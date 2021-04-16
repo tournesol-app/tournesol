@@ -1,13 +1,13 @@
 # Tournesol: expert-driven recommender system
 
-![Demo of Expert Interface](https://github.com/tournesol-app/recommender-system-alignment-proof-of-concept/blob/master/demo.png)
+![Demo of Expert Interface](https://github.com/tournesol-app/tournesol/blob/master/demo.png)
 
 We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 [Django](https://www.djangoproject.com/) for the backend, and [React.js](https://reactjs.org/) for the front-end.
 
 ## How to launch (tested on Ubuntu in WSL)
 
-![Continuous Integration](https://github.com/tournesol-app/recommender-system-alignment-proof-of-concept/workflows/Continuous%20Integration/badge.svg?branch=master)
+![Continuous Integration](https://github.com/tournesol-app/tournesol/workflows/Continuous%20Integration/badge.svg?branch=master)
 
 <details>
   <summary>Click to expand</summary>
