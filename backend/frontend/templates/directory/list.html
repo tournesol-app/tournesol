@@ -1,0 +1,26 @@
+{# simplest template for listing the directory #}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<title>Model train directory</title>
+<body>
+
+<h1>{{ directory_name }}</h1>
+<ul>
+{% for basename, link_target in directory_directories %}
+  {% if link_target %}
+    <li><a href="{% url 'directory_browse' link_target %}">{{ basename }}/</a></li>
+  {% else %}
+    <li>{{ basename }}/</li>
+  {% endif %}
+{% endfor %}
+{% for basename, link_target in directory_files %}
+  {% if link_target %}
+    <li><a target='_blank' href="{% url 'directory_browse' link_target %}">{{ basename }}</a></li>
+  {% else %}
+    <li>{{ basename }}</li>
+  {% endif %}
+{% endfor %}
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<p>Thank you for registering this e-mail address with Tournesol &#127803;</p>
+<p id="confirmation_text_id">
+    {% if is_accepted %}
+        <span id="email_accepted_id"></span>
+        Great news! Your email domain is considered trustworthy by Tournesol.
+        Please click <a id="confirmation_link_id" href="{{ link }}">here</a> to confirm your email
+        address.
+        You will then be able to provide ratings and affect Tournesol's scores!
+    {% elif is_rejected %}
+        <span id="email_rejected_id"></span>
+        Your account is almost validated. Please click
+        <a id="confirmation_link_id" href="{{ link }}">here</a> to confirm your
+        email address.
+        Once validated, you will be able to provide ratings, and to enable others to search with
+        your recommendations.
+        Unfortunately, the email domain you registered is not trusted by Tournesol.
+        Unless you
+        <a href="https://tournesol.app/info">validate a trusted email
+            address</a>, your
+        ratings will not affect Tournesol's scores.
+    {% else %}
+        <span id="email_pending_id"></span>
+        Your account is almost validated. Please click
+        <a id="confirmation_link_id" href="{{ link }}">here</a> to confirm your
+        email address.
+        Once validated, you will be able to provide ratings, and to enable others to search with
+        your recommendations.
+        Note, however, that the email domain you registered has not yet been considered trustworthy
+        by Tournesol.
+        We will let you know when the trustworthiness of your email domain is decided.
+        In the meantime, unless you
+        <a href="https://tournesol.app/info">validate a trusted email
+            address</a>, your ratings will
+        not affect Tournesol's scores.
+    {% endif %}
+</p>
+
+<p><a href="http://tournesol.app">Tournesol</a>: Collaborative Content Recommendations</p>
+</body>
+</html>

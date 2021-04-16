@@ -1,0 +1,9 @@
+import backend.add_videos
+
+
+VideoManager.video_dir = './videos/'
+VideoManager.after_download_delay_sec = 1.0
+
+qs_videos_to_download.max_download_times = 5
+qs_subsample_to_download.limit = 10
+qs_subsample_to_download.max_output = 3

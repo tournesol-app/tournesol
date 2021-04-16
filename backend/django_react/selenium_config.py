@@ -1,0 +1,2 @@
+SELENIUM_USERNAME = 'selenium'
+SELENIUM_PASSWORD = 'Boo2evukaich7si'

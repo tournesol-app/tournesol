@@ -1,0 +1,7 @@
+_test_plot.png
+db.sqlite3
+db.sqlite3.clean
+demo_accounts*.csv
+videos
+.idea
+python_api

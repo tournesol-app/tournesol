@@ -1,0 +1,38 @@
+import backend.ml_model.preference_aggregation_featureless
+import backend.ml_model.helpers
+import backend.ml_model.preference_aggregation_featureless_online
+include 'common.gin'
+
+# optimizer settings
+opt/Adam.lr = 1e-3
+
+# initialization settings
+VariableIndexLayer.initializer = @Zeros()
+AllRatingsWithCommon.var_init_cls = @VariableIndexLayer
+
+# train step configuration
+FeaturelessMedianPreferenceAverageRegularizationAggregator.optimizer = @opt/Adam()
+FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 100000
+FeaturelessMedianPreferenceAverageRegularizationAggregator.hypers = @hypers/gin_dict()
+FeaturelessMedianPreferenceAverageRegularizationAggregator.batch_params = @batch_params/gin_dict()
+
+# loss hyperparameters configuration
+hypers/gin_dict.C = 3.
+hypers/gin_dict.lambda_ = 2.
+hypers/gin_dict.mu = 1.
+hypers/gin_dict.default_score_value = 1.0
+hypers/gin_dict.sample_every = 1000
+
+# mini-batch configuration
+batch_params/gin_dict.sample_experts = 100
+batch_params/gin_dict.sample_ratings_per_expert = 50000
+batch_params/gin_dict.sample_objects_per_expert = 50000
+
+# sampling with replacement
+choice_or_all.replace = False
+
+# online update config
+FeaturelessOnlineUpdater.hypers = @hypers/gin_dict()
+
+# setting golden ratio search parameters for online updates
+FeaturelessOnlineUpdater.golden_params = {'maxiter': 50, 'tol': 1e-8, 'smartbracket': (-4, 4)}

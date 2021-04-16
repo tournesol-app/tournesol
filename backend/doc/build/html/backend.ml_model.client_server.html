@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>backend.ml_model.client_server package &#8212; Tournesol  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Tournesol  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">backend.ml_model.client_server package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="backend-ml-model-client-server-package">
+<h1>backend.ml_model.client_server package<a class="headerlink" href="#backend-ml-model-client-server-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-backend.ml_model.client_server.database_learner">
+<span id="backend-ml-model-client-server-database-learner-module"></span><h2>backend.ml_model.client_server.database_learner module<a class="headerlink" href="#module-backend.ml_model.client_server.database_learner" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.client_server.database_learner.</code><code class="sig-name descname">DatabasePreferenceLearner</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Learn models from the database, save/restore.</p>
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.create_models">
+<code class="sig-name descname">create_models</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.create_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the user_to_model and aggregator fields.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit on latest database records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.get_dataset">
+<em class="property">static </em><code class="sig-name descname">get_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.get_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get dataset for a user. Format: (v_emb1, v_emb2, result).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load weights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.predict_aggregated">
+<code class="sig-name descname">predict_aggregated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.predict_aggregated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predictions for the aggregated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.predict_user">
+<code class="sig-name descname">predict_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.predict_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prediction for one user, or None if there’s nothing there.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save weights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.save_figure">
+<code class="sig-name descname">save_figure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.save_figure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.update_features">
+<code class="sig-name descname">update_features</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner.update_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the features for all videos in the database using the fitted model.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.client_server.django_ml_embedding">
+<span id="backend-ml-model-client-server-django-ml-embedding-module"></span><h2>backend.ml_model.client_server.django_ml_embedding module<a class="headerlink" href="#module-backend.ml_model.client_server.django_ml_embedding" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.client_server.django_ml_embedding.</code><code class="sig-name descname">DatabasePreferenceLearnerEmbedding</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner" title="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.client_server.database_learner.DatabasePreferenceLearner</span></code></a></p>
+<p>Learn models from the database, save/restore.</p>
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.create_models">
+<code class="sig-name descname">create_models</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.create_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the models.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.fill_model_data">
+<em class="property">static </em><code class="sig-name descname">fill_model_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.fill_model_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate model data from db.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit on latest database records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.predict_aggregated">
+<code class="sig-name descname">predict_aggregated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.predict_aggregated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predictions for the aggregated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.predict_user">
+<code class="sig-name descname">predict_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.predict_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prediction for one user, or None if there’s nothing there.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.predict_with_emb_or_None">
+<code class="sig-name descname">predict_with_emb_or_None</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.predict_with_emb_or_None" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.visualize">
+<code class="sig-name descname">visualize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_embedding.DatabasePreferenceLearnerEmbedding.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot model predictions and losses.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.client_server.django_ml_featureless">
+<span id="backend-ml-model-client-server-django-ml-featureless-module"></span><h2>backend.ml_model.client_server.django_ml_featureless module<a class="headerlink" href="#module-backend.ml_model.client_server.django_ml_featureless" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.client_server.django_ml_featureless.</code><code class="sig-name descname">DatabasePreferenceLearnerFeatureless</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.client_server.database_learner.DatabasePreferenceLearner" title="backend.ml_model.client_server.database_learner.DatabasePreferenceLearner"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.client_server.database_learner.DatabasePreferenceLearner</span></code></a></p>
+<p>Learn models from the database, save/restore.</p>
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.create_models">
+<code class="sig-name descname">create_models</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.create_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create learning models and the aggregator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.fill_model_data">
+<em class="property">static </em><code class="sig-name descname">fill_model_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.fill_model_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate model data from db.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit on latest database records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.predict_aggregated">
+<code class="sig-name descname">predict_aggregated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.predict_aggregated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predictions for the aggregated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.predict_user">
+<code class="sig-name descname">predict_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">videos</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.predict_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prediction for one user, or None if there’s nothing there.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.visualize">
+<code class="sig-name descname">visualize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.django_ml_featureless.DatabasePreferenceLearnerFeatureless.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot model predictions and losses.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.client_server.ml_client">
+<span id="backend-ml-model-client-server-ml-client-module"></span><h2>backend.ml_model.client_server.ml_client module<a class="headerlink" href="#module-backend.ml_model.client_server.ml_client" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.client_server.ml_client.</code><code class="sig-name descname">DatabaseLearnerCommunicator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">port_inference</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">port_training</span><span class="o">=</span><span class="default_value">5001</span></em>, <em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Communicate with training/inference workers.</p>
+<dl class="py method">
+<dt id="backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">port_inference</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">port_training</span><span class="o">=</span><span class="default_value">5001</span></em>, <em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize (remember ports).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator.build_client">
+<code class="sig-name descname">build_client</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">port</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator.build_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an http client pointing to the worker.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_client.DatabaseLearnerCommunicator.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit on data from the dataset.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.client_server.ml_client.time_cache_wrapper">
+<code class="sig-prename descclassname">backend.ml_model.client_server.ml_client.</code><code class="sig-name descname">time_cache_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">expire_sec</span><span class="o">=</span><span class="default_value">3600</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_client.time_cache_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator which caches results for some seconds.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.client_server.ml_server">
+<span id="backend-ml-model-client-server-ml-server-module"></span><h2>backend.ml_model.client_server.ml_server module<a class="headerlink" href="#module-backend.ml_model.client_server.ml_server" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.client_server.ml_server.MainHandler">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.client_server.ml_server.</code><code class="sig-name descname">MainHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">application</span><span class="p">:</span> <span class="n">tornado.web.Application</span></em>, <em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">tornado.httputil.HTTPServerRequest</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_server.MainHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.web.RequestHandler</span></code></p>
+<p>Server which handles the connections.</p>
+<dl class="py method">
+<dt id="backend.ml_model.client_server.ml_server.MainHandler.post">
+<code class="sig-name descname">post</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_server.MainHandler.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.client_server.ml_server.run_server">
+<code class="sig-prename descclassname">backend.ml_model.client_server.ml_server.</code><code class="sig-name descname">run_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">port</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">learner</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.client_server.ml_server.run_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run server.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.client_server">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-backend.ml_model.client_server" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">backend.ml_model.client_server package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.client_server.database_learner">backend.ml_model.client_server.database_learner module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.client_server.django_ml_embedding">backend.ml_model.client_server.django_ml_embedding module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.client_server.django_ml_featureless">backend.ml_model.client_server.django_ml_featureless module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.client_server.ml_client">backend.ml_model.client_server.ml_client module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.client_server.ml_server">backend.ml_model.client_server.ml_server module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.client_server">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/backend.ml_model.client_server.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Tournesol  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">backend.ml_model.client_server package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Tournesol authors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

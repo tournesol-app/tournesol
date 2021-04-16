@@ -1,0 +1,18 @@
+{% extends "rest_framework/base.html" %}
+
+{% block title %}{% if name %}{{ name }} – {% endif %}Tournesol API{% endblock %}
+
+{% block branding %}
+<a class='navbar-brand' rel="nofollow" href='/api/v2/'>
+    Tournesol API
+</a>
+<a class='navbar-brand' rel="nofollow" href='/schema/redoc/'>
+    [docs]
+</a>
+<a class='navbar-brand' rel="nofollow" href='/schema/swagger-ui/'>
+    [swagger]
+</a>
+<a class='navbar-brand' rel="nofollow" href='/'>
+    [site]
+</a>
+{% endblock %}

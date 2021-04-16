@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    {% include "frontend/analytics.html" %}
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+    <title>Tournesol</title>
+</head>
+<body>
+<script>
+    window.username = '{{username}}';
+    window.user_information_id = {{ user_information_id }};
+    window.is_superuser = {{is_superuser}};
+    window.is_authenticated = {{is_authenticated}};
+    window.user_id = {{ user_id }};
+    window.user_preferences_id = {{ user_preferences_id }};
+    window.ENABLE_YOUTUBE_VIDEO_EMBED = {{ ENABLE_YOUTUBE_VIDEO_EMBED }};
+</script>
+
+{% block body %}{% endblock %}
+
+<div id="unsupported_browser" style="display: none">
+    Please download Chrome/Firefox/Safari to use Tournesol.
+</div>
+</body>
+
+<script>
+    function onloadCheckError() {
+        if(document.getElementById('app').innerHTML.trimLeft().startsWith("<!-- React")) {
+            console.log("Error loading react");
+        }
+        document.getElementById('unsupported_browser').style.display = "inherit";
+    }
+</script>
+
+<script src="{% static "frontend/main.js" %}" onload="onloadCheckError()"></script>
+</html>

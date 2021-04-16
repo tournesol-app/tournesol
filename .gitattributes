@@ -1,0 +1,5 @@
+*.ipynb linguist-vendored
+*.sql linguist-vendored
+*.json linguist-vendored
+API linguist-generated=true
+frontend/api linguist-generated=true

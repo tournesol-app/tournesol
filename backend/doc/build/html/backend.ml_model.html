@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>backend.ml_model package &#8212; Tournesol  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Tournesol  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">backend.ml_model package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="backend-ml-model-package">
+<h1>backend.ml_model package<a class="headerlink" href="#backend-ml-model-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backend.ml_model.client_server.html">backend.ml_model.client_server package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#module-backend.ml_model.client_server.database_learner">backend.ml_model.client_server.database_learner module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#module-backend.ml_model.client_server.django_ml_embedding">backend.ml_model.client_server.django_ml_embedding module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#module-backend.ml_model.client_server.django_ml_featureless">backend.ml_model.client_server.django_ml_featureless module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#module-backend.ml_model.client_server.ml_client">backend.ml_model.client_server.ml_client module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#module-backend.ml_model.client_server.ml_server">backend.ml_model.client_server.ml_server module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend.ml_model.client_server.html#module-backend.ml_model.client_server">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-backend.ml_model.helpers">
+<span id="backend-ml-model-helpers-module"></span><h2>backend.ml_model.helpers module<a class="headerlink" href="#module-backend.ml_model.helpers" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="backend.ml_model.helpers.arr_of_dicts_to_dict_of_arrays">
+<code class="sig-prename descclassname">backend.ml_model.helpers.</code><code class="sig-name descname">arr_of_dicts_to_dict_of_arrays</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.helpers.arr_of_dicts_to_dict_of_arrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Array of dicts to dict of arrays</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.helpers.choice_or_all">
+<code class="sig-prename descclassname">backend.ml_model.helpers.</code><code class="sig-name descname">choice_or_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.helpers.choice_or_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select a given number of selements, or all of them if there are not enough.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.helpers.convert_to_tf">
+<code class="sig-prename descclassname">backend.ml_model.helpers.</code><code class="sig-name descname">convert_to_tf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.helpers.convert_to_tf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert numpy arrays to tensorflow, caring about the dtype.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.helpers.numpy_to_tf">
+<code class="sig-prename descclassname">backend.ml_model.helpers.</code><code class="sig-name descname">numpy_to_tf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.helpers.numpy_to_tf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dict/list numpy-&gt;tf.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.helpers.tf_to_numpy">
+<code class="sig-prename descclassname">backend.ml_model.helpers.</code><code class="sig-name descname">tf_to_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.helpers.tf_to_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dict/list tf-&gt;numpy.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.preference_aggregation">
+<span id="backend-ml-model-preference-aggregation-module"></span><h2>backend.ml_model.preference_aggregation module<a class="headerlink" href="#module-backend.ml_model.preference_aggregation" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation.MedianPreferenceAggregator">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation.</code><code class="sig-name descname">MedianPreferenceAggregator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.MedianPreferenceAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.preference_aggregation.PreferencePredictor" title="backend.ml_model.preference_aggregation.PreferencePredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.preference_aggregation.PreferencePredictor</span></code></a></p>
+<p>Aggregate preferences of experts using a median.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation.MedianPreferenceAggregator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.MedianPreferenceAggregator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation.MedianPreferenceAggregator.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.MedianPreferenceAggregator.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation.MedianPreferenceAggregator.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.MedianPreferenceAggregator.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation.PreferencePredictor">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation.</code><code class="sig-name descname">PreferencePredictor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.PreferencePredictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds user preferences.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation.PreferencePredictor.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">show_component</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.PreferencePredictor.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation.PreferencePredictor.plot_with_colors">
+<code class="sig-name descname">plot_with_colors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">idxes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">component</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation.PreferencePredictor.plot_with_colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot data with model output.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.preference_aggregation_featureless">
+<span id="backend-ml-model-preference-aggregation-featureless-module"></span><h2>backend.ml_model.preference_aggregation_featureless module<a class="headerlink" href="#module-backend.ml_model.preference_aggregation_featureless" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation_featureless.</code><code class="sig-name descname">AllRatingsWithCommon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.COMMON_EXPERT">
+<code class="sig-name descname">COMMON_EXPERT</code><em class="property"> = '__aggregate_expert__'</em><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.COMMON_EXPERT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores a tensor will ALL ratings, including the common model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">experts</em>, <em class="sig-param">objects</em>, <em class="sig-param">output_features</em>, <em class="sig-param">name</em>, <em class="sig-param">var_init_cls=&lt;class 'backend.ml_model.preference_aggregation_featureless.VariableIndexLayer'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.get_internal_ids">
+<code class="sig-name descname">get_internal_ids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objects</span></em>, <em class="sig-param"><span class="n">experts</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.get_internal_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get integer IDs for objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load weights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.reset_model">
+<code class="sig-name descname">reset_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.reset_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.AllRatingsWithCommon.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save weights.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation_featureless.</code><code class="sig-name descname">FeaturelessMedianPreferenceAverageRegularizationAggregator</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.preference_aggregation.MedianPreferenceAggregator" title="backend.ml_model.preference_aggregation.MedianPreferenceAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.preference_aggregation.MedianPreferenceAggregator</span></code></a></p>
+<p>Aggregate with median, train with an average set of parameters.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">models</em>, <em class="sig-param">epochs=20</em>, <em class="sig-param">optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam object&gt;</em>, <em class="sig-param">hypers=None</em>, <em class="sig-param">batch_params=None</em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.build_loss_fcn">
+<code class="sig-name descname">build_loss_fcn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lambda_</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">C</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">default_score_value</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.build_loss_fcn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epochs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit with multiple epochs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.fit_step">
+<code class="sig-name descname">fit_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.fit_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit using the custom magic loss…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict of losses (numpy)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.plot_loss">
+<code class="sig-name descname">plot_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.plot_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the losses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.sample_minibatch">
+<code class="sig-name descname">sample_minibatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_experts</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">sample_ratings_per_expert</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">sample_objects_per_expert</span><span class="o">=</span><span class="default_value">50</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.sample_minibatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get one mini-batch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_experts</strong> – number of experts to sample at each mini-batch for RATINGS/REGULARIZATION</p></li>
+<li><p><strong>sample_ratings_per_expert</strong> – number of ratings to sample at each mini-batch for RATINGS</p></li>
+<li><p><strong>sample_objects_per_expert</strong> – number of objects to sample at each mini-batch for REGULARIZATION</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict with tensors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessMedianPreferenceAverageRegularizationAggregator.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation_featureless.</code><code class="sig-name descname">FeaturelessPreferenceLearningModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.preference_aggregation.PreferencePredictor" title="backend.ml_model.preference_aggregation.PreferencePredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.preference_aggregation.PreferencePredictor</span></code></a></p>
+<p>A model for preference learning.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expert</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">all_ratings</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.clear_data">
+<code class="sig-name descname">clear_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.clear_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all preferences from the training dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.ratings_with_object">
+<code class="sig-name descname">ratings_with_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.ratings_with_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of ratings with a particular object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.register_preference">
+<code class="sig-name descname">register_preference</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">o1</span></em>, <em class="sig-param"><span class="n">o2</span></em>, <em class="sig-param"><span class="n">p1_vs_p2</span></em>, <em class="sig-param"><span class="n">weights</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.FeaturelessPreferenceLearningModel.register_preference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save data when preference is available.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation_featureless.VariableIndexLayer">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation_featureless.</code><code class="sig-name descname">VariableIndexLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.VariableIndexLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>Layer which outputs a trainable variable on a call.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.VariableIndexLayer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'index_layer'</span></em>, <em class="sig-param"><span class="n">initializer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.VariableIndexLayer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_featureless.VariableIndexLayer.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_featureless.VariableIndexLayer.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<p>Note here that <cite>call()</cite> method in <cite>tf.keras</cite> is little bit different
+from <cite>keras</cite> API. In <cite>keras</cite> API, you can pass support masking for
+layers as additional arguments. Whereas <cite>tf.keras</cite> has <cite>compute_mask()</cite>
+method to support masking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> – Input tensor, or list/tuple of input tensors.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments. Currently unused.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model.preference_aggregation_with_embeddings">
+<span id="backend-ml-model-preference-aggregation-with-embeddings-module"></span><h2>backend.ml_model.preference_aggregation_with_embeddings module<a class="headerlink" href="#module-backend.ml_model.preference_aggregation_with_embeddings" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation_with_embeddings.</code><code class="sig-name descname">MedianPreferenceAverageRegularizationAggregator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.preference_aggregation.MedianPreferenceAggregator" title="backend.ml_model.preference_aggregation.MedianPreferenceAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.preference_aggregation.MedianPreferenceAggregator</span></code></a></p>
+<p>Aggregate with median, train with an average set of parameters.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epochs</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit with multiple epochs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.fit_step">
+<code class="sig-name descname">fit_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reg_common_to_0</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">reg_m_to_common</span><span class="o">=</span><span class="default_value">0.001</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.fit_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit using the custom magic loss…</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.plot_loss">
+<code class="sig-name descname">plot_loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.plot_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the loss, inherit from models[0].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.plot_loss_and_decisions">
+<code class="sig-name descname">plot_loss_and_decisions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">idxes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.MedianPreferenceAverageRegularizationAggregator.plot_loss_and_decisions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the losses and decision boundary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding">
+<em class="property">class </em><code class="sig-prename descclassname">backend.ml_model.preference_aggregation_with_embeddings.</code><code class="sig-name descname">PreferenceLearningModelEmbedding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_dim</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">output_dim</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#backend.ml_model.preference_aggregation.PreferencePredictor" title="backend.ml_model.preference_aggregation.PreferencePredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">backend.ml_model.preference_aggregation.PreferencePredictor</span></code></a></p>
+<p>A model for preference learning.</p>
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_dim</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">output_dim</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.build_preference_model">
+<em class="property">static </em><code class="sig-name descname">build_preference_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.build_preference_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a model to train by comparison.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.build_score_model">
+<code class="sig-name descname">build_score_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.build_score_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a score model with known dimensions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.clear_data">
+<code class="sig-name descname">clear_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.clear_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all preferences from the training dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epochs</span><span class="o">=</span><span class="default_value">20</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit on the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.iteration">
+<code class="sig-name descname">iteration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">override_input_fcn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">do_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">do_fit</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">min_data_to_train</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">epochs</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">epochs_many</span><span class="o">=</span><span class="default_value">1000</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the state and query the user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load weights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.plot_loss">
+<code class="sig-name descname">plot_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.plot_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot all losses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.plot_loss_and_decisions">
+<code class="sig-name descname">plot_loss_and_decisions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">idxes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.plot_loss_and_decisions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot both the loss and the decision fcn.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.register_preference">
+<code class="sig-name descname">register_preference</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_pt_1</span></em>, <em class="sig-param"><span class="n">data_pt_2</span></em>, <em class="sig-param"><span class="n">p1_vs_p2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.register_preference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save data when preference is available.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.reset_model">
+<code class="sig-name descname">reset_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.reset_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-create the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.PreferenceLearningModelEmbedding.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save weights.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="backend.ml_model.preference_aggregation_with_embeddings.flatten_array_of_tensors">
+<code class="sig-prename descclassname">backend.ml_model.preference_aggregation_with_embeddings.</code><code class="sig-name descname">flatten_array_of_tensors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">W</span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.ml_model.preference_aggregation_with_embeddings.flatten_array_of_tensors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take an array of tensor and turn into a single flat tensor.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-backend.ml_model">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-backend.ml_model" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">backend.ml_model package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.helpers">backend.ml_model.helpers module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.preference_aggregation">backend.ml_model.preference_aggregation module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.preference_aggregation_featureless">backend.ml_model.preference_aggregation_featureless module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model.preference_aggregation_with_embeddings">backend.ml_model.preference_aggregation_with_embeddings module</a></li>
+<li><a class="reference internal" href="#module-backend.ml_model">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/backend.ml_model.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Tournesol  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">backend.ml_model package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Tournesol authors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

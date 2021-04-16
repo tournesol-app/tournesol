@@ -1,0 +1,19 @@
+{% load settings_value %}
+{% settings_value "ENABLE_ANALYTICS" as analytics_enabled %}
+{% if analytics_enabled %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VG06GZ8WLT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-VG06GZ8WLT');
+    </script>
+{% else %}
+    <!-- Google analytics is disabled -->
+{% endif %}

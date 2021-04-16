@@ -1,0 +1,32 @@
+include 'featureless_config.gin'
+import gin_tune
+
+# number of samples
+tune_run.num_samples = 100
+
+# reporting
+callback.report_every = 50
+callback.metric_every = 1000
+
+# train step configuration
+FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 10100
+
+# hyperparameter search ranges
+C/loguniform.lower = 1e-3
+C/loguniform.upper = 1e3
+lam/loguniform.lower = 1e-3
+lam/loguniform.upper = 1e3
+mu/loguniform.lower = 1e-3
+mu/loguniform.upper = 1e3
+
+# loss hyperparameters configuration
+hypers/gin_dict.C = @C/loguniform()
+hypers/gin_dict.lambda_ = @lam/loguniform()
+hypers/gin_dict.mu = @mu/loguniform()
+
+# tune-specific configuration
+tune_run.verbose = True
+tune_run.queue_trials = True
+gin_tune_config.log_sys_usage = True
+tune_run.resources_per_trial = {'cpu': 2}
+tune_run.name = "featureless_tournesol"

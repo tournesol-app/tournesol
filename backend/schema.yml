@@ -1,0 +1,6078 @@
+openapi: 3.0.3
+info:
+  title: Tournesol API
+  version: 2.0.0
+paths:
+  /api/v2/constants/view_constants/:
+    get:
+      operationId: view_constants
+      description: Get constants.
+      tags:
+      - constants
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstantsSerializerV2'
+          description: ''
+  /api/v2/email_domain/:
+    get:
+      operationId: email_domain_list
+      description: List e-mail domains
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: status
+        required: false
+        in: query
+        description: status
+        schema:
+          type: string
+          enum:
+          - RJ
+          - ACK
+          - PD
+      tags:
+      - email_domain
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmailDomainList'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/email_domain/{id}/:
+    get:
+      operationId: email_domain_retrieve
+      description: Get e-mail domain
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this email domain.
+        required: true
+      tags:
+      - email_domain
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailDomain'
+          description: ''
+  /api/v2/expert_ratings/:
+    get:
+      operationId: expert_ratings_list
+      description: List my own expert ratings
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: video_1
+        required: false
+        in: query
+        description: First video in the rating (fixed order)
+        schema:
+          type: string
+      - name: video_2
+        required: false
+        in: query
+        description: Second video in the rating (fixed order)
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: Any video ID (first or second)
+        schema:
+          type: string
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExpertRatingsSerializerV2List'
+          description: ''
+    post:
+      operationId: expert_ratings_create
+      description: Rate two videos
+      tags:
+      - expert_ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+  /api/v2/expert_ratings/{id}/:
+    get:
+      operationId: expert_ratings_retrieve
+      description: Set and get expert ratings.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expert rating.
+        required: true
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+    put:
+      operationId: expert_ratings_update
+      description: Change all fields in a rating
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expert rating.
+        required: true
+      tags:
+      - expert_ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+    patch:
+      operationId: expert_ratings_partial_update
+      description: Change some fields in a rating
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expert rating.
+        required: true
+      tags:
+      - expert_ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExpertRatingsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExpertRatingsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExpertRatingsSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+  /api/v2/expert_ratings/by_video_ids/:
+    get:
+      operationId: expert_ratings_by_video_ids_retrieve
+      description: Get/set ratings by video IDs, with reverse order (v1-v2 and v2-v1)
+        supported.
+      parameters:
+      - in: query
+        name: force_set_ids
+        schema:
+          type: boolean
+        description: Force set video_1 and video_2 (in DB order -- confusing, disabled
+          by-default)
+      - in: query
+        name: video_left
+        schema:
+          type: string
+        description: Left video (can be either v1 or v2)
+        required: true
+      - in: query
+        name: video_right
+        schema:
+          type: string
+        description: Right video (can be either v1 or v2)
+        required: true
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+    patch:
+      operationId: expert_ratings_by_video_ids_partial_update
+      description: Get/set ratings by video IDs, with reverse order (v1-v2 and v2-v1)
+        supported.
+      parameters:
+      - in: query
+        name: force_set_ids
+        schema:
+          type: boolean
+        description: Force set video_1 and video_2 (in DB order -- confusing, disabled
+          by-default)
+      - in: query
+        name: video_left
+        schema:
+          type: string
+        description: Left video (can be either v1 or v2)
+        required: true
+      - in: query
+        name: video_right
+        schema:
+          type: string
+        description: Right video (can be either v1 or v2)
+        required: true
+      tags:
+      - expert_ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExpertRatingsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExpertRatingsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExpertRatingsSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/expert_ratings/disagreements/:
+    get:
+      operationId: disagreements
+      description: Get disagreements in Expert Ratings.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: video_1
+        required: false
+        in: query
+        description: First video in the rating (fixed order)
+        schema:
+          type: string
+      - name: video_2
+        required: false
+        in: query
+        description: Second video in the rating (fixed order)
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: Any video ID (first or second)
+        schema:
+          type: string
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDisagreementList'
+          description: ''
+  /api/v2/expert_ratings/double_down/:
+    patch:
+      operationId: api_v2_expert_ratings_double_down
+      description: Double the weight of one of the ratings on one of the features.
+      parameters:
+      - in: query
+        name: feature
+        schema:
+          type: string
+        description: The feature to double down the weight on
+        required: true
+      - in: query
+        name: video_left
+        schema:
+          type: string
+        description: Left video (can be either v1 or v2)
+        required: true
+      - in: query
+        name: video_right
+        schema:
+          type: string
+        description: Right video (can be either v1 or v2)
+        required: true
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+  /api/v2/expert_ratings/inconsistencies/:
+    get:
+      operationId: api_v2_expert_ratings_show_inconsistencies
+      description: Get inconsistencies in Expert Ratings.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: video_1
+        required: false
+        in: query
+        description: First video in the rating (fixed order)
+        schema:
+          type: string
+      - name: video_2
+        required: false
+        in: query
+        description: Second video in the rating (fixed order)
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: Any video ID (first or second)
+        schema:
+          type: string
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInconsistenciesList'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+          description: ''
+  /api/v2/expert_ratings/online_by_video_ids/:
+    get:
+      operationId: expert_ratings_online_by_video_ids_retrieve
+      description: Do online updates on ratings.
+      parameters:
+      - in: query
+        name: add_debug_info
+        schema:
+          type: boolean
+        description: Return also a dict with information
+      - in: query
+        name: feature
+        schema:
+          type: string
+        description: The feature to update
+        required: true
+      - in: query
+        name: new_value
+        schema:
+          type: number
+          format: float
+        description: New value for the feature in 0..100.0
+        required: true
+      - in: query
+        name: video_left
+        schema:
+          type: string
+        description: Left video (can be either v1 or v2)
+        required: true
+      - in: query
+        name: video_right
+        schema:
+          type: string
+        description: Right video (can be either v1 or v2)
+        required: true
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlineResponse'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+    patch:
+      operationId: expert_ratings_online_by_video_ids_partial_update
+      description: Do online updates on ratings.
+      parameters:
+      - in: query
+        name: add_debug_info
+        schema:
+          type: boolean
+        description: Return also a dict with information
+      - in: query
+        name: feature
+        schema:
+          type: string
+        description: The feature to update
+        required: true
+      - in: query
+        name: new_value
+        schema:
+          type: number
+          format: float
+        description: New value for the feature in 0..100.0
+        required: true
+      - in: query
+        name: video_left
+        schema:
+          type: string
+        description: Left video (can be either v1 or v2)
+        required: true
+      - in: query
+        name: video_right
+        schema:
+          type: string
+        description: Right video (can be either v1 or v2)
+        required: true
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlineResponse'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/expert_ratings/register_slider_change/:
+    post:
+      operationId: register_slider_change
+      description: Register any change in slider values on the rating page.
+      tags:
+      - expert_ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SliderChangeSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SliderChangeSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SliderChangeSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SliderChangeSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/expert_ratings/sample_first_video/:
+    get:
+      operationId: expert_ratings_sample_first_video_retrieve
+      description: Sample a video to rate.
+      parameters:
+      - in: query
+        name: video_exclude
+        schema:
+          type: string
+        description: Exclude a video ID from consideration
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Samplevideov3Error'
+          description: ''
+  /api/v2/expert_ratings/sample_popular_video/:
+    get:
+      operationId: expert_ratings_sample_popular_video_retrieve
+      description: Sample a popular video.
+      parameters:
+      - in: query
+        name: no_rate_later
+        schema:
+          type: boolean
+        description: Do not show videos in rate later list
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+          description: ''
+  /api/v2/expert_ratings/sample_video/:
+    get:
+      operationId: api_v2_expert_ratings_sample_video
+      description: Sample a video to rate.
+      parameters:
+      - in: query
+        name: only_rated
+        schema:
+          type: boolean
+        description: Only sample videos already rated by the expert
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoSerializerV2'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+          description: ''
+  /api/v2/expert_ratings/sample_video_with_other/:
+    get:
+      operationId: expert_ratings_sample_video_with_other_retrieve
+      description: Sample a video to rate.
+      parameters:
+      - in: query
+        name: video_other
+        schema:
+          type: string
+        description: Other video_id being rated
+        required: true
+      tags:
+      - expert_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoSerializerV2'
+          description: ''
+        '404':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Samplevideov3Error'
+          description: ''
+  /api/v2/expert_ratings/skip_video/:
+    patch:
+      operationId: expert_ratings_skip_video_partial_update
+      description: Set and get expert ratings.
+      tags:
+      - expert_ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchedVideo'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchedVideo'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchedVideo'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/login_signup/:
+    get:
+      operationId: login_signup_list
+      description: Get my username in a list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - login_signup
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOnlyUsernameAndIDList'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/login_signup/{id}/:
+    get:
+      operationId: login_signup_retrieve
+      description: Get my username by my user preferences id
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - login_signup
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+    put:
+      operationId: login_signup_update
+      description: Update my username
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - login_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnlyUsernameAndID'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OnlyUsernameAndID'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OnlyUsernameAndID'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '403':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+    patch:
+      operationId: login_signup_partial_update
+      description: Update my username
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - login_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOnlyUsernameAndID'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOnlyUsernameAndID'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOnlyUsernameAndID'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '403':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+  /api/v2/login_signup/change_password/:
+    patch:
+      operationId: login_signup_change_password_partial_update
+      description: Change password
+      tags:
+      - login_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePassword'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/login_signup/login/:
+    patch:
+      operationId: login_signup_login_partial_update
+      description: Register a user.
+      tags:
+      - login_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLogin'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/login_signup/logout/:
+    patch:
+      operationId: login_signup_logout_partial_update
+      description: Log out.
+      tags:
+      - login_signup
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v2/login_signup/register/:
+    post:
+      operationId: login_signup_register_create
+      description: Register a user.
+      tags:
+      - login_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlyUsernameAndID'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/login_signup/reset_password/:
+    patch:
+      operationId: login_signup_reset_password_partial_update
+      description: Reset password.
+      tags:
+      - login_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedResetPassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedResetPassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedResetPassword'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/rate_later/:
+    get:
+      operationId: rate_later_list
+      description: Get videos queued to be rated later
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: video__video_id
+        required: false
+        in: query
+        description: video__video_id
+        schema:
+          type: string
+      tags:
+      - rate_later
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoRateLaterSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+    post:
+      operationId: rate_later_create
+      description: Schedule a video to be rated later
+      tags:
+      - rate_later
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoRateLaterSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoRateLaterSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoRateLaterSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoRateLaterSerializerV2'
+          description: ''
+  /api/v2/rate_later/{id}/:
+    get:
+      operationId: rate_later_retrieve
+      description: Get one video to be rated later (by object ID)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video rate later.
+        required: true
+      tags:
+      - rate_later
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoRateLaterSerializerV2'
+          description: ''
+    delete:
+      operationId: rate_later_destroy
+      description: Remove a video from rate later list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video rate later.
+        required: true
+      tags:
+      - rate_later
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/rate_later/bulk_delete/:
+    patch:
+      operationId: rate_later_bulk_delete_partial_update
+      description: Delete many videos from the list by IDs.
+      tags:
+      - rate_later
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchedVideoRateLaterDelete'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchedVideoRateLaterDelete'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchedVideoRateLaterDelete'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+        '400':
+          description: No response body
+  /api/v2/statistics/view/:
+    get:
+      operationId: view
+      description: Get statistics for the website.
+      tags:
+      - statistics
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsSerializerV2'
+          description: ''
+  /api/v2/user_information/:
+    get:
+      operationId: user_information_list
+      description: List and filter user information
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: user__username
+        required: false
+        in: query
+        description: user__username
+        schema:
+          type: string
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserInformationPublicSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/user_information/{id}/:
+    get:
+      operationId: user_information_retrieve
+      description: Get information about one user
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user information.
+        required: true
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          description: ''
+    put:
+      operationId: user_information_update
+      description: Replace my user information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user information.
+        required: true
+      tags:
+      - user_information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '403':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          description: ''
+    patch:
+      operationId: user_information_partial_update
+      description: Partially update my user information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user information.
+        required: true
+      tags:
+      - user_information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserInformationPublicSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserInformationPublicSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserInformationPublicSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '403':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+          description: ''
+  /api/v2/user_information/{id}/add_verify_email/:
+    patch:
+      operationId: user_information_add_verify_email_partial_update
+      description: Add an address and ask for verification.
+      parameters:
+      - in: query
+        name: email
+        schema:
+          type: string
+        description: E-mail to add and ask to verify
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user information.
+        required: true
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifiableEmail'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '403':
+          description: No response body
+  /api/v2/user_information/{id}/verify_all_emails/:
+    patch:
+      operationId: user_information_verify_all_emails_partial_update
+      description: Ask for e-mail verification for all unverified e-mails.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user information.
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: user__username
+        required: false
+        in: query
+        description: user__username
+        schema:
+          type: string
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVerifiableEmailList'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '403':
+          description: No response body
+  /api/v2/user_information/{id}/verify_email/:
+    patch:
+      operationId: user_information_verify_email_partial_update
+      description: Ask for e-mail verification.
+      parameters:
+      - in: query
+        name: email
+        schema:
+          type: string
+        description: E-mail to verify
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user information.
+        required: true
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifiableEmail'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '403':
+          description: No response body
+  /api/v2/user_information/public_models/:
+    get:
+      operationId: user_information_public_models_list
+      description: Ask for e-mail verification for all unverified e-mails.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: user__username
+        required: false
+        in: query
+        description: user__username
+        schema:
+          type: string
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOnlyUsernameList'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/user_information/search_expertise/:
+    get:
+      operationId: user_information_search_expertise_list
+      description: Get and set my UserInformation.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: search_query
+        schema:
+          type: string
+        description: Search for this string in expertises
+        required: true
+      - name: user__username
+        required: false
+        in: query
+        description: user__username
+        schema:
+          type: string
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExpertiseList'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/user_information/search_username/:
+    get:
+      operationId: user_information_search_username_list
+      description: Get and set my UserInformation.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: search_query
+        schema:
+          type: string
+        description: Search for this string in user names
+        required: true
+      - name: user__username
+        required: false
+        in: query
+        description: user__username
+        schema:
+          type: string
+      tags:
+      - user_information
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOnlyUsernameList'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/user_preferences/:
+    get:
+      operationId: user_preferences_list
+      description: Show my user preferences in a list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - user_preferences
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '400':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserPreferencesSerializerV2List'
+          description: ''
+  /api/v2/user_preferences/{id}/:
+    get:
+      operationId: user_preferences_retrieve
+      description: Get user preferences
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user preferences.
+        required: true
+      tags:
+      - user_preferences
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          description: ''
+    put:
+      operationId: user_preferences_update
+      description: Change all fields in user preferences
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user preferences.
+        required: true
+      tags:
+      - user_preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserPreferencesSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          description: ''
+    patch:
+      operationId: user_preferences_partial_update
+      description: Change some fields in user preferences
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user preferences.
+        required: true
+      tags:
+      - user_preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferencesSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferencesSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferencesSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          description: ''
+  /api/v2/user_preferences/my/:
+    get:
+      operationId: user_preferences_my_retrieve
+      description: Get/set my own user preferences.
+      tags:
+      - user_preferences
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          description: ''
+    patch:
+      operationId: user_preferences_my_partial_update
+      description: Get/set my own user preferences.
+      tags:
+      - user_preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferencesSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferencesSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPreferencesSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesSerializerV2'
+          description: ''
+  /api/v2/video_comments/:
+    get:
+      operationId: video_comments_list
+      description: List and filter comments
+      parameters:
+      - name: backfire_risk
+        required: false
+        in: query
+        description: backfire_risk
+        schema:
+          type: string
+      - name: better_habits
+        required: false
+        in: query
+        description: better_habits
+        schema:
+          type: string
+      - name: comment
+        required: false
+        in: query
+        description: comment
+        schema:
+          type: string
+      - name: diversity_inclusion
+        required: false
+        in: query
+        description: diversity_inclusion
+        schema:
+          type: string
+      - name: engaging
+        required: false
+        in: query
+        description: engaging
+        schema:
+          type: string
+      - name: entertaining_relaxing
+        required: false
+        in: query
+        description: entertaining_relaxing
+        schema:
+          type: string
+      - name: importance
+        required: false
+        in: query
+        description: importance
+        schema:
+          type: string
+      - name: layman_friendly
+        required: false
+        in: query
+        description: layman_friendly
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: parent_comment
+        required: false
+        in: query
+        description: parent_comment
+        schema:
+          type: string
+      - name: pedagogy
+        required: false
+        in: query
+        description: pedagogy
+        schema:
+          type: string
+      - name: reliability
+        required: false
+        in: query
+        description: reliability
+        schema:
+          type: string
+      - name: user__user__username
+        required: false
+        in: query
+        description: user__user__username
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: video__video_id
+        schema:
+          type: string
+      tags:
+      - video_comments
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoCommentsSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+    post:
+      operationId: video_comments_create
+      description: Comment on a video
+      tags:
+      - video_comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoCommentsSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+  /api/v2/video_comments/{id}/:
+    get:
+      operationId: video_comments_retrieve
+      description: Get one comment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video comment.
+        required: true
+      tags:
+      - video_comments
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+    put:
+      operationId: video_comments_update
+      description: Change all fields in a comment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video comment.
+        required: true
+      tags:
+      - video_comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoCommentsSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+    patch:
+      operationId: video_comments_partial_update
+      description: Change some fields in a comment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video comment.
+        required: true
+      tags:
+      - video_comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoCommentsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoCommentsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoCommentsSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+  /api/v2/video_comments/{id}/set_mark/:
+    post:
+      operationId: api_v2_video_comments_set_mark
+      description: Mark a comment with a flag (like/dislike/red flag).
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+          enum:
+          - add
+          - delete
+          - toggle
+        description: Delete or add the marker, one of ['add', 'delete', 'toggle']
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video comment.
+        required: true
+      - in: query
+        name: marker
+        schema:
+          type: string
+          enum:
+          - red_flags
+          - votes_minus
+          - votes_plus
+        description: The marker to set, one of ['votes_plus', 'votes_minus', 'red_flags']
+        required: true
+      tags:
+      - video_comments
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoCommentsSerializerV2'
+          description: ''
+        '400':
+          description: No response body
+        '422':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/video_ratings/:
+    get:
+      operationId: video_ratings_list
+      description: Get my video ratings (predictions of my algorithmic representative)
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: video
+        required: false
+        in: query
+        description: video
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: video__video_id
+        schema:
+          type: string
+      tags:
+      - video_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoRatingsSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/video_ratings/{id}/:
+    get:
+      operationId: video_ratings_retrieve
+      description: Get one video rating (predictions of my algorithmic representative)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video rating.
+        required: true
+      tags:
+      - video_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoRatingsSerializerV2'
+          description: ''
+  /api/v2/video_ratings/video_rating_statistics/:
+    get:
+      operationId: video_rating_statistics
+      description: Get statistical data on video ratings.
+      parameters:
+      - in: query
+        name: backfire_risk
+        schema:
+          type: number
+          format: float
+        description: Resilience to backfiring risks [preference override]
+      - in: query
+        name: better_habits
+        schema:
+          type: number
+          format: float
+        description: Encourages better habits [preference override]
+      - in: query
+        name: diversity_inclusion
+        schema:
+          type: number
+          format: float
+        description: Diversity and Inclusion [preference override]
+      - in: query
+        name: engaging
+        schema:
+          type: number
+          format: float
+        description: Engaging and thought-provoking [preference override]
+      - in: query
+        name: entertaining_relaxing
+        schema:
+          type: number
+          format: float
+        description: Entertaining and relaxing [preference override]
+      - in: query
+        name: importance
+        schema:
+          type: number
+          format: float
+        description: Important and actionable [preference override]
+      - in: query
+        name: layman_friendly
+        schema:
+          type: number
+          format: float
+        description: Layman-friendly [preference override]
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: pedagogy
+        schema:
+          type: number
+          format: float
+        description: Clear and pedagogical [preference override]
+      - in: query
+        name: reliability
+        schema:
+          type: number
+          format: float
+        description: Reliable and not misleading [preference override]
+      - name: video
+        required: false
+        in: query
+        description: video
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: video__video_id
+        schema:
+          type: string
+      tags:
+      - video_ratings
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoRatingsStatisticsSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+        '403':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/video_reports/:
+    get:
+      operationId: video_reports_list
+      description: Show all anonymized video reports
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: only_mine
+        required: false
+        in: query
+        description: only_mine
+        schema:
+          type: string
+      - name: video__video_id
+        required: false
+        in: query
+        description: video__video_id
+        schema:
+          type: string
+      tags:
+      - video_reports
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoReportsSerializerV2List'
+          description: ''
+    post:
+      operationId: video_reports_create
+      description: Report a video
+      tags:
+      - video_reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoReportsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoReportsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoReportsSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoReportsSerializerV2'
+          description: ''
+  /api/v2/video_reports/{id}/:
+    get:
+      operationId: video_reports_retrieve
+      description: Get one video report
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video reports.
+        required: true
+      tags:
+      - video_reports
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoReportsSerializerV2'
+          description: ''
+    put:
+      operationId: video_reports_update
+      description: Change all fields in a video report
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video reports.
+        required: true
+      tags:
+      - video_reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoReportsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoReportsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoReportsSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoReportsSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoReportsSerializerV2'
+          description: ''
+        '400':
+          description: No response body
+    patch:
+      operationId: video_reports_partial_update
+      description: Change some fields in a video report
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video reports.
+        required: true
+      tags:
+      - video_reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoReportsSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoReportsSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVideoReportsSerializerV2'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '404':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoReportsSerializerV2'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoReportsSerializerV2'
+          description: ''
+        '400':
+          description: No response body
+  /api/v2/videos/:
+    get:
+      operationId: videos_list
+      description: List all videos with search/filter capability
+      parameters:
+      - name: days_ago_gte
+        required: false
+        in: query
+        description: Upload date, older than x days ago
+        schema:
+          type: string
+      - name: days_ago_lte
+        required: false
+        in: query
+        description: Upload date, more recent than x days ago
+        schema:
+          type: string
+      - name: duration_gte
+        required: false
+        in: query
+        description: duration_gte
+        schema:
+          type: string
+      - name: duration_lte
+        required: false
+        in: query
+        description: duration_lte
+        schema:
+          type: string
+      - name: language
+        required: false
+        in: query
+        description: language
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Search string
+        schema:
+          type: string
+      - name: show_all_my_videos
+        required: false
+        in: query
+        description: Show all my videos in search
+        schema:
+          type: string
+      - name: video_id
+        required: false
+        in: query
+        description: video_id
+        schema:
+          type: string
+      - name: views_gte
+        required: false
+        in: query
+        description: views_gte
+        schema:
+          type: string
+      - name: views_lte
+        required: false
+        in: query
+        description: views_lte
+        schema:
+          type: string
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+    post:
+      operationId: videos_create
+      description: Add a video to the database (without filling the fields) from Youtube
+      tags:
+      - videos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoSerializerV2'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoSerializerV2'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoSerializerV2'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '400':
+          description: No response body
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoSerializerV2'
+          description: ''
+  /api/v2/videos/{id}/:
+    get:
+      operationId: videos_retrieve
+      description: Get one video by internal ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this video.
+        required: true
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '404':
+          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoSerializerV2'
+          description: ''
+  /api/v2/videos/my_ratings_are_private/:
+    get:
+      operationId: my_ratings_are_private
+      description: Are my ratings private?
+      parameters:
+      - in: query
+        name: video_id
+        schema:
+          type: string
+        description: Youtube Video ID
+        required: true
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateOrPublic'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/videos/n_thanks/:
+    get:
+      operationId: n_thanks
+      description: Get number of people I thanked for a video.
+      parameters:
+      - in: query
+        name: video_id
+        schema:
+          type: string
+        description: Youtube Video ID
+        required: true
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NumberOfThanks'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/videos/search_tournesol/:
+    get:
+      operationId: api_v2_video_search_tournesol
+      description: Search videos using the Tournesol algorithm.
+      parameters:
+      - in: query
+        name: backfire_risk
+        schema:
+          type: number
+          format: float
+        description: Resilience to backfiring risks [preference override]
+      - in: query
+        name: better_habits
+        schema:
+          type: number
+          format: float
+        description: Encourages better habits [preference override]
+      - name: days_ago_gte
+        required: false
+        in: query
+        description: Upload date, older than x days ago
+        schema:
+          type: string
+      - name: days_ago_lte
+        required: false
+        in: query
+        description: Upload date, more recent than x days ago
+        schema:
+          type: string
+      - in: query
+        name: diversity_inclusion
+        schema:
+          type: number
+          format: float
+        description: Diversity and Inclusion [preference override]
+      - name: duration_gte
+        required: false
+        in: query
+        description: duration_gte
+        schema:
+          type: string
+      - name: duration_lte
+        required: false
+        in: query
+        description: duration_lte
+        schema:
+          type: string
+      - in: query
+        name: engaging
+        schema:
+          type: number
+          format: float
+        description: Engaging and thought-provoking [preference override]
+      - in: query
+        name: entertaining_relaxing
+        schema:
+          type: number
+          format: float
+        description: Entertaining and relaxing [preference override]
+      - in: query
+        name: importance
+        schema:
+          type: number
+          format: float
+        description: Important and actionable [preference override]
+      - name: language
+        required: false
+        in: query
+        description: language
+        schema:
+          type: string
+      - in: query
+        name: layman_friendly
+        schema:
+          type: number
+          format: float
+        description: Layman-friendly [preference override]
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: pedagogy
+        schema:
+          type: number
+          format: float
+        description: Clear and pedagogical [preference override]
+      - in: query
+        name: reliability
+        schema:
+          type: number
+          format: float
+        description: Reliable and not misleading [preference override]
+      - name: search
+        required: false
+        in: query
+        description: Search string
+        schema:
+          type: string
+      - in: query
+        name: search_model
+        schema:
+          type: string
+        description: Use this user's algorithmic representative
+      - name: show_all_my_videos
+        required: false
+        in: query
+        description: Show all my videos in search
+        schema:
+          type: string
+      - name: video_id
+        required: false
+        in: query
+        description: video_id
+        schema:
+          type: string
+      - name: views_gte
+        required: false
+        in: query
+        description: views_gte
+        schema:
+          type: string
+      - name: views_lte
+        required: false
+        in: query
+        description: views_lte
+        schema:
+          type: string
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+        '403':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/videos/search_youtube/:
+    get:
+      operationId: api_v2_video_search_youtube
+      description: Search videos using the YouTube algorithm.
+      parameters:
+      - name: days_ago_gte
+        required: false
+        in: query
+        description: Upload date, older than x days ago
+        schema:
+          type: string
+      - name: days_ago_lte
+        required: false
+        in: query
+        description: Upload date, more recent than x days ago
+        schema:
+          type: string
+      - name: duration_gte
+        required: false
+        in: query
+        description: duration_gte
+        schema:
+          type: string
+      - name: duration_lte
+        required: false
+        in: query
+        description: duration_lte
+        schema:
+          type: string
+      - name: language
+        required: false
+        in: query
+        description: language
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Youtube search phrase
+        required: true
+      - name: show_all_my_videos
+        required: false
+        in: query
+        description: Show all my videos in search
+        schema:
+          type: string
+      - name: video_id
+        required: false
+        in: query
+        description: video_id
+        schema:
+          type: string
+      - name: views_gte
+        required: false
+        in: query
+        description: views_gte
+        schema:
+          type: string
+      - name: views_lte
+        required: false
+        in: query
+        description: views_lte
+        schema:
+          type: string
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoSerializerV2List'
+          description: ''
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/videos/set_all_rating_privacy/:
+    patch:
+      operationId: set_all_rating_privacy
+      description: Set all video rating privacy.
+      parameters:
+      - in: query
+        name: is_public
+        schema:
+          type: boolean
+        description: Should all ratings be public
+        required: true
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/videos/set_rating_privacy/:
+    patch:
+      operationId: set_rating_privacy
+      description: Set video rating privacy.
+      parameters:
+      - in: query
+        name: is_public
+        schema:
+          type: boolean
+        description: Should the rating be public
+        required: true
+      - in: query
+        name: video_id
+        schema:
+          type: string
+        description: Youtube Video ID
+        required: true
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+  /api/v2/videos/thank_contributors/:
+    patch:
+      operationId: thank_contributors
+      description: Thank contributors for the video.
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+          enum:
+          - thank
+          - unthank
+        description: Set/unset
+        required: true
+      - in: query
+        name: video_id
+        schema:
+          type: string
+        description: Youtube Video ID
+        required: true
+      tags:
+      - videos
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          description: No response body
+        '400':
+          description: No response body
+        '404':
+          description: No response body
+components:
+  schemas:
+    ConstantsSerializerV2:
+      type: object
+      description: Serialize statistics for the website.
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature'
+          description: Features used on the website to rate videos
+        report_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportField'
+          description: Video reporting fields
+        search_divider_coefficient:
+          type: number
+          format: float
+          description: divide search score by this value
+        search_feature_constant_add:
+          type: number
+          format: float
+          description: add this value to Tournesol scores
+        recaptcha_v2_public_key:
+          type: string
+          description: Public ReCaptcha key
+        youtubeVideoIdRegexSymbol:
+          type: string
+          description: Regular expression of YouTube videos (one symbol)
+        minNumRateLater:
+          type: integer
+          description: Minimal number of videos to rate before redirecting to rating
+            page
+      required:
+      - features
+      - minNumRateLater
+      - recaptcha_v2_public_key
+      - report_fields
+      - search_divider_coefficient
+      - search_feature_constant_add
+      - youtubeVideoIdRegexSymbol
+    ContextEnum:
+      enum:
+      - RATE
+      - DIS
+      - INC
+      type: string
+    Degree:
+      type: object
+      description: Degree
+      properties:
+        level:
+          type: string
+          description: Degree level
+          maxLength: 100
+        domain:
+          type: string
+          description: Degree domain
+          maxLength: 100
+        institution:
+          type: string
+          description: Degree institution
+          maxLength: 100
+      required:
+      - domain
+      - institution
+      - level
+    DegreeOfPoliticalEngagementEnum:
+      enum:
+      - Not Specified
+      - None
+      - Light
+      - Interested
+      - Engaged
+      - Activist
+      - Professional
+      type: string
+    Disagreement:
+      type: object
+      description: Serialize disagreements between ratings and the representative.
+      properties:
+        feature:
+          type: string
+          description: Feature the inconsistency is on
+        video_1__video_id:
+          type: string
+          description: Left video
+        video_2__video_id:
+          type: string
+          description: Right video
+        model_score:
+          type: number
+          format: float
+          description: The score that the model gives, in 0..100.0
+        rating_score:
+          type: number
+          format: float
+          description: The score that you gave, in 0..100.0
+        mse_01:
+          type: number
+          format: float
+          description: Mean squared error between model and rating scores, in 0-1
+      required:
+      - feature
+      - model_score
+      - mse_01
+      - rating_score
+      - video_1__video_id
+      - video_2__video_id
+    EmailDomain:
+      type: object
+      description: E-mail domain
+      properties:
+        domain:
+          type: string
+          description: E-mail domain with leading @
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          description: Status of the domain.
+      required:
+      - domain
+    ExpertRatingsSerializerV2:
+      type: object
+      description: Serialize ExpertRatings.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Username of this user
+        video_1:
+          type: string
+        video_2:
+          type: string
+        duration_ms:
+          type: number
+          format: float
+          nullable: true
+          description: Time it took to rate the videos (in milliseconds)
+        reliability:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Reliable and not misleading
+          minimum: 0.0
+        importance:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Important and actionable
+          minimum: 0.0
+        engaging:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Engaging and thought-provoking
+          minimum: 0.0
+        pedagogy:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Clear and pedagogical
+          minimum: 0.0
+        layman_friendly:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Layman-friendly
+          minimum: 0.0
+        diversity_inclusion:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Diversity and Inclusion
+          minimum: 0.0
+        backfire_risk:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Resilience to backfiring risks
+          minimum: 0.0
+        better_habits:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Encourages better habits
+          minimum: 0.0
+        entertaining_relaxing:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Entertaining and relaxing
+          minimum: 0.0
+        reliability_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Reliable and not misleading weight
+          minimum: 0.0
+        importance_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Important and actionable weight
+          minimum: 0.0
+        engaging_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Engaging and thought-provoking weight
+          minimum: 0.0
+        pedagogy_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Clear and pedagogical weight
+          minimum: 0.0
+        layman_friendly_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Layman-friendly weight
+          minimum: 0.0
+        diversity_inclusion_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Diversity and Inclusion weight
+          minimum: 0.0
+        backfire_risk_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Resilience to backfiring risks weight
+          minimum: 0.0
+        better_habits_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Encourages better habits weight
+          minimum: 0.0
+        entertaining_relaxing_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Entertaining and relaxing weight
+          minimum: 0.0
+      required:
+      - id
+      - username
+      - video_1
+      - video_2
+    Expertise:
+      type: object
+      description: Expertise
+      properties:
+        name:
+          type: string
+          description: Expertise description
+          maxLength: 100
+      required:
+      - name
+    ExpertiseKeyword:
+      type: object
+      description: Expertise keyword
+      properties:
+        name:
+          type: string
+          description: Expertise keyword description
+          maxLength: 100
+      required:
+      - name
+    Feature:
+      type: object
+      description: Serialize features used to rate videos.
+      properties:
+        feature:
+          type: string
+          description: Feature short name
+        description:
+          type: string
+          description: Feature full description
+        color:
+          type: string
+          description: Color of the feature
+        enabled_by_default:
+          type: boolean
+          description: Is enabled for new users?
+      required:
+      - color
+      - description
+      - enabled_by_default
+      - feature
+    GenderEnum:
+      enum:
+      - Not Specified
+      - Non-binary
+      - Other
+      - Female
+      - Male
+      type: string
+    GenericError:
+      type: object
+      properties:
+        detail:
+          allOf:
+          - $ref: '#/components/schemas/GenericErrorDetailEnum'
+          description: Reason code for error, explanation:<br /><b><u>UNKNOWN</u>:</b>
+            <i>Unknown error</i><br /><b><u>DB_ERROR</u>:</b> <i>Unknown database
+            error</i><br /><b><u>PK_ERROR</u>:</b> <i>Invalid primary key</i><br /><b><u>NO_VIDEOS</u>:</b>
+            <i>No videos in the system</i><br /><b><u>ALREADY_EXISTS</u>:</b> <i>Object
+            already exists</i>
+      required:
+      - detail
+    GenericErrorDetailEnum:
+      enum:
+      - UNKNOWN
+      - DB_ERROR
+      - PK_ERROR
+      - NO_VIDEOS
+      - ALREADY_EXISTS
+      type: string
+    Inconsistencies:
+      type: object
+      description: Serialize inconsistencies
+      properties:
+        feature:
+          type: string
+          description: Feature the inconsistency is on
+        comparisons:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleFeatureRating'
+          description: All ratings in a cycle
+        videos:
+          type: array
+          items:
+            type: string
+            description: video_id
+          description: All videos in a cycle
+      required:
+      - comparisons
+      - feature
+      - videos
+    MoralPhilosophyEnum:
+      enum:
+      - Not Specified
+      - Utilitarian
+      - Non-Utilitarian Consequentialist
+      - Deontological
+      - Virtue Ethics
+      - Mixed
+      - Other
+      type: string
+    NationalityEnum:
+      enum:
+      - Not Specified
+      - Afghanistan
+      - Åland Islands
+      - Albania
+      - Algeria
+      - American Samoa
+      - Andorra
+      - Angola
+      - Anguilla
+      - Antarctica
+      - Antigua and Barbuda
+      - Argentina
+      - Armenia
+      - Aruba
+      - Australia
+      - Austria
+      - Azerbaijan
+      - Bahamas
+      - Bahrain
+      - Bangladesh
+      - Barbados
+      - Belarus
+      - Belgium
+      - Belize
+      - Benin
+      - Bermuda
+      - Bhutan
+      - Bolivia
+      - Bonaire, Sint Eustatius and Saba
+      - Bosnia and Herzegovina
+      - Botswana
+      - Bouvet Island
+      - Brazil
+      - British Indian Ocean Territory
+      - Brunei
+      - Bulgaria
+      - Burkina Faso
+      - Burundi
+      - Cabo Verde
+      - Cambodia
+      - Cameroon
+      - Canada
+      - Cayman Islands
+      - Central African Republic
+      - Chad
+      - Chile
+      - China
+      - Christmas Island
+      - Cocos (Keeling) Islands
+      - Colombia
+      - Comoros
+      - Congo
+      - Congo (the Democratic Republic of the)
+      - Cook Islands
+      - Costa Rica
+      - Côte d'Ivoire
+      - Croatia
+      - Cuba
+      - Curaçao
+      - Cyprus
+      - Czechia
+      - Denmark
+      - Djibouti
+      - Dominica
+      - Dominican Republic
+      - Ecuador
+      - Egypt
+      - El Salvador
+      - Equatorial Guinea
+      - Eritrea
+      - Estonia
+      - Eswatini
+      - Ethiopia
+      - Falkland Islands (Malvinas)
+      - Faroe Islands
+      - Fiji
+      - Finland
+      - France
+      - French Guiana
+      - French Polynesia
+      - French Southern Territories
+      - Gabon
+      - Gambia
+      - Georgia
+      - Germany
+      - Ghana
+      - Gibraltar
+      - Greece
+      - Greenland
+      - Grenada
+      - Guadeloupe
+      - Guam
+      - Guatemala
+      - Guernsey
+      - Guinea
+      - Guinea-Bissau
+      - Guyana
+      - Haiti
+      - Heard Island and McDonald Islands
+      - Holy See
+      - Honduras
+      - Hong Kong
+      - Hungary
+      - Iceland
+      - India
+      - Indonesia
+      - Iran
+      - Iraq
+      - Ireland
+      - Isle of Man
+      - Israel
+      - Italy
+      - Jamaica
+      - Japan
+      - Jersey
+      - Jordan
+      - Kazakhstan
+      - Kenya
+      - Kiribati
+      - Kuwait
+      - Kyrgyzstan
+      - Laos
+      - Latvia
+      - Lebanon
+      - Lesotho
+      - Liberia
+      - Libya
+      - Liechtenstein
+      - Lithuania
+      - Luxembourg
+      - Macao
+      - Madagascar
+      - Malawi
+      - Malaysia
+      - Maldives
+      - Mali
+      - Malta
+      - Marshall Islands
+      - Martinique
+      - Mauritania
+      - Mauritius
+      - Mayotte
+      - Mexico
+      - Micronesia (Federated States of)
+      - Moldova
+      - Monaco
+      - Mongolia
+      - Montenegro
+      - Montserrat
+      - Morocco
+      - Mozambique
+      - Myanmar
+      - Namibia
+      - Nauru
+      - Nepal
+      - Netherlands
+      - New Caledonia
+      - New Zealand
+      - Nicaragua
+      - Niger
+      - Nigeria
+      - Niue
+      - Norfolk Island
+      - North Korea
+      - North Macedonia
+      - Northern Mariana Islands
+      - Norway
+      - Oman
+      - Pakistan
+      - Palau
+      - Palestine, State of
+      - Panama
+      - Papua New Guinea
+      - Paraguay
+      - Peru
+      - Philippines
+      - Pitcairn
+      - Poland
+      - Portugal
+      - Puerto Rico
+      - Qatar
+      - Réunion
+      - Romania
+      - Russia
+      - Rwanda
+      - Saint Barthélemy
+      - Saint Helena, Ascension and Tristan da Cunha
+      - Saint Kitts and Nevis
+      - Saint Lucia
+      - Saint Martin (French part)
+      - Saint Pierre and Miquelon
+      - Saint Vincent and the Grenadines
+      - Samoa
+      - San Marino
+      - Sao Tome and Principe
+      - Saudi Arabia
+      - Senegal
+      - Serbia
+      - Seychelles
+      - Sierra Leone
+      - Singapore
+      - Sint Maarten (Dutch part)
+      - Slovakia
+      - Slovenia
+      - Solomon Islands
+      - Somalia
+      - South Africa
+      - South Georgia and the South Sandwich Islands
+      - South Korea
+      - South Sudan
+      - Spain
+      - Sri Lanka
+      - Sudan
+      - Suriname
+      - Svalbard and Jan Mayen
+      - Sweden
+      - Switzerland
+      - Syria
+      - Taiwan
+      - Tajikistan
+      - Tanzania
+      - Thailand
+      - Timor-Leste
+      - Togo
+      - Tokelau
+      - Tonga
+      - Trinidad and Tobago
+      - Tunisia
+      - Turkey
+      - Turkmenistan
+      - Turks and Caicos Islands
+      - Tuvalu
+      - Uganda
+      - Ukraine
+      - United Arab Emirates
+      - United Kingdom
+      - United States Minor Outlying Islands
+      - United States of America
+      - Uruguay
+      - Uzbekistan
+      - Vanuatu
+      - Venezuela
+      - Vietnam
+      - Virgin Islands (British)
+      - Virgin Islands (U.S.)
+      - Wallis and Futuna
+      - Western Sahara
+      - Yemen
+      - Zambia
+      - Zimbabwe
+      type: string
+    NumberOfThanks:
+      type: object
+      properties:
+        n_thanks:
+          type: integer
+          description: Number of people I thanked for this video
+      required:
+      - n_thanks
+    OnlineResponse:
+      type: object
+      properties:
+        new_score_left:
+          type: number
+          format: float
+          description: New value for my score for the left video
+        new_score_right:
+          type: number
+          format: float
+          description: New value for my score for the right video
+        agg_score_left:
+          type: number
+          format: float
+          description: New value for aggregated score for the left video
+        agg_score_right:
+          type: number
+          format: float
+          description: New value for aggregated score for the right video
+        debug_info:
+          type: string
+          description: Information from the optimizer
+      required:
+      - agg_score_left
+      - agg_score_right
+      - new_score_left
+      - new_score_right
+    OnlyUsername:
+      type: object
+      description: Serialize user information, give only username.
+      properties:
+        username:
+          type: string
+          readOnly: true
+      required:
+      - username
+    OnlyUsernameAndID:
+      type: object
+      description: Change login name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: New login name
+      required:
+      - id
+      - username
+    PaginatedDisagreementList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Disagreement'
+    PaginatedEmailDomainList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailDomain'
+    PaginatedExpertRatingsSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpertRatingsSerializerV2'
+    PaginatedExpertiseList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expertise'
+    PaginatedInconsistenciesList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inconsistencies'
+    PaginatedOnlyUsernameAndIDList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnlyUsernameAndID'
+    PaginatedOnlyUsernameList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnlyUsername'
+    PaginatedUserInformationPublicSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserInformationPublicSerializerV2'
+    PaginatedUserPreferencesSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPreferencesSerializerV2'
+    PaginatedVerifiableEmailList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerifiableEmail'
+    PaginatedVideoCommentsSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoCommentsSerializerV2'
+    PaginatedVideoRateLaterSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoRateLaterSerializerV2'
+    PaginatedVideoRatingsSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoRatingsSerializerV2'
+    PaginatedVideoRatingsStatisticsSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoRatingsStatisticsSerializerV2'
+    PaginatedVideoReportsSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoReportsSerializerV2'
+    PaginatedVideoSerializerV2List:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoSerializerV2'
+    PatchedChangePassword:
+      type: object
+      description: Change password
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          description: Your new password
+        password2:
+          type: string
+          writeOnly: true
+          description: Repeat your new password again
+    PatchedDegree:
+      type: object
+      description: Degree
+      properties:
+        level:
+          type: string
+          description: Degree level
+          maxLength: 100
+        domain:
+          type: string
+          description: Degree domain
+          maxLength: 100
+        institution:
+          type: string
+          description: Degree institution
+          maxLength: 100
+    PatchedExpertRatingsSerializerV2:
+      type: object
+      description: Serialize ExpertRatings.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Username of this user
+        video_1:
+          type: string
+        video_2:
+          type: string
+        duration_ms:
+          type: number
+          format: float
+          nullable: true
+          description: Time it took to rate the videos (in milliseconds)
+        reliability:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Reliable and not misleading
+          minimum: 0.0
+        importance:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Important and actionable
+          minimum: 0.0
+        engaging:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Engaging and thought-provoking
+          minimum: 0.0
+        pedagogy:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Clear and pedagogical
+          minimum: 0.0
+        layman_friendly:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Layman-friendly
+          minimum: 0.0
+        diversity_inclusion:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Diversity and Inclusion
+          minimum: 0.0
+        backfire_risk:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Resilience to backfiring risks
+          minimum: 0.0
+        better_habits:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Encourages better habits
+          minimum: 0.0
+        entertaining_relaxing:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Entertaining and relaxing
+          minimum: 0.0
+        reliability_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Reliable and not misleading weight
+          minimum: 0.0
+        importance_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Important and actionable weight
+          minimum: 0.0
+        engaging_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Engaging and thought-provoking weight
+          minimum: 0.0
+        pedagogy_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Clear and pedagogical weight
+          minimum: 0.0
+        layman_friendly_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Layman-friendly weight
+          minimum: 0.0
+        diversity_inclusion_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Diversity and Inclusion weight
+          minimum: 0.0
+        backfire_risk_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Resilience to backfiring risks weight
+          minimum: 0.0
+        better_habits_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Encourages better habits weight
+          minimum: 0.0
+        entertaining_relaxing_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Entertaining and relaxing weight
+          minimum: 0.0
+    PatchedExpertise:
+      type: object
+      description: Expertise
+      properties:
+        name:
+          type: string
+          description: Expertise description
+          maxLength: 100
+    PatchedExpertiseKeyword:
+      type: object
+      description: Expertise keyword
+      properties:
+        name:
+          type: string
+          description: Expertise keyword description
+          maxLength: 100
+    PatchedLogin:
+      type: object
+      description: Log in a user with username and a password
+      properties:
+        username:
+          type: string
+          description: Your username
+        password:
+          type: string
+          writeOnly: true
+          description: Your password
+    PatchedOnlyUsernameAndID:
+      type: object
+      description: Change login name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: New login name
+    PatchedResetPassword:
+      type: object
+      description: Reset a password
+      properties:
+        username:
+          type: string
+          description: Your username
+        recaptcha:
+          type: string
+          writeOnly: true
+    PatchedUserInformationPublicSerializerV2:
+      type: object
+      description: User Profile
+      properties:
+        title_userprofile:
+          type: string
+        show_my_profile:
+          type: boolean
+          description: Show my profile on Tournesol
+        avatar:
+          type: string
+          format: uri
+          description: Profile picture
+        first_name:
+          type: string
+          nullable: true
+          description: First name
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          description: Last name
+          maxLength: 100
+        comment_anonymously:
+          type: boolean
+          description: By default, comment anonymously
+        title:
+          type: string
+          nullable: true
+          description: Your position
+        bio:
+          type: string
+          nullable: true
+          description: Self-description (degree, biography, ...)
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Username
+        n_ratings:
+          type: integer
+          readOnly: true
+          description: Number of ratings
+        n_videos:
+          type: integer
+          readOnly: true
+          description: Number of rated videos
+        n_comments:
+          type: integer
+          readOnly: true
+          description: Number of comments left
+        n_likes:
+          type: integer
+          readOnly: true
+          description: Number of likes minus number of dislikes for comments
+        n_thanks_given:
+          type: integer
+          readOnly: true
+          description: Number of thank you for recommendations given
+        n_thanks_received:
+          type: integer
+          readOnly: true
+          description: Number of thank you for recommendations received
+        n_mentions:
+          type: integer
+          readOnly: true
+          description: Number of mentions in comments
+        n_public_videos:
+          type: integer
+          readOnly: true
+          description: Number of videos rated publicly
+        title_email:
+          type: string
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatchedVerifiableEmail'
+          description: E-mails
+        is_certified:
+          type: boolean
+          readOnly: true
+          description: E-mail domain is certified
+        is_domain_rejected:
+          type: boolean
+          readOnly: true
+          description: Any e-mail domain is rejected
+        certified_email_domain:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Certified e-mail domain, starting with @
+        title_degree:
+          type: string
+        degrees:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatchedDegree'
+          description: Degrees
+        title_expertise:
+          type: string
+        expertises:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatchedExpertise'
+          description: Expertises
+        title_expertise_keywords:
+          type: string
+        expertise_keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatchedExpertiseKeyword'
+          description: Expertise keywords
+        title_demographic:
+          type: string
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: Your gender
+        birth_year:
+          type: integer
+          maximum: 2100
+          minimum: 1900
+          nullable: true
+          description: Year of birth
+        nationality:
+          allOf:
+          - $ref: '#/components/schemas/NationalityEnum'
+          description: Your country of nationality
+        residence:
+          allOf:
+          - $ref: '#/components/schemas/ResidenceEnum'
+          description: Your country of residence
+        race:
+          allOf:
+          - $ref: '#/components/schemas/RaceEnum'
+          description: Your ethnicity
+        political_affiliation:
+          allOf:
+          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
+          description: Your political preference
+        degree_of_political_engagement:
+          allOf:
+          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
+          description: Your degree of political engagement
+        religion:
+          allOf:
+          - $ref: '#/components/schemas/ReligionEnum'
+          description: Your religion
+        moral_philosophy:
+          allOf:
+          - $ref: '#/components/schemas/MoralPhilosophyEnum'
+          description: Your preferred moral philosophy
+        title_online:
+          type: string
+        show_online_presence:
+          type: boolean
+          description: Show my online presence on Tournesol
+        google_scholar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Google Scholar URL
+          maxLength: 500
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: Your website URL
+          maxLength: 500
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          description: Your LinkedIn URL
+          maxLength: 500
+        orcid:
+          type: string
+          format: uri
+          nullable: true
+          description: Your ORCID URL
+          maxLength: 500
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Twitter URL
+          maxLength: 500
+        researchgate:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Researchgate profile URL
+          maxLength: 500
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Youtube channel URL
+          maxLength: 500
+    PatchedUserPreferencesSerializerV2:
+      type: object
+      description: Serialize UserPreferences.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reliability:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Reliable and not misleading
+          minimum: 0.0
+        importance:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Important and actionable
+          minimum: 0.0
+        engaging:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Engaging and thought-provoking
+          minimum: 0.0
+        pedagogy:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Clear and pedagogical
+          minimum: 0.0
+        layman_friendly:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Layman-friendly
+          minimum: 0.0
+        diversity_inclusion:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Diversity and Inclusion
+          minimum: 0.0
+        backfire_risk:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Resilience to backfiring risks
+          minimum: 0.0
+        better_habits:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Encourages better habits
+          minimum: 0.0
+        entertaining_relaxing:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Entertaining and relaxing
+          minimum: 0.0
+        username:
+          type: string
+          readOnly: true
+          description: Username for this user preferences' user
+        reliability_enabled:
+          type: boolean
+          description: reliability given for ratings
+        importance_enabled:
+          type: boolean
+          description: importance given for ratings
+        engaging_enabled:
+          type: boolean
+          description: engaging given for ratings
+        pedagogy_enabled:
+          type: boolean
+          description: pedagogy given for ratings
+        layman_friendly_enabled:
+          type: boolean
+          description: layman_friendly given for ratings
+        diversity_inclusion_enabled:
+          type: boolean
+          description: diversity_inclusion given for ratings
+        backfire_risk_enabled:
+          type: boolean
+          description: backfire_risk given for ratings
+        better_habits_enabled:
+          type: boolean
+          description: better_habits given for ratings
+        entertaining_relaxing_enabled:
+          type: boolean
+          description: entertaining_relaxing given for ratings
+        rating_mode:
+          allOf:
+          - $ref: '#/components/schemas/RatingModeEnum'
+          description: Which sliders and parameters to display on the rating page?
+    PatchedVerifiableEmail:
+      type: object
+      description: E-mail
+      properties:
+        email:
+          type: string
+          format: email
+          description: E-mail address
+          maxLength: 100
+        is_verified:
+          type: boolean
+          readOnly: true
+          description: Verified
+    PatchedVideo:
+      type: object
+      properties:
+        video_id:
+          type: string
+          description: Video id
+    PatchedVideoCommentsSerializerV2:
+      type: object
+      description: Serialize comments.
+      properties:
+        user:
+          type: integer
+          readOnly: true
+        video:
+          type: string
+        parent_comment:
+          type: integer
+          nullable: true
+        comment:
+          type: string
+          description: Comment body text/html
+        username:
+          type: string
+          readOnly: true
+          description: User username
+        anonymized_username_id:
+          type: integer
+          readOnly: true
+          description: ID of the hash of the username
+        datetime_lastedit:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time the comment was edited the last time
+        datetime_add:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time the comment was added
+        votes_plus:
+          type: integer
+          readOnly: true
+          description: Number of likes
+        anonymous:
+          type: boolean
+          description: Do not show author's username
+        votes_minus:
+          type: integer
+          readOnly: true
+          description: Number of dislikes
+        red_flags:
+          type: integer
+          readOnly: true
+          description: Number of red flags
+        id:
+          type: integer
+          readOnly: true
+        children:
+          type: integer
+          readOnly: true
+          description: Number of children comments
+        datetime_add_ago:
+          type: string
+          readOnly: true
+          description: Human-readable x time units ago
+        edited_m_added_s:
+          type: number
+          format: float
+          readOnly: true
+          description: Edited minus created time in seconds
+        reliability:
+          type: boolean
+          nullable: true
+          description: Reliable and not misleading
+        importance:
+          type: boolean
+          nullable: true
+          description: Important and actionable
+        engaging:
+          type: boolean
+          nullable: true
+          description: Engaging and thought-provoking
+        pedagogy:
+          type: boolean
+          nullable: true
+          description: Clear and pedagogical
+        layman_friendly:
+          type: boolean
+          nullable: true
+          description: Layman-friendly
+        diversity_inclusion:
+          type: boolean
+          nullable: true
+          description: Diversity and Inclusion
+        backfire_risk:
+          type: boolean
+          nullable: true
+          description: Resilience to backfiring risks
+        better_habits:
+          type: boolean
+          nullable: true
+          description: Encourages better habits
+        entertaining_relaxing:
+          type: boolean
+          nullable: true
+          description: Entertaining and relaxing
+    PatchedVideoRateLaterDelete:
+      type: object
+      properties:
+        video_id:
+          type: string
+          description: Video id
+    PatchedVideoReportsSerializerV2:
+      type: object
+      description: Serialize VideoReports.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video:
+          type: string
+        explanation:
+          type: string
+          nullable: true
+          description: Why is the video reported
+        bully:
+          type: boolean
+          nullable: true
+          description: The content is cyber-bullying
+        death_threat:
+          type: boolean
+          nullable: true
+          description: The content contains death threats
+        hate:
+          type: boolean
+          nullable: true
+          description: The content contains hate speech
+        kid:
+          type: boolean
+          nullable: true
+          description: The content is not kid-friendly
+        misl0:
+          type: boolean
+          nullable: true
+          description: The content is slightly misleading
+        misl1:
+          type: boolean
+          nullable: true
+          description: The content is very misleading
+        misl2:
+          type: boolean
+          nullable: true
+          description: The misinformation of the content is misleading and dangerous
+        threat:
+          type: boolean
+          nullable: true
+          description: The content contains threats
+        troll:
+          type: boolean
+          nullable: true
+          description: The content is a troll
+        violence:
+          type: boolean
+          nullable: true
+          description: The content promotes violence
+        violent_act:
+          type: boolean
+          nullable: true
+          description: The content calls for violent acts
+    PoliticalAffiliationEnum:
+      enum:
+      - Not Specified
+      - Extreme left
+      - Far left
+      - Left
+      - Centrist
+      - Right
+      - Far right
+      - Extreme right
+      - Other
+      type: string
+    PrivateOrPublic:
+      type: object
+      properties:
+        my_ratings_are_private:
+          type: boolean
+          description: Are my ratings private?
+        entry_found:
+          type: boolean
+          description: Privacy entry found?
+      required:
+      - entry_found
+      - my_ratings_are_private
+    RaceEnum:
+      enum:
+      - Not Specified
+      - African
+      - African American
+      - American Indian
+      - Arabic or Middle Eastern
+      - Asian
+      - Caucasian
+      - Latino or Hispanic
+      - Mixed
+      - Unknown
+      - Other
+      type: string
+    RatingModeEnum:
+      enum:
+      - enable_all
+      - skip
+      - confidence
+      type: string
+    Register:
+      type: object
+      description: Register a user
+      properties:
+        username:
+          type: string
+          description: Your new username
+        password:
+          type: string
+          writeOnly: true
+          description: Your new password
+        password2:
+          type: string
+          writeOnly: true
+          description: Repeat your new password again
+        email:
+          type: string
+          format: email
+          description: Your e-mail address
+        recaptcha:
+          type: string
+          writeOnly: true
+        shrivacy_policy:
+          type: boolean
+          writeOnly: true
+          description: I have read and I accept the privacy policy
+      required:
+      - email
+      - password
+      - password2
+      - recaptcha
+      - username
+    ReligionEnum:
+      enum:
+      - Not Specified
+      - Christian
+      - Muslim
+      - Hindu
+      - Buddhist
+      - Jewish
+      - Atheist
+      - Agnostic
+      - Other
+      type: string
+    ReportField:
+      type: object
+      description: Video reporting fields.
+      properties:
+        field:
+          type: string
+          description: Short field name
+        description:
+          type: string
+          description: Field full description
+      required:
+      - description
+      - field
+    ResidenceEnum:
+      enum:
+      - Not Specified
+      - Afghanistan
+      - Åland Islands
+      - Albania
+      - Algeria
+      - American Samoa
+      - Andorra
+      - Angola
+      - Anguilla
+      - Antarctica
+      - Antigua and Barbuda
+      - Argentina
+      - Armenia
+      - Aruba
+      - Australia
+      - Austria
+      - Azerbaijan
+      - Bahamas
+      - Bahrain
+      - Bangladesh
+      - Barbados
+      - Belarus
+      - Belgium
+      - Belize
+      - Benin
+      - Bermuda
+      - Bhutan
+      - Bolivia
+      - Bonaire, Sint Eustatius and Saba
+      - Bosnia and Herzegovina
+      - Botswana
+      - Bouvet Island
+      - Brazil
+      - British Indian Ocean Territory
+      - Brunei
+      - Bulgaria
+      - Burkina Faso
+      - Burundi
+      - Cabo Verde
+      - Cambodia
+      - Cameroon
+      - Canada
+      - Cayman Islands
+      - Central African Republic
+      - Chad
+      - Chile
+      - China
+      - Christmas Island
+      - Cocos (Keeling) Islands
+      - Colombia
+      - Comoros
+      - Congo
+      - Congo (the Democratic Republic of the)
+      - Cook Islands
+      - Costa Rica
+      - Côte d'Ivoire
+      - Croatia
+      - Cuba
+      - Curaçao
+      - Cyprus
+      - Czechia
+      - Denmark
+      - Djibouti
+      - Dominica
+      - Dominican Republic
+      - Ecuador
+      - Egypt
+      - El Salvador
+      - Equatorial Guinea
+      - Eritrea
+      - Estonia
+      - Eswatini
+      - Ethiopia
+      - Falkland Islands (Malvinas)
+      - Faroe Islands
+      - Fiji
+      - Finland
+      - France
+      - French Guiana
+      - French Polynesia
+      - French Southern Territories
+      - Gabon
+      - Gambia
+      - Georgia
+      - Germany
+      - Ghana
+      - Gibraltar
+      - Greece
+      - Greenland
+      - Grenada
+      - Guadeloupe
+      - Guam
+      - Guatemala
+      - Guernsey
+      - Guinea
+      - Guinea-Bissau
+      - Guyana
+      - Haiti
+      - Heard Island and McDonald Islands
+      - Holy See
+      - Honduras
+      - Hong Kong
+      - Hungary
+      - Iceland
+      - India
+      - Indonesia
+      - Iran
+      - Iraq
+      - Ireland
+      - Isle of Man
+      - Israel
+      - Italy
+      - Jamaica
+      - Japan
+      - Jersey
+      - Jordan
+      - Kazakhstan
+      - Kenya
+      - Kiribati
+      - Kuwait
+      - Kyrgyzstan
+      - Laos
+      - Latvia
+      - Lebanon
+      - Lesotho
+      - Liberia
+      - Libya
+      - Liechtenstein
+      - Lithuania
+      - Luxembourg
+      - Macao
+      - Madagascar
+      - Malawi
+      - Malaysia
+      - Maldives
+      - Mali
+      - Malta
+      - Marshall Islands
+      - Martinique
+      - Mauritania
+      - Mauritius
+      - Mayotte
+      - Mexico
+      - Micronesia (Federated States of)
+      - Moldova
+      - Monaco
+      - Mongolia
+      - Montenegro
+      - Montserrat
+      - Morocco
+      - Mozambique
+      - Myanmar
+      - Namibia
+      - Nauru
+      - Nepal
+      - Netherlands
+      - New Caledonia
+      - New Zealand
+      - Nicaragua
+      - Niger
+      - Nigeria
+      - Niue
+      - Norfolk Island
+      - North Korea
+      - North Macedonia
+      - Northern Mariana Islands
+      - Norway
+      - Oman
+      - Pakistan
+      - Palau
+      - Palestine, State of
+      - Panama
+      - Papua New Guinea
+      - Paraguay
+      - Peru
+      - Philippines
+      - Pitcairn
+      - Poland
+      - Portugal
+      - Puerto Rico
+      - Qatar
+      - Réunion
+      - Romania
+      - Russia
+      - Rwanda
+      - Saint Barthélemy
+      - Saint Helena, Ascension and Tristan da Cunha
+      - Saint Kitts and Nevis
+      - Saint Lucia
+      - Saint Martin (French part)
+      - Saint Pierre and Miquelon
+      - Saint Vincent and the Grenadines
+      - Samoa
+      - San Marino
+      - Sao Tome and Principe
+      - Saudi Arabia
+      - Senegal
+      - Serbia
+      - Seychelles
+      - Sierra Leone
+      - Singapore
+      - Sint Maarten (Dutch part)
+      - Slovakia
+      - Slovenia
+      - Solomon Islands
+      - Somalia
+      - South Africa
+      - South Georgia and the South Sandwich Islands
+      - South Korea
+      - South Sudan
+      - Spain
+      - Sri Lanka
+      - Sudan
+      - Suriname
+      - Svalbard and Jan Mayen
+      - Sweden
+      - Switzerland
+      - Syria
+      - Taiwan
+      - Tajikistan
+      - Tanzania
+      - Thailand
+      - Timor-Leste
+      - Togo
+      - Tokelau
+      - Tonga
+      - Trinidad and Tobago
+      - Tunisia
+      - Turkey
+      - Turkmenistan
+      - Turks and Caicos Islands
+      - Tuvalu
+      - Uganda
+      - Ukraine
+      - United Arab Emirates
+      - United Kingdom
+      - United States Minor Outlying Islands
+      - United States of America
+      - Uruguay
+      - Uzbekistan
+      - Vanuatu
+      - Venezuela
+      - Vietnam
+      - Virgin Islands (British)
+      - Virgin Islands (U.S.)
+      - Wallis and Futuna
+      - Western Sahara
+      - Yemen
+      - Zambia
+      - Zimbabwe
+      type: string
+    Samplevideov3Error:
+      type: object
+      properties:
+        detail:
+          allOf:
+          - $ref: '#/components/schemas/Samplevideov3ErrorDetailEnum'
+          description: Reason code for error, explanation:<br /><b><u>UNKNOWN</u>:</b>
+            <i>Unknown error</i><br /><b><u>DB_ERROR</u>:</b> <i>Unknown database
+            error</i><br /><b><u>PK_ERROR</u>:</b> <i>Invalid primary key</i><br /><b><u>NO_VIDEOS</u>:</b>
+            <i>No videos in the system</i><br /><b><u>ALREADY_EXISTS</u>:</b> <i>Object
+            already exists</i><br /><b><u>NO_FEATURES</u>:</b> <i>No features selected
+            as active</i><br /><b><u>NO_RATE_LATER_NO_RATED</u>:</b> <i>Rate later
+            list is empty, and list of rated videos is empty</i><br /><b><u>NO_RATE_LATER_ALL_RATED</u>:</b>
+            <i>Rate later list is empty, and all videos are rated against each other
+            in terms of all quality features</i><br /><b><u>FIRST_RATED_AGAINST_ALL_RATED</u>:</b>
+            <i>First video was rated against all other rated videos</i>
+      required:
+      - detail
+    Samplevideov3ErrorDetailEnum:
+      enum:
+      - UNKNOWN
+      - DB_ERROR
+      - PK_ERROR
+      - NO_VIDEOS
+      - ALREADY_EXISTS
+      - NO_FEATURES
+      - NO_RATE_LATER_NO_RATED
+      - NO_RATE_LATER_ALL_RATED
+      - FIRST_RATED_AGAINST_ALL_RATED
+      type: string
+    SingleFeatureRating:
+      type: object
+      description: Serialize single-feature comparisons.
+      properties:
+        id:
+          type: integer
+          description: ExpertRating id
+        videoA:
+          type: string
+          description: Left video
+        videoB:
+          type: string
+          description: Right video
+        score:
+          type: number
+          format: float
+          description: Value in 0..100.0
+      required:
+      - id
+      - score
+      - videoA
+      - videoB
+    SliderChangeSerializerV2:
+      type: object
+      description: Serialize ExpertRating slider changes.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Username of this user
+        video_left:
+          type: string
+        video_right:
+          type: string
+        duration_ms:
+          type: number
+          format: float
+          nullable: true
+          description: Time from page load to this slider value (in milliseconds)
+        context:
+          allOf:
+          - $ref: '#/components/schemas/ContextEnum'
+          description: The page where slider change occurs
+        reliability:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Reliable and not misleading
+          minimum: 0.0
+        importance:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Important and actionable
+          minimum: 0.0
+        engaging:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Engaging and thought-provoking
+          minimum: 0.0
+        pedagogy:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Clear and pedagogical
+          minimum: 0.0
+        layman_friendly:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Layman-friendly
+          minimum: 0.0
+        diversity_inclusion:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Diversity and Inclusion
+          minimum: 0.0
+        backfire_risk:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Resilience to backfiring risks
+          minimum: 0.0
+        better_habits:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Encourages better habits
+          minimum: 0.0
+        entertaining_relaxing:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Entertaining and relaxing
+          minimum: 0.0
+      required:
+      - id
+      - username
+      - video_left
+      - video_right
+    StatisticsSerializerV2:
+      type: object
+      description: Serialize statistics for the website.
+      properties:
+        certified_experts:
+          type: integer
+          description: Number of experts with certified e-mails
+        pairwise_comparisons:
+          type: integer
+          description: Total number of pairwise comparisons
+        videos:
+          type: integer
+          description: Total number of videos in the database
+        min_score:
+          type: number
+          format: float
+          description: Minimal aggregated score over all videos and features
+        max_score:
+          type: number
+          format: float
+          description: Maximal aggregated score over all videos and features
+      required:
+      - certified_experts
+      - max_score
+      - min_score
+      - pairwise_comparisons
+      - videos
+    StatusEnum:
+      enum:
+      - RJ
+      - ACK
+      - PD
+      type: string
+    UserInformationPublicSerializerV2:
+      type: object
+      description: User Profile
+      properties:
+        title_userprofile:
+          type: string
+        show_my_profile:
+          type: boolean
+          description: Show my profile on Tournesol
+        avatar:
+          type: string
+          format: uri
+          description: Profile picture
+        first_name:
+          type: string
+          nullable: true
+          description: First name
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          description: Last name
+          maxLength: 100
+        comment_anonymously:
+          type: boolean
+          description: By default, comment anonymously
+        title:
+          type: string
+          nullable: true
+          description: Your position
+        bio:
+          type: string
+          nullable: true
+          description: Self-description (degree, biography, ...)
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Username
+        n_ratings:
+          type: integer
+          readOnly: true
+          description: Number of ratings
+        n_videos:
+          type: integer
+          readOnly: true
+          description: Number of rated videos
+        n_comments:
+          type: integer
+          readOnly: true
+          description: Number of comments left
+        n_likes:
+          type: integer
+          readOnly: true
+          description: Number of likes minus number of dislikes for comments
+        n_thanks_given:
+          type: integer
+          readOnly: true
+          description: Number of thank you for recommendations given
+        n_thanks_received:
+          type: integer
+          readOnly: true
+          description: Number of thank you for recommendations received
+        n_mentions:
+          type: integer
+          readOnly: true
+          description: Number of mentions in comments
+        n_public_videos:
+          type: integer
+          readOnly: true
+          description: Number of videos rated publicly
+        title_email:
+          type: string
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerifiableEmail'
+          description: E-mails
+        is_certified:
+          type: boolean
+          readOnly: true
+          description: E-mail domain is certified
+        is_domain_rejected:
+          type: boolean
+          readOnly: true
+          description: Any e-mail domain is rejected
+        certified_email_domain:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Certified e-mail domain, starting with @
+        title_degree:
+          type: string
+        degrees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Degree'
+          description: Degrees
+        title_expertise:
+          type: string
+        expertises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expertise'
+          description: Expertises
+        title_expertise_keywords:
+          type: string
+        expertise_keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpertiseKeyword'
+          description: Expertise keywords
+        title_demographic:
+          type: string
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: Your gender
+        birth_year:
+          type: integer
+          maximum: 2100
+          minimum: 1900
+          nullable: true
+          description: Year of birth
+        nationality:
+          allOf:
+          - $ref: '#/components/schemas/NationalityEnum'
+          description: Your country of nationality
+        residence:
+          allOf:
+          - $ref: '#/components/schemas/ResidenceEnum'
+          description: Your country of residence
+        race:
+          allOf:
+          - $ref: '#/components/schemas/RaceEnum'
+          description: Your ethnicity
+        political_affiliation:
+          allOf:
+          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
+          description: Your political preference
+        degree_of_political_engagement:
+          allOf:
+          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
+          description: Your degree of political engagement
+        religion:
+          allOf:
+          - $ref: '#/components/schemas/ReligionEnum'
+          description: Your religion
+        moral_philosophy:
+          allOf:
+          - $ref: '#/components/schemas/MoralPhilosophyEnum'
+          description: Your preferred moral philosophy
+        title_online:
+          type: string
+        show_online_presence:
+          type: boolean
+          description: Show my online presence on Tournesol
+        google_scholar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Google Scholar URL
+          maxLength: 500
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: Your website URL
+          maxLength: 500
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          description: Your LinkedIn URL
+          maxLength: 500
+        orcid:
+          type: string
+          format: uri
+          nullable: true
+          description: Your ORCID URL
+          maxLength: 500
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Twitter URL
+          maxLength: 500
+        researchgate:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Researchgate profile URL
+          maxLength: 500
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Youtube channel URL
+          maxLength: 500
+      required:
+      - certified_email_domain
+      - comment_anonymously
+      - id
+      - is_certified
+      - is_domain_rejected
+      - n_comments
+      - n_likes
+      - n_mentions
+      - n_public_videos
+      - n_ratings
+      - n_thanks_given
+      - n_thanks_received
+      - n_videos
+      - username
+    UserInformationSerializerNameOnly:
+      type: object
+      description: Only show username of the person.
+      properties:
+        username:
+          type: string
+          readOnly: true
+          description: Username of the contributor
+      required:
+      - username
+    UserPreferencesSerializerV2:
+      type: object
+      description: Serialize UserPreferences.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reliability:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Reliable and not misleading
+          minimum: 0.0
+        importance:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Important and actionable
+          minimum: 0.0
+        engaging:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Engaging and thought-provoking
+          minimum: 0.0
+        pedagogy:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Clear and pedagogical
+          minimum: 0.0
+        layman_friendly:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Layman-friendly
+          minimum: 0.0
+        diversity_inclusion:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Diversity and Inclusion
+          minimum: 0.0
+        backfire_risk:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Resilience to backfiring risks
+          minimum: 0.0
+        better_habits:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Encourages better habits
+          minimum: 0.0
+        entertaining_relaxing:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Entertaining and relaxing
+          minimum: 0.0
+        username:
+          type: string
+          readOnly: true
+          description: Username for this user preferences' user
+        reliability_enabled:
+          type: boolean
+          description: reliability given for ratings
+        importance_enabled:
+          type: boolean
+          description: importance given for ratings
+        engaging_enabled:
+          type: boolean
+          description: engaging given for ratings
+        pedagogy_enabled:
+          type: boolean
+          description: pedagogy given for ratings
+        layman_friendly_enabled:
+          type: boolean
+          description: layman_friendly given for ratings
+        diversity_inclusion_enabled:
+          type: boolean
+          description: diversity_inclusion given for ratings
+        backfire_risk_enabled:
+          type: boolean
+          description: backfire_risk given for ratings
+        better_habits_enabled:
+          type: boolean
+          description: better_habits given for ratings
+        entertaining_relaxing_enabled:
+          type: boolean
+          description: entertaining_relaxing given for ratings
+        rating_mode:
+          allOf:
+          - $ref: '#/components/schemas/RatingModeEnum'
+          description: Which sliders and parameters to display on the rating page?
+      required:
+      - id
+      - username
+    VerifiableEmail:
+      type: object
+      description: E-mail
+      properties:
+        email:
+          type: string
+          format: email
+          description: E-mail address
+          maxLength: 100
+        is_verified:
+          type: boolean
+          readOnly: true
+          description: Verified
+      required:
+      - email
+      - is_verified
+    VideoCommentsSerializerV2:
+      type: object
+      description: Serialize comments.
+      properties:
+        user:
+          type: integer
+          readOnly: true
+        video:
+          type: string
+        parent_comment:
+          type: integer
+          nullable: true
+        comment:
+          type: string
+          description: Comment body text/html
+        username:
+          type: string
+          readOnly: true
+          description: User username
+        anonymized_username_id:
+          type: integer
+          readOnly: true
+          description: ID of the hash of the username
+        datetime_lastedit:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time the comment was edited the last time
+        datetime_add:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time the comment was added
+        votes_plus:
+          type: integer
+          readOnly: true
+          description: Number of likes
+        anonymous:
+          type: boolean
+          description: Do not show author's username
+        votes_minus:
+          type: integer
+          readOnly: true
+          description: Number of dislikes
+        red_flags:
+          type: integer
+          readOnly: true
+          description: Number of red flags
+        id:
+          type: integer
+          readOnly: true
+        children:
+          type: integer
+          readOnly: true
+          description: Number of children comments
+        datetime_add_ago:
+          type: string
+          readOnly: true
+          description: Human-readable x time units ago
+        edited_m_added_s:
+          type: number
+          format: float
+          readOnly: true
+          description: Edited minus created time in seconds
+        reliability:
+          type: boolean
+          nullable: true
+          description: Reliable and not misleading
+        importance:
+          type: boolean
+          nullable: true
+          description: Important and actionable
+        engaging:
+          type: boolean
+          nullable: true
+          description: Engaging and thought-provoking
+        pedagogy:
+          type: boolean
+          nullable: true
+          description: Clear and pedagogical
+        layman_friendly:
+          type: boolean
+          nullable: true
+          description: Layman-friendly
+        diversity_inclusion:
+          type: boolean
+          nullable: true
+          description: Diversity and Inclusion
+        backfire_risk:
+          type: boolean
+          nullable: true
+          description: Resilience to backfiring risks
+        better_habits:
+          type: boolean
+          nullable: true
+          description: Encourages better habits
+        entertaining_relaxing:
+          type: boolean
+          nullable: true
+          description: Entertaining and relaxing
+      required:
+      - anonymized_username_id
+      - children
+      - comment
+      - datetime_add
+      - datetime_add_ago
+      - datetime_lastedit
+      - edited_m_added_s
+      - id
+      - red_flags
+      - user
+      - username
+      - video
+      - votes_minus
+      - votes_plus
+    VideoRateLaterSerializerV2:
+      type: object
+      description: Serialize rate later objects.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: ID of the video rate later object
+        video:
+          type: string
+          description: Youtube Video ID
+        username:
+          type: string
+          readOnly: true
+          description: User username
+        datetime_add:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When video was added
+        video_info:
+          allOf:
+          - $ref: '#/components/schemas/VideoSerializerV2'
+          readOnly: true
+      required:
+      - datetime_add
+      - id
+      - username
+      - video
+      - video_info
+    VideoRatingsSerializerV2:
+      type: object
+      description: Serialize VideoRatings.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video:
+          type: string
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        score:
+          type: number
+          format: float
+          readOnly: true
+          default: 0.0
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Number of ratings by me
+        reliability:
+          type: number
+          format: float
+          description: Reliable and not misleading
+        importance:
+          type: number
+          format: float
+          description: Important and actionable
+        engaging:
+          type: number
+          format: float
+          description: Engaging and thought-provoking
+        pedagogy:
+          type: number
+          format: float
+          description: Clear and pedagogical
+        layman_friendly:
+          type: number
+          format: float
+          description: Layman-friendly
+        diversity_inclusion:
+          type: number
+          format: float
+          description: Diversity and Inclusion
+        backfire_risk:
+          type: number
+          format: float
+          description: Resilience to backfiring risks
+        better_habits:
+          type: number
+          format: float
+          description: Encourages better habits
+        entertaining_relaxing:
+          type: number
+          format: float
+          description: Entertaining and relaxing
+      required:
+      - id
+      - rating_n_ratings
+      - score
+      - user
+      - video
+    VideoRatingsStatisticsSerializerV2:
+      type: object
+      description: Give statistics on video ratings.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video:
+          type: string
+          readOnly: true
+        public_username:
+          type: string
+          nullable: true
+          description: The person who left the rating
+        score:
+          type: number
+          format: float
+          readOnly: true
+          default: 0.0
+        n_comparisons:
+          type: integer
+          description: Number of all pairwise comparisons for the video by the person
+        reliability:
+          type: number
+          format: float
+          description: Reliable and not misleading
+        importance:
+          type: number
+          format: float
+          description: Important and actionable
+        engaging:
+          type: number
+          format: float
+          description: Engaging and thought-provoking
+        pedagogy:
+          type: number
+          format: float
+          description: Clear and pedagogical
+        layman_friendly:
+          type: number
+          format: float
+          description: Layman-friendly
+        diversity_inclusion:
+          type: number
+          format: float
+          description: Diversity and Inclusion
+        backfire_risk:
+          type: number
+          format: float
+          description: Resilience to backfiring risks
+        better_habits:
+          type: number
+          format: float
+          description: Encourages better habits
+        entertaining_relaxing:
+          type: number
+          format: float
+          description: Entertaining and relaxing
+      required:
+      - id
+      - n_comparisons
+      - public_username
+      - score
+      - video
+    VideoReportsSerializerV2:
+      type: object
+      description: Serialize VideoReports.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video:
+          type: string
+        explanation:
+          type: string
+          nullable: true
+          description: Why is the video reported
+        bully:
+          type: boolean
+          nullable: true
+          description: The content is cyber-bullying
+        death_threat:
+          type: boolean
+          nullable: true
+          description: The content contains death threats
+        hate:
+          type: boolean
+          nullable: true
+          description: The content contains hate speech
+        kid:
+          type: boolean
+          nullable: true
+          description: The content is not kid-friendly
+        misl0:
+          type: boolean
+          nullable: true
+          description: The content is slightly misleading
+        misl1:
+          type: boolean
+          nullable: true
+          description: The content is very misleading
+        misl2:
+          type: boolean
+          nullable: true
+          description: The misinformation of the content is misleading and dangerous
+        threat:
+          type: boolean
+          nullable: true
+          description: The content contains threats
+        troll:
+          type: boolean
+          nullable: true
+          description: The content is a troll
+        violence:
+          type: boolean
+          nullable: true
+          description: The content promotes violence
+        violent_act:
+          type: boolean
+          nullable: true
+          description: The content calls for violent acts
+      required:
+      - id
+      - video
+    VideoSerializerV2:
+      type: object
+      description: Serialize Videos.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        video_id:
+          type: string
+          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]+$
+          pattern: ^[A-Za-z0-9-_]+$
+          maxLength: 20
+        score:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          default: 0.0
+          description: Computed video score.
+        name:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Video Title
+        duration:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Video Duration
+        language:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Language as str.
+          maxLength: 3
+        publication_date:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+          description: When the video was published
+        views:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Number of views
+        uploader:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Name of the channel (uploader)
+        score_preferences_term:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          default: 0.0
+          description: Computed video score [preferences].
+        score_search_term:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          default: 0.0
+          description: Computed video score [search].
+        rating_n_experts:
+          type: integer
+          readOnly: true
+          description: Number of experts in ratings
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Number of ratings
+        n_reports:
+          type: integer
+          readOnly: true
+          description: Number of times video was reported
+        public_experts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserInformationSerializerNameOnly'
+          readOnly: true
+          description: First 10 public contributors
+        n_public_experts:
+          type: integer
+          readOnly: true
+          description: Number of public contributors
+        n_private_experts:
+          type: integer
+          readOnly: true
+          description: Number private contributors
+        pareto_optimal:
+          type: boolean
+          readOnly: true
+          description: Is this video pareto-optimal?
+        reliability:
+          type: number
+          format: float
+          readOnly: true
+          description: Reliable and not misleading
+        importance:
+          type: number
+          format: float
+          readOnly: true
+          description: Important and actionable
+        engaging:
+          type: number
+          format: float
+          readOnly: true
+          description: Engaging and thought-provoking
+        pedagogy:
+          type: number
+          format: float
+          readOnly: true
+          description: Clear and pedagogical
+        layman_friendly:
+          type: number
+          format: float
+          readOnly: true
+          description: Layman-friendly
+        diversity_inclusion:
+          type: number
+          format: float
+          readOnly: true
+          description: Diversity and Inclusion
+        backfire_risk:
+          type: number
+          format: float
+          readOnly: true
+          description: Resilience to backfiring risks
+        better_habits:
+          type: number
+          format: float
+          readOnly: true
+          description: Encourages better habits
+        entertaining_relaxing:
+          type: number
+          format: float
+          readOnly: true
+          description: Entertaining and relaxing
+      required:
+      - backfire_risk
+      - better_habits
+      - diversity_inclusion
+      - duration
+      - engaging
+      - entertaining_relaxing
+      - id
+      - importance
+      - language
+      - layman_friendly
+      - n_private_experts
+      - n_public_experts
+      - n_reports
+      - name
+      - pareto_optimal
+      - pedagogy
+      - public_experts
+      - publication_date
+      - rating_n_experts
+      - rating_n_ratings
+      - reliability
+      - score
+      - score_preferences_term
+      - score_search_term
+      - uploader
+      - video_id
+      - views
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: Session
+    tokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token

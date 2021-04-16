@@ -1,0 +1,8 @@
+import backend.ml_model.preference_aggregation
+import backend.ml_model.client_server.django_ml_featureless
+import backend.management.commands.ml_train
+import backend.ml_model.helpers
+
+
+ml_train.learner.cls = @DatabasePreferenceLearnerFeatureless
+PreferencePredictor.show_component = 0

@@ -1,0 +1,7 @@
+New pending e-mail domain "{{ email_domain }}" was added to Tournesol.
+
+Go to the following address to manage it:
+
+{{ domain }}admin/backend/emaildomain/{{ id }}/change/
+
+
