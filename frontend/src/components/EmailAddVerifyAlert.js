@@ -34,7 +34,8 @@ export default () => {
       {!isCertified && domainRejected && (
         <Alert severity="error" className={`${classes.alertTop} class_rejected`}>
           Note that the email domain of your verified email address is currently not trusted by Tournesol. 
-          We fear that this email domain could be used by malicious entities to create fake accounts, which have become predominant on Facebook. 
+          We fear that this email domain could be used by malicious entities to create fake accounts, 
+          <a href="https://www.youtube.com/watch?v=w5JRKUndWNk&list=PL8ovs-QtxcNxcwlsTF5O9NXtr3NAj_SVc" target="_blank">which have become predominant on Facebook</a>. 
           As a result, your ratings will not impact the certified Tournesol scores, and your comments will not be visible. 
           Note that you can gain capabilities by registering another email address from a trusted email domain
 
