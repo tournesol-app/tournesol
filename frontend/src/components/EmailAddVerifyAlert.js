@@ -33,17 +33,16 @@ export default () => {
     <>
       {!isCertified && domainRejected && (
         <Alert severity="error" className={`${classes.alertTop} class_rejected`}>
-          Your verified email address does not belong to a trusted institution. As a result,
-          your
-          ratings will not impact the Tournesol scores, and your comments will not be visible.
-          Please register an email address
-          to a trusted institution to impact Tournesol scores
+          Note that the email domain of your verified email address is currently not trusted by Tournesol. 
+          We fear that this email domain could be used by malicious entities to create fake accounts, which have become predominant on Facebook. 
+          As a result, your ratings will not impact the certified Tournesol scores, and your comments will not be visible. 
+          Note that you can gain capabilities by registering another email address from a trusted email domain
 
           <EmailAddVerify />
         </Alert>)}
       {!isCertified && !domainRejected && (
         <Alert severity="info" className={`${classes.alertTop} class_pending`}>
-          We are currently assessing the trustworthiness of the institution associated to your
+          We are currently assessing the trustworthiness of the email domain associated to your
           email address. Note that, as a result, your ratings may not impact the Tournesol
           scores, and your comments will not be visible.
 
