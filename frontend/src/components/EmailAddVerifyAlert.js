@@ -38,7 +38,7 @@ export default () => {
           We fear that this email domain could be used by malicious
           entities to create numerous fake accounts
           and gain control of Tournesol through a
-          <a href="https://wiki.tournesol.app/index.php/51%25_attack">51% attack</a>. 
+          <a href="https://wiki.tournesol.app/index.php/51%25_attack">51% attack</a>.
           As a result, your ratings will not impact the certified Tournesol scores,
           and your comments will not be visible.
           You can gain the capabilities of certified Tournesol accounts
