@@ -43,7 +43,7 @@ export default () => {
           and your comments will not be visible.
           You can gain the capabilities of certified Tournesol accounts
           by registering another email address from a
-          <a href="https://wiki.tournesol.app/index.php/Trusted_email_domains"_blank">trusted email domain</a>
+          <a href="https://wiki.tournesol.app/index.php/Trusted_email_domains">trusted email domain</a>
 
           <EmailAddVerify />
         </Alert>)}
