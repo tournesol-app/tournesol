@@ -2,6 +2,8 @@
 
 This github hosts the code of the platform [Tournesol.app](https://tournesol.app).
 
+See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php/Contribute_to_Tournesol) for details.
+
 ![Home page of Tournesol.app](https://user-images.githubusercontent.com/10453308/115123905-9b6b4300-9fbf-11eb-8853-25552d13f7b0.png)
 
 We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
