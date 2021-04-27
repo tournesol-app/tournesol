@@ -8,6 +8,11 @@ import numpy as np
 import pandas as pd
 import os
 
+from functools import partial
+#from backend.ml_model.client_server.database_learner import print_memory
+
+from backend.ml_model.preference_aggregation import print_memory
+
 
 @gin.configurable
 def learner(cls=None):
@@ -144,6 +149,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
+        print_memory(stage="Command init")
+        
         features = options['features']
 
         if features is None:
@@ -174,6 +181,23 @@ class Command(BaseCommand):
 
         # regular training
         else:
+            print_memory(stage="pre-learner init")
             learner_obj = learner()(features=features)
-            learner_obj.fit(epochs=options['epochs_override'])
+            
+            print_memory(stage="learner created")
+            
+#            print("pre-fit reached... entering infinite loop")
+#            from time import sleep
+#            while True:
+#                sleep(1)
+#            
+            def print_mem_epoch_callback(learner, epoch, **losses):
+                print_memory(stage='EPOCH')
+#            print_mem_epoch = partial(print_memory, stage='EPOCH')
+            learner_obj.fit(epochs=options['epochs_override'], callback=print_mem_epoch_callback)
+            
+            print_memory(stage="post train")
+            
             learner_obj.update_features()
+
+            print_memory(stage="post update")

@@ -12,6 +12,7 @@ from django_react.settings import BASE_DIR, COUNT_UNCERTIFIED_USERS
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 import numpy as np
+from backend.ml_model.preference_aggregation import print_memory
 
 tf.compat.v1.enable_eager_execution()
 
@@ -29,11 +30,15 @@ class DatabasePreferenceLearner(object):
         self.directory = directory
         os.makedirs(self.directory, exist_ok=True)
 
+        print_memory("DPL:init")
+
         # all users
         self.user_queryset = UserPreferences.objects.all()\
             if user_queryset is None\
             else user_queryset
         self.users = [x.id for x in self.user_queryset]
+
+        print_memory("DPL:users_loaded")
 
         # is the user certified?
         # if not, will not be used for aggregation
@@ -48,11 +53,15 @@ class DatabasePreferenceLearner(object):
 
         self.user_certified = [is_certified(user) for user in self.users]
 
+        print_memory("DPL:is_certified_all")
+
         # all videos
         self.video_queryset = Video.objects.all()\
             if video_queryset is None\
             else video_queryset
         self.videos = [x.video_id for x in self.video_queryset]
+
+        print_memory("DPL:all_videos_loaded")
 
         # user -> all expert rating array
         self.users_to_ratings = {
@@ -61,11 +70,17 @@ class DatabasePreferenceLearner(object):
             if users_to_ratings is None\
             else users_to_ratings
 
+        print_memory("DPL:users_ratings_loaded")
+
         for u in self.users:
             assert u in self.users_to_ratings, f"users_to_ratings must contain a user {u}"
 
+        print_memory("DPL:user_rating_check_ok")
+
         # models and aggregator (empty)
         self.user_to_model = {user: None for user in self.users}
+
+        print_memory("DPL:models_initialized")
 
         # the aggregator (will be created
         self.aggregator = None
@@ -79,10 +94,15 @@ class DatabasePreferenceLearner(object):
 
         self.features = features
 
+        print_memory("DPL:pre_model_create")
+
         print(f"Learner uses features {self.features}")
 
         # actually creating the models
+        # aggregator is set here
         self.create_models()
+        
+        print_memory("DPL:models_created")
 
         # load/save variables
         self.save_after_train = save
@@ -91,8 +111,12 @@ class DatabasePreferenceLearner(object):
         if load:
             self.load()
 
+        print_memory("DPL:weights_loaded")
+
         self.train_counter = 0
         self.stats = {}
+        
+        print_memory("DPL:READY")
 
     def create_models(self):
         """Fill the user_to_model and aggregator fields."""
@@ -115,6 +139,9 @@ class DatabasePreferenceLearner(object):
         """Fit on latest database records."""
         # fitting on data
         self.aggregator.user_certified = self.user_certified
+        
+        print(self.aggregator, type(self.aggregator))
+        
         self.stats.update(self.aggregator.fit(**kwargs))
 
         logging.info(f"Fit iteration finished {self.stats}")
@@ -207,7 +234,9 @@ class DatabasePreferenceLearner(object):
 
     def load(self):
         """Load weights."""
+        print_memory('DPL:pre_load')
         r = self.aggregator.load(self.directory)
+        print_memory('DPL:post_load')
         logging.info(f"Weights load result: {r}")
         return r
 

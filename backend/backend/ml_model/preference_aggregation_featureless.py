@@ -8,7 +8,8 @@ import tensorflow as tf
 from backend.ml_model.helpers import choice_or_all, arr_of_dicts_to_dict_of_arrays, convert_to_tf
 from backend.ml_model.preference_aggregation import PreferencePredictor, MedianPreferenceAggregator
 from matplotlib import pyplot as plt
-from tqdm import tqdm
+from tqdm.auto import tqdm
+from backend.ml_model.preference_aggregation import print_memory, tqdmem
 
 tf.compat.v1.enable_eager_execution()
 
@@ -54,6 +55,8 @@ class AllRatingsWithCommon(object):
             output_features,
             name,
             var_init_cls=VariableIndexLayer):
+
+        print_memory('ARWC:init')
 
         # experts
         self.name = name
@@ -120,11 +123,17 @@ class AllRatingsWithCommon(object):
 
         # print("Load weights")
 
+        print_memory('ARWC:load_start')
+
         path = self._save_path(directory=directory)
         result = pickle.load(open(path, 'rb'))
 
+        print_memory('ARWC:pickle_loaded')
+
         # setting zero weights
         self.reset_model()
+
+        print_memory('ARWC:model_reset_loaded')
 
         old_object_indices = {
             obj: idx for idx, obj in enumerate(
@@ -138,15 +147,21 @@ class AllRatingsWithCommon(object):
 
         restored_items = 0
 
+        
+        print_memory('ARWC:old_indices_loaded')
         # print("experts", len(self.experts), "objects", len(self.objects),
         #       "features", len(self.output_features))
 
         to_assign_idx = []
         to_assign_vals = []
+        
+        print_memory('ARWC:start_assign_append_loop')
 
-        for new_expert_idx, expert in tqdm(enumerate(self.experts)):
+        for new_expert_idx, expert in enumerate(tqdmem(self.experts, desc="rating_load_expert_loop",
+                                             leave=True)):
             old_expert_idx = old_expert_indices.get(expert, None)
-            for new_obj_idx, obj in enumerate(self.objects):
+            for new_obj_idx, obj in enumerate(tqdmem(self.objects, desc="rating_load_object_loop",
+                                              leave=False, disable=True)):
                 old_obj_idx = old_object_indices.get(obj, None)
                 for new_f_idx, feature in enumerate(self.output_features):
                     old_f_idx = old_feature_indices.get(feature, None)
@@ -158,16 +173,22 @@ class AllRatingsWithCommon(object):
                             to_assign_idx.append((new_expert_idx, new_obj_idx, new_f_idx))
                             to_assign_vals.append(val)
                             restored_items += 1
+                            
+        print_memory('ARWC:finish_assign_append_loop')
 
         if to_assign_idx:
+            print_memory('ARWC:start_create_layer_variable')
             self.layer.v = tf.Variable(
                 tf.tensor_scatter_nd_update(self.layer.v,
                                             to_assign_idx,
                                             to_assign_vals),
                 trainable=True)
+            print_memory('ARWC:finish_create_layer_variable')
 
         # print(to_assign_idx, to_assign_vals)
         # print(self.layer.v)
+        
+        print_memory('ARWC:alive')
 
         return {'restored_items': restored_items}
 
@@ -383,6 +404,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             epochs=20,
             optimizer=Adam(),
             hypers=None,
+            callback=None,
             batch_params=None):
         assert models, "Models cannot be empty."
         assert all([isinstance(m, FeaturelessPreferenceLearningModel)
@@ -398,7 +420,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         self.hypers = hypers if hypers else {}
         self.hypers['aggregate_index'] = self.all_ratings.aggregate_index
         self.batch_params = batch_params if batch_params else {}
-        self.callback = None
+        self.callback = callback
 
         # creating the optimized tf loss function
         assert len(self.all_ratings.model.variables) == 1, "Only support 1-variable models!"
@@ -446,7 +468,9 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
 
     def load(self, directory):
         try:
+            print_memory('FMPARA:pre_rating_load')
             result = self.all_ratings.load(directory)
+            print_memory('FMPARA:post_rating_load')
         except FileNotFoundError as e:
             logging.warning(f"No model restore data {e}")
             result = {'status': str(e)}
@@ -464,11 +488,13 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             plt.title(key)
             plt.plot(losses[key])
 
-    def fit(self, epochs=None):
+    def fit(self, epochs=None, callback=None):
         """Fit with multiple epochs."""
         if epochs is None:
             epochs = self.epochs
-        with tqdm(total=epochs) as pbar:
+        if callback is None:
+            callback = self.callback
+        with tqdmem(total=epochs, desc="fit_loop") as pbar:
             for i in range(epochs):
                 if i % self.hypers.get('sample_every', 1) == 0:
                     self.minibatch = self.sample_minibatch(**self.batch_params)
@@ -477,8 +503,8 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
                 self.losses.append(losses)
                 pbar.update(1)
                 pbar.set_postfix(**losses)  # loss=losses['loss'])
-                if callable(self.callback):
-                    self.callback(self, epoch=i, **losses)
+                if callable(callback):
+                    callback(self, epoch=i, **losses)
         if self.losses:
             return self.losses[-1]
         else:
