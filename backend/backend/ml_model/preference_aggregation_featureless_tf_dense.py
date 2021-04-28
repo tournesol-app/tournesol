@@ -1,6 +1,39 @@
+import tensorflow as tf
+import gin
+
+
+def variable_index_layer_call(tensor, inputs):
+    """Get variable at indices."""
+    return tf.gather_nd(tensor, inputs)
+
+
+@gin.configurable
+class VariableIndexLayer(tf.keras.layers.Layer):
+    """Layer which outputs a trainable variable on a call."""
+
+    NEED_INDICES = False
+    INPUT_FLAT_INDEX = False
+
+    def __init__(self, shape, name="index_layer", initializer=None, **kwargs):
+        super(VariableIndexLayer, self).__init__(name=name)
+        self.v = self.add_weight(
+            shape=shape, initializer=initializer,
+            trainable=True, name="var/" + name,
+            dtype=tf.keras.backend.floatx())
+
+    @tf.function
+    def call(self, inputs, **kwargs):
+        # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape)
+
+        out = variable_index_layer_call(self.v, inputs)
+        # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape, "OUT SHAPE", out.shape)
+        return out
+
+
 # get the loss function for this class
+@gin.configurable
 @tf.function(experimental_relax_shapes=True)
-def loss_fcn(
+def loss_fcn_dense(
         experts_rating=None,
         objects_rating_v1=None,
         objects_rating_v2=None,
@@ -15,7 +48,8 @@ def loss_fcn(
         lambda_=None,
         mu=None,
         C=None,
-        default_score_value=None):
+        default_score_value=None,
+        **kwargs):
     """
     Compute the loss function. All IDs are internal (int64).
 
@@ -119,3 +153,16 @@ def loss_fcn(
         'loss_common_to_1']
 
     return result
+
+
+@tf.function(experimental_relax_shapes=True)
+def loss_fcn_gradient_hessian(video_indices, **kwargs):
+    """Compute the loss function, gradient and the Hessian."""
+    variable = kwargs['model_tensor']
+    loss = loss_fcn_dense(**kwargs)['loss']
+    g = tf.gradients(loss, variable)[0]
+    g = tf.gather(g, axis=1, indices=video_indices)
+    h = tf.hessians(loss, variable)[0]
+    h = tf.gather(h, axis=1, indices=video_indices)
+    h = tf.gather(h, axis=4, indices=video_indices)
+    return {'loss': loss, 'gradient': g, 'hessian': h}

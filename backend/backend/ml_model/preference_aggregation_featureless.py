@@ -17,90 +17,6 @@ Adam = gin.external_configurable(tf.keras.optimizers.Adam)
 SGD = gin.external_configurable(tf.keras.optimizers.SGD)
 Zeros = gin.external_configurable(tf.keras.initializers.Zeros)
 
-
-def variable_index_layer_call(tensor, inputs):
-    """Get variable at indices."""
-    return tf.gather_nd(tensor, inputs)
-
-
-@gin.configurable
-class VariableIndexLayer(tf.keras.layers.Layer):
-    """Layer which outputs a trainable variable on a call."""
-
-    NEED_INDICES = False
-
-    def __init__(self, shape, name="index_layer", initializer=None, **kwargs):
-        super(VariableIndexLayer, self).__init__(name=name)
-        self.v = self.add_weight(
-            shape=shape, initializer=initializer,
-            trainable=True, name="var/" + name,
-            dtype=tf.keras.backend.floatx())
-
-    @tf.function
-    def call(self, inputs, **kwargs):
-        # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape)
-
-        out = variable_index_layer_call(self.v, inputs)
-        # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape, "OUT SHAPE", out.shape)
-        return out
-
-class HashMap(object):
-    """Maps objects from keys to values and vice-versa."""
-    def __init__(self):
-        self.key_to_value = {}
-        self.value_to_key = {}
-        
-    def set(self, key, value):
-        self.key_to_value[key] = value
-        self.value_to_key[value] = key
-        
-    def get_value(self, key):
-        return self.key_to_value[key]
-    
-    def get_key(self, value):
-        return self.value_to_key[value]
-    
-    def get_keys(self, values):
-        """Get multiple keys given values. Can be parallelized!"""
-        return [self.get_key(value) for value in values]
-
-@gin.configurable
-class SparseVariableIndexLayer(tf.keras.layers.Layer):
-    """Layer which outputs a trainable variable on a call, sparse storage."""
-    
-    NEED_INDICES = True
-
-    def __init__(self, shape, indices_list, name="index_layer", initializer=None):
-        super(SparseVariableIndexLayer, self).__init__(name=name)
-        
-        assert isinstance(indices_list, list), "indices_list must be a list"
-        assert indices_list, "List of indices must be non-empty!"
-        assert all([isinstance(x, tuple) for x in indices_list]), \
-          "all items in indices_list must be tuples"
-          
-        # checking tuple length
-        assert [len(shape) == len(idx) for idx in indices_list], "All tuple lengths must be equal"
-        
-        self.num_items = len(indices_list)
-        # tf.sparse.SparseTensor didn't work with GradientTape, so using own implementation
-        self.v = self.add_weight(shape=(self.num_items,), initializer=initializer,
-                                 trainable=True, name="var_sparse_values/" + name,
-                                 dtype=tf.keras.backend.floatx())
-        self.idx = HashMap()
-        
-        # storing indices
-        # TODO: use vectorized implementation
-        for i, idx in enumerate(indices_list):
-            self.idx.set(i, idx)
-
-
-    def call(self, inputs, **kwargs):
-        # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape)
-        
-        indices_flat = self.idx.get_keys(inputs)
-        return tf.gather(self.v, indices_flat)
-
-
 @gin.configurable
 class AllRatingsWithCommon(object):
     COMMON_EXPERT = "__aggregate_expert__"
@@ -113,7 +29,7 @@ class AllRatingsWithCommon(object):
             objects,
             output_features,
             name,
-            var_init_cls=VariableIndexLayer):
+            var_init_cls=None):
 
         print_memory('ARWC:init')
 
@@ -145,6 +61,7 @@ class AllRatingsWithCommon(object):
         self.var_init_cls = var_init_cls
         self.indices_list = []
         self.variables = []
+        self.expert_id_to_used_videos = {}
 
         self.reset_model()
         
@@ -277,6 +194,10 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
         self.objects = self.all_ratings.objects
         self.used_object_feature_ids = set()
         assert expert in self.all_ratings.experts
+        
+        if expert == self.all_ratings.COMMON_EXPERT:
+            print("Common expert has FPLM")
+        
         self.expert = expert
         self.expert_id = self.all_ratings.experts_reverse[expert]
         self.output_features = self.all_ratings.output_features
@@ -322,7 +243,7 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
             val_no_nan <= 1), "Preferences should be in [0,1]"
 
         # indices for features that are used
-        used_feature_indices = [i for i in range(len(weights)) if weights[i] > 0]
+        used_feature_indices = [i for i, w in enumerate(weights) if not np.allclose(w, 0)]
         
         for f_idx in used_feature_indices:
             self.used_object_feature_ids.add((self.all_ratings.objects_reverse[o1], f_idx))
@@ -349,19 +270,11 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
         #print("Appending indices", indices)
         
         self.all_ratings.add_indices(indices)
+        
+        self.all_ratings.expert_id_to_used_videos[self.expert_id] = set(
+                [obj_id for obj_id, _ in self.used_object_feature_ids])
 
 
-@tf.function(experimental_relax_shapes=True)
-def loss_fcn_gradient_hessian(video_indices, **kwargs):
-    """Compute the loss function, gradient and the Hessian."""
-    variable = kwargs['model_tensor']
-    loss = loss_fcn(**kwargs)['loss']
-    g = tf.gradients(loss, variable)[0]
-    g = tf.gather(g, axis=1, indices=video_indices)
-    h = tf.hessians(loss, variable)[0]
-    h = tf.gather(h, axis=1, indices=video_indices)
-    h = tf.gather(h, axis=4, indices=video_indices)
-    return {'loss': loss, 'gradient': g, 'hessian': h}
 
 
 @tf.function(experimental_relax_shapes=True)
@@ -383,6 +296,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             optimizer=Adam(),
             hypers=None,
             callback=None,
+            loss_fcn=None,
             batch_params=None):
         assert models, "Models cannot be empty."
         assert all([isinstance(m, FeaturelessPreferenceLearningModel)
@@ -402,7 +316,10 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
 
         # creating the optimized tf loss function
         assert len(self.all_ratings.variables) == 1, "Only support 1-variable models!"
-        self.loss_fcn = self.build_loss_fcn(**self.hypers)
+        
+        # arg loss_fcn -- the TF callable
+        # build_loss_fcn assigns the model_tensor to it
+        self.loss_fcn = self.build_loss_fcn(**self.hypers, loss_fcn=loss_fcn)
 
         self.minibatch = None
 
@@ -430,7 +347,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
 
         return kwargs_subset_dict
 
-    def build_loss_fcn(self, **kwargs):
+    def build_loss_fcn(self, loss_fcn=None, **kwargs):
         """Create the loss function."""
         kwargs0 = self.loss_fcn_kwargs(**kwargs)
 
@@ -559,6 +476,9 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
 
             expert_id = self.all_ratings.experts_reverse[expert]
             for obj in sampled_objects:
+                if obj not in self.all_ratings.expert_id_to_used_videos[expert_id]:
+                    continue
+                
                 object_id = self.all_ratings.objects_reverse[obj]
                 experts_all.append(expert_id)
                 objects_all.append(object_id)
@@ -587,6 +507,75 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             'num_ratings_all': np.array(num_ratings_all, dtype=np.float32),
             'objects_common_to_1': np.array(sampled_object_ids, dtype=np.int64)
         }
+        
+        # adding parameters for the sparse tensor, if required
+        if self.all_ratings.layer.NEED_INDICES:
+            # A to add: expert_object_feature_v1_flat, expert_object_feature_v2_flat, cmp_flat
+            #  weights_flat
+            # B expert_object_feature_all, expert_object_feature_agg_all, num_ratings_all_flat
+            # C expert_object_feature_common_to_1
+            
+            # filling in A (fit loss)
+            expert_object_feature_v1_flat = []
+            expert_object_feature_v2_flat = []
+            cmp_flat = []
+            weights_flat = []
+            for c_expert, c_v1, c_v2, c_cmp, c_weights in zip(kwargs['experts_rating'],
+                                                              kwargs['objects_rating_v1'],
+                                                              kwargs['objects_rating_v2'],
+                                                              kwargs['cmp'],
+                                                              kwargs['weights']):
+                for feature_index, weight in enumerate(c_weights):
+                    # weight is 0 -> rating does not have any effect
+                    if np.allclose(weight, 0):
+                        continue
+                    
+                    expert_object_feature_v1_flat.append((c_expert, c_v1, feature_index))
+                    expert_object_feature_v2_flat.append((c_expert, c_v2, feature_index))
+                    cmp_flat.append(c_cmp[feature_index])
+                    weights_flat.append(weight)
+                    
+            def arr_to_index_np(arr):
+                """Array of tuples -> int64 np array with indices."""
+                idxes = self.all_ratings.layer.idx.get_keys(arr)
+                return np.array(idxes, dtype=np.int64)
+                    
+            kwargs['expert_object_feature_v1_flat'] = arr_to_index_np(
+                    expert_object_feature_v1_flat)
+            
+            kwargs['expert_object_feature_v2_flat'] = arr_to_index_np(
+                    expert_object_feature_v2_flat)
+            
+            kwargs['cmp_flat'] = np.array(cmp_flat, dtype=np.float32)
+            kwargs['weights_flat'] = np.array(weights_flat, dtype=np.float32)
+            
+            # filling in B (model to common)
+            expert_object_feature_all = []
+            expert_object_feature_agg_all = []
+            num_ratings_all_flat = []
+            for c_expert, c_object, c_num_ratings in zip(kwargs['experts_all'],
+                                                         kwargs['objects_all'],
+                                                         kwargs['num_ratings_all']):
+                for feature_index in range(self.all_ratings.output_dim):
+                    expert_object_feature_all.append((c_expert, c_object, feature_index))
+                    expert_object_feature_agg_all.append((self.all_ratings.aggregate_index,
+                                                          c_object, feature_index))
+                    num_ratings_all_flat.append(c_num_ratings)
+                    
+            kwargs['expert_object_feature_all'] = arr_to_index_np(expert_object_feature_all)
+            kwargs['expert_object_feature_agg_all'] = arr_to_index_np(expert_object_feature_agg_all)
+            kwargs['num_ratings_all_flat'] = np.array(num_ratings_all_flat, dtype=np.float32)
+            
+            # filling in C (common to 1)
+            expert_object_feature_common_to_1 = []
+            
+            for c_object in kwargs['objects_common_to_1']:
+                for feature_index in range(self.all_ratings.output_dim):
+                    expert_object_feature_common_to_1.append((self.all_ratings.aggregate_index,
+                                                              c_object, feature_index))
+                
+            kwargs['expert_object_feature_common_to_1'] = arr_to_index_np(
+                    expert_object_feature_common_to_1)
 
         kwargs = convert_to_tf(kwargs)
 

@@ -1,4 +1,6 @@
 import backend.ml_model.preference_aggregation_featureless
+import backend.ml_model.preference_aggregation_featureless_tf_dense
+import backend.ml_model.preference_aggregation_featureless_tf_sparse
 import backend.ml_model.helpers
 import backend.ml_model.preference_aggregation_featureless_online
 include 'common.gin'
@@ -13,15 +15,18 @@ SparseVariableIndexLayer.initializer = %VAR_INIT
 
 # using sparse tensor
 AllRatingsWithCommon.var_init_cls = @SparseVariableIndexLayer
+FeaturelessMedianPreferenceAverageRegularizationAggregator.loss_fcn = @loss_fcn_sparse
 
 # using dense tensor (takes more memory, a bit faster)
 # AllRatingsWithCommon.var_init_cls = @VariableIndexLayer
+# FeaturelessMedianPreferenceAverageRegularizationAggregator.loss_fcn = @loss_fcn_dense
 
 # train step configuration
 FeaturelessMedianPreferenceAverageRegularizationAggregator.optimizer = @opt/Adam()
 FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 100000
 FeaturelessMedianPreferenceAverageRegularizationAggregator.hypers = @hypers/gin_dict()
 FeaturelessMedianPreferenceAverageRegularizationAggregator.batch_params = @batch_params/gin_dict()
+
 
 # loss hyperparameters configuration
 hypers/gin_dict.C = 3.

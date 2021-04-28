@@ -35,6 +35,12 @@ class DatabasePreferenceLearnerFeatureless(DatabasePreferenceLearner):
             user: self.fill_model_data(
                 self.user_to_model[user],
                 user) for user in tqdmem(self.users, desc="fill_data")}
+            
+        # virtual 'common' data
+        fplm_common = FeaturelessPreferenceLearningModel(expert=AllRatingsWithCommon.COMMON_EXPERT,
+                                                         all_ratings=self.all_ratings)
+        fplm_common.on_dataset_end()
+        
 
         print_memory(stage="DPLF:data_filled")
 
