@@ -33,15 +33,22 @@ class tqdmem(tqdm):
     def __init__(self, *args, relative=True, **kwargs):
         self.rss_start_mb = tqdmem.get_memory_mb()
         self.relative = relative
+        self.last_postfix = {}
         super(tqdmem, self).__init__(*args, **kwargs)
     
     def with_mem_postfix(self, key='mem'):
         """Add memory usage postfix entry."""
-        self.set_postfix({key: self.format_mem()})
+        postfix_total = dict(self.last_postfix)
+        postfix_total[key] = self.format_mem()
+        super(tqdmem, self).set_postfix(**postfix_total)
     
-    def update(self):
+    def set_postfix(self, **kwargs):
+        self.last_postfix = kwargs
+        super(tqdmem, self).set_postfix(**kwargs)
+    
+    def update(self, *args, **kwargs):
         self.with_mem_postfix()
-        return super(tqdmem, self).update()
+        return super(tqdmem, self).update(*args, **kwargs)
         
     def __iter__(self):
         self.with_mem_postfix()
@@ -109,6 +116,10 @@ class PreferencePredictor(object):
 
         # plt.xlim((-3, 3))
         # plt.ylim((-3, 3))
+        
+    def on_dataset_end(self):
+        """Called when all data is loaded."""
+        pass
 
 
 class MedianPreferenceAggregator(PreferencePredictor):

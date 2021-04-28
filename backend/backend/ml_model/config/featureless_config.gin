@@ -7,8 +7,15 @@ include 'common.gin'
 opt/Adam.lr = 1e-3
 
 # initialization settings
-VariableIndexLayer.initializer = @Zeros()
-AllRatingsWithCommon.var_init_cls = @VariableIndexLayer
+VAR_INIT = @Zeros()
+VariableIndexLayer.initializer = %VAR_INIT
+SparseVariableIndexLayer.initializer = %VAR_INIT
+
+# using sparse tensor
+AllRatingsWithCommon.var_init_cls = @SparseVariableIndexLayer
+
+# using dense tensor (takes more memory, a bit faster)
+# AllRatingsWithCommon.var_init_cls = @VariableIndexLayer
 
 # train step configuration
 FeaturelessMedianPreferenceAverageRegularizationAggregator.optimizer = @opt/Adam()

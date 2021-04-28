@@ -123,8 +123,7 @@ class DatabasePreferenceLearner(object):
         raise NotImplementedError
 
     def save_figure(self):
-        plt.suptitle("Train call %d data stats %s" %
-                     (self.train_counter, str(self.stats)), wrap=True)
+        plt.suptitle("Train call %d" % self.train_counter, wrap=True)
         date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         plt.savefig(
             os.path.join(

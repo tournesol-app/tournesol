@@ -27,19 +27,78 @@ def variable_index_layer_call(tensor, inputs):
 class VariableIndexLayer(tf.keras.layers.Layer):
     """Layer which outputs a trainable variable on a call."""
 
-    def __init__(self, shape, name="index_layer", initializer=None):
+    NEED_INDICES = False
+
+    def __init__(self, shape, name="index_layer", initializer=None, **kwargs):
         super(VariableIndexLayer, self).__init__(name=name)
         self.v = self.add_weight(
             shape=shape, initializer=initializer,
             trainable=True, name="var/" + name,
             dtype=tf.keras.backend.floatx())
 
+    @tf.function
     def call(self, inputs, **kwargs):
         # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape)
 
         out = variable_index_layer_call(self.v, inputs)
         # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape, "OUT SHAPE", out.shape)
         return out
+
+class HashMap(object):
+    """Maps objects from keys to values and vice-versa."""
+    def __init__(self):
+        self.key_to_value = {}
+        self.value_to_key = {}
+        
+    def set(self, key, value):
+        self.key_to_value[key] = value
+        self.value_to_key[value] = key
+        
+    def get_value(self, key):
+        return self.key_to_value[key]
+    
+    def get_key(self, value):
+        return self.value_to_key[value]
+    
+    def get_keys(self, values):
+        """Get multiple keys given values. Can be parallelized!"""
+        return [self.get_key(value) for value in values]
+
+@gin.configurable
+class SparseVariableIndexLayer(tf.keras.layers.Layer):
+    """Layer which outputs a trainable variable on a call, sparse storage."""
+    
+    NEED_INDICES = True
+
+    def __init__(self, shape, indices_list, name="index_layer", initializer=None):
+        super(SparseVariableIndexLayer, self).__init__(name=name)
+        
+        assert isinstance(indices_list, list), "indices_list must be a list"
+        assert indices_list, "List of indices must be non-empty!"
+        assert all([isinstance(x, tuple) for x in indices_list]), \
+          "all items in indices_list must be tuples"
+          
+        # checking tuple length
+        assert [len(shape) == len(idx) for idx in indices_list], "All tuple lengths must be equal"
+        
+        self.num_items = len(indices_list)
+        # tf.sparse.SparseTensor didn't work with GradientTape, so using own implementation
+        self.v = self.add_weight(shape=(self.num_items,), initializer=initializer,
+                                 trainable=True, name="var_sparse_values/" + name,
+                                 dtype=tf.keras.backend.floatx())
+        self.idx = HashMap()
+        
+        # storing indices
+        # TODO: use vectorized implementation
+        for i, idx in enumerate(indices_list):
+            self.idx.set(i, idx)
+
+
+    def call(self, inputs, **kwargs):
+        # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape)
+        
+        indices_flat = self.idx.get_keys(inputs)
+        return tf.gather(self.v, indices_flat)
 
 
 @gin.configurable
@@ -82,21 +141,28 @@ class AllRatingsWithCommon(object):
         self.objects_reverse = {obj: i for i, obj in enumerate(self.objects)}
 
         # outputs
-        self.model = None
         self.layer = None
         self.var_init_cls = var_init_cls
+        self.indices_list = []
+        self.variables = []
 
         self.reset_model()
+        
+    def add_indices(self, indices):
+        self.indices_list += indices
 
     def reset_model(self):
+        if self.var_init_cls.NEED_INDICES and not self.indices_list:
+            logging.warning("Variable needs indices, and they are not yet available. Skip init...")
+            return
+        
+        logging.warning("Indices: %d" % len(self.indices_list))
+        
         self.layer = self.var_init_cls(
-            shape=(len(self.experts), len(self.objects), self.output_dim))
+            shape=(len(self.experts), len(self.objects), self.output_dim),
+            indices_list=self.indices_list)
+        self.variables = [self.layer.v]
         # print(self.output_dim)
-        self.model_input = tf.keras.Input(shape=(2,), dtype=tf.int64)
-        self.model = tf.keras.Model(
-            inputs=self.model_input,
-            outputs=self.layer(
-                self.model_input))
 
     def _save_path(self, directory):
         path = os.path.join(
@@ -209,8 +275,10 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
         assert isinstance(all_ratings, AllRatingsWithCommon)
         self.all_ratings = all_ratings
         self.objects = self.all_ratings.objects
+        self.used_object_feature_ids = set()
         assert expert in self.all_ratings.experts
         self.expert = expert
+        self.expert_id = self.all_ratings.experts_reverse[expert]
         self.output_features = self.all_ratings.output_features
         self.clear_data()
         self.ratings = []
@@ -224,7 +292,7 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
     def __call__(self, objects):
         internal_ids = self.all_ratings.get_internal_ids(
             objects, experts=[self.expert] * len(objects))
-        result = self.all_ratings.model.predict(
+        result = self.all_ratings.model(
             np.array(internal_ids, dtype=np.int64))
         return result
 
@@ -253,132 +321,34 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
             val_no_nan >= 0) and np.all(
             val_no_nan <= 1), "Preferences should be in [0,1]"
 
+        # indices for features that are used
+        used_feature_indices = [i for i in range(len(weights)) if weights[i] > 0]
+        
+        for f_idx in used_feature_indices:
+            self.used_object_feature_ids.add((self.all_ratings.objects_reverse[o1], f_idx))
+            self.used_object_feature_ids.add((self.all_ratings.objects_reverse[o2], f_idx))
+
         self.ratings.append({'o1': o1, 'o2': o2,
                              'ratings': 2 * (np.array(p1_vs_p2) - 0.5),
                              'weights': weights})
-
-
-# get the loss function for this class
-@tf.function(experimental_relax_shapes=True)
-def loss_fcn(
-        experts_rating=None,
-        objects_rating_v1=None,
-        objects_rating_v2=None,
-        cmp=None,
-        weights=None,
-        experts_all=None,
-        objects_all=None,
-        num_ratings_all=None,
-        objects_common_to_1=None,
-        model_tensor=None,
-        aggregate_index=None,
-        lambda_=None,
-        mu=None,
-        C=None,
-        default_score_value=None):
-    """
-    Compute the loss function. All IDs are internal (int64).
-
-    See https://www.overleaf.com/project/5f44dd8e84c8540001bf1552
-    Equations 1-2-3
-
-    Args:
-        experts_rating: 1D tensor with expert IDs
-        objects_rating_v1: 1D tensor with LEFT objects, same length as experts_rating
-        objects_rating_v2: 1D tensor with RIGHT objects, same length as experts_rating
-        cmp: 2D tensor comparison_id, feature_id, same length as experts_rating
-        weights: 2D tensor comparison_id, feature_weight, same length as experts_rating
-        experts_all: 1D tensor with expert IDs for the regularization loss
-        objects_all: 1D tensor with objects (for common loss), same length as experts_all
-        num_ratings_all: 1D tensor with number of ratings for expert/object in experts_all
-            and objects_all, same length as experts_all
-        objects_common_to_1: 1D tensor with object IDs for the common-to-1 loss.
-
-    Returns dict of Tensorflow tensors with the total loss and components
-    """
-
-    result = {}
-
-    # internal indices for experts and objects (ratings)
-    idx_v1 = tf.stack((experts_rating, objects_rating_v1), axis=1)
-    idx_v2 = tf.stack((experts_rating, objects_rating_v2), axis=1)
-
-    # 2D array (comparison_id, feature) -> float
-    theta_eqv = variable_index_layer_call(model_tensor, idx_v1)
-    theta_eqw = variable_index_layer_call(model_tensor, idx_v2)
-
-    # FIT LOSS SUM
-    theta_vw = theta_eqv - theta_eqw
-    # print(theta_vw.shape, cmp.shape)
-    theta_vw_y = tf.math.multiply(theta_vw, cmp)
-    sp = tf.math.softplus(theta_vw_y)
-    sp_weighted = tf.math.multiply(sp, weights)
-
-    sp_weighted_flat = tf.reshape(sp_weighted, (-1,))
-    sp_weighted_no_nan = tf.boolean_mask(sp_weighted_flat,
-                                         tf.math.is_finite(sp_weighted_flat))
-    # tf.print("original tensor")
-    # tf.print(sp_weighted_flat)
-
-    # tf.print("nonan tensor")
-    # tf.print(sp_weighted_no_nan)
-
-    result['loss_fit'] = tf.reduce_sum(sp_weighted_no_nan)
-
-    # LOSS MODEL TO COMMON
-    # common expert
-    experts_common = aggregate_index * tf.ones(
-        shape=experts_all.shape, dtype=tf.int64)
-
-    # indices for experts for regularization
-    idx_all = tf.stack((experts_all, objects_all), axis=1)
-    idx_common = tf.stack((experts_common, objects_all), axis=1)
-
-    # 2D array (regul_id, feature) -> float
-    theta_eqv_common = variable_index_layer_call(model_tensor, idx_all)
-    s_qv = variable_index_layer_call(model_tensor, idx_common)
-
-    # print("IDX", idx_common.shape, s_qv.shape)
-
-    # coefficient, shape: regul_id
-    num_float = tf.cast(num_ratings_all, tf.keras.backend.floatx())
-    coef_yev = tf.divide(num_float, C + num_float)
-    # print(theta_eqv_common.shape, s_qv.shape)
-    # tf.print('thetacomm', theta_eqv_common)
-    # tf.print("sqv", s_qv)
-    theta_s = tf.abs(theta_eqv_common - s_qv)
-    coef_yev_repeated = tf.repeat(
-        tf.expand_dims(
-            coef_yev,
-            axis=1),
-        theta_s.shape[1],
-        axis=1)
-    # print("THETAS", theta_s.shape, "COEF", coef_yev.shape, \
-    # "COEFR", coef_yev_repeated.shape)
-    # tf.print("thetas", theta_s)
-    # tf.print("coefyev", coef_yev_repeated)
-    theta_s_withcoeff = tf.multiply(theta_s, coef_yev_repeated)
-    result['loss_m_to_common'] = tf.reduce_sum(
-        theta_s_withcoeff) * lambda_
-
-    # LOSS COMMON TO 0
-    experts_common_to_1 = aggregate_index * tf.ones(
-        shape=objects_common_to_1.shape, dtype=tf.int64)
-    idx_common_to_1 = tf.stack(
-        (experts_common_to_1, objects_common_to_1), axis=1)
-    s_qv_common_to_1 = variable_index_layer_call(model_tensor, idx_common_to_1)
-
-    sm1 = tf.math.square(s_qv_common_to_1 - default_score_value)
-
-    # print(idx_common_to_1, s_qv_common_to_1, sm1)
-
-    result['loss_common_to_1'] = tf.reduce_sum(sm1) * mu
-
-    # TOTAL LOSS
-    result['loss'] = result['loss_fit'] + result['loss_m_to_common'] + result[
-        'loss_common_to_1']
-
-    return result
+            
+    def on_dataset_end(self):
+        #print("Expert ID", self.expert_id)
+        #print("Used objects", self.used_object_feature_ids)
+        
+        if self.expert_id == self.all_ratings.aggregate_index:
+            # common model
+            indices = [(self.expert_id, obj_id, feature_id)
+                       for obj_id in self.all_ratings.objects_reverse.values()
+                       for feature_id in range(self.all_ratings.output_dim)]
+        else:
+            # individual model, order is fixed here
+            indices = [(self.expert_id, obj_id, feature_id)
+                       for obj_id, feature_id in self.used_object_feature_ids]
+        
+        #print("Appending indices", indices)
+        
+        self.all_ratings.add_indices(indices)
 
 
 @tf.function(experimental_relax_shapes=True)
@@ -392,6 +362,14 @@ def loss_fcn_gradient_hessian(video_indices, **kwargs):
     h = tf.gather(h, axis=1, indices=video_indices)
     h = tf.gather(h, axis=4, indices=video_indices)
     return {'loss': loss, 'gradient': g, 'hessian': h}
+
+
+@tf.function(experimental_relax_shapes=True)
+def transform_grad(g):
+    """Replace nan with 0."""
+    idx_non_finite = tf.where(~tf.math.is_finite(g))
+    zeros = tf.zeros(len(idx_non_finite), dtype=g.dtype)
+    return tf.tensor_scatter_nd_update(g, idx_non_finite, zeros)
 
 
 @gin.configurable
@@ -423,7 +401,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         self.callback = callback
 
         # creating the optimized tf loss function
-        assert len(self.all_ratings.model.variables) == 1, "Only support 1-variable models!"
+        assert len(self.all_ratings.variables) == 1, "Only support 1-variable models!"
         self.loss_fcn = self.build_loss_fcn(**self.hypers)
 
         self.minibatch = None
@@ -432,7 +410,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         """Return predictions for the s_qv."""
         ids = self.all_ratings.get_internal_ids(
             x, experts=[self.all_ratings.COMMON_EXPERT] * len(x))
-        result = self.all_ratings.model.predict(np.array(ids, dtype=np.int64))
+        result = self.all_ratings.model(np.array(ids, dtype=np.int64))
         return result
 
     def loss_fcn_kwargs(self, **kwargs):
@@ -458,7 +436,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
 
         def fcn(**kwargs1):
             if 'model_tensor' not in kwargs0:
-                kwargs0['model_tensor'] = self.all_ratings.model.variables[0]
+                kwargs0['model_tensor'] = self.all_ratings.variables[0]
             return loss_fcn(**kwargs0, **kwargs1)
 
         return fcn
@@ -501,8 +479,8 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
 
                 losses = self.fit_step()
                 self.losses.append(losses)
+                pbar.set_postfix(**losses)  # loss=losses['loss']
                 pbar.update(1)
-                pbar.set_postfix(**losses)  # loss=losses['loss'])
                 if callable(callback):
                     callback(self, epoch=i, **losses)
         if self.losses:
@@ -615,7 +593,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         # print(kwargs)
 
         return kwargs
-
+    
     def fit_step(self):
         """Fit using the custom magic loss...
 
@@ -628,23 +606,29 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         if not minibatch:
             return {}
 
+        # mem: +32mb
+
         # computing the custom loss
         with tf.GradientTape() as tape:
             losses = self.loss_fcn(**minibatch)
 
+        # mem: +135mb
+
         # doing optimization (1 step)
-        all_variables = self.all_ratings.model.variables
+        all_variables = self.all_ratings.variables
         grads = tape.gradient(losses['loss'], all_variables,
                               unconnected_gradients=tf.UnconnectedGradients.ZERO)
 
-        def transform_grad(g):
-            """Replace nan with 0."""
-            return tf.raw_ops.Select(condition=tf.math.is_finite(g), x=g, y=tf.zeros_like(g))
-
+        # mem: +180mb
+        
         grads = [transform_grad(g) for g in grads]
+
+        # mem: +250mb
 
         optimizer.apply_gradients(zip(grads, all_variables))
 
+        # mem: +500mb
+        
         out = {}
         out.update(losses)
         out.update({f"grad{i}": tf.linalg.norm(g)

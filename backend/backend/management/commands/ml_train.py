@@ -191,10 +191,8 @@ class Command(BaseCommand):
 #            while True:
 #                sleep(1)
 #            
-            def print_mem_epoch_callback(learner, epoch, **losses):
-                print_memory(stage='EPOCH')
 #            print_mem_epoch = partial(print_memory, stage='EPOCH')
-            learner_obj.fit(epochs=options['epochs_override'], callback=print_mem_epoch_callback)
+            learner_obj.fit(epochs=options['epochs_override'])
             
             print_memory(stage="post train")
             
