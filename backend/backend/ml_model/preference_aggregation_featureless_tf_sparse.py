@@ -119,16 +119,29 @@ def loss_fcn_sparse(
     theta_eqv = tf.gather(model_tensor, expert_object_feature_v1_flat)
     theta_eqw = tf.gather(model_tensor, expert_object_feature_v2_flat)
 
+    print(theta_eqv.shape, theta_eqv)
+    print(theta_eqw.shape, theta_eqw)
+
     # FIT LOSS SUM
     theta_vw = theta_eqv - theta_eqw
     # print(theta_vw.shape, cmp.shape)
     theta_vw_y = tf.math.multiply(theta_vw, cmp_flat)
+    
+    print(cmp_flat.shape, theta_vw_y.shape)
+    
     sp = tf.math.softplus(theta_vw_y)
     sp_weighted = tf.math.multiply(sp, weights_flat)
 
+    print(sp_weighted.shape)
+
     sp_weighted_flat = tf.reshape(sp_weighted, (-1,))
+    
+    print(sp_weighted_flat.shape)
+    
     sp_weighted_no_nan = tf.boolean_mask(sp_weighted_flat,
                                          tf.math.is_finite(sp_weighted_flat))
+    
+    print(sp_weighted_no_nan.shape)
     # tf.print("original tensor")
     # tf.print(sp_weighted_flat)
 

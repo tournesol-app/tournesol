@@ -313,6 +313,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         self.hypers['aggregate_index'] = self.all_ratings.aggregate_index
         self.batch_params = batch_params if batch_params else {}
         self.callback = callback
+        self.last_mb_np = None
 
         # creating the optimized tf loss function
         assert len(self.all_ratings.variables) == 1, "Only support 1-variable models!"
@@ -456,12 +457,16 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             self.all_ratings.objects,
             sample_objects_per_expert)
 
-        # print("EXPERTS", experts_all, sampled_experts)
+#        print("OBJECTS", sampled_objects)
 
         if hasattr(self, 'certification_status') and len(
                 self.certification_status) == len(experts_to_sample):
             certified_experts = [x for i, x in enumerate(
                 experts_to_sample) if self.certification_status[i]]
+            if not certified_experts:
+                logging.warning("List of certified experts found but empty")
+#            else:
+#                logging.warning("List of certified experts non-empty!")
         else:
             logging.warning("List of certified experts not found")
             certified_experts = experts_to_sample
@@ -469,17 +474,19 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
         sampled_certified_experts = choice_or_all(
             certified_experts, sample_experts)
 
-        # print("SAMPLED CERTIFIED", sampled_certified_experts)
+#        print("SAMPLED CERTIFIED", sampled_certified_experts)
 
         for expert in sampled_certified_experts:
             # print(expert, self.all_ratings.experts_reverse)
 
             expert_id = self.all_ratings.experts_reverse[expert]
             for obj in sampled_objects:
-                if obj not in self.all_ratings.expert_id_to_used_videos[expert_id]:
+                object_id = self.all_ratings.objects_reverse[obj]
+                
+#                print(expert, "USEDV", self.all_ratings.expert_id_to_used_videos[expert_id])
+                if object_id not in self.all_ratings.expert_id_to_used_videos[expert_id]:
                     continue
                 
-                object_id = self.all_ratings.objects_reverse[obj]
                 experts_all.append(expert_id)
                 objects_all.append(object_id)
                 num_ratings_all.append(
@@ -508,6 +515,8 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             'objects_common_to_1': np.array(sampled_object_ids, dtype=np.int64)
         }
         
+        print('variable', self.all_ratings.layer.v)
+        
         # adding parameters for the sparse tensor, if required
         if self.all_ratings.layer.NEED_INDICES:
             # A to add: expert_object_feature_v1_flat, expert_object_feature_v2_flat, cmp_flat
@@ -527,7 +536,9 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
                                                               kwargs['weights']):
                 for feature_index, weight in enumerate(c_weights):
                     # weight is 0 -> rating does not have any effect
+#                    print('feature index', feature_index, weight, c_cmp[feature_index])
                     if np.allclose(weight, 0):
+                        print("dropping feature")
                         continue
                     
                     expert_object_feature_v1_flat.append((c_expert, c_v1, feature_index))
@@ -557,6 +568,8 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
                                                          kwargs['objects_all'],
                                                          kwargs['num_ratings_all']):
                 for feature_index in range(self.all_ratings.output_dim):
+                    if (c_object, feature_index) not in self.models[c_expert].used_object_feature_ids:
+                        continue
                     expert_object_feature_all.append((c_expert, c_object, feature_index))
                     expert_object_feature_agg_all.append((self.all_ratings.aggregate_index,
                                                           c_object, feature_index))
@@ -576,6 +589,8 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
                 
             kwargs['expert_object_feature_common_to_1'] = arr_to_index_np(
                     expert_object_feature_common_to_1)
+
+        self.last_mb_np = dict(kwargs)
 
         kwargs = convert_to_tf(kwargs)
 

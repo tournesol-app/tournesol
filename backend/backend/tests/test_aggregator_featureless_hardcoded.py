@@ -9,8 +9,12 @@ from backend.ml_model.preference_aggregation_featureless import \
     FeaturelessMedianPreferenceAverageRegularizationAggregator
 from backend.ml_model.preference_aggregation_featureless import \
     FeaturelessPreferenceLearningModel, AllRatingsWithCommon
-from backend.ml_model.preference_aggregation_featureless import VariableIndexLayer
-from backend.ml_model.preference_aggregation_featureless import loss_fcn as loss_fcn_tf
+from backend.ml_model.preference_aggregation_featureless_tf_dense import VariableIndexLayer,\
+    loss_fcn_dense
+from backend.ml_model.preference_aggregation_featureless_tf_sparse import \
+    SparseVariableIndexLayer, loss_fcn_sparse
+from backend.ml_model.preference_aggregation_featureless_tf_dense import\
+    loss_fcn_dense as loss_fcn_tf
 from backend.ml_model.preference_aggregation_featureless_np import loss_fcn_np
 from backend.toy_preference_dataset import ToyHardcodedDataset, ToyRandomDataset
 from matplotlib import pyplot as plt
@@ -95,6 +99,108 @@ def test_hardcoded_dataset():
             assert not errors, "There were %s errors" % errors
 
     validate_order(dataset, aggregator)
+
+def test_loss_computation_sparse_vs_dense():
+    dataset = ToyRandomDataset(n_objects=100, n_users=100)
+    dataset._generate_many(1000)
+
+    def create_aggregator(dataset, mode=None, with_weights=False, with_cert=False):
+        assert mode in ['sparse', 'dense']
+        
+        var_init_cls = VariableIndexLayer if mode == 'dense' else SparseVariableIndexLayer
+        loss_fcn = loss_fcn_dense if mode == 'dense' else loss_fcn_sparse
+    
+        all_ratings = AllRatingsWithCommon(
+            experts=dataset.users,
+            objects=dataset.objects,
+            output_features=dataset.fields,
+            name="tst",
+            var_init_cls=var_init_cls)
+    
+        # creating models
+        models = [
+            FeaturelessPreferenceLearningModel(
+                expert=user,
+                all_ratings=all_ratings) for user in dataset.users]
+    
+        for r in dataset.ratings:
+            u_idx = dataset.users.index(r['user'])
+            ratings_as_vector = np.array([r['ratings'][k]
+                                          for k in dataset.fields]) / 100.
+            if with_weights:
+                weights_as_vector = np.array([r['weights'][k]
+                                              for k in dataset.fields])
+            else:
+                weights_as_vector = np.ones(len(dataset.fields))
+                
+            models[u_idx].register_preference(
+                o1=r['o1'],
+                o2=r['o2'],
+                p1_vs_p2=ratings_as_vector,
+                weights=weights_as_vector)
+            models[u_idx].on_dataset_end()
+            
+        # virtual 'common' data
+        fplm_common = FeaturelessPreferenceLearningModel(expert=AllRatingsWithCommon.COMMON_EXPERT,
+                                                         all_ratings=all_ratings)
+        fplm_common.on_dataset_end()
+            
+        all_ratings.reset_model()
+    
+        # aggregating models
+        aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
+            models=models,
+            loss_fcn=loss_fcn,
+            optimizer=tf.keras.optimizers.SGD(lr=1e-3),
+            hypers={
+                'C': 1.,
+                'mu': 1.,
+                'lambda_': 1.,
+                'default_score_value': 1.0},
+            batch_params=dict(
+                sample_experts=5000,
+                sample_ratings_per_expert=5000,
+                sample_objects_per_expert=5000))
+        
+        params = aggregator.all_ratings.layer.v
+        params.assign(tf.zeros_like(params))
+        
+        if with_cert:
+            aggregator.certification_status = [np.random.rand() > 0.5
+                                               for _ in range(len(dataset.users))]
+        
+
+        return aggregator
+    
+    seed = int(np.random.rand() * 1000)
+    
+    np.random.seed(seed)
+    agg_dense = create_aggregator(dataset, mode='dense')
+    losses_dense = agg_dense.fit(epochs=15)
+    mb_dense = agg_dense.last_mb_np
+    print(agg_dense.all_ratings.layer.v)
+    
+    np.random.seed(seed)
+    agg_sparse = create_aggregator(dataset, mode='sparse')    
+    losses_sparse = agg_sparse.fit(epochs=15)
+    mb_sparse = agg_sparse.last_mb_np
+    print(agg_sparse.all_ratings.layer.v)
+
+    print({x: len(y) for x, y in mb_dense.items()})
+#    print(mb_sparse)
+    
+    for key in set(mb_dense.keys()).intersection(mb_sparse.keys()):
+        assert np.allclose(mb_dense[key], mb_sparse[key]), key
+        print(key, 'mb sparse=dense')
+
+    print(losses_dense)
+    print(losses_sparse)
+    
+    assert set(losses_sparse.keys()) == set(losses_dense.keys())
+    for key in losses_dense.keys():
+        assert np.allclose(losses_dense[key], losses_sparse[key]), (key,
+                          'dense', losses_dense[key],
+                          'sparse', losses_sparse[key])
 
 
 def test_loss_computation():
