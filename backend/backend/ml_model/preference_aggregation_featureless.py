@@ -538,7 +538,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
                     # weight is 0 -> rating does not have any effect
 #                    print('feature index', feature_index, weight, c_cmp[feature_index])
                     if np.allclose(weight, 0):
-                        print("dropping feature")
+#                        print("dropping feature")
                         continue
                     
                     expert_object_feature_v1_flat.append((c_expert, c_v1, feature_index))

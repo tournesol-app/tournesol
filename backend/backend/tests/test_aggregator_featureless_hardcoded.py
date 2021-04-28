@@ -104,7 +104,7 @@ def test_loss_computation_sparse_vs_dense():
     dataset = ToyRandomDataset(n_objects=100, n_users=100)
     dataset._generate_many(1000)
 
-    def create_aggregator(dataset, mode=None, with_weights=False, with_cert=False):
+    def create_aggregator(dataset, mode=None, with_weights=True, with_cert=True):
         assert mode in ['sparse', 'dense']
         
         var_init_cls = VariableIndexLayer if mode == 'dense' else SparseVariableIndexLayer
