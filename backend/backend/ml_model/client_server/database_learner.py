@@ -168,22 +168,25 @@ class DatabasePreferenceLearner(object):
         logging.info("Loading scores into the database.")
         videos = self.video_queryset
 
-        # saving per-user scores
-        for user in tqdm(self.users):
-            user_pref = UserPreferences.objects.get(id=user)
-            result_user = self.predict_user(user=user_pref, videos=videos)
-            for i, video in enumerate(videos):
-                result = result_user[i]
-                param_dict = dict(user=user_pref, video=video)
+        # todo: reimplement so that there's no double loop
+        # in a transaction, reset all ratings, and then load the new ones
 
-                if result is not None:
-                    rating_record = VideoRating.objects.get_or_create(
-                        **param_dict)[0]
-                    for j, attribute in enumerate(self.features):
-                        setattr(rating_record, attribute, result[j])
-                    rating_record.save()
-                else:  # prediction does not exist
-                    VideoRating.objects.filter(**param_dict).delete()
+#        # saving per-user scores
+#        for user in tqdm(self.users):
+#            user_pref = UserPreferences.objects.get(id=user)
+#            result_user = self.predict_user(user=user_pref, videos=videos)
+#            for i, video in enumerate(videos):
+#                result = result_user[i]
+#                param_dict = dict(user=user_pref, video=video)
+#
+#                if result is not None:
+#                    rating_record = VideoRating.objects.get_or_create(
+#                        **param_dict)[0]
+#                    for j, attribute in enumerate(self.features):
+#                        setattr(rating_record, attribute, result[j])
+#                    rating_record.save()
+#                else:  # prediction does not exist
+#                    VideoRating.objects.filter(**param_dict).delete()
 
         # saving overall scores
         results = self.predict_aggregated(videos=videos)

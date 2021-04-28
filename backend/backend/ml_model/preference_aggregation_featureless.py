@@ -80,6 +80,34 @@ class AllRatingsWithCommon(object):
             indices_list=self.indices_list)
         self.variables = [self.layer.v]
         # print(self.output_dim)
+        
+        class adhoc_model():
+            def __init__(self1, layer):
+                self1.layer = layer
+                assert self1.layer.NEED_INDICES, "Dense implementation not supported"
+            def __call__(self1, inp):
+                print("INPUT", inp)
+                
+                output = []
+                for expert_id, object_id in inp:
+                    
+                    all_features = []
+                    
+                    for feature_id in range(self.output_dim):
+                        idx = (expert_id, object_id, feature_id)
+                        if idx in self.layer.indices_set:
+                            idx_flat = self.layer.idx.value_to_key[idx]
+                            value = float(self.layer.v[idx_flat].numpy())
+                        else:
+                            value = np.nan
+                            
+                        all_features.append(value)
+                    output.append(all_features)
+                
+                return output
+                
+#                return self1.layer(new_inp).numpy()
+        self.model = adhoc_model(self.layer)
 
     def _save_path(self, directory):
         path = os.path.join(
@@ -88,16 +116,16 @@ class AllRatingsWithCommon(object):
         return path
 
     def save(self, directory):
-        """Save weights."""
+        """Save weights."""        
         result = {
             'name': self.name,
             'experts': self.experts,
             'objects': self.objects,
+            'layer': self.layer.serialize(),
             'data': self.layer.v.numpy(),
             'features': self.output_features,
+            'type': 'sparse' if self.layer.NEED_INDICES else 'dense'
         }
-        assert result['data'].shape == (len(result['experts']), len(
-            result['objects']), len(result['features']))
         path = self._save_path(directory=directory)
         pickle.dump(result, open(path, 'wb'))
 
@@ -140,6 +168,21 @@ class AllRatingsWithCommon(object):
         
         print_memory('ARWC:start_assign_append_loop')
 
+        if 'type' not in result:
+            logging.warning("Old checkpoint (without 'type') is found and not loaded.")
+            return {}
+        
+        def get_old_data(expert_id, object_id, feature_id):            
+            if result['type'] == 'dense':
+                return result['data'][expert_id, object_id, feature_id]
+            elif result['type'] == 'sparse':
+                layer = result['layer']
+                idx = layer['idx'].get_key((expert_id, object_id, feature_id))
+                return result['data'][idx]
+            else:
+                raise NotImplementedError
+            
+
         for new_expert_idx, expert in enumerate(tqdmem(self.experts, desc="rating_load_expert_loop",
                                              leave=True)):
             old_expert_idx = old_expert_indices.get(expert, None)
@@ -150,7 +193,7 @@ class AllRatingsWithCommon(object):
                     old_f_idx = old_feature_indices.get(feature, None)
 
                     if all([x is not None for x in [old_expert_idx, old_obj_idx, old_f_idx]]):
-                        val = result['data'][old_expert_idx, old_obj_idx, old_f_idx]
+                        val = get_old_data(old_expert_idx, old_obj_idx, old_f_idx)
 
                         if not np.isnan(val):
                             to_assign_idx.append((new_expert_idx, new_obj_idx, new_f_idx))
@@ -161,11 +204,24 @@ class AllRatingsWithCommon(object):
 
         if to_assign_idx:
             print_memory('ARWC:start_create_layer_variable')
-            self.layer.v = tf.Variable(
-                tf.tensor_scatter_nd_update(self.layer.v,
-                                            to_assign_idx,
-                                            to_assign_vals),
-                trainable=True)
+            
+            if result['type'] == 'dense':            
+                self.layer.v = tf.Variable(
+                    tf.tensor_scatter_nd_update(self.layer.v,
+                                                to_assign_idx,
+                                                to_assign_vals),
+                    trainable=True)
+            elif result['type'] == 'sparse':
+                to_assign_idx_flat = self.layer.idx.get_keys(to_assign_idx)
+                
+                self.layer.v = tf.Variable(
+                    tf.tensor_scatter_nd_update(self.layer.v,
+                                                to_assign_idx_flat,
+                                                to_assign_vals),
+                    trainable=True)
+            else:
+                raise NotImplementedError
+                
             print_memory('ARWC:finish_create_layer_variable')
 
         # print(to_assign_idx, to_assign_vals)

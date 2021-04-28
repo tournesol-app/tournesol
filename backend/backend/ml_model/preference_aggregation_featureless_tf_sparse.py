@@ -46,12 +46,18 @@ class SparseVariableIndexLayer(tf.keras.layers.Layer):
                                  trainable=True, name="var_sparse_values/" + name,
                                  dtype=tf.keras.backend.floatx())
         self.idx = HashMap()
+        self.indices_list = indices_list
+        self.indices_set = set(indices_list)
+        
+        assert len(self.indices_list) == len(self.indices_set), "Indices must be unique"
         
         # storing indices
         # TODO: use vectorized implementation
         for i, idx in enumerate(indices_list):
             self.idx.set(i, idx)
 
+    def serialize(self):
+        return {'v': self.v.numpy(), 'NEED_INDICES': self.NEED_INDICES, 'idx': self.idx}
 
     def call(self, inputs, **kwargs):
         # print("INPUT SHAPE", inputs.shape, "WEIGHT SHAPE", self.v.shape)
@@ -119,29 +125,29 @@ def loss_fcn_sparse(
     theta_eqv = tf.gather(model_tensor, expert_object_feature_v1_flat)
     theta_eqw = tf.gather(model_tensor, expert_object_feature_v2_flat)
 
-    print(theta_eqv.shape, theta_eqv)
-    print(theta_eqw.shape, theta_eqw)
+#    print(theta_eqv.shape, theta_eqv)
+#    print(theta_eqw.shape, theta_eqw)
 
     # FIT LOSS SUM
     theta_vw = theta_eqv - theta_eqw
     # print(theta_vw.shape, cmp.shape)
     theta_vw_y = tf.math.multiply(theta_vw, cmp_flat)
     
-    print(cmp_flat.shape, theta_vw_y.shape)
+#    print(cmp_flat.shape, theta_vw_y.shape)
     
     sp = tf.math.softplus(theta_vw_y)
     sp_weighted = tf.math.multiply(sp, weights_flat)
 
-    print(sp_weighted.shape)
+#    print(sp_weighted.shape)
 
     sp_weighted_flat = tf.reshape(sp_weighted, (-1,))
     
-    print(sp_weighted_flat.shape)
+#    print(sp_weighted_flat.shape)
     
     sp_weighted_no_nan = tf.boolean_mask(sp_weighted_flat,
                                          tf.math.is_finite(sp_weighted_flat))
     
-    print(sp_weighted_no_nan.shape)
+#    print(sp_weighted_no_nan.shape)
     # tf.print("original tensor")
     # tf.print(sp_weighted_flat)
 

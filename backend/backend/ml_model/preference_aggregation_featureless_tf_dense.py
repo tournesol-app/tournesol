@@ -12,7 +12,6 @@ class VariableIndexLayer(tf.keras.layers.Layer):
     """Layer which outputs a trainable variable on a call."""
 
     NEED_INDICES = False
-    INPUT_FLAT_INDEX = False
 
     def __init__(self, shape, name="index_layer", initializer=None, **kwargs):
         super(VariableIndexLayer, self).__init__(name=name)
@@ -20,6 +19,9 @@ class VariableIndexLayer(tf.keras.layers.Layer):
             shape=shape, initializer=initializer,
             trainable=True, name="var/" + name,
             dtype=tf.keras.backend.floatx())
+        
+    def serialize(self):
+        return {'v': self.v.numpy(), 'NEED_INDICES': self.NEED_INDICES}
 
     @tf.function
     def call(self, inputs, **kwargs):
