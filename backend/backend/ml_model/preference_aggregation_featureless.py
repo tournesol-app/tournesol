@@ -134,7 +134,8 @@ class AllRatingsWithCommon(object):
         return path
 
     def save(self, directory):
-        """Save weights."""        
+        """Save weights."""
+        logging.warning("Saving tensor with scores")
         result = {
             'name': self.name,
             'experts': self.experts,
@@ -251,6 +252,8 @@ class AllRatingsWithCommon(object):
 #                print(to_assign_idx_flat, to_assign_vals, self.layer.v)
                 
                 to_assign_idx_flat = [[x] for x in to_assign_idx_flat]
+                
+                logging.warning(f"Restoring {len(to_assign_vals)} values...")
                 
                 self.layer.v = tf.Variable(
                     tf.tensor_scatter_nd_update(self.layer.v,

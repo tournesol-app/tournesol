@@ -26,7 +26,7 @@ FeaturelessMedianPreferenceAverageRegularizationAggregator.loss_fcn = @loss_fcn_
 
 # train step configuration
 FeaturelessMedianPreferenceAverageRegularizationAggregator.optimizer = @opt/Adam()
-FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 100000
+FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 50000
 FeaturelessMedianPreferenceAverageRegularizationAggregator.hypers = @hypers/gin_dict()
 FeaturelessMedianPreferenceAverageRegularizationAggregator.batch_params = @batch_params/gin_dict()
 
@@ -36,7 +36,7 @@ hypers/gin_dict.C = 3.
 hypers/gin_dict.lambda_ = 2.
 hypers/gin_dict.mu = 1.
 hypers/gin_dict.default_score_value = %DEFAULT_SCORE
-hypers/gin_dict.sample_every = 5
+hypers/gin_dict.sample_every = 1000
 
 # mini-batch configuration
 batch_params/gin_dict.sample_experts = 5000000
