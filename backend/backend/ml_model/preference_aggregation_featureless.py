@@ -142,7 +142,8 @@ class AllRatingsWithCommon(object):
             'layer': self.layer.serialize(),
             'data': self.layer.v.numpy(),
             'features': self.output_features,
-            'type': 'sparse' if self.layer.NEED_INDICES else 'dense'
+            'type': 'sparse' if self.layer.NEED_INDICES else 'dense',
+            'expert_id_to_used_videos': self.expert_id_to_used_videos,
         }
         path = self._save_path(directory=directory)
         pickle.dump(result, open(path, 'wb'))
@@ -195,8 +196,11 @@ class AllRatingsWithCommon(object):
                 return result['data'][expert_id, object_id, feature_id]
             elif result['type'] == 'sparse':
                 layer = result['layer']
-                idx = layer['idx'].get_key((expert_id, object_id, feature_id))
-                return result['data'][idx]
+                try:
+                    idx = layer['idx'].get_key((expert_id, object_id, feature_id))
+                    return result['data'][idx]
+                except KeyError:
+                    return np.nan
             else:
                 raise NotImplementedError
             
@@ -204,11 +208,20 @@ class AllRatingsWithCommon(object):
         for new_expert_idx, expert in enumerate(tqdmem(self.experts, desc="rating_load_expert_loop",
                                              leave=True)):
             old_expert_idx = old_expert_indices.get(expert, None)
+            old_obj_idxes = set(result['expert_id_to_used_videos'][old_expert_idx])
+            if old_expert_idx is None:
+                continue
+            
             for new_obj_idx, obj in enumerate(tqdmem(self.objects, desc="rating_load_object_loop",
                                               leave=False, disable=True)):
                 old_obj_idx = old_object_indices.get(obj, None)
+                if old_obj_idx is None or old_obj_idx not in old_obj_idxes:
+                    continue
+                
                 for new_f_idx, feature in enumerate(self.output_features):
                     old_f_idx = old_feature_indices.get(feature, None)
+                    if old_f_idx is None:
+                        continue
 
                     if all([x is not None for x in [old_expert_idx, old_obj_idx, old_f_idx]]):
                         val = get_old_data(old_expert_idx, old_obj_idx, old_f_idx)
@@ -231,6 +244,13 @@ class AllRatingsWithCommon(object):
                     trainable=True)
             elif result['type'] == 'sparse':
                 to_assign_idx_flat = self.layer.idx.get_keys(to_assign_idx)
+                
+                assert len(to_assign_idx_flat) == len(to_assign_vals),\
+                    (to_assign_idx_flat, to_assign_vals)
+                    
+#                print(to_assign_idx_flat, to_assign_vals, self.layer.v)
+                
+                to_assign_idx_flat = [[x] for x in to_assign_idx_flat]
                 
                 self.layer.v = tf.Variable(
                     tf.tensor_scatter_nd_update(self.layer.v,
@@ -336,19 +356,20 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
             indices = [(self.expert_id, obj_id, feature_id)
                        for obj_id in self.all_ratings.objects_reverse.values()
                        for feature_id in range(self.all_ratings.output_dim)]
+            
+            self.all_ratings.expert_id_to_used_videos[self.expert_id] = set(
+                    self.all_ratings.objects_reverse.values())
         else:
             # individual model, order is fixed here
             indices = [(self.expert_id, obj_id, feature_id)
                        for obj_id, feature_id in self.used_object_feature_ids]
+            
+            self.all_ratings.expert_id_to_used_videos[self.expert_id] = set(
+                [obj_id for obj_id, _ in self.used_object_feature_ids])
         
         #print("Appending indices", indices)
         
         self.all_ratings.add_indices(indices)
-        
-        self.all_ratings.expert_id_to_used_videos[self.expert_id] = set(
-                [obj_id for obj_id, _ in self.used_object_feature_ids])
-
-
 
 
 @tf.function(experimental_relax_shapes=True)
