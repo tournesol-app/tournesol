@@ -29,6 +29,7 @@ class AllRatingsWithCommon(object):
             objects,
             output_features,
             name,
+            default_rating=None,
             var_init_cls=None):
 
         print_memory('ARWC:init')
@@ -62,6 +63,7 @@ class AllRatingsWithCommon(object):
         self.indices_list = []
         self.variables = []
         self.expert_id_to_used_videos = {}
+        self.default_rating = default_rating
 
         self.reset_model()
         
@@ -86,27 +88,43 @@ class AllRatingsWithCommon(object):
                 self1.layer = layer
                 assert self1.layer.NEED_INDICES, "Dense implementation not supported"
             def __call__(self1, inp):
-                print("INPUT", inp)
+#                logging.warning('pred_start')
+                if not len(inp):
+                    return []
                 
-                output = []
-                for expert_id, object_id in inp:
-                    
-                    all_features = []
-                    
+                output = np.full(fill_value=self.default_rating,
+                                 shape=(len(inp), self.output_dim))
+                indices_write = []
+                values_write = []
+                
+                indices_read = []
+                
+                for input_id, (expert_id, object_id) in enumerate(inp):
                     for feature_id in range(self.output_dim):
                         idx = (expert_id, object_id, feature_id)
                         if idx in self.layer.indices_set:
                             idx_flat = self.layer.idx.value_to_key[idx]
-                            value = float(self.layer.v[idx_flat].numpy())
-                        else:
-                            value = np.nan
+                            indices_read.append(idx_flat)
+                            indices_write.append((input_id, feature_id))
+
+#                logging.warning('pred_loop_finished')
+
+                if not len(indices_write):
+                    return output
                             
-                        all_features.append(value)
-                    output.append(all_features)
+                values_write = self.layer.v.numpy()[indices_read]
+                
+#                logging.warning('pred_values_obtained')
+                
+#                print(output, values_write, indices_write)
+                
+                # https://stackoverflow.com/questions/47015578/numpy-assigning-values-to-2d-array-with-list-of-indices
+                output[tuple(np.array(indices_write).T)] = values_write
+                
+#                logging.warning('Prediction end')
                 
                 return output
                 
-#                return self1.layer(new_inp).numpy()
         self.model = adhoc_model(self.layer)
 
     def _save_path(self, directory):
@@ -571,7 +589,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(MedianPreferenc
             'objects_common_to_1': np.array(sampled_object_ids, dtype=np.int64)
         }
         
-        print('variable', self.all_ratings.layer.v)
+#        print('variable', self.all_ratings.layer.v)
         
         # adding parameters for the sparse tensor, if required
         if self.all_ratings.layer.NEED_INDICES:

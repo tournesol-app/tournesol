@@ -13,6 +13,9 @@ VAR_INIT = @Zeros()
 VariableIndexLayer.initializer = %VAR_INIT
 SparseVariableIndexLayer.initializer = %VAR_INIT
 
+DEFAULT_SCORE = 1.0
+AllRatingsWithCommon.default_rating = %DEFAULT_SCORE
+
 # using sparse tensor
 AllRatingsWithCommon.var_init_cls = @SparseVariableIndexLayer
 FeaturelessMedianPreferenceAverageRegularizationAggregator.loss_fcn = @loss_fcn_sparse
@@ -32,13 +35,13 @@ FeaturelessMedianPreferenceAverageRegularizationAggregator.batch_params = @batch
 hypers/gin_dict.C = 3.
 hypers/gin_dict.lambda_ = 2.
 hypers/gin_dict.mu = 1.
-hypers/gin_dict.default_score_value = 1.0
-hypers/gin_dict.sample_every = 1000
+hypers/gin_dict.default_score_value = %DEFAULT_SCORE
+hypers/gin_dict.sample_every = 5
 
 # mini-batch configuration
-batch_params/gin_dict.sample_experts = 100
-batch_params/gin_dict.sample_ratings_per_expert = 50000
-batch_params/gin_dict.sample_objects_per_expert = 50000
+batch_params/gin_dict.sample_experts = 5000000
+batch_params/gin_dict.sample_ratings_per_expert = 1000000000
+batch_params/gin_dict.sample_objects_per_expert = 100000000
 
 # sampling with replacement
 choice_or_all.replace = False

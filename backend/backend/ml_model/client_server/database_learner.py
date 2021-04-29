@@ -12,7 +12,9 @@ from django_react.settings import BASE_DIR, COUNT_UNCERTIFIED_USERS
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 import numpy as np
-from backend.ml_model.preference_aggregation import print_memory
+from backend.ml_model.preference_aggregation import print_memory, tqdmem
+from django.db import transaction
+from django.db.models import Q
 
 tf.compat.v1.enable_eager_execution()
 
@@ -138,9 +140,7 @@ class DatabasePreferenceLearner(object):
         """Fit on latest database records."""
         # fitting on data
         self.aggregator.user_certified = self.user_certified
-        
-        print(self.aggregator, type(self.aggregator))
-        
+                
         self.stats.update(self.aggregator.fit(**kwargs))
 
         logging.info(f"Fit iteration finished {self.stats}")
@@ -171,35 +171,47 @@ class DatabasePreferenceLearner(object):
         # todo: reimplement so that there's no double loop
         # in a transaction, reset all ratings, and then load the new ones
 
-#        # saving per-user scores
-#        for user in tqdm(self.users):
-#            user_pref = UserPreferences.objects.get(id=user)
-#            result_user = self.predict_user(user=user_pref, videos=videos)
-#            for i, video in enumerate(videos):
-#                result = result_user[i]
-#                param_dict = dict(user=user_pref, video=video)
-#
-#                if result is not None:
-#                    rating_record = VideoRating.objects.get_or_create(
-#                        **param_dict)[0]
-#                    for j, attribute in enumerate(self.features):
-#                        setattr(rating_record, attribute, result[j])
-#                    rating_record.save()
-#                else:  # prediction does not exist
-#                    VideoRating.objects.filter(**param_dict).delete()
+        # saving per-user scores
+        for user in tqdmem(self.users, desc="user_scores_write"):
+            user_pref = UserPreferences.objects.get(id=user)
+            
+            # intermediate results are not visible to site visitors
+            with transaction.atomic():
+                # deleting old ratings
+                VideoRating.objects.filter(user=user_pref).delete()
+                
+                # selecting rated videos by this person
+                rated_videos = Video.objects.filter(
+                        Q(expertrating_video_1__user=user_pref) |
+                        Q(expertrating_video_2__user=user_pref)).distinct()
+            
+                if rated_videos.count() > 0:
+                    result_user = self.predict_user(user=user_pref, videos=rated_videos)
+                    for i, video in enumerate(rated_videos):
+                        result = result_user[i]
+                        param_dict = dict(user=user_pref, video=video)
+        
+                        if result is not None:
+                            rating_record = VideoRating.objects.get_or_create(
+                                **param_dict)[0]
+                            for j, attribute in enumerate(self.features):
+                                setattr(rating_record, attribute, result[j])
+                            rating_record.save()
 
         # saving overall scores
-        results = self.predict_aggregated(videos=videos)
-        for i, video in enumerate(videos):
-            result = results[i]
-
-            # no raters -> score is 0 (-> not shown in search)
-            if not video.rating_n_experts:
-                result = [0.0 for _ in result]
-
-            for i, attribute in enumerate(self.features):
-                setattr(video, attribute, result[i])
-            video.save()
+        # intermediate results are not visible to site visitors
+        with transaction.atomic():
+            results = self.predict_aggregated(videos=videos)
+            for i, video in enumerate(tqdmem(videos, desc="agg_scores_write")):
+                result = results[i]
+    
+                # no raters -> score is 0 (-> not shown in search)
+                if not video.rating_n_experts:
+                    result = [0.0 for _ in result]
+    
+                for i, attribute in enumerate(self.features):
+                    setattr(video, attribute, result[i])
+                video.save()
 
     def get_dataset(self, user):
         """Get dataset for a user. Format: (v_emb1, v_emb2, result)."""
