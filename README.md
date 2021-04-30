@@ -18,51 +18,11 @@ We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 
 First, clone this repo and `cd` to it.
 
-<h3>Prerequisites</h3>
+<h3>Installing dependencies</h3>
 
-1. Install Firefox version 84.0.1:
-   
-   To check the version of Firefox:
-   
-   ```
-   $ firefox --version
-   Mozilla Firefox 84.0.1
-   ```
-   
-   If the output of `$ firefox --version` is different from above, install the correct version of Firefox with:
-   
-   ```
-   wget -c https://download-installer.cdn.mozilla.net/pub/firefox/releases/84.0.1/linux-x86_64/en-US/firefox-84.0.1.tar.bz2
-   tar -xvf firefox-84.0.1.tar.bz2
-   sudo ln -fs $(pwd)/firefox/firefox /usr/bin/firefox
-   ```
+To install all dependencies, execute: `./setup.sh`
 
-2. Install the `apt` dependencies specified in `pkglist.txt`:
-
-   ```
-   $ curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   $ sudo apt-get install $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
-   ```
-
-3. Install dependencies for front-end:
-
-   ```
-   $ cd frontend
-   frontend $ npm ci
-   frontend $ cd ..
-   ```
-
-4. Create a virtual environment for backend and install its dependencies:
-
-   ```
-   $ python3 -m pip install --upgrade pip
-   $ python3 -m venv venv
-
-   # run that to go inside the virtual environment
-   $ source venv/bin/activate
-   (venv) $ pip install -r backend/requirements.txt
-   ```
-5. Run tests to see that the installation is correct: `./tests.sh`
+Run tests to see that the installation is correct: `./tests.sh`
 
 <h3>Building and running front-end</h3>
 
