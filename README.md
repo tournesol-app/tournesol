@@ -20,9 +20,7 @@ First, clone this repo and `cd` to it.
 
 <h3>Prerequisites</h3>
 
-1. Make sure that Python 3 is installed.
-
-2. Install Firefox version 84.0.1:
+1. Install Firefox version 84.0.1:
    
    To check the version of Firefox:
    

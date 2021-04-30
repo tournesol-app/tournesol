@@ -1,4 +1,5 @@
 # These requirements were specified in the CI file (state April 2021)
+python3
 postgresql
 libpqxx-dev
 screen
