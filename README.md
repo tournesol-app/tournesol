@@ -28,9 +28,16 @@ First, clone this repo and `cd` to it.
    ```
    $ cd frontend
    frontend $ npm ci
+   frontend $ cd ..
    ```
 
-3. Create a virtual environment for backend and install its dependencies:
+3. Install the dependencies specified in `pkglist.txt`
+
+   ```
+   $ sudo apt-get install $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
+   ```
+
+4. Create a virtual environment for backend and install its dependencies:
 
    ```
    $ python3 -m venv venv
@@ -39,7 +46,7 @@ First, clone this repo and `cd` to it.
    $ source venv/bin/activate
    (venv) $ pip install -r backend/requirements.txt
    ```
-4. Run tests to see that the installation is correct: `./tests.sh`
+5. Run tests to see that the installation is correct: `./tests.sh`
 
 <h3>Building and running front-end</h3>
 
