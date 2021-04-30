@@ -31,7 +31,9 @@ jobs:
       - name: Run install script
         run: ./setup.sh
       - name: Run all tests
-        run: ./tests.sh
+        run: |
+          source venv-tournesol/bin/activate
+          ./tests.sh
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
