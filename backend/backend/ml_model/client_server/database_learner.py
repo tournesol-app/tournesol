@@ -135,6 +135,14 @@ class DatabasePreferenceLearner(object):
 
         print_memory("DPL:READY")
 
+    def __getstate__(self):
+        result = {
+            'directory': self.directory,
+            'aggregator': self.aggregator if self.aggregator is None
+            else self.aggregator.__getstate__(),
+        }
+        return result
+
     def create_models(self):
         """Fill the user_to_model and aggregator fields."""
         raise NotImplementedError

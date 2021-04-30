@@ -7,6 +7,8 @@ from ray import tune
 import numpy as np
 import pandas as pd
 import os
+import pickle
+import logging
 from backend.ml_model.tqdmem import print_memory
 
 
@@ -40,6 +42,7 @@ def callback(self, epoch, report_every=50, metric_every=1000, **kwargs):
     is_last = epoch == (self.epochs - 1)
 
     if is_last or epoch % report_every == 0:
+        logging.warning(f"Computing metrics at epoch {epoch}")
         metrics = {}
         if is_last or epoch % metric_every == 0:
             metrics = compute_metrics()
@@ -106,9 +109,17 @@ def experiment(config, checkpoint_dir=None):
     learner_obj.aggregator.callback = callback
     learner_obj.fit()
     with tune.checkpoint_dir(step=learner_obj.aggregator.epochs) as checkpoint_dir:
+        predictions_path = os.path.join(checkpoint_dir, "predictions.csv")
         df_learner_info(learner_obj).to_csv(
-            os.path.join(checkpoint_dir, "predictions.csv")
+            predictions_path
         )
+        logging.warning(f"Predictions saved to {predictions_path}")
+
+        ckpt_path = os.path.join(checkpoint_dir, "learner_ckpt.pkl")
+        state = learner_obj.__getstate__()
+        with open(ckpt_path, 'wb') as f:
+            pickle.dump(state, f)
+        print(f"State saved to {ckpt_path}")
 
 
 class Command(BaseCommand):

@@ -154,9 +154,7 @@ class AllRatingsWithCommon(object):
         path = os.path.join(directory, f"{self.name}_alldata_featureless_onetensor.pkl")
         return path
 
-    def save(self, directory):
-        """Save weights."""
-        logging.warning("Saving tensor with scores")
+    def __getstate__(self):
         result = {
             "name": self.name,
             "experts": self.experts,
@@ -167,6 +165,12 @@ class AllRatingsWithCommon(object):
             "type": "sparse" if self.layer.NEED_INDICES else "dense",
             "expert_id_to_used_videos": self.expert_id_to_used_videos,
         }
+        return result
+
+    def save(self, directory):
+        """Save weights."""
+        logging.warning("Saving tensor with scores")
+        result = self.__getstate__()
         path = self._save_path(directory=directory)
         pickle.dump(result, open(path, "wb"))
 
@@ -493,6 +497,16 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(
         self.loss_fcn = self.build_loss_fcn(**self.hypers, loss_fcn=loss_fcn)
 
         self.minibatch = None
+
+    def __getstate__(self):
+        result = {
+            'losses': self.losses,
+            'ratings': self.all_ratings.__getstate__(),
+            #'hypers': self.hypers,
+            #'epochs': self.epochs,
+            #'batch_params': self.batch_params,
+        }
+        return result
 
     def __call__(self, x):
         """Return predictions for the s_qv."""
