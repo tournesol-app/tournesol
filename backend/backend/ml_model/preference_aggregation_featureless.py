@@ -227,7 +227,7 @@ class AllRatingsWithCommon(object):
             tqdmem(self.experts, desc="rating_load_expert_loop", leave=True)
         ):
             old_expert_idx = old_expert_indices.get(expert, None)
-            old_obj_idxes = set(result["expert_id_to_used_videos"][old_expert_idx])
+            old_obj_idxes = set(result["expert_id_to_used_videos"].get(old_expert_idx, []))
             if old_expert_idx is None:
                 continue
 
