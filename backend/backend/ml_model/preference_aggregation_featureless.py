@@ -364,7 +364,16 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
 
     def register_preference(self, o1, o2, p1_vs_p2, weights):
         """Save data when preference is available."""
+
+        def check_float(arr):
+            assert (arr.dtype == np.float32) or (arr.dtype == np.float64), f"Wrong dtype: {arr}"
+
+        assert weights.shape == (self.output_dim,), "Wrong weight shape"
         assert p1_vs_p2.shape == (self.output_dim,), "Wrong preference shape."
+        check_float(p1_vs_p2)
+        check_float(weights)
+        # weights can't be np.nan
+        assert np.sum(np.isnan(weights)) == 0, (o1, o2, weights)
         assert o1 in self.objects, "Wrong object %s" % o1
         assert o2 in self.objects, "Wrong object %s" % o2
         val = p1_vs_p2
@@ -385,6 +394,14 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
             self.used_object_feature_ids.add(
                 (self.all_ratings.objects_reverse[o2], f_idx)
             )
+
+        # for None rating score, set weight to 0
+        # FIXES the problem with new quality criteria not updated
+        # (one None rating -> None gradient -> 0 gradient -> no update)
+        p1_vs_p2 = np.copy(p1_vs_p2)
+        is_nan = np.isnan(p1_vs_p2)
+        p1_vs_p2[is_nan] = 0.5  # set to middle value (virtually, the weight is 0)
+        weights[is_nan] = 0.0  # set weight to 0 for ratings with no component
 
         self.ratings.append(
             {
