@@ -9,7 +9,7 @@ See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php
 We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 [Django](https://www.djangoproject.com/) for the backend, and [React.js](https://reactjs.org/) for the front-end.
 
-## How to launch (tested on Ubuntu in WSL)
+## How to launch (tested on Ubuntu in WSL and on Ubuntu 20.04)
 
 ![Continuous Integration](https://github.com/tournesol-app/tournesol/workflows/Continuous%20Integration/badge.svg?branch=master)
 
@@ -20,10 +20,16 @@ First, clone this repo and `cd` to it.
 
 <h3>Prerequisites</h3>
 
-1. [Install](https://github.com/nodesource/distributions/blob/master/README.md) latest nodejs and npm.
-   Install Python 3
+1. Make sure that Python 3 is installed.
 
-2. Install dependencies for front-end
+2. [Install](https://github.com/nodesource/distributions/blob/master/README.md) latest nodejs:
+   
+   ```
+   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+   ```
+
+3. Install dependencies for front-end:
 
    ```
    $ cd frontend
@@ -31,13 +37,13 @@ First, clone this repo and `cd` to it.
    frontend $ cd ..
    ```
 
-3. Install the dependencies specified in `pkglist.txt`
+4. Install the dependencies specified in `pkglist.txt`:
 
    ```
    $ sudo apt-get install $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
    ```
 
-4. Create a virtual environment for backend and install its dependencies:
+5. Create a virtual environment for backend and install its dependencies:
 
    ```
    $ python3 -m venv venv
@@ -46,7 +52,7 @@ First, clone this repo and `cd` to it.
    $ source venv/bin/activate
    (venv) $ pip install -r backend/requirements.txt
    ```
-5. Run tests to see that the installation is correct: `./tests.sh`
+6. Run tests to see that the installation is correct: `./tests.sh`
 
 <h3>Building and running front-end</h3>
 
