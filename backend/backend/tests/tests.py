@@ -14,7 +14,7 @@ from backend.cycle_preference_inconsistency import inconsistencies_3_for_queryse
 from backend.ml_model.client_server.django_ml_embedding import DatabasePreferenceLearnerEmbedding
 from backend.ml_model.client_server.django_ml_featureless import \
     DatabasePreferenceLearnerFeatureless
-from backend.ml_model.preference_aggregation_featureless import VariableIndexLayer
+from backend.ml_model.preference_aggregation_featureless_tf_dense import VariableIndexLayer
 from backend.models import ExpertRating, VideoRating, UserInformation, EmailDomain, \
     VerifiableEmail, VideoRateLater, VideoRatingPrivacy
 from backend.models import Video, UserPreferences, DjangoUser, VideoSelectorSkips

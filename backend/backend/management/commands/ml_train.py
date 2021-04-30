@@ -7,7 +7,7 @@ from ray import tune
 import numpy as np
 import pandas as pd
 import os
-from backend.ml_model.preference_aggregation import print_memory
+from backend.ml_model.tqdmem import print_memory
 
 
 @gin.configurable

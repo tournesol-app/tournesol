@@ -15,7 +15,7 @@ from backend.ml_model.preference_aggregation import (
     MedianPreferenceAggregator,
 )
 from matplotlib import pyplot as plt
-from backend.ml_model.preference_aggregation import print_memory, tqdmem
+from backend.ml_model.tqdmem import print_memory, tqdmem
 
 tf.compat.v1.enable_eager_execution()
 
@@ -93,7 +93,15 @@ class AllRatingsWithCommon(object):
         self.variables = [self.layer.v]
         # print(self.output_dim)
 
-        class adhoc_model:
+        class adhoc_model_dense:
+            def __init__(self1, layer):
+                self1.layer = layer
+                assert not self1.layer.NEED_INDICES, "Sparse implementation not supported"
+
+            def __call__(self1, inp):
+                return self1.layer(inp).numpy()
+
+        class adhoc_model_sparse:
             def __init__(self1, layer):
                 self1.layer = layer
                 assert self1.layer.NEED_INDICES, "Dense implementation not supported"
@@ -137,7 +145,10 @@ class AllRatingsWithCommon(object):
 
                 return output
 
-        self.model = adhoc_model(self.layer)
+        if self.layer.NEED_INDICES:  # sparse
+            self.model = adhoc_model_sparse(self.layer)
+        else:
+            self.model = adhoc_model_dense(self.layer)
 
     def _save_path(self, directory):
         path = os.path.join(directory, f"{self.name}_alldata_featureless_onetensor.pkl")
@@ -626,7 +637,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(
         #            else:
         #                logging.warning("List of certified experts non-empty!")
         else:
-            logging.warning("List of certified experts not found")
+            # logging.warning("List of certified experts not found")
             certified_experts = experts_to_sample
 
         sampled_certified_experts = choice_or_all(certified_experts, sample_experts)

@@ -28,7 +28,24 @@ from backend.toy_preference_dataset import ToyHardcodedDataset, ToyRandomDataset
 from matplotlib import pyplot as plt
 
 
-def test_hardcoded_dataset():
+def call_on_dataset_end(models):
+    """Inform all models that data was loaded."""
+    for m in models:
+        m.on_dataset_end()
+
+    all_ratings = models[0].all_ratings
+
+    # virtual 'common' data
+    fplm_common = FeaturelessPreferenceLearningModel(
+            expert=AllRatingsWithCommon.COMMON_EXPERT, all_ratings=all_ratings
+    )
+    fplm_common.on_dataset_end()
+    all_ratings.reset_model()
+
+
+@pytest.mark.parametrize("mode", ['sparse', 'dense'])
+def test_hardcoded_dataset(mode):
+    assert mode in ['sparse', 'dense']
     dataset = ToyHardcodedDataset()
     dataset._generate_many(100)
 
@@ -37,7 +54,7 @@ def test_hardcoded_dataset():
         objects=dataset.objects,
         output_features=dataset.fields,
         name="tst",
-        var_init_cls=VariableIndexLayer,
+        var_init_cls=VariableIndexLayer if mode == 'dense' else SparseVariableIndexLayer,
     )
 
     # creating models
@@ -45,17 +62,6 @@ def test_hardcoded_dataset():
         FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings)
         for user in dataset.users
     ]
-
-    # aggregating models
-    aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
-        models=models,
-        hypers={"C": 1.0, "mu": 1.0, "lambda_": 1.0, "default_score_value": 1.0},
-        batch_params=dict(
-            sample_experts=5000,
-            sample_ratings_per_expert=5000,
-            sample_objects_per_expert=5000,
-        ),
-    )
 
     for r in dataset.ratings:
         u_idx = dataset.users.index(r["user"])
@@ -67,7 +73,22 @@ def test_hardcoded_dataset():
             weights=np.ones(len(ratings_as_vector)),
         )
 
-    aggregator.fit(epochs=10000)
+    call_on_dataset_end(models)
+
+    # aggregating models
+    aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
+        models=models,
+        loss_fcn=loss_fcn_dense if mode == 'dense' else loss_fcn_sparse,
+        hypers={"C": 1.0, "mu": 1.0, "lambda_": 1.0, "default_score_value": 1.0,
+                "sample_every": 100},
+        batch_params=dict(
+            sample_experts=5000,
+            sample_ratings_per_expert=5000,
+            sample_objects_per_expert=5000,
+        ),
+    )
+
+    aggregator.fit(epochs=1000)
 
     result = aggregator.models[0](["trump_video"])[0]
     assert isinstance(result, np.ndarray), "Wrong output"
@@ -150,15 +171,8 @@ def test_loss_computation_sparse_vs_dense():
                 p1_vs_p2=ratings_as_vector,
                 weights=weights_as_vector,
             )
-            models[u_idx].on_dataset_end()
 
-        # virtual 'common' data
-        fplm_common = FeaturelessPreferenceLearningModel(
-            expert=AllRatingsWithCommon.COMMON_EXPERT, all_ratings=all_ratings
-        )
-        fplm_common.on_dataset_end()
-
-        all_ratings.reset_model()
+        call_on_dataset_end(models)
 
         # aggregating models
         aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
@@ -228,7 +242,8 @@ def test_loss_computation():
 
     # creating the table
     all_ratings = AllRatingsWithCommon(
-        experts=users, objects=objects, output_features=fields, name="tst"
+        experts=users, objects=objects, output_features=fields, name="tst",
+        var_init_cls=VariableIndexLayer
     )
 
     # setting a fixed value as the current model parameters
@@ -251,7 +266,8 @@ def test_loss_computation():
 
     # aggregating models
     aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
-        models=models, hypers=hypers
+        models=models, hypers=hypers,
+        loss_fcn=loss_fcn_dense
     )
 
     # inputs to the loss function
@@ -401,7 +417,9 @@ def test_loss_computation():
         print(f"Correct value for loss {key}")
 
 
-def test_save_load():
+@pytest.mark.parametrize("mode", ['sparse', 'dense'])
+def test_save_load(mode):
+    assert mode in ['sparse', 'dense']
     dataset = ToyRandomDataset()
     dataset._generate_many(100)
 
@@ -410,7 +428,7 @@ def test_save_load():
         objects=dataset.objects,
         output_features=dataset.fields,
         name="tst",
-        var_init_cls=VariableIndexLayer,
+        var_init_cls=VariableIndexLayer if mode == 'dense' else SparseVariableIndexLayer,
     )
 
     # creating models
@@ -419,19 +437,24 @@ def test_save_load():
         for user in dataset.users
     ]
 
-    for r in dataset.ratings:
-        u_idx = dataset.users.index(r["user"])
-        ratings_as_vector = np.array([r["ratings"][k] for k in dataset.fields]) / 100.0
-        models1[u_idx].register_preference(
-            o1=r["o1"],
-            o2=r["o2"],
-            p1_vs_p2=ratings_as_vector,
-            weights=np.ones(len(ratings_as_vector)),
-        )
+    def load_data_to(models):
+        for r in dataset.ratings:
+            u_idx = dataset.users.index(r["user"])
+            ratings_as_vector = np.array([r["ratings"][k] for k in dataset.fields]) / 100.0
+            models[u_idx].register_preference(
+                o1=r["o1"],
+                o2=r["o2"],
+                p1_vs_p2=ratings_as_vector,
+                weights=np.ones(len(ratings_as_vector)),
+            )
+
+    load_data_to(models1)
+    call_on_dataset_end(models1)
 
     aggregator1 = FeaturelessMedianPreferenceAverageRegularizationAggregator(
         hypers={"lambda_": 1.0, "mu": 1.0, "C": 1.0, "default_score_value": 1.0},
         models=models1,
+        loss_fcn=loss_fcn_dense if mode == 'dense' else loss_fcn_sparse,
     )
     aggregator1.fit(epochs=100)
 
@@ -440,7 +463,7 @@ def test_save_load():
         objects=dataset.objects,
         output_features=dataset.fields,
         name="tst",
-        var_init_cls=VariableIndexLayer,
+        var_init_cls=VariableIndexLayer if mode == 'dense' else SparseVariableIndexLayer,
     )
 
     # creating models
@@ -448,22 +471,40 @@ def test_save_load():
         FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings2)
         for user in dataset.users
     ]
+
+    load_data_to(models2)
+    call_on_dataset_end(models2)
+
     aggregator2 = FeaturelessMedianPreferenceAverageRegularizationAggregator(
         hypers={"lambda_": 1.0, "mu": 1.0, "C": 1.0, "default_score_value": 1.0},
+        loss_fcn=loss_fcn_dense if mode == 'dense' else loss_fcn_sparse,
         models=models2,
     )
 
-    assert not np.allclose(
-        aggregator1(dataset.objects), aggregator2(dataset.objects)
-    ), "Outputs already the same"
+    def is_close():
+        out1 = aggregator1(dataset.objects)
+        out2 = aggregator2(dataset.objects)
+
+        assert isinstance(out1, np.ndarray), type(out1)
+        assert isinstance(out2, np.ndarray), type(out2)
+
+        assert out1.shape == out2.shape, (out1.shape, out2.shape)
+
+        out1[out1 == None] = np.nan  # noqa: E711
+        out2[out2 == None] = np.nan  # noqa: E711
+        out1 = np.array(out1, dtype=np.float32)
+        out2 = np.array(out2, dtype=np.float32)
+
+        assert out1.dtype == out2.dtype, (out1.dtype, out2.dtype)
+        return np.allclose(out1, out2)
+
+    assert not is_close(), "Outputs already the same"
 
     save_dir = "./test-" + str(uuid1()) + "/"
     os.mkdir(save_dir)
     aggregator1.save(save_dir)
     aggregator2.load(save_dir)
-    assert np.allclose(
-        aggregator1(dataset.objects), aggregator2(dataset.objects)
-    ), "Outputs differ"
+    assert is_close(), "Outputs differ"
 
     shutil.rmtree(save_dir)
 

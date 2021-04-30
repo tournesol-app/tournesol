@@ -7,7 +7,7 @@ from backend.ml_model.preference_aggregation_featureless import (
     AllRatingsWithCommon,
 )
 from backend.models import UserPreferences
-from backend.ml_model.preference_aggregation import tqdmem, print_memory
+from backend.ml_model.tqdmem import tqdmem, print_memory
 
 tf.compat.v1.enable_eager_execution()
 

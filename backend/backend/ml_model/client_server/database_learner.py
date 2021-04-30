@@ -17,7 +17,7 @@ from backend.rating_fields import VIDEO_FIELDS
 from django_react.settings import BASE_DIR, COUNT_UNCERTIFIED_USERS
 from matplotlib import pyplot as plt
 import numpy as np
-from backend.ml_model.preference_aggregation import print_memory, tqdmem
+from backend.ml_model.tqdmem import print_memory, tqdmem
 from django.db import transaction
 from django.db.models import Q
 
