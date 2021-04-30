@@ -22,6 +22,23 @@ First, clone this repo and `cd` to it.
 
 1. Make sure that Python 3 is installed.
 
+2. Install Firefox version 84.0.1:
+   
+   To check the version of Firefox:
+   
+   ```
+   $ firefox --version
+   Mozilla Firefox 84.0.1
+   ```
+   
+   If the output of `$ firefox --version` is different from above, install the correct version of Firefox with:
+   
+   ```
+   wget -c https://download-installer.cdn.mozilla.net/pub/firefox/releases/84.0.1/linux-x86_64/en-US/firefox-84.0.1.tar.bz2
+   tar -xvf firefox-84.0.1.tar.bz2
+   sudo ln -fs $(pwd)/firefox/firefox /usr/bin/firefox
+   ```
+
 2. [Install](https://github.com/nodesource/distributions/blob/master/README.md) latest nodejs:
    
    ```
