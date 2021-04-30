@@ -1,9 +1,11 @@
 import gin
 import tensorflow as tf
 from backend.ml_model.client_server.database_learner import DatabasePreferenceLearner
-from backend.ml_model.preference_aggregation_featureless import \
-    FeaturelessPreferenceLearningModel, \
-    FeaturelessMedianPreferenceAverageRegularizationAggregator, AllRatingsWithCommon
+from backend.ml_model.preference_aggregation_featureless import (
+    FeaturelessPreferenceLearningModel,
+    FeaturelessMedianPreferenceAverageRegularizationAggregator,
+    AllRatingsWithCommon,
+)
 from backend.models import UserPreferences
 from backend.ml_model.preference_aggregation import tqdmem, print_memory
 
@@ -20,40 +22,46 @@ class DatabasePreferenceLearnerFeatureless(DatabasePreferenceLearner):
             experts=self.users,
             objects=self.videos,
             output_features=self.features,
-            name="prod")
+            name="prod",
+        )
 
         print_memory(stage="DPLF:ratings_nodata_created")
 
         # creating models
-        self.user_to_model = {user: FeaturelessPreferenceLearningModel(
-            expert=user, all_ratings=self.all_ratings) for user in self.users}
+        self.user_to_model = {
+            user: FeaturelessPreferenceLearningModel(
+                expert=user, all_ratings=self.all_ratings
+            )
+            for user in self.users
+        }
 
         print_memory(stage="DPLF:models_created")
-    
+
         # before creating the aggregator, filling models with data
         self.user_to_size = {
-            user: self.fill_model_data(
-                self.user_to_model[user],
-                user) for user in tqdmem(self.users, desc="fill_data")}
-            
+            user: self.fill_model_data(self.user_to_model[user], user)
+            for user in tqdmem(self.users, desc="fill_data")
+        }
+
         # virtual 'common' data
-        fplm_common = FeaturelessPreferenceLearningModel(expert=AllRatingsWithCommon.COMMON_EXPERT,
-                                                         all_ratings=self.all_ratings)
+        fplm_common = FeaturelessPreferenceLearningModel(
+            expert=AllRatingsWithCommon.COMMON_EXPERT, all_ratings=self.all_ratings
+        )
         fplm_common.on_dataset_end()
-        
 
         print_memory(stage="DPLF:data_filled")
 
         # resetting the model given the data
         self.all_ratings.reset_model()
-        
+
         print_memory(stage="DPLF:model_reset_ok")
-    
+
         # aggregating models
         self.aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
-            models=[self.user_to_model[u] for u in self.users])
+            models=[self.user_to_model[u] for u in self.users]
+        )
         self.aggregator.certification_status = self.user_certified
-        
+
         print_memory(stage="DPLF:aggregator_created")
 
     def visualize(self):
@@ -80,7 +88,7 @@ class DatabasePreferenceLearnerFeatureless(DatabasePreferenceLearner):
     def fit(self, **kwargs):
         """Fit on latest database records."""
 
-        self.stats['dataset_size'] = self.user_to_size
+        self.stats["dataset_size"] = self.user_to_size
 
         super(DatabasePreferenceLearnerFeatureless, self).fit(**kwargs)
 
@@ -88,8 +96,9 @@ class DatabasePreferenceLearnerFeatureless(DatabasePreferenceLearner):
         """Populate model data from db."""
         n = 0
         for dct in self.get_dataset(user=user):
-            v1, v2, res, w = [dct[key]
-                              for key in ['video_1', 'video_2', 'cmp', 'weights']]
+            v1, v2, res, w = [
+                dct[key] for key in ["video_1", "video_2", "cmp", "weights"]
+            ]
             model.register_preference(v1, v2, res, w)
             n += 1
         model.on_dataset_end()

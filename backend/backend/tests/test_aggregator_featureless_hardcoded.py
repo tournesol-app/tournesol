@@ -5,16 +5,24 @@ from uuid import uuid1
 import numpy as np
 import pytest
 import tensorflow as tf
-from backend.ml_model.preference_aggregation_featureless import \
-    FeaturelessMedianPreferenceAverageRegularizationAggregator
-from backend.ml_model.preference_aggregation_featureless import \
-    FeaturelessPreferenceLearningModel, AllRatingsWithCommon
-from backend.ml_model.preference_aggregation_featureless_tf_dense import VariableIndexLayer,\
-    loss_fcn_dense
-from backend.ml_model.preference_aggregation_featureless_tf_sparse import \
-    SparseVariableIndexLayer, loss_fcn_sparse
-from backend.ml_model.preference_aggregation_featureless_tf_dense import\
-    loss_fcn_dense as loss_fcn_tf
+from backend.ml_model.preference_aggregation_featureless import (
+    FeaturelessMedianPreferenceAverageRegularizationAggregator,
+)
+from backend.ml_model.preference_aggregation_featureless import (
+    FeaturelessPreferenceLearningModel,
+    AllRatingsWithCommon,
+)
+from backend.ml_model.preference_aggregation_featureless_tf_dense import (
+    VariableIndexLayer,
+    loss_fcn_dense,
+)
+from backend.ml_model.preference_aggregation_featureless_tf_sparse import (
+    SparseVariableIndexLayer,
+    loss_fcn_sparse,
+)
+from backend.ml_model.preference_aggregation_featureless_tf_dense import (
+    loss_fcn_dense as loss_fcn_tf,
+)
 from backend.ml_model.preference_aggregation_featureless_np import loss_fcn_np
 from backend.toy_preference_dataset import ToyHardcodedDataset, ToyRandomDataset
 from matplotlib import pyplot as plt
@@ -29,48 +37,46 @@ def test_hardcoded_dataset():
         objects=dataset.objects,
         output_features=dataset.fields,
         name="tst",
-        var_init_cls=VariableIndexLayer)
+        var_init_cls=VariableIndexLayer,
+    )
 
     # creating models
     models = [
-        FeaturelessPreferenceLearningModel(
-            expert=user,
-            all_ratings=all_ratings) for user in dataset.users]
+        FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings)
+        for user in dataset.users
+    ]
 
     # aggregating models
     aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
         models=models,
-        hypers={
-            'C': 1.,
-            'mu': 1.,
-            'lambda_': 1.,
-            'default_score_value': 1.0},
+        hypers={"C": 1.0, "mu": 1.0, "lambda_": 1.0, "default_score_value": 1.0},
         batch_params=dict(
             sample_experts=5000,
             sample_ratings_per_expert=5000,
-            sample_objects_per_expert=5000))
+            sample_objects_per_expert=5000,
+        ),
+    )
 
     for r in dataset.ratings:
-        u_idx = dataset.users.index(r['user'])
-        ratings_as_vector = np.array([r['ratings'][k]
-                                      for k in dataset.fields]) / 100.
+        u_idx = dataset.users.index(r["user"])
+        ratings_as_vector = np.array([r["ratings"][k] for k in dataset.fields]) / 100.0
         models[u_idx].register_preference(
-            o1=r['o1'],
-            o2=r['o2'],
+            o1=r["o1"],
+            o2=r["o2"],
             p1_vs_p2=ratings_as_vector,
-            weights=np.ones(
-                len(ratings_as_vector)))
+            weights=np.ones(len(ratings_as_vector)),
+        )
 
     aggregator.fit(epochs=10000)
 
-    result = aggregator.models[0](['trump_video'])[0]
+    result = aggregator.models[0](["trump_video"])[0]
     assert isinstance(result, np.ndarray), "Wrong output"
 
-    result = aggregator(['trump_video'])[0]
+    result = aggregator(["trump_video"])[0]
     assert isinstance(result, np.ndarray), "Wrong output"
 
     aggregator.plot_loss()
-    plt.savefig('_test_plot.png')
+    plt.savefig("_test_plot.png")
 
     def validate_order(dataset, aggregator):
         """Test that downvoted videos have smaller ratings."""
@@ -88,11 +94,12 @@ def test_hardcoded_dataset():
                             delta2 = expect_scores[feature][(o1, o2)]
                         else:
                             delta2 = 100 - expect_scores[feature][(o2, o1)]
-                        delta2 = (delta2 - 50) / 50.
+                        delta2 = (delta2 - 50) / 50.0
                         if delta1 * delta2 <= 0:
                             print(
                                 f"Invalid result: {user} {feature} {o1} {o2} got"
-                                f" {got_scores[i1][i]} {got_scores[i2][i]} rating {delta2}")
+                                f" {got_scores[i1][i]} {got_scores[i2][i]} rating {delta2}"
+                            )
                             errors += 1
                         else:
                             print("Valid result")
@@ -100,107 +107,115 @@ def test_hardcoded_dataset():
 
     validate_order(dataset, aggregator)
 
+
 def test_loss_computation_sparse_vs_dense():
     dataset = ToyRandomDataset(n_objects=100, n_users=100)
     dataset._generate_many(1000)
 
     def create_aggregator(dataset, mode=None, with_weights=True, with_cert=True):
-        assert mode in ['sparse', 'dense']
-        
-        var_init_cls = VariableIndexLayer if mode == 'dense' else SparseVariableIndexLayer
-        loss_fcn = loss_fcn_dense if mode == 'dense' else loss_fcn_sparse
-    
+        assert mode in ["sparse", "dense"]
+
+        var_init_cls = (
+            VariableIndexLayer if mode == "dense" else SparseVariableIndexLayer
+        )
+        loss_fcn = loss_fcn_dense if mode == "dense" else loss_fcn_sparse
+
         all_ratings = AllRatingsWithCommon(
             experts=dataset.users,
             objects=dataset.objects,
             output_features=dataset.fields,
             name="tst",
-            var_init_cls=var_init_cls)
-    
+            var_init_cls=var_init_cls,
+        )
+
         # creating models
         models = [
-            FeaturelessPreferenceLearningModel(
-                expert=user,
-                all_ratings=all_ratings) for user in dataset.users]
-    
+            FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings)
+            for user in dataset.users
+        ]
+
         for r in dataset.ratings:
-            u_idx = dataset.users.index(r['user'])
-            ratings_as_vector = np.array([r['ratings'][k]
-                                          for k in dataset.fields]) / 100.
+            u_idx = dataset.users.index(r["user"])
+            ratings_as_vector = (
+                np.array([r["ratings"][k] for k in dataset.fields]) / 100.0
+            )
             if with_weights:
-                weights_as_vector = np.array([r['weights'][k]
-                                              for k in dataset.fields])
+                weights_as_vector = np.array([r["weights"][k] for k in dataset.fields])
             else:
                 weights_as_vector = np.ones(len(dataset.fields))
-                
+
             models[u_idx].register_preference(
-                o1=r['o1'],
-                o2=r['o2'],
+                o1=r["o1"],
+                o2=r["o2"],
                 p1_vs_p2=ratings_as_vector,
-                weights=weights_as_vector)
+                weights=weights_as_vector,
+            )
             models[u_idx].on_dataset_end()
-            
+
         # virtual 'common' data
-        fplm_common = FeaturelessPreferenceLearningModel(expert=AllRatingsWithCommon.COMMON_EXPERT,
-                                                         all_ratings=all_ratings)
+        fplm_common = FeaturelessPreferenceLearningModel(
+            expert=AllRatingsWithCommon.COMMON_EXPERT, all_ratings=all_ratings
+        )
         fplm_common.on_dataset_end()
-            
+
         all_ratings.reset_model()
-    
+
         # aggregating models
         aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
             models=models,
             loss_fcn=loss_fcn,
             optimizer=tf.keras.optimizers.SGD(lr=1e-3),
-            hypers={
-                'C': 1.,
-                'mu': 1.,
-                'lambda_': 1.,
-                'default_score_value': 1.0},
+            hypers={"C": 1.0, "mu": 1.0, "lambda_": 1.0, "default_score_value": 1.0},
             batch_params=dict(
                 sample_experts=5000,
                 sample_ratings_per_expert=5000,
-                sample_objects_per_expert=5000))
-        
+                sample_objects_per_expert=5000,
+            ),
+        )
+
         params = aggregator.all_ratings.layer.v
         params.assign(tf.zeros_like(params))
-        
+
         if with_cert:
-            aggregator.certification_status = [np.random.rand() > 0.5
-                                               for _ in range(len(dataset.users))]
-        
+            aggregator.certification_status = [
+                np.random.rand() > 0.5 for _ in range(len(dataset.users))
+            ]
 
         return aggregator
-    
+
     seed = int(np.random.rand() * 1000)
-    
+
     np.random.seed(seed)
-    agg_dense = create_aggregator(dataset, mode='dense')
+    agg_dense = create_aggregator(dataset, mode="dense")
     losses_dense = agg_dense.fit(epochs=15)
     mb_dense = agg_dense.last_mb_np
     print(agg_dense.all_ratings.layer.v)
-    
+
     np.random.seed(seed)
-    agg_sparse = create_aggregator(dataset, mode='sparse')    
+    agg_sparse = create_aggregator(dataset, mode="sparse")
     losses_sparse = agg_sparse.fit(epochs=15)
     mb_sparse = agg_sparse.last_mb_np
     print(agg_sparse.all_ratings.layer.v)
 
     print({x: len(y) for x, y in mb_dense.items()})
-#    print(mb_sparse)
-    
+    #    print(mb_sparse)
+
     for key in set(mb_dense.keys()).intersection(mb_sparse.keys()):
         assert np.allclose(mb_dense[key], mb_sparse[key]), key
-        print(key, 'mb sparse=dense')
+        print(key, "mb sparse=dense")
 
     print(losses_dense)
     print(losses_sparse)
-    
+
     assert set(losses_sparse.keys()) == set(losses_dense.keys())
     for key in losses_dense.keys():
-        assert np.allclose(losses_dense[key], losses_sparse[key]), (key,
-                          'dense', losses_dense[key],
-                          'sparse', losses_sparse[key])
+        assert np.allclose(losses_dense[key], losses_sparse[key]), (
+            key,
+            "dense",
+            losses_dense[key],
+            "sparse",
+            losses_sparse[key],
+        )
 
 
 def test_loss_computation():
@@ -212,8 +227,9 @@ def test_loss_computation():
     fields = range(np.random.randint(1, 100))
 
     # creating the table
-    all_ratings = AllRatingsWithCommon(experts=users, objects=objects,
-                                       output_features=fields, name="tst")
+    all_ratings = AllRatingsWithCommon(
+        experts=users, objects=objects, output_features=fields, name="tst"
+    )
 
     # setting a fixed value as the current model parameters
     ratings_val = np.random.randn(1 + len(users), len(objects), len(fields))
@@ -221,25 +237,31 @@ def test_loss_computation():
 
     # creating models
     models = [
-        FeaturelessPreferenceLearningModel(
-            expert=user,
-            all_ratings=all_ratings) for user in users]
+        FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings)
+        for user in users
+    ]
 
     # random hyperparamters
     hypers = {
-        'C': np.random.rand(),
-        'mu': np.random.rand(),
-        'lambda_': np.random.rand(),
-        'default_score_value': 1.0,
-
+        "C": np.random.rand(),
+        "mu": np.random.rand(),
+        "lambda_": np.random.rand(),
+        "default_score_value": 1.0,
     }
 
     # aggregating models
     aggregator = FeaturelessMedianPreferenceAverageRegularizationAggregator(
-        models=models, hypers=hypers)
+        models=models, hypers=hypers
+    )
 
     # inputs to the loss function
-    experts_rating, objects_rating_v1, objects_rating_v2, cmp, weights = [], [], [], [], []
+    experts_rating, objects_rating_v1, objects_rating_v2, cmp, weights = (
+        [],
+        [],
+        [],
+        [],
+        [],
+    )
     experts_all, objects_all, num_ratings_all = [], [], []
     objects_common_to_1 = []
 
@@ -261,9 +283,17 @@ def test_loss_computation():
     for v in range(n_all):
         objects_common_to_1.append(np.random.choice(objects))
 
-    def np_loss_fcn(experts_rating, objects_rating_v1, objects_rating_v2, cmp,
-                    weights, experts_all, objects_all, num_ratings_all,
-                    objects_common_to_1):
+    def np_loss_fcn(
+        experts_rating,
+        objects_rating_v1,
+        objects_rating_v2,
+        cmp,
+        weights,
+        experts_all,
+        objects_all,
+        num_ratings_all,
+        objects_common_to_1,
+    ):
         """Compute the loss using numpy, same as aggregator.loss_fcn."""
         result = {}
 
@@ -271,7 +301,8 @@ def test_loss_computation():
         loss_fit = 0.0
         loss_fit_cnt = 0
         for exp, v1, v2, c, wei in zip(
-                experts_rating, objects_rating_v1, objects_rating_v2, cmp, weights):
+            experts_rating, objects_rating_v1, objects_rating_v2, cmp, weights
+        ):
             for f in range(len(fields)):
                 thetav = ratings_val[exp, v1, f]
                 thetaw = ratings_val[exp, v2, f]
@@ -280,7 +311,7 @@ def test_loss_computation():
                 elem = np.log(1 + np.exp(y * (thetav - thetaw))) * w
                 loss_fit += elem
                 loss_fit_cnt += 1
-        result['loss_fit'] = loss_fit
+        result["loss_fit"] = loss_fit
 
         # LOSS M to COMMON computation
         loss_reg_common = 0.0
@@ -290,12 +321,12 @@ def test_loss_computation():
                 theta = ratings_val[exp, v, f]
                 s = ratings_val[-1, v, f]
 
-                elem = n / (hypers['C'] + n) * np.abs(theta - s)
+                elem = n / (hypers["C"] + n) * np.abs(theta - s)
 
                 loss_reg_common += elem
                 loss_reg_common_cnt += 1
 
-        result['loss_m_to_common'] = loss_reg_common * hypers['lambda_']
+        result["loss_m_to_common"] = loss_reg_common * hypers["lambda_"]
 
         # LOSS COMMON to 1 COMPUTATION
         loss_reg_c1 = 0.0
@@ -310,25 +341,43 @@ def test_loss_computation():
                 loss_reg_c1 += elem
                 loss_reg_c1_cnt += 1
 
-        result['loss_common_to_1'] = loss_reg_c1 * hypers['mu']
+        result["loss_common_to_1"] = loss_reg_c1 * hypers["mu"]
 
         # TOTAL LOSS COMPUTATION
-        result['loss'] = result['loss_fit'] + result['loss_m_to_common'] + result[
-            'loss_common_to_1']
+        result["loss"] = (
+            result["loss_fit"] + result["loss_m_to_common"] + result["loss_common_to_1"]
+        )
 
         return result
 
     # computing the loss
-    args = [experts_rating, objects_rating_v1, objects_rating_v2, cmp, weights,
-            experts_all, objects_all, num_ratings_all,
-            objects_common_to_1]
-    args_names = ['experts_rating', 'objects_rating_v1', 'objects_rating_v2', 'cmp', 'weights',
-                  'experts_all', 'objects_all', 'num_ratings_all',
-                  'objects_common_to_1']
+    args = [
+        experts_rating,
+        objects_rating_v1,
+        objects_rating_v2,
+        cmp,
+        weights,
+        experts_all,
+        objects_all,
+        num_ratings_all,
+        objects_common_to_1,
+    ]
+    args_names = [
+        "experts_rating",
+        "objects_rating_v1",
+        "objects_rating_v2",
+        "cmp",
+        "weights",
+        "experts_all",
+        "objects_all",
+        "num_ratings_all",
+        "objects_common_to_1",
+    ]
     args = [np.array(x) for x in args]
-    args = [tf.constant(x, dtype=tf.float32)
-            if x.dtype == np.float64 else tf.constant(x)
-            for x in args]
+    args = [
+        tf.constant(x, dtype=tf.float32) if x.dtype == np.float64 else tf.constant(x)
+        for x in args
+    ]
     ans_tf = aggregator.loss_fcn(**dict(zip(args_names, args)))
     ans_tf = {k: v.numpy() for k, v in ans_tf.items()}
 
@@ -342,13 +391,13 @@ def test_loss_computation():
         experts_all,
         objects_all,
         num_ratings_all,
-        objects_common_to_1)
+        objects_common_to_1,
+    )
 
     # verifying that the results are the same
     assert ans_tf.keys() == ans_np.keys()
     for key in ans_tf.keys():
-        assert np.allclose(ans_tf[key], ans_np[key]
-                           ), f"Wrong value for loss {key}"
+        assert np.allclose(ans_tf[key], ans_np[key]), f"Wrong value for loss {key}"
         print(f"Correct value for loss {key}")
 
 
@@ -361,28 +410,29 @@ def test_save_load():
         objects=dataset.objects,
         output_features=dataset.fields,
         name="tst",
-        var_init_cls=VariableIndexLayer)
+        var_init_cls=VariableIndexLayer,
+    )
 
     # creating models
     models1 = [
-        FeaturelessPreferenceLearningModel(
-            expert=user,
-            all_ratings=all_ratings1) for user in dataset.users]
+        FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings1)
+        for user in dataset.users
+    ]
 
     for r in dataset.ratings:
-        u_idx = dataset.users.index(r['user'])
-        ratings_as_vector = np.array([r['ratings'][k]
-                                      for k in dataset.fields]) / 100.
+        u_idx = dataset.users.index(r["user"])
+        ratings_as_vector = np.array([r["ratings"][k] for k in dataset.fields]) / 100.0
         models1[u_idx].register_preference(
-            o1=r['o1'],
-            o2=r['o2'],
+            o1=r["o1"],
+            o2=r["o2"],
             p1_vs_p2=ratings_as_vector,
-            weights=np.ones(
-                len(ratings_as_vector)))
+            weights=np.ones(len(ratings_as_vector)),
+        )
 
     aggregator1 = FeaturelessMedianPreferenceAverageRegularizationAggregator(
-        hypers={'lambda_': 1., 'mu': 1., 'C': 1., 'default_score_value': 1.},
-        models=models1)
+        hypers={"lambda_": 1.0, "mu": 1.0, "C": 1.0, "default_score_value": 1.0},
+        models=models1,
+    )
     aggregator1.fit(epochs=100)
 
     all_ratings2 = AllRatingsWithCommon(
@@ -390,35 +440,35 @@ def test_save_load():
         objects=dataset.objects,
         output_features=dataset.fields,
         name="tst",
-        var_init_cls=VariableIndexLayer)
+        var_init_cls=VariableIndexLayer,
+    )
 
     # creating models
     models2 = [
-        FeaturelessPreferenceLearningModel(
-            expert=user,
-            all_ratings=all_ratings2) for user in dataset.users]
+        FeaturelessPreferenceLearningModel(expert=user, all_ratings=all_ratings2)
+        for user in dataset.users
+    ]
     aggregator2 = FeaturelessMedianPreferenceAverageRegularizationAggregator(
-        hypers={'lambda_': 1., 'mu': 1., 'C': 1., 'default_score_value': 1.},
-        models=models2)
+        hypers={"lambda_": 1.0, "mu": 1.0, "C": 1.0, "default_score_value": 1.0},
+        models=models2,
+    )
 
     assert not np.allclose(
-        aggregator1(
-            dataset.objects), aggregator2(
-            dataset.objects)), "Outputs already the same"
+        aggregator1(dataset.objects), aggregator2(dataset.objects)
+    ), "Outputs already the same"
 
-    save_dir = './test-' + str(uuid1()) + '/'
+    save_dir = "./test-" + str(uuid1()) + "/"
     os.mkdir(save_dir)
     aggregator1.save(save_dir)
     aggregator2.load(save_dir)
     assert np.allclose(
-        aggregator1(
-            dataset.objects), aggregator2(
-            dataset.objects)), "Outputs differ"
+        aggregator1(dataset.objects), aggregator2(dataset.objects)
+    ), "Outputs differ"
 
     shutil.rmtree(save_dir)
 
 
-@pytest.mark.parametrize('execution_number', range(10))
+@pytest.mark.parametrize("execution_number", range(10))
 def test_np_tf_equal(execution_number):
     print("Repetition", execution_number)
 
@@ -428,7 +478,9 @@ def test_np_tf_equal(execution_number):
     n_videos = np.random.randint(1, 1000)
     n_features = np.random.randint(1, 100)
 
-    model_tensor = np.random.randn(n_experts + 1, n_videos, n_features).astype(np.float32)
+    model_tensor = np.random.randn(n_experts + 1, n_videos, n_features).astype(
+        np.float32
+    )
 
     n_minibatch = np.random.randint(1, 512)
 
@@ -451,20 +503,28 @@ def test_np_tf_equal(execution_number):
             return np.random.choice(n, **kwargs)
 
     feed_batch = {
-        'experts_rating': choice_or_empty(n_experts, size=n_minibatch, replace=True),
-        'objects_rating_v1': choice_or_empty(n_videos, size=n_minibatch, replace=True),
-        'objects_rating_v2': choice_or_empty(n_videos, size=n_minibatch, replace=True),
-        'cmp': np.random.randn(n_minibatch, n_features),
-        'weights': np.random.randn(n_minibatch, n_features),
-        'num_ratings_all': np.random.randn(n_minibatch_all),
-        'experts_all': choice_or_empty(n_experts, size=n_minibatch_all, replace=True),
-        'objects_all': choice_or_empty(n_videos, size=n_minibatch_all, replace=True),
-        'objects_common_to_1': choice_or_empty(n_videos, size=n_minibatch_common_to_1,
-                                               replace=True),
+        "experts_rating": choice_or_empty(n_experts, size=n_minibatch, replace=True),
+        "objects_rating_v1": choice_or_empty(n_videos, size=n_minibatch, replace=True),
+        "objects_rating_v2": choice_or_empty(n_videos, size=n_minibatch, replace=True),
+        "cmp": np.random.randn(n_minibatch, n_features),
+        "weights": np.random.randn(n_minibatch, n_features),
+        "num_ratings_all": np.random.randn(n_minibatch_all),
+        "experts_all": choice_or_empty(n_experts, size=n_minibatch_all, replace=True),
+        "objects_all": choice_or_empty(n_videos, size=n_minibatch_all, replace=True),
+        "objects_common_to_1": choice_or_empty(
+            n_videos, size=n_minibatch_common_to_1, replace=True
+        ),
     }
 
-    print(n_nans, n_experts, n_videos, n_features, n_minibatch, n_minibatch_all,
-          n_minibatch_common_to_1)
+    print(
+        n_nans,
+        n_experts,
+        n_videos,
+        n_features,
+        n_minibatch,
+        n_minibatch_all,
+        n_minibatch_common_to_1,
+    )
 
     # settings some cmps to np.nan
     for _ in range(n_nans):
@@ -472,7 +532,7 @@ def test_np_tf_equal(execution_number):
             continue
         random_item = np.random.choice(n_minibatch)
         random_feature = np.random.choice(n_features)
-        feed_batch['cmp'][random_item, random_feature] = np.nan
+        feed_batch["cmp"][random_item, random_feature] = np.nan
 
     # transforming type
     for key in feed_batch.keys():
@@ -481,43 +541,34 @@ def test_np_tf_equal(execution_number):
 
     # hyperparameters
     hypers = {
-        'aggregate_index': np.random.choice(n_experts + 1),
-        'lambda_': np.random.randn(),
-        'mu': np.random.randn(),
-        'C': np.random.randn(),
-        'default_score_value': np.random.randn()
+        "aggregate_index": np.random.choice(n_experts + 1),
+        "lambda_": np.random.randn(),
+        "mu": np.random.randn(),
+        "C": np.random.randn(),
+        "default_score_value": np.random.randn(),
     }
 
     print(hypers)
 
-    feed_batch_tf = {
-        key: tf.constant(val)
-        for key, val in feed_batch.items()
-    }
+    feed_batch_tf = {key: tf.constant(val) for key, val in feed_batch.items()}
 
     args_np = {
         **hypers,
         **feed_batch,
-        'model_tensor': model_tensor,
+        "model_tensor": model_tensor,
     }
 
-    args_tf = {
-        **hypers,
-        **feed_batch_tf,
-        'model_tensor': tf.constant(model_tensor)
-    }
+    args_tf = {**hypers, **feed_batch_tf, "model_tensor": tf.constant(model_tensor)}
 
     result_np = loss_fcn_np(**args_np)
     result_tf = loss_fcn_tf(**args_tf)
 
-    result_tf = {
-        key: val.numpy()
-        for key, val in result_tf.items()
-    }
+    result_tf = {key: val.numpy() for key, val in result_tf.items()}
 
     print(result_np.keys(), result_tf.keys())
     assert set(result_np.keys()) == set(result_tf.keys())
     for key in result_np.keys():
         print(key, result_np[key], result_tf[key])
-        assert np.allclose(result_np[key], result_tf[key],
-                           rtol=1e-3, atol=1e-3, equal_nan=True)
+        assert np.allclose(
+            result_np[key], result_tf[key], rtol=1e-3, atol=1e-3, equal_nan=True
+        )

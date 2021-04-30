@@ -19,7 +19,7 @@ class VariableIndexLayer(tf.keras.layers.Layer):
             shape=shape, initializer=initializer,
             trainable=True, name="var/" + name,
             dtype=tf.keras.backend.floatx())
-        
+
     def serialize(self):
         return {'v': self.v.numpy(), 'NEED_INDICES': self.NEED_INDICES}
 

@@ -33,8 +33,8 @@ FeaturelessMedianPreferenceAverageRegularizationAggregator.batch_params = @batch
 
 # loss hyperparameters configuration
 hypers/gin_dict.C = 3.
-hypers/gin_dict.lambda_ = 2.
-hypers/gin_dict.mu = 1.
+hypers/gin_dict.lambda_ = 0.00001
+hypers/gin_dict.mu = 0.
 hypers/gin_dict.default_score_value = %DEFAULT_SCORE
 hypers/gin_dict.sample_every = 1000
 
