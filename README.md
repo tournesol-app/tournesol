@@ -27,7 +27,7 @@ First, clone this repo and `cd` to it.
 
    ```
    $ cd frontend
-   frontend $ npm install
+   frontend $ npm ci
    ```
 
 3. Create a virtual environment for backend and install its dependencies:
