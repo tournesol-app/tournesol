@@ -39,11 +39,11 @@ First, clone this repo and `cd` to it.
    sudo ln -fs $(pwd)/firefox/firefox /usr/bin/firefox
    ```
 
-2. [Install](https://github.com/nodesource/distributions/blob/master/README.md) latest nodejs:
-   
+2. Install the `apt` dependencies specified in `pkglist.txt`:
+
    ```
-   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt-get install -y nodejs
+   $ curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+   $ sudo apt-get install $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
    ```
 
 3. Install dependencies for front-end:
@@ -54,13 +54,7 @@ First, clone this repo and `cd` to it.
    frontend $ cd ..
    ```
 
-4. Install the dependencies specified in `pkglist.txt`:
-
-   ```
-   $ sudo apt-get install $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
-   ```
-
-5. Create a virtual environment for backend and install its dependencies:
+4. Create a virtual environment for backend and install its dependencies:
 
    ```
    $ python3 -m pip install --upgrade pip
@@ -70,7 +64,7 @@ First, clone this repo and `cd` to it.
    $ source venv/bin/activate
    (venv) $ pip install -r backend/requirements.txt
    ```
-6. Run tests to see that the installation is correct: `./tests.sh`
+5. Run tests to see that the installation is correct: `./tests.sh`
 
 <h3>Building and running front-end</h3>
 
