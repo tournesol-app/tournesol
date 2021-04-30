@@ -502,9 +502,9 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(
         result = {
             'losses': self.losses,
             'ratings': self.all_ratings.__getstate__(),
-            #'hypers': self.hypers,
-            #'epochs': self.epochs,
-            #'batch_params': self.batch_params,
+            # 'hypers': self.hypers,
+            # 'epochs': self.epochs,
+            # 'batch_params': self.batch_params,
         }
         return result
 
