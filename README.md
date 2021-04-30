@@ -63,6 +63,7 @@ First, clone this repo and `cd` to it.
 5. Create a virtual environment for backend and install its dependencies:
 
    ```
+   $ python3 -m pip install --upgrade pip
    $ python3 -m venv venv
 
    # run that to go inside the virtual environment
