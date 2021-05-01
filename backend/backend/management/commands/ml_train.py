@@ -137,6 +137,9 @@ class Command(BaseCommand):
             "--tune", help="Run hyperparameter search", action="store_true"
         )
         parser.add_argument(
+            "--tune_resume", help="Resume a failed tune trial", action="store_true",
+        )
+        parser.add_argument(
             "--features",
             help="Only update given features",
             type=str,
@@ -180,6 +183,9 @@ class Command(BaseCommand):
                 import django
 
                 django.setup()
+
+            if options["tune_resume"]:
+                gin.bind_parameter('tune_run.resume', True)
 
             tune_gin(experiment, pre_parse=pre_parse)
 
