@@ -1,5 +1,7 @@
 import base64
 import pickle
+from functools import reduce
+import logging
 
 import numpy as np
 from backend.rating_fields import VIDEO_FIELDS
@@ -104,3 +106,25 @@ def url_has_domain(url, domain):
         return False
 
     return domain_remove_www(domain) == domain_remove_www(url_domain)
+
+
+def filter_reduce(lst, fcn, name='_'):
+    """Reduce a list of filters."""
+    lst_orig = lst
+    lst = [x for x in lst if x is not None]
+    if not lst:
+        logging.warning(f"{name} query with en empty list of operands, returning None: {lst_orig}")
+        return None
+    return reduce(fcn, lst)
+
+
+def query_or(lst):
+    """Combine query parts with OR."""
+    return filter_reduce(lst, fcn=(lambda x, y: x | y),
+                         name='OR')
+
+
+def query_and(lst):
+    """Combine query parts with AND."""
+    return filter_reduce(lst, fcn=(lambda x, y: x & y),
+                         name='AND')

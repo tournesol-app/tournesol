@@ -29,6 +29,29 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from functools import reduce
 from math import isinf
+from time import time
+from backend.constants import fields as constants
+
+
+class TimeDeltaPrint():
+    def __init__(self):
+        self.last_timestamp = None
+
+    def reset(self):
+        self.last_timestamp = None
+
+    def print_now(self, descr):
+        now = time()
+        if self.last_timestamp is None:
+            delta = "[started]"
+        else:
+            delta = now - self.last_timestamp
+            delta = "+%.3f sec" % delta
+        self.last_timestamp = now
+        print(f"TIME {delta}: {descr}")
+
+
+TDP = TimeDeltaPrint()
 
 
 # number of public contributors to show
@@ -83,6 +106,12 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         default=0,
         read_only=True,
         allow_null=True)
+    tournesol_score = serializers.FloatField(
+        help_text=f"The total Tournesol score with uniform preferences "\
+            f"(value={constants['DEFAULT_PREFS_VAL']})",
+        default=0,
+        read_only=True,
+        allow_null=True)
     score_preferences_term = serializers.FloatField(
         help_text="Computed video score [preferences].",
         default=0,
@@ -128,15 +157,24 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             return video
 
     def get_top_raters(self, video):
-        video_obj = self.get_video_object(video)
+
+        #return UserInformation.objects.none()
+
+        tdp = TimeDeltaPrint()
+        tdp.print_now('get_top_raters:start')
+        video_obj = None #self.get_video_object(video)
+        tdp.print_now('get_top_raters:video_obj_obtained')
         request = self.context.get("request", {})
         username = search_username_from_request(request)
+        tdp.print_now('get_top_raters:search_username_obtaned')
         if not video_obj:
             qs = UserInformation.objects.none()
         elif username:
             qs = UserInformation.objects.filter(user__username=username)
         else:
             qs = video_obj.certified_top_raters()
+
+        tdp.print_now('get_top_raters:ui_qs_obtained')
 
         # annotating with whether the rating is public
         pref_privacy = 'user__userpreferences__videoratingprivacy'
@@ -152,6 +190,8 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
                 default=Value(0),
                 output_field=IntegerField()))
 
+        tdp.print_now('get_top_raters:qs_obtained')
+
         return qs
 
     FILTER_PUBLIC = Q(n_public_rating=1,
@@ -159,23 +199,33 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
 
     @extend_schema_field(UserInformationSerializerNameOnly(many=True))
     def get_public_experts(self, video):
-        qs = self.get_top_raters(video).filter(self.FILTER_PUBLIC)[
-             :N_PUBLIC_CONTRIBUTORS_SHOW]
-        s = UserInformationSerializerNameOnly(qs, many=True)
-        return s.data
+        #qs = self.get_top_raters(video).filter(self.FILTER_PUBLIC)[
+        #     :N_PUBLIC_CONTRIBUTORS_SHOW]
+        #s = UserInformationSerializerNameOnly(qs, many=True)
+        return [] #s.data
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_public_experts(self, video):
-        return self.get_top_raters(video).filter(self.FILTER_PUBLIC).count()
+        return 0 # self.get_top_raters(video).filter(self.FILTER_PUBLIC).count()
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_private_experts(self, video):
-        return self.get_top_raters(video).filter(~self.FILTER_PUBLIC).count()
+        return 0 # self.get_top_raters(video).filter(~self.FILTER_PUBLIC).count()
 
     def to_representation(self, obj):
         """Adding missing fields because of .values() in queryset"""
         # TODO do not use values and use a raw sql query instead?
+
+        tdp = TimeDeltaPrint()
+
+        tdp.print_now('to_representation:start')
+
         ret = super(VideoSerializerV2, self).to_representation(obj)
+        return  ret
+
+
+        tdp.print_now('to_representation:super_call_ok')
+
         try:
             # restoring fields that are not present because of values()
             v = Video.objects.get(id=ret.get('id', -1))
@@ -191,6 +241,9 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
 
         except Video.DoesNotExist:
             pass
+
+        tdp.print_now('to_representation:end')
+
         return ret
 
     class Meta:
@@ -213,7 +266,9 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             'public_experts',
             'n_public_experts',
             'n_private_experts',
-            'pareto_optimal'] + VIDEO_FIELDS
+            'pareto_optimal',
+            'tournesol_score'
+            ] + VIDEO_FIELDS
         read_only_fields = [x for x in fields if x != 'video_id']
         extra_kwargs = {'views': {'allow_null': True},
                         'duration': {'allow_null': True},
@@ -368,6 +423,7 @@ class VideoViewSetV2(mixins.CreateModelMixin,
                 [F(f) * v for f, v in zip(VIDEO_FIELDS, user_preferences_vector)])
 
         features = self.get_features_from_request()
+        default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
         search_username = self.need_scores_for_username()
 
         # computing score inside the database
@@ -412,6 +468,9 @@ class VideoViewSetV2(mixins.CreateModelMixin,
 
         queryset = queryset.annotate(
             score_preferences_term=get_score_annotation(features))
+
+        queryset = queryset.annotate(
+            tournesol_score=get_score_annotation(default_features))
 
         queryset = queryset.annotate(
             score_search_term_=Value(
@@ -467,13 +526,25 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         return queryset
 
     def return_queryset(self, queryset):
+        TDP.print_now('rqs:start')
         page = self.paginate_queryset(queryset)
+        TDP.print_now('rqs:page_obtained')
         if page is not None:
+            TDP.print_now('rqs:page_not_none')
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            TDP.print_now('rqs:serializer_obtained')
+            ser_data = serializer.data
+            TDP.print_now('rqs:data_obtained')
+            data = self.get_paginated_response(ser_data)
+            TDP.print_now('rqs:paginated')
+            return data
 
+        TDP.print_now('rqs:page_none')
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        TDP.print_now('rqs:serializer_obtained')
+        data = Response(serializer.data)
+        TDP.print_now('rqs:data_obtained')
+        return data
 
     @extend_schema(
         parameters=[
@@ -516,11 +587,19 @@ class VideoViewSetV2(mixins.CreateModelMixin,
     @action(methods=['GET'], detail=False, name="Search using Tournesol")
     def search_tournesol(self, request):
         """Search videos using the Tournesol algorithm."""
+        TDP.reset()
+        TDP.print_now("search_ts:start")
         filter = self.filterset_class(request=request)
+        TDP.print_now("search_ts:filterset_class_obtained")
         queryset = self.get_queryset()
+        TDP.print_now("search_ts:queryset_obtained")
         queryset = queryset.order_by('-score')
+        TDP.print_now("search_ts:order_done")
         queryset = filter.filter_empty(self.filter_queryset(queryset))
-        return self.return_queryset(queryset)
+        TDP.print_now("search_ts:filter_done")
+        data = self.return_queryset(queryset)
+        TDP.print_now("search_ts:data_computed")
+        return data
 
     @extend_schema(operation_id="n_thanks",
                    responses={200: inline_serializer(

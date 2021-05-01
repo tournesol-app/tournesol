@@ -14,6 +14,7 @@ comments = {
     'featureIsEnabledByDeFault': "Is the feature enabled by-default?",
     'youtubeVideoIdRegexSymbol': "Regular expression of YouTube videos (one symbol)",
     'minNumRateLater': "Minimal number of videos to rate before redirecting to rating page",
+    'DEFAULT_PREFS_VAL': "Default value of preferences for tournesol_score",
 }
 
 featureColors = {
@@ -65,4 +66,5 @@ fields = {
     'featureIsEnabledByDeFault': featureIsEnabledByDeFault,
     'youtubeVideoIdRegexSymbol': youtubeVideoIdRegexSymbol,
     'minNumRateLater': minNumRateLater,
+    'DEFAULT_PREFS_VAL': 50.0,
 }

@@ -5,8 +5,6 @@ import hashlib
 import logging
 import os
 import uuid
-from functools import reduce
-
 import computed_property
 import numpy as np
 from backend.black_white_email_domain import get_domain
@@ -28,6 +26,7 @@ from django_countries import countries
 from languages.fields import LanguageField
 from backend.constants import featureIsEnabledByDeFault, youtubeVideoIdRegex
 from django.core.validators import RegexValidator
+from backend.model_helpers import query_and, query_or
 
 
 class ResetPasswordToken(models.Model):
@@ -570,7 +569,7 @@ class UserInformation(models.Model):
         return any_rejected > 0
 
     @staticmethod
-    def _annotate_is_certified(queryset, prefix=""):
+    def _annotate_is_certified(queryset, prefix="", output_field="_is_certified"):
         """Annotate a queryset with _is_certified in a vectorized way."""
         queryset = queryset.annotate(
             _certified_emails=Count(
@@ -579,8 +578,9 @@ class UserInformation(models.Model):
                     prefix + 'emails__domain_fk__status': EmailDomain.STATUS_ACCEPTED,
                     prefix + 'emails__is_verified': True
                 })))
-        queryset = queryset.annotate(_is_certified=Case(When(
-            Q(_certified_emails__gt=0), then=1), default=0, output_field=IntegerField()))
+
+        queryset = queryset.annotate(**{output_field: Case(When(
+            Q(_certified_emails__gt=0), then=1), default=0, output_field=IntegerField())})
         return queryset
 
     @staticmethod
@@ -703,12 +703,6 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
     @property
     def pareto_optimal(self):
-        def query_or(lst):
-            return reduce((lambda x, y: x | y), lst)
-
-        def query_and(lst):
-            return reduce((lambda x, y: x & y), lst)
-
         f1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in VIDEO_FIELDS])
         f2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in VIDEO_FIELDS])
 
@@ -773,6 +767,11 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         qs = qs.order_by('-_n_ratings')
         return qs
 
+    @property
+    def tournesol_score(self):
+        # computed by a query
+        return 0.0
+
     def ratings(self, user=None, only_certified=True):
         """All associated certified ratings."""
         f = Q(video_1=self) | Q(video_2=self)
@@ -795,16 +794,6 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     def n_ratings(self, user=None):
         """Number of associated ratings."""
         return self.ratings(user=user).count()
-
-    @property
-    def n_reports(self):
-        """Number of associated reports."""
-        return self.reports().count()
-
-    @property
-    def rating_n_ratings(self):
-        """Number of ratings."""
-        return self.n_ratings()
 
     @property
     def rating_n_experts(self):
