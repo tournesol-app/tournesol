@@ -313,8 +313,12 @@ const ExpertSettings = ({ setStateExternal }) => {
   );
 };
 
-export default ({ videoIdAOverride = null, videoIdBOverride = null,
-  onSliderFeatureChanged = null, showControls = true }) => {
+export default ({
+  videoIdAOverride = null,
+  videoIdBOverride = null,
+  onSliderFeatureChanged = null,
+  showControls = true,
+}) => {
   // got a correct video Id?
   const isIdValid = (videoId) => {
     const notNull = videoId !== null;
@@ -324,7 +328,10 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
   };
 
   const classes = useStyles();
-  const { videoIdA = videoIdAOverride, videoIdB = videoIdBOverride } = useParams();
+  const {
+    videoIdA = videoIdAOverride,
+    videoIdB = videoIdBOverride,
+  } = useParams();
 
   const history = useHistory();
 
@@ -371,10 +378,10 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
 
   // updating internal IDs from the URL
   React.useEffect(() => {
-    if (isIdValid(videoIdA) && (videoIdA !== videoA)) {
+    if (isIdValid(videoIdA) && videoIdA !== videoA) {
       setVideoARaw(videoIdA);
     }
-    if (isIdValid(videoIdB) && (videoIdB !== videoB)) {
+    if (isIdValid(videoIdB) && videoIdB !== videoB) {
       setVideoBRaw(videoIdB);
     }
   }, [videoIdA, videoIdB]);
@@ -431,24 +438,30 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
 
   // need comment for at least one of the videos?
   const MIN_RATING_DELTA_NEED_COMMENT_MAX_STARS = 5;
-  const needOneCommentMaxStars = Math.max(
-    ...Object.keys(confidenceState).filter((k) => Math.abs(comparison[k] - 50) >
-          MIN_RATING_DELTA_NEED_COMMENT_MAX_STARS)
-      .map((k) => confidenceState[k]),
-  ) >= nStars;
+  const needOneCommentMaxStars =
+    Math.max(
+      ...Object.keys(confidenceState)
+        .filter(
+          (k) =>
+            Math.abs(comparison[k] - 50) >
+            MIN_RATING_DELTA_NEED_COMMENT_MAX_STARS,
+        )
+        .map((k) => confidenceState[k]),
+    ) >= nStars;
 
   // are comments present for one of the videos?
   const commentsPresent = (videoId, cb) => {
     const api = new TournesolAPI.VideoCommentsApi();
-    api.videoCommentsList({ limit: 1,
-      videoVideoId: videoId,
-      userUserUsername: window.username }, (err, data) => {
-      if (err) {
-        cb(false);
-      } else {
-        cb(data.count > 0);
-      }
-    });
+    api.videoCommentsList(
+      { limit: 1, videoVideoId: videoId, userUserUsername: window.username },
+      (err, data) => {
+        if (err) {
+          cb(false);
+        } else {
+          cb(data.count > 0);
+        }
+      },
+    );
   };
 
   const updateExistingRating = (videoA_, videoB_) => {
@@ -501,12 +514,16 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
   };
 
   React.useEffect(() => {
-    if (isIdValid(videoA) && isIdValid(videoB) && (videoIdA !== videoA || videoIdB !== videoB)) {
+    if (
+      isIdValid(videoA) &&
+      isIdValid(videoB) &&
+      (videoIdA !== videoA || videoIdB !== videoB)
+    ) {
       const url = `/rate/${videoA}/${videoB}`;
 
       // only doing an update if the URL differs, to prevent duplicate entries in history
       if (lastHistoryURL !== url) {
-      // console.log("changing URL to", url);
+        // console.log("changing URL to", url);
 
         setLastHistoryURL(url);
 
@@ -861,12 +878,14 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
         <div id="id_no_pending_expert" />
       )}
 
-      {!isIdValid(videoA) || !isIdValid(videoB) ||
-       !isIdValid(videoIdA) || !isIdValid(videoIdB) ? (
-         <div id="id_pending_expert_video" />
-        ) : (
-          <div id="id_no_pending_expert_video" />
-        )}
+      {!isIdValid(videoA) ||
+      !isIdValid(videoB) ||
+      !isIdValid(videoIdA) ||
+      !isIdValid(videoIdB) ? (
+        <div id="id_pending_expert_video" />
+      ) : (
+        <div id="id_no_pending_expert_video" />
+      )}
 
       {submitPending ? (
         <div id="id_pending_submit" />
@@ -968,9 +987,9 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
                               </a>
 
                               {weights[feature] !== 1 &&
-                            state.rating_mode !== 'confidence' &&
-                            (state.rating_mode !== 'skip' ||
-                              weights[feature] !== 0)
+                              state.rating_mode !== 'confidence' &&
+                              (state.rating_mode !== 'skip' ||
+                                weights[feature] !== 0)
                                 ? `, weight: ${weights[feature]}x`
                                 : ''}
                             </Typography>
@@ -978,36 +997,38 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
                         </div>
 
                         {/* SKIP FEATURE */}
-                        {(state.rating_mode === 'skip' || state.rating_mode === 'confidence') && (
-                        <div>
-                          <Tooltip title="Skip this feature" aria-label="add">
-                            <Checkbox
-                              id={`id_checkbox_skip_${feature}`}
-                              disabled={submitted}
-                              checked={skipState[feature]}
-                              onChange={(e) => {
-                                setSkipState({
-                                  ...skipState,
-                                  [feature]: e.target.checked,
-                                });
-                                setWeights({
-                                  ...weights,
-                                  [feature]: e.target.checked ? 0.0 : 1.0,
-                                });
+                        {(state.rating_mode === 'skip' ||
+                          state.rating_mode === 'confidence') && (
+                          <div>
+                            <Tooltip title="Skip this feature" aria-label="add">
+                              <Checkbox
+                                id={`id_checkbox_skip_${feature}`}
+                                disabled={submitted}
+                                checked={skipState[feature]}
+                                onChange={(e) => {
+                                  setSkipState({
+                                    ...skipState,
+                                    [feature]: e.target.checked,
+                                  });
+                                  setWeights({
+                                    ...weights,
+                                    [feature]: e.target.checked ? 0.0 : 1.0,
+                                  });
 
-                                const newConfidenceState = e.target.checked ?
-                                  0 : getDefaultConfidence()[feature];
+                                  const newConfidenceState = e.target.checked
+                                    ? 0
+                                    : getDefaultConfidence()[feature];
 
-                                setConfidenceState({
-                                  ...confidenceState,
-                                  [feature]: newConfidenceState,
-                                });
-                              }}
-                              name={feature}
-                              color="primary"
-                            />
-                          </Tooltip>
-                        </div>
+                                  setConfidenceState({
+                                    ...confidenceState,
+                                    [feature]: newConfidenceState,
+                                  });
+                                }}
+                                name={feature}
+                                color="primary"
+                              />
+                            </Tooltip>
+                          </div>
                         )}
                         {/* CONFIDENCE STARS */}
                         {state.rating_mode === 'confidence' && (
@@ -1043,7 +1064,10 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
                                     [feature]: val * STARS_TO_WEIGHT_COEFF,
                                   });
 
-                                  setSkipState({ ...skipState, [feature]: val === 0 });
+                                  setSkipState({
+                                    ...skipState,
+                                    [feature]: val === 0,
+                                  });
                                 }}
                                 onChangeActive={(event, newHover) => {
                                   setConfidenceStateHover({
@@ -1156,11 +1180,11 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
                 </Alert>
               )}
               {commentError && (
-              <Alert severity="warning" id="id_please_comment_alert">
-                You have set a {nStars}-star confidence on one of the features.
-                Please comment one of the videos to explain the reason for it before
-                submitting the rating.
-              </Alert>
+                <Alert severity="warning" id="id_please_comment_alert">
+                  You have set a {nStars}-star confidence on one of the
+                  features. Please comment one of the videos to explain the
+                  reason for it before submitting the rating.
+                </Alert>
               )}
             </div>
             <Button
