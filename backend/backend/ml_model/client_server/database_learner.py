@@ -75,6 +75,7 @@ class DatabasePreferenceLearner(object):
             Video.objects.all() if video_queryset is None else video_queryset
         )
         self.videos = [x.video_id for x in self.video_queryset]
+        self.videos_set = set(self.videos)
 
         print_memory("DPL:all_videos_loaded")
 
@@ -210,7 +211,10 @@ class DatabasePreferenceLearner(object):
                     | Q(expertrating_video_2__user=user_pref)
                 ).distinct()
 
-                if rated_videos.count() > 0:
+                # only selecting "pre-registered" videos
+                rated_videos = [x for x in rated_videos if x.video_id in self.videos_set]
+
+                if rated_videos:
                     result_user = self.predict_user(user=user_pref, videos=rated_videos)
                     for i, video in enumerate(rated_videos):
                         result = result_user[i]
@@ -227,6 +231,10 @@ class DatabasePreferenceLearner(object):
         # saving overall scores
         # intermediate results are not visible to site visitors
         with transaction.atomic():
+
+            # only selecting "pre-registered" videos
+            videos = [x for x in videos if x.video_id in self.videos_set]
+
             results = self.predict_aggregated(videos=videos)
             for i, video in enumerate(tqdmem(videos, desc="agg_scores_write")):
                 result = results[i]
