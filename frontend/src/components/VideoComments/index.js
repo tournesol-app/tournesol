@@ -14,7 +14,6 @@ import { SUBMIT_EDITED_COMMENT, GET_COMMENTS, TournesolAPI } from '../../api';
 import CommentHeader from './CommentHeader';
 import CommentFooter from './CommentFooter';
 import CommentEditor from './CommentEditor';
-import EmailAddVerifyAlert from '../EmailAddVerifyAlert';
 import getUsernames from './getUsernames';
 
 const useStyles = makeStyles((theme) => ({
@@ -215,7 +214,6 @@ export default (props) => {
 
   return (
     <>
-      <EmailAddVerifyAlert />
       <Typography
         paragraph
         className={classes.title}
