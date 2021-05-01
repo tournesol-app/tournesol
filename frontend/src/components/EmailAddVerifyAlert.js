@@ -39,14 +39,14 @@ export default () => {
           The email domain of your verified email address is currently not
           trusted by Tournesol. We fear that this email domain could be used by
           malicious entities to create numerous fake accounts and gain control
-          of Tournesol through a
+          of Tournesol through a{' '}
           <a href="https://wiki.tournesol.app/index.php/51%25_attack">
             51% attack
           </a>
           . As a result, your ratings will not impact the certified Tournesol
           scores, and your comments will not be visible. You can gain the
           capabilities of certified Tournesol accounts by registering another
-          email address from a
+          email address from a{' '}
           <a href="https://wiki.tournesol.app/index.php/Trusted_email_domains">
             trusted email domain
           </a>
