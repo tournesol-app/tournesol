@@ -61,7 +61,7 @@ export default () => {
       If a contributor has an account and logs in to this site, Tournesol will set a
       temporary cookie to determine if their browser accepts cookies. This cookie contains
       no personal data and is discarded when the contributor closes their browser.
- 
+
       When the contributor logs in, Tournesol will also set up several cookies to save their
       login information and their screen display choices. Login cookies last for two days,
       and screen options cookies last for a year. If the contributor selects “Remember Me”,
@@ -85,20 +85,20 @@ export default () => {
       judgments without the fear of any consequence for their personal life. This is why
       Tournesol has the option of providing judgments and comments privately or anonymously.
       Privately provided raw judgments and comments will not be shared with any third party.
-      
+
       <h4>Public data</h4>
       Contributors are encouraged, when possible, to rate and comment videos publicly.
       This will allow us to collect a public database, which, hopefully, will stimulate
-      research on more beneficial recommendation algorithms. 
+      research on more beneficial recommendation algorithms.
 
       Note that contributors can however publish comments anonymously. In this case, the
       comment is public, and we can certify whether it comes from a certified account, but
       the identity of the author of the comment will never be made public, nor be shared
-      with third parties. 
+      with third parties.
 
       Private ratings, i.e. ratings for which at least one video is rated privately by the
       contributor, will never be made public, nor shared with third parties.
-    
+
       <h4>Aggregate data</h4>
       Our algorithms combine your data to other experts’ data to provide aggregate statistics,
       which are made public. This is typically the case of the Tournesol scores given to
@@ -107,7 +107,7 @@ export default () => {
 
       In any such case, we apply the principles of differential privacy, by adding randomness
       to the actual aggregation, in order to increase the privacy of your data.
-    
+
       <h4>Research purposes</h4>
       We believe that contributors’ data have an important scientific and ethical value to
       help make recommendation systems more robustly beneficial to humanity. This is why the
