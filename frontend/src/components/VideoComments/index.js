@@ -77,7 +77,9 @@ const Comment = ({ comment, alternateColor, isRoot, reload }) => {
   const [isReplying, setIsReplying] = useState(false);
 
   const [allUsernames, setAllUsernames] = React.useState([]);
-  const [allUsernamesRequested, setAllUsernamesRequested] = React.useState(false);
+  const [allUsernamesRequested, setAllUsernamesRequested] = React.useState(
+    false,
+  );
 
   if (!allUsernamesRequested) {
     setAllUsernamesRequested(true);
@@ -99,11 +101,7 @@ const Comment = ({ comment, alternateColor, isRoot, reload }) => {
       >
         <Editor
           readOnly
-          mention={{ separator: ' ',
-            trigger: '@',
-            suggestions: allUsernames,
-          }}
-
+          mention={{ separator: ' ', trigger: '@', suggestions: allUsernames }}
           editorState={getEditorState(commentText)}
           toolbarClassName={classes.toolbarDisabled}
         />
@@ -131,10 +129,7 @@ const Comment = ({ comment, alternateColor, isRoot, reload }) => {
         toolbar={toolbarOptions}
         toolbarClassName={!isEditing && classes.toolbarDisabled}
         style={isEditing && { background: '#dfd7' }}
-        mention={{ separator: ' ',
-          trigger: '@',
-          suggestions: allUsernames,
-        }}
+        mention={{ separator: ' ', trigger: '@', suggestions: allUsernames }}
       />
       <CommentFooter
         comment={comment}
@@ -211,27 +206,32 @@ export default (props) => {
   if (!informationRequested) {
     setInformationRequested(true);
     const api = new TournesolAPI.UserInformationApi();
-    api.userInformationRetrieve(window.user_information_id,
-      (err, resp) => {
-        if (!err) {
-          setCommentAnonymously(resp.comment_anonymously);
-        }
-      });
+    api.userInformationRetrieve(window.user_information_id, (err, resp) => {
+      if (!err) {
+        setCommentAnonymously(resp.comment_anonymously);
+      }
+    });
   }
 
   return (
     <>
       <EmailAddVerifyAlert />
-      <Typography paragraph className={classes.title} color="textSecondary" gutterBottom>
+      <Typography
+        paragraph
+        className={classes.title}
+        color="textSecondary"
+        gutterBottom
+      >
         What do you think about this video? Please respect other users when
         writing comments.
       </Typography>
-      {commentAnonymously !== null &&
+      {commentAnonymously !== null && (
         <CommentEditor
           videoId={props.videoId}
           close={setReload}
           anonymousInitial={commentAnonymously}
-        />}
+        />
+      )}
       <CommentList {...props} isRoot reload={reload} />
     </>
   );
