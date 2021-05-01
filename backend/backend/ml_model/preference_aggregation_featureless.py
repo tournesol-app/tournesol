@@ -537,6 +537,9 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(
                 val = tf.constant(val, dtype=tf.float32)
             kwargs_subset_dict[k] = val
 
+        for key in ['lambda_', 'mu', 'C', 'default_score_value']:
+            kwargs_subset_dict[key] = float(kwargs_subset_dict[key])
+
         return kwargs_subset_dict
 
     def build_loss_fcn(self, loss_fcn=None, **kwargs):

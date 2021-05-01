@@ -41,7 +41,7 @@ hypers/gin_dict.sample_every = 1000
 # mini-batch configuration
 batch_params/gin_dict.sample_experts = 5000000
 batch_params/gin_dict.sample_ratings_per_expert = 1000000000
-batch_params/gin_dict.sample_objects_per_expert = 100000000
+batch_params/gin_dict.sample_objects_per_expert = 1000000000
 
 # sampling with replacement
 choice_or_all.replace = False

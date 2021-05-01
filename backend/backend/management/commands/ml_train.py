@@ -42,10 +42,11 @@ def callback(self, epoch, report_every=50, metric_every=1000, **kwargs):
     is_last = epoch == (self.epochs - 1)
 
     if is_last or epoch % report_every == 0:
-        logging.warning(f"Computing metrics at epoch {epoch}")
         metrics = {}
         if is_last or epoch % metric_every == 0:
+            logging.warning(f"Computing metrics at epoch {epoch}")
             metrics = compute_metrics()
+        logging.warning(f"Reporting at epoch {epoch}")
         tune.report(epoch=epoch, **kwargs, **metrics)
 
 
