@@ -1,4 +1,6 @@
 import backend.ml_model.preference_aggregation_featureless
+import backend.ml_model.preference_aggregation_featureless_tf_dense
+import backend.ml_model.preference_aggregation_featureless_tf_sparse
 import backend.ml_model.helpers
 import backend.ml_model.preference_aggregation_featureless_online
 include 'common.gin'
@@ -7,26 +9,42 @@ include 'common.gin'
 opt/Adam.lr = 1e-3
 
 # initialization settings
-VariableIndexLayer.initializer = @Zeros()
-AllRatingsWithCommon.var_init_cls = @VariableIndexLayer
+VAR_INIT = @Zeros()
+VariableIndexLayer.initializer = %VAR_INIT
+SparseVariableIndexLayer.initializer = %VAR_INIT
+
+DEFAULT_SCORE = 1.0
+AllRatingsWithCommon.default_rating = %DEFAULT_SCORE
+
+# using sparse tensor
+AllRatingsWithCommon.var_init_cls = @SparseVariableIndexLayer
+FeaturelessMedianPreferenceAverageRegularizationAggregator.loss_fcn = @loss_fcn_sparse
+
+# using dense tensor (takes more memory, a bit faster)
+# AllRatingsWithCommon.var_init_cls = @VariableIndexLayer
+# FeaturelessMedianPreferenceAverageRegularizationAggregator.loss_fcn = @loss_fcn_dense
 
 # train step configuration
 FeaturelessMedianPreferenceAverageRegularizationAggregator.optimizer = @opt/Adam()
-FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 100000
+FeaturelessMedianPreferenceAverageRegularizationAggregator.epochs = 50000
 FeaturelessMedianPreferenceAverageRegularizationAggregator.hypers = @hypers/gin_dict()
 FeaturelessMedianPreferenceAverageRegularizationAggregator.batch_params = @batch_params/gin_dict()
 
+
 # loss hyperparameters configuration
 hypers/gin_dict.C = 3.
-hypers/gin_dict.lambda_ = 2.
-hypers/gin_dict.mu = 1.
-hypers/gin_dict.default_score_value = 1.0
+
+# decided on 1st of May 2020 via hyperparam search
+hypers/gin_dict.lambda_ = 1.0
+hypers/gin_dict.mu = 1.0
+
+hypers/gin_dict.default_score_value = %DEFAULT_SCORE
 hypers/gin_dict.sample_every = 1000
 
 # mini-batch configuration
-batch_params/gin_dict.sample_experts = 100
-batch_params/gin_dict.sample_ratings_per_expert = 50000
-batch_params/gin_dict.sample_objects_per_expert = 50000
+batch_params/gin_dict.sample_experts = 5000000
+batch_params/gin_dict.sample_ratings_per_expert = 1000000000
+batch_params/gin_dict.sample_objects_per_expert = 1000000000
 
 # sampling with replacement
 choice_or_all.replace = False
