@@ -5,10 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-import ReportIcon from '@material-ui/icons/Report';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
-import { useHistory } from 'react-router-dom';
 
 import { featureNames } from '../../constants';
 import { TournesolAPI, UPDATE_COMPARISON } from '../../api';
@@ -88,34 +86,21 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Buttons = ({ videoId, _class, commentsOpen, setCommentsOpen }) => {
-  const history = useHistory();
-
-  return (
-    <div className={_class}>
-      <Tooltip title="Report video" aria-label="report">
-        <IconButton
-          size="small"
-          aria-label="report"
-          onClick={() => history.push(`/report/${videoId}`)}
-        >
-          <ReportIcon size="small" />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title="Comments" aria-label="add">
-        <IconButton
-          size="small"
-          aria-label="load"
-          onClick={() => {
-            setCommentsOpen(commentsOpen === videoId ? undefined : videoId);
-          }}
-        >
-          <CommentIcon size="small" />
-        </IconButton>
-      </Tooltip>
-    </div>
-  );
-};
+const Buttons = ({ videoId, _class, commentsOpen, setCommentsOpen }) => (
+  <div className={_class}>
+    <Tooltip title="Comments" aria-label="add">
+      <IconButton
+        size="small"
+        aria-label="load"
+        onClick={() => {
+          setCommentsOpen(commentsOpen === videoId ? undefined : videoId);
+        }}
+      >
+        <CommentIcon size="small" />
+      </IconButton>
+    </Tooltip>
+  </div>
+);
 
 const Comparison = (props) => {
   const { videoA, videoB, feature } = props;
@@ -137,7 +122,9 @@ const Comparison = (props) => {
       <div className={classes.videoContainer}>
         {window.ENABLE_YOUTUBE_VIDEO_EMBED === 1 ? (
           <YouTube videoId={videoA} opts={opts} />
-        ) : <span>Youtube {videoA}</span>}
+        ) : (
+          <span>Youtube {videoA}</span>
+        )}
 
         <Buttons
           videoId={videoA}
@@ -152,7 +139,9 @@ const Comparison = (props) => {
       <div className={classes.videoContainer}>
         {window.ENABLE_YOUTUBE_VIDEO_EMBED === 1 ? (
           <YouTube videoId={videoB} opts={opts} />
-        ) : <span>Youtube {videoB}</span>}
+        ) : (
+          <span>Youtube {videoB}</span>
+        )}
 
         <Buttons
           videoId={videoB}

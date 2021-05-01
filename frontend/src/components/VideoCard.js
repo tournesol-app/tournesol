@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import Card from '@material-ui/core/Card';
 import Chart from 'react-google-charts';
-import ReportIcon from '@material-ui/icons/Report';
 import CommentIcon from '@material-ui/icons/Comment';
 import FunctionsIcon from '@material-ui/icons/Functions';
 import SearchIcon from '@material-ui/icons/Search';
@@ -23,7 +22,13 @@ import RemoveFromQueueIcon from '@material-ui/icons/RemoveFromQueue';
 import Grid from '@material-ui/core/Grid';
 import { TournesolAPI } from '../api';
 import { YoutubePlayer } from '../utils';
-import { featureNames, featureColors, featureList, SEARCH_DIVIDER_COEFF, SEARCH_FEATURE_CONST_ADD } from '../constants';
+import {
+  featureNames,
+  featureColors,
+  featureList,
+  SEARCH_DIVIDER_COEFF,
+  SEARCH_FEATURE_CONST_ADD,
+} from '../constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,7 +109,6 @@ const useStyles = makeStyles((theme) => ({
   paretoPaper: {
     padding: theme.spacing(1),
   },
-
 }));
 
 const numberFormat = (x) => {
@@ -121,7 +125,12 @@ const VideoEmbed = ({ video, showPlayer, setShowPlayer, light = true }) => {
   return (
     <div className={classes.videoContainer}>
       {showPlayer && (
-      <YoutubePlayer videoId={video.video_id} light={light} width={250} height={142} />
+        <YoutubePlayer
+          videoId={video.video_id}
+          light={light}
+          width={250}
+          height={142}
+        />
       )}
       {!showPlayer && (
         <Button
@@ -163,18 +172,32 @@ const InfoChart = ({ showChart, setShowChart, video, showMyScore, myInfo }) => {
     if (showMyScore && myInfo !== null) {
       v = myInfo[k];
     }
-    chartData.push([featureNames[k], SEARCH_FEATURE_CONST_ADD + v, featureColors[k], null]);
+    chartData.push([
+      featureNames[k],
+      SEARCH_FEATURE_CONST_ADD + v,
+      featureColors[k],
+      null,
+    ]);
     return null;
   });
 
   // add search score
   if (video.score_search_term) {
-    chartData.push(['Search match score', video.score_search_term / SEARCH_DIVIDER_COEFF, 'black', null]);
+    chartData.push([
+      'Search match score',
+      video.score_search_term / SEARCH_DIVIDER_COEFF,
+      'black',
+      null,
+    ]);
   }
 
   if (video.minValue === undefined && localMinValue === false) {
-    setLocalMinValue(Math.min([0,
-      Math.min(featureList.map((f) => video[f] + SEARCH_FEATURE_CONST_ADD))]));
+    setLocalMinValue(
+      Math.min([
+        0,
+        Math.min(featureList.map((f) => video[f] + SEARCH_FEATURE_CONST_ADD)),
+      ]),
+    );
   }
 
   if (video.maxValue === undefined && !statsRequested) {
@@ -190,28 +213,40 @@ const InfoChart = ({ showChart, setShowChart, video, showMyScore, myInfo }) => {
 
   return (
     <div className={classes.chartContainer}>
-      {showChart ? (chartReady && (
-        <Chart
-          width="100%"
-          height="100%"
-          chartType="BarChart"
-          loader={<div>Loading Chart</div>}
-          data={chartData}
-          options={{
-            bar: { groupWidth: '80%' },
-            vAxis: { textPosition: 'none' },
-            chartArea: { width: '95%', height: '95%' },
-            hAxis: {
-              minValue: (video.minValue !== undefined ? video.minValue : localMinValue),
-              maxValue: (video.maxValue !== undefined ? video.maxValue : globalMaxValue),
-              viewWindow: {
-                min: (video.minValue !== undefined ? video.minValue : localMinValue),
-                max: (video.maxValue !== undefined ? video.maxValue : globalMaxValue),
+      {showChart ? (
+        chartReady && (
+          <Chart
+            width="100%"
+            height="100%"
+            chartType="BarChart"
+            loader={<div>Loading Chart</div>}
+            data={chartData}
+            options={{
+              bar: { groupWidth: '80%' },
+              vAxis: { textPosition: 'none' },
+              chartArea: { width: '95%', height: '95%' },
+              hAxis: {
+                minValue:
+                  video.minValue !== undefined ? video.minValue : localMinValue,
+                maxValue:
+                  video.maxValue !== undefined
+                    ? video.maxValue
+                    : globalMaxValue,
+                viewWindow: {
+                  min:
+                    video.minValue !== undefined
+                      ? video.minValue
+                      : localMinValue,
+                  max:
+                    video.maxValue !== undefined
+                      ? video.maxValue
+                      : globalMaxValue,
+                },
               },
-            },
-          }}
-        />
-      )) : (
+            }}
+          />
+        )
+      ) : (
         <Button
           variant="contained"
           color="primary"
@@ -264,7 +299,6 @@ const InfoScore = ({ video, myInfo, showMyInfo }) => {
               aria-owns={paretoOpen ? 'pareto-mouse-over-popover' : undefined}
               onMouseEnter={handleParetoPopoverOpen}
               onMouseLeave={handleParetoPopoverClose}
-
               style={{ width: '1em' }}
               src="/static/video_pareto_logo.png"
               alt="pareto_optimal"
@@ -288,57 +322,73 @@ const InfoScore = ({ video, myInfo, showMyInfo }) => {
               onClose={handleParetoPopoverClose}
               disableRestoreFocus
             >
-              <Typography>This video is Pareto-optimal! This means that no other video uniformly
-                outperforms it according to Tournesol contributors.
+              <Typography>
+                This video is Pareto-optimal! This means that no other video
+                uniformly outperforms it according to Tournesol contributors.
               </Typography>
             </Popover>
-
           </div>
         ) : (
-          <img style={{ width: '1em' }} src="/static/video_logo.png" alt="tournesol" />
+          <img
+            style={{ width: '1em' }}
+            src="/static/video_logo.png"
+            alt="tournesol"
+          />
         )}
       </span>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span className={classes.score}>Score {showMyInfo && myInfo !== null ?
-          Math.round(myInfo.score + video.score_search_term)
-          : Math.round(video.score)}
+        <span className={classes.score}>
+          Score{' '}
+          {showMyInfo && myInfo !== null
+            ? Math.round(myInfo.score + video.score_search_term)
+            : Math.round(video.score)}
         </span>
         {video.rating_n_ratings !== undefined && (
           <span style={{ color: '#666', fontSize: '90%' }}>
             {showMyInfo && myInfo !== null && (
-            <span>Based on {myInfo.rating_n_ratings} ratings by me</span>
+              <span>Based on {myInfo.rating_n_ratings} ratings by me</span>
             )}
             {!showMyInfo && (
-            <span>
-              Based on {video.rating_n_ratings} ratings by{' '}
-              <HtmlTooltip
-                className={classes.contributorsTooltip}
-                title={(
-                  <div>
-                    {video.public_experts !== undefined && video.public_experts.map((e) => (
-                      <span>
-                        <a href={`/user/${e.username}`}>@{e.username}</a><br />
-                      </span>))}
-                    {video.n_public_experts !== undefined && video.public_experts !== undefined &&
-                    video.n_public_experts > video.public_experts.length && (
-                    <span>...<br /></span>
-                    )}
-                    {video.n_private_experts !== undefined && video.n_private_experts > 0 && (
-                    <span>
+              <span>
+                Based on {video.rating_n_ratings} ratings by{' '}
+                <HtmlTooltip
+                  className={classes.contributorsTooltip}
+                  title={
+                    <div>
+                      {video.public_experts !== undefined &&
+                        video.public_experts.map((e) => (
+                          <span>
+                            <a href={`/user/${e.username}`}>@{e.username}</a>
+                            <br />
+                          </span>
+                        ))}
                       {video.n_public_experts !== undefined &&
-                       video.n_public_experts > 0 ? 'and ' : ''}
-                      {video.n_private_experts} anonymous contributors
-                    </span>
-                    )}
-                  </div>)}
-                interactive
-              >
-                <span>
-                  {video.rating_n_experts} contributors
-                </span>
-              </HtmlTooltip>
-            </span>)}
-
+                        video.public_experts !== undefined &&
+                        video.n_public_experts >
+                          video.public_experts.length && (
+                          <span>
+                            ...
+                            <br />
+                          </span>
+                      )}
+                      {video.n_private_experts !== undefined &&
+                        video.n_private_experts > 0 && (
+                          <span>
+                            {video.n_public_experts !== undefined &&
+                            video.n_public_experts > 0
+                              ? 'and '
+                              : ''}
+                            {video.n_private_experts} anonymous contributors
+                          </span>
+                      )}
+                    </div>
+                  }
+                  interactive
+                >
+                  <span>{video.rating_n_experts} contributors</span>
+                </HtmlTooltip>
+              </span>
+            )}
           </span>
         )}
       </div>
@@ -355,17 +405,27 @@ const TitleBar = ({ video }) => {
         <span className={classes.title}>{video.name}</span>
         <span className={classes.subtitle}>
           {video.uploader} · {numberFormat(video.views)} views ·{' '}
-          {video.publication_date ? `${video.publication_date.getFullYear()}.${video.publication_date.getMonth()}.${video.publication_date.getDate()}` : 'No date'}
+          {video.publication_date
+            ? `${video.publication_date.getFullYear()}.${video.publication_date.getMonth()}.${video.publication_date.getDate()}`
+            : 'No date'}
         </span>
       </div>
     </div>
   );
 };
 
-const Controls = ({ video, setShowMyScore, showMyScore, needShowMyScoreToggle, myInfo,
-  showRatingsLink, forceShowAddRateLater = true, onRateLaterClick = null,
+const Controls = ({
+  video,
+  setShowMyScore,
+  showMyScore,
+  needShowMyScoreToggle,
+  myInfo,
+  showRatingsLink,
+  forceShowAddRateLater = true,
+  onRateLaterClick = null,
   showRateLater = true,
-  setInRateLater = null }) => {
+  setInRateLater = null,
+}) => {
   const history = useHistory();
   const [thankStatus, setThankStatus] = React.useState(null);
   const [rateLaterStatus, setRateLaterStatus] = React.useState(null);
@@ -438,17 +498,17 @@ const Controls = ({ video, setShowMyScore, showMyScore, needShowMyScoreToggle, m
     const api = new TournesolAPI.RateLaterApi();
 
     if (add) {
-      api.rateLaterCreate({ video: video.video_id },
-        () => {
-          setRateLaterStatus(null);
-          innerOnRateLaterClick();
-        });
+      api.rateLaterCreate({ video: video.video_id }, () => {
+        setRateLaterStatus(null);
+        innerOnRateLaterClick();
+      });
     } else if (rateLaterId !== null) {
       api.rateLaterDestroy(rateLaterId, () => {
         setRateLaterStatus(null);
         innerOnRateLaterClick();
       });
-    } else { // something is wrong, better reload the data...
+    } else {
+      // something is wrong, better reload the data...
       setRateLaterStatus(null);
       innerOnRateLaterClick();
     }
@@ -460,61 +520,51 @@ const Controls = ({ video, setShowMyScore, showMyScore, needShowMyScoreToggle, m
         <Grid item xs={6} spacing={0}>
           <Grid container>
             <Grid item xs={12}>
-              <Tooltip title="Report video" aria-label="report">
-                <IconButton
-                  className="button_video_reports"
-                  aria-label="report"
-                  style={{ background: video.n_reports ? 'red' : '' }}
-                  onClick={() => history.push(`/report/${video.video_id}`)}
-                >
-                  <ReportIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={12}>
-
               {needShowMyScoreToggle && myInfo !== null && (
-                <Tooltip title={showMyScore ? 'Show search results scores' : 'Show my score'} aria-label="add">
+                <Tooltip
+                  title={
+                    showMyScore ? 'Show search results scores' : 'Show my score'
+                  }
+                  aria-label="add"
+                >
                   <IconButton
                     aria-label="load"
                     onClick={() => setShowMyScore(!showMyScore)}
                   >
                     {showMyScore ? <SearchIcon /> : <PersonIcon />}
                   </IconButton>
-                </Tooltip>)}
+                </Tooltip>
+              )}
             </Grid>
             <Grid item xs={12}>
-
               {thankStatus === true && (
-              <Tooltip title="Remove thank you" aria-label="add">
-                <IconButton
-                  id={`id_${video.video_id}_unthank`}
-                  aria-label="load"
-                  onClick={() => thank('unthank')}
-                >
-                  <ThumbDownIcon />
-                </IconButton>
-              </Tooltip>
+                <Tooltip title="Remove thank you" aria-label="add">
+                  <IconButton
+                    id={`id_${video.video_id}_unthank`}
+                    aria-label="load"
+                    onClick={() => thank('unthank')}
+                  >
+                    <ThumbDownIcon />
+                  </IconButton>
+                </Tooltip>
               )}
               {thankStatus === false && (
-              <Tooltip title="Thank contributors" aria-label="add">
-                <IconButton
-                  id={`id_${video.video_id}_thank`}
-                  aria-label="load"
-                  onClick={() => thank('thank')}
-                >
-                  <ThumbUpIcon />
-                </IconButton>
-              </Tooltip>
+                <Tooltip title="Thank contributors" aria-label="add">
+                  <IconButton
+                    id={`id_${video.video_id}_thank`}
+                    aria-label="load"
+                    onClick={() => thank('thank')}
+                  >
+                    <ThumbUpIcon />
+                  </IconButton>
+                </Tooltip>
               )}
             </Grid>
           </Grid>
-
         </Grid>
         <Grid item xs={6}>
           <Grid container>
             <Grid item xs={12}>
-
               <Tooltip title="Comments" aria-label="add">
                 <IconButton
                   aria-label="load"
@@ -537,17 +587,18 @@ const Controls = ({ video, setShowMyScore, showMyScore, needShowMyScoreToggle, m
             </Grid>
 
             {showRatingsLink === true && (
-            <Grid item xs={12}>
-              <Tooltip title="Ratings" aria-label="add">
-                <IconButton
-                  className="button_video_ratings"
-                  aria-label="load"
-                  onClick={() => history.push(`/ratings/${video.video_id}`)}
-                >
-                  <FilterListIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>)}
+              <Grid item xs={12}>
+                <Tooltip title="Ratings" aria-label="add">
+                  <IconButton
+                    className="button_video_ratings"
+                    aria-label="load"
+                    onClick={() => history.push(`/ratings/${video.video_id}`)}
+                  >
+                    <FilterListIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            )}
 
             <Grid item xs={12}>
               {rateLaterStatus === true && showRateLater === true && (
@@ -561,32 +612,39 @@ const Controls = ({ video, setShowMyScore, showMyScore, needShowMyScoreToggle, m
                   </IconButton>
                 </Tooltip>
               )}
-              {(rateLaterStatus === false) && showRateLater === true
-              && ((myInfo === null) || forceShowAddRateLater) && (
-                <Tooltip title="Add to Rate later" aria-label="add">
-                  <IconButton
-                    id={`id_${video.video_id}_rate_later`}
-                    aria-label="load"
-                    onClick={() => rateLater(true)}
-                  >
-                    <QueuePlayNextIcon />
-                  </IconButton>
-                </Tooltip>
+              {rateLaterStatus === false &&
+                showRateLater === true &&
+                (myInfo === null || forceShowAddRateLater) && (
+                  <Tooltip title="Add to Rate later" aria-label="add">
+                    <IconButton
+                      id={`id_${video.video_id}_rate_later`}
+                      aria-label="load"
+                      onClick={() => rateLater(true)}
+                    >
+                      <QueuePlayNextIcon />
+                    </IconButton>
+                  </Tooltip>
               )}
             </Grid>
           </Grid>
         </Grid>
-
       </Grid>
-
     </div>
   );
 };
 
-export default ({ video, showPlayer_ = true, showChart_ = true, onlyInfo,
-  needShowMyScoreToggle = false, showRatingsLink = false, forceShowAddRateLater = true,
+export default ({
+  video,
+  showPlayer_ = true,
+  showChart_ = true,
+  onlyInfo,
+  needShowMyScoreToggle = false,
+  showRatingsLink = false,
+  forceShowAddRateLater = true,
   showRateLater = true,
-  onRateLaterClick = null, setInRateLater = null }) => {
+  onRateLaterClick = null,
+  setInRateLater = null,
+}) => {
   const classes = useStyles();
 
   const [showPlayer, setShowPlayer] = React.useState(showPlayer_);
@@ -598,11 +656,14 @@ export default ({ video, showPlayer_ = true, showChart_ = true, onlyInfo,
   if (myInfo === null && !myInfoRequested) {
     setMyInfoRequested(true);
     const api = new TournesolAPI.VideoRatingsApi();
-    api.videoRatingsList({ limit: 1, videoVideoId: video.video_id }, (_err, data) => {
-      if (!_err && data.count > 0) {
-        setMyInfo(data.results[0]);
-      }
-    });
+    api.videoRatingsList(
+      { limit: 1, videoVideoId: video.video_id },
+      (_err, data) => {
+        if (!_err && data.count > 0) {
+          setMyInfo(data.results[0]);
+        }
+      },
+    );
   }
 
   return (
@@ -622,15 +683,14 @@ export default ({ video, showPlayer_ = true, showChart_ = true, onlyInfo,
       >
         <Grid item>
           {!onlyInfo && (
-          <VideoEmbed
-            video={video}
-            showPlayer={showPlayer}
-            setShowPlayer={setShowPlayer}
-          />
+            <VideoEmbed
+              video={video}
+              showPlayer={showPlayer}
+              setShowPlayer={setShowPlayer}
+            />
           )}
         </Grid>
         <Grid item>
-
           <div className={classes.infoContainer}>
             <TitleBar video={video} />
             <InfoScore video={video} myInfo={myInfo} showMyInfo={showMyScore} />
@@ -646,18 +706,20 @@ export default ({ video, showPlayer_ = true, showChart_ = true, onlyInfo,
 
         <Grid item>
           <div className={classes.controlsContainer}>
-            {!onlyInfo && window.is_authenticated === 1 && <Controls
-              video={video}
-              needShowMyScoreToggle={needShowMyScoreToggle}
-              setShowMyScore={setShowMyScore}
-              showMyScore={showMyScore}
-              myInfo={myInfo}
-              forceShowAddRateLater={forceShowAddRateLater}
-              showRatingsLink={showRatingsLink}
-              onRateLaterClick={onRateLaterClick}
-              setInRateLater={setInRateLater}
-              showRateLater={showRateLater}
-            />}
+            {!onlyInfo && window.is_authenticated === 1 && (
+              <Controls
+                video={video}
+                needShowMyScoreToggle={needShowMyScoreToggle}
+                setShowMyScore={setShowMyScore}
+                showMyScore={showMyScore}
+                myInfo={myInfo}
+                forceShowAddRateLater={forceShowAddRateLater}
+                showRatingsLink={showRatingsLink}
+                onRateLaterClick={onRateLaterClick}
+                setInRateLater={setInRateLater}
+                showRateLater={showRateLater}
+              />
+            )}
           </div>
         </Grid>
       </Grid>

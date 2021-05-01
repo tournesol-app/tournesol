@@ -80,77 +80,75 @@ export function errorToJsonError(err) {
 
 // download URL and convert to b64 data URL
 // https://gist.github.com/oliyh/db3d1a582aefe6d8fee9
-export const urlToDataURL = (urlOrig, name = null) =>
-  new Promise((resolve, reject) => {
-    // http -> https
+export const urlToDataURL = (urlOrig, name = null) => new Promise((resolve, reject) => {
+  // http -> https
 
-    let url;
-    if (
-      window.location.protocol.startsWith('https') &&
+  let url;
+  if (
+    window.location.protocol.startsWith('https') &&
       urlOrig &&
       urlOrig.startsWith('http:')
-    ) {
-      url = urlOrig.replace('http://', 'https://');
+  ) {
+    url = urlOrig.replace('http://', 'https://');
+  } else {
+    url = urlOrig;
+  }
+
+  const xmlHTTP = new XMLHttpRequest();
+  xmlHTTP.open('GET', url, true);
+
+  if (!url) {
+    reject(new Error('Please provide a url'));
+  }
+
+  xmlHTTP.responseType = 'arraybuffer';
+  xmlHTTP.onload = function onload() {
+    const arr = new Uint8Array(this.response);
+    const contentType = this.getResponseHeader('content-type');
+
+    // https://gist.github.com/jonleighton/958841
+    // TODO: replace with a faster library call instead of JS loop
+    function uint8ToBase64(buffer) {
+      let binary = '';
+      const len = buffer.byteLength;
+      for (let i = 0; i < len; i += 1) {
+        binary += String.fromCharCode(buffer[i]);
+      }
+      return window.btoa(binary);
+    }
+    // var raw = new TextDecoder("utf-8").decode(arr);
+    // var b64 = btoa(raw);
+    const b64 = uint8ToBase64(arr);
+    let basename;
+    if (name === null) {
+      [basename] = url.split('/').reverse();
     } else {
-      url = urlOrig;
+      basename = name;
     }
-
-    const xmlHTTP = new XMLHttpRequest();
-    xmlHTTP.open('GET', url, true);
-
-    if (!url) {
-      reject(new Error('Please provide a url'));
-    }
-
-    xmlHTTP.responseType = 'arraybuffer';
-    xmlHTTP.onload = function onload() {
-      const arr = new Uint8Array(this.response);
-      const contentType = this.getResponseHeader('content-type');
-
-      // https://gist.github.com/jonleighton/958841
-      // TODO: replace with a faster library call instead of JS loop
-      function uint8ToBase64(buffer) {
-        let binary = '';
-        const len = buffer.byteLength;
-        for (let i = 0; i < len; i += 1) {
-          binary += String.fromCharCode(buffer[i]);
-        }
-        return window.btoa(binary);
-      }
-      // var raw = new TextDecoder("utf-8").decode(arr);
-      // var b64 = btoa(raw);
-      const b64 = uint8ToBase64(arr);
-      let basename;
-      if (name === null) {
-        [basename] = url.split('/').reverse();
-      } else {
-        basename = name;
-      }
-      const dataURL = `data:${contentType};filename=${basename};base64,${b64}`;
-      resolve(dataURL);
-    };
-    xmlHTTP.onerror = function error() {
-      reject(new Error('Request failed'));
-    };
-    xmlHTTP.send();
-  });
+    const dataURL = `data:${contentType};filename=${basename};base64,${b64}`;
+    resolve(dataURL);
+  };
+  xmlHTTP.onerror = function error() {
+    reject(new Error('Request failed'));
+  };
+  xmlHTTP.send();
+});
 
 /// get a JSON froa a given URL
-export const getJSON = (url) =>
-  new Promise((resolve, reject) => {
-    const xmlHTTP = new XMLHttpRequest();
-    xmlHTTP.open('GET', url, true);
-    xmlHTTP.setRequestHeader('Accept', 'application/json');
-    xmlHTTP.setRequestHeader('X-CSRFToken', csrftoken);
-    xmlHTTP.responseType = 'json';
-    xmlHTTP.onload = function onload() {
-      resolve(this.response);
-    };
-    xmlHTTP.onerror = function onerror() {
-      reject(new Error('Request failed'));
-    };
-    xmlHTTP.send();
-  });
+export const getJSON = (url) => new Promise((resolve, reject) => {
+  const xmlHTTP = new XMLHttpRequest();
+  xmlHTTP.open('GET', url, true);
+  xmlHTTP.setRequestHeader('Accept', 'application/json');
+  xmlHTTP.setRequestHeader('X-CSRFToken', csrftoken);
+  xmlHTTP.responseType = 'json';
+  xmlHTTP.onload = function onload() {
+    resolve(this.response);
+  };
+  xmlHTTP.onerror = function onerror() {
+    reject(new Error('Request failed'));
+  };
+  xmlHTTP.send();
+});
 
 /// Get tournesol API schema
 export const getSchema = () => getJSON('/static/schema.json');
@@ -173,9 +171,7 @@ export function fromOpenAPIToJsonSchema(apiSchema) {
 export const GET_VIDEO_FOR_COMPARISON = (onlyRated, callback) => {
   const api = new TournesolAPI.ExpertRatingsApi();
   // callback(video.video_id)
-  api.apiV2ExpertRatingsSampleVideo({ onlyRated }, (_err, data, _resp) =>
-    callback(data.video_id),
-  );
+  api.apiV2ExpertRatingsSampleVideo({ onlyRated }, (_err, data, _resp) => callback(data.video_id));
 };
 
 // Writes a new entry in the database table ExpertRating
@@ -263,16 +259,14 @@ export const GET_PREFERENCES = (callback) => {
 };
 
 // API call to query a list of videos to recommend for a USER
-export const GET_TOP_RECOMMENDATION = (preferences, options, callback) => {
+export const GET_TOP_RECOMMENDATION = (preferences, opt, callback) => {
   const api = new TournesolAPI.VideosApi();
   SET_PREFERENCES(preferences, () => {
-    if (options.searchYTRaw === 'true') {
-      api.apiV2VideoSearchYoutube(options.search, {}, (_err, data, _resp) =>
-        callback(data.results),
-      );
+    if (opt.searchYTRaw === 'true') {
+      api.apiV2VideoSearchYoutube(opt.search, {}, (_err, data, _resp) => callback(data.results));
     } else {
       api.apiV2VideoSearchTournesol(
-        { ...options, ...camelcaseKeys(preferences) },
+        { ...opt, ...camelcaseKeys(preferences) },
         (_err, data, _resp) => callback(data.results),
       );
     }
@@ -286,21 +280,6 @@ export const SUBMIT_VIDEO = (videoId, callbackSuccess, callbackFail) => {
     if (err) callbackFail(formatError(err));
     else callbackSuccess(data);
   });
-};
-
-// API call to report VIDEOS
-export const REPORT_VIDEO = (videoId, info, callbackSuccess, callbackFail) => {
-  const api = new TournesolAPI.VideoReportsApi();
-  api.videoReportsCreate(
-    TournesolAPI.VideoReportsSerializerV2.constructFromObject({
-      ...info,
-      video: videoId,
-    }),
-    (err, data, _resp) => {
-      if (err) callbackFail(formatError(err));
-      else callbackSuccess(data);
-    },
-  );
 };
 
 // API call to query a list of all videos
@@ -327,14 +306,6 @@ export const GET_COMMENTS = (videoId, callback, parentComment = null) => {
   );
 };
 
-// API call to get reports
-export const GET_REPORTS = (videoId, callback) => {
-  const api = new TournesolAPI.VideoReportsApi();
-  api.videoReportsList({ videoVideoId: videoId }, (_err, data, _resp) =>
-    callback(data.results),
-  );
-};
-
 // API call to get ratings for videos
 export const GET_SINGLE_VIDEO_RATINGS = (callback, options = {}) => {
   const api = new TournesolAPI.VideoRatingsApi();
@@ -350,9 +321,7 @@ export const GET_COMPARISON_RATINGS = (callback, options = {}) => {
 // API call to get cyclic inconsistencies
 export const GET_CYCLIC_INCONSISTENCIES = (username, callback) => {
   const api = new TournesolAPI.ExpertRatingsApi();
-  api.apiV2ExpertRatingsShowInconsistencies({}, (_err, data, _resp) =>
-    callback(data.results),
-  );
+  api.apiV2ExpertRatingsShowInconsistencies({}, (_err, data, _resp) => callback(data.results));
 };
 
 // API call to submit a comment
