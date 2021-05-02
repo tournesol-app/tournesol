@@ -17,16 +17,9 @@ class FeatureSerializer(serializers.Serializer):
                                                   help_text="Is enabled for new users?")
 
 
-class ReportFieldSerializer(serializers.Serializer):
-    """Video reporting fields."""
-    field = serializers.CharField(required=True, help_text="Short field name")
-    description = serializers.CharField(required=True, help_text="Field full description")
-
-
 class ConstantsSerializerV2(serializers.Serializer):
     """Serialize statistics for the website."""
     features = FeatureSerializer(many=True, help_text="Features used on the website to rate videos")
-    report_fields = ReportFieldSerializer(many=True, help_text="Video reporting fields")
     search_divider_coefficient = serializers.FloatField(required=True,
                                                         help_text=comments['SEARCH_DIVIDER_COEFF'])
     search_feature_constant_add = serializers.FloatField(
@@ -73,18 +66,10 @@ class ConstantsViewSetV2(viewsets.ViewSet, WithPKOverflowProtection):
                 'enabled_by_default': fields['featureIsEnabledByDeFault'][key],
             })
 
-        report_fields = []
-        for key, val in fields['videoReportFieldNames'].items():
-            report_fields.append({
-                'field': key,
-                'description': val,
-            })
-
         data = {
             'recaptcha_v2_public_key': fields['DRF_RECAPTCHA_PUBLIC_KEY'],
             'search_feature_constant_add': fields['SEARCH_FEATURE_CONST_ADD'],
             'search_divider_coefficient': fields['SEARCH_DIVIDER_COEFF'],
-            'report_fields': report_fields,
             'features': features,
             'youtubeVideoIdRegexSymbol': fields['youtubeVideoIdRegexSymbol'],
             'minNumRateLater': fields['minNumRateLater'],

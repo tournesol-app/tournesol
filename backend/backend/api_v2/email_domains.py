@@ -50,5 +50,6 @@ class EmailDomainViewSetV2(mixins.ListModelMixin,
 
     queryset = EmailDomain.objects.all().filter(status=EmailDomain.STATUS_ACCEPTED).\
         annotate(n_verified_emails=Count('verifiable_emails_domain',
-                                         filter=Q(verifiable_emails_domain__is_verified=True)))
+                                         filter=Q(verifiable_emails_domain__is_verified=True))).\
+        order_by('-n_verified_emails')
     serializer_class = EmailDomainSerializer
