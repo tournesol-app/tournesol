@@ -104,8 +104,6 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         help_text="Number of experts in ratings", read_only=True)
     rating_n_ratings = serializers.IntegerField(
         help_text="Number of ratings", read_only=True)
-    n_reports = serializers.IntegerField(
-        help_text="Number of times video was reported", read_only=True)
     duration = serializers.DurationField(
         help_text="Video Duration",
         allow_null=True,
@@ -216,7 +214,6 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             'score_search_term',
             'rating_n_experts',
             'rating_n_ratings',
-            'n_reports',
             'public_experts',
             'n_public_experts',
             'n_private_experts',
