@@ -508,6 +508,24 @@ class VideoViewSetV2(mixins.CreateModelMixin,
                 'search', ""), queryset=queryset)
         return self.return_queryset(queryset)
 
+    @extend_schema(responses={
+                              200: VSMany,
+                              400: None,
+                              403: None,
+                              404: None
+            })
+    @action(methods=['GET'], detail=False, name="List of rated videos")
+    def rated_videos(self, request):
+        filter = self.filterset_class(request=request)
+        queryset = self.get_queryset()
+        queryset = queryset.order_by('-score')
+        queryset = filter.filter_empty(self.filter_queryset(queryset))
+        queryset = queryset.filter(
+                Q(expertrating_video_1__user__user__username=request.user.username) |
+                Q(expertrating_video_1__user__user__username=request.user.username)).\
+            distinct()
+        return self.return_queryset(queryset)
+
     @extend_schema(operation_id="api_v2_video_search_tournesol",
                    responses={200: VSMany,
                               400: None,
