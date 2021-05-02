@@ -809,7 +809,8 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     @property
     def n_reports(self):
         """Number of associated reports."""
-        return self.reports().count()
+        # reports are deprecated
+        return 0
 
     @property
     def rating_n_ratings(self):

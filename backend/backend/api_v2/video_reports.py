@@ -52,7 +52,7 @@ class VideoReportsViewSetV2(mixins.RetrieveModelMixin,
                             mixins.UpdateModelMixin,
                             WithPKOverflowProtection,
                             viewsets.GenericViewSet, ):
-    """Report videos and show reports."""
+    """Report videos and show reports [DEPRECATED]."""
 
     UPDATE_DOCSTRING = {
         'list': "Show all anonymized video reports",
