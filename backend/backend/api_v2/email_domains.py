@@ -44,5 +44,5 @@ class EmailDomainViewSetV2(mixins.ListModelMixin,
                 200: EmailDomainSerializer(
                     many=True), 400: None}}}
 
-    queryset = EmailDomain.objects.all()
+    queryset = EmailDomain.objects.all().filter(status=EmailDomain.STATUS_ACCEPTED)
     serializer_class = EmailDomainSerializer
