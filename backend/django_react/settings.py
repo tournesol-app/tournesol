@@ -19,6 +19,12 @@ import builtins
 import logging
 builtins.basestring = str
 
+# enable DEBUG log entries
+if os.environ.get('DJANGO_LOGGING_DEBUG', None) is not None:
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.DEBUG)
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -327,6 +333,9 @@ EMAIL_BACKENDS = {
 EMAIL_BACKEND = EMAIL_BACKENDS[os.environ.get('EMAIL_BACKEND', 'smtp')]
 EMAIL_USE_SINGLE_THREAD = os.environ.get('EMAIL_USE_SINGLE_THREAD', None) is not None
 EMAIL_FILE_PATH = '/tmp/app-messages'
+
+# only send a second verification e-mail after that time has passed
+EMAIL_SEND_EVERY_SECONDS = 3600
 
 EMAIL_ACTIVE_FIELD = 'is_active'
 
