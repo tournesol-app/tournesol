@@ -25,10 +25,11 @@ class OnlyUsernameAndID {
      * @alias module:model/OnlyUsernameAndID
      * @param id {Number} 
      * @param username {String} New login name
+     * @param userId {Number} DjangoUser ID
      */
-    constructor(id, username) { 
+    constructor(id, username, userId) { 
         
-        OnlyUsernameAndID.initialize(this, id, username);
+        OnlyUsernameAndID.initialize(this, id, username, userId);
     }
 
     /**
@@ -36,9 +37,10 @@ class OnlyUsernameAndID {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, username) { 
+    static initialize(obj, id, username, userId) { 
         obj['id'] = id;
         obj['username'] = username;
+        obj['user__id'] = userId;
     }
 
     /**
@@ -58,6 +60,9 @@ class OnlyUsernameAndID {
             if (data.hasOwnProperty('username')) {
                 obj['username'] = ApiClient.convertToType(data['username'], 'String');
             }
+            if (data.hasOwnProperty('user__id')) {
+                obj['user__id'] = ApiClient.convertToType(data['user__id'], 'Number');
+            }
         }
         return obj;
     }
@@ -75,6 +80,12 @@ OnlyUsernameAndID.prototype['id'] = undefined;
  * @member {String} username
  */
 OnlyUsernameAndID.prototype['username'] = undefined;
+
+/**
+ * DjangoUser ID
+ * @member {Number} user__id
+ */
+OnlyUsernameAndID.prototype['user__id'] = undefined;
 
 
 

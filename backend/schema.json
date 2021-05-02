@@ -1627,7 +1627,7 @@
         "/api/v2/login_signup/login/": {
             "patch": {
                 "operationId": "login_signup_login_partial_update",
-                "description": "Register a user.",
+                "description": "Log in to Tournesol.",
                 "tags": [
                     "login_signup"
                 ],
@@ -3770,316 +3770,6 @@
                 }
             }
         },
-        "/api/v2/video_reports/": {
-            "get": {
-                "operationId": "video_reports_list",
-                "description": "Show all anonymized video reports",
-                "parameters": [
-                    {
-                        "name": "limit",
-                        "required": false,
-                        "in": "query",
-                        "description": "Number of results to return per page.",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "offset",
-                        "required": false,
-                        "in": "query",
-                        "description": "The initial index from which to return the results.",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "only_mine",
-                        "required": false,
-                        "in": "query",
-                        "description": "only_mine",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "video__video_id",
-                        "required": false,
-                        "in": "query",
-                        "description": "video__video_id",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "tags": [
-                    "video_reports"
-                ],
-                "security": [
-                    {
-                        "cookieAuth": []
-                    },
-                    {
-                        "tokenAuth": []
-                    }
-                ],
-                "responses": {
-                    "400": {
-                        "description": "No response body"
-                    },
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PaginatedVideoReportsSerializerV2List"
-                                }
-                            }
-                        },
-                        "description": ""
-                    }
-                }
-            },
-            "post": {
-                "operationId": "video_reports_create",
-                "description": "Report a video",
-                "tags": [
-                    "video_reports"
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                            }
-                        },
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                            }
-                        },
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "security": [
-                    {
-                        "cookieAuth": []
-                    },
-                    {
-                        "tokenAuth": []
-                    }
-                ],
-                "responses": {
-                    "400": {
-                        "description": "No response body"
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                                }
-                            }
-                        },
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/v2/video_reports/{id}/": {
-            "get": {
-                "operationId": "video_reports_retrieve",
-                "description": "Get one video report",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "A unique integer value identifying this video reports.",
-                        "required": true
-                    }
-                ],
-                "tags": [
-                    "video_reports"
-                ],
-                "security": [
-                    {
-                        "cookieAuth": []
-                    },
-                    {
-                        "tokenAuth": []
-                    }
-                ],
-                "responses": {
-                    "404": {
-                        "description": "No response body"
-                    },
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                                }
-                            }
-                        },
-                        "description": ""
-                    }
-                }
-            },
-            "put": {
-                "operationId": "video_reports_update",
-                "description": "Change all fields in a video report",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "A unique integer value identifying this video reports.",
-                        "required": true
-                    }
-                ],
-                "tags": [
-                    "video_reports"
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                            }
-                        },
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                            }
-                        },
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "security": [
-                    {
-                        "cookieAuth": []
-                    },
-                    {
-                        "tokenAuth": []
-                    }
-                ],
-                "responses": {
-                    "404": {
-                        "description": "No response body"
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "description": "No response body"
-                    }
-                }
-            },
-            "patch": {
-                "operationId": "video_reports_partial_update",
-                "description": "Change some fields in a video report",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "A unique integer value identifying this video reports.",
-                        "required": true
-                    }
-                ],
-                "tags": [
-                    "video_reports"
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PatchedVideoReportsSerializerV2"
-                            }
-                        },
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PatchedVideoReportsSerializerV2"
-                            }
-                        },
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PatchedVideoReportsSerializerV2"
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "cookieAuth": []
-                    },
-                    {
-                        "tokenAuth": []
-                    }
-                ],
-                "responses": {
-                    "404": {
-                        "description": "No response body"
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "description": "No response body"
-                    }
-                }
-            }
-        },
         "/api/v2/videos/": {
             "get": {
                 "operationId": "videos_list",
@@ -4415,6 +4105,164 @@
                         "description": ""
                     },
                     "400": {
+                        "description": "No response body"
+                    },
+                    "404": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/v2/videos/rated_videos/": {
+            "get": {
+                "operationId": "videos_rated_videos_list",
+                "description": "Get videos and search results.",
+                "parameters": [
+                    {
+                        "name": "days_ago_gte",
+                        "required": false,
+                        "in": "query",
+                        "description": "Upload date, older than x days ago",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "days_ago_lte",
+                        "required": false,
+                        "in": "query",
+                        "description": "Upload date, more recent than x days ago",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "duration_gte",
+                        "required": false,
+                        "in": "query",
+                        "description": "duration_gte",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "duration_lte",
+                        "required": false,
+                        "in": "query",
+                        "description": "duration_lte",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "language",
+                        "required": false,
+                        "in": "query",
+                        "description": "language",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "Search string",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "show_all_my_videos",
+                        "required": false,
+                        "in": "query",
+                        "description": "Show all my videos in search",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "video_id",
+                        "required": false,
+                        "in": "query",
+                        "description": "video_id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "views_gte",
+                        "required": false,
+                        "in": "query",
+                        "description": "views_gte",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "views_lte",
+                        "required": false,
+                        "in": "query",
+                        "description": "views_lte",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "videos"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "tokenAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedVideoSerializerV2List"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "No response body"
+                    },
+                    "403": {
                         "description": "No response body"
                     },
                     "404": {
@@ -4978,13 +4826,6 @@
                         },
                         "description": "Features used on the website to rate videos"
                     },
-                    "report_fields": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ReportField"
-                        },
-                        "description": "Video reporting fields"
-                    },
                     "search_divider_coefficient": {
                         "type": "number",
                         "format": "float",
@@ -5012,7 +4853,6 @@
                     "features",
                     "minNumRateLater",
                     "recaptcha_v2_public_key",
-                    "report_fields",
                     "search_divider_coefficient",
                     "search_feature_constant_add",
                     "youtubeVideoIdRegexSymbol"
@@ -5121,10 +4961,16 @@
                             }
                         ],
                         "description": "Status of the domain."
+                    },
+                    "n_verified_emails": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "description": "Number of verified emails with ths domain"
                     }
                 },
                 "required": [
-                    "domain"
+                    "domain",
+                    "n_verified_emails"
                 ]
             },
             "ExpertRatingsSerializerV2": {
@@ -5755,10 +5601,16 @@
                     "username": {
                         "type": "string",
                         "description": "New login name"
+                    },
+                    "user__id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "description": "DjangoUser ID"
                     }
                 },
                 "required": [
                     "id",
+                    "user__id",
                     "username"
                 ]
             },
@@ -6140,33 +5992,6 @@
                     }
                 }
             },
-            "PaginatedVideoReportsSerializerV2List": {
-                "type": "object",
-                "properties": {
-                    "count": {
-                        "type": "integer",
-                        "example": 123
-                    },
-                    "next": {
-                        "type": "string",
-                        "nullable": true,
-                        "format": "uri",
-                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
-                    },
-                    "previous": {
-                        "type": "string",
-                        "nullable": true,
-                        "format": "uri",
-                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
-                    },
-                    "results": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/VideoReportsSerializerV2"
-                        }
-                    }
-                }
-            },
             "PaginatedVideoSerializerV2List": {
                 "type": "object",
                 "properties": {
@@ -6441,6 +6266,11 @@
                     "username": {
                         "type": "string",
                         "description": "New login name"
+                    },
+                    "user__id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "description": "DjangoUser ID"
                     }
                 }
             },
@@ -7021,79 +6851,6 @@
                     }
                 }
             },
-            "PatchedVideoReportsSerializerV2": {
-                "type": "object",
-                "description": "Serialize VideoReports.",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "video": {
-                        "type": "string"
-                    },
-                    "explanation": {
-                        "type": "string",
-                        "nullable": true,
-                        "description": "Why is the video reported"
-                    },
-                    "bully": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is cyber-bullying"
-                    },
-                    "death_threat": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content contains death threats"
-                    },
-                    "hate": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content contains hate speech"
-                    },
-                    "kid": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is not kid-friendly"
-                    },
-                    "misl0": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is slightly misleading"
-                    },
-                    "misl1": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is very misleading"
-                    },
-                    "misl2": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The misinformation of the content is misleading and dangerous"
-                    },
-                    "threat": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content contains threats"
-                    },
-                    "troll": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is a troll"
-                    },
-                    "violence": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content promotes violence"
-                    },
-                    "violent_act": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content calls for violent acts"
-                    }
-                }
-            },
             "PoliticalAffiliationEnum": {
                 "enum": [
                     "Not Specified",
@@ -7203,24 +6960,6 @@
                     "Other"
                 ],
                 "type": "string"
-            },
-            "ReportField": {
-                "type": "object",
-                "description": "Video reporting fields.",
-                "properties": {
-                    "field": {
-                        "type": "string",
-                        "description": "Short field name"
-                    },
-                    "description": {
-                        "type": "string",
-                        "description": "Field full description"
-                    }
-                },
-                "required": [
-                    "description",
-                    "field"
-                ]
             },
             "ResidenceEnum": {
                 "enum": [
@@ -7657,6 +7396,10 @@
                         "type": "integer",
                         "description": "Number of experts with certified e-mails"
                     },
+                    "total_experts": {
+                        "type": "integer",
+                        "description": "Number of all experts"
+                    },
                     "pairwise_comparisons": {
                         "type": "integer",
                         "description": "Total number of pairwise comparisons"
@@ -7674,14 +7417,25 @@
                         "type": "number",
                         "format": "float",
                         "description": "Maximal aggregated score over all videos and features"
+                    },
+                    "weekly_active_ratings": {
+                        "type": "integer",
+                        "description": "Number of ratings added within a week"
+                    },
+                    "n_rated_videos": {
+                        "type": "integer",
+                        "description": "Total number of videos with ratings"
                     }
                 },
                 "required": [
                     "certified_experts",
                     "max_score",
                     "min_score",
+                    "n_rated_videos",
                     "pairwise_comparisons",
-                    "videos"
+                    "total_experts",
+                    "videos",
+                    "weekly_active_ratings"
                 ]
             },
             "StatusEnum": {
@@ -8494,83 +8248,6 @@
                     "video"
                 ]
             },
-            "VideoReportsSerializerV2": {
-                "type": "object",
-                "description": "Serialize VideoReports.",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "video": {
-                        "type": "string"
-                    },
-                    "explanation": {
-                        "type": "string",
-                        "nullable": true,
-                        "description": "Why is the video reported"
-                    },
-                    "bully": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is cyber-bullying"
-                    },
-                    "death_threat": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content contains death threats"
-                    },
-                    "hate": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content contains hate speech"
-                    },
-                    "kid": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is not kid-friendly"
-                    },
-                    "misl0": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is slightly misleading"
-                    },
-                    "misl1": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is very misleading"
-                    },
-                    "misl2": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The misinformation of the content is misleading and dangerous"
-                    },
-                    "threat": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content contains threats"
-                    },
-                    "troll": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content is a troll"
-                    },
-                    "violence": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content promotes violence"
-                    },
-                    "violent_act": {
-                        "type": "boolean",
-                        "nullable": true,
-                        "description": "The content calls for violent acts"
-                    }
-                },
-                "required": [
-                    "id",
-                    "video"
-                ]
-            },
             "VideoSerializerV2": {
                 "type": "object",
                 "description": "Serialize Videos.",
@@ -8657,11 +8334,6 @@
                         "readOnly": true,
                         "description": "Number of ratings"
                     },
-                    "n_reports": {
-                        "type": "integer",
-                        "readOnly": true,
-                        "description": "Number of times video was reported"
-                    },
                     "public_experts": {
                         "type": "array",
                         "items": {
@@ -8684,6 +8356,14 @@
                         "type": "boolean",
                         "readOnly": true,
                         "description": "Is this video pareto-optimal?"
+                    },
+                    "tournesol_score": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "nullable": true,
+                        "default": 0.0,
+                        "description": "The total Tournesol score with uniform preferences (value=50.0)"
                     },
                     "reliability": {
                         "type": "number",
@@ -8753,7 +8433,6 @@
                     "layman_friendly",
                     "n_private_experts",
                     "n_public_experts",
-                    "n_reports",
                     "name",
                     "pareto_optimal",
                     "pedagogy",
@@ -8765,6 +8444,7 @@
                     "score",
                     "score_preferences_term",
                     "score_search_term",
+                    "tournesol_score",
                     "uploader",
                     "video_id",
                     "views"

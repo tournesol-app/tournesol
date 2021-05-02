@@ -5,7 +5,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **features** | [**[Feature]**](Feature.md) | Features used on the website to rate videos | 
-**reportFields** | [**[ReportField]**](ReportField.md) | Video reporting fields | 
 **searchDividerCoefficient** | **Number** | divide search score by this value | 
 **searchFeatureConstantAdd** | **Number** | add this value to Tournesol scores | 
 **recaptchaV2PublicKey** | **String** | Public ReCaptcha key | 

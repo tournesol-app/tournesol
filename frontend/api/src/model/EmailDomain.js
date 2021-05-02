@@ -25,10 +25,11 @@ class EmailDomain {
      * E-mail domain
      * @alias module:model/EmailDomain
      * @param domain {String} E-mail domain with leading @
+     * @param nVerifiedEmails {Number} Number of verified emails with ths domain
      */
-    constructor(domain) { 
+    constructor(domain, nVerifiedEmails) { 
         
-        EmailDomain.initialize(this, domain);
+        EmailDomain.initialize(this, domain, nVerifiedEmails);
     }
 
     /**
@@ -36,8 +37,9 @@ class EmailDomain {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, domain) { 
+    static initialize(obj, domain, nVerifiedEmails) { 
         obj['domain'] = domain;
+        obj['n_verified_emails'] = nVerifiedEmails;
     }
 
     /**
@@ -57,6 +59,9 @@ class EmailDomain {
             if (data.hasOwnProperty('status')) {
                 obj['status'] = ApiClient.convertToType(data['status'], StatusEnum);
             }
+            if (data.hasOwnProperty('n_verified_emails')) {
+                obj['n_verified_emails'] = ApiClient.convertToType(data['n_verified_emails'], 'Number');
+            }
         }
         return obj;
     }
@@ -75,6 +80,12 @@ EmailDomain.prototype['domain'] = undefined;
  * @member {module:model/StatusEnum} status
  */
 EmailDomain.prototype['status'] = undefined;
+
+/**
+ * Number of verified emails with ths domain
+ * @member {Number} n_verified_emails
+ */
+EmailDomain.prototype['n_verified_emails'] = undefined;
 
 
 
