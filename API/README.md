@@ -30,7 +30,7 @@ Class | Method | HTTP request | Description
 *ExpertRatingsApi* | [**registerSliderChange**](Apis/ExpertRatingsApi.md#registersliderchange) | **POST** /api/v2/expert_ratings/register_slider_change/ | Register any change in slider values on the rating page.
 *LoginSignupApi* | [**loginSignupChangePasswordPartialUpdate**](Apis/LoginSignupApi.md#loginsignupchangepasswordpartialupdate) | **PATCH** /api/v2/login_signup/change_password/ | Change password
 *LoginSignupApi* | [**loginSignupList**](Apis/LoginSignupApi.md#loginsignuplist) | **GET** /api/v2/login_signup/ | Get my username in a list
-*LoginSignupApi* | [**loginSignupLoginPartialUpdate**](Apis/LoginSignupApi.md#loginsignuploginpartialupdate) | **PATCH** /api/v2/login_signup/login/ | Register a user.
+*LoginSignupApi* | [**loginSignupLoginPartialUpdate**](Apis/LoginSignupApi.md#loginsignuploginpartialupdate) | **PATCH** /api/v2/login_signup/login/ | Log in to Tournesol.
 *LoginSignupApi* | [**loginSignupLogoutPartialUpdate**](Apis/LoginSignupApi.md#loginsignuplogoutpartialupdate) | **PATCH** /api/v2/login_signup/logout/ | Log out.
 *LoginSignupApi* | [**loginSignupPartialUpdate**](Apis/LoginSignupApi.md#loginsignuppartialupdate) | **PATCH** /api/v2/login_signup/{id}/ | Update my username
 *LoginSignupApi* | [**loginSignupRegisterCreate**](Apis/LoginSignupApi.md#loginsignupregistercreate) | **POST** /api/v2/login_signup/register/ | Register a user.
@@ -68,11 +68,6 @@ Class | Method | HTTP request | Description
 *VideoRatingsApi* | [**videoRatingStatistics**](Apis/VideoRatingsApi.md#videoratingstatistics) | **GET** /api/v2/video_ratings/video_rating_statistics/ | Get statistical data on video ratings.
 *VideoRatingsApi* | [**videoRatingsList**](Apis/VideoRatingsApi.md#videoratingslist) | **GET** /api/v2/video_ratings/ | Get my video ratings (predictions of my algorithmic representative)
 *VideoRatingsApi* | [**videoRatingsRetrieve**](Apis/VideoRatingsApi.md#videoratingsretrieve) | **GET** /api/v2/video_ratings/{id}/ | Get one video rating (predictions of my algorithmic representative)
-*VideoReportsApi* | [**videoReportsCreate**](Apis/VideoReportsApi.md#videoreportscreate) | **POST** /api/v2/video_reports/ | Report a video
-*VideoReportsApi* | [**videoReportsList**](Apis/VideoReportsApi.md#videoreportslist) | **GET** /api/v2/video_reports/ | Show all anonymized video reports
-*VideoReportsApi* | [**videoReportsPartialUpdate**](Apis/VideoReportsApi.md#videoreportspartialupdate) | **PATCH** /api/v2/video_reports/{id}/ | Change some fields in a video report
-*VideoReportsApi* | [**videoReportsRetrieve**](Apis/VideoReportsApi.md#videoreportsretrieve) | **GET** /api/v2/video_reports/{id}/ | Get one video report
-*VideoReportsApi* | [**videoReportsUpdate**](Apis/VideoReportsApi.md#videoreportsupdate) | **PUT** /api/v2/video_reports/{id}/ | Change all fields in a video report
 *VideosApi* | [**apiV2VideoSearchTournesol**](Apis/VideosApi.md#apiv2videosearchtournesol) | **GET** /api/v2/videos/search_tournesol/ | Search videos using the Tournesol algorithm.
 *VideosApi* | [**apiV2VideoSearchYoutube**](Apis/VideosApi.md#apiv2videosearchyoutube) | **GET** /api/v2/videos/search_youtube/ | Search videos using the YouTube algorithm.
 *VideosApi* | [**myRatingsArePrivate**](Apis/VideosApi.md#myratingsareprivate) | **GET** /api/v2/videos/my_ratings_are_private/ | Are my ratings private?
@@ -82,6 +77,7 @@ Class | Method | HTTP request | Description
 *VideosApi* | [**thankContributors**](Apis/VideosApi.md#thankcontributors) | **PATCH** /api/v2/videos/thank_contributors/ | Thank contributors for the video.
 *VideosApi* | [**videosCreate**](Apis/VideosApi.md#videoscreate) | **POST** /api/v2/videos/ | Add a video to the database (without filling the fields) from Youtube
 *VideosApi* | [**videosList**](Apis/VideosApi.md#videoslist) | **GET** /api/v2/videos/ | List all videos with search/filter capability
+*VideosApi* | [**videosRatedVideosList**](Apis/VideosApi.md#videosratedvideoslist) | **GET** /api/v2/videos/rated_videos/ | Get videos and search results.
 *VideosApi* | [**videosRetrieve**](Apis/VideosApi.md#videosretrieve) | **GET** /api/v2/videos/{id}/ | Get one video by internal ID
 
 
@@ -122,7 +118,6 @@ Class | Method | HTTP request | Description
  - [PaginatedVideoRateLaterSerializerV2List](.//Models/PaginatedVideoRateLaterSerializerV2List.md)
  - [PaginatedVideoRatingsSerializerV2List](.//Models/PaginatedVideoRatingsSerializerV2List.md)
  - [PaginatedVideoRatingsStatisticsSerializerV2List](.//Models/PaginatedVideoRatingsStatisticsSerializerV2List.md)
- - [PaginatedVideoReportsSerializerV2List](.//Models/PaginatedVideoReportsSerializerV2List.md)
  - [PaginatedVideoSerializerV2List](.//Models/PaginatedVideoSerializerV2List.md)
  - [PatchedChangePassword](.//Models/PatchedChangePassword.md)
  - [PatchedDegree](.//Models/PatchedDegree.md)
@@ -138,14 +133,12 @@ Class | Method | HTTP request | Description
  - [PatchedVideo](.//Models/PatchedVideo.md)
  - [PatchedVideoCommentsSerializerV2](.//Models/PatchedVideoCommentsSerializerV2.md)
  - [PatchedVideoRateLaterDelete](.//Models/PatchedVideoRateLaterDelete.md)
- - [PatchedVideoReportsSerializerV2](.//Models/PatchedVideoReportsSerializerV2.md)
  - [PoliticalAffiliationEnum](.//Models/PoliticalAffiliationEnum.md)
  - [PrivateOrPublic](.//Models/PrivateOrPublic.md)
  - [RaceEnum](.//Models/RaceEnum.md)
  - [RatingModeEnum](.//Models/RatingModeEnum.md)
  - [Register](.//Models/Register.md)
  - [ReligionEnum](.//Models/ReligionEnum.md)
- - [ReportField](.//Models/ReportField.md)
  - [ResidenceEnum](.//Models/ResidenceEnum.md)
  - [Samplevideov3Error](.//Models/Samplevideov3Error.md)
  - [Samplevideov3ErrorDetailEnum](.//Models/Samplevideov3ErrorDetailEnum.md)
@@ -161,7 +154,6 @@ Class | Method | HTTP request | Description
  - [VideoRateLaterSerializerV2](.//Models/VideoRateLaterSerializerV2.md)
  - [VideoRatingsSerializerV2](.//Models/VideoRatingsSerializerV2.md)
  - [VideoRatingsStatisticsSerializerV2](.//Models/VideoRatingsStatisticsSerializerV2.md)
- - [VideoReportsSerializerV2](.//Models/VideoReportsSerializerV2.md)
  - [VideoSerializerV2](.//Models/VideoSerializerV2.md)
 
 

@@ -47,7 +47,6 @@ import PaginatedVideoCommentsSerializerV2List from './model/PaginatedVideoCommen
 import PaginatedVideoRateLaterSerializerV2List from './model/PaginatedVideoRateLaterSerializerV2List';
 import PaginatedVideoRatingsSerializerV2List from './model/PaginatedVideoRatingsSerializerV2List';
 import PaginatedVideoRatingsStatisticsSerializerV2List from './model/PaginatedVideoRatingsStatisticsSerializerV2List';
-import PaginatedVideoReportsSerializerV2List from './model/PaginatedVideoReportsSerializerV2List';
 import PaginatedVideoSerializerV2List from './model/PaginatedVideoSerializerV2List';
 import PatchedChangePassword from './model/PatchedChangePassword';
 import PatchedDegree from './model/PatchedDegree';
@@ -63,14 +62,12 @@ import PatchedVerifiableEmail from './model/PatchedVerifiableEmail';
 import PatchedVideo from './model/PatchedVideo';
 import PatchedVideoCommentsSerializerV2 from './model/PatchedVideoCommentsSerializerV2';
 import PatchedVideoRateLaterDelete from './model/PatchedVideoRateLaterDelete';
-import PatchedVideoReportsSerializerV2 from './model/PatchedVideoReportsSerializerV2';
 import PoliticalAffiliationEnum from './model/PoliticalAffiliationEnum';
 import PrivateOrPublic from './model/PrivateOrPublic';
 import RaceEnum from './model/RaceEnum';
 import RatingModeEnum from './model/RatingModeEnum';
 import Register from './model/Register';
 import ReligionEnum from './model/ReligionEnum';
-import ReportField from './model/ReportField';
 import ResidenceEnum from './model/ResidenceEnum';
 import Samplevideov3Error from './model/Samplevideov3Error';
 import Samplevideov3ErrorDetailEnum from './model/Samplevideov3ErrorDetailEnum';
@@ -86,7 +83,6 @@ import VideoCommentsSerializerV2 from './model/VideoCommentsSerializerV2';
 import VideoRateLaterSerializerV2 from './model/VideoRateLaterSerializerV2';
 import VideoRatingsSerializerV2 from './model/VideoRatingsSerializerV2';
 import VideoRatingsStatisticsSerializerV2 from './model/VideoRatingsStatisticsSerializerV2';
-import VideoReportsSerializerV2 from './model/VideoReportsSerializerV2';
 import VideoSerializerV2 from './model/VideoSerializerV2';
 import ConstantsApi from './api/ConstantsApi';
 import EmailDomainApi from './api/EmailDomainApi';
@@ -98,7 +94,6 @@ import UserInformationApi from './api/UserInformationApi';
 import UserPreferencesApi from './api/UserPreferencesApi';
 import VideoCommentsApi from './api/VideoCommentsApi';
 import VideoRatingsApi from './api/VideoRatingsApi';
-import VideoReportsApi from './api/VideoReportsApi';
 import VideosApi from './api/VideosApi';
 
 
@@ -345,12 +340,6 @@ export {
     PaginatedVideoRatingsStatisticsSerializerV2List,
 
     /**
-     * The PaginatedVideoReportsSerializerV2List model constructor.
-     * @property {module:model/PaginatedVideoReportsSerializerV2List}
-     */
-    PaginatedVideoReportsSerializerV2List,
-
-    /**
      * The PaginatedVideoSerializerV2List model constructor.
      * @property {module:model/PaginatedVideoSerializerV2List}
      */
@@ -441,12 +430,6 @@ export {
     PatchedVideoRateLaterDelete,
 
     /**
-     * The PatchedVideoReportsSerializerV2 model constructor.
-     * @property {module:model/PatchedVideoReportsSerializerV2}
-     */
-    PatchedVideoReportsSerializerV2,
-
-    /**
      * The PoliticalAffiliationEnum model constructor.
      * @property {module:model/PoliticalAffiliationEnum}
      */
@@ -481,12 +464,6 @@ export {
      * @property {module:model/ReligionEnum}
      */
     ReligionEnum,
-
-    /**
-     * The ReportField model constructor.
-     * @property {module:model/ReportField}
-     */
-    ReportField,
 
     /**
      * The ResidenceEnum model constructor.
@@ -579,12 +556,6 @@ export {
     VideoRatingsStatisticsSerializerV2,
 
     /**
-     * The VideoReportsSerializerV2 model constructor.
-     * @property {module:model/VideoReportsSerializerV2}
-     */
-    VideoReportsSerializerV2,
-
-    /**
      * The VideoSerializerV2 model constructor.
      * @property {module:model/VideoSerializerV2}
      */
@@ -649,12 +620,6 @@ export {
     * @property {module:api/VideoRatingsApi}
     */
     VideoRatingsApi,
-
-    /**
-    * The VideoReportsApi service constructor.
-    * @property {module:api/VideoReportsApi}
-    */
-    VideoReportsApi,
 
     /**
     * The VideosApi service constructor.

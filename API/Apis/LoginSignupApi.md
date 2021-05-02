@@ -76,7 +76,7 @@ Name | Type | Description  | Notes
 
 
 
-    Register a user.
+    Log in to Tournesol.
 
 ### Parameters
 

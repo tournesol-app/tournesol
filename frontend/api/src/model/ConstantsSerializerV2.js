@@ -13,7 +13,6 @@
 
 import ApiClient from '../ApiClient';
 import Feature from './Feature';
-import ReportField from './ReportField';
 
 /**
  * The ConstantsSerializerV2 model module.
@@ -26,16 +25,15 @@ class ConstantsSerializerV2 {
      * Serialize statistics for the website.
      * @alias module:model/ConstantsSerializerV2
      * @param features {Array.<module:model/Feature>} Features used on the website to rate videos
-     * @param reportFields {Array.<module:model/ReportField>} Video reporting fields
      * @param searchDividerCoefficient {Number} divide search score by this value
      * @param searchFeatureConstantAdd {Number} add this value to Tournesol scores
      * @param recaptchaV2PublicKey {String} Public ReCaptcha key
      * @param youtubeVideoIdRegexSymbol {String} Regular expression of YouTube videos (one symbol)
      * @param minNumRateLater {Number} Minimal number of videos to rate before redirecting to rating page
      */
-    constructor(features, reportFields, searchDividerCoefficient, searchFeatureConstantAdd, recaptchaV2PublicKey, youtubeVideoIdRegexSymbol, minNumRateLater) { 
+    constructor(features, searchDividerCoefficient, searchFeatureConstantAdd, recaptchaV2PublicKey, youtubeVideoIdRegexSymbol, minNumRateLater) { 
         
-        ConstantsSerializerV2.initialize(this, features, reportFields, searchDividerCoefficient, searchFeatureConstantAdd, recaptchaV2PublicKey, youtubeVideoIdRegexSymbol, minNumRateLater);
+        ConstantsSerializerV2.initialize(this, features, searchDividerCoefficient, searchFeatureConstantAdd, recaptchaV2PublicKey, youtubeVideoIdRegexSymbol, minNumRateLater);
     }
 
     /**
@@ -43,9 +41,8 @@ class ConstantsSerializerV2 {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, features, reportFields, searchDividerCoefficient, searchFeatureConstantAdd, recaptchaV2PublicKey, youtubeVideoIdRegexSymbol, minNumRateLater) { 
+    static initialize(obj, features, searchDividerCoefficient, searchFeatureConstantAdd, recaptchaV2PublicKey, youtubeVideoIdRegexSymbol, minNumRateLater) { 
         obj['features'] = features;
-        obj['report_fields'] = reportFields;
         obj['search_divider_coefficient'] = searchDividerCoefficient;
         obj['search_feature_constant_add'] = searchFeatureConstantAdd;
         obj['recaptcha_v2_public_key'] = recaptchaV2PublicKey;
@@ -66,9 +63,6 @@ class ConstantsSerializerV2 {
 
             if (data.hasOwnProperty('features')) {
                 obj['features'] = ApiClient.convertToType(data['features'], [Feature]);
-            }
-            if (data.hasOwnProperty('report_fields')) {
-                obj['report_fields'] = ApiClient.convertToType(data['report_fields'], [ReportField]);
             }
             if (data.hasOwnProperty('search_divider_coefficient')) {
                 obj['search_divider_coefficient'] = ApiClient.convertToType(data['search_divider_coefficient'], 'Number');
@@ -97,12 +91,6 @@ class ConstantsSerializerV2 {
  * @member {Array.<module:model/Feature>} features
  */
 ConstantsSerializerV2.prototype['features'] = undefined;
-
-/**
- * Video reporting fields
- * @member {Array.<module:model/ReportField>} report_fields
- */
-ConstantsSerializerV2.prototype['report_fields'] = undefined;
 
 /**
  * divide search score by this value

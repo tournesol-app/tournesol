@@ -24,14 +24,17 @@ class StatisticsSerializerV2 {
      * Serialize statistics for the website.
      * @alias module:model/StatisticsSerializerV2
      * @param certifiedExperts {Number} Number of experts with certified e-mails
+     * @param totalExperts {Number} Number of all experts
      * @param pairwiseComparisons {Number} Total number of pairwise comparisons
      * @param videos {Number} Total number of videos in the database
      * @param minScore {Number} Minimal aggregated score over all videos and features
      * @param maxScore {Number} Maximal aggregated score over all videos and features
+     * @param weeklyActiveRatings {Number} Number of ratings added within a week
+     * @param nRatedVideos {Number} Total number of videos with ratings
      */
-    constructor(certifiedExperts, pairwiseComparisons, videos, minScore, maxScore) { 
+    constructor(certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos) { 
         
-        StatisticsSerializerV2.initialize(this, certifiedExperts, pairwiseComparisons, videos, minScore, maxScore);
+        StatisticsSerializerV2.initialize(this, certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos);
     }
 
     /**
@@ -39,12 +42,15 @@ class StatisticsSerializerV2 {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, certifiedExperts, pairwiseComparisons, videos, minScore, maxScore) { 
+    static initialize(obj, certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos) { 
         obj['certified_experts'] = certifiedExperts;
+        obj['total_experts'] = totalExperts;
         obj['pairwise_comparisons'] = pairwiseComparisons;
         obj['videos'] = videos;
         obj['min_score'] = minScore;
         obj['max_score'] = maxScore;
+        obj['weekly_active_ratings'] = weeklyActiveRatings;
+        obj['n_rated_videos'] = nRatedVideos;
     }
 
     /**
@@ -61,6 +67,9 @@ class StatisticsSerializerV2 {
             if (data.hasOwnProperty('certified_experts')) {
                 obj['certified_experts'] = ApiClient.convertToType(data['certified_experts'], 'Number');
             }
+            if (data.hasOwnProperty('total_experts')) {
+                obj['total_experts'] = ApiClient.convertToType(data['total_experts'], 'Number');
+            }
             if (data.hasOwnProperty('pairwise_comparisons')) {
                 obj['pairwise_comparisons'] = ApiClient.convertToType(data['pairwise_comparisons'], 'Number');
             }
@@ -72,6 +81,12 @@ class StatisticsSerializerV2 {
             }
             if (data.hasOwnProperty('max_score')) {
                 obj['max_score'] = ApiClient.convertToType(data['max_score'], 'Number');
+            }
+            if (data.hasOwnProperty('weekly_active_ratings')) {
+                obj['weekly_active_ratings'] = ApiClient.convertToType(data['weekly_active_ratings'], 'Number');
+            }
+            if (data.hasOwnProperty('n_rated_videos')) {
+                obj['n_rated_videos'] = ApiClient.convertToType(data['n_rated_videos'], 'Number');
             }
         }
         return obj;
@@ -85,6 +100,12 @@ class StatisticsSerializerV2 {
  * @member {Number} certified_experts
  */
 StatisticsSerializerV2.prototype['certified_experts'] = undefined;
+
+/**
+ * Number of all experts
+ * @member {Number} total_experts
+ */
+StatisticsSerializerV2.prototype['total_experts'] = undefined;
 
 /**
  * Total number of pairwise comparisons
@@ -109,6 +130,18 @@ StatisticsSerializerV2.prototype['min_score'] = undefined;
  * @member {Number} max_score
  */
 StatisticsSerializerV2.prototype['max_score'] = undefined;
+
+/**
+ * Number of ratings added within a week
+ * @member {Number} weekly_active_ratings
+ */
+StatisticsSerializerV2.prototype['weekly_active_ratings'] = undefined;
+
+/**
+ * Total number of videos with ratings
+ * @member {Number} n_rated_videos
+ */
+StatisticsSerializerV2.prototype['n_rated_videos'] = undefined;
 
 
 
