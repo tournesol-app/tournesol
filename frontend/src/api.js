@@ -84,7 +84,11 @@ export const urlToDataURL = (urlOrig, name = null) => new Promise((resolve, reje
   // http -> https
 
   let url;
-  if (window.location.protocol.startsWith('https') && urlOrig && urlOrig.startsWith('http:')) {
+  if (
+    window.location.protocol.startsWith('https') &&
+      urlOrig &&
+      urlOrig.startsWith('http:')
+  ) {
     url = urlOrig.replace('http://', 'https://');
   } else {
     url = urlOrig;
@@ -137,8 +141,12 @@ export const getJSON = (url) => new Promise((resolve, reject) => {
   xmlHTTP.setRequestHeader('Accept', 'application/json');
   xmlHTTP.setRequestHeader('X-CSRFToken', csrftoken);
   xmlHTTP.responseType = 'json';
-  xmlHTTP.onload = function onload() { resolve(this.response); };
-  xmlHTTP.onerror = function onerror() { reject(new Error('Request failed')); };
+  xmlHTTP.onload = function onload() {
+    resolve(this.response);
+  };
+  xmlHTTP.onerror = function onerror() {
+    reject(new Error('Request failed'));
+  };
   xmlHTTP.send();
 });
 
@@ -149,7 +157,8 @@ export const getSchema = () => getJSON('/static/schema.json');
 export function fromOpenAPIToJsonSchema(apiSchema) {
   const formJSON = toJsonSchema(apiSchema, { keepNotSupported: ['readOnly'] });
   delete formJSON.$schema;
-  recursiveIterDict(formJSON, (o, k) => { // description to title
+  recursiveIterDict(formJSON, (o, k) => {
+    // description to title
     if (k === 'description') {
       o.title = o[k]; // eslint-disable-line no-param-reassign
       delete o[k]; // eslint-disable-line no-param-reassign
@@ -162,8 +171,7 @@ export function fromOpenAPIToJsonSchema(apiSchema) {
 export const GET_VIDEO_FOR_COMPARISON = (onlyRated, callback) => {
   const api = new TournesolAPI.ExpertRatingsApi();
   // callback(video.video_id)
-  api.apiV2ExpertRatingsSampleVideo({ onlyRated },
-    (_err, data, _resp) => callback(data.video_id));
+  api.apiV2ExpertRatingsSampleVideo({ onlyRated }, (_err, data, _resp) => callback(data.video_id));
 };
 
 // Writes a new entry in the database table ExpertRating
@@ -174,15 +182,19 @@ export const GET_VIDEO_FOR_COMPARISON = (onlyRated, callback) => {
 //   video_2: string,
 //   [featureNames]: 0 <= number <= 100,
 // }
-export const SUBMIT_COMPARISON_RESULT = (user, comparison, callback, callbackSuccess = null) => {
+export const SUBMIT_COMPARISON_RESULT = (
+  user,
+  comparison,
+  callback,
+  callbackSuccess = null,
+) => {
   const api = new TournesolAPI.ExpertRatingsApi();
-  api.expertRatingsCreate(comparison,
-    (err, _data, _resp) => {
-      if (err) callback(formatError(err));
-      else if (callbackSuccess) {
-        callbackSuccess();
-      }
-    });
+  api.expertRatingsCreate(comparison, (err, _data, _resp) => {
+    if (err) callback(formatError(err));
+    else if (callbackSuccess) {
+      callbackSuccess();
+    }
+  });
 };
 
 // This API call updates on comparison submitted by an expert
@@ -194,9 +206,15 @@ export const SUBMIT_COMPARISON_RESULT = (user, comparison, callback, callbackSuc
 //   feature: string,
 //   score: 0 <= number <= 100
 // }
-export const UPDATE_COMPARISON = (comparison, callback, callbackSuccess = null) => {
+export const UPDATE_COMPARISON = (
+  comparison,
+  callback,
+  callbackSuccess = null,
+) => {
   const api = new TournesolAPI.ExpertRatingsApi();
-  api.expertRatingsByVideoIdsPartialUpdate(comparison.video_1, comparison.video_2,
+  api.expertRatingsByVideoIdsPartialUpdate(
+    comparison.video_1,
+    comparison.video_2,
     { patchedExpertRatingsSerializerV2: comparison },
     (err, data, _resp) => {
       window.err = err;
@@ -204,23 +222,35 @@ export const UPDATE_COMPARISON = (comparison, callback, callbackSuccess = null) 
       else if (callbackSuccess) {
         callbackSuccess();
       }
-    });
+    },
+  );
 };
 
-export const GET_COMPARISON_RATING = (videoLeft, videoRight, callbackSuccess, callbackFail) => {
+export const GET_COMPARISON_RATING = (
+  videoLeft,
+  videoRight,
+  callbackSuccess,
+  callbackFail,
+) => {
   const api = new TournesolAPI.ExpertRatingsApi();
-  api.expertRatingsByVideoIdsRetrieve(videoLeft, videoRight, {},
+  api.expertRatingsByVideoIdsRetrieve(
+    videoLeft,
+    videoRight,
+    {},
     (error, data, _resp) => {
       if (!error) callbackSuccess(data);
       else callbackFail();
-    });
+    },
+  );
 };
 
 // API call to set USER preferences
 export const SET_PREFERENCES = (preferences_, callback) => {
   const api = new TournesolAPI.UserPreferencesApi();
-  api.userPreferencesMyPartialUpdate({ patchedUserPreferencesSerializerV2: preferences_ },
-    (_err, data, _resp) => callback(data));
+  api.userPreferencesMyPartialUpdate(
+    { patchedUserPreferencesSerializerV2: preferences_ },
+    (_err, data, _resp) => callback(data),
+  );
 };
 
 export const GET_PREFERENCES = (callback) => {
@@ -229,15 +259,16 @@ export const GET_PREFERENCES = (callback) => {
 };
 
 // API call to query a list of videos to recommend for a USER
-export const GET_TOP_RECOMMENDATION = (preferences, options, callback) => {
+export const GET_TOP_RECOMMENDATION = (preferences, opt, callback) => {
   const api = new TournesolAPI.VideosApi();
   SET_PREFERENCES(preferences, () => {
-    if (options.searchYTRaw === 'true') {
-      api.apiV2VideoSearchYoutube(options.search, {},
-        (_err, data, _resp) => callback(data.results));
+    if (opt.searchYTRaw === 'true') {
+      api.apiV2VideoSearchYoutube(opt.search, {}, (_err, data, _resp) => callback(data.results));
     } else {
-      api.apiV2VideoSearchTournesol({ ...options, ...camelcaseKeys(preferences) },
-        (_err, data, _resp) => callback(data.results));
+      api.apiV2VideoSearchTournesol(
+        { ...opt, ...camelcaseKeys(preferences) },
+        (_err, data, _resp) => callback(data.results),
+      );
     }
   });
 };
@@ -245,20 +276,7 @@ export const GET_TOP_RECOMMENDATION = (preferences, options, callback) => {
 // API call to add a new video as an EXPERT
 export const SUBMIT_VIDEO = (videoId, callbackSuccess, callbackFail) => {
   const api = new TournesolAPI.VideosApi();
-  api.videosCreate({ video_id: videoId },
-    (err, data, _resp) => {
-      if (err) callbackFail(formatError(err));
-      else callbackSuccess(data);
-    });
-};
-
-// API call to report VIDEOS
-export const REPORT_VIDEO = (videoId, info, callbackSuccess, callbackFail) => {
-  const api = new TournesolAPI.VideoReportsApi();
-  api.videoReportsCreate(TournesolAPI.VideoReportsSerializerV2.constructFromObject(
-    { ...info, video: videoId },
-  ),
-  (err, data, _resp) => {
+  api.videosCreate({ video_id: videoId }, (err, data, _resp) => {
     if (err) callbackFail(formatError(err));
     else callbackSuccess(data);
   });
@@ -282,14 +300,10 @@ export const GET_VIDEO = (videoId, callback) => {
 // API call to get comments
 export const GET_COMMENTS = (videoId, callback, parentComment = null) => {
   const api = new TournesolAPI.VideoCommentsApi();
-  api.videoCommentsList({ videoVideoId: videoId, parentComment },
-    (_err, data, _resp) => callback(data.results));
-};
-
-// API call to get reports
-export const GET_REPORTS = (videoId, callback) => {
-  const api = new TournesolAPI.VideoReportsApi();
-  api.videoReportsList({ videoVideoId: videoId }, (_err, data, _resp) => callback(data.results));
+  api.videoCommentsList(
+    { videoVideoId: videoId, parentComment },
+    (_err, data, _resp) => callback(data.results),
+  );
 };
 
 // API call to get ratings for videos
@@ -313,11 +327,13 @@ export const GET_CYCLIC_INCONSISTENCIES = (username, callback) => {
 // API call to submit a comment
 export const SUBMIT_COMMENT = (options, callbackSuccess, callbackFail) => {
   const api = new TournesolAPI.VideoCommentsApi();
-  api.videoCommentsCreate(TournesolAPI.VideoCommentsSerializerV2.constructFromObject(options),
+  api.videoCommentsCreate(
+    TournesolAPI.VideoCommentsSerializerV2.constructFromObject(options),
     (err, data, _resp) => {
       if (err) callbackFail(formatError(err));
       else callbackSuccess(data);
-    });
+    },
+  );
 };
 
 // API call to submit a comment
@@ -328,12 +344,14 @@ export const SUBMIT_EDITED_COMMENT = (
   callbackFail,
 ) => {
   const api = new TournesolAPI.VideoCommentsApi();
-  api.videoCommentsPartialUpdate(commentId,
+  api.videoCommentsPartialUpdate(
+    commentId,
     { patchedVideoCommentsSerializerV2: { comment } },
     (err, data, _resp) => {
       if (err) callbackFail(formatError(err));
       else callbackSuccess(data);
-    });
+    },
+  );
 };
 
 // API call to double down on a rating
@@ -346,20 +364,31 @@ export const DOUBLE_DOWN = (
   callbackSuccess,
 ) => {
   const api = new TournesolAPI.ExpertRatingsApi();
-  api.apiV2ExpertRatingsDoubleDown(feature, video1, video2, (err, data, _resp) => {
-    if (err) callbackFail(formatError(err));
-    else callbackSuccess(data);
-  });
+  api.apiV2ExpertRatingsDoubleDown(
+    feature,
+    video1,
+    video2,
+    (err, data, _resp) => {
+      if (err) callbackFail(formatError(err));
+      else callbackSuccess(data);
+    },
+  );
 };
 
 // API call to flag a comment (thumbs up/down; red flag)
 export const FLAG_COMMENT = (commentId, field, callback) => {
   const api = new TournesolAPI.VideoCommentsApi();
-  api.apiV2VideoCommentsSetMark('toggle', commentId, field, (_err, data, _resp) => callback(data));
+  api.apiV2VideoCommentsSetMark(
+    'toggle',
+    commentId,
+    field,
+    (_err, data, _resp) => callback(data),
+  );
 };
 
 export const SUBMIT_COMMENT_FEATURES = (commentId, features) => {
   const api = new TournesolAPI.VideoCommentsApi();
-  api.videoCommentsPartialUpdate(commentId,
-    { patchedVideoCommentsSerializerV2: features });
+  api.videoCommentsPartialUpdate(commentId, {
+    patchedVideoCommentsSerializerV2: features,
+  });
 };
