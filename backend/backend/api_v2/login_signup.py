@@ -140,10 +140,12 @@ class OnlyUsernameAndIDSerializer(serializers.HyperlinkedModelSerializer):
 
     username = serializers.CharField(read_only=False, source='user.username',
                                      help_text="New login name")
+    user__id = serializers.IntegerField(read_only=True, source='user.id',
+                                        help_text="DjangoUser ID")
 
     class Meta:
         model = UserInformation
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'user__id']
 
     def update(self, instance, validated_data):
         if not instance.user:
@@ -244,14 +246,14 @@ class LoginSignupViewSetV2(mixins.ListModelMixin,
                    request=LoginSerializer)
     @action(methods=['PATCH'], detail=False, name="Log in with username/password")
     def login(self, request):
-        """Register a user."""
+        """Log in to Tournesol."""
         username, password = request.data.get('username', ''), request.data.get('password', '')
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
                 login(request, user)
-                s_ret = OnlyUsernameAndIDSerializer(DjangoUser.objects.get(
-                    username=user.username))
+                s_ret = OnlyUsernameAndIDSerializer(UserInformation.objects.get(
+                    user__username=user.username))
 
                 return Response(s_ret.data, status=200)
 
