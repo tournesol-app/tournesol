@@ -5,10 +5,8 @@ import ReplayIcon from '@material-ui/icons/Replay';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import CommentIcon from '@material-ui/icons/Comment';
-import ReportIcon from '@material-ui/icons/Report';
 import PublicIcon from '@material-ui/icons/Public';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useHistory } from 'react-router-dom';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -37,11 +35,10 @@ const StyledMenu = withStyles({
       horizontal: 'center',
     }}
     TransitionComponent={Fade}
-  /* eslint-disable react/jsx-props-no-spreading */
+    /* eslint-disable react/jsx-props-no-spreading */
 
     {...props}
-  /* eslint-enable react/jsx-props-no-spreading */
-
+    /* eslint-enable react/jsx-props-no-spreading */
   />
 ));
 
@@ -109,19 +106,15 @@ const PrivacyStatusSelector = ({ id, onPrivacyInfo = null }) => {
 
   // note the STRING indices
   const nameByPrivacy = { true: 'Only me', false: 'Everyone' };
-  const iconByPrivacy = { true: <FontAwesomeIcon icon={['fa', 'user-secret']} />,
-    false: <PublicIcon /> };
+  const iconByPrivacy = {
+    true: <FontAwesomeIcon icon={['fa', 'user-secret']} />,
+    false: <PublicIcon />,
+  };
 
   if (privacyStatus !== true && privacyStatus !== false) {
     return (
-      <Tooltip
-        title="Please wait..."
-        aria-label="add"
-      >
-        <IconButton
-          className="class_privacy_loading"
-          aria-label="load"
-        >
+      <Tooltip title="Please wait..." aria-label="add">
+        <IconButton className="class_privacy_loading" aria-label="load">
           <HourglassEmptyIcon />
         </IconButton>
       </Tooltip>
@@ -139,12 +132,8 @@ const PrivacyStatusSelector = ({ id, onPrivacyInfo = null }) => {
           aria-label="load"
           onClick={handleClickListItem}
         >
-          {privacyStatus === true && (
-            <div id={`id_video_${id}_private`} />
-          )}
-          {privacyStatus === false && (
-          <div id={`id_video_${id}_public`} />
-          )}
+          {privacyStatus === true && <div id={`id_video_${id}_private`} />}
+          {privacyStatus === false && <div id={`id_video_${id}_public`} />}
           {iconByPrivacy[privacyStatus.toString()]}
         </IconButton>
       </Tooltip>
@@ -165,11 +154,8 @@ const PrivacyStatusSelector = ({ id, onPrivacyInfo = null }) => {
               onClick={(event) => handleMenuItemClick(event, status)}
               id={`menu_set_private_${status}_${id}`}
             >
-              <ListItemIcon>
-                {iconByPrivacy[status.toString()]}
-              </ListItemIcon>
+              <ListItemIcon>{iconByPrivacy[status.toString()]}</ListItemIcon>
               <ListItemText primary={nameByPrivacy[status.toString()]} />
-
             </StyledMenuItem>
           ))}
       </StyledMenu>
@@ -182,14 +168,11 @@ export default ({
   setId,
   getNewId,
   showPlayer = true,
-  showReport = true,
   showControls = true,
   showCommentButton = true,
   openComments,
   tourIndex,
 }) => {
-  const history = useHistory();
-
   const handleChange = (e) => {
     const videoId = getVideoIdFromURL(e.target.value);
     if (videoId) setId(videoId);
@@ -206,59 +189,53 @@ export default ({
             background: '#000',
           }}
         >
-          <YoutubePlayer videoId={id} light width={420} height={240} lightAutoplay={0} />
+          <YoutubePlayer
+            videoId={id}
+            light
+            width={420}
+            height={240}
+            lightAutoplay={0}
+          />
         </div>
       )}
       {showControls && (
-      <div style={{ marginTop: '12px' }}>
-        <TutorialTooltip
-          i={tourIndex === 0 || tourIndex === 1 ? tourIndex : -2}
-          tourIndex={tourIndex}
-        >
-          <TextField
-            label="Video Id"
-            variant="outlined"
-            className="video_id_text_field"
-            placeholder="Paste URL or Video ID"
-            style={{ width: '13em' }}
-            value={id}
-            onChange={handleChange}
-          />
-        </TutorialTooltip>
-        <TutorialTooltip i={7} tourIndex={tourIndex}>
-          <Tooltip title="New Video" aria-label="add">
-            <IconButton
-              className="new_video_button"
-              aria-label="load"
-              onClick={() => getNewId()}
-            >
-              <ReplayIcon />
-            </IconButton>
-          </Tooltip>
-        </TutorialTooltip>
-        {showCommentButton && (
-          <TutorialTooltip i={5} tourIndex={tourIndex}>
-            <Tooltip title="Comments" aria-label="add">
-              <IconButton aria-label="load" onClick={openComments}>
-                <CommentIcon />
-              </IconButton>
-            </Tooltip>
+        <div style={{ marginTop: '12px' }}>
+          <TutorialTooltip
+            i={tourIndex === 0 || tourIndex === 1 ? tourIndex : -2}
+            tourIndex={tourIndex}
+          >
+            <TextField
+              label="Video Id"
+              variant="outlined"
+              className="video_id_text_field"
+              placeholder="Paste URL or Video ID"
+              style={{ width: '13em' }}
+              value={id}
+              onChange={handleChange}
+            />
           </TutorialTooltip>
-        )}
-        {showReport && (
-          <TutorialTooltip i={6} tourIndex={tourIndex}>
-            <Tooltip title="Report video" aria-label="add">
+          <TutorialTooltip i={7} tourIndex={tourIndex}>
+            <Tooltip title="New Video" aria-label="add">
               <IconButton
+                className="new_video_button"
                 aria-label="load"
-                onClick={() => history.push(`/report/${id}`)}
+                onClick={() => getNewId()}
               >
-                <ReportIcon />
+                <ReplayIcon />
               </IconButton>
             </Tooltip>
           </TutorialTooltip>
-        )}
-        <PrivacyStatusSelector id={id} />
-      </div>
+          {showCommentButton && (
+            <TutorialTooltip i={5} tourIndex={tourIndex}>
+              <Tooltip title="Comments" aria-label="add">
+                <IconButton aria-label="load" onClick={openComments}>
+                  <CommentIcon />
+                </IconButton>
+              </Tooltip>
+            </TutorialTooltip>
+          )}
+          <PrivacyStatusSelector id={id} />
+        </div>
       )}
     </div>
   );

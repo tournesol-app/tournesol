@@ -5,10 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-import ReportIcon from '@material-ui/icons/Report';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
-import { useHistory } from 'react-router-dom';
 
 import YouTube from 'react-youtube';
 
@@ -78,32 +76,19 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Buttons = ({ videoId, _class, setOpenComments }) => {
-  const history = useHistory();
-
-  return (
-    <div className={_class}>
-      <Tooltip title="Report video" aria-label="report">
-        <IconButton
-          size="small"
-          aria-label="report"
-          onClick={() => history.push(`/report/${videoId}`)}
-        >
-          <ReportIcon size="small" />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title="Comments" aria-label="add">
-        <IconButton
-          size="small"
-          aria-label="load"
-          onClick={() => setOpenComments(videoId)}
-        >
-          <CommentIcon size="small" />
-        </IconButton>
-      </Tooltip>
-    </div>
-  );
-};
+const Buttons = ({ videoId, _class, setOpenComments }) => (
+  <div className={_class}>
+    <Tooltip title="Comments" aria-label="add">
+      <IconButton
+        size="small"
+        aria-label="load"
+        onClick={() => setOpenComments(videoId)}
+      >
+        <CommentIcon size="small" />
+      </IconButton>
+    </Tooltip>
+  </div>
+);
 
 const Comparison = (props) => {
   const { videoA, videoB, feature } = props;
@@ -153,11 +138,16 @@ const Comparison = (props) => {
   };
 
   return (
-    <div className={`${classes.comparisonContainer} inconsistency`} id={`${videoA}_${videoB}`}>
+    <div
+      className={`${classes.comparisonContainer} inconsistency`}
+      id={`${videoA}_${videoB}`}
+    >
       <div className={classes.videoContainer}>
         {window.ENABLE_YOUTUBE_VIDEO_EMBED === 1 ? (
           <YouTube videoId={videoA} opts={opts} />
-        ) : <span>Youtube {videoA}</span>}
+        ) : (
+          <span>Youtube {videoA}</span>
+        )}
 
         <Buttons
           videoId={videoA}
@@ -183,7 +173,9 @@ const Comparison = (props) => {
       <div className={classes.videoContainer}>
         {window.ENABLE_YOUTUBE_VIDEO_EMBED === 1 ? (
           <YouTube videoId={videoB} opts={opts} />
-        ) : <span>Youtube {videoB}</span>}
+        ) : (
+          <span>Youtube {videoB}</span>
+        )}
 
         <Buttons
           videoId={videoB}
@@ -262,8 +254,10 @@ export default () => {
     );
   }
 
-  const inconsistency = (inconsistencies !== null && inconsistencies.length > 0) ?
-    inconsistencies[inconsistencyIndex] : null;
+  const inconsistency =
+    inconsistencies !== null && inconsistencies.length > 0
+      ? inconsistencies[inconsistencyIndex]
+      : null;
   const setInconsistency = (x) => {
     inconsistencies[inconsistencyIndex] = x;
     setInconsistencies([...inconsistencies]);

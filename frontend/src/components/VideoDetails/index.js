@@ -13,14 +13,9 @@ import FeatureSelector from '../VideoComments/FeatureSelector';
 import VideoCard from '../VideoCard';
 import VideoSelector from '../ExpertInterface/VideoSelector';
 import VideoComments from '../VideoComments';
-import VideoReports from '../VideoReports';
 import AlgorithmicRepresentative from '../AlgorithmicRepresentative';
 import ExpertInterface from '../ExpertInterface/index';
-import {
-  GET_VIDEO_FOR_COMPARISON,
-  GET_VIDEO,
-  TournesolAPI,
-} from '../../api';
+import { GET_VIDEO_FOR_COMPARISON, GET_VIDEO, TournesolAPI } from '../../api';
 
 const useStyles = makeStyles(() => ({
   root: { display: 'flex', flexFlow: 'row wrap' },
@@ -79,7 +74,8 @@ const StatisticsHistogramSelectable = ({ statistics }) => {
   return (
     <div className={classes.container}>
       <span style={{ fontSize: '120%' }}>
-        The histogram shows the distribution of the scores given by all experts, including you!
+        The histogram shows the distribution of the scores given by all experts,
+        including you!
       </span>
       <FeatureSelector
         show={showInitial}
@@ -94,8 +90,12 @@ const StatisticsHistogramSelectable = ({ statistics }) => {
 };
 
 // iterate over the comparisons in random order
-const ComparisonSelector = ({ videoId, onComparisonChanged = null, maxRatings = 1000,
-  child }) => {
+const ComparisonSelector = ({
+  videoId,
+  onComparisonChanged = null,
+  maxRatings = 1000,
+  child,
+}) => {
   // number of comparisons (ratings)
   const [count, setCount] = React.useState(undefined);
 
@@ -138,12 +138,11 @@ const ComparisonSelector = ({ videoId, onComparisonChanged = null, maxRatings = 
     setCount(undefined);
 
     const api = new TournesolAPI.ExpertRatingsApi();
-    api.expertRatingsList({ limit: 1, videoVideoId: videoId },
-      (err, data) => {
-        if (!err) {
-          setCount(data.count);
-        }
-      });
+    api.expertRatingsList({ limit: 1, videoVideoId: videoId }, (err, data) => {
+      if (!err) {
+        setCount(data.count);
+      }
+    });
   }
 
   // shuffle an array https://javascript.info/task/shuffle
@@ -167,35 +166,41 @@ const ComparisonSelector = ({ videoId, onComparisonChanged = null, maxRatings = 
   }
 
   // if there is a new offset that we can load, but it's not loaded yet
-  if (ratingOffsetArray && countValid && offset !== offsetRequested &&
-      offset >= 0 && offset < ratingOffsetArray.length) {
+  if (
+    ratingOffsetArray &&
+    countValid &&
+    offset !== offsetRequested &&
+    offset >= 0 &&
+    offset < ratingOffsetArray.length
+  ) {
     setOffsetRequested(offset);
 
     // requesting the data...
     const api = new TournesolAPI.ExpertRatingsApi();
-    api.expertRatingsList({ videoVideoId: videoId,
-      limit: 1,
-      offset: ratingOffsetArray[offset] },
-    (err, data) => {
-      if (!err && data.count >= 1) {
-        const r = data.results[0];
-        setRating(r);
+    api.expertRatingsList(
+      { videoVideoId: videoId, limit: 1, offset: ratingOffsetArray[offset] },
+      (err, data) => {
+        if (!err && data.count >= 1) {
+          const r = data.results[0];
+          setRating(r);
 
-        // console.log(r);
+          // console.log(r);
 
-        if (onComparisonChanged) {
-          onComparisonChanged(r);
+          if (onComparisonChanged) {
+            onComparisonChanged(r);
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   if (countValid && ratingOffsetArray !== null) {
     return (
       <div>
-        <span>You compared the video {ratingOffsetArray.length}
-          {overflow ? '+' : ''} times. Showing rating {ratingOffsetArray[offset] + 1}/
-          {ratingOffsetArray.length}.
+        <span>
+          You compared the video {ratingOffsetArray.length}
+          {overflow ? '+' : ''} times. Showing rating{' '}
+          {ratingOffsetArray[offset] + 1}/{ratingOffsetArray.length}.
         </span>
 
         <Grid
@@ -210,16 +215,16 @@ const ComparisonSelector = ({ videoId, onComparisonChanged = null, maxRatings = 
               aria-label="left"
               color="primary"
               variant="outlined"
-              onClick={() => { setOffset(offset - 1); }}
+              onClick={() => {
+                setOffset(offset - 1);
+              }}
               disabled={offset <= 0}
             >
               <SkipPreviousIcon />
             </IconButton>
           </Grid>
 
-          <Grid item>
-            {child(rating)}
-          </Grid>
+          <Grid item>{child(rating)}</Grid>
 
           {/* right button */}
           <Grid item>
@@ -227,15 +232,15 @@ const ComparisonSelector = ({ videoId, onComparisonChanged = null, maxRatings = 
               aria-label="left"
               color="primary"
               variant="outlined"
-              onClick={() => { setOffset(offset + 1); }}
+              onClick={() => {
+                setOffset(offset + 1);
+              }}
               disabled={offset + 1 >= ratingOffsetArray.length}
             >
               <SkipNextIcon />
             </IconButton>
           </Grid>
-
         </Grid>
-
       </div>
     );
   }
@@ -266,13 +271,15 @@ export default () => {
     const api = new TournesolAPI.VideoRatingsApi();
 
     // todo: add selected features as parameters to compute the total score
-    api.videoRatingStatistics({ videoVideoId: videoId, limit: 100 },
+    api.videoRatingStatistics(
+      { videoVideoId: videoId, limit: 100 },
       (err, data) => {
         if (!err) {
           setStatistics(data.results);
-        // console.log("statistics", data['results']);
+          // console.log("statistics", data['results']);
         }
-      });
+      },
+    );
   }
 
   const loadVideo = (setVideoCallback) => {
@@ -306,16 +313,23 @@ export default () => {
     setUpdatePending(true);
 
     const api = new TournesolAPI.ExpertRatingsApi();
-    api.expertRatingsOnlineByVideoIdsRetrieve(feature, value, videoId1, videoId2,
-      { addDebugInfo: false }, (err, data) => {
+    api.expertRatingsOnlineByVideoIdsRetrieve(
+      feature,
+      value,
+      videoId1,
+      videoId2,
+      { addDebugInfo: false },
+      (err, data) => {
         if (!err) {
-        // console.log(data);
-          const newScore = videoId1 === videoId ? data.new_score_left : data.new_score_right;
+          // console.log(data);
+          const newScore =
+            videoId1 === videoId ? data.new_score_left : data.new_score_right;
           setOverrideFeature(feature);
           setOverrideValue(newScore);
         }
         setUpdatePending(false);
-      });
+      },
+    );
   };
 
   return (
@@ -336,22 +350,16 @@ export default () => {
       </div>
       {infoLoading && <span>Loading...</span>}
       {!infoLoading && videoInfo && (
-      <>
-        <VideoCard video={videoInfo} showRatingsLink />
-        <Grid container direction="row" spacing={3}>
-
-          <Grid item>
-            <div className={classes.container}>
-              <VideoComments videoId={videoId} />
-            </div>
-            {videoInfo.n_reports > 0 && (
-            <div className={classes.container}>
-              <VideoReports videoId={videoId} />
-            </div>
-            )}
+        <>
+          <VideoCard video={videoInfo} showRatingsLink />
+          <Grid container direction="row" spacing={3}>
+            <Grid item>
+              <div className={classes.container}>
+                <VideoComments videoId={videoId} />
+              </div>
+            </Grid>
           </Grid>
-        </Grid>
-      </>
+        </>
       )}
 
       {!videoInfo && !infoLoading && videoId !== '...' && (
@@ -361,67 +369,58 @@ export default () => {
       )}
 
       <Grid container direction="column" spacing={3}>
-
         <Grid item>
-
           {!infoLoading && statistics.length > 0 && (
-          <StatisticsHistogramSelectable statistics={statistics} />
+            <StatisticsHistogramSelectable statistics={statistics} />
           )}
-
         </Grid>
 
         <Grid item>
-
           {!infoLoading && (
-          <div className={classes.container} style={{ direction: 'row' }}>
-            <ComparisonSelector
-              onComparisonChanged={() => {
-                setOverrideFeature(null);
-                setOverrideValue(null);
-              }}
-              style={{ width: '100%' }}
-              videoId={videoId}
-              child={(rating) => {
-                if (rating) {
-                  return (
-                    <ExpertInterface
-                      videoIdAOverride={rating.video_1}
-                      showControls={false}
-                      style={{ width: '90%' }}
-                      videoIdBOverride={rating.video_2}
-                      onSliderFeatureChanged={
-                          (feature, value) => onlineUpdateFeed(
-                            rating.video_1, rating.video_2,
-                            feature, value,
-                          )
-}
-                      key={`rating-${rating.id}`}
-                    />
-                  );
-                }
+            <div className={classes.container} style={{ direction: 'row' }}>
+              <ComparisonSelector
+                onComparisonChanged={() => {
+                  setOverrideFeature(null);
+                  setOverrideValue(null);
+                }}
+                style={{ width: '100%' }}
+                videoId={videoId}
+                child={(rating) => {
+                  if (rating) {
+                    return (
+                      <ExpertInterface
+                        videoIdAOverride={rating.video_1}
+                        showControls={false}
+                        style={{ width: '90%' }}
+                        videoIdBOverride={rating.video_2}
+                        onSliderFeatureChanged={(feature, value) => onlineUpdateFeed(
+                          rating.video_1,
+                          rating.video_2,
+                          feature,
+                          value,
+                        )}
+                        key={`rating-${rating.id}`}
+                      />
+                    );
+                  }
 
-                return <span>Loading...</span>;
-              }}
-            />
-          </div>
+                  return <span>Loading...</span>;
+                }}
+              />
+            </div>
           )}
-
         </Grid>
 
         {!infoLoading && videoInfo && (
-
-        <Grid item>
-          <AlgorithmicRepresentative
-            overrideFeature={overrideFeature}
-            overrideValue={overrideValue}
-            videoId={videoId}
-          />
-        </Grid>
-
+          <Grid item>
+            <AlgorithmicRepresentative
+              overrideFeature={overrideFeature}
+              overrideValue={overrideValue}
+              videoId={videoId}
+            />
+          </Grid>
         )}
-
       </Grid>
-
     </div>
   );
 };

@@ -59,6 +59,11 @@ class VerifiableEmail(models.Model):
         blank=False,
         null=False,
         help_text="Verified")
+    last_verification_email_ts = models.DateTimeField(
+        help_text="Timestamp when the last verification e-mail was sent to this address",
+        null=True,
+        default=None,
+        blank=True)
     token = models.CharField(
         max_length=1000,
         blank=True,
