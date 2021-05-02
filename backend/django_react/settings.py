@@ -329,15 +329,19 @@ EMAIL_USE_SINGLE_THREAD = os.environ.get('EMAIL_USE_SINGLE_THREAD', None) is not
 EMAIL_FILE_PATH = '/tmp/app-messages'
 
 EMAIL_ACTIVE_FIELD = 'is_active'
-EMAIL_SERVER = '127.0.0.1'
-EMAIL_PORT = 25
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = None
-EMAIL_HOST_PASSWORD = None
+
+# Outlook 365 config
+EMAIL_SERVER = os.environ.get('DJANGO_EMAIL_SERVER', '127.0.0.1')
+EMAIL_HOST = EMAIL_SERVER
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_HOST_USER', 'noreply@tournesol.app')
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD',
+                                     'password_from_email_hosting')
+EMAIL_PASSWORD = EMAIL_HOST_PASSWORD
+
 DEFAULT_FROM_EMAIL = 'Tournesol.app <verification-noreply@tournesol.app>'
 EMAIL_ADDRESS = 'verification-noreply@tournesol.app'
-EMAIL_PASSWORD = ''
 EMAIL_MAIL_SUBJECT = 'Please confirm your email'
 EMAIL_MAIL_HTML = 'mail_body.html'
 EMAIL_MAIL_PLAIN = 'mail_body.txt'
@@ -345,7 +349,7 @@ EMAIL_PAGE_TEMPLATE = 'confirm_template.html'
 
 EMAIL_NEWDOMAIN_ADDRESS = 'pendingdomain-noreply@tournesol.app'
 EMAIL_PASSWORDRESET_ADDRESS = 'passwordreset-noreply@tournesol.app'
-ADMIN_EMAILS = ["le-nguyen.hoang@science4all.org", "sergei.volodin.ch@gmail.com"]
+ADMIN_EMAILS = ["len@tournesol.app", "sergei.volodin.ch@gmail.com"]
 
 # for user profile pics
 FILE_UPLOAD_HANDLERS = [
