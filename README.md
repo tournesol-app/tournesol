@@ -51,6 +51,8 @@ frontend $ npm run dev
 # now go to localhost:8000
 (venv) backend $ python manage.py runserver
 ```
+
+Note that creating a super user is highly recommended for testing the website locally and contributing to the codebase. 💯
 </details>
 
 ## API

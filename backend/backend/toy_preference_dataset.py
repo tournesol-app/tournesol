@@ -75,7 +75,9 @@ class ToyRandomDataset(PreferenceDataset):
 
         user = np.random.choice(self.users)
         ratings = {f: get_rating() for f in self.fields}
+        weights = {f: np.random.rand() + 1 for f in self.fields}
         return {'o1': o1, 'o2': o2, 'ratings': ratings,
+                'weights': weights,
                 'user': user}
 
 
