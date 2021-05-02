@@ -29,6 +29,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from functools import reduce
 from math import isinf
+from backend.constants import fields as constants
 
 
 # number of public contributors to show
@@ -80,6 +81,12 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         allow_null=True)
     score = serializers.FloatField(
         help_text="Computed video score.",
+        default=0,
+        read_only=True,
+        allow_null=True)
+    tournesol_score = serializers.FloatField(
+        help_text=f"The total Tournesol score with uniform preferences "\
+            f"(value={constants['DEFAULT_PREFS_VAL']})",
         default=0,
         read_only=True,
         allow_null=True)
@@ -213,7 +220,8 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             'public_experts',
             'n_public_experts',
             'n_private_experts',
-            'pareto_optimal'] + VIDEO_FIELDS
+            'pareto_optimal',
+            'tournesol_score'] + VIDEO_FIELDS
         read_only_fields = [x for x in fields if x != 'video_id']
         extra_kwargs = {'views': {'allow_null': True},
                         'duration': {'allow_null': True},
@@ -368,6 +376,7 @@ class VideoViewSetV2(mixins.CreateModelMixin,
                 [F(f) * v for f, v in zip(VIDEO_FIELDS, user_preferences_vector)])
 
         features = self.get_features_from_request()
+        default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
         search_username = self.need_scores_for_username()
 
         # computing score inside the database
@@ -412,6 +421,9 @@ class VideoViewSetV2(mixins.CreateModelMixin,
 
         queryset = queryset.annotate(
             score_preferences_term=get_score_annotation(features))
+
+        queryset = queryset.annotate(
+            tournesol_score=get_score_annotation(default_features))
 
         queryset = queryset.annotate(
             score_search_term_=Value(

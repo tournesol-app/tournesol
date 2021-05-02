@@ -778,6 +778,11 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         qs = qs.order_by('-_n_ratings')
         return qs
 
+    @property
+    def tournesol_score(self):
+        # computed by a query
+        return 0.0
+
     def ratings(self, user=None, only_certified=True):
         """All associated certified ratings."""
         f = Q(video_1=self) | Q(video_2=self)
