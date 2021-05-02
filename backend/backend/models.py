@@ -13,8 +13,7 @@ from backend.black_white_email_domain import get_domain
 from backend.model_helpers import WithFeatures, WithEmbedding, WithDynamicFields, EnumList,\
     url_has_domain
 from backend.rating_fields import MAX_VALUE as MAX_RATING
-from backend.rating_fields import VIDEO_FIELDS, VIDEO_FIELDS_DICT, VIDEO_REPORT_FIELDS, \
-    MAX_FEATURE_WEIGHT
+from backend.rating_fields import VIDEO_FIELDS, VIDEO_FIELDS_DICT, MAX_FEATURE_WEIGHT
 from backend.video_search import VideoSearchEngine
 from django.contrib.auth.models import User as DjangoUser
 from django.core.exceptions import ValidationError
@@ -795,22 +794,9 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             qs = qs.filter(_is_certified=True)
         return qs
 
-    def reports(self, user=None):
-        """All associated reports."""
-        f = Q(video=self)
-        if user is not None:
-            f = f & Q(user=user)
-        return VideoReports.objects.filter(f)
-
     def n_ratings(self, user=None):
         """Number of associated ratings."""
         return self.ratings(user=user).count()
-
-    @property
-    def n_reports(self):
-        """Number of associated reports."""
-        # reports are deprecated
-        return 0
 
     @property
     def rating_n_ratings(self):
@@ -1244,40 +1230,6 @@ class VideoCommentMarker(models.Model, WithDynamicFields):
 
     def __str__(self):
         return "%s for %s" % (self.which, self.comment)
-
-
-class VideoReports(models.Model, WithDynamicFields):
-    """Reports on videos."""
-
-    class Meta:
-        unique_together = ['user', 'video']
-
-    user = models.ForeignKey(
-        UserPreferences,
-        on_delete=models.CASCADE,
-        help_text="Reporter for the video")
-    video = models.ForeignKey(
-        Video,
-        on_delete=models.CASCADE,
-        help_text="Video being reported")
-    explanation = models.TextField(
-        null=True,
-        default="",
-        help_text="Why is the video reported")
-
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field, descr in VIDEO_REPORT_FIELDS.items():
-            VideoReports.add_to_class(
-                field, models.BooleanField(
-                    null=True, default=False, help_text=descr))
-
-    def __str__(self):
-        fields = [
-            field for field in VIDEO_REPORT_FIELDS if getattr(
-                self, field)]
-        return "%s on %s: %s" % (self.user, self.video, ', '.join(fields))
 
 
 class RepresentativeModelUsage(models.Model):

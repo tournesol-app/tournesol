@@ -85,8 +85,8 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         read_only=True,
         allow_null=True)
     tournesol_score = serializers.FloatField(
-        help_text=f"The total Tournesol score with uniform preferences "\
-            f"(value={constants['DEFAULT_PREFS_VAL']})",
+        help_text=f"The total Tournesol score with uniform preferences "
+                  f"(value={constants['DEFAULT_PREFS_VAL']})",
         default=0,
         read_only=True,
         allow_null=True)

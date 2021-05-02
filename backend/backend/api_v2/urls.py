@@ -5,7 +5,6 @@ from backend.api_v2.user_information import UserInformationViewSetV2
 from backend.api_v2.user_preferences import UserPreferencesViewSetV2
 from backend.api_v2.video_comments import VideoCommentsViewSetV2
 from backend.api_v2.video_ratings import VideoRatingsViewSetV2
-from backend.api_v2.video_reports import VideoReportsViewSetV2
 from backend.api_v2.videos import VideoViewSetV2
 from backend.api_v2.login_signup import LoginSignupViewSetV2
 from backend.api_v2.constants import ConstantsViewSetV2
@@ -29,10 +28,6 @@ def fill_router(router, prefix):
         prefix + r'video_ratings',
         VideoRatingsViewSetV2,
         basename='v2_video_ratings')
-    router.register(
-        prefix + r'video_reports',
-        VideoReportsViewSetV2,
-        basename='v2_video_reports')
     router.register(
         prefix + r'video_comments',
         VideoCommentsViewSetV2,
