@@ -27,6 +27,7 @@ echo "=================================================="
 echo "Step 2 / 4: Install the apt dependencies."
 echo " "
 # Install  apt dependencies
+sudo apt-get update
 sudo apt-get install -y $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
 
 # For nodejs, we need to execute the code from nodesource.com, which also executes `apt-get update`

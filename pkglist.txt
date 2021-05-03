@@ -5,7 +5,6 @@ libpqxx-dev
 screen
 xvfb
 git
-nodejs
 build-essential
 default-jre
 wget

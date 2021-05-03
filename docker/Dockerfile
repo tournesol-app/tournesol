@@ -2,16 +2,15 @@ FROM ubuntu:20.04 AS base
 ARG DEBIAN_FRONTEND=noninteractive
 
 # installing basic apt dependencies and python3.7
-RUN apt-get update -q \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata \
-    && apt-get install -y --no-install-recommends \
-	git htop mc links wget vim sudo screen ca-certificates \
-    && sudo update-ca-certificates \
-    && sudo apt-get install -y --no-install-recommends software-properties-common \
-    && sudo add-apt-repository -y ppa:deadsnakes/ppa \
-    && sudo apt-get install -y --no-install-recommends python3.7 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN echo "Installing APT dependencies" \
+ && apt-get update -q \
+ && apt-get install -y --no-install-recommends software-properties-common \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata \
+ && apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates \
+ && sudo update-ca-certificates \
+ && sudo add-apt-repository -y ppa:deadsnakes/ppa \
+ && sudo apt-get install -y --no-install-recommends python3.7 \
+ && apt-get clean \
 
 # set the locale and shell to prevent weird errors
 ENV LANG C.UTF-8
