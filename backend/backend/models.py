@@ -27,6 +27,7 @@ from django_countries import countries
 from languages.fields import LanguageField
 from backend.constants import featureIsEnabledByDeFault, youtubeVideoIdRegex
 from django.core.validators import RegexValidator
+from simple_history import register as register_historical
 
 
 class ResetPasswordToken(models.Model):
@@ -1369,3 +1370,6 @@ class VideoRateLater(models.Model):
 
 # adding dynamic fields
 WithDynamicFields.create_all()
+
+# history of edits/changed/additions/deletions/...
+register_historical(ExpertRating, excluded_fields=['video_1_2_ids_sorted'])

@@ -112,6 +112,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_recaptcha',
     'django_countries',
+    'simple_history',
 ]
 
 SOCIAL_AUTH_PIPELINE = (
@@ -156,6 +157,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_react.get_username.RequestMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'django_react.urls'
