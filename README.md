@@ -31,7 +31,7 @@ ssh-rsa ...
 === /public key
    ```
    Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
-3. Run the container with `sudo docker run -p 8000 -p 8899 -p 5900 -it tournesol-app/tournesol`.
+3. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -it tournesol-app/tournesol`.
    The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, and `5900` is for VNC.
 4. To run the same container again, remember the host name of the container (`root@xxx`) and run
    `sudo docker start -ai xxx`
@@ -39,7 +39,7 @@ ssh-rsa ...
 
 <h3>Building front-end</h3>
 
-Run inside the container:
+Run inside the container (`npm run build` runs on image build):
 
 ```
 $ cd frontend
@@ -56,6 +56,10 @@ Run inside the container to launch the server, and the jupyter notebook:
 ```
 (venv-tournesol) $ ./launch_debug.sh
 ```
+
+Now you can navigate to http://127.0.0.1:8000 to view the development website, and to http://127.0.0.1:8899 to view the Jupyter notebook
+
+When running integration tests, you can connect to 127.0.0.1 via VNC (port 5900) to see Firefox
 
 Auxiliary commands:
 
