@@ -17,14 +17,29 @@ We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
   <summary>Click to expand</summary>
 
 First, clone this repo and `cd` to it.
+You will need [Docker](https://docs.docker.com/get-docker/) installed and configured.
 
-<h3>Installing dependencies</h3>
+<h3>Building the Docker image</h3>
 
-To install all dependencies, execute: `./setup.sh`
+The final image size (`docker image ls`) is about 4GB, but during the installation it might take more space.
 
-Run tests to see that the installation is correct: `./tests.sh`
+1. Inside the repository, run `sudo docker build -t tournesol-app/tournesol docker`
+2. At the end, the script will print the ssh certificate, like
+   ```
+=== Your ssh public key... ===
+ssh-rsa ...
+=== /public key
+   ```
+   Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
+3. Run the container with `sudo docker run -p 8000 -p 8899 -p 5900 -it tournesol-app/tournesol`.
+   The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, and `5900` is for VNC.
+4. To run the same container again, remember the host name of the container (`root@xxx`) and run
+   `sudo docker start -ai xxx`
 
-<h3>Building and running front-end</h3>
+
+<h3>Building front-end</h3>
+
+Run inside the container:
 
 ```
 $ cd frontend
@@ -35,24 +50,39 @@ frontend $ npm run dev
 
 <h3>Running back-end</h3>
 
+Run inside the container to launch the server, and the jupyter notebook:
+
+
 ```
-(venv) $ . ./debug_export.sh # to set env vars
+(venv-tournesol) $ ./launch_debug.sh
+```
+
+Auxiliary commands:
+
+```
+(venv-tournesol) $ . ./debug_export.sh # to set env vars, done automatically in Docker
 # cd backend
 
+# create the test database
+(venv-tournesol) backend $ python manage.py migrate
+
 # (optional) run training
-(venv) backend $ python manage.py ml_train
+(venv-tournesol) backend $ python manage.py ml_train
 
 # (optional) download latest video metadata
-(venv) backend $ python manage.py add_videos
+(venv-tournesol) backend $ python manage.py add_videos
 
 # optional: create a user for yourself
-(venv) backend $ python manage.py createsuperuser
-
-# now go to localhost:8000
-(venv) backend $ python manage.py runserver
+(venv-tournesol) backend $ python manage.py createsuperuser
 ```
 
+
+
 Note that creating a super user is highly recommended for testing the website locally and contributing to the codebase. 💯
+
+<h3>Connecting to the website</h3>
+
+
 </details>
 
 ## API

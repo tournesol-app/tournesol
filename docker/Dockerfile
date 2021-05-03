@@ -35,16 +35,22 @@ RUN DEBIAN_FRONTEND=noninteractive ./setup.sh \
 # use installed firefox
 ENV PATH /tournesol/firefox:$PATH
 
-# creating ssh key
-RUN ssh-keygen -f /root/.ssh/id_rsa -N "" \
- && echo "=== YOUR ssh public key is below, add it to your github ===" \
- && cat /root/.ssh/id_rsa.pub \
- && echo "=== /public key ===" \
+# finalizing the setup
+RUN sudo apt-get install -y openssh-client telnet net-tools x11vnc \
+ && ssh-keygen -f /root/.ssh/id_rsa -N "" \
  && git remote rm origin \
  && git remote add origin git@github.com:tournesol-app/tournesol.git
 
+RUN echo "Creating the database" \
+ && . ./debug_export.sh \
+ && . ./venv-tournesol/bin/activate \
+ && cd backend; python manage.py migrate
+
+RUN echo "=== YOUR ssh public key is below, add it to your github ===" \
+ && cat /root/.ssh/id_rsa.pub \
+ && echo "=== /public key ===" \
+
 # web server port
 EXPOSE 8000
-
-# running tests
-CMD bash ./tests.sh
+EXPOSE 8899
+EXPOSE 5900

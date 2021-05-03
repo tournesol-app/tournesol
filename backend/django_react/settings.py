@@ -321,6 +321,7 @@ NOTEBOOK_ARGUMENTS = [
     '--port=8899',
     # disables the browser
     '--no-browser',
+    '--allow-root',
 ]
 
 # configurable email backend
