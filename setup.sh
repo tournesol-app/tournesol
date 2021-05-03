@@ -53,6 +53,8 @@ python3.7 -m venv venv-tournesol
 source venv-tournesol/bin/activate
 python3.7 -m pip install --upgrade pip
 python3.7 -m pip install -r backend/requirements.txt
+python3.7 -m pip cache purge
+rm -rf ~/.cache/pip/
 
 echo " "
 echo "=================================================="

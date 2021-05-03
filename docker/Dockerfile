@@ -7,7 +7,7 @@ RUN echo "Installing APT dependencies" \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates tzdata software-properties-common apt-utils \
  && DEBIAN_FRONTEND=noninteractive sudo update-ca-certificates \
  && DEBIAN_FRONTEND=noninteractive sudo add-apt-repository -y ppa:deadsnakes/ppa \
- && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends python3.7 python3.7-venv \
+ && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends python3.7 python3.7-venv python3.7-dev \
  && DEBIAN_FRONTEND=noninteractive apt-get clean
 
 # installing pip
@@ -28,10 +28,9 @@ RUN git checkout issue-dockerfile
 
 # installing all Tournesol dependencies into a virtual environment
 RUN DEBIAN_FRONTEND=noninteractive ./setup.sh \
- && sudo apt-get clean \
- && pip cache purge \
- && rm -rf ~/.cache/pip/ \
- && echo "source /tournesol/venv-tournesol/bin/activate" >> ~/.bashrc
+ && echo "echo 'Tournesol Debug Environment'" >> ~/.bashrc \
+ && echo "source /tournesol/venv-tournesol/bin/activate" >> ~/.bashrc \
+ && echo "source /tournesol/debug_export.sh" >> ~/.bashrc
 
 # use installed firefox
 ENV PATH /tournesol/firefox:$PATH
