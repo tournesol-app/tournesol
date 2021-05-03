@@ -21,10 +21,8 @@ SHELL ["/bin/bash", "-c"]
 
 # cloning the Tournesol repository
 WORKDIR /
-# RUN git clone --recursive https://github.com/tournesol-app/tournesol.git
-RUN git clone --recursive https://github.com/sergeivolodin/tournesol.git tournesol
+RUN git clone --recursive https://github.com/tournesol-app/tournesol.git
 WORKDIR /tournesol
-RUN git checkout issue-dockerfile
 
 # installing all Tournesol dependencies into a virtual environment
 RUN DEBIAN_FRONTEND=noninteractive ./setup.sh \
