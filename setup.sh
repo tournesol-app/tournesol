@@ -18,7 +18,6 @@ if [ "$(firefox --version)" != "Mozilla Firefox 84.0.1" ]; then
     echo "Installing Mozilla Firefox version 84.0.1"
 	wget -c https://download-installer.cdn.mozilla.net/pub/firefox/releases/84.0.1/linux-x86_64/en-US/firefox-84.0.1.tar.bz2
     tar -xvf firefox-84.0.1.tar.bz2
-    sudo ln -fs $(pwd)/firefox/firefox /ts_firefox/firefox
 else
     echo "OK: Mozilla Firefox version 84.0.1 already installed."
 fi

@@ -23,7 +23,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 SHELL ["/bin/bash", "-c"]
-ENV PATH /opt/conda/bin:$PATH
+ENV PATH /opt/conda/bin:/tournesol/firefox:$PATH
 
 # cloning the Tournesol repository
 WORKDIR /
@@ -33,8 +33,9 @@ WORKDIR /tournesol
 RUN git checkout issue-dockerfile
 
 # installing python 3.7
-RUN conda update conda -y \
- && conda install -y python=3.7 \
+RUN \
+    conda install -y python=3.7 \
+ && conda update conda -y \
  && conda clean --all -y
 
 # installing all Tournesol dependencies into a virtual environment
@@ -45,7 +46,7 @@ RUN ./setup.sh \
 
 # creating ssh key
 RUN ssh-keygen -f /root/.ssh/id_rsa -N "" \
- && echo "=== YOUR ssh public key is below, add it to your github ==="
+ && echo "=== YOUR ssh public key is below, add it to your github ===" \
  && cat /root/.ssh/id_rsa.pub \
  && echo "=== /public key ===" \
  && git remote rm origin \
