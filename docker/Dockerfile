@@ -39,16 +39,20 @@ ENV PATH /tournesol/firefox:$PATH
 RUN sudo apt-get install -y openssh-client telnet net-tools x11vnc \
  && ssh-keygen -f /root/.ssh/id_rsa -N "" \
  && git remote rm origin \
- && git remote add origin git@github.com:tournesol-app/tournesol.git
+ && git remote add origin git@github.com:tournesol-app/tournesol.git \
+ && git remote add origin_https https://github.com/tournesol-app/tournesol.git
 
 RUN echo "Creating the database" \
  && . ./debug_export.sh \
  && . ./venv-tournesol/bin/activate \
  && cd backend; python manage.py migrate
 
-RUN echo "=== YOUR ssh public key is below, add it to your github ===" \
+RUN echo "Building front-end" \
+ && cd frontend; npm run build 
+
+RUN echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" \
  && cat /root/.ssh/id_rsa.pub \
- && echo "=== /public key ===" \
+ && echo -e "=== /public key ===\n\n" \
 
 # web server port
 EXPOSE 8000
