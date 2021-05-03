@@ -265,6 +265,23 @@ export default () => {
           </Alert>
         </div>
 
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Alert
+            severity="info"
+            icon={false}
+            variant="outlined"
+            style={{ width: '450px' }}
+          >
+            <AlertTitle>We are currently experiencing issues with email validation</AlertTitle>
+            You may fail to be delivered the email we send you to confirm your email address.
+            Please try again later.
+            Our team is doing its best to fix this issue as soon as possible.
+            We thank you for your patience and understanding, and we apologize
+            for the inconvenience.
+
+          </Alert>
+        </div>
+
         <div className={classes.spacing} />
 
         {showArrowTutorial === true && (
