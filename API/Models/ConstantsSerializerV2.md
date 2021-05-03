@@ -4,7 +4,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **features** | [**List**](Feature.md) | Features used on the website to rate videos | [default to null]
-**reportUnderscorefields** | [**List**](ReportField.md) | Video reporting fields | [default to null]
 **searchUnderscoredividerUnderscorecoefficient** | [**Float**](float.md) | divide search score by this value | [default to null]
 **searchUnderscorefeatureUnderscoreconstantUnderscoreadd** | [**Float**](float.md) | add this value to Tournesol scores | [default to null]
 **recaptchaUnderscorev2UnderscorepublicUnderscorekey** | [**String**](string.md) | Public ReCaptcha key | [default to null]

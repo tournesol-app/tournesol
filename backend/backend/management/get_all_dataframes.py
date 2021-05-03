@@ -2,8 +2,8 @@ from io import BytesIO, StringIO
 from zipfile import ZipFile
 
 from backend.models import Video, VideoRating, ExpertRating
-from backend.models import VideoComment, VideoReports, VideoCommentMarker
-from backend.rating_fields import VIDEO_FIELDS, VIDEO_REPORT_FIELDS
+from backend.models import VideoComment, VideoCommentMarker
+from backend.rating_fields import VIDEO_FIELDS
 from django.contrib.auth.models import User as DjangoUser
 from django_pandas.io import read_frame
 
@@ -20,11 +20,6 @@ def get_user_data(username):
 
     df = read_frame(ExpertRating.objects.filter(user__user__username=username).all())
     dfs['my_expert_ratings'] = df
-
-    df = read_frame(VideoReports.objects.filter(user__user__username=username).all())
-    df.columns = [VIDEO_REPORT_FIELDS[x]
-                  if x in VIDEO_REPORT_FIELDS else x for x in df.columns]
-    dfs['my_video_reports'] = df
 
     df = read_frame(VideoComment.objects.filter(user__user__username=username).all())
     dfs['my_video_comments'] = df
@@ -76,11 +71,6 @@ def get_database_as_pd():
             'userpreferences__id'] + [
             f"userpreferences__{x}" for x in VIDEO_FIELDS])
     result_df['users'] = df
-
-    df = read_frame(VideoReports.objects.all())
-    df.columns = [VIDEO_REPORT_FIELDS[x]
-                  if x in VIDEO_REPORT_FIELDS else x for x in df.columns]
-    result_df['video_reports'] = df
 
     df = read_frame(VideoComment.objects.all())
     result_df['video_comment'] = df

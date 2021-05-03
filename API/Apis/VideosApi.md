@@ -13,6 +13,7 @@ Method | HTTP request | Description
 [**thankContributors**](VideosApi.md#thankContributors) | **PATCH** /api/v2/videos/thank_contributors/ | 
 [**videosCreate**](VideosApi.md#videosCreate) | **POST** /api/v2/videos/ | 
 [**videosList**](VideosApi.md#videosList) | **GET** /api/v2/videos/ | 
+[**videosRatedVideosList**](VideosApi.md#videosRatedVideosList) | **GET** /api/v2/videos/rated_videos/ | 
 [**videosRetrieve**](VideosApi.md#videosRetrieve) | **GET** /api/v2/videos/{id}/ | 
 
 
@@ -275,6 +276,45 @@ Name | Type | Description  | Notes
 
 
     List all videos with search/filter capability
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **daysAgoGte** | **String**| Upload date, older than x days ago | [optional] [default to null]
+ **daysAgoLte** | **String**| Upload date, more recent than x days ago | [optional] [default to null]
+ **durationGte** | **String**| duration_gte | [optional] [default to null]
+ **durationLte** | **String**| duration_lte | [optional] [default to null]
+ **language** | **String**| language | [optional] [default to null]
+ **limit** | **Integer**| Number of results to return per page. | [optional] [default to null]
+ **offset** | **Integer**| The initial index from which to return the results. | [optional] [default to null]
+ **ordering** | **String**| Which field to use when ordering the results. | [optional] [default to null]
+ **search** | **String**| Search string | [optional] [default to null]
+ **showAllMyVideos** | **String**| Show all my videos in search | [optional] [default to null]
+ **videoId** | **String**| video_id | [optional] [default to null]
+ **viewsGte** | **String**| views_gte | [optional] [default to null]
+ **viewsLte** | **String**| views_lte | [optional] [default to null]
+
+### Return type
+
+[**PaginatedVideoSerializerV2List**](..//Models/PaginatedVideoSerializerV2List.md)
+
+### Authorization
+
+[cookieAuth](../README.md#cookieAuth), [tokenAuth](../README.md#tokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+<a name="videosRatedVideosList"></a>
+# **videosRatedVideosList**
+> PaginatedVideoSerializerV2List videosRatedVideosList(daysAgoGte, daysAgoLte, durationGte, durationLte, language, limit, offset, ordering, search, showAllMyVideos, videoId, viewsGte, viewsLte)
+
+
+
+    Get videos and search results.
 
 ### Parameters
 
