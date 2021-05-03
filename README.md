@@ -26,9 +26,9 @@ The final image size (`docker image ls`) is about 4GB, but during the installati
 1. Inside the repository, run `sudo docker build -t tournesol-app/tournesol docker`
 2. At the end, the script will print the ssh certificate, like
    ```
-=== Your ssh public key... ===
-ssh-rsa ...
-=== /public key
+   === Your ssh public key... ===
+   ssh-rsa ...
+   === /public key
    ```
    Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
 3. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol`.
@@ -44,7 +44,7 @@ The default root password is `tournesol`.
 
 Run inside the container (`npm run build` runs on image build):
 
-```
+```shell
 $ cd frontend
 
 # will watch for changes made to the frontend source code and re-build automatically:
@@ -56,14 +56,14 @@ frontend $ npm run dev
 Run inside the container to launch the server, and the jupyter notebook:
 
 
-```
+```shell
 (venv-tournesol) $ ./launch_debug.sh
 ```
 
 Now you can navigate to http://127.0.0.1:8000 to view the development website, and to http://127.0.0.1:8899 to view the Jupyter notebook
 
 To run all tests, do
-```
+```shell
 (venv-tournesol) $ ./tests.sh
 ```
 
@@ -75,7 +75,7 @@ When running integration tests, you can connect to 127.0.0.1 via VNC (port 5900)
 
 Auxiliary commands:
 
-```
+```shell
 (venv-tournesol) $ . ./debug_export.sh # to set env vars, done automatically in Docker
 # cd backend
 
@@ -92,10 +92,7 @@ Auxiliary commands:
 (venv-tournesol) backend $ python manage.py createsuperuser
 ```
 
-
-
 Note that creating a super user is highly recommended for testing the website locally and contributing to the codebase. 💯
-
 
 </details>
 
