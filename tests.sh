@@ -76,7 +76,7 @@ then
 	if [ "X$(which x11vnc)" != "X" ]
 	then
 		echo "Launching x11vnc"
-		screen -Sdm "xvfb_vnc" x11vnc -display $DISPLAY -loop
+		screen -Sdm "xvfb_vnc" x11vnc -display $DISPLAY -loop -shared -forever
 	fi
 fi
 

@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # installing basic apt dependencies and python3.7
 RUN echo "Installing APT dependencies" \
  && DEBIAN_FRONTEND=noninteractive apt-get update -q \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates tzdata software-properties-common apt-utils \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates tzdata software-properties-common apt-utils libgtk-3-0 \
  && DEBIAN_FRONTEND=noninteractive sudo update-ca-certificates \
  && DEBIAN_FRONTEND=noninteractive sudo add-apt-repository -y ppa:deadsnakes/ppa \
  && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends python3.7 python3.7-venv python3.7-dev \
@@ -43,6 +43,7 @@ RUN sudo apt-get install -y openssh-client telnet net-tools x11vnc openssh-serve
  && git remote add origin_https https://github.com/tournesol-app/tournesol.git \
  && echo "PermitRootLogin yes" >> /etc/ssh/sshd_config \
  && echo "sudo service ssh start" >> ~/.bashrc \
+ && echo "PATH=/tournesol/firefox:\$PATH" >> ~/.bashrc \
  && echo "root password is: tournesol" \
  && echo -e "tournesol\ntournesol" | passwd root
 
