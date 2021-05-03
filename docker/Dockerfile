@@ -3,14 +3,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # installing basic apt dependencies and python3.7
 RUN echo "Installing APT dependencies" \
- && apt-get update -q \
- && apt-get install -y --no-install-recommends software-properties-common \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata \
- && apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates \
- && sudo update-ca-certificates \
- && sudo add-apt-repository -y ppa:deadsnakes/ppa \
- && sudo apt-get install -y --no-install-recommends python3.7 \
- && apt-get clean \
+ && DEBIAN_FRONTEND=noninteractive apt-get update -q \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates tzdata software-properties-common apt-utils \
+ && DEBIAN_FRONTEND=noninteractive sudo update-ca-certificates \
+ && DEBIAN_FRONTEND=noninteractive sudo add-apt-repository -y ppa:deadsnakes/ppa \
+ && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends python3.7 \
+ && DEBIAN_FRONTEND=noninteractive apt-get clean
 
 # set the locale and shell to prevent weird errors
 ENV LANG C.UTF-8
@@ -24,7 +22,8 @@ WORKDIR /tournesol
 RUN git checkout issue-dockerfile
 
 # installing all Tournesol dependencies into a virtual environment
-RUN ./setup.sh \
+RUN DEBIAN_FRONTEND=noninteractive ./setup.sh \
+ && sudo apt-get clean \
  && pip cache purge \
  && rm -rf ~/.cache/pip/ \
  && echo "source /tournesol/venv-tournesol/bin/activate" >> ~/.bashrc

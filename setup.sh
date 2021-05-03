@@ -32,6 +32,8 @@ sudo apt-get install -y $(grep -vE "^\s*#" pkglist.txt | tr "\n" " ")
 
 # For nodejs, we need to execute the code from nodesource.com, which also executes `apt-get update`
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo apt-get clean
 
 echo " "
 echo "=================================================="
