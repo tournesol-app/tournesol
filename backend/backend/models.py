@@ -1287,7 +1287,8 @@ class VideoRatingPrivacy(models.Model):
     @staticmethod
     def _annotate_privacy(qs, prefix='video__videoratingprivacy', field_user=F('user'),
                           filter_add=None, default_value=None, annotate_bool=True,
-                          annotate_n=False, videorating_field=None):
+                          annotate_n=False, videorating_field=None,
+                          output_prefix=""):
         """Count number of private/public Privacy database entries.
 
         By-default, works for the VideoRating model.
@@ -1302,44 +1303,50 @@ class VideoRatingPrivacy(models.Model):
         if default_value is None:
             default_value = VideoRatingPrivacy.DEFAULT_VALUE_IS_PUBLIC
 
-        qs = qs.annotate(
-            _n_public_videoratingprivacy=Count(prefix, filter=Q(**{prefix + '__is_public': True,
-                                                                   **filter_add}),
-                                               distinct=True))
-        qs = qs.annotate(
-            _n_private_videoratingprivacy=Count(prefix, filter=Q(**{prefix + '__is_public': False,
-                                                                    **filter_add}),
-                                                distinct=True))
+        qs = qs.annotate(**{
+            output_prefix + '_n_public_videoratingprivacy':
+                Count(prefix, filter=Q(**{prefix + '__is_public': True,
+                                          **filter_add}), distinct=True)})
+        qs = qs.annotate(**{
+            output_prefix + '_n_private_videoratingprivacy':
+                Count(prefix, filter=Q(**{prefix + '__is_public': False,
+                                          **filter_add}), distinct=True)})
 
         if annotate_bool:
             if default_value:
                 # default value is PUBLIC, therefore public == !(_n_private_videoratingprivacy > 0)
-                qs = qs.annotate(_is_public=Case(
-                    When(_n_private_videoratingprivacy__gt=0,
+                qs = qs.annotate(**{output_prefix + '_is_public': Case(
+                    When(**{output_prefix + '_n_private_videoratingprivacy__gt': 0},
                          then=Value(False)),
                     default=Value(True),
-                    output_field=BooleanField()))
+                    output_field=BooleanField())})
             else:
                 # default value is PRIVATE, therefore public == (_n_public_videoratingprivacy > 0)
-                qs = qs.annotate(_is_public=Case(
-                    When(_n_public_videoratingprivacy__gt=0,
+                qs = qs.annotate(**{output_prefix + '_is_public': Case(
+                    When(**{output_prefix + '_n_public_videoratingprivacy__gt': 0},
                          then=Value(True)),
                     default=Value(False),
-                    output_field=BooleanField()))
+                    output_field=BooleanField())})
 
         if annotate_n:
 
-            qs = qs.annotate(_n_total=Count(videorating_field,
-                                            distinct=True))
+            qs = qs.annotate(**{output_prefix + '_n_total':
+                Count(videorating_field, distinct=True)})
 
             if default_value:
                 # default value is PUBLIC -> _n_public = n_total - n_private
-                qs = qs.annotate(_n_public=F('_n_total') - F('_n_private_videoratingprivacy'))
-                qs = qs.annotate(_n_private=F('_n_private_videoratingprivacy'))
+                qs = qs.annotate(**{output_prefix + '_n_public':
+                    F(output_prefix + '_n_total') - \
+                    F(output_prefix + '_n_private_videoratingprivacy')})
+                qs = qs.annotate(**{output_prefix + '_n_private':
+                    F(output_prefix + '_n_private_videoratingprivacy')})
             else:
                 # default value is PRIVATE -> _n_private = n_total - n_public
-                qs = qs.annotate(_n_private=F('_n_total') - F('_n_public_videoratingprivacy'))
-                qs = qs.annotate(_n_public=F('_n_public_videoratingprivacy'))
+                qs = qs.annotate(**{output_prefix + '_n_private':
+                    F(output_prefix + '_n_total') - \
+                    F(output_prefix + '_n_public_videoratingprivacy')})
+                qs = qs.annotate(**{output_prefix + '_n_public':
+                    F(output_prefix + '_n_public_videoratingprivacy')})
 
         return qs
 
