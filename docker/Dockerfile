@@ -17,7 +17,7 @@ SHELL ["/bin/bash", "-c"]
 # cloning the Tournesol repository
 WORKDIR /
 # RUN git clone --recursive https://github.com/tournesol-app/tournesol.git
-RUN git clone --recursive https://github.com/sergeivolodin/tournesol.git
+RUN git clone --recursive https://github.com/sergeivolodin/tournesol.git tournesol
 WORKDIR /tournesol
 RUN git checkout issue-dockerfile
 
