@@ -192,7 +192,7 @@ const App = () => {
           {window.location.href.includes('staging.tournesol.app') && (
           <Alert
             severity="warning"
-            icon={true}
+            icon
             variant="outlined"
             style={{ width: '70%', marginTop: '5px', marginBottom: '5px' }}
           >
@@ -204,19 +204,19 @@ const App = () => {
             {' '}how you ended up on the staging platform, if it was by mistake.
 
           </Alert>
-        )}
+          )}
 
-        {window.location.href.includes('127.0.0.1') && (
+          {window.location.href.includes('127.0.0.1') && (
           <Alert
             severity="warning"
-            icon={true}
+            icon
             variant="outlined"
             style={{ width: '70%', marginTop: '5px', marginBottom: '5px' }}
           >
             Development version
 
           </Alert>
-        )}
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
