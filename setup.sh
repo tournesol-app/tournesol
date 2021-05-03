@@ -49,7 +49,7 @@ echo "=================================================="
 echo "Step 4 / 4: Create a new python3 venv and install the python dependencies for the backend."
 echo " "
 # Create venv and install python3 dependencies:
-. ./debug_export.sh
+alias python=python3.7
 python -m venv venv-tournesol
 source venv-tournesol/bin/activate
 python -m pip install --upgrade pip
