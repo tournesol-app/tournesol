@@ -13,7 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-
+import Alert from '@material-ui/lab/Alert';
 import WbSunny from '@material-ui/icons/WbSunny';
 import FunctionsIcon from '@material-ui/icons/Functions';
 import PersonIcon from '@material-ui/icons/Person';
@@ -188,6 +188,35 @@ const App = () => {
             Tournesol
           </Typography>
           <WbSunny />
+
+          {window.location.href.includes('staging.tournesol.app') && (
+          <Alert
+            severity="warning"
+            icon={true}
+            variant="outlined"
+            style={{ width: '70%', marginTop: '5px', marginBottom: '5px' }}
+          >
+            This is the staging platform of Tournesol.
+            To access the actual Tournesol page, please go to{' '}
+            <a href="https://tournesol.app">tournesol.app</a>.
+            Please also{' '}
+            <a href="mailto:tournesol.application@gmail.com">let us know</a>
+            {' '}how you ended up on the staging platform, if it was by mistake.
+
+          </Alert>
+        )}
+
+        {window.location.href.includes('127.0.0.1') && (
+          <Alert
+            severity="warning"
+            icon={true}
+            variant="outlined"
+            style={{ width: '70%', marginTop: '5px', marginBottom: '5px' }}
+          >
+            Development version
+
+          </Alert>
+        )}
         </Toolbar>
       </AppBar>
       <Drawer
