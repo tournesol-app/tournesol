@@ -4,7 +4,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # installing basic apt dependencies
 RUN apt-get update -q \
     && apt-get install -y --no-install-recommends \
-	git htop mc links wget vim sudo screen \
+	git htop mc links wget vim sudo screen ca-certificates \
+    && sudo update-ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,8 +27,10 @@ ENV PATH /opt/conda/bin:$PATH
 
 # cloning the Tournesol repository
 WORKDIR /
-RUN git clone --recursive https://github.com/tournesol-app/tournesol.git
+# RUN git clone --recursive https://github.com/tournesol-app/tournesol.git
+RUN git clone --recursive https://github.com/sergeivolodin/tournesol.git
 WORKDIR /tournesol
+RUN git checkout issue-dockerfile
 
 # installing python 3.7
 RUN conda update conda -y \
@@ -37,8 +40,16 @@ RUN conda update conda -y \
 # installing all Tournesol dependencies into a virtual environment
 RUN ./setup.sh \
  && pip cache purge \
- && rm -rf ~/.cache/pip/
+ && rm -rf ~/.cache/pip/ \
  && echo "source /tournesol/venv-tournesol/bin/activate" >> ~/.bashrc
+
+# creating ssh key
+RUN ssh-keygen -f /root/.ssh/id_rsa -N "" \
+ && echo "=== YOUR ssh public key is below, add it to your github ==="
+ && cat /root/.ssh/id_rsa.pub \
+ && echo "=== /public key ===" \
+ && git remote rm origin \
+ && git remote add origin git@github.com:tournesol-app/tournesol.git
 
 # web server port
 EXPOSE 8000

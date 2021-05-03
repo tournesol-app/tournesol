@@ -11,3 +11,4 @@ default-jre
 wget
 libdbus-glib-1-2
 xclip
+curl
