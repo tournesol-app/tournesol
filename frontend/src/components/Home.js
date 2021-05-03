@@ -159,11 +159,33 @@ export default () => {
             Tournesol aims to identify top videos of public utility
             by eliciting contributors' judgements on content quality.
             <br />
-            Learn more with our{' '}
-            <a href="https://wiki.tournesol.app/">
-              Tournesol wiki
-            </a>
-            , or <a href="mailto:le-nguyen.hoang@science4all.org">contact us</a>.
+            Please also consider using our{' '}
+            <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
+                Chrome extension
+            </a>, our{' '}
+            <a href="https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/">
+                Firefox extension
+            </a>,
+            and our{' '}
+            <a href="https://play.google.com/store/apps/details?id=com.tournesolapp&hl=en&gl=US">
+                Android application
+            </a>.
+            <br />
+            Find out more with our{' '}
+            <a href="http://wiki.tournesol.app/">
+                wiki
+            </a>,
+            check out our{' '}
+            <a href="https://github.com/tournesol-app/tournesol">
+                open-source code
+            </a>, join our{' '}
+            <a href="https://discord.gg/3KApy6tHAM">
+                Discord
+            </a>,
+            and{' '}
+            <a href="/tournesol.public.latest.csv.zip">
+                download our public database
+            </a>.
           </Typography>
 
           {window.is_authenticated ? (
