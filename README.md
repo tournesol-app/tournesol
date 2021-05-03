@@ -9,7 +9,7 @@ See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php
 We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 [Django](https://www.djangoproject.com/) for the backend, and [React.js](https://reactjs.org/) for the front-end.
 
-## How to launch (tested on Ubuntu in WSL)
+## How to launch (tested on Ubuntu in WSL and on Ubuntu 20.04)
 
 ![Continuous Integration](https://github.com/tournesol-app/tournesol/workflows/Continuous%20Integration/badge.svg?branch=master)
 
@@ -18,28 +18,11 @@ We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 
 First, clone this repo and `cd` to it.
 
-<h3>Prerequisites</h3>
+<h3>Installing dependencies</h3>
 
-1. [Install](https://github.com/nodesource/distributions/blob/master/README.md) latest nodejs and npm.
-   Install Python 3
+To install all dependencies, execute: `./setup.sh`
 
-2. Install dependencies for front-end
-
-   ```
-   $ cd frontend
-   frontend $ npm install
-   ```
-
-3. Create a virtual environment for backend and install its dependencies:
-
-   ```
-   $ python3 -m venv venv
-
-   # run that to go inside the virtual environment
-   $ source venv/bin/activate
-   (venv) $ pip install -r backend/requirements.txt
-   ```
-4. Run tests to see that the installation is correct: `./tests.sh`
+Run tests to see that the installation is correct: `./tests.sh`
 
 <h3>Building and running front-end</h3>
 

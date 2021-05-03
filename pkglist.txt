@@ -1,0 +1,13 @@
+# These requirements were specified in the CI file (state April 2021)
+python3
+postgresql
+libpqxx-dev
+screen
+xvfb
+git
+nodejs
+build-essential
+default-jre
+wget
+libdbus-glib-1-2
+xclip
