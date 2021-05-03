@@ -5,9 +5,9 @@ libpqxx-dev
 screen
 xvfb
 git
-nodejs
 build-essential
 default-jre
 wget
 libdbus-glib-1-2
 xclip
+curl

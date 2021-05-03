@@ -17,16 +17,34 @@ We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
   <summary>Click to expand</summary>
 
 First, clone this repo and `cd` to it.
+You will need [Docker](https://docs.docker.com/get-docker/) installed and configured.
 
-<h3>Installing dependencies</h3>
+<h3>Building the Docker image</h3>
 
-To install all dependencies, execute: `./setup.sh`
+The final image size (`docker image ls`) is about 4GB, but during the installation it might take more space.
 
-Run tests to see that the installation is correct: `./tests.sh`
+1. Inside the repository, run `sudo docker build -t tournesol-app/tournesol docker`
+2. At the end, the script will print the ssh certificate, like
+   ```
+   === Your ssh public key... ===
+   ssh-rsa ...
+   === /public key
+   ```
+   Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
+3. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol`.
+   The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, `5900` is for VNC, and `2222` for ssh.
+4. To run the same container again, remember the host name of the container (`root@xxx`) and run
+   `sudo docker start -ai xxx`
 
-<h3>Building and running front-end</h3>
+To edit Tournesol source code, start the container and connect via ssh to port 2222 (set up your password, or the public key via the container terminal).
+The default root password is `tournesol`.
 
-```
+
+<h3>Building front-end</h3>
+
+Run inside the container (`npm run build` runs on image build):
+
+```shell
 $ cd frontend
 
 # will watch for changes made to the frontend source code and re-build automatically:
@@ -35,24 +53,47 @@ frontend $ npm run dev
 
 <h3>Running back-end</h3>
 
+Run inside the container to launch the server, and the jupyter notebook:
+
+
+```shell
+(venv-tournesol) $ ./launch_debug.sh
 ```
-(venv) $ . ./debug_export.sh # to set env vars
+
+Now you can navigate to http://127.0.0.1:8000 to view the development website, and to http://127.0.0.1:8899 to view the Jupyter notebook
+
+To run all tests, do
+```shell
+(venv-tournesol) $ ./tests.sh
+```
+
+Note that the backend needs to be started in a special mode for integration tests, so please close the previous one if you started it (see `screen -ls` and close the backend_server screen).
+
+To see the Jupyter token, run `jupyter notebook list` inside the container.
+
+When running integration tests, you can connect to 127.0.0.1 via VNC (port 5900) to see Firefox
+
+Auxiliary commands:
+
+```shell
+(venv-tournesol) $ . ./debug_export.sh # to set env vars, done automatically in Docker
 # cd backend
 
+# create the test database
+(venv-tournesol) backend $ python manage.py migrate
+
 # (optional) run training
-(venv) backend $ python manage.py ml_train
+(venv-tournesol) backend $ python manage.py ml_train
 
 # (optional) download latest video metadata
-(venv) backend $ python manage.py add_videos
+(venv-tournesol) backend $ python manage.py add_videos
 
 # optional: create a user for yourself
-(venv) backend $ python manage.py createsuperuser
-
-# now go to localhost:8000
-(venv) backend $ python manage.py runserver
+(venv-tournesol) backend $ python manage.py createsuperuser
 ```
 
 Note that creating a super user is highly recommended for testing the website locally and contributing to the codebase. 💯
+
 </details>
 
 ## API

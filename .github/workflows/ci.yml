@@ -33,6 +33,7 @@ jobs:
       - name: Run all tests
         run: |
           source venv-tournesol/bin/activate
+          export PATH=$(pwd)/firefox/:$PATH
           ./tests.sh
       - uses: actions/upload-artifact@v2
         if: failure()
