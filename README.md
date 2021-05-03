@@ -69,6 +69,8 @@ To run all tests, do
 
 Note that the backend needs to be started in a special mode for integration tests, so please close the previous one if you started it (see `screen -ls` and close the backend_server screen).
 
+To see the Jupyter token, run `jupyter notebook list` inside the container.
+
 When running integration tests, you can connect to 127.0.0.1 via VNC (port 5900) to see Firefox
 
 Auxiliary commands:
