@@ -7,8 +7,13 @@ RUN echo "Installing APT dependencies" \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git htop mc links wget vim sudo screen ca-certificates tzdata software-properties-common apt-utils \
  && DEBIAN_FRONTEND=noninteractive sudo update-ca-certificates \
  && DEBIAN_FRONTEND=noninteractive sudo add-apt-repository -y ppa:deadsnakes/ppa \
- && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends python3.7 \
+ && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends python3.7 python3.7-venv \
  && DEBIAN_FRONTEND=noninteractive apt-get clean
+
+# installing pip
+RUN echo "Installing PIP" \
+ && wget -q https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+ && python3.7 get-pip.py
 
 # set the locale and shell to prevent weird errors
 ENV LANG C.UTF-8
