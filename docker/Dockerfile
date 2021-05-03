@@ -54,6 +54,12 @@ RUN echo "Creating the database" \
 RUN echo "Building front-end" \
  && cd frontend; npm run build 
 
+Run echo "To open the container, run sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol" \
+ && echo "To run tests, run ./tests.sh inside" \
+ && echo "To run the server, run ./launch_debug.sh inside" \
+ && echo "To edit files, connect to port 2222 via ssh (login root, password tournesol)" \
+ && echo "Connect via port 8000 to the server, via port 8899 to the notebook, and via port 5900 to VNC for integration tests"
+
 RUN echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" \
  && cat /root/.ssh/id_rsa.pub \
  && echo -e "=== /public key ===\n\n"
