@@ -56,7 +56,7 @@ RUN echo "Building front-end" \
 
 RUN echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" \
  && cat /root/.ssh/id_rsa.pub \
- && echo -e "=== /public key ===\n\n" \
+ && echo -e "=== /public key ===\n\n"
 
 # web server port
 EXPOSE 8000
