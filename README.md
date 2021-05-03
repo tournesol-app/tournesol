@@ -37,6 +37,7 @@ ssh-rsa ...
    `sudo docker start -ai xxx`
 
 To edit Tournesol source code, start the container and connect via ssh to port 2222 (set up your password, or the public key via the container terminal).
+The default root password is `tournesol`.
 
 
 <h3>Building front-end</h3>
@@ -60,6 +61,13 @@ Run inside the container to launch the server, and the jupyter notebook:
 ```
 
 Now you can navigate to http://127.0.0.1:8000 to view the development website, and to http://127.0.0.1:8899 to view the Jupyter notebook
+
+To run all tests, do
+```
+(venv-tournesol) $ ./tests.sh
+```
+
+Note that the backend needs to be started in a special mode for integration tests, so please close the previous one if you started it (see `screen -ls` and close the backend_server screen).
 
 When running integration tests, you can connect to 127.0.0.1 via VNC (port 5900) to see Firefox
 
@@ -85,8 +93,6 @@ Auxiliary commands:
 
 
 Note that creating a super user is highly recommended for testing the website locally and contributing to the codebase. 💯
-
-<h3>Connecting to the website</h3>
 
 
 </details>

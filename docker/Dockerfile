@@ -42,7 +42,9 @@ RUN sudo apt-get install -y openssh-client telnet net-tools x11vnc openssh-serve
  && git remote add origin git@github.com:tournesol-app/tournesol.git \
  && git remote add origin_https https://github.com/tournesol-app/tournesol.git \
  && echo "PermitRootLogin yes" >> /etc/ssh/sshd_config \
- && echo "sudo service ssh start" >> ~/.bashrc
+ && echo "sudo service ssh start" >> ~/.bashrc \
+ && echo "root password is: tournesol" \
+ && echo -e "tournesol\ntournesol" | passwd root
 
 RUN echo "Creating the database" \
  && . ./debug_export.sh \
