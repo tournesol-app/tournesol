@@ -31,10 +31,12 @@ ssh-rsa ...
 === /public key
    ```
    Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
-3. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -it tournesol-app/tournesol`.
-   The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, and `5900` is for VNC.
+3. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol`.
+   The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, `5900` is for VNC, and `2222` for ssh.
 4. To run the same container again, remember the host name of the container (`root@xxx`) and run
    `sudo docker start -ai xxx`
+
+To edit Tournesol source code, start the container and connect via ssh to port 2222 (set up your password, or the public key via the container terminal).
 
 
 <h3>Building front-end</h3>

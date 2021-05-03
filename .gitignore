@@ -2,6 +2,9 @@ integration_test*.avi
 firefox
 *.bz2
 
+# virtual environment
+venv-tournesol
+
 # development database
 
 *.orig

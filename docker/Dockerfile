@@ -36,11 +36,13 @@ RUN DEBIAN_FRONTEND=noninteractive ./setup.sh \
 ENV PATH /tournesol/firefox:$PATH
 
 # finalizing the setup
-RUN sudo apt-get install -y openssh-client telnet net-tools x11vnc \
+RUN sudo apt-get install -y openssh-client telnet net-tools x11vnc openssh-server \
  && ssh-keygen -f /root/.ssh/id_rsa -N "" \
  && git remote rm origin \
  && git remote add origin git@github.com:tournesol-app/tournesol.git \
- && git remote add origin_https https://github.com/tournesol-app/tournesol.git
+ && git remote add origin_https https://github.com/tournesol-app/tournesol.git \
+ && echo "PermitRootLogin yes" >> /etc/ssh/sshd_config \
+ && echo "sudo service ssh start" >> ~/.bashrc
 
 RUN echo "Creating the database" \
  && . ./debug_export.sh \
@@ -58,3 +60,4 @@ RUN echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" \
 EXPOSE 8000
 EXPOSE 8899
 EXPOSE 5900
+EXPOSE 22
