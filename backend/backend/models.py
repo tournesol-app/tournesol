@@ -887,9 +887,9 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             Video.add_to_class(
                 field + "_quantile",
                 models.FloatField(
-                    default=None,
-                    null=True,
-                    blank=True,
+                    default=1.0,
+                    null=False,
+                    blank=False,
                     validators=[
                         MinValueValidator(0.0),
                         MaxValueValidator(1.0)],
