@@ -701,7 +701,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     )
 
     rating_n_ratings = computed_property.ComputedIntegerField(
-        compute_from='get_n_ratings',
+        compute_from='get_rating_n_ratings',
         null=False,
         default=0,
         help_text="Total number of pairwise comparisons for this video from certified contributors"
@@ -722,7 +722,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     )
 
     public_experts = ComputedJsonField(
-        compute_from='get_certified_public_top_raters_list',
+        compute_from='get_certified_top_raters_list',
         null=False,
         default="[]",
         help_text=f"Top {ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW']} certified public "
@@ -733,6 +733,12 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
     def get_certified_top_raters(self, add_user__username=None):
         """Get certified raters for this video, sorted by number of ratings."""
+
+        logging.warning("get_certified_top_raters")
+
+        if self.id is None:
+            return UserInformation.objects.none()
+
         qs = UserInformation.objects.filter(user__userpreferences__expertrating__in=self.ratings())
         qs = qs.distinct()
         qs = UserInformation._annotate_is_certified(qs)
@@ -754,21 +760,28 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             self, limit=ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW'], only_public=True,
             return_json=True):
         """Compute the top certified public top raters and return JSON."""
+
+        logging.warning("get_certified_top_raters_list")
+
         qs = self.get_certified_top_raters()
 
-                # annotating with whether the rating is public
-        pref_privacy = 'user__userpreferences__videoratingprivacy'
+        if qs.count() > 0:
+            # annotating with whether the rating is public
+            pref_privacy = 'user__userpreferences__videoratingprivacy'
 
-        qs = VideoRatingPrivacy._annotate_privacy(
-            qs=qs, prefix=pref_privacy,
-            field_user=None, filter_add={f'{pref_privacy}__video': self}
-        )
+            qs = VideoRatingPrivacy._annotate_privacy(
+                qs=qs, prefix=pref_privacy,
+                field_user=None, filter_add={f'{pref_privacy}__video': self}
+            )
 
-        qs = qs.annotate(n_public_rating=Case(
-                When(_is_public=True,
-                     then=Value(1)),
-                default=Value(0),
-                output_field=IntegerField()))
+            qs = qs.annotate(n_public_rating=Case(
+                    When(_is_public=True,
+                         then=Value(1)),
+                    default=Value(0),
+                    output_field=IntegerField()))
+        else:
+            # dummy value in case if we are creating a video
+            qs = qs.annotate(n_public_rating=Value(0, output_field=IntegerField()))
 
         if only_public:
             qs = qs.filter(self.FILTER_PUBLIC)
@@ -783,23 +796,37 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
     def get_n_public_experts(self):
         """Get the number of public certified experts who rated this video."""
+
+        logging.warning("get_n_public_experts")
+
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
                 filter(self.FILTER_PUBLIC).count()
 
     def get_n_private_experts(self):
         """Get the number of private certified experts who rated this video."""
+
+        logging.warning("get_n_private_experts")
+
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
                 filter(~self.FILTER_PUBLIC).count()
 
     def get_rating_n_ratings(self, user=None):
         """Number of associated ratings."""
+
+        logging.warning("get_rating_n_ratings")
+
         return self.ratings(user=user).count()
 
     def get_rating_n_experts(self):
         """Number of experts in ratings."""
+
+        logging.warning("get_rating_n_experts")
+
         return self.ratings().values('user').distinct().count()
+
+    # /COMPUTED properties implementation
 
     def get_pareto_optimal(self):
         """Compute pareto-optimality in sql. Runs in O(n^2) where n=num videos."""
@@ -808,9 +835,6 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
         qs = Video.objects.filter(f1).filter(f2)
         return qs.count() == 0
-
-
-    # /COMPUTED properties implementation
 
     @staticmethod
     def get_or_create_with_validation(**kwargs):
