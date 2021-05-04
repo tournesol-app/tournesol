@@ -676,15 +676,18 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     download_failed = models.BooleanField(
         default=False, help_text="Was last download unsuccessful")
 
-    # computed after every ml_train command (see the devops script)
+    # computed in the Video.recompute_pareto(),
+    #  called via the manage.py compute_quantile_pareto command
+    # should be computed after every ml_train command (see the devops script)
+    # SEE also: {feature}_quantile fields (defined below)
+
     pareto_optimal = models.BooleanField(
         null=False,
         default=False,
         help_text="Is the video pareto-optimal based on aggregated scores?")
 
     # computed properties, updated via save signals,
-    #  or via cron (recompute_properties manage.py command)
-    # SEE ALSO {feature}_quantile fields, they are also computed!
+    #  or via manage.py recompute_properties manage.py
 
     COMPUTED_PROPERTIES = ['rating_n_experts', 'rating_n_ratings',
                            'n_public_experts', 'n_private_experts', 'public_experts']
@@ -743,6 +746,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         qs = qs.order_by('-_n_ratings')
         return qs
 
+    # public rating and a public expert
     FILTER_PUBLIC = Q(n_public_rating=1,
                       show_my_profile=True)
 
@@ -844,6 +848,10 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
                     help_text=f"Uncertainty for {field}"))
 
         # quantiles
+        # computed in the Video.recompute_quantiles(),
+        #  called via the manage.py compute_quantile_pareto command
+        # should be computed after every ml_train command (see the devops script)
+        # SEE also: pareto_optimal field (defined above)
         for field in VIDEO_FIELDS:
             Video.add_to_class(
                 field + "_quantile",
@@ -854,7 +862,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
                     validators=[
                         MinValueValidator(0.0),
                         MaxValueValidator(1.0)],
-                    help_text=f"Top quantile for {field} for all rated videos for"
+                    help_text=f"Top quantile for {field} for all rated videos for "
                               "aggregated scores. 0.0=best, 1.0=worst"))
 
     @property
