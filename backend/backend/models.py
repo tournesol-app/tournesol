@@ -676,6 +676,11 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     download_failed = models.BooleanField(
         default=False, help_text="Was last download unsuccessful")
 
+    is_update_pending = models.BooleanField(
+            default=False,
+            help_text="If true, recompute properties"
+    )
+
     # computed in the Video.recompute_pareto(),
     #  called via the manage.py compute_quantile_pareto command
     # should be computed after every ml_train command (see the devops script)
@@ -993,6 +998,22 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             if new_pareto != v.pareto_optimal:
                 v.pareto_optimal = new_pareto
                 v.save()
+
+    @staticmethod
+    def recompute_computed_properties(only_pending=False):
+        qs = Video.objects.all()
+
+        if only_pending:
+            logging.warning("Updating pending videos")
+            qs = qs.filter(is_update_pending=True)
+        else:
+            logging.warning("Updating all videos")
+
+        for v in tqdm(qs):
+            # computing new values
+            for f in Video.COMPUTED_PROPERTIES:
+                getattr(v, f)
+            v.save()
 
 
 class UserPreferences(models.Model, WithFeatures, WithDynamicFields):

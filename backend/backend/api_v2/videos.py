@@ -111,9 +111,6 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         read_only=True)
 
-    public_experts = serializers.IntegerField(
-        help_text=f"First {constants['N_PUBLIC_CONTRIBUTORS_SHOW']} public certified contributors",
-        read_only=True)
     n_public_experts = serializers.IntegerField(
         help_text="Number of certified public contributors", read_only=True)
 
@@ -122,6 +119,16 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
 
     pareto_optimal = serializers.BooleanField(help_text="Is this video pareto-optimal?",
                                               read_only=True)
+
+    public_experts = serializers.SerializerMethodField(
+            help_text=f"First {constants['N_PUBLIC_CONTRIBUTORS_SHOW']} "
+                      "public certified contributors",
+            read_only=True)
+
+    @extend_schema_field(UserInformationSerializerNameOnly(many=True))
+    def get_public_experts(self, video):
+        s = UserInformationSerializerNameOnly(video['public_experts'], many=True)
+        return s.data
 
     class Meta:
         model = Video

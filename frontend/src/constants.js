@@ -71,3 +71,6 @@ export const minNumRateLater = JSON.parse('6');
 
 // Default value of preferences for tournesol_score
 export const DEFAULT_PREFS_VAL = JSON.parse('50.0');
+
+// Number of public contributors to show
+export const N_PUBLIC_CONTRIBUTORS_SHOW = JSON.parse('10');

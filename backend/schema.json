@@ -8340,17 +8340,18 @@
                             "$ref": "#/components/schemas/UserInformationSerializerNameOnly"
                         },
                         "readOnly": true,
-                        "description": "First 10 public contributors"
+                        "description": "First 10 public certified contributors"
                     },
                     "n_public_experts": {
                         "type": "integer",
                         "readOnly": true,
-                        "description": "Number of public contributors"
+                        "description": "Number of certified public contributors"
                     },
                     "n_private_experts": {
-                        "type": "integer",
+                        "type": "object",
+                        "additionalProperties": {},
                         "readOnly": true,
-                        "description": "Number private contributors"
+                        "description": "Number certified private contributors"
                     },
                     "pareto_optimal": {
                         "type": "boolean",
@@ -8418,29 +8419,155 @@
                         "format": "float",
                         "readOnly": true,
                         "description": "Entertaining and relaxing"
+                    },
+                    "reliability_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for reliability"
+                    },
+                    "importance_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for importance"
+                    },
+                    "engaging_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for engaging"
+                    },
+                    "pedagogy_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for pedagogy"
+                    },
+                    "layman_friendly_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for layman_friendly"
+                    },
+                    "diversity_inclusion_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for diversity_inclusion"
+                    },
+                    "backfire_risk_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for backfire_risk"
+                    },
+                    "better_habits_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for better_habits"
+                    },
+                    "entertaining_relaxing_uncertainty": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Uncertainty for entertaining_relaxing"
+                    },
+                    "reliability_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for reliability for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "importance_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for importance for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "engaging_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for engaging for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "pedagogy_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for pedagogy for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "layman_friendly_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for layman_friendly for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "diversity_inclusion_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for diversity_inclusion for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "backfire_risk_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for backfire_risk for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "better_habits_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for better_habits for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
+                    },
+                    "entertaining_relaxing_quantile": {
+                        "type": "number",
+                        "format": "float",
+                        "readOnly": true,
+                        "description": "Top quantile for entertaining_relaxing for all rated videos for aggregated scores. 0.0=best, 1.0=worst"
                     }
                 },
                 "required": [
                     "backfire_risk",
+                    "backfire_risk_quantile",
+                    "backfire_risk_uncertainty",
                     "better_habits",
+                    "better_habits_quantile",
+                    "better_habits_uncertainty",
                     "diversity_inclusion",
+                    "diversity_inclusion_quantile",
+                    "diversity_inclusion_uncertainty",
                     "duration",
                     "engaging",
+                    "engaging_quantile",
+                    "engaging_uncertainty",
                     "entertaining_relaxing",
+                    "entertaining_relaxing_quantile",
+                    "entertaining_relaxing_uncertainty",
                     "id",
                     "importance",
+                    "importance_quantile",
+                    "importance_uncertainty",
                     "language",
                     "layman_friendly",
+                    "layman_friendly_quantile",
+                    "layman_friendly_uncertainty",
                     "n_private_experts",
                     "n_public_experts",
                     "name",
                     "pareto_optimal",
                     "pedagogy",
+                    "pedagogy_quantile",
+                    "pedagogy_uncertainty",
                     "public_experts",
                     "publication_date",
                     "rating_n_experts",
                     "rating_n_ratings",
                     "reliability",
+                    "reliability_quantile",
+                    "reliability_uncertainty",
                     "score",
                     "score_preferences_term",
                     "score_search_term",

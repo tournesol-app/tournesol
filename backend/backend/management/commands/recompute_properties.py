@@ -3,7 +3,6 @@ from backend.models import VerifiableEmail, ExpertRating, VideoRating, Video
 from backend.models import DjangoUser, UserInformation, EmailDomain
 from backend.rating_fields import VIDEO_FIELDS
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from tqdm.auto import tqdm
 
 
@@ -82,21 +81,13 @@ def recompute_property_expertrating(*args, **kwargs):
 def prune_wrong_videos(*args, **kwargs):
     """Remove videos with wrong IDs."""
     for v in tqdm(Video.objects.all()):
-        with transaction.atomic():
-            try:
-                v.full_clean()
-
-                # to recompute the properties
-                for f in Video.COMPUTED_PROPERTIES:
-                    getattr(v, f)
-
-                # to recompute the properties
-                v.save()
-            except ValidationError as e:
-                print(f"Deleting invalid video {v}: {e}")
-                v.delete()
-            except Exception as e:
-                print(f"Unknown error for video {v}: {e}, keeping the video")
+        try:
+            v.full_clean()
+        except ValidationError as e:
+            print(f"Deleting invalid video {v}: {e}")
+            v.delete()
+        except Exception as e:
+            print(f"Unknown error for video {v}: {e}, keeping the video")
 
 
 def recompute_property_verif_email(*args, **kwargs):
@@ -155,7 +146,7 @@ class Command(BaseCommand):
 
         if options['cron']:
             # only update videos
-            prune_wrong_videos()
+            Video.recompute_computed_properties(only_pending=True)
 
         else:
             nonnull_rating()
@@ -168,3 +159,6 @@ class Command(BaseCommand):
 
             # update videos last as a downstream task
             prune_wrong_videos()
+
+            # recomputing properties
+            Video.recompute_computed_properties(only_pending=False)

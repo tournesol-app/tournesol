@@ -21,7 +21,7 @@ def clamp_list(lst, max_len=MAX_IN_LIST):
     if len(lst) > max_len:
         logging.warning("List is too long to perform updates. "
                         "The updates will be done later via the cron job.")
-        return lst[:max_len]
+        return None
     return lst
 
 
@@ -39,8 +39,12 @@ def update_user_username(username):
     rated = Video.objects.filter(Q(expertrating_video_1__user__user__username=username) |
                                  Q(expertrating_video_2__user__user__username=username))
 
-    for v in clamp_list(rated):
-        update_video(v)
+    rated_to_update = clamp_list(rated)
+    if rated_to_update is None:
+        rated.update(is_update_pending=True)
+    else:
+        for v in rated_to_update:
+            update_video(v)
 
 
 def update_email(verifiable_email):
