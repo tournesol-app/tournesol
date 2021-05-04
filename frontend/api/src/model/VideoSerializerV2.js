@@ -12,7 +12,6 @@
  */
 
 import ApiClient from '../ApiClient';
-import AnyType from './AnyType';
 import UserInformationSerializerNameOnly from './UserInformationSerializerNameOnly';
 
 /**
@@ -40,7 +39,7 @@ class VideoSerializerV2 {
      * @param ratingNRatings {Number} Number of ratings
      * @param publicExperts {Array.<module:model/UserInformationSerializerNameOnly>} First 10 public certified contributors
      * @param nPublicExperts {Number} Number of certified public contributors
-     * @param nPrivateExperts {Object.<String, module:model/AnyType>} Number certified private contributors
+     * @param nPrivateExperts {Number} Number certified private contributors
      * @param paretoOptimal {Boolean} Is this video pareto-optimal?
      * @param tournesolScore {Number} The total Tournesol score with uniform preferences (value=50.0)
      * @param reliability {Number} Reliable and not misleading
@@ -186,7 +185,7 @@ class VideoSerializerV2 {
                 obj['n_public_experts'] = ApiClient.convertToType(data['n_public_experts'], 'Number');
             }
             if (data.hasOwnProperty('n_private_experts')) {
-                obj['n_private_experts'] = ApiClient.convertToType(data['n_private_experts'], {'String': AnyType});
+                obj['n_private_experts'] = ApiClient.convertToType(data['n_private_experts'], 'Number');
             }
             if (data.hasOwnProperty('pareto_optimal')) {
                 obj['pareto_optimal'] = ApiClient.convertToType(data['pareto_optimal'], 'Boolean');
@@ -376,7 +375,7 @@ VideoSerializerV2.prototype['n_public_experts'] = undefined;
 
 /**
  * Number certified private contributors
- * @member {Object.<String, module:model/AnyType>} n_private_experts
+ * @member {Number} n_private_experts
  */
 VideoSerializerV2.prototype['n_private_experts'] = undefined;
 

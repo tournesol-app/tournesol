@@ -204,6 +204,14 @@ DATABASES_AVAILABLE = {
         'PASSWORD': POSTGRES_DB_PASSWORD,
         'HOST': 'localhost',
         'PORT': '',
+    },
+    'development_pg': {  # for development
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'tournesol',
+        'USER': 'tournesol',
+        'PASSWORD': 'tournesol',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -211,7 +219,7 @@ DATABASES_AVAILABLE = {
 # https://stackoverflow.com/questions/11187123/django-runserver-custom-database
 database = os.environ.get('DJANGO_DATABASE', 'sqlite')
 
-if database == 'sqlite':
+if database in ['development_pg', 'sqlite']:
     EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000/'
 elif database == 'dev':
     EMAIL_PAGE_DOMAIN = 'https://www.tournesol.app/'
@@ -391,3 +399,6 @@ ENABLE_ANALYTICS = os.environ.get('DJANGO_DISABLE_ANALYTICS', False) is False
 
 # enable/disable embedded videos on the website
 ENABLE_YOUTUBE_VIDEO_EMBED = os.environ.get('DJANGO_DISABLE_YOUTUBE', False) is False
+
+# append this to main.js to update the file on clients
+COMMIT_ID = os.environ.get('DJANGO_COMMIT_ID', 'development')

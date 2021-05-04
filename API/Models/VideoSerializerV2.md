@@ -18,7 +18,7 @@ Name | Type | Description | Notes
 **ratingUnderscorenUnderscoreratings** | [**Integer**](integer.md) | Number of ratings | [default to null]
 **publicUnderscoreexperts** | [**List**](UserInformationSerializerNameOnly.md) | First 10 public certified contributors | [default to null]
 **nUnderscorepublicUnderscoreexperts** | [**Integer**](integer.md) | Number of certified public contributors | [default to null]
-**nUnderscoreprivateUnderscoreexperts** | [**Map**](AnyType.md) | Number certified private contributors | [default to null]
+**nUnderscoreprivateUnderscoreexperts** | [**Integer**](integer.md) | Number certified private contributors | [default to null]
 **paretoUnderscoreoptimal** | [**Boolean**](boolean.md) | Is this video pareto-optimal? | [default to null]
 **tournesolUnderscorescore** | [**Float**](float.md) | The total Tournesol score with uniform preferences (value&#x3D;50.0) | [default to 0.0]
 **reliability** | [**Float**](float.md) | Reliable and not misleading | [default to null]

@@ -30,6 +30,7 @@ from django.core.validators import RegexValidator
 from backend.model_helpers import query_and, query_or, ComputedJsonField
 from simple_history import register as register_historical
 from tqdm.auto import tqdm
+from tqdm.contrib.concurrent import process_map
 
 
 class ResetPasswordToken(models.Model):
@@ -744,16 +745,18 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         if self.id is None:
             return UserInformation.objects.none()
 
-        qs = UserInformation.objects.filter(user__userpreferences__expertrating__in=self.ratings())
-        qs = qs.distinct()
+        filter_this_video = Q(user__userpreferences__expertrating__video_1=self) |\
+                            Q(user__userpreferences__expertrating__video_2=self)
+
+        qs = UserInformation.objects.filter(filter_this_video)
         qs = UserInformation._annotate_is_certified(qs)
         filter_query = Q(_is_certified=True)
         if add_user__username:
             filter_query = filter_query | Q(user__username=add_user__username)
         qs = qs.filter(filter_query)
         qs = qs.annotate(_n_ratings=Count('user__userpreferences__expertrating',
-                                          Q(user__userpreferences__expertrating__video_1=self) |
-                                          Q(user__userpreferences__expertrating__video_2=self)))
+                                          filter_this_video))
+        qs = qs.distinct()
         qs = qs.order_by('-_n_ratings')
         return qs
 
@@ -795,7 +798,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             qs = qs[:limit]
 
         if return_json:
-            return json.dumps([{'username': user.user.username for user in qs}])
+            return json.dumps([{'username': user.user.username} for user in qs])
 
         return qs
 
@@ -981,23 +984,31 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
                 quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
 
         logging.warning("Writing quantiles...")
+        video_objects = []
         # TODO: use batched updates with bulk_update
         for v in tqdm(Video.objects.all()):
             for f in VIDEO_FIELDS:
                 setattr(v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None))
-            v.save()
+            video_objects.append(v)
+
+        Video.objects.bulk_update(video_objects, batch_size=200,
+                                  fields=[f + "_quantile" for f in VIDEO_FIELDS])
 
     @staticmethod
     def recompute_pareto():
         """Compute pareto-optimality."""
         # TODO: use a faster algorithm than O(|rated_videos|^2)
 
-        logging.warning("Computing quantiles...")
+        logging.warning("Computing pareto-optimality...")
+        video_objects = []
         for v in tqdm(Video.objects.all()):
             new_pareto = v.get_pareto_optimal()
             if new_pareto != v.pareto_optimal:
                 v.pareto_optimal = new_pareto
-                v.save()
+            video_objects.append(v)
+
+        Video.objects.bulk_update(video_objects, batch_size=200,
+                                  fields=['pareto_optimal'])
 
     @staticmethod
     def recompute_computed_properties(only_pending=False):
@@ -1009,11 +1020,19 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         else:
             logging.warning("Updating all videos")
 
-        for v in tqdm(qs):
-            # computing new values
+        def process_video(v):
             for f in Video.COMPUTED_PROPERTIES:
                 getattr(v, f)
-            v.save()
+            v.is_update_pending = False
+            return v
+
+        video_objects = []
+        for v in tqdm(qs):
+            # computing new values
+            video_objects.append(process_video(v))
+
+        Video.objects.bulk_update(video_objects, batch_size=200,
+                                  fields=Video.COMPUTED_PROPERTIES + ['is_update_pending'])
 
 
 class UserPreferences(models.Model, WithFeatures, WithDynamicFields):

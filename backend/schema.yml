@@ -5771,8 +5771,7 @@ components:
           readOnly: true
           description: Number of certified public contributors
         n_private_experts:
-          type: object
-          additionalProperties: {}
+          type: integer
           readOnly: true
           description: Number certified private contributors
         pareto_optimal:

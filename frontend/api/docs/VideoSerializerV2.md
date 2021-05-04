@@ -19,7 +19,7 @@ Name | Type | Description | Notes
 **ratingNRatings** | **Number** | Number of ratings | [readonly] 
 **publicExperts** | [**[UserInformationSerializerNameOnly]**](UserInformationSerializerNameOnly.md) | First 10 public certified contributors | [readonly] 
 **nPublicExperts** | **Number** | Number of certified public contributors | [readonly] 
-**nPrivateExperts** | [**{String: AnyType}**](AnyType.md) | Number certified private contributors | [readonly] 
+**nPrivateExperts** | **Number** | Number certified private contributors | [readonly] 
 **paretoOptimal** | **Boolean** | Is this video pareto-optimal? | [readonly] 
 **tournesolScore** | **Number** | The total Tournesol score with uniform preferences (value&#x3D;50.0) | [readonly] [default to 0.0]
 **reliability** | **Number** | Reliable and not misleading | [readonly] 

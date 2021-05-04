@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 from frontend.helpers import get_id_or_m1, get_user_id_or_m1
-from django_react.settings import ENABLE_YOUTUBE_VIDEO_EMBED
+from django_react.settings import ENABLE_YOUTUBE_VIDEO_EMBED, COMMIT_ID
 
 
 def create_user_preferences():
@@ -49,7 +49,8 @@ def template_kwargs(request):
             'user_id': get_user_id_or_m1(request),
             'user_preferences_id': get_id_or_m1(UserPreferences,
                                                 user__username=request.user.username),
-            'ENABLE_YOUTUBE_VIDEO_EMBED': 1 if ENABLE_YOUTUBE_VIDEO_EMBED else 0}
+            'ENABLE_YOUTUBE_VIDEO_EMBED': 1 if ENABLE_YOUTUBE_VIDEO_EMBED else 0,
+            'commit_id': COMMIT_ID}
 
 
 @ensure_csrf_cookie

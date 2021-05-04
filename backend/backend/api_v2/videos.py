@@ -13,7 +13,7 @@ from backend.youtube_search import search_yt_intersect_tournesol
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import Q, F, Count, Value, FloatField, IntegerField
+from django.db.models import Q, F, Count, Value, FloatField, IntegerField, CharField
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from drf_spectacular.types import OpenApiTypes
@@ -53,19 +53,11 @@ def search_username_from_request(request):
     return False
 
 
-class UserInformationSerializerNameOnly(serializers.HyperlinkedModelSerializer):
+class UserInformationSerializerNameOnly(serializers.Serializer):
     """Only show username of the person."""
 
-    username = serializers.SerializerMethodField(read_only=True,
-                                                 help_text="Username of the contributor",)
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_username(self, user_information):
-        return user_information.user.username
-
-    class Meta:
-        model = UserInformation
-        fields = ['username']
+    username = serializers.CharField(read_only=True,
+                                     help_text="Username of the contributor",)
 
 
 class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
@@ -114,7 +106,7 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
     n_public_experts = serializers.IntegerField(
         help_text="Number of certified public contributors", read_only=True)
 
-    n_private_experts = serializers.JSONField(
+    n_private_experts = serializers.IntegerField(
         help_text="Number certified private contributors", read_only=True)
 
     pareto_optimal = serializers.BooleanField(help_text="Is this video pareto-optimal?",
@@ -320,6 +312,9 @@ class VideoViewSetV2(mixins.CreateModelMixin,
 
         # computing score inside the database
         if search_username:
+            fields_exclude = set(Video.COMPUTED_PROPERTIES)
+            fields = [f for f in fields if f not in fields_exclude]
+
             queryset = queryset.values(*fields)
             queryset = queryset.annotate(**{key: F(f'videorating__{key}') for key in VIDEO_FIELDS},
                                          user=F(
@@ -350,6 +345,13 @@ class VideoViewSetV2(mixins.CreateModelMixin,
             c2 = Count('expertrating_video_2', q2, distinct=True)
 
             queryset = queryset.annotate(rating_n_ratings=c1 + c2)
+
+            queryset = queryset.annotate(n_public_experts=Value(1, IntegerField()))
+            queryset = queryset.annotate(n_private_experts=Value(0, IntegerField()))
+
+            # TODO: a hack. improve this
+            queryset = queryset.annotate(
+                    public_experts=Value("", CharField()))
 
             # logging model usage in search
             if self.request.user.is_authenticated:
@@ -504,6 +506,7 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         queryset = self.get_queryset()
         TDP.print_now("search_ts:queryset_obtained")
         queryset = queryset.order_by('-score')
+        queryset = queryset.filter(~Q(tournesol_score=0))
         TDP.print_now("search_ts:order_done")
         queryset = filter.filter_empty(self.filter_queryset(queryset))
         TDP.print_now("search_ts:filter_done")
