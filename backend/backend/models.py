@@ -29,6 +29,7 @@ from backend.constants import fields as ts_constants
 from django.core.validators import RegexValidator
 from backend.model_helpers import query_and, query_or, ComputedJsonField
 from simple_history import register as register_historical
+from tqdm.auto import tqdm
 
 
 class ResetPasswordToken(models.Model):
@@ -927,6 +928,42 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         if only_certified:
             qs = qs.filter(_is_certified=True)
         return qs
+
+    @staticmethod
+    def recompute_quantiles():
+        """Set {f}_quantile attribute for videos."""
+        quantiles_by_feature_by_id = {f: {} for f in VIDEO_FIELDS}
+
+        # go over all features
+        logging.warning("Computing quantiles...")
+        for f in tqdm(VIDEO_FIELDS):
+            # order by feature (descenting, because using the top quantile)
+            qs = Video.objects.filter(**{f + "__isnull": False}).order_by('-' + f)
+            quantiles_f = np.linspace(0.0, 0.1, len(qs))
+            for i, v in tqdm(enumerate(qs)):
+                quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
+
+        logging.warning("Writing quantiles...")
+        # TODO: use batched updates with bulk_update
+        for v in tqdm(Video.objects.all()):
+            changed = False
+            for f in VIDEO_FIELDS:
+                if v.id in quantiles_by_feature_by_id[f]:
+                    setattr(v, f + "_quantile", quantiles_by_feature_by_id[f][v.id])
+                    changed = True
+            if changed:
+                v.save()
+
+    @staticmethod
+    def recompute_pareto():
+        """Compute pareto-optimality."""
+        # TODO: use a faster algorithm than O(|rated_videos|^2)
+        logging.warning("Computing quantiles...")
+        for v in tqdm(Video.objects.all()):
+            new_pareto = v.get_pareto_optimal()
+            if new_pareto != v.pareto_optimal:
+                v.pareto_optimal = new_pareto
+                v.save()
 
 
 class UserPreferences(models.Model, WithFeatures, WithDynamicFields):
