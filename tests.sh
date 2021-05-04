@@ -61,6 +61,8 @@ python manage.py recompute_properties
 python manage.py ml_train --epochs_override 1
 python manage.py set_existing_rating_privacy --set_public False
 python manage.py compute_quantile_pareto
+python manage.py recompute_properties --set_all_pending
+python manage.py recompute_properties --cron
 # running tests
 pytest --ignore=backend/tests/tests.py
 python manage.py test
