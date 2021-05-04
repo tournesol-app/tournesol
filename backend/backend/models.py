@@ -30,7 +30,6 @@ from django.core.validators import RegexValidator
 from backend.model_helpers import query_and, query_or, ComputedJsonField
 from simple_history import register as register_historical
 from tqdm.auto import tqdm
-from tqdm.contrib.concurrent import process_map
 
 
 class ResetPasswordToken(models.Model):
@@ -746,7 +745,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             return UserInformation.objects.none()
 
         filter_this_video = Q(user__userpreferences__expertrating__video_1=self) |\
-                            Q(user__userpreferences__expertrating__video_2=self)
+            Q(user__userpreferences__expertrating__video_2=self)
 
         qs = UserInformation.objects.filter(filter_this_video)
         qs = UserInformation._annotate_is_certified(qs)

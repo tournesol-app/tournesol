@@ -106,7 +106,7 @@ def create_emails(*args, **kwargs):
 
     # creating emails only for those who don't have any
     qs = DjangoUser.objects.all().annotate(_n_emails=Count('userinformation__emails',
-                               filter=Q(userinformation__emails__is_verified=True)))
+                                           filter=Q(userinformation__emails__is_verified=True)))
     qs = qs.filter(_n_emails=0, email__isnull=False)
 
     for u in tqdm(qs):

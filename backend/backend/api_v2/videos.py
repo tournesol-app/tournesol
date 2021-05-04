@@ -16,7 +16,6 @@ from django.db import connection
 from django.db.models import Q, F, Count, Value, FloatField, IntegerField, CharField
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, \
     extend_schema_field, inline_serializer
 from rest_framework import filters as filters_
