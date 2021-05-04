@@ -119,7 +119,16 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
 
     @extend_schema_field(UserInformationSerializerNameOnly(many=True))
     def get_public_experts(self, video):
-        s = UserInformationSerializerNameOnly(video['public_experts'], many=True)
+
+        # support both dict and object videos
+        if hasattr(video, 'public_experts'):
+            experts = video.public_experts
+        elif isinstance(video, dict) and 'public_experts' in video:
+            experts = video['public_experts']
+        else:
+            experts = []
+
+        s = UserInformationSerializerNameOnly(experts, many=True)
         return s.data
 
     class Meta:
