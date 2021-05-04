@@ -6,3 +6,4 @@ class BackendConfig(AppConfig):
 
     def ready(self):
         import backend.new_email_domain_signal  # noqa
+        import backend.video_property_signals  # noqa
