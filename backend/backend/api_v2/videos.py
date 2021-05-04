@@ -25,12 +25,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from functools import reduce
-from backend.api_v2.helpers import TimeDeltaPrint
 from backend.constants import fields as constants
 from backend.video_property_signals import update_user_username
-
-
-TDP = TimeDeltaPrint()
 
 
 def search_username_from_request(request):
@@ -428,24 +424,15 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         return queryset
 
     def return_queryset(self, queryset):
-        TDP.print_now('rqs:start')
         page = self.paginate_queryset(queryset)
-        TDP.print_now('rqs:page_obtained')
         if page is not None:
-            TDP.print_now('rqs:page_not_none')
             serializer = self.get_serializer(page, many=True)
-            TDP.print_now('rqs:serializer_obtained')
             ser_data = serializer.data
-            TDP.print_now('rqs:data_obtained')
             data = self.get_paginated_response(ser_data)
-            TDP.print_now('rqs:paginated')
             return data
 
-        TDP.print_now('rqs:page_none')
         serializer = self.get_serializer(queryset, many=True)
-        TDP.print_now('rqs:serializer_obtained')
         data = Response(serializer.data)
-        TDP.print_now('rqs:data_obtained')
         return data
 
     @extend_schema(
@@ -507,19 +494,12 @@ class VideoViewSetV2(mixins.CreateModelMixin,
     @action(methods=['GET'], detail=False, name="Search using Tournesol")
     def search_tournesol(self, request):
         """Search videos using the Tournesol algorithm."""
-        TDP.reset()
-        TDP.print_now("search_ts:start")
         filter = self.filterset_class(request=request)
-        TDP.print_now("search_ts:filterset_class_obtained")
         queryset = self.get_queryset()
-        TDP.print_now("search_ts:queryset_obtained")
         queryset = queryset.order_by('-score')
         queryset = queryset.filter(~Q(tournesol_score=0))
-        TDP.print_now("search_ts:order_done")
         queryset = filter.filter_empty(self.filter_queryset(queryset))
-        TDP.print_now("search_ts:filter_done")
         data = self.return_queryset(queryset)
-        TDP.print_now("search_ts:data_computed")
         return data
 
     @extend_schema(operation_id="n_thanks",

@@ -5,10 +5,11 @@ from backend.models import EmailDomain, Video, VideoRatingPrivacy, ExpertRating,
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.db.models import Q
+from time import time
 
 
 # maximal number of updates done within the same thread
-MAX_IN_LIST = 10
+MAX_IN_LIST = 5
 
 
 # Video properties can be affected by VideoRatingPrivacy, ExpertRating,
@@ -25,33 +26,52 @@ def clamp_list(lst, max_len=MAX_IN_LIST):
     return lst
 
 
-def update_video(v):
+# do not update recently updated videos
+RECENTLY_UPDATED_TIMESTAMP = {}
+RECENTLY_UPDATED_DELTA_S = 10
+
+
+def update_video(v, delta_s=RECENTLY_UPDATED_DELTA_S):
     """Recompute properties for a video."""
+
+    time_now = time()
+    if v.id in RECENTLY_UPDATED_TIMESTAMP and time_now - RECENTLY_UPDATED_TIMESTAMP[v.id] < delta_s:
+        return
+
     # TODO: only save when something has changed
     logging.warning(f"update_video:{v}")
     for field in Video.COMPUTED_PROPERTIES:
         getattr(v, field)
     v.save()
 
+    RECENTLY_UPDATED_TIMESTAMP[v.id] = time_now
 
-def update_user_username(username):
+
+def update_user_username(username, force_fast=False):
     """Recompute properties for all rated videos for a user."""
     rated = Video.objects.filter(Q(expertrating_video_1__user__user__username=username) |
                                  Q(expertrating_video_2__user__user__username=username))
 
     rated_to_update = clamp_list(rated)
-    if rated_to_update is None:
+    if rated_to_update is None or force_fast:
         rated.update(is_update_pending=True)
     else:
         for v in rated_to_update:
             update_video(v)
 
 
-def update_email(verifiable_email):
+def update_email(verifiable_email, force_fast=False):
     """Recompute properties for a user given an email."""
-    if verifiable_email.user is not None:
-        username = verifiable_email.user.user.username
-        update_user_username(username)
+
+    # user might be deleted!
+    try:
+        user = verifiable_email.user
+    except UserInformation.DoesNotExist:
+        return
+
+    if user is not None:
+        username = user.user.username
+        update_user_username(username, force_fast=force_fast)
 
 # EmailDomain -> VerifiableEmail -> UserInformation -> ExpertRating -> Video
 #                                                VideoRatingPrivacy ->
@@ -61,15 +81,19 @@ def update_email(verifiable_email):
 @receiver(post_save, sender=EmailDomain)
 def save_emaildomain(sender, instance, created, raw, using, update_fields, **kwargs):
     emails = VerifiableEmail.objects.filter(domain=instance.domain)
-    for email in clamp_list(emails):
-        update_email(email)
+
+    lst = clamp_list(emails)
+    for email in emails:
+        update_email(email, force_fast=lst is None)
 
 
 @receiver(post_delete, sender=EmailDomain)
 def delete_emaildomain(sender, instance, using, **kwargs):
     emails = VerifiableEmail.objects.filter(domain=instance.domain)
-    for email in clamp_list(emails):
-        update_email(email)
+
+    lst = clamp_list(emails)
+    for email in emails:
+        update_email(email, force_fast=lst is None)
 
 
 # VerifiableEmail

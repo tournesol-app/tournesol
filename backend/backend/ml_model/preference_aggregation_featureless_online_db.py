@@ -304,7 +304,7 @@ class OnlineRatingUpdateContext():
             for j, video in enumerate(self.videos_selected):
                 self.minibatch_construct['experts_all'].append(i)
                 self.minibatch_construct['objects_all'].append(j)
-                self.minibatch_construct['num_ratings_all'].append(video.n_ratings())
+                self.minibatch_construct['num_ratings_all'].append(video.get_rating_n_ratings())
 
         # regularization: common to 1
         for i, video in enumerate(self.videos_selected):
