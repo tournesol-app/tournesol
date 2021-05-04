@@ -252,6 +252,7 @@ class LoginSignupViewSetV2(mixins.ListModelMixin,
         if user is not None:
             if user.is_active:
                 login(request, user)
+                create_user_preferences()
                 s_ret = OnlyUsernameAndIDSerializer(UserInformation.objects.get(
                     user__username=user.username))
 

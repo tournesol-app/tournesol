@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 from django.db.models import Case, When, Value, IntegerField
 
 from .models import Video, UserPreferences, ExpertRating, RepresentativeModelUsage
@@ -10,7 +11,7 @@ from .models import VideoRatingPrivacy, VideoRateLater
 
 admin.site.register(Video)
 admin.site.register(UserPreferences)
-admin.site.register(ExpertRating)
+admin.site.register(ExpertRating, SimpleHistoryAdmin)
 admin.site.register(VideoComment)
 admin.site.register(VideoCommentMarker)
 admin.site.register(VideoRating)

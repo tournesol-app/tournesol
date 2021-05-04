@@ -8,5 +8,6 @@ urlpatterns = [
     path('welcome/', views.login_by_reset_password_token),
     path('tournesol.latest.csv.zip', views.download_all),
     path('my_tournesol_data.zip', views.download_user_data),
+    path('tournesol.public.latest.csv.zip', views.download_public_database),
     re_path('.*', views.index),
 ]

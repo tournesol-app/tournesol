@@ -1,7 +1,8 @@
 from datetime import datetime
 from functools import partial
 
-from backend.management.get_all_dataframes import save_dfs_get_zip, get_user_data
+from backend.management.get_all_dataframes import save_dfs_get_zip, get_user_data, \
+    get_public_append_only_database_as_pd
 from backend.models import UserPreferences, UserInformation
 from backend.reset_password import reset_token
 from backend.user_verify import verify_email_by_token
@@ -86,6 +87,21 @@ def download_user_data(request):
 
     name = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     out_zip = f'tournesol_{username}_{name}.zip'
+
+    response = HttpResponse(zip_file.read(), content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=%s' % out_zip
+    response['X-Sendfile'] = out_zip
+
+    del zip_file
+    return response
+
+
+def download_public_database(request):
+    """Download the PUBLIC database."""
+    zip_file = save_dfs_get_zip(dfs_fcn=get_public_append_only_database_as_pd)
+
+    name = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    out_zip = f'tournesol_public_{name}.zip'
 
     response = HttpResponse(zip_file.read(), content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename=%s' % out_zip
