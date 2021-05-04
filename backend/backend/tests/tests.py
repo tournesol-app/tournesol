@@ -35,6 +35,7 @@ from backend.sample_video_active_learning import ActiveLearningException
 from backend.add_videos import VideoManager
 from django.db.models import CharField, TextField
 from django.db.models.functions import Length
+import json
 
 
 def create_accepted_domain(domain="@tournesol.app"):
@@ -1175,7 +1176,85 @@ class TestVideoSignalUpdate(TestCase):
     """Test that update signals work correctly for computed properties."""
 
     def test_props(self):
-        assert False
+        domain = EmailDomain.objects.create(domain="@domain.com",
+                                            status=EmailDomain.STATUS_ACCEPTED)
+        video = Video.objects.create(video_id='test_video')
+        video_other = Video.objects.create(video_id='test_video_other')
+        user = DjangoUser.objects.create(username='test_user')
+        up = UserPreferences.objects.create(user=user)
+        ui = UserInformation.objects.create(user=user, show_my_profile=False)
+
+        vrp = VideoRatingPrivacy.objects.create(user=up, video=video, is_public=False)
+        er = ExpertRating.objects.create(user=up, video_1=video, video_2=video_other)
+
+        def check_video(**kwargs):
+            qs = Video.objects.filter(video_id='test_video')
+            qs_test = qs.filter(**kwargs)
+            assert qs_test.count() == 1, qs.values()
+
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        ve = VerifiableEmail.objects.create(user=ui, email="a@domain.com", is_verified=False)
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        ve.is_verified = True
+        ve.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=0, n_private_experts=1)
+
+        ui.show_my_profile = True
+        ui.save()
+        vrp.is_public = True
+        vrp.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        ui.show_my_profile = False
+        ui.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=0, n_private_experts=1)
+
+        ui.show_my_profile = True
+        ui.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        vrp.is_public = False
+        vrp.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=0, n_private_experts=1)
+
+        vrp.is_public = True
+        vrp.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+        public_experts = Video.objects.get(video_id='test_video').public_experts
+        assert public_experts[0]['username'] == 'test_user'
+
+        domain.status = EmailDomain.STATUS_REJECTED
+        domain.save()
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        domain.status = EmailDomain.STATUS_ACCEPTED
+        domain.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        ve.delete()
+        VerifiableEmail.objects.all().delete()
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        ve = VerifiableEmail.objects.create(user=ui, email="a@domain.com", is_verified=True)
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        er.delete()
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
 
 
 class TestQuantile(TestCase):

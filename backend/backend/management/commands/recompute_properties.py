@@ -3,6 +3,7 @@ from backend.models import VerifiableEmail, ExpertRating, VideoRating, Video
 from backend.models import DjangoUser, UserInformation, EmailDomain
 from backend.rating_fields import VIDEO_FIELDS
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
 
 ACCEPTED_DOMAINS = """
@@ -80,20 +81,21 @@ def recompute_property_expertrating(*args, **kwargs):
 def prune_wrong_videos(*args, **kwargs):
     """Remove videos with wrong IDs."""
     for v in Video.objects.all():
-        try:
-            v.full_clean()
+        with transaction.atomic():
+            try:
+                v.full_clean()
 
-            # to recompute the properties
-            for f in Video.COMPUTED_PROPERTIES:
-                getattr(v, f)
+                # to recompute the properties
+                for f in Video.COMPUTED_PROPERTIES:
+                    getattr(v, f)
 
-            # to recompute the properties
-            v.save()
-        except ValidationError as e:
-            print(f"Deleting invalid video {v}: {e}")
-            v.delete()
-        except Exception as e:
-            print(f"Unknown error for video {v}: {e}, keeping the video")
+                # to recompute the properties
+                v.save()
+            except ValidationError as e:
+                print(f"Deleting invalid video {v}: {e}")
+                v.delete()
+            except Exception as e:
+                print(f"Unknown error for video {v}: {e}, keeping the video")
 
 
 def recompute_property_verif_email(*args, **kwargs):
@@ -144,14 +146,25 @@ def demo_account(*args, **kwargs):
 
 
 class Command(BaseCommand):
-    def handle(self, **options):
-        nonnull_rating()
-        fill_email_domains()
-        create_emails()
-        recompute_property_verif_email()
-        recompute_property_expertrating()
-        recompute_property_avatar_hash()
-        demo_account()
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('--cron', help='Run on cron', action='store_true')
 
-        # update videos last as a downstream task
-        prune_wrong_videos()
+
+    def handle(self, **options):
+
+        if options['cron']:
+            # only update videos
+            prune_wrong_videos()
+
+        else:
+            nonnull_rating()
+            fill_email_domains()
+            create_emails()
+            recompute_property_verif_email()
+            recompute_property_expertrating()
+            recompute_property_avatar_hash()
+            demo_account()
+
+            # update videos last as a downstream task
+            prune_wrong_videos()

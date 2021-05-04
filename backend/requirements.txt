@@ -42,6 +42,8 @@ decorator==4.4.2
 defusedxml==0.6.0
 Django==3.1.8
 django-annoying==0.10.6
+django-background-tasks==1.2.5
+django-compat==1.0.15
 django-computed-property==0.3.0
 django-countries==7.0
 django-database-view==0.2.1
