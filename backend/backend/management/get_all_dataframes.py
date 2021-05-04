@@ -115,7 +115,7 @@ def get_public_append_only_database_as_pd():
     import django
     django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
 
-    #Even if 'show my profile' is false, export 'username'.
+    # Even if 'show my profile' is false, export 'username'.
     # If 'show my profile' is true, export 'First name',
     # 'Last name', 'Title', 'Bio',
     # If 'show online presence' is true, export 'Website',

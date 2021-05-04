@@ -161,30 +161,30 @@ export default () => {
             <br />
             Please also consider using our{' '}
             <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
-                Chrome extension
+              Chrome extension
             </a>, our{' '}
             <a href="https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/">
-                Firefox extension
+              Firefox extension
             </a>,
             and our{' '}
             <a href="https://play.google.com/store/apps/details?id=com.tournesolapp&hl=en&gl=US">
-                Android application
+              Android application
             </a>.
             <br />
             Find out more with our{' '}
             <a href="http://wiki.tournesol.app/">
-                wiki
+              wiki
             </a>,
             check out our{' '}
             <a href="https://github.com/tournesol-app/tournesol">
-                open-source code
+              open-source code
             </a>, join our{' '}
             <a href="https://discord.gg/3KApy6tHAM">
-                Discord
+              Discord
             </a>,
             and{' '}
             <a href="/tournesol.public.latest.csv.zip" id="id_public_database_download">
-                download our public database
+              download our public database
             </a>.
           </Typography>
 

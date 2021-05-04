@@ -2,7 +2,7 @@ from backend.models import DjangoUser, UserPreferences, EmailDomain, \
     UserInformation, VerifiableEmail, Video, ExpertRating, VideoRatingPrivacy
 import numpy as np
 from backend.models import VIDEO_FIELDS
-from helpers import random_alphanumeric, create_test_video, login, logout, get_cookies, \
+from helpers import random_alphanumeric, create_test_video, login, logout, \
     TIME_WAIT, get, open_tournesol
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -156,7 +156,7 @@ def test_download_privacy_public_database(driver, django_db_blocker):
             df = pd.read_csv(StringIO(content))
             dfs[fileinfo.filename] = df
 
-    #print(data.content)
+    # print(data.content)
 
     assert set(dfs.keys()) == set(['comparison_database.csv', 'contributors_public.csv']), \
         f"Wrong files in archive: {dfs.keys()}"

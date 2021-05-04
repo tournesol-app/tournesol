@@ -1345,22 +1345,22 @@ class VideoRatingPrivacy(models.Model):
         if annotate_n:
 
             qs = qs.annotate(**{output_prefix + '_n_total':
-                Count(videorating_field, distinct=True)})
+                                Count(videorating_field, distinct=True)})
 
             if default_value:
                 # default value is PUBLIC -> _n_public = n_total - n_private
                 qs = qs.annotate(**{output_prefix + '_n_public':
-                    F(output_prefix + '_n_total') - \
-                    F(output_prefix + '_n_private_videoratingprivacy')})
+                                    F(output_prefix + '_n_total') -
+                                    F(output_prefix + '_n_private_videoratingprivacy')})
                 qs = qs.annotate(**{output_prefix + '_n_private':
-                    F(output_prefix + '_n_private_videoratingprivacy')})
+                                    F(output_prefix + '_n_private_videoratingprivacy')})
             else:
                 # default value is PRIVATE -> _n_private = n_total - n_public
                 qs = qs.annotate(**{output_prefix + '_n_private':
-                    F(output_prefix + '_n_total') - \
-                    F(output_prefix + '_n_public_videoratingprivacy')})
+                                    F(output_prefix + '_n_total') -
+                                    F(output_prefix + '_n_public_videoratingprivacy')})
                 qs = qs.annotate(**{output_prefix + '_n_public':
-                    F(output_prefix + '_n_public_videoratingprivacy')})
+                                    F(output_prefix + '_n_public_videoratingprivacy')})
 
         return qs
 
