@@ -734,7 +734,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     def get_certified_top_raters(self, add_user__username=None):
         """Get certified raters for this video, sorted by number of ratings."""
 
-        logging.warning("get_certified_top_raters")
+        # logging.warning("get_certified_top_raters")
 
         if self.id is None:
             return UserInformation.objects.none()
@@ -761,7 +761,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             return_json=True):
         """Compute the top certified public top raters and return JSON."""
 
-        logging.warning("get_certified_top_raters_list")
+        # logging.warning("get_certified_top_raters_list")
 
         qs = self.get_certified_top_raters()
 
@@ -797,7 +797,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     def get_n_public_experts(self):
         """Get the number of public certified experts who rated this video."""
 
-        logging.warning("get_n_public_experts")
+        # logging.warning("get_n_public_experts")
 
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
@@ -806,7 +806,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     def get_n_private_experts(self):
         """Get the number of private certified experts who rated this video."""
 
-        logging.warning("get_n_private_experts")
+        # logging.warning("get_n_private_experts")
 
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
@@ -815,14 +815,14 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     def get_rating_n_ratings(self, user=None):
         """Number of associated ratings."""
 
-        logging.warning("get_rating_n_ratings")
+        # logging.warning("get_rating_n_ratings")
 
         return self.ratings(user=user).count()
 
     def get_rating_n_experts(self):
         """Number of experts in ratings."""
 
-        logging.warning("get_rating_n_experts")
+        # logging.warning("get_rating_n_experts")
 
         return self.ratings().values('user').distinct().count()
 
@@ -967,29 +967,26 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         quantiles_by_feature_by_id = {f: {} for f in VIDEO_FIELDS}
 
         # go over all features
-        logging.warning("Computing quantiles...")
+        # logging.warning("Computing quantiles...")
         for f in tqdm(VIDEO_FIELDS):
             # order by feature (descenting, because using the top quantile)
             qs = Video.objects.filter(**{f + "__isnull": False}).order_by('-' + f)
-            quantiles_f = np.linspace(0.0, 0.1, len(qs))
+            quantiles_f = np.linspace(0.0, 1.0, len(qs))
             for i, v in tqdm(enumerate(qs)):
                 quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
 
         logging.warning("Writing quantiles...")
         # TODO: use batched updates with bulk_update
         for v in tqdm(Video.objects.all()):
-            changed = False
             for f in VIDEO_FIELDS:
-                if v.id in quantiles_by_feature_by_id[f]:
-                    setattr(v, f + "_quantile", quantiles_by_feature_by_id[f][v.id])
-                    changed = True
-            if changed:
-                v.save()
+                setattr(v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None))
+            v.save()
 
     @staticmethod
     def recompute_pareto():
         """Compute pareto-optimality."""
         # TODO: use a faster algorithm than O(|rated_videos|^2)
+
         logging.warning("Computing quantiles...")
         for v in tqdm(Video.objects.all()):
             new_pareto = v.get_pareto_optimal()

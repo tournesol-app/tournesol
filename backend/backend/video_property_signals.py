@@ -1,6 +1,6 @@
 import logging
 
-from backend.models import EmailDomain, Video, VideoRatingPrivacy, ExpertRating, UserInformation,
+from backend.models import EmailDomain, Video, VideoRatingPrivacy, ExpertRating, UserInformation,\
     VerifiableEmail
 from backend.send_email_thread import send_email_possibly_threaded
 from django.db.models.signals import post_save, post_delete

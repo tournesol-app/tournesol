@@ -1181,8 +1181,35 @@ class TestVideoSignalUpdate(TestCase):
 class TestQuantile(TestCase):
     """Test that the quantile computation works properly."""
 
-    def test_quantile(self):
-        assert False
+    def test_quantile(self, n_videos=100):
+        fdata = []
+
+        # 0.0 ... 1.0
+        quantile_direct = np.linspace(0.0, 1.0, n_videos)
+
+        # random permutations for each feature
+        permutations = {f: np.random.permutation(n_videos) for f in VIDEO_FIELDS}
+
+        # squaring and permuting
+        fdata = [{f: 10 - 3 * quantile_direct[permutations[f]][v] ** 2
+                  for f in VIDEO_FIELDS}
+                 for v in range(n_videos)]
+
+        # creating videos
+        [Video.objects.create(video_id='test%05d' % i, **fdata[i])
+         for i in range(n_videos)]
+
+        # computing quantiles
+        Video.recompute_quantiles()
+
+        # validating results
+        videos = Video.objects.all().order_by('video_id')
+        for i, v in enumerate(videos):
+            for f in VIDEO_FIELDS:
+                quantile_expected = quantile_direct[permutations[f]][i]
+                quantile_obtained = getattr(v, f + "_quantile")
+                assert np.allclose(quantile_expected, quantile_obtained), \
+                       (v, f, quantile_expected, quantile_obtained)
 
 
 class TestParetoOptimality(TestCase):
