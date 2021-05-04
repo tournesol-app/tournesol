@@ -4,6 +4,7 @@ from backend.models import DjangoUser, UserInformation, EmailDomain
 from backend.rating_fields import VIDEO_FIELDS
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from tqdm.auto import tqdm
 
 
 ACCEPTED_DOMAINS = """
@@ -80,7 +81,7 @@ def recompute_property_expertrating(*args, **kwargs):
 
 def prune_wrong_videos(*args, **kwargs):
     """Remove videos with wrong IDs."""
-    for v in Video.objects.all():
+    for v in tqdm(Video.objects.all()):
         with transaction.atomic():
             try:
                 v.full_clean()

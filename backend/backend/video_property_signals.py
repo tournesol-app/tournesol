@@ -10,6 +10,10 @@ from django.db.models import Q
 import logging
 
 
+# maximal number of updates
+MAX_IN_LIST = 30
+
+
 # Video properties can be affected by VideoRatingPrivacy, ExpertRating,
 #  UserInformation, EmailDomain, VerifiableEmail
 
@@ -26,6 +30,13 @@ def update_user_username(username):
     """Recompute properties for all rated videos for a user."""
     rated = Video.objects.filter(Q(expertrating_video_1__user__user__username=username) |
                                  Q(expertrating_video_2__user__user__username=username))
+
+    if len(rated) > MAX_IN_LIST:
+        # TODO use a background job?
+        logging.warning("List of rated videos is too long to perform updates. "
+                        "The updates will be done later via the cron job.")
+        return
+
     for v in rated:
         update_video(v)
 
@@ -79,12 +90,14 @@ def delete_userinformation(sender, instance, using, **kwargs):
 # ExpertRating
 @receiver(post_save, sender=ExpertRating)
 def save_expertrating(sender, instance, created, raw, using, update_fields, **kwargs):
+    # done instantly
     update_video(instance.video_1)
     update_video(instance.video_2)
 
 
 @receiver(post_delete, sender=ExpertRating)
 def delete_expertrating(sender, instance, using, **kwargs):
+    # done instantly
     update_video(instance.video_1)
     update_video(instance.video_2)
 
@@ -92,9 +105,11 @@ def delete_expertrating(sender, instance, using, **kwargs):
 # VideoRatingPrivacy
 @receiver(post_save, sender=VideoRatingPrivacy)
 def save_videoratingprivacy(sender, instance, created, raw, using, update_fields, **kwargs):
+    # done instantly
     update_video(instance.video)
 
 
 @receiver(post_delete, sender=VideoRatingPrivacy)
 def delete_videoratingprivacy(sender, instance, using, **kwargs):
+    # done instantly
     update_video(instance.video)

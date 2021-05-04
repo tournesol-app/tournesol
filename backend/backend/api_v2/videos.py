@@ -31,6 +31,7 @@ from functools import reduce
 from math import isinf
 from backend.api_v2.helpers import TimeDeltaPrint
 from backend.constants import fields as constants
+from backend.video_property_signals import update_user_username
 
 TDP = TimeDeltaPrint()
 
@@ -672,5 +673,8 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         is_public = request.query_params.get('is_public', 'true') == 'true'
 
         VideoRatingPrivacy.objects.filter(user=user).update(is_public=is_public)
+
+        # updating video properties
+        update_user_username(user.user.username)
 
         return Response({'status': 'success'}, status=201)
