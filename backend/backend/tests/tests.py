@@ -1187,6 +1187,7 @@ class TestVideoSignalUpdate(TestCase):
         er = ExpertRating.objects.create(user=up, video_1=video, video_2=video_other)
 
         def check_video(**kwargs):
+            Video.recompute_computed_properties(only_pending=True)
             qs = Video.objects.filter(video_id='test_video')
             qs_test = qs.filter(**kwargs)
             assert qs_test.count() == 1, qs.values()
