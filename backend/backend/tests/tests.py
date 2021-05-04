@@ -1216,4 +1216,20 @@ class TestParetoOptimality(TestCase):
     """Test that the pareto-optimality computation works properly."""
 
     def test_pareto(self):
-        assert False
+        assert len(VIDEO_FIELDS) >= 2
+
+        feature1 = VIDEO_FIELDS[0]
+        feature2 = VIDEO_FIELDS[1]
+
+        v = Video.objects.create(video_id='v0', **{feature1: 0, feature2: 0})
+        assert v.pareto_optimal is False
+        Video.objects.create(video_id='v1', **{feature1: 1, feature2: 0})
+        Video.objects.create(video_id='v2', **{feature1: 0, feature2: 1})
+        Video.objects.create(video_id='v3', **{feature1: 1, feature2: 1})
+
+        Video.recompute_pareto()
+
+        assert Video.objects.get(video_id='v0').pareto_optimal is False
+        assert Video.objects.get(video_id='v1').pareto_optimal is False
+        assert Video.objects.get(video_id='v2').pareto_optimal is False
+        assert Video.objects.get(video_id='v3').pareto_optimal is True
