@@ -62,6 +62,7 @@ def test_set_privacy_settings(driver, django_db_blocker):
                                        is_verified=True)
         ExpertRating.objects.create(user=up, video_1=Video.objects.get(video_id=video_id1),
                                     video_2=Video.objects.get(video_id=video_id2))
+        Video.recompute_computed_properties(only_pending=True)
 
     login(driver)
 
@@ -76,6 +77,9 @@ def test_set_privacy_settings(driver, django_db_blocker):
 
     def check_privacy_status(video_id1, is_private, check_db=True,
                              check_api=False):
+        with django_db_blocker.unblock():
+            Video.recompute_computed_properties(only_pending=True)
+
         priv_public = 'private' if is_private else 'public'
         WebDriverWait(driver, TIME_WAIT).until(
             EC.presence_of_element_located((By.ID, f'id_video_{video_id1}_{priv_public}'))

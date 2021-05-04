@@ -37,9 +37,9 @@ class VideoSerializerV2 {
      * @param scoreSearchTerm {Number} Computed video score [search].
      * @param ratingNExperts {Number} Number of experts in ratings
      * @param ratingNRatings {Number} Number of ratings
-     * @param publicExperts {Array.<module:model/UserInformationSerializerNameOnly>} First 10 public contributors
-     * @param nPublicExperts {Number} Number of public contributors
-     * @param nPrivateExperts {Number} Number private contributors
+     * @param publicExperts {Array.<module:model/UserInformationSerializerNameOnly>} First 10 public certified contributors
+     * @param nPublicExperts {Number} Number of certified public contributors
+     * @param nPrivateExperts {Number} Number certified private contributors
      * @param paretoOptimal {Boolean} Is this video pareto-optimal?
      * @param tournesolScore {Number} The total Tournesol score with uniform preferences (value=50.0)
      * @param reliability {Number} Reliable and not misleading
@@ -51,10 +51,28 @@ class VideoSerializerV2 {
      * @param backfireRisk {Number} Resilience to backfiring risks
      * @param betterHabits {Number} Encourages better habits
      * @param entertainingRelaxing {Number} Entertaining and relaxing
+     * @param reliabilityUncertainty {Number} Uncertainty for reliability
+     * @param importanceUncertainty {Number} Uncertainty for importance
+     * @param engagingUncertainty {Number} Uncertainty for engaging
+     * @param pedagogyUncertainty {Number} Uncertainty for pedagogy
+     * @param laymanFriendlyUncertainty {Number} Uncertainty for layman_friendly
+     * @param diversityInclusionUncertainty {Number} Uncertainty for diversity_inclusion
+     * @param backfireRiskUncertainty {Number} Uncertainty for backfire_risk
+     * @param betterHabitsUncertainty {Number} Uncertainty for better_habits
+     * @param entertainingRelaxingUncertainty {Number} Uncertainty for entertaining_relaxing
+     * @param reliabilityQuantile {Number} Top quantile for reliability for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param importanceQuantile {Number} Top quantile for importance for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param engagingQuantile {Number} Top quantile for engaging for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param pedagogyQuantile {Number} Top quantile for pedagogy for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param laymanFriendlyQuantile {Number} Top quantile for layman_friendly for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param diversityInclusionQuantile {Number} Top quantile for diversity_inclusion for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param backfireRiskQuantile {Number} Top quantile for backfire_risk for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param betterHabitsQuantile {Number} Top quantile for better_habits for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+     * @param entertainingRelaxingQuantile {Number} Top quantile for entertaining_relaxing for all rated videos for aggregated scores. 0.0=best, 1.0=worst
      */
-    constructor(id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing) { 
+    constructor(id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile) { 
         
-        VideoSerializerV2.initialize(this, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing);
+        VideoSerializerV2.initialize(this, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile);
     }
 
     /**
@@ -62,7 +80,7 @@ class VideoSerializerV2 {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing) { 
+    static initialize(obj, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile) { 
         obj['id'] = id;
         obj['video_id'] = videoId;
         obj['score'] = score;
@@ -90,6 +108,24 @@ class VideoSerializerV2 {
         obj['backfire_risk'] = backfireRisk;
         obj['better_habits'] = betterHabits;
         obj['entertaining_relaxing'] = entertainingRelaxing;
+        obj['reliability_uncertainty'] = reliabilityUncertainty;
+        obj['importance_uncertainty'] = importanceUncertainty;
+        obj['engaging_uncertainty'] = engagingUncertainty;
+        obj['pedagogy_uncertainty'] = pedagogyUncertainty;
+        obj['layman_friendly_uncertainty'] = laymanFriendlyUncertainty;
+        obj['diversity_inclusion_uncertainty'] = diversityInclusionUncertainty;
+        obj['backfire_risk_uncertainty'] = backfireRiskUncertainty;
+        obj['better_habits_uncertainty'] = betterHabitsUncertainty;
+        obj['entertaining_relaxing_uncertainty'] = entertainingRelaxingUncertainty;
+        obj['reliability_quantile'] = reliabilityQuantile;
+        obj['importance_quantile'] = importanceQuantile;
+        obj['engaging_quantile'] = engagingQuantile;
+        obj['pedagogy_quantile'] = pedagogyQuantile;
+        obj['layman_friendly_quantile'] = laymanFriendlyQuantile;
+        obj['diversity_inclusion_quantile'] = diversityInclusionQuantile;
+        obj['backfire_risk_quantile'] = backfireRiskQuantile;
+        obj['better_habits_quantile'] = betterHabitsQuantile;
+        obj['entertaining_relaxing_quantile'] = entertainingRelaxingQuantile;
     }
 
     /**
@@ -184,6 +220,60 @@ class VideoSerializerV2 {
             if (data.hasOwnProperty('entertaining_relaxing')) {
                 obj['entertaining_relaxing'] = ApiClient.convertToType(data['entertaining_relaxing'], 'Number');
             }
+            if (data.hasOwnProperty('reliability_uncertainty')) {
+                obj['reliability_uncertainty'] = ApiClient.convertToType(data['reliability_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('importance_uncertainty')) {
+                obj['importance_uncertainty'] = ApiClient.convertToType(data['importance_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('engaging_uncertainty')) {
+                obj['engaging_uncertainty'] = ApiClient.convertToType(data['engaging_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('pedagogy_uncertainty')) {
+                obj['pedagogy_uncertainty'] = ApiClient.convertToType(data['pedagogy_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('layman_friendly_uncertainty')) {
+                obj['layman_friendly_uncertainty'] = ApiClient.convertToType(data['layman_friendly_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('diversity_inclusion_uncertainty')) {
+                obj['diversity_inclusion_uncertainty'] = ApiClient.convertToType(data['diversity_inclusion_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('backfire_risk_uncertainty')) {
+                obj['backfire_risk_uncertainty'] = ApiClient.convertToType(data['backfire_risk_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('better_habits_uncertainty')) {
+                obj['better_habits_uncertainty'] = ApiClient.convertToType(data['better_habits_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('entertaining_relaxing_uncertainty')) {
+                obj['entertaining_relaxing_uncertainty'] = ApiClient.convertToType(data['entertaining_relaxing_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('reliability_quantile')) {
+                obj['reliability_quantile'] = ApiClient.convertToType(data['reliability_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('importance_quantile')) {
+                obj['importance_quantile'] = ApiClient.convertToType(data['importance_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('engaging_quantile')) {
+                obj['engaging_quantile'] = ApiClient.convertToType(data['engaging_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('pedagogy_quantile')) {
+                obj['pedagogy_quantile'] = ApiClient.convertToType(data['pedagogy_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('layman_friendly_quantile')) {
+                obj['layman_friendly_quantile'] = ApiClient.convertToType(data['layman_friendly_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('diversity_inclusion_quantile')) {
+                obj['diversity_inclusion_quantile'] = ApiClient.convertToType(data['diversity_inclusion_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('backfire_risk_quantile')) {
+                obj['backfire_risk_quantile'] = ApiClient.convertToType(data['backfire_risk_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('better_habits_quantile')) {
+                obj['better_habits_quantile'] = ApiClient.convertToType(data['better_habits_quantile'], 'Number');
+            }
+            if (data.hasOwnProperty('entertaining_relaxing_quantile')) {
+                obj['entertaining_relaxing_quantile'] = ApiClient.convertToType(data['entertaining_relaxing_quantile'], 'Number');
+            }
         }
         return obj;
     }
@@ -272,19 +362,19 @@ VideoSerializerV2.prototype['rating_n_experts'] = undefined;
 VideoSerializerV2.prototype['rating_n_ratings'] = undefined;
 
 /**
- * First 10 public contributors
+ * First 10 public certified contributors
  * @member {Array.<module:model/UserInformationSerializerNameOnly>} public_experts
  */
 VideoSerializerV2.prototype['public_experts'] = undefined;
 
 /**
- * Number of public contributors
+ * Number of certified public contributors
  * @member {Number} n_public_experts
  */
 VideoSerializerV2.prototype['n_public_experts'] = undefined;
 
 /**
- * Number private contributors
+ * Number certified private contributors
  * @member {Number} n_private_experts
  */
 VideoSerializerV2.prototype['n_private_experts'] = undefined;
@@ -355,6 +445,114 @@ VideoSerializerV2.prototype['better_habits'] = undefined;
  * @member {Number} entertaining_relaxing
  */
 VideoSerializerV2.prototype['entertaining_relaxing'] = undefined;
+
+/**
+ * Uncertainty for reliability
+ * @member {Number} reliability_uncertainty
+ */
+VideoSerializerV2.prototype['reliability_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for importance
+ * @member {Number} importance_uncertainty
+ */
+VideoSerializerV2.prototype['importance_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for engaging
+ * @member {Number} engaging_uncertainty
+ */
+VideoSerializerV2.prototype['engaging_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for pedagogy
+ * @member {Number} pedagogy_uncertainty
+ */
+VideoSerializerV2.prototype['pedagogy_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for layman_friendly
+ * @member {Number} layman_friendly_uncertainty
+ */
+VideoSerializerV2.prototype['layman_friendly_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for diversity_inclusion
+ * @member {Number} diversity_inclusion_uncertainty
+ */
+VideoSerializerV2.prototype['diversity_inclusion_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for backfire_risk
+ * @member {Number} backfire_risk_uncertainty
+ */
+VideoSerializerV2.prototype['backfire_risk_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for better_habits
+ * @member {Number} better_habits_uncertainty
+ */
+VideoSerializerV2.prototype['better_habits_uncertainty'] = undefined;
+
+/**
+ * Uncertainty for entertaining_relaxing
+ * @member {Number} entertaining_relaxing_uncertainty
+ */
+VideoSerializerV2.prototype['entertaining_relaxing_uncertainty'] = undefined;
+
+/**
+ * Top quantile for reliability for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} reliability_quantile
+ */
+VideoSerializerV2.prototype['reliability_quantile'] = undefined;
+
+/**
+ * Top quantile for importance for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} importance_quantile
+ */
+VideoSerializerV2.prototype['importance_quantile'] = undefined;
+
+/**
+ * Top quantile for engaging for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} engaging_quantile
+ */
+VideoSerializerV2.prototype['engaging_quantile'] = undefined;
+
+/**
+ * Top quantile for pedagogy for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} pedagogy_quantile
+ */
+VideoSerializerV2.prototype['pedagogy_quantile'] = undefined;
+
+/**
+ * Top quantile for layman_friendly for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} layman_friendly_quantile
+ */
+VideoSerializerV2.prototype['layman_friendly_quantile'] = undefined;
+
+/**
+ * Top quantile for diversity_inclusion for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} diversity_inclusion_quantile
+ */
+VideoSerializerV2.prototype['diversity_inclusion_quantile'] = undefined;
+
+/**
+ * Top quantile for backfire_risk for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} backfire_risk_quantile
+ */
+VideoSerializerV2.prototype['backfire_risk_quantile'] = undefined;
+
+/**
+ * Top quantile for better_habits for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} better_habits_quantile
+ */
+VideoSerializerV2.prototype['better_habits_quantile'] = undefined;
+
+/**
+ * Top quantile for entertaining_relaxing for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} entertaining_relaxing_quantile
+ */
+VideoSerializerV2.prototype['entertaining_relaxing_quantile'] = undefined;
 
 
 

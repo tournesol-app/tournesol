@@ -3,6 +3,8 @@ from backend.models import VerifiableEmail, ExpertRating, VideoRating, Video
 from backend.models import DjangoUser, UserInformation, EmailDomain
 from backend.rating_fields import VIDEO_FIELDS
 from django.core.exceptions import ValidationError
+from django.db.models import Q, Count
+from tqdm.auto import tqdm
 
 
 ACCEPTED_DOMAINS = """
@@ -39,14 +41,14 @@ REJECTED_DOMAINS = """
 
 def fill_email_domains(*args, **kwargs):
     """Open all objects and save them to recompute the property."""
-    for d in ACCEPTED_DOMAINS.strip().split('\n'):
+    for d in tqdm(ACCEPTED_DOMAINS.strip().split('\n')):
         try:
             EmailDomain.objects.create(
                 domain=d, status=EmailDomain.STATUS_ACCEPTED)
         except Exception as e:
             print(e)
             pass
-    for d in REJECTED_DOMAINS.strip().split('\n'):
+    for d in tqdm(REJECTED_DOMAINS.strip().split('\n')):
         try:
             EmailDomain.objects.create(
                 domain=d, status=EmailDomain.STATUS_REJECTED)
@@ -56,11 +58,10 @@ def fill_email_domains(*args, **kwargs):
 
 
 def recompute_property_avatar_hash(*args, **kwargs):
-    for u in UserInformation.objects.all():
+    for u in tqdm(UserInformation.objects.all()):
         try:
-            hash = u.avatar_hash
+            getattr(u, 'avatar_hash')
             u.save()
-            print("Userinfo avatar hash", hash)
         except FileNotFoundError as f:
             print("Avatar error", u, f)
         except ValidationError as f:
@@ -68,18 +69,17 @@ def recompute_property_avatar_hash(*args, **kwargs):
 
 
 def recompute_property_expertrating(*args, **kwargs):
-    for u in ExpertRating.objects.all():
+    for u in tqdm(ExpertRating.objects.filter(video_1_2_ids_sorted=None)):
         try:
-            ids = u.video_1_2_ids_sorted
-            u.save(ignore_lastedit=True)
-            print("ExpertRating ids", ids)
+            prop = getattr(u, 'video_1_2_ids_sorted')
+            ExpertRating.objects.filter(pk=u.pk).update(video_1_2_ids_sorted=prop)
         except Exception as e:
             print("Error saving expert rating", e)
 
 
 def prune_wrong_videos(*args, **kwargs):
     """Remove videos with wrong IDs."""
-    for v in Video.objects.all():
+    for v in tqdm(Video.objects.all()):
         try:
             v.full_clean()
         except ValidationError as e:
@@ -92,10 +92,9 @@ def prune_wrong_videos(*args, **kwargs):
 def recompute_property_verif_email(*args, **kwargs):
     """Open all objects and save them to recompute the property."""
 
-    for instance in VerifiableEmail.objects.all().iterator():
+    for instance in tqdm(VerifiableEmail.objects.filter(domain_fk=None).iterator()):
         try:
             val = instance.domain
-            print("DOMAIN", val)
             if val:
                 instance.save()
         except Exception as e:
@@ -105,14 +104,19 @@ def recompute_property_verif_email(*args, **kwargs):
 def create_emails(*args, **kwargs):
     """Create e-mails from existing users."""
 
-    for u in DjangoUser.objects.all():
+    # creating emails only for those who don't have any
+    qs = DjangoUser.objects.all().annotate(_n_emails=Count('userinformation__emails',
+                                           filter=Q(userinformation__emails__is_verified=True)))
+    qs = qs.filter(_n_emails=0, email__isnull=False)
+
+    for u in tqdm(qs):
         u_inf, _ = UserInformation.objects.get_or_create(user=u)
         if not u.email:
             print(u, "No email")
             continue
-        v_email, v_email_created = VerifiableEmail.objects.get_or_create(
+        v_email, _ = VerifiableEmail.objects.get_or_create(
             email=u.email, user=u_inf)
-        print("Setting email for", u, v_email_created)
+        # print("Setting email for", u, v_email_created)
         v_email.user = u_inf
         v_email.is_verified = u.is_active
         v_email.save()
@@ -120,15 +124,10 @@ def create_emails(*args, **kwargs):
 
 def nonnull_rating(*args, **kwargs):
     """Change null values to 0."""
-    for v in VideoRating.objects.all():
-        try:
-            for f in VIDEO_FIELDS:
-                if getattr(v, f) is None:
-                    setattr(v, f, 0)
-                    print(v, f, 0)
-                v.save()
-        except Exception as e:
-            print(e)
+
+    for f in tqdm(VIDEO_FIELDS):
+        qs = VideoRating.objects.all().filter(**{f: None})
+        qs.update(**{f: 0.0})
 
 
 def demo_account(*args, **kwargs):
@@ -137,12 +136,47 @@ def demo_account(*args, **kwargs):
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('--cron', help='Run on cron', action='store_true')
+        parser.add_argument('--set_all_pending', help="Set all videos as needing an update",
+                            action='store_true')
+
     def handle(self, **options):
-        nonnull_rating()
-        fill_email_domains()
-        create_emails()
-        recompute_property_verif_email()
-        recompute_property_expertrating()
-        recompute_property_avatar_hash()
-        prune_wrong_videos()
-        demo_account()
+
+        if options['set_all_pending']:
+            Video.objects.all().update(is_update_pending=True)
+        elif options['cron']:
+            # only update videos
+            Video.recompute_computed_properties(only_pending=True)
+
+        else:
+            print("Non-null ratings...")
+            nonnull_rating()
+
+            print("Email domains...")
+            fill_email_domains()
+
+            print("Creating emails...")
+            create_emails()
+
+            print("Email verif...""")
+            recompute_property_verif_email()
+
+            print("Ratings...")
+            recompute_property_expertrating()
+
+            print("Avatar hashes...")
+            recompute_property_avatar_hash()
+
+            print("Demo accounts...")
+            demo_account()
+
+            # update videos last as a downstream task
+            # print("Wrong videos...")
+            # prune_wrong_videos()
+
+            # recomputing properties
+            # done via the cron job, otherwise will take too much time for the update...
+            # print("Video props...")
+            # Video.recompute_computed_properties(only_pending=True)

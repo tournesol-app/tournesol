@@ -36,5 +36,5 @@
     }
 </script>
 
-<script src="{% static "frontend/main.js" %}" onload="onloadCheckError()"></script>
+<script src="{% static "frontend/main.js" %}?{{ commit_id }}" onload="onloadCheckError()"></script>
 </html>

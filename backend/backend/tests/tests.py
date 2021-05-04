@@ -1169,3 +1169,146 @@ class TestVideoRatingPrivacyAnnotation(TestCase):
                                                   default_value=False)
         assert len(qs) == 1
         assert qs[0]._is_public is False
+
+
+class TestVideoSignalUpdate(TestCase):
+    """Test that update signals work correctly for computed properties."""
+
+    def test_props(self):
+        domain = EmailDomain.objects.create(domain="@domain.com",
+                                            status=EmailDomain.STATUS_ACCEPTED)
+        video = Video.objects.create(video_id='test_video')
+        video_other = Video.objects.create(video_id='test_video_other')
+        user = DjangoUser.objects.create(username='test_user')
+        up = UserPreferences.objects.create(user=user)
+        ui = UserInformation.objects.create(user=user, show_my_profile=False)
+
+        vrp = VideoRatingPrivacy.objects.create(user=up, video=video, is_public=False)
+        er = ExpertRating.objects.create(user=up, video_1=video, video_2=video_other)
+
+        def check_video(**kwargs):
+            Video.recompute_computed_properties(only_pending=True)
+            qs = Video.objects.filter(video_id='test_video')
+            qs_test = qs.filter(**kwargs)
+            assert qs_test.count() == 1, qs.values()
+
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        ve = VerifiableEmail.objects.create(user=ui, email="a@domain.com", is_verified=False)
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        ve.is_verified = True
+        ve.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=0, n_private_experts=1)
+
+        ui.show_my_profile = True
+        ui.save()
+        vrp.is_public = True
+        vrp.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        ui.show_my_profile = False
+        ui.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=0, n_private_experts=1)
+
+        ui.show_my_profile = True
+        ui.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        vrp.is_public = False
+        vrp.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=0, n_private_experts=1)
+
+        vrp.is_public = True
+        vrp.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+        public_experts = Video.objects.get(video_id='test_video').public_experts
+        assert public_experts[0]['username'] == 'test_user'
+
+        domain.status = EmailDomain.STATUS_REJECTED
+        domain.save()
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        domain.status = EmailDomain.STATUS_ACCEPTED
+        domain.save()
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        ve.delete()
+        VerifiableEmail.objects.all().delete()
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+        ve = VerifiableEmail.objects.create(user=ui, email="a@domain.com", is_verified=True)
+        check_video(rating_n_experts=1, rating_n_ratings=1,
+                    n_public_experts=1, n_private_experts=0)
+
+        er.delete()
+        check_video(rating_n_experts=0, rating_n_ratings=0,
+                    n_public_experts=0, n_private_experts=0)
+
+
+class TestQuantile(TestCase):
+    """Test that the quantile computation works properly."""
+
+    def test_quantile(self, n_videos=100):
+        fdata = []
+
+        # 0.0 ... 1.0
+        quantile_direct = np.linspace(0.0, 1.0, n_videos)
+
+        # random permutations for each feature
+        permutations = {f: np.random.permutation(n_videos) for f in VIDEO_FIELDS}
+
+        # squaring and permuting
+        fdata = [{f: 10 - 3 * quantile_direct[permutations[f]][v] ** 2
+                  for f in VIDEO_FIELDS}
+                 for v in range(n_videos)]
+
+        # creating videos
+        [Video.objects.create(video_id='test%05d' % i, **fdata[i])
+         for i in range(n_videos)]
+
+        # computing quantiles
+        Video.recompute_quantiles()
+
+        # validating results
+        videos = Video.objects.all().order_by('video_id')
+        for i, v in enumerate(videos):
+            for f in VIDEO_FIELDS:
+                quantile_expected = quantile_direct[permutations[f]][i]
+                quantile_obtained = getattr(v, f + "_quantile")
+                assert np.allclose(quantile_expected, quantile_obtained), \
+                       (v, f, quantile_expected, quantile_obtained)
+
+
+class TestParetoOptimality(TestCase):
+    """Test that the pareto-optimality computation works properly."""
+
+    def test_pareto(self):
+        assert len(VIDEO_FIELDS) >= 2
+
+        feature1 = VIDEO_FIELDS[0]
+        feature2 = VIDEO_FIELDS[1]
+
+        v = Video.objects.create(video_id='v0', **{feature1: 0, feature2: 0})
+        assert v.pareto_optimal is False
+        Video.objects.create(video_id='v1', **{feature1: 1, feature2: 0})
+        Video.objects.create(video_id='v2', **{feature1: 0, feature2: 1})
+        Video.objects.create(video_id='v3', **{feature1: 1, feature2: 1})
+
+        Video.recompute_pareto()
+
+        assert Video.objects.get(video_id='v0').pareto_optimal is False
+        assert Video.objects.get(video_id='v1').pareto_optimal is False
+        assert Video.objects.get(video_id='v2').pareto_optimal is False
+        assert Video.objects.get(video_id='v3').pareto_optimal is True

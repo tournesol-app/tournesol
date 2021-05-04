@@ -12,6 +12,7 @@ comments = {
     'youtubeVideoIdRegexSymbol': "Regular expression of YouTube videos (one symbol)",
     'minNumRateLater': "Minimal number of videos to rate before redirecting to rating page",
     'DEFAULT_PREFS_VAL': "Default value of preferences for tournesol_score",
+    'N_PUBLIC_CONTRIBUTORS_SHOW': 'Number of public contributors to show',
 }
 
 featureColors = {
@@ -61,4 +62,5 @@ fields = {
     'youtubeVideoIdRegexSymbol': youtubeVideoIdRegexSymbol,
     'minNumRateLater': minNumRateLater,
     'DEFAULT_PREFS_VAL': 50.0,
+    'N_PUBLIC_CONTRIBUTORS_SHOW': 10,
 }

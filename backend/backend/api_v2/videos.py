@@ -1,9 +1,7 @@
-from collections import OrderedDict
 from functools import partial
 
 import django_filters
 import numpy as np
-from annoying.functions import get_object_or_None
 from backend.api_v2.helpers import get_user_preferences, filter_date_ago, identity, \
     WithUpdatedDocstringsDecorator, WithPKOverflowProtection,\
     update_preferences_vector_from_request
@@ -15,10 +13,9 @@ from backend.youtube_search import search_yt_intersect_tournesol
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import Q, F, Count, Value, FloatField, IntegerField, Case, When
+from django.db.models import Q, F, Count, Value, FloatField, IntegerField, CharField
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, \
     extend_schema_field, inline_serializer
 from rest_framework import filters as filters_
@@ -28,12 +25,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from functools import reduce
-from math import isinf
 from backend.constants import fields as constants
-
-
-# number of public contributors to show
-N_PUBLIC_CONTRIBUTORS_SHOW = 10
+from backend.video_property_signals import update_user_username
 
 
 def search_username_from_request(request):
@@ -55,19 +48,11 @@ def search_username_from_request(request):
     return False
 
 
-class UserInformationSerializerNameOnly(serializers.HyperlinkedModelSerializer):
+class UserInformationSerializerNameOnly(serializers.Serializer):
     """Only show username of the person."""
 
-    username = serializers.SerializerMethodField(read_only=True,
-                                                 help_text="Username of the contributor",)
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_username(self, user_information):
-        return user_information.user.username
-
-    class Meta:
-        model = UserInformation
-        fields = ['username']
+    username = serializers.CharField(read_only=True,
+                                     help_text="Username of the contributor",)
 
 
 class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
@@ -113,90 +98,33 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         read_only=True)
 
-    public_experts = serializers.SerializerMethodField(
-        help_text=f"First {N_PUBLIC_CONTRIBUTORS_SHOW} public contributors",
-        read_only=True)
-    n_public_experts = serializers.SerializerMethodField(
-        help_text="Number of public contributors", read_only=True)
+    n_public_experts = serializers.IntegerField(
+        help_text="Number of certified public contributors", read_only=True)
 
-    n_private_experts = serializers.SerializerMethodField(
-        help_text="Number private contributors", read_only=True)
+    n_private_experts = serializers.IntegerField(
+        help_text="Number certified private contributors", read_only=True)
 
     pareto_optimal = serializers.BooleanField(help_text="Is this video pareto-optimal?",
                                               read_only=True)
 
-    def get_video_object(self, video):
-        """Get the video object from ID."""
-        if isinstance(video, dict):
-            return get_object_or_None(Video, id=video.get('id', -1))
-        else:
-            return video
-
-    def get_top_raters(self, video):
-        video_obj = self.get_video_object(video)
-        request = self.context.get("request", {})
-        username = search_username_from_request(request)
-        if not video_obj:
-            qs = UserInformation.objects.none()
-        elif username:
-            qs = UserInformation.objects.filter(user__username=username)
-        else:
-            qs = video_obj.certified_top_raters()
-
-        # annotating with whether the rating is public
-        pref_privacy = 'user__userpreferences__videoratingprivacy'
-
-        qs = VideoRatingPrivacy._annotate_privacy(
-            qs=qs, prefix=pref_privacy,
-            field_user=None, filter_add={f'{pref_privacy}__video': video_obj}
-        )
-
-        qs = qs.annotate(n_public_rating=Case(
-                When(_is_public=True,
-                     then=Value(1)),
-                default=Value(0),
-                output_field=IntegerField()))
-
-        return qs
-
-    FILTER_PUBLIC = Q(n_public_rating=1,
-                      show_my_profile=True)
+    public_experts = serializers.SerializerMethodField(
+            help_text=f"First {constants['N_PUBLIC_CONTRIBUTORS_SHOW']} "
+                      "public certified contributors",
+            read_only=True)
 
     @extend_schema_field(UserInformationSerializerNameOnly(many=True))
     def get_public_experts(self, video):
-        qs = self.get_top_raters(video).filter(self.FILTER_PUBLIC)[
-             :N_PUBLIC_CONTRIBUTORS_SHOW]
-        s = UserInformationSerializerNameOnly(qs, many=True)
+
+        # support both dict and object videos
+        if hasattr(video, 'public_experts'):
+            experts = video.public_experts
+        elif isinstance(video, dict) and 'public_experts' in video:
+            experts = video['public_experts']
+        else:
+            experts = []
+
+        s = UserInformationSerializerNameOnly(experts, many=True)
         return s.data
-
-    @extend_schema_field(OpenApiTypes.INT)
-    def get_n_public_experts(self, video):
-        return self.get_top_raters(video).filter(self.FILTER_PUBLIC).count()
-
-    @extend_schema_field(OpenApiTypes.INT)
-    def get_n_private_experts(self, video):
-        return self.get_top_raters(video).filter(~self.FILTER_PUBLIC).count()
-
-    def to_representation(self, obj):
-        """Adding missing fields because of .values() in queryset"""
-        # TODO do not use values and use a raw sql query instead?
-        ret = super(VideoSerializerV2, self).to_representation(obj)
-        try:
-            # restoring fields that are not present because of values()
-            v = Video.objects.get(id=ret.get('id', -1))
-            for f in set(self.Meta.fields).difference(ret.keys()):
-                ret[f] = getattr(v, f)
-
-            if isinf(ret['score_preferences_term']):
-                ret['score_preferences_term'] = None
-            if isinf(ret['score']):
-                ret['score'] = None
-
-            ret = OrderedDict([(key, ret[key]) for key in self.Meta.fields])
-
-        except Video.DoesNotExist:
-            pass
-        return ret
 
     class Meta:
         model = Video
@@ -218,7 +146,17 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             'n_public_experts',
             'n_private_experts',
             'pareto_optimal',
-            'tournesol_score'] + VIDEO_FIELDS
+            'tournesol_score']
+
+        # per-feature scores
+        fields += VIDEO_FIELDS
+
+        # per-feature uncertainty
+        fields += [f + "_uncertainty" for f in VIDEO_FIELDS]
+
+        # per-feature quantiles
+        fields += [f + "_quantile" for f in VIDEO_FIELDS]
+
         read_only_fields = [x for x in fields if x != 'video_id']
         extra_kwargs = {'views': {'allow_null': True},
                         'duration': {'allow_null': True},
@@ -378,6 +316,9 @@ class VideoViewSetV2(mixins.CreateModelMixin,
 
         # computing score inside the database
         if search_username:
+            fields_exclude = set(Video.COMPUTED_PROPERTIES)
+            fields = [f for f in fields if f not in fields_exclude]
+
             queryset = queryset.values(*fields)
             queryset = queryset.annotate(**{key: F(f'videorating__{key}') for key in VIDEO_FIELDS},
                                          user=F(
@@ -408,6 +349,13 @@ class VideoViewSetV2(mixins.CreateModelMixin,
             c2 = Count('expertrating_video_2', q2, distinct=True)
 
             queryset = queryset.annotate(rating_n_ratings=c1 + c2)
+
+            queryset = queryset.annotate(n_public_experts=Value(1, IntegerField()))
+            queryset = queryset.annotate(n_private_experts=Value(0, IntegerField()))
+
+            # TODO: a hack. improve this
+            queryset = queryset.annotate(
+                    public_experts=Value("", CharField()))
 
             # logging model usage in search
             if self.request.user.is_authenticated:
@@ -479,10 +427,13 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            ser_data = serializer.data
+            data = self.get_paginated_response(ser_data)
+            return data
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        data = Response(serializer.data)
+        return data
 
     @extend_schema(
         parameters=[
@@ -546,8 +497,10 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         filter = self.filterset_class(request=request)
         queryset = self.get_queryset()
         queryset = queryset.order_by('-score')
+        queryset = queryset.filter(~Q(tournesol_score=0))
         queryset = filter.filter_empty(self.filter_queryset(queryset))
-        return self.return_queryset(queryset)
+        data = self.return_queryset(queryset)
+        return data
 
     @extend_schema(operation_id="n_thanks",
                    responses={200: inline_serializer(
@@ -717,5 +670,8 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         is_public = request.query_params.get('is_public', 'true') == 'true'
 
         VideoRatingPrivacy.objects.filter(user=user).update(is_public=is_public)
+
+        # updating video properties
+        update_user_username(user.user.username)
 
         return Response({'status': 'success'}, status=201)
