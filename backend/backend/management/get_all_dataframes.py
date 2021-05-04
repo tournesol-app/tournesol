@@ -115,8 +115,6 @@ def get_public_append_only_database_as_pd():
     import django
     django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
 
-    print(qs.values())
-
     #Even if 'show my profile' is false, export 'username'.
     # If 'show my profile' is true, export 'First name',
     # 'Last name', 'Title', 'Bio',
@@ -125,21 +123,19 @@ def get_public_append_only_database_as_pd():
     # Do NOT share demographic data.
 
     # only username
-    fields_basic = ['user__username', '_is_certified']
+    fields_basic = UserInformation.BASIC_FIELDS + ['_is_certified']
     qs1 = qs.filter(show_my_profile=False)
     df1 = read_frame(qs1, fieldnames=fields_basic)
 
     # username and info
-    fields_profile = ['first_name', 'last_name', 'title', 'bio']
+    fields_profile = UserInformation.PROFILE_FIELDS
     qs2 = qs.filter(show_my_profile=True, show_online_presence=False)
     df2 = read_frame(qs2, fieldnames=fields_basic + fields_profile)
 
     # username, info and online fields
-    fields_online = sorted(UserInformation._domain_startswith.keys())
+    fields_online = UserInformation.ONLINE_FIELDS
     qs3 = qs.filter(show_my_profile=True, show_online_presence=True)
     df3 = read_frame(qs3, fieldnames=fields_basic + fields_profile + fields_online)
-
-    print(df1, df2, df3)
 
     # all contributors
     df = pd.concat([df1, df2, df3], axis=0, ignore_index=True)

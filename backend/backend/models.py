@@ -417,6 +417,20 @@ class UserInformation(models.Model):
         'researchgate': 'www.researchgate.net',
     }
 
+    # showing always
+    BASIC_FIELDS = ['user__username']
+
+    # showing only if show_online_presence is True and show_my_profile is True
+    ONLINE_FIELDS = sorted(list(_domain_startswith.keys()) + ['website'])
+
+    # showing if show_my_profile is True
+    PROFILE_FIELDS = ['first_name', 'last_name', 'title', 'bio']
+
+    # only showing to oneself
+    PROTECTED_FIELDS = ['birth_year', 'gender', 'nationality', 'residence', 'race',
+                        'political_affiliation', 'religion', 'degree_of_political_engagement',
+                        'moral_philosophy']
+
     avatar_hash = computed_property.ComputedCharField(
         compute_from='get_avatar_hash',
         max_length=50,

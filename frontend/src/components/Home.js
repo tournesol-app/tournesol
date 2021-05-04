@@ -183,7 +183,7 @@ export default () => {
                 Discord
             </a>,
             and{' '}
-            <a href="/tournesol.public.latest.csv.zip">
+            <a href="/tournesol.public.latest.csv.zip" id="id_public_database_download">
                 download our public database
             </a>.
           </Typography>
