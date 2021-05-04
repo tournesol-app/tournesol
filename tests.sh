@@ -72,6 +72,12 @@ then
         export DISPLAY=:99
         screen -Sdm "xvfb_test" Xvfb $DISPLAY -screen 0 1920x1080x24
         export XDG_SESSION_TYPE=x11
+	sleep 3
+	if [ "X$(which x11vnc)" != "X" ]
+	then
+		echo "Launching x11vnc"
+		screen -Sdm "xvfb_vnc" x11vnc -display $DISPLAY -loop -shared -forever
+	fi
 fi
 
 # enabling basic auth for the API

@@ -112,6 +112,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_recaptcha',
     'django_countries',
+    'simple_history',
 ]
 
 SOCIAL_AUTH_PIPELINE = (
@@ -156,6 +157,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_react.get_username.RequestMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'django_react.urls'
@@ -321,6 +323,7 @@ NOTEBOOK_ARGUMENTS = [
     '--port=8899',
     # disables the browser
     '--no-browser',
+    '--allow-root',
 ]
 
 # configurable email backend
@@ -342,8 +345,9 @@ EMAIL_ACTIVE_FIELD = 'is_active'
 # Outlook 365 config
 EMAIL_SERVER = os.environ.get('DJANGO_EMAIL_SERVER', '127.0.0.1')
 EMAIL_HOST = EMAIL_SERVER
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_PORT = int(os.environ.get('DJANGO_EMAIL_PORT', 25))
+EMAIL_USE_TLS = os.environ.get('DJANGO_EMAIL_USE_TLS', '') == 'True'
+EMAIL_USE_SSL = os.environ.get('DJANGO_EMAIL_USE_SSL', '') == 'True'
 EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_HOST_USER', 'noreply@tournesol.app')
 EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD',
                                      'password_from_email_hosting')

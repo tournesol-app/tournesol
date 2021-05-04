@@ -1,15 +1,12 @@
-from backend.rating_fields import VIDEO_FIELDS_DICT, VIDEO_FIELDS, VIDEO_REPORT_FIELDS
+from backend.rating_fields import VIDEO_FIELDS_DICT, VIDEO_FIELDS
 from django_react.settings import DRF_RECAPTCHA_PUBLIC_KEY
 
 comments = {
     'featureNames': 'Dictionary mapping quality features to their description',
     'featureList': 'List of quality features in the correct order',
     'featureColors': 'Colors for quality features',
-    'videoReportFieldNames':
-        'Dictionary mapping video report fields to their descriptions',
     'SEARCH_DIVIDER_COEFF': 'divide search score by this value',
     'SEARCH_FEATURE_CONST_ADD': 'add this value to Tournesol scores',
-    'videoReportFields': 'List of video report fields',
     'DRF_RECAPTCHA_PUBLIC_KEY': "Public ReCaptcha key",
     'featureIsEnabledByDeFault': "Is the feature enabled by-default?",
     'youtubeVideoIdRegexSymbol': "Regular expression of YouTube videos (one symbol)",
@@ -57,11 +54,8 @@ fields = {
     'featureNames': VIDEO_FIELDS_DICT,
     'featureList': VIDEO_FIELDS,
     'featureColors': featureColors,
-    'videoReportFieldNames': VIDEO_REPORT_FIELDS,
     'SEARCH_DIVIDER_COEFF': 100 * 20,
     'SEARCH_FEATURE_CONST_ADD': 0.,
-    'videoReportFields': list(
-        VIDEO_REPORT_FIELDS.keys()),
     'DRF_RECAPTCHA_PUBLIC_KEY': DRF_RECAPTCHA_PUBLIC_KEY,
     'featureIsEnabledByDeFault': featureIsEnabledByDeFault,
     'youtubeVideoIdRegexSymbol': youtubeVideoIdRegexSymbol,

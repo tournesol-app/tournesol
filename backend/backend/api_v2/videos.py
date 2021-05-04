@@ -107,8 +107,8 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         read_only=True,
         allow_null=True)
     tournesol_score = serializers.FloatField(
-        help_text=f"The total Tournesol score with uniform preferences "\
-            f"(value={constants['DEFAULT_PREFS_VAL']})",
+        help_text=f"The total Tournesol score with uniform preferences "
+                  f"(value={constants['DEFAULT_PREFS_VAL']})",
         default=0,
         read_only=True,
         allow_null=True)
@@ -126,8 +126,6 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         help_text="Number of experts in ratings", read_only=True)
     rating_n_ratings = serializers.IntegerField(
         help_text="Number of ratings", read_only=True)
-    n_reports = serializers.IntegerField(
-        help_text="Number of times video was reported", read_only=True)
     duration = serializers.DurationField(
         help_text="Video Duration",
         allow_null=True,
@@ -262,13 +260,11 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             'score_search_term',
             'rating_n_experts',
             'rating_n_ratings',
-            'n_reports',
             'public_experts',
             'n_public_experts',
             'n_private_experts',
             'pareto_optimal',
-            'tournesol_score'
-            ] + VIDEO_FIELDS
+            'tournesol_score'] + VIDEO_FIELDS
         read_only_fields = [x for x in fields if x != 'video_id']
         extra_kwargs = {'views': {'allow_null': True},
                         'duration': {'allow_null': True},
@@ -568,6 +564,24 @@ class VideoViewSetV2(mixins.CreateModelMixin,
         queryset = search_yt_intersect_tournesol(
             request.query_params.get(
                 'search', ""), queryset=queryset)
+        return self.return_queryset(queryset)
+
+    @extend_schema(responses={
+                              200: VSMany,
+                              400: None,
+                              403: None,
+                              404: None
+            })
+    @action(methods=['GET'], detail=False, name="List of rated videos")
+    def rated_videos(self, request):
+        filter = self.filterset_class(request=request)
+        queryset = self.get_queryset()
+        queryset = queryset.order_by('-score')
+        queryset = filter.filter_empty(self.filter_queryset(queryset))
+        queryset = queryset.filter(
+                Q(expertrating_video_1__user__user__username=request.user.username) |
+                Q(expertrating_video_1__user__user__username=request.user.username)).\
+            distinct()
         return self.return_queryset(queryset)
 
     @extend_schema(operation_id="api_v2_video_search_tournesol",

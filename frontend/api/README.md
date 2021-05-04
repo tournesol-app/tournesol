@@ -189,11 +189,6 @@ Class | Method | HTTP request | Description
 *TournesolApi.VideoRatingsApi* | [**videoRatingStatistics**](docs/VideoRatingsApi.md#videoRatingStatistics) | **GET** /api/v2/video_ratings/video_rating_statistics/ | 
 *TournesolApi.VideoRatingsApi* | [**videoRatingsList**](docs/VideoRatingsApi.md#videoRatingsList) | **GET** /api/v2/video_ratings/ | 
 *TournesolApi.VideoRatingsApi* | [**videoRatingsRetrieve**](docs/VideoRatingsApi.md#videoRatingsRetrieve) | **GET** /api/v2/video_ratings/{id}/ | 
-*TournesolApi.VideoReportsApi* | [**videoReportsCreate**](docs/VideoReportsApi.md#videoReportsCreate) | **POST** /api/v2/video_reports/ | 
-*TournesolApi.VideoReportsApi* | [**videoReportsList**](docs/VideoReportsApi.md#videoReportsList) | **GET** /api/v2/video_reports/ | 
-*TournesolApi.VideoReportsApi* | [**videoReportsPartialUpdate**](docs/VideoReportsApi.md#videoReportsPartialUpdate) | **PATCH** /api/v2/video_reports/{id}/ | 
-*TournesolApi.VideoReportsApi* | [**videoReportsRetrieve**](docs/VideoReportsApi.md#videoReportsRetrieve) | **GET** /api/v2/video_reports/{id}/ | 
-*TournesolApi.VideoReportsApi* | [**videoReportsUpdate**](docs/VideoReportsApi.md#videoReportsUpdate) | **PUT** /api/v2/video_reports/{id}/ | 
 *TournesolApi.VideosApi* | [**apiV2VideoSearchTournesol**](docs/VideosApi.md#apiV2VideoSearchTournesol) | **GET** /api/v2/videos/search_tournesol/ | 
 *TournesolApi.VideosApi* | [**apiV2VideoSearchYoutube**](docs/VideosApi.md#apiV2VideoSearchYoutube) | **GET** /api/v2/videos/search_youtube/ | 
 *TournesolApi.VideosApi* | [**myRatingsArePrivate**](docs/VideosApi.md#myRatingsArePrivate) | **GET** /api/v2/videos/my_ratings_are_private/ | 
@@ -203,6 +198,7 @@ Class | Method | HTTP request | Description
 *TournesolApi.VideosApi* | [**thankContributors**](docs/VideosApi.md#thankContributors) | **PATCH** /api/v2/videos/thank_contributors/ | 
 *TournesolApi.VideosApi* | [**videosCreate**](docs/VideosApi.md#videosCreate) | **POST** /api/v2/videos/ | 
 *TournesolApi.VideosApi* | [**videosList**](docs/VideosApi.md#videosList) | **GET** /api/v2/videos/ | 
+*TournesolApi.VideosApi* | [**videosRatedVideosList**](docs/VideosApi.md#videosRatedVideosList) | **GET** /api/v2/videos/rated_videos/ | 
 *TournesolApi.VideosApi* | [**videosRetrieve**](docs/VideosApi.md#videosRetrieve) | **GET** /api/v2/videos/{id}/ | 
 
 
@@ -242,7 +238,6 @@ Class | Method | HTTP request | Description
  - [TournesolApi.PaginatedVideoRateLaterSerializerV2List](docs/PaginatedVideoRateLaterSerializerV2List.md)
  - [TournesolApi.PaginatedVideoRatingsSerializerV2List](docs/PaginatedVideoRatingsSerializerV2List.md)
  - [TournesolApi.PaginatedVideoRatingsStatisticsSerializerV2List](docs/PaginatedVideoRatingsStatisticsSerializerV2List.md)
- - [TournesolApi.PaginatedVideoReportsSerializerV2List](docs/PaginatedVideoReportsSerializerV2List.md)
  - [TournesolApi.PaginatedVideoSerializerV2List](docs/PaginatedVideoSerializerV2List.md)
  - [TournesolApi.PatchedChangePassword](docs/PatchedChangePassword.md)
  - [TournesolApi.PatchedDegree](docs/PatchedDegree.md)
@@ -258,14 +253,12 @@ Class | Method | HTTP request | Description
  - [TournesolApi.PatchedVideo](docs/PatchedVideo.md)
  - [TournesolApi.PatchedVideoCommentsSerializerV2](docs/PatchedVideoCommentsSerializerV2.md)
  - [TournesolApi.PatchedVideoRateLaterDelete](docs/PatchedVideoRateLaterDelete.md)
- - [TournesolApi.PatchedVideoReportsSerializerV2](docs/PatchedVideoReportsSerializerV2.md)
  - [TournesolApi.PoliticalAffiliationEnum](docs/PoliticalAffiliationEnum.md)
  - [TournesolApi.PrivateOrPublic](docs/PrivateOrPublic.md)
  - [TournesolApi.RaceEnum](docs/RaceEnum.md)
  - [TournesolApi.RatingModeEnum](docs/RatingModeEnum.md)
  - [TournesolApi.Register](docs/Register.md)
  - [TournesolApi.ReligionEnum](docs/ReligionEnum.md)
- - [TournesolApi.ReportField](docs/ReportField.md)
  - [TournesolApi.ResidenceEnum](docs/ResidenceEnum.md)
  - [TournesolApi.Samplevideov3Error](docs/Samplevideov3Error.md)
  - [TournesolApi.Samplevideov3ErrorDetailEnum](docs/Samplevideov3ErrorDetailEnum.md)
@@ -281,7 +274,6 @@ Class | Method | HTTP request | Description
  - [TournesolApi.VideoRateLaterSerializerV2](docs/VideoRateLaterSerializerV2.md)
  - [TournesolApi.VideoRatingsSerializerV2](docs/VideoRatingsSerializerV2.md)
  - [TournesolApi.VideoRatingsStatisticsSerializerV2](docs/VideoRatingsStatisticsSerializerV2.md)
- - [TournesolApi.VideoReportsSerializerV2](docs/VideoReportsSerializerV2.md)
  - [TournesolApi.VideoSerializerV2](docs/VideoSerializerV2.md)
 
 

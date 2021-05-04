@@ -130,7 +130,7 @@ export default class LoginSignupApi {
      */
 
     /**
-     * Register a user.
+     * Log in to Tournesol.
      * @param {Object} opts Optional parameters
      * @param {module:model/PatchedLogin} opts.patchedLogin 
      * @param {module:api/LoginSignupApi~loginSignupLoginPartialUpdateCallback} callback The callback function, accepting three arguments: error, data, response

@@ -57,6 +57,7 @@ django-mptt==0.11.0
 django-pandas==0.6.2
 django-polymorphic==2.1.2
 django-recaptcha==2.0.6
+django-simple-history==3.0.0
 djangorestframework==3.12.2
 dm-tree==0.1.5
 docstring-parser==0.7.3
@@ -180,7 +181,7 @@ pyasn1-modules==0.2.8
 pycodestyle==2.6.0
 pycparser==2.20
 pyflakes==2.2.0
-pygame==1.9.6
+pygame==2.0.0
 Pygments==2.7.4
 PyJWT==1.7.1
 pylint==2.6.0

@@ -54,6 +54,9 @@ class PatchedOnlyUsernameAndID {
             if (data.hasOwnProperty('username')) {
                 obj['username'] = ApiClient.convertToType(data['username'], 'String');
             }
+            if (data.hasOwnProperty('user__id')) {
+                obj['user__id'] = ApiClient.convertToType(data['user__id'], 'Number');
+            }
         }
         return obj;
     }
@@ -71,6 +74,12 @@ PatchedOnlyUsernameAndID.prototype['id'] = undefined;
  * @member {String} username
  */
 PatchedOnlyUsernameAndID.prototype['username'] = undefined;
+
+/**
+ * DjangoUser ID
+ * @member {Number} user__id
+ */
+PatchedOnlyUsernameAndID.prototype['user__id'] = undefined;
 
 
 

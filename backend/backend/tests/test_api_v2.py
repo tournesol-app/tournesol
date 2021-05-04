@@ -6,10 +6,10 @@ from functools import partial
 import numpy as np
 import pytest
 from backend.constants import youtubeVideoIdRegex
-from backend.models import Video, UserPreferences, ExpertRating, VideoReports, \
+from backend.models import Video, UserPreferences, ExpertRating, \
     VideoComment, VideoRating, VideoCommentMarker, UserInformation, VerifiableEmail, EmailDomain,\
     VideoRatingPrivacy
-from backend.rating_fields import VIDEO_FIELDS, VIDEO_REPORT_FIELDS
+from backend.rating_fields import VIDEO_FIELDS
 from backend.tests.helpers import get_singleton, get_date_ago
 from django.contrib.auth.models import User as DjangoUser
 from backend.rating_fields import MAX_VALUE as MAX_RATING
@@ -528,65 +528,6 @@ class TestAPI(object):
         u_created.delete()
         Video.objects.all().delete()
         ExpertRating.objects.all().delete()
-
-    def test_video_reports(self, client, current_user_preferences):
-        # creating a video
-        v = Video.objects.create(video_id="aba")
-        data = {f: np.random.choice([0, 1]) for f in VIDEO_REPORT_FIELDS}
-        data.update({'video': v.video_id,
-                     'explanation': "too long didn't watch"})
-        r = client.post('/api/v2/video_reports/', data=data)
-        assert r.status_code == 201, r.json()
-        assert 1 == VideoReports.objects.all().count()
-        report = VideoReports.objects.get()
-
-        def report_equals_json(report, data):
-            for key, val in data.items():
-                val1 = getattr(report, key)
-                if key == 'video':
-                    val1 = val1.video_id
-                assert val == val1
-
-        report_equals_json(report, data)
-
-        data.update({f: np.random.choice([0, 1]) for f in VIDEO_REPORT_FIELDS})
-        data['explanation'] = "sdfsdfsdfsdf"
-        r = client.patch(f'/api/v2/video_reports/{report.id}/', data=data)
-        assert r.status_code == 200, r.json()
-
-        report.refresh_from_db()
-        report_equals_json(report, data)
-
-        # getting the report from API
-        r = client.get(
-            '/api/v2/video_reports/',
-            data={
-                'video_id': v.video_id})
-        assert r.status_code == 200
-        assert len(r.json()['results']) == 1
-
-        # don't want to show usernames in reports
-        assert 'user' not in r.json()['results'][0]
-        assert 'username' not in r.json()['results'][0]
-
-        # can't change another person's report
-        other_user_django = DjangoUser.objects.create(username="report_test")
-        other_user_up = UserPreferences.objects.create(user=other_user_django)
-
-        r = VideoReports.objects.create(user=other_user_up, video=v, explanation="test")
-        report_id = VideoReports.objects.get(user=other_user_up, video=v).id
-
-        resp = client.patch(f'/api/v2/video_reports/{report_id}/',
-                            data={'explanation': "test_nnnn"})
-        print(resp.status_code)
-        assert resp.status_code == 400, r.json()
-
-        r.refresh_from_db()
-        assert r.explanation == "test"
-
-        Video.objects.all().delete()
-        VideoReports.objects.all().delete()
-        other_user_django.delete()
 
     def test_anonymous_comments(self, client, current_user_preferences):
         u = DjangoUser.objects.create_user(
