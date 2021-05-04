@@ -35,7 +35,6 @@ from backend.sample_video_active_learning import ActiveLearningException
 from backend.add_videos import VideoManager
 from django.db.models import CharField, TextField
 from django.db.models.functions import Length
-import json
 
 
 def create_accepted_domain(domain="@tournesol.app"):

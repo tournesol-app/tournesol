@@ -1,9 +1,7 @@
-from collections import OrderedDict
 from functools import partial
 
 import django_filters
 import numpy as np
-from annoying.functions import get_object_or_None
 from backend.api_v2.helpers import get_user_preferences, filter_date_ago, identity, \
     WithUpdatedDocstringsDecorator, WithPKOverflowProtection,\
     update_preferences_vector_from_request
@@ -15,7 +13,7 @@ from backend.youtube_search import search_yt_intersect_tournesol
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import Q, F, Count, Value, FloatField, IntegerField, Case, When
+from django.db.models import Q, F, Count, Value, FloatField, IntegerField
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from drf_spectacular.types import OpenApiTypes
@@ -28,12 +26,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from functools import reduce
-from math import isinf
 from backend.api_v2.helpers import TimeDeltaPrint
 from backend.constants import fields as constants
 from backend.video_property_signals import update_user_username
 
+
 TDP = TimeDeltaPrint()
+
 
 def search_username_from_request(request):
     """Get the username to use the scores from."""

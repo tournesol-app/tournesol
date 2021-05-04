@@ -151,7 +151,6 @@ class Command(BaseCommand):
         # Positional arguments
         parser.add_argument('--cron', help='Run on cron', action='store_true')
 
-
     def handle(self, **options):
 
         if options['cron']:

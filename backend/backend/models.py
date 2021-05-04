@@ -801,7 +801,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
-                filter(self.FILTER_PUBLIC).count()
+            filter(self.FILTER_PUBLIC).count()
 
     def get_n_private_experts(self):
         """Get the number of private certified experts who rated this video."""
@@ -810,7 +810,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
-                filter(~self.FILTER_PUBLIC).count()
+            filter(~self.FILTER_PUBLIC).count()
 
     def get_rating_n_ratings(self, user=None):
         """Number of associated ratings."""

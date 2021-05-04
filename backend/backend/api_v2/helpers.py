@@ -302,6 +302,7 @@ def update_preferences_vector_from_request(vector, request_query_params):
 
 
 class TimeDeltaPrint():
+    """Print time passed between calls."""
     def __init__(self):
         self.last_timestamp = None
 

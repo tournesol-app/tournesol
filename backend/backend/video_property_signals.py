@@ -2,12 +2,9 @@ import logging
 
 from backend.models import EmailDomain, Video, VideoRatingPrivacy, ExpertRating, UserInformation,\
     VerifiableEmail
-from backend.send_email_thread import send_email_possibly_threaded
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django_react import settings
 from django.db.models import Q
-import logging
 
 
 # maximal number of updates done within the same thread
@@ -54,6 +51,7 @@ def update_email(verifiable_email):
 
 # EmailDomain -> VerifiableEmail -> UserInformation -> ExpertRating -> Video
 #                                                VideoRatingPrivacy ->
+
 
 # EmailDomain
 @receiver(post_save, sender=EmailDomain)
