@@ -82,6 +82,13 @@ def prune_wrong_videos(*args, **kwargs):
     for v in Video.objects.all():
         try:
             v.full_clean()
+
+            # to recompute the properties
+            for f in Video.COMPUTED_PROPERTIES:
+                getattr(v, f)
+
+            # to recompute the properties
+            v.save()
         except ValidationError as e:
             print(f"Deleting invalid video {v}: {e}")
             v.delete()
@@ -144,5 +151,7 @@ class Command(BaseCommand):
         recompute_property_verif_email()
         recompute_property_expertrating()
         recompute_property_avatar_hash()
-        prune_wrong_videos()
         demo_account()
+
+        # update videos last as a downstream task
+        prune_wrong_videos()

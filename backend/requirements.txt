@@ -107,6 +107,7 @@ jedi==0.17.0
 Jinja2==2.11.3
 joblib==0.15.1
 json5==0.9.4
+jsonfield==3.1.0
 jsonrpcclient==3.3.6
 jsonrpcserver==4.1.3
 jsonschema==3.2.0

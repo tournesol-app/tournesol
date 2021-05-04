@@ -1169,3 +1169,24 @@ class TestVideoRatingPrivacyAnnotation(TestCase):
                                                   default_value=False)
         assert len(qs) == 1
         assert qs[0]._is_public is False
+
+
+class TestVideoSignalUpdate(TestCase):
+    """Test that update signals work correctly for computed properties."""
+
+    def test_props(self):
+        assert False
+
+
+class TestQuantile(TestCase):
+    """Test that the quantile computation works properly."""
+
+    def test_quantile(self):
+        assert False
+
+
+class TestParetoOptimality(TestCase):
+    """Test that the pareto-optimality computation works properly."""
+
+    def test_pareto(self):
+        assert False

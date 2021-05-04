@@ -60,6 +60,7 @@ python manage.py set_default_features_enabled
 python manage.py recompute_properties
 python manage.py ml_train --epochs_override 1
 python manage.py set_existing_rating_privacy --set_public False
+python manage.py compute_quantile_pareto
 # running tests
 pytest --ignore=backend/tests/tests.py
 python manage.py test

@@ -6,6 +6,8 @@ import logging
 import numpy as np
 from backend.rating_fields import VIDEO_FIELDS
 from urllib.parse import urlparse
+from computed_property import ComputedField
+from jsonfield import JSONField
 
 
 class WithFeatures(object):
@@ -128,3 +130,8 @@ def query_and(lst):
     """Combine query parts with AND."""
     return filter_reduce(lst, fcn=(lambda x, y: x & y),
                          name='AND')
+
+
+class ComputedJsonField(ComputedField, JSONField):
+    """A JSON field that is computed from other fields."""
+    pass

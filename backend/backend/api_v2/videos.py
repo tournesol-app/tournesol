@@ -29,34 +29,10 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from functools import reduce
 from math import isinf
-from time import time
+from backend.api_v2.helpers import TimeDeltaPrint
 from backend.constants import fields as constants
 
-
-class TimeDeltaPrint():
-    def __init__(self):
-        self.last_timestamp = None
-
-    def reset(self):
-        self.last_timestamp = None
-
-    def print_now(self, descr):
-        now = time()
-        if self.last_timestamp is None:
-            delta = "[started]"
-        else:
-            delta = now - self.last_timestamp
-            delta = "+%.3f sec" % delta
-        self.last_timestamp = now
-        print(f"TIME {delta}: {descr}")
-
-
 TDP = TimeDeltaPrint()
-
-
-# number of public contributors to show
-N_PUBLIC_CONTRIBUTORS_SHOW = 10
-
 
 def search_username_from_request(request):
     """Get the username to use the scores from."""
@@ -135,114 +111,17 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         read_only=True)
 
-    public_experts = serializers.SerializerMethodField(
-        help_text=f"First {N_PUBLIC_CONTRIBUTORS_SHOW} public contributors",
+    public_experts = serializers.IntegerField(
+        help_text=f"First {constants['N_PUBLIC_CONTRIBUTORS_SHOW']} public certified contributors",
         read_only=True)
-    n_public_experts = serializers.SerializerMethodField(
-        help_text="Number of public contributors", read_only=True)
+    n_public_experts = serializers.IntegerField(
+        help_text="Number of certified public contributors", read_only=True)
 
-    n_private_experts = serializers.SerializerMethodField(
-        help_text="Number private contributors", read_only=True)
+    n_private_experts = serializers.JSONField(
+        help_text="Number certified private contributors", read_only=True)
 
     pareto_optimal = serializers.BooleanField(help_text="Is this video pareto-optimal?",
                                               read_only=True)
-
-    def get_video_object(self, video):
-        """Get the video object from ID."""
-        if isinstance(video, dict):
-            return get_object_or_None(Video, id=video.get('id', -1))
-        else:
-            return video
-
-    def get_top_raters(self, video):
-
-        #return UserInformation.objects.none()
-
-        tdp = TimeDeltaPrint()
-        tdp.print_now('get_top_raters:start')
-        video_obj = None #self.get_video_object(video)
-        tdp.print_now('get_top_raters:video_obj_obtained')
-        request = self.context.get("request", {})
-        username = search_username_from_request(request)
-        tdp.print_now('get_top_raters:search_username_obtaned')
-        if not video_obj:
-            qs = UserInformation.objects.none()
-        elif username:
-            qs = UserInformation.objects.filter(user__username=username)
-        else:
-            qs = video_obj.certified_top_raters()
-
-        tdp.print_now('get_top_raters:ui_qs_obtained')
-
-        # annotating with whether the rating is public
-        pref_privacy = 'user__userpreferences__videoratingprivacy'
-
-        qs = VideoRatingPrivacy._annotate_privacy(
-            qs=qs, prefix=pref_privacy,
-            field_user=None, filter_add={f'{pref_privacy}__video': video_obj}
-        )
-
-        qs = qs.annotate(n_public_rating=Case(
-                When(_is_public=True,
-                     then=Value(1)),
-                default=Value(0),
-                output_field=IntegerField()))
-
-        tdp.print_now('get_top_raters:qs_obtained')
-
-        return qs
-
-    FILTER_PUBLIC = Q(n_public_rating=1,
-                      show_my_profile=True)
-
-    @extend_schema_field(UserInformationSerializerNameOnly(many=True))
-    def get_public_experts(self, video):
-        #qs = self.get_top_raters(video).filter(self.FILTER_PUBLIC)[
-        #     :N_PUBLIC_CONTRIBUTORS_SHOW]
-        #s = UserInformationSerializerNameOnly(qs, many=True)
-        return [] #s.data
-
-    @extend_schema_field(OpenApiTypes.INT)
-    def get_n_public_experts(self, video):
-        return 0 # self.get_top_raters(video).filter(self.FILTER_PUBLIC).count()
-
-    @extend_schema_field(OpenApiTypes.INT)
-    def get_n_private_experts(self, video):
-        return 0 # self.get_top_raters(video).filter(~self.FILTER_PUBLIC).count()
-
-    def to_representation(self, obj):
-        """Adding missing fields because of .values() in queryset"""
-        # TODO do not use values and use a raw sql query instead?
-
-        tdp = TimeDeltaPrint()
-
-        tdp.print_now('to_representation:start')
-
-        ret = super(VideoSerializerV2, self).to_representation(obj)
-        return  ret
-
-
-        tdp.print_now('to_representation:super_call_ok')
-
-        try:
-            # restoring fields that are not present because of values()
-            v = Video.objects.get(id=ret.get('id', -1))
-            for f in set(self.Meta.fields).difference(ret.keys()):
-                ret[f] = getattr(v, f)
-
-            if isinf(ret['score_preferences_term']):
-                ret['score_preferences_term'] = None
-            if isinf(ret['score']):
-                ret['score'] = None
-
-            ret = OrderedDict([(key, ret[key]) for key in self.Meta.fields])
-
-        except Video.DoesNotExist:
-            pass
-
-        tdp.print_now('to_representation:end')
-
-        return ret
 
     class Meta:
         model = Video
@@ -264,7 +143,17 @@ class VideoSerializerV2(serializers.HyperlinkedModelSerializer):
             'n_public_experts',
             'n_private_experts',
             'pareto_optimal',
-            'tournesol_score'] + VIDEO_FIELDS
+            'tournesol_score']
+
+        # per-feature scores
+        fields += VIDEO_FIELDS
+
+        # per-feature uncertainty
+        fields += [f + "_uncertainty" for f in VIDEO_FIELDS]
+
+        # per-feature quantiles
+        fields += [f + "_quantile" for f in VIDEO_FIELDS]
+
         read_only_fields = [x for x in fields if x != 'video_id']
         extra_kwargs = {'views': {'allow_null': True},
                         'duration': {'allow_null': True},

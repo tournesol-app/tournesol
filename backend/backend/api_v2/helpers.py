@@ -1,4 +1,5 @@
 import base64
+from time import time
 import datetime
 import imghdr
 import uuid
@@ -298,3 +299,21 @@ def update_preferences_vector_from_request(vector, request_query_params):
             except ValueError as e:
                 raise serializers.ValidationError({k: [f'Wrong value, {str(e)}']})
     return vector
+
+
+class TimeDeltaPrint():
+    def __init__(self):
+        self.last_timestamp = None
+
+    def reset(self):
+        self.last_timestamp = None
+
+    def print_now(self, descr):
+        now = time()
+        if self.last_timestamp is None:
+            delta = "[started]"
+        else:
+            delta = now - self.last_timestamp
+            delta = "+%.3f sec" % delta
+        self.last_timestamp = now
+        print(f"TIME {delta}: {descr}")
