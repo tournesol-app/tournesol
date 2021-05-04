@@ -163,7 +163,8 @@ const helpText = {
                 if (err) {
                   f('Operation failed', null);
                 } else {
-                  f(null, 'All ratings set as private!');
+                  f(null, 'All ratings set as private! If you have many ratings' +
+                  ', it might take up to one hour to update the list of contributors.');
                 }
               });
               return null;
@@ -182,7 +183,8 @@ const helpText = {
                 if (err) {
                   f('Operation failed', null);
                 } else {
-                  f(null, 'All ratings set as public!');
+                  f(null, 'All ratings set as public! If you have many ratings' +
+                  ', it might take up to one hour to update the list of contributors.');
                 }
               });
               return null;

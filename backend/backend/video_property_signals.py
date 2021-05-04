@@ -10,12 +10,23 @@ from django.db.models import Q
 import logging
 
 
-# maximal number of updates
-MAX_IN_LIST = 30
+# maximal number of updates done within the same thread
+MAX_IN_LIST = 10
 
 
 # Video properties can be affected by VideoRatingPrivacy, ExpertRating,
 #  UserInformation, EmailDomain, VerifiableEmail
+
+
+def clamp_list(lst, max_len=MAX_IN_LIST):
+    """If the list is too long, print a warning and reduce the length."""
+    # TODO: immediately start a background job?
+    if len(lst) > max_len:
+        logging.warning("List is too long to perform updates. "
+                        "The updates will be done later via the cron job.")
+        return lst[:max_len]
+    return lst
+
 
 def update_video(v):
     """Recompute properties for a video."""
@@ -31,13 +42,7 @@ def update_user_username(username):
     rated = Video.objects.filter(Q(expertrating_video_1__user__user__username=username) |
                                  Q(expertrating_video_2__user__user__username=username))
 
-    if len(rated) > MAX_IN_LIST:
-        # TODO use a background job?
-        logging.warning("List of rated videos is too long to perform updates. "
-                        "The updates will be done later via the cron job.")
-        return
-
-    for v in rated:
+    for v in clamp_list(rated):
         update_video(v)
 
 
@@ -54,14 +59,14 @@ def update_email(verifiable_email):
 @receiver(post_save, sender=EmailDomain)
 def save_emaildomain(sender, instance, created, raw, using, update_fields, **kwargs):
     emails = VerifiableEmail.objects.filter(domain=instance.domain)
-    for email in emails:
+    for email in clamp_list(emails):
         update_email(email)
 
 
 @receiver(post_delete, sender=EmailDomain)
 def delete_emaildomain(sender, instance, using, **kwargs):
     emails = VerifiableEmail.objects.filter(domain=instance.domain)
-    for email in emails:
+    for email in clamp_list(emails):
         update_email(email)
 
 
