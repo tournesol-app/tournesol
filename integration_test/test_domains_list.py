@@ -8,9 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait  # noqa: E402
 
 
 def _test_domains(driver, ack_email, rej_email, pend_email):
-    to_check = [(ack_email, 'accepted_domains_class'),
-                (rej_email, 'rejected_domains_class'),
-                (pend_email, 'pending_domains_class')]
+    to_check = [(ack_email, 'accepted_domains_class')]
 
     for domain, elem_id in to_check:
         links = driver.find_element_by_class_name(elem_id).find_elements_by_class_name(

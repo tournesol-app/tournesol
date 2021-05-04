@@ -3,6 +3,8 @@ from sklearn.decomposition import PCA
 from matplotlib import pyplot as plt
 import numpy as np
 import tensorflow as tf
+
+
 tf.compat.v1.enable_eager_execution()
 
 
@@ -26,28 +28,38 @@ class PreferencePredictor(object):
         # doing PCA if have >1 components
         if data.shape[1] > 2:
             data_vis = PCA(n_components=2).fit_transform(data)
-            xylabel = 'PCA[Input]'
+            xylabel = "PCA[Input]"
         else:
             data_vis = data
-            xylabel = 'Input'
+            xylabel = "Input"
 
         ys = self(data)[:, component]
         # plt.title("Data")
-        plt.xlabel('%s[0]' % xylabel)
-        plt.ylabel('%s[1]' % xylabel)
-        cm = plt.cm.get_cmap('copper')
-        plt.title("Output[%d] Min: %.2f Max: %.2f" % (component,
-                                                      np.min(ys), np.max(ys)))
+        plt.xlabel("%s[0]" % xylabel)
+        plt.ylabel("%s[1]" % xylabel)
+        cm = plt.cm.get_cmap("copper")
+        plt.title(
+            "Output[%d] Min: %.2f Max: %.2f" % (component, np.min(ys), np.max(ys))
+        )
         plt.scatter(data_vis[:, 0], data_vis[:, 1], c=ys, cmap=cm)
 
         if idxes:
             texts = ["1", "0"]
             for idx, text in zip(idxes, texts):
-                plt.text(*data_vis[idx, :], text, fontsize=15, color='red',
-                         bbox=dict(facecolor='white', alpha=0.5))
+                plt.text(
+                    *data_vis[idx, :],
+                    text,
+                    fontsize=15,
+                    color="red",
+                    bbox=dict(facecolor="white", alpha=0.5)
+                )
 
         # plt.xlim((-3, 3))
         # plt.ylim((-3, 3))
+
+    def on_dataset_end(self):
+        """Called when all data is loaded."""
+        pass
 
 
 class MedianPreferenceAggregator(PreferencePredictor):

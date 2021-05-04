@@ -2,7 +2,7 @@
 
 export DJANGO_DATABASE="sqlite"
 export MODE="runserver"
-export PORT=8000
+export PORT="0.0.0.0:8000"
 
 . ./debug_export.sh
 

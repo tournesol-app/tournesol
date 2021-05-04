@@ -13,8 +13,7 @@ from backend.black_white_email_domain import get_domain
 from backend.model_helpers import WithFeatures, WithEmbedding, WithDynamicFields, EnumList,\
     url_has_domain
 from backend.rating_fields import MAX_VALUE as MAX_RATING
-from backend.rating_fields import VIDEO_FIELDS, VIDEO_FIELDS_DICT, VIDEO_REPORT_FIELDS, \
-    MAX_FEATURE_WEIGHT
+from backend.rating_fields import VIDEO_FIELDS, VIDEO_FIELDS_DICT, MAX_FEATURE_WEIGHT
 from backend.video_search import VideoSearchEngine
 from django.contrib.auth.models import User as DjangoUser
 from django.core.exceptions import ValidationError
@@ -28,6 +27,7 @@ from django_countries import countries
 from languages.fields import LanguageField
 from backend.constants import featureIsEnabledByDeFault, youtubeVideoIdRegex
 from django.core.validators import RegexValidator
+from simple_history import register as register_historical
 
 
 class ResetPasswordToken(models.Model):
@@ -60,6 +60,11 @@ class VerifiableEmail(models.Model):
         blank=False,
         null=False,
         help_text="Verified")
+    last_verification_email_ts = models.DateTimeField(
+        help_text="Timestamp when the last verification e-mail was sent to this address",
+        null=True,
+        default=None,
+        blank=True)
     token = models.CharField(
         max_length=1000,
         blank=True,
@@ -411,6 +416,20 @@ class UserInformation(models.Model):
         'orcid': 'orcid.org',
         'researchgate': 'www.researchgate.net',
     }
+
+    # showing always
+    BASIC_FIELDS = ['user__username']
+
+    # showing only if show_online_presence is True and show_my_profile is True
+    ONLINE_FIELDS = sorted(list(_domain_startswith.keys()) + ['website'])
+
+    # showing if show_my_profile is True
+    PROFILE_FIELDS = ['first_name', 'last_name', 'title', 'bio']
+
+    # only showing to oneself
+    PROTECTED_FIELDS = ['birth_year', 'gender', 'nationality', 'residence', 'race',
+                        'political_affiliation', 'religion', 'degree_of_political_engagement',
+                        'moral_philosophy']
 
     avatar_hash = computed_property.ComputedCharField(
         compute_from='get_avatar_hash',
@@ -773,6 +792,11 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         qs = qs.order_by('-_n_ratings')
         return qs
 
+    @property
+    def tournesol_score(self):
+        # computed by a query
+        return 0.0
+
     def ratings(self, user=None, only_certified=True):
         """All associated certified ratings."""
         f = Q(video_1=self) | Q(video_2=self)
@@ -785,21 +809,9 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             qs = qs.filter(_is_certified=True)
         return qs
 
-    def reports(self, user=None):
-        """All associated reports."""
-        f = Q(video=self)
-        if user is not None:
-            f = f & Q(user=user)
-        return VideoReports.objects.filter(f)
-
     def n_ratings(self, user=None):
         """Number of associated ratings."""
         return self.ratings(user=user).count()
-
-    @property
-    def n_reports(self):
-        """Number of associated reports."""
-        return self.reports().count()
 
     @property
     def rating_n_ratings(self):
@@ -1235,40 +1247,6 @@ class VideoCommentMarker(models.Model, WithDynamicFields):
         return "%s for %s" % (self.which, self.comment)
 
 
-class VideoReports(models.Model, WithDynamicFields):
-    """Reports on videos."""
-
-    class Meta:
-        unique_together = ['user', 'video']
-
-    user = models.ForeignKey(
-        UserPreferences,
-        on_delete=models.CASCADE,
-        help_text="Reporter for the video")
-    video = models.ForeignKey(
-        Video,
-        on_delete=models.CASCADE,
-        help_text="Video being reported")
-    explanation = models.TextField(
-        null=True,
-        default="",
-        help_text="Why is the video reported")
-
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field, descr in VIDEO_REPORT_FIELDS.items():
-            VideoReports.add_to_class(
-                field, models.BooleanField(
-                    null=True, default=False, help_text=descr))
-
-    def __str__(self):
-        fields = [
-            field for field in VIDEO_REPORT_FIELDS if getattr(
-                self, field)]
-        return "%s on %s: %s" % (self.user, self.video, ', '.join(fields))
-
-
 class RepresentativeModelUsage(models.Model):
     """Count usage of representative models in search."""
     model = models.ForeignKey(to=UserPreferences, on_delete=models.CASCADE,
@@ -1323,7 +1301,8 @@ class VideoRatingPrivacy(models.Model):
     @staticmethod
     def _annotate_privacy(qs, prefix='video__videoratingprivacy', field_user=F('user'),
                           filter_add=None, default_value=None, annotate_bool=True,
-                          annotate_n=False, videorating_field=None):
+                          annotate_n=False, videorating_field=None,
+                          output_prefix=""):
         """Count number of private/public Privacy database entries.
 
         By-default, works for the VideoRating model.
@@ -1338,44 +1317,50 @@ class VideoRatingPrivacy(models.Model):
         if default_value is None:
             default_value = VideoRatingPrivacy.DEFAULT_VALUE_IS_PUBLIC
 
-        qs = qs.annotate(
-            _n_public_videoratingprivacy=Count(prefix, filter=Q(**{prefix + '__is_public': True,
-                                                                   **filter_add}),
-                                               distinct=True))
-        qs = qs.annotate(
-            _n_private_videoratingprivacy=Count(prefix, filter=Q(**{prefix + '__is_public': False,
-                                                                    **filter_add}),
-                                                distinct=True))
+        qs = qs.annotate(**{
+            output_prefix + '_n_public_videoratingprivacy':
+                Count(prefix, filter=Q(**{prefix + '__is_public': True,
+                                          **filter_add}), distinct=True)})
+        qs = qs.annotate(**{
+            output_prefix + '_n_private_videoratingprivacy':
+                Count(prefix, filter=Q(**{prefix + '__is_public': False,
+                                          **filter_add}), distinct=True)})
 
         if annotate_bool:
             if default_value:
                 # default value is PUBLIC, therefore public == !(_n_private_videoratingprivacy > 0)
-                qs = qs.annotate(_is_public=Case(
-                    When(_n_private_videoratingprivacy__gt=0,
+                qs = qs.annotate(**{output_prefix + '_is_public': Case(
+                    When(**{output_prefix + '_n_private_videoratingprivacy__gt': 0},
                          then=Value(False)),
                     default=Value(True),
-                    output_field=BooleanField()))
+                    output_field=BooleanField())})
             else:
                 # default value is PRIVATE, therefore public == (_n_public_videoratingprivacy > 0)
-                qs = qs.annotate(_is_public=Case(
-                    When(_n_public_videoratingprivacy__gt=0,
+                qs = qs.annotate(**{output_prefix + '_is_public': Case(
+                    When(**{output_prefix + '_n_public_videoratingprivacy__gt': 0},
                          then=Value(True)),
                     default=Value(False),
-                    output_field=BooleanField()))
+                    output_field=BooleanField())})
 
         if annotate_n:
 
-            qs = qs.annotate(_n_total=Count(videorating_field,
-                                            distinct=True))
+            qs = qs.annotate(**{output_prefix + '_n_total':
+                                Count(videorating_field, distinct=True)})
 
             if default_value:
                 # default value is PUBLIC -> _n_public = n_total - n_private
-                qs = qs.annotate(_n_public=F('_n_total') - F('_n_private_videoratingprivacy'))
-                qs = qs.annotate(_n_private=F('_n_private_videoratingprivacy'))
+                qs = qs.annotate(**{output_prefix + '_n_public':
+                                    F(output_prefix + '_n_total') -
+                                    F(output_prefix + '_n_private_videoratingprivacy')})
+                qs = qs.annotate(**{output_prefix + '_n_private':
+                                    F(output_prefix + '_n_private_videoratingprivacy')})
             else:
                 # default value is PRIVATE -> _n_private = n_total - n_public
-                qs = qs.annotate(_n_private=F('_n_total') - F('_n_public_videoratingprivacy'))
-                qs = qs.annotate(_n_public=F('_n_public_videoratingprivacy'))
+                qs = qs.annotate(**{output_prefix + '_n_private':
+                                    F(output_prefix + '_n_total') -
+                                    F(output_prefix + '_n_public_videoratingprivacy')})
+                qs = qs.annotate(**{output_prefix + '_n_public':
+                                    F(output_prefix + '_n_public_videoratingprivacy')})
 
         return qs
 
@@ -1406,3 +1391,6 @@ class VideoRateLater(models.Model):
 
 # adding dynamic fields
 WithDynamicFields.create_all()
+
+# history of edits/changed/additions/deletions/...
+register_historical(ExpertRating, excluded_fields=['video_1_2_ids_sorted'])

@@ -5,7 +5,6 @@ import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import UserInterface from './UserInterface';
 import ExpertInterface from './ExpertInterface';
-import VideoReporting from './VideoReporting';
 import VideoList from './VideoList';
 import VideoDetails from './VideoDetails';
 import VideoRatings from './VideoRatings';
@@ -39,9 +38,6 @@ export default () => (
     </Route>
     <Route path="/user/:userId">
       <UserPage />
-    </Route>
-    <Route path="/report/:videoId">
-      <VideoReporting />
     </Route>
     <Route path="/rate/:videoIdA/:videoIdB">
       <ExpertInterface />

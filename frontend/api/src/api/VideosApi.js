@@ -514,6 +514,70 @@ export default class VideosApi {
     }
 
     /**
+     * Callback function to receive the result of the videosRatedVideosList operation.
+     * @callback module:api/VideosApi~videosRatedVideosListCallback
+     * @param {String} error Error message, if any.
+     * @param {module:model/PaginatedVideoSerializerV2List} data The data returned by the service call.
+     * @param {String} response The complete HTTP response.
+     */
+
+    /**
+     * Get videos and search results.
+     * @param {Object} opts Optional parameters
+     * @param {String} opts.daysAgoGte Upload date, older than x days ago
+     * @param {String} opts.daysAgoLte Upload date, more recent than x days ago
+     * @param {String} opts.durationGte duration_gte
+     * @param {String} opts.durationLte duration_lte
+     * @param {String} opts.language language
+     * @param {Number} opts.limit Number of results to return per page.
+     * @param {Number} opts.offset The initial index from which to return the results.
+     * @param {String} opts.ordering Which field to use when ordering the results.
+     * @param {String} opts.search Search string
+     * @param {String} opts.showAllMyVideos Show all my videos in search
+     * @param {String} opts.videoId video_id
+     * @param {String} opts.viewsGte views_gte
+     * @param {String} opts.viewsLte views_lte
+     * @param {module:api/VideosApi~videosRatedVideosListCallback} callback The callback function, accepting three arguments: error, data, response
+     * data is of type: {@link module:model/PaginatedVideoSerializerV2List}
+     */
+    videosRatedVideosList(opts, callback) {
+      opts = opts || {};
+      let postBody = null;
+
+      let pathParams = {
+      };
+      let queryParams = {
+        'days_ago_gte': opts['daysAgoGte'],
+        'days_ago_lte': opts['daysAgoLte'],
+        'duration_gte': opts['durationGte'],
+        'duration_lte': opts['durationLte'],
+        'language': opts['language'],
+        'limit': opts['limit'],
+        'offset': opts['offset'],
+        'ordering': opts['ordering'],
+        'search': opts['search'],
+        'show_all_my_videos': opts['showAllMyVideos'],
+        'video_id': opts['videoId'],
+        'views_gte': opts['viewsGte'],
+        'views_lte': opts['viewsLte']
+      };
+      let headerParams = {
+      };
+      let formParams = {
+      };
+
+      let authNames = ['cookieAuth', 'tokenAuth'];
+      let contentTypes = [];
+      let accepts = ['application/json'];
+      let returnType = PaginatedVideoSerializerV2List;
+      return this.apiClient.callApi(
+        '/api/v2/videos/rated_videos/', 'GET',
+        pathParams, queryParams, headerParams, formParams, postBody,
+        authNames, contentTypes, accepts, returnType, null, callback
+      );
+    }
+
+    /**
      * Callback function to receive the result of the videosRetrieve operation.
      * @callback module:api/VideosApi~videosRetrieveCallback
      * @param {String} error Error message, if any.

@@ -13,3 +13,5 @@ export DRF_RECAPTCHA_PUBLIC_KEY="get_yours_from_recaptcha"
 export DRF_RECAPTCHA_SECRET_KEY="unknown"
 export COMMENT_USERNAME_SALT="tournesol_salt_dae7oDe0aongie9"
 
+alias python="python3.7"
+alias python3="python3.7"

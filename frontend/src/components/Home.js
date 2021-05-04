@@ -159,11 +159,33 @@ export default () => {
             Tournesol aims to identify top videos of public utility
             by eliciting contributors' judgements on content quality.
             <br />
-            Learn more with our{' '}
-            <a href="https://wiki.tournesol.app/">
-              Tournesol wiki
-            </a>
-            , or <a href="mailto:le-nguyen.hoang@science4all.org">contact us</a>.
+            Please also consider using our{' '}
+            <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
+              Chrome extension
+            </a>, our{' '}
+            <a href="https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/">
+              Firefox extension
+            </a>,
+            and our{' '}
+            <a href="https://play.google.com/store/apps/details?id=com.tournesolapp&hl=en&gl=US">
+              Android application
+            </a>.
+            <br />
+            Find out more with our{' '}
+            <a href="http://wiki.tournesol.app/">
+              wiki
+            </a>,
+            check out our{' '}
+            <a href="https://github.com/tournesol-app/tournesol">
+              open-source code
+            </a>, join our{' '}
+            <a href="https://discord.gg/3KApy6tHAM">
+              Discord
+            </a>,
+            and{' '}
+            <a href="/tournesol.public.latest.csv.zip" id="id_public_database_download">
+              download our public database
+            </a>.
           </Typography>
 
           {window.is_authenticated ? (
@@ -261,6 +283,23 @@ export default () => {
             Please{' '}
             <a href="mailto:le-nguyen.hoang@science4all.org">contact us</a> if
             you identify bugs or potential improvements.
+
+          </Alert>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Alert
+            severity="info"
+            icon={false}
+            variant="outlined"
+            style={{ width: '450px' }}
+          >
+            <AlertTitle>We are currently experiencing issues with email validation</AlertTitle>
+            You may fail to be delivered the email we send you to confirm your email address.
+            Please try again later.
+            Our team is doing its best to fix this issue as soon as possible.
+            We thank you for your patience and understanding, and we apologize
+            for the inconvenience.
 
           </Alert>
         </div>

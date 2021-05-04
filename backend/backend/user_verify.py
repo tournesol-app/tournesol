@@ -5,6 +5,9 @@ from backend.black_white_email_domain import is_domain_accepted, is_domain_rejec
 from backend.models import VerifiableEmail
 from backend.send_email_thread import send_email_possibly_threaded
 from django.conf import settings
+from django_react.settings import EMAIL_SEND_EVERY_SECONDS
+from django.utils.timezone import make_aware
+from datetime import datetime
 
 
 def get_token():
@@ -15,9 +18,30 @@ def get_token():
 def send_verification_email(email: VerifiableEmail):
     """Send verification e-mail to a destination."""
     if not email.is_verified:
+
+        # current timestamp with a proper time zone
+        ts_now = make_aware(datetime.now())
+
+        # checking that there was no email already sent within one hour
+        if email.last_verification_email_ts is not None:
+            time_delta = ts_now - email.last_verification_email_ts
+            time_delta_seconds = time_delta.total_seconds()
+            logging.info(f"{email} Time delta is {time_delta} = {time_delta_seconds} sec")
+            if time_delta_seconds < EMAIL_SEND_EVERY_SECONDS:
+                logging.info(f"{email} Too little time has passed,"
+                             f"threshold is {EMAIL_SEND_EVERY_SECONDS}, doing nothing")
+                return
+            else:
+                logging.info(f"{email} Threshold OK")
+        else:
+            logging.info(f"{email} No previous e-mail sent")
+
+        # changing the e-mail object and saving it
         email.token = get_token()
+        email.last_verification_email_ts = ts_now
         email.save()
 
+        # sending the e-mail
         send_verification_email_thread(email=email.email, token=email.token)
         logging.info(
             f"Sending verification email for {email} with token {email.token}")

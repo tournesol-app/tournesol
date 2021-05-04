@@ -37,11 +37,11 @@ class VideoSerializerV2 {
      * @param scoreSearchTerm {Number} Computed video score [search].
      * @param ratingNExperts {Number} Number of experts in ratings
      * @param ratingNRatings {Number} Number of ratings
-     * @param nReports {Number} Number of times video was reported
      * @param publicExperts {Array.<module:model/UserInformationSerializerNameOnly>} First 10 public contributors
      * @param nPublicExperts {Number} Number of public contributors
      * @param nPrivateExperts {Number} Number private contributors
      * @param paretoOptimal {Boolean} Is this video pareto-optimal?
+     * @param tournesolScore {Number} The total Tournesol score with uniform preferences (value=50.0)
      * @param reliability {Number} Reliable and not misleading
      * @param importance {Number} Important and actionable
      * @param engaging {Number} Engaging and thought-provoking
@@ -52,9 +52,9 @@ class VideoSerializerV2 {
      * @param betterHabits {Number} Encourages better habits
      * @param entertainingRelaxing {Number} Entertaining and relaxing
      */
-    constructor(id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, nReports, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing) { 
+    constructor(id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing) { 
         
-        VideoSerializerV2.initialize(this, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, nReports, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing);
+        VideoSerializerV2.initialize(this, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing);
     }
 
     /**
@@ -62,7 +62,7 @@ class VideoSerializerV2 {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, nReports, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing) { 
+    static initialize(obj, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing) { 
         obj['id'] = id;
         obj['video_id'] = videoId;
         obj['score'] = score;
@@ -76,11 +76,11 @@ class VideoSerializerV2 {
         obj['score_search_term'] = scoreSearchTerm;
         obj['rating_n_experts'] = ratingNExperts;
         obj['rating_n_ratings'] = ratingNRatings;
-        obj['n_reports'] = nReports;
         obj['public_experts'] = publicExperts;
         obj['n_public_experts'] = nPublicExperts;
         obj['n_private_experts'] = nPrivateExperts;
         obj['pareto_optimal'] = paretoOptimal;
+        obj['tournesol_score'] = tournesolScore;
         obj['reliability'] = reliability;
         obj['importance'] = importance;
         obj['engaging'] = engaging;
@@ -142,9 +142,6 @@ class VideoSerializerV2 {
             if (data.hasOwnProperty('rating_n_ratings')) {
                 obj['rating_n_ratings'] = ApiClient.convertToType(data['rating_n_ratings'], 'Number');
             }
-            if (data.hasOwnProperty('n_reports')) {
-                obj['n_reports'] = ApiClient.convertToType(data['n_reports'], 'Number');
-            }
             if (data.hasOwnProperty('public_experts')) {
                 obj['public_experts'] = ApiClient.convertToType(data['public_experts'], [UserInformationSerializerNameOnly]);
             }
@@ -156,6 +153,9 @@ class VideoSerializerV2 {
             }
             if (data.hasOwnProperty('pareto_optimal')) {
                 obj['pareto_optimal'] = ApiClient.convertToType(data['pareto_optimal'], 'Boolean');
+            }
+            if (data.hasOwnProperty('tournesol_score')) {
+                obj['tournesol_score'] = ApiClient.convertToType(data['tournesol_score'], 'Number');
             }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Number');
@@ -272,12 +272,6 @@ VideoSerializerV2.prototype['rating_n_experts'] = undefined;
 VideoSerializerV2.prototype['rating_n_ratings'] = undefined;
 
 /**
- * Number of times video was reported
- * @member {Number} n_reports
- */
-VideoSerializerV2.prototype['n_reports'] = undefined;
-
-/**
  * First 10 public contributors
  * @member {Array.<module:model/UserInformationSerializerNameOnly>} public_experts
  */
@@ -300,6 +294,13 @@ VideoSerializerV2.prototype['n_private_experts'] = undefined;
  * @member {Boolean} pareto_optimal
  */
 VideoSerializerV2.prototype['pareto_optimal'] = undefined;
+
+/**
+ * The total Tournesol score with uniform preferences (value=50.0)
+ * @member {Number} tournesol_score
+ * @default 0.0
+ */
+VideoSerializerV2.prototype['tournesol_score'] = 0.0;
 
 /**
  * Reliable and not misleading
