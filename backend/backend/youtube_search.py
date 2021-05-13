@@ -8,13 +8,13 @@ from django_react.settings import SEARCH_YOUTUBE_ENABLE
 
 def search_yt_by_string(s, n=50):
     """Search youtube by string."""
-    
+
     # Sergei, 13th May 2021
     # Disabled until #100 is fixed
     # TODO: re-enable
-    
+
     return []
-    
+
     # s = json.dumps(s)[1:-1]
     s = s.replace('"', '\"')
     path = str(uuid.uuid1()) + '.json'
