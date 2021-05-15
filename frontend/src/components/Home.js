@@ -398,7 +398,7 @@ export default () => {
               comparison-based ratings between pairs of video contents
             </Grid>
             <Grid item xs={4}>
-              <h1 className={classes.statistic}>{getStatistic('videos')}</h1>
+              <h1 className={classes.statistic}>{getStatistic('n_rated_videos')}</h1>
               video contents from YouTube
             </Grid>
           </Grid>
