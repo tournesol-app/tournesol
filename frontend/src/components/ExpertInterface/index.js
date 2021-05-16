@@ -23,7 +23,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Checkbox from '@material-ui/core/Checkbox';
 import Rating from '@material-ui/lab/Rating';
-import EmailAddVerifyAlert from '../EmailAddVerifyAlert';
 import SidePanel from './SidePanel';
 import VideoSelector from './VideoSelector';
 import { featureList, featureNames } from '../../constants';
@@ -877,7 +876,6 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
       {commentsOpen === 'left' && <SidePanel videoId={videoA} />}
 
       <div className={classes.centered}>
-        <EmailAddVerifyAlert />
 
         <div className={classes.videoContainer}>
           <div id="video-left">
