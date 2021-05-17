@@ -94,6 +94,12 @@ Auxiliary commands:
 
 Note that creating a super user is highly recommended for testing the website locally and contributing to the codebase. 💯
 
+<h3>Remote text editors</h3>
+
+Several options are available to edit the code on the docker container.
+- Vim
+- The `remote-ssh` extension can be used on Vscode as detailed [here](<h3>Running back-end</h3>) 
+
 </details>
 
 ## API
