@@ -68,7 +68,7 @@ RUN echo "Adding the greeting message" \
  && echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" | /usr/bin/tee -a /etc/motd \
  && cat /root/.ssh/id_rsa.pub | /usr/bin/tee -a /etc/motd \
  && echo -e "=== /public key ===\n\n" | /usr/bin/tee -a /etc/motd \
- && echo "cat /etc/motd | /usr/games/lolcat --force" | /usr/bin/tee -a /root/.bashrc \
+ && echo "cat /etc/motd | /usr/games/lolcat --force" | /usr/bin/tee -a /root/.bashrc
 
 # web server port
 EXPOSE 8000
