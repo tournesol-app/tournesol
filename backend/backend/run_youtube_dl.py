@@ -7,9 +7,9 @@ def run_command_get_output(command, args, do_print=True, out_fn=None):
     """Run a command and get output."""
     lines = []
     p = subprocess.Popen([command] + args,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
-                       bufsize=1, shell=False)
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT,
+                         bufsize=1, shell=False)
     for line in iter(p.stdout.readline, b''):
         line = line[:-1]
         lines.append(line)
@@ -33,7 +33,8 @@ run_ytdl = partial(run_command_get_output, command='youtube-dl')
 
 def download_video_info(video_id, **kwargs):
     """Get a video information into the current folder via youtube-dl."""
-    args = ['--id', '--write-description', '--write-info-json', '--write-pages', '--sleep-interval', '5',
+    args = ['--id', '--write-description', '--write-info-json', '--write-pages',
+            '--sleep-interval', '5',
             '--skip-download', '--download_archive', 'archive.txt', '--', video_id]
     return run_ytdl(args=args, **kwargs)
 

@@ -1,10 +1,7 @@
 import json
-import os
-import uuid
-
 from backend.models import Video
 from django_react.settings import SEARCH_YOUTUBE_ENABLE
-from backend.run_youtube_dl import 
+from backend.run_youtube_dl import search_on_youtube_playlist
 
 
 def search_yt_by_string(s, n=50):

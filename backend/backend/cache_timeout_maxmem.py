@@ -16,7 +16,8 @@ class CacheTimeoutMaxMem(object):
         if n_objects <= self.max_entries:
             return
 
-        oldest_to_newest = sorted(list(self.entries.keys()), key=lambda x: self.entries[x]['created'])
+        oldest_to_newest = sorted(list(self.entries.keys()),
+                                  key=lambda x: self.entries[x]['created'])
         for key in oldest_to_newest[:n_objects - self.max_entries]:
             del self.entries[key]
 
@@ -24,7 +25,6 @@ class CacheTimeoutMaxMem(object):
         """Remember an key-value pair."""
         self.entries[key] = {'value': value, 'created': time()}
         self.clean()
-
 
     def get(self, key):
         """Get an element by key."""

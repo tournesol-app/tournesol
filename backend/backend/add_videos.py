@@ -3,7 +3,6 @@ import datetime
 import json
 import os
 import gin
-import subprocess
 # for sleep
 import time
 from django.utils.timezone import make_aware
@@ -14,7 +13,6 @@ from langdetect import detect
 from path import Path
 from tqdm.auto import tqdm
 from django_react.settings import BASE_DIR
-from shlex import quote
 import logging
 from django.db import transaction
 from time import sleep
@@ -174,7 +172,8 @@ class VideoManager(object):
                       SEARCH_PHRASE="covid-19"):
         """Search for videos and save their metadata to a folder."""
         with Path(self.video_dir):
-            raise NotImplementedError("Search on youtube for adding videos is disabled, use the Rate Later list!")
+            raise NotImplementedError("Search on youtube for adding videos is disabled"
+                                      ", use the Rate Later list!")
 
     def get_queryset(self):
         """All videos or only_download videos."""
