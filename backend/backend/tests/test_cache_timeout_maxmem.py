@@ -12,21 +12,21 @@ def test_cache_timeout_maxmem():
     g = cache_timeout_maxmem(timeout_s=10, max_entries=1)(f)
 
     # calling first time -> must call f
-    g(x=1, y=1)
+    assert g(x=1, y=1) == 1
     assert len(arr) == 1
     assert arr[0] == (1, 1)
 
     # calling second time -> no call to f
-    g(x=1, y=1)
+    assert g(x=1, y=1) == 1
     assert len(arr) == 1
     assert arr[0] == (1, 1)
 
     # calling with other args -> call to f
-    g(x=1, y=2)
+    assert g(x=1, y=2) == 2
     assert len(arr) == 2
     assert arr[1] == (1, 2)
 
     # calling third time, but cache size only 1
-    g(x=1, y=1)
+    assert g(x=1, y=1) == 1
     assert len(arr) == 3
     assert arr[2] == (1, 1)

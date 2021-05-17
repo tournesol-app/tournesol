@@ -42,5 +42,6 @@ def download_video_info(video_id, **kwargs):
 @cache_timeout_maxmem(timeout_s=3600, max_entries=1000)
 def search_on_youtube_playlist(search_phrase="video", n_videos=10, **kwargs):
     """Get search results from youtube."""
-    args = ['--flat-playlist', '--skip-download', '--print-json', 'ytsearch%d:%s' % search_phrase]
+    args = ['--flat-playlist', '--skip-download', '--print-json',
+            'ytsearch%d:"%s"' % (n_videos, search_phrase.replace('"', '\\"'))]
     return run_ytdl(args=args, **kwargs)
