@@ -54,3 +54,6 @@ FeaturelessOnlineUpdater.hypers = @hypers/gin_dict()
 
 # setting golden ratio search parameters for online updates
 FeaturelessOnlineUpdater.golden_params = {'maxiter': 50, 'tol': 1e-8, 'smartbracket': (-4, 4)}
+
+# disable model loading (run from scratch every time)
+DatabasePreferenceLearner.load = False
