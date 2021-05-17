@@ -4,27 +4,13 @@ import uuid
 
 from backend.models import Video
 from django_react.settings import SEARCH_YOUTUBE_ENABLE
+from backend.run_youtube_dl import 
 
 
 def search_yt_by_string(s, n=50):
     """Search youtube by string."""
-
-    # Sergei, 13th May 2021
-    # Disabled until #100 is fixed
-    # TODO: re-enable
-
-    return []
-
-    # s = json.dumps(s)[1:-1]
-    s = s.replace('"', '\"')
-    path = str(uuid.uuid1()) + '.json'
-    os.system(
-        'youtube-dl --flat-playlist --skip-download --print-json ytsearch%d:"%s" > %s' %
-        (n, s, path))
-    s = open(path, 'r').read()
-    os.unlink(path)
-
-    return json.loads('[' + ', '.join(s.splitlines()) + ']')
+    output = search_on_youtube_playlist(search_phrase=s, n_videos=n)
+    return json.loads('[' + ', '.join(output.splitlines()) + ']')
 
 
 def search_yt_intersect_tournesol(s, n=50, queryset=None):

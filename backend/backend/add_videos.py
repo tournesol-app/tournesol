@@ -20,6 +20,7 @@ from django.db import transaction
 from time import sleep
 from django_react.settings import load_gin_config
 import threading
+from backend.run_youtube_dl import download_video_info
 
 
 def load_videos_thread(config):
@@ -136,25 +137,6 @@ def video_fill_info(v):
     v.save()
 
 
-def run_command_get_output(command, do_print=True):
-    """Run a command and get output."""
-    lines = []
-    p = subprocess.Popen(["bash",
-                          "-c",
-                          command],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT,
-                         bufsize=1)
-    for line in iter(p.stdout.readline, b''):
-        line = line[:-1]
-        lines.append(line)
-        if do_print:
-            print(line.decode('utf-8'))
-    p.stdout.close()
-    p.wait()
-    return b'\n'.join(lines).decode('utf-8')
-
-
 def time_convert_secs_to_hms_string(secs):
     """Convert seconds (int) to H:M:S."""
     duration_hms = int(secs)
@@ -192,13 +174,7 @@ class VideoManager(object):
                       SEARCH_PHRASE="covid-19"):
         """Search for videos and save their metadata to a folder."""
         with Path(self.video_dir):
-            run_command_get_output(
-                "youtube-dl --id --write-description --write-info-json " +
-                "--sleep-interval 5 --skip-download --download-archive archive.txt " +
-                "'ytsearch%d: %s' | tee search.txt" %
-                (quote(NUM_VIDEOS),
-                 quote(SEARCH_PHRASE)))
-            return open('search.txt', 'r').read()
+            raise NotImplementedError("Search on youtube for adding videos is disabled, use the Rate Later list!")
 
     def get_queryset(self):
         """All videos or only_download videos."""
@@ -228,14 +204,8 @@ class VideoManager(object):
                 vid = v.video_id
                 if self.only_download and vid not in self.only_download:
                     continue
-                os.system('echo > fill_info.txt')
-                run_command_get_output(
-                    "youtube-dl --id --write-description --write-info-json --write-pages " +
-                    "--sleep-interval 5 --skip-download --download-archive archive.txt -- " +
-                    "%s 2>&1 | tee fill_info.txt" %
-                    (quote(str(vid))))
-                with open('fill_info.txt', 'r') as f:
-                    ret_text[vid] = f.read()
+                out = download_video_info(str(vid))
+                ret_text[vid] = out
                 sleep(self.after_download_delay_sec)
         self.last_fill_info = ret_text
         return ret_text
