@@ -338,7 +338,7 @@ const InfoScore = ({ video, myInfo, showMyInfo }) => {
       </span>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span className={classes.score}>
-          Score {video.tournesol_score}
+          Score {Math.round(video.tournesol_score)}
         </span>
         {video.rating_n_ratings !== undefined && (
           <span style={{ color: '#666', fontSize: '90%' }}>
