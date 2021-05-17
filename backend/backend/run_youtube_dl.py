@@ -35,7 +35,7 @@ def download_video_info(video_id, **kwargs):
     """Get a video information into the current folder via youtube-dl."""
     args = ['--id', '--write-description', '--write-info-json', '--write-pages',
             '--sleep-interval', '5',
-            '--skip-download', '--download_archive', 'archive.txt', '--', video_id]
+            '--skip-download', '--download-archive', 'archive.txt', '--', video_id]
     return run_ytdl(args=args, **kwargs)
 
 
