@@ -200,27 +200,28 @@ class DatabasePreferenceLearner(object):
         for user in tqdmem(self.users, desc="user_scores_write"):
             user_pref = UserPreferences.objects.get(id=user)
 
-            # intermediate results are not visible to site visitors
-            with transaction.atomic():
-                # deleting old ratings
-                VideoRating.objects.filter(user=user_pref).delete()
+            # selecting rated videos by this person
+            rated_videos = Video.objects.filter(
+                Q(expertrating_video_1__user=user_pref)
+                | Q(expertrating_video_2__user=user_pref)
+            ).distinct()
+            rated_included_videos = rated_videos.filter(video_id__in=list(self.videos_set))
 
-                # selecting rated videos by this person
-                rated_videos = Video.objects.filter(
-                    Q(expertrating_video_1__user=user_pref)
-                    | Q(expertrating_video_2__user=user_pref)
-                ).distinct()
+            # deleting unrated videos
+            VideoRating.objects.filter(Q(user=user_pref) & ~Q(video__pk__in=rated_included_videos))\
+                .delete()
 
-                # only selecting "pre-registered" videos
-                rated_videos = [x for x in rated_videos if x.video_id in self.videos_set]
+            # only selecting "pre-registered" videos
+            rated_videos = [x for x in rated_videos if x.video_id in self.videos_set]
 
-                if rated_videos:
-                    result_user = self.predict_user(user=user_pref, videos=rated_videos)
-                    for i, video in enumerate(rated_videos):
-                        result = result_user[i]
-                        param_dict = dict(user=user_pref, video=video)
+            if rated_videos:
+                result_user = self.predict_user(user=user_pref, videos=rated_videos)
+                for i, video in enumerate(rated_videos):
+                    result = result_user[i]
+                    param_dict = dict(user=user_pref, video=video)
 
-                        if result is not None:
+                    if result is not None:
+                        with transaction.atomic():
                             rating_record = VideoRating.objects.get_or_create(
                                 **param_dict
                             )[0]
@@ -229,19 +230,20 @@ class DatabasePreferenceLearner(object):
                             rating_record.save()
 
         # saving overall scores
-        # intermediate results are not visible to site visitors
-        with transaction.atomic():
+        # only selecting "pre-registered" videos
+        videos = [x for x in videos if x.video_id in self.videos_set]
 
-            # only selecting "pre-registered" videos
-            videos = [x for x in videos if x.video_id in self.videos_set]
+        results = self.predict_aggregated(videos=videos)
+        for i, video in enumerate(tqdmem(videos, desc="agg_scores_write")):
+            result = results[i]
 
-            results = self.predict_aggregated(videos=videos)
-            for i, video in enumerate(tqdmem(videos, desc="agg_scores_write")):
-                result = results[i]
+            # no raters -> score is 0 (-> not shown in search)
+            if not video.rating_n_experts:
+                result = [0.0 for _ in result]
 
-                # no raters -> score is 0 (-> not shown in search)
-                if not video.rating_n_experts:
-                    result = [0.0 for _ in result]
+            # intermediate results are not visible
+            with transaction.atomic():
+                video = Video.objects.get(video_id=video.video_id)
 
                 for i, attribute in enumerate(self.features):
                     setattr(video, attribute, result[i])
