@@ -380,31 +380,40 @@ export default () => {
 
         <div className={classes.spacing} />
 
-        <Typography paragraph>
-          <Typography variant="h4">
-            Our journey so far encompasses...
-          </Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={4}>
-              <h1 className={classes.statistic}>
-                {getStatistic('certified_experts')}
-              </h1>
-              contributors certified by their institutional e-mail addresses
-            </Grid>
-            <Grid item xs={4}>
-              <h1 className={classes.statistic}>
-                {getStatistic('pairwise_comparisons')}
-              </h1>
-              comparison-based ratings between pairs of video contents
-            </Grid>
-            <Grid item xs={4}>
-              <h1 className={classes.statistic}>{getStatistic('n_rated_videos')}</h1>
-              video contents from YouTube
-            </Grid>
-          </Grid>
+        <Typography variant="h4">
+          Our journey so far encompasses...
         </Typography>
 
-        <Typography paragraph>
+        <Grid container spacing={3} style={{ justifyContent: 'center' }}>
+          <Grid item xs={4}>
+            <h1 className={classes.statistic}>
+              {getStatistic('total_experts')}
+            </h1>
+            users
+          </Grid>
+          <Grid item xs={4}>
+            <h1 className={classes.statistic}>
+              {getStatistic('certified_experts')}
+            </h1>
+            contributors certified by their institutional e-mail addresses
+          </Grid>
+          <Grid item xs={4}>
+            <h1 className={classes.statistic}>
+              {getStatistic('pairwise_comparisons')}
+            </h1>
+            comparison-based ratings between pairs of video contents
+          </Grid>
+          <Grid item xs={4}>
+            <h1 className={classes.statistic}>{getStatistic('n_rated_videos')}</h1>
+            video contents from YouTube
+          </Grid>
+          <Grid item xs={4}>
+            <h1 className={classes.statistic}>{getStatistic('weekly_active_ratings')}</h1>
+            Weekly active users
+          </Grid>
+        </Grid>
+
+        <Typography paragraph style={{ marginTop: 16 }}>
           By using this website you agree to our{' '}
           <a href="/privacy_policy">
             Privacy policy
