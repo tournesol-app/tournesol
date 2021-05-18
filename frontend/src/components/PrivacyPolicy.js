@@ -92,7 +92,7 @@ export default () => {
       research on more beneficial recommendation algorithms.
 
       Note that contributors can however publish comments anonymously. In this case, the
-      comment is public, and we can certify whether it comes from a certified account, but
+      comment is public, and we can certify whether it comes from a verified account, but
       the identity of the author of the comment will never be made public, nor be shared
       with third parties.
 

@@ -389,7 +389,7 @@ export default () => {
               <h1 className={classes.statistic}>
                 {getStatistic('certified_experts')}
               </h1>
-              contributors certified by their institutional e-mail addresses
+              contributors verified by trusted e-mail addresses
             </Grid>
             <Grid item xs={4}>
               <h1 className={classes.statistic}>
