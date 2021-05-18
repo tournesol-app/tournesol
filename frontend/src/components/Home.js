@@ -409,7 +409,7 @@ export default () => {
           </Grid>
           <Grid item xs={4}>
             <h1 className={classes.statistic}>{getStatistic('weekly_active_ratings')}</h1>
-            Weekly active users
+            weekly active contributors
           </Grid>
         </Grid>
 
