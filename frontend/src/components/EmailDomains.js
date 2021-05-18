@@ -37,16 +37,6 @@ export default () => {
       <ul className="accepted_domains_class">
         {listDomains(acceptedDomains)}
       </ul>
-
-      <p>Rejected domains</p>
-      <ul className="rejected_domains_class">
-        {listDomains(rejectedDomains)}
-      </ul>
-
-      <p>Pending domains</p>
-      <ul className="pending_domains_class">
-        {listDomains(pendingDomains)}
-      </ul>
     </div>
   );
 };
