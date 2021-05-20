@@ -31,6 +31,8 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import TwitterIcon from '@material-ui/icons/Twitter';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
@@ -98,6 +100,9 @@ const useStyles = makeStyles((theme) => ({
       width: theme.spacing(9) + 1,
     },
   },
+  grow: {
+    flexGrow: 1,
+  },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
@@ -105,6 +110,12 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
+  },
+  sectionDesktop: {
+    display: 'none',
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+    },
   },
   content: {
     flexGrow: 1,
@@ -159,6 +170,21 @@ const App = () => {
   };
 
   const nestedClass = open ? classes.nested : '';
+
+  const socialMedia = {
+    twitter: {
+      href: 'https://twitter.com/tournesolapp',
+      ariaLabel: 'The Twitter page of Tournesol',
+    },
+    youtube: {
+      href: 'https://www.youtube.com/channel/UCH8TsmKEX_PR4jxsg2W3vOg',
+      ariaLabel: 'The YouTube page of Tournesol',
+    },
+    github: {
+      href: 'https://github.com/tournesol-app',
+      ariaLabel: 'The GitHub page of Tournesol',
+    },
+  };
 
   return (
     <div className={classes.root} id="id_menu_all">
@@ -217,6 +243,34 @@ const App = () => {
 
           </Alert>
           )}
+
+          <div className={classes.grow} />
+          <div className={classes.sectionDesktop}>
+            <IconButton
+              color="inherit"
+              href={socialMedia.twitter.href}
+              aria-label={socialMedia.twitter.ariaLabel}
+            >
+              <TwitterIcon />
+            </IconButton>
+
+            <IconButton
+              color="inherit"
+              href={socialMedia.youtube.href}
+              aria-label={socialMedia.youtube.ariaLabel}
+            >
+              <YouTubeIcon />
+            </IconButton>
+
+            <IconButton
+              color="inherit"
+              href={socialMedia.github.href}
+              aria-label={socialMedia.github.ariaLabel}
+            >
+              <GitHubIcon />
+            </IconButton>
+          </div>
+
         </Toolbar>
       </AppBar>
       <Drawer
