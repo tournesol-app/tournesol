@@ -42,9 +42,9 @@ The final image size (`docker image ls`) is about 4GB, but during the installati
 2. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol`. Running this command will create a new container with the same image every time. See below how to re-use a container. The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, `5900` is for VNC, and `2222` for ssh.
 3. The container will print your SSH public key, like in the image below:
    
-   ![image](https://user-images.githubusercontent.com/1012270/119038501-b6581b00-b9a2-11eb-9852-bdfe34a35248.png)
+   ![image](https://user-images.githubusercontent.com/1012270/119053322-7189af80-b9b5-11eb-82e0-eb1f937451d2.png)
   
-   Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
+   Copy the ssh-rsa line (up until and including root@...) to your [GitHub account](https://github.com/settings/keys).
 4. To run the same container again, remember the host name of the container (`root@xxx`) and run
    `sudo docker start -ai xxx`
 5. If you are re-using one Docker image to work on multiple issues, you might need to `git pull` the recent changes. You might additionally need to install npm or python packages. If something doesn't work, you might want to consider re-builing the Docker image with `sudo docker build --no-cache -t tournesol-app/tournesol docker`. The `--no-cache` will disable re-using the image you have built before.
