@@ -57,18 +57,19 @@ RUN echo "Adding the greeting message" \
  && sudo apt-get install -y cowsay lolcat \
  && sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc \
  && sed -i 's/1;32m/1;93m/g' /root/.bashrc \
- && echo "Tournesol Docker Development Image, built on $(date)" | /usr/bin/tee -a /etc/motd \
- && echo "Let's build recommender systems together!" | /usr/games/cowthink -f moose | /usr/bin/tee -a /etc/motd \
- && echo "* To open the container, run sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol" | /usr/bin/tee -a /etc/motd \
- && echo "* To run tests, run ./tests.sh inside" | /usr/bin/tee -a /etc/motd \
- && echo "* To run the server, run ./launch_debug.sh inside" | /usr/bin/tee -a /etc/motd \
- && echo "* To edit files, connect to port 2222 via ssh (login root, password tournesol)" | /usr/bin/tee -a /etc/motd \
- && echo "Push your changes to a separate branch, and then create a PR on https://github.com/tournesol-app/tournesol" | /usr/bin/tee -a /etc/motd \
- && echo "Connect via port 8000 to the server, via port 8899 to the notebook, and via port 5900 to VNC for integration tests" | /usr/bin/tee -a /etc/motd \
- && echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" | /usr/bin/tee -a /etc/motd \
- && cat /root/.ssh/id_rsa.pub | /usr/bin/tee -a /etc/motd \
- && echo -e "=== /public key ===\n\n" | /usr/bin/tee -a /etc/motd \
- && echo "cat /etc/motd | /usr/games/lolcat --force" | /usr/bin/tee -a /root/.bashrc
+ && echo "Tournesol Docker Development Image, built on $(date)" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "Let's build recommender systems together!" | /usr/games/cowthink -f moose | /usr/bin/tee -a /etc/motd.ts \
+ && echo "* To open the container, run sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "* The repository is located in /tournesol. Run cd /tournesol to go there." | /usr/bin/tee -a /etc/motd.ts \
+ && echo "* To run tests, run ./tests.sh inside" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "* To run the server, run ./launch_debug.sh inside" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "* To edit files, connect to port 2222 via ssh (login root, password tournesol)" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "Push your changes to a separate branch, and then create a PR on https://github.com/tournesol-app/tournesol" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "Connect via port 8000 to the server, via port 8899 to the notebook, and via port 5900 to VNC for integration tests" | /usr/bin/tee -a /etc/motd.ts \
+ && echo -e "\n\n=== YOUR ssh PUBLIC KEY is below, add it to your github ===" | /usr/bin/tee -a /etc/motd.ts \
+ && cat /root/.ssh/id_rsa.pub | /usr/bin/tee -a /etc/motd.ts \
+ && echo -e "=== /public key ===\n\n" | /usr/bin/tee -a /etc/motd.ts \
+ && echo "cat /etc/motd.ts | /usr/games/lolcat --force" | /usr/bin/tee -a /root/.bashrc
 
 # web server port
 EXPOSE 8000
