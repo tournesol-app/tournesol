@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **publicUnderscoreusername** | [**String**](string.md) | The person who left the rating | [default to null]
 **score** | [**Float**](float.md) |  | [default to 0.0]
 **nUnderscorecomparisons** | [**Integer**](integer.md) | Number of all pairwise comparisons for the video by the person | [default to null]
+**largelyUnderscorerecommended** | [**Float**](float.md) | Should be largely recommended | [optional] [default to null]
 **reliability** | [**Float**](float.md) | Reliable and not misleading | [optional] [default to null]
 **importance** | [**Float**](float.md) | Important and actionable | [optional] [default to null]
 **engaging** | [**Float**](float.md) | Engaging and thought-provoking | [optional] [default to null]

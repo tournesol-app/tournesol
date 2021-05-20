@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **Number** |  | [readonly] 
+**largelyRecommended** | **Number** | Should be largely recommended | [optional] 
 **reliability** | **Number** | Reliable and not misleading | [optional] 
 **importance** | **Number** | Important and actionable | [optional] 
 **engaging** | **Number** | Engaging and thought-provoking | [optional] 
@@ -15,6 +16,7 @@ Name | Type | Description | Notes
 **betterHabits** | **Number** | Encourages better habits | [optional] 
 **entertainingRelaxing** | **Number** | Entertaining and relaxing | [optional] 
 **username** | **String** | Username for this user preferences&#39; user | [readonly] 
+**largelyRecommendedEnabled** | **Boolean** | largely_recommended given for ratings | [optional] 
 **reliabilityEnabled** | **Boolean** | reliability given for ratings | [optional] 
 **importanceEnabled** | **Boolean** | importance given for ratings | [optional] 
 **engagingEnabled** | **Boolean** | engaging given for ratings | [optional] 

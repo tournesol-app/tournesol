@@ -59,6 +59,7 @@ export default class VideosApi {
      * @param {Number} opts.entertainingRelaxing Entertaining and relaxing [preference override]
      * @param {Number} opts.importance Important and actionable [preference override]
      * @param {String} opts.language language
+     * @param {Number} opts.largelyRecommended Should be largely recommended [preference override]
      * @param {Number} opts.laymanFriendly Layman-friendly [preference override]
      * @param {Number} opts.limit Number of results to return per page.
      * @param {Number} opts.offset The initial index from which to return the results.
@@ -92,6 +93,7 @@ export default class VideosApi {
         'entertaining_relaxing': opts['entertainingRelaxing'],
         'importance': opts['importance'],
         'language': opts['language'],
+        'largely_recommended': opts['largelyRecommended'],
         'layman_friendly': opts['laymanFriendly'],
         'limit': opts['limit'],
         'offset': opts['offset'],

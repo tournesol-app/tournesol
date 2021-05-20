@@ -96,6 +96,9 @@ class PatchedVideoCommentsSerializerV2 {
             if (data.hasOwnProperty('edited_m_added_s')) {
                 obj['edited_m_added_s'] = ApiClient.convertToType(data['edited_m_added_s'], 'Number');
             }
+            if (data.hasOwnProperty('largely_recommended')) {
+                obj['largely_recommended'] = ApiClient.convertToType(data['largely_recommended'], 'Boolean');
+            }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Boolean');
             }
@@ -221,6 +224,12 @@ PatchedVideoCommentsSerializerV2.prototype['datetime_add_ago'] = undefined;
  * @member {Number} edited_m_added_s
  */
 PatchedVideoCommentsSerializerV2.prototype['edited_m_added_s'] = undefined;
+
+/**
+ * Should be largely recommended
+ * @member {Boolean} largely_recommended
+ */
+PatchedVideoCommentsSerializerV2.prototype['largely_recommended'] = undefined;
 
 /**
  * Reliable and not misleading
