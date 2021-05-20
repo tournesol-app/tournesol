@@ -1,38 +1,43 @@
-# Tournesol: collaborative content recommendation
+# Tournesol: Collaborative Content Recommendation
 
-This github hosts the code of the platform [Tournesol.app](https://tournesol.app).
-
-See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php/Contribute_to_Tournesol) for details.
+This repository hosts the code of the platform [Tournesol.app](https://tournesol.app). See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php/Contribute_to_Tournesol) for details.
 
 ![Home page of Tournesol.app](https://user-images.githubusercontent.com/10453308/115123905-9b6b4300-9fbf-11eb-8853-25552d13f7b0.png)
 
 We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 [Django](https://www.djangoproject.com/) for the backend, and [React.js](https://reactjs.org/) for the front-end.
 
-## How to launch (tested on Ubuntu in WSL and on Ubuntu 20.04)
-
+## How to launch
 ![Continuous Integration](https://github.com/tournesol-app/tournesol/workflows/Continuous%20Integration/badge.svg?branch=master)
 
 <details>
   <summary>Click to expand</summary>
+  
+### Tested platforms  
+**Docker setup on Ubuntu, Debian, Windows 10, Mac OS X, Mac OS X with the M1 chip**
+    
+For expert use without Docker, the setup was tested on WSL 2 from Windows 10 Preview (no Docker), Debian GNU/Linux 10 (buster) (no Docker), Ubuntu 20.04 and 18.04 (no Docker). Mac OS X setup without Docker is more complicated, as an X server is required for integration tests, as well as some linux-specific dependencies.
 
+### Building the Docker image
 First, clone this repo and `cd` to it.
 You will need [Docker](https://docs.docker.com/get-docker/) installed and configured.
+The final image size (`docker image ls`) is about 4GB, but during the installation it might take more space. The build takes about 9 minutes with a 1 GBit/sec Internet connection, during which it downloads 1.3GB.
+  
+**Notes on the Docker image:**
+  1. Please make sure that the image has at least 4 GB of RAM
+  2. On Macs with the [M1 chip](https://docs.docker.com/docker-for-mac/apple-silicon/), you will need to use the [`buildx` command](https://blog.jaimyn.dev/how-to-build-multi-architecture-docker-images-on-an-m1-mac/) for Docker with an architecture `linux/amd64`. The native M1 architecture currently does not have all of the PIP dependencies used in the project.
 
-<h3>Building the Docker image</h3>
-
-The final image size (`docker image ls`) is about 4GB, but during the installation it might take more space.
-
+  
+**Building the image**
 1. Inside the repository, run `sudo docker build -t tournesol-app/tournesol docker`
-2. At the end, the script will print the ssh certificate, like
-   ```
-   === Your ssh public key... ===
-   ssh-rsa ...
-   === /public key
-   ```
-   Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
-3. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol`.
+2. Run the container with `sudo docker run -p 8000:8000 -p 8899:8899 -p 5900:5900 -p 2222:22 -it tournesol-app/tournesol`.
    The `8000` port exposes the web server, the `8899` port exposes the jupyter notebook, `5900` is for VNC, and `2222` for ssh.
+3. The container will print your SSH public key, like in the image below:
+   
+   ![image](https://user-images.githubusercontent.com/1012270/119038501-b6581b00-b9a2-11eb-9852-bdfe34a35248.png)
+
+  
+   Copy the ssh-rsa line to your [GitHub account](https://github.com/settings/keys).
 4. To run the same container again, remember the host name of the container (`root@xxx`) and run
    `sudo docker start -ai xxx`
 
