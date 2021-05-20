@@ -13,9 +13,6 @@ def get_user_data(username):
     """Get user's personal data."""
     dfs = {}
 
-    df = read_frame(Video.objects.all(), fieldnames=['id', 'video_id'] + VIDEO_FIELDS)
-    dfs['all_video_ratings'] = df
-
     df = read_frame(VideoRating.objects.filter(user__user__username=username).all())
     dfs['my_video_scores'] = df
 
@@ -86,6 +83,8 @@ def get_database_as_pd():
 def get_public_append_only_database_as_pd():
     """Get the public append-only database."""
     result_df = {}
+
+    result_df['all_video_scores'] = read_frame(Video.objects.all(), fieldnames=['id', 'video_id'] + VIDEO_FIELDS)
 
     # all history for ratings, with both videos rated publicly
     qs = HistoricalExpertRating.objects.all()
