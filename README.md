@@ -8,6 +8,8 @@ This repository hosts the code of the platform 🌻[Tournesol.app](https://tourn
 We use [TensorFlow](http://tensorflow.org/) to compute the aggregated scores,
 [Django](https://www.djangoproject.com/) for the backend, and [React.js](https://reactjs.org/) for the front-end.
 
+![image](https://user-images.githubusercontent.com/1012270/119049451-13a69900-b9b0-11eb-807f-25f2455f3d05.png)
+
 ## Development workflow
 To contribute to the code base, you will need basic knowledge of the [Linux command line](https://ubuntu.com/tutorials/command-line-for-beginners#1-overview), [Git](https://product.hubspot.com/blog/git-and-github-tutorial-for-beginners) (specifically, branches) and GitHub [Pull Requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests).
 
@@ -128,28 +130,36 @@ Several options are available to edit the code on the docker container. See the 
 ![image](https://user-images.githubusercontent.com/1012270/119043773-f28e7a00-b9a8-11eb-9f03-33352c2da6c8.png)
 </details>
 
-## Project structure
+<details>
+  <summary>Frequently asked questions</summary>
+  
+- Quality features are defined in [rating_fields.py](backend/backend/rating_fields.py), and the front-end counterpart [constants.js](frontend/src/constants.js) is generated from backend via running `python manage.py js_constants --file ../frontend/src/constants.js`.
+- To re-generate API code and documentation, run `tournesol $ ./update_api.sh`
+- The main React file is in [frontend/src/index.js](frontend/src/index.js)
+- The template for the website layout (menu, top bar, ...) is defined in [frontend/src/components/App.js](frontend/src/components/App.js)
+- Other React components: [Home page](frontend/src/components/Home.js), [Routes](frontend/src/components/Router.js), [Video information component](frontend/src/components/VideoCard.js), [Search page](frontend/src/components/UserInterface/index.js), [Rate page](frontend/src/components/ExpertInterface/index.js)
+- Other back-end files: [Django settings](backend/django_react/settings.py), [backend routes](backend/frontend/urls.py), [main template for React](backend/frontend/templates/frontend/index.html), [database models](master/backend/backend/models.py), [backend views](backend/frontend/views.py), [database export](backend/backend/management/get_all_dataframes.py), [the train command code](backend/backend/management/commands/ml_train.py)
+- For the description of the API, see the section "Tournesol API" below
+- For the description of the ML model, see the section "Machine Learning model" below
+  
+</details>
 
-## API
+## Tournesol API
 <details>
   <summary>Click to expand</summary>
 
 API is implemented in [Django-REST](https://www.django-rest-framework.org/) using [Spectacular](https://github.com/tfranzel/drf-spectacular) for annotations compliany with [OpenAPI 3.0](https://swagger.io/specification/):
 
-* API (v2): [api_v2](backend/backend/api_v2), running at [api/v2/](https://tournesol.app/api/v2/).
-* For API v2, the [OpenAPI 3](https://swagger.io/specification/) schema is available in [schema.json](backend/schema.json), [schema.yaml](backend/schema.yaml)
+* API is defined in [api_v2](backend/backend/api_v2), and it has a developer-friendly webpage running at [api/v2/](https://tournesol.app/api/v2/).
+* The [OpenAPI 3](https://swagger.io/specification/) schema is available in [schema.json](backend/schema.json), [schema.yaml](backend/schema.yaml)
   and at [/schema/](https://tournesol.app/schema/)
-  - To generate it, run
-    ```shell
-    tournesol $ ./update_api.sh
-    ```
-* For API v2, auto-generated documentation is available as well:
+* Auto-generated documentation is available as well:
   - Via Swagger: [/schema/swagger-ui/](https://tournesol.app/schema/swagger-ui/)
   - Via ReDoc: [/schema/redoc/](https://tournesol.app/schema/redoc/)
   
 </details>
 
-### Machine learning model
+### Machine Learning model
 
 <details>
   <summary>Click to expand</summary>
