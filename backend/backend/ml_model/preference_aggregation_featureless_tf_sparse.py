@@ -75,6 +75,22 @@ class SparseVariableIndexLayer(tf.keras.layers.Layer):
         indices_flat = self.idx.get_keys(inputs)
         return tf.gather(self.v, indices_flat)
 
+@tf.function(experimental_relax_shapes=True)
+def sinh_loss(x, threshold=1e-1):
+    """New learning function, first term ln(2sinhx/x)."""
+
+    # Taylor expansion
+    option_close_to_0 = tf.math.pow(x, 2) / 6.0 - tf.math.log(2.0)
+    option_far_from_0 = tf.math.log(2 * tf.math.sinh(x) / x)
+
+    condition_close_to_0 = tf.abs(x) < threshold
+
+    result = tf.raw_ops.Select(condition_close_to_0, option_close_to_0, y,
+                               option_far_from_0)
+
+    return result
+
+
 
 # get the loss function for this class
 @gin.configurable
@@ -142,7 +158,13 @@ def loss_fcn_sparse(
 
     #    print(cmp_flat.shape, theta_vw_y.shape)
 
-    sp = tf.math.softplus(theta_vw_y)
+    # old learning function
+    # sp = tf.math.softplus(theta_vw_y)
+
+    # new learning function #88
+    sp = sinh_loss(theta_vw) + theta_vw_y
+
+
     sp_weighted = tf.math.multiply(sp, weights_flat)
 
     #    print(sp_weighted.shape)
