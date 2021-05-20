@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import { featureList } from '../../constants';
 
 export const featureLinks = {
+  largely_recommended: 'https://wiki.tournesol.app/index.php/Should_be_largely_recommended',
   reliability: 'https://wiki.tournesol.app/index.php/Reliable_and_not_misleading',
   pedagogy: 'https://wiki.tournesol.app/index.php/Clear_and_pedagogical',
   importance: 'https://wiki.tournesol.app/index.php/Important_and_actionable',
@@ -16,6 +17,12 @@ export const featureLinks = {
 };
 
 export const featureExplanations = {
+  largely_recommended: (
+    <Typography paragraph key="largely_recommended">
+      <b>Should be largely recommended</b> measures how good a video is in general
+      in terms of recommending it to other people.
+    </Typography>
+  ),
   reliability: (
     <Typography paragraph key="reliability">
       <b>Reliability</b> measures how much the information presented in the

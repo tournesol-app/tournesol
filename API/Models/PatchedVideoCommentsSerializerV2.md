@@ -19,6 +19,7 @@ Name | Type | Description | Notes
 **children** | [**Integer**](integer.md) | Number of children comments | [optional] [default to null]
 **datetimeUnderscoreaddUnderscoreago** | [**String**](string.md) | Human-readable x time units ago | [optional] [default to null]
 **editedUnderscoremUnderscoreaddedUnderscores** | [**Float**](float.md) | Edited minus created time in seconds | [optional] [default to null]
+**largelyUnderscorerecommended** | [**Boolean**](boolean.md) | Should be largely recommended | [optional] [default to null]
 **reliability** | [**Boolean**](boolean.md) | Reliable and not misleading | [optional] [default to null]
 **importance** | [**Boolean**](boolean.md) | Important and actionable | [optional] [default to null]
 **engaging** | [**Boolean**](boolean.md) | Engaging and thought-provoking | [optional] [default to null]

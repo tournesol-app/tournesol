@@ -71,6 +71,9 @@ class ExpertRatingsSerializerV2 {
             if (data.hasOwnProperty('duration_ms')) {
                 obj['duration_ms'] = ApiClient.convertToType(data['duration_ms'], 'Number');
             }
+            if (data.hasOwnProperty('largely_recommended')) {
+                obj['largely_recommended'] = ApiClient.convertToType(data['largely_recommended'], 'Number');
+            }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Number');
             }
@@ -97,6 +100,9 @@ class ExpertRatingsSerializerV2 {
             }
             if (data.hasOwnProperty('entertaining_relaxing')) {
                 obj['entertaining_relaxing'] = ApiClient.convertToType(data['entertaining_relaxing'], 'Number');
+            }
+            if (data.hasOwnProperty('largely_recommended_weight')) {
+                obj['largely_recommended_weight'] = ApiClient.convertToType(data['largely_recommended_weight'], 'Number');
             }
             if (data.hasOwnProperty('reliability_weight')) {
                 obj['reliability_weight'] = ApiClient.convertToType(data['reliability_weight'], 'Number');
@@ -160,6 +166,12 @@ ExpertRatingsSerializerV2.prototype['video_2'] = undefined;
 ExpertRatingsSerializerV2.prototype['duration_ms'] = undefined;
 
 /**
+ * Should be largely recommended
+ * @member {Number} largely_recommended
+ */
+ExpertRatingsSerializerV2.prototype['largely_recommended'] = undefined;
+
+/**
  * Reliable and not misleading
  * @member {Number} reliability
  */
@@ -212,6 +224,12 @@ ExpertRatingsSerializerV2.prototype['better_habits'] = undefined;
  * @member {Number} entertaining_relaxing
  */
 ExpertRatingsSerializerV2.prototype['entertaining_relaxing'] = undefined;
+
+/**
+ * Should be largely recommended weight
+ * @member {Number} largely_recommended_weight
+ */
+ExpertRatingsSerializerV2.prototype['largely_recommended_weight'] = undefined;
 
 /**
  * Reliable and not misleading weight

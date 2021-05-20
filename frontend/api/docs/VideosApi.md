@@ -53,6 +53,7 @@ let opts = {
   'entertainingRelaxing': 3.4, // Number | Entertaining and relaxing [preference override]
   'importance': 3.4, // Number | Important and actionable [preference override]
   'language': "language_example", // String | language
+  'largelyRecommended': 3.4, // Number | Should be largely recommended [preference override]
   'laymanFriendly': 3.4, // Number | Layman-friendly [preference override]
   'limit': 56, // Number | Number of results to return per page.
   'offset': 56, // Number | The initial index from which to return the results.
@@ -91,6 +92,7 @@ Name | Type | Description  | Notes
  **entertainingRelaxing** | **Number**| Entertaining and relaxing [preference override] | [optional] 
  **importance** | **Number**| Important and actionable [preference override] | [optional] 
  **language** | **String**| language | [optional] 
+ **largelyRecommended** | **Number**| Should be largely recommended [preference override] | [optional] 
  **laymanFriendly** | **Number**| Layman-friendly [preference override] | [optional] 
  **limit** | **Number**| Number of results to return per page. | [optional] 
  **offset** | **Number**| The initial index from which to return the results. | [optional] 

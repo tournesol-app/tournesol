@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **video1** | **String** |  | 
 **video2** | **String** |  | 
 **durationMs** | **Number** | Time it took to rate the videos (in milliseconds) | [optional] 
+**largelyRecommended** | **Number** | Should be largely recommended | [optional] 
 **reliability** | **Number** | Reliable and not misleading | [optional] 
 **importance** | **Number** | Important and actionable | [optional] 
 **engaging** | **Number** | Engaging and thought-provoking | [optional] 
@@ -18,6 +19,7 @@ Name | Type | Description | Notes
 **backfireRisk** | **Number** | Resilience to backfiring risks | [optional] 
 **betterHabits** | **Number** | Encourages better habits | [optional] 
 **entertainingRelaxing** | **Number** | Entertaining and relaxing | [optional] 
+**largelyRecommendedWeight** | **Number** | Should be largely recommended weight | [optional] 
 **reliabilityWeight** | **Number** | Reliable and not misleading weight | [optional] 
 **importanceWeight** | **Number** | Important and actionable weight | [optional] 
 **engagingWeight** | **Number** | Engaging and thought-provoking weight | [optional] 

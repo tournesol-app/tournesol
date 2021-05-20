@@ -156,6 +156,7 @@ let opts = {
   'engaging': "engaging_example", // String | engaging
   'entertainingRelaxing': "entertainingRelaxing_example", // String | entertaining_relaxing
   'importance': "importance_example", // String | importance
+  'largelyRecommended': "largelyRecommended_example", // String | largely_recommended
   'laymanFriendly': "laymanFriendly_example", // String | layman_friendly
   'limit': 56, // Number | Number of results to return per page.
   'offset': 56, // Number | The initial index from which to return the results.
@@ -186,6 +187,7 @@ Name | Type | Description  | Notes
  **engaging** | **String**| engaging | [optional] 
  **entertainingRelaxing** | **String**| entertaining_relaxing | [optional] 
  **importance** | **String**| importance | [optional] 
+ **largelyRecommended** | **String**| largely_recommended | [optional] 
  **laymanFriendly** | **String**| layman_friendly | [optional] 
  **limit** | **Number**| Number of results to return per page. | [optional] 
  **offset** | **Number**| The initial index from which to return the results. | [optional] 
