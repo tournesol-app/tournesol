@@ -42,6 +42,7 @@ class VideoSerializerV2 {
      * @param nPrivateExperts {Number} Number certified private contributors
      * @param paretoOptimal {Boolean} Is this video pareto-optimal?
      * @param tournesolScore {Number} The total Tournesol score with uniform preferences (value=50.0)
+     * @param largelyRecommended {Number} Should be largely recommended
      * @param reliability {Number} Reliable and not misleading
      * @param importance {Number} Important and actionable
      * @param engaging {Number} Engaging and thought-provoking
@@ -51,6 +52,7 @@ class VideoSerializerV2 {
      * @param backfireRisk {Number} Resilience to backfiring risks
      * @param betterHabits {Number} Encourages better habits
      * @param entertainingRelaxing {Number} Entertaining and relaxing
+     * @param largelyRecommendedUncertainty {Number} Uncertainty for largely_recommended
      * @param reliabilityUncertainty {Number} Uncertainty for reliability
      * @param importanceUncertainty {Number} Uncertainty for importance
      * @param engagingUncertainty {Number} Uncertainty for engaging
@@ -60,6 +62,7 @@ class VideoSerializerV2 {
      * @param backfireRiskUncertainty {Number} Uncertainty for backfire_risk
      * @param betterHabitsUncertainty {Number} Uncertainty for better_habits
      * @param entertainingRelaxingUncertainty {Number} Uncertainty for entertaining_relaxing
+     * @param largelyRecommendedQuantile {Number} Top quantile for largely_recommended for all rated videos for aggregated scores. 0.0=best, 1.0=worst
      * @param reliabilityQuantile {Number} Top quantile for reliability for all rated videos for aggregated scores. 0.0=best, 1.0=worst
      * @param importanceQuantile {Number} Top quantile for importance for all rated videos for aggregated scores. 0.0=best, 1.0=worst
      * @param engagingQuantile {Number} Top quantile for engaging for all rated videos for aggregated scores. 0.0=best, 1.0=worst
@@ -70,9 +73,9 @@ class VideoSerializerV2 {
      * @param betterHabitsQuantile {Number} Top quantile for better_habits for all rated videos for aggregated scores. 0.0=best, 1.0=worst
      * @param entertainingRelaxingQuantile {Number} Top quantile for entertaining_relaxing for all rated videos for aggregated scores. 0.0=best, 1.0=worst
      */
-    constructor(id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile) { 
+    constructor(id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, largelyRecommended, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, largelyRecommendedUncertainty, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, largelyRecommendedQuantile, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile) { 
         
-        VideoSerializerV2.initialize(this, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile);
+        VideoSerializerV2.initialize(this, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, largelyRecommended, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, largelyRecommendedUncertainty, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, largelyRecommendedQuantile, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile);
     }
 
     /**
@@ -80,7 +83,7 @@ class VideoSerializerV2 {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile) { 
+    static initialize(obj, id, videoId, score, name, duration, language, publicationDate, views, uploader, scorePreferencesTerm, scoreSearchTerm, ratingNExperts, ratingNRatings, publicExperts, nPublicExperts, nPrivateExperts, paretoOptimal, tournesolScore, largelyRecommended, reliability, importance, engaging, pedagogy, laymanFriendly, diversityInclusion, backfireRisk, betterHabits, entertainingRelaxing, largelyRecommendedUncertainty, reliabilityUncertainty, importanceUncertainty, engagingUncertainty, pedagogyUncertainty, laymanFriendlyUncertainty, diversityInclusionUncertainty, backfireRiskUncertainty, betterHabitsUncertainty, entertainingRelaxingUncertainty, largelyRecommendedQuantile, reliabilityQuantile, importanceQuantile, engagingQuantile, pedagogyQuantile, laymanFriendlyQuantile, diversityInclusionQuantile, backfireRiskQuantile, betterHabitsQuantile, entertainingRelaxingQuantile) { 
         obj['id'] = id;
         obj['video_id'] = videoId;
         obj['score'] = score;
@@ -99,6 +102,7 @@ class VideoSerializerV2 {
         obj['n_private_experts'] = nPrivateExperts;
         obj['pareto_optimal'] = paretoOptimal;
         obj['tournesol_score'] = tournesolScore;
+        obj['largely_recommended'] = largelyRecommended;
         obj['reliability'] = reliability;
         obj['importance'] = importance;
         obj['engaging'] = engaging;
@@ -108,6 +112,7 @@ class VideoSerializerV2 {
         obj['backfire_risk'] = backfireRisk;
         obj['better_habits'] = betterHabits;
         obj['entertaining_relaxing'] = entertainingRelaxing;
+        obj['largely_recommended_uncertainty'] = largelyRecommendedUncertainty;
         obj['reliability_uncertainty'] = reliabilityUncertainty;
         obj['importance_uncertainty'] = importanceUncertainty;
         obj['engaging_uncertainty'] = engagingUncertainty;
@@ -117,6 +122,7 @@ class VideoSerializerV2 {
         obj['backfire_risk_uncertainty'] = backfireRiskUncertainty;
         obj['better_habits_uncertainty'] = betterHabitsUncertainty;
         obj['entertaining_relaxing_uncertainty'] = entertainingRelaxingUncertainty;
+        obj['largely_recommended_quantile'] = largelyRecommendedQuantile;
         obj['reliability_quantile'] = reliabilityQuantile;
         obj['importance_quantile'] = importanceQuantile;
         obj['engaging_quantile'] = engagingQuantile;
@@ -193,6 +199,9 @@ class VideoSerializerV2 {
             if (data.hasOwnProperty('tournesol_score')) {
                 obj['tournesol_score'] = ApiClient.convertToType(data['tournesol_score'], 'Number');
             }
+            if (data.hasOwnProperty('largely_recommended')) {
+                obj['largely_recommended'] = ApiClient.convertToType(data['largely_recommended'], 'Number');
+            }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Number');
             }
@@ -220,6 +229,9 @@ class VideoSerializerV2 {
             if (data.hasOwnProperty('entertaining_relaxing')) {
                 obj['entertaining_relaxing'] = ApiClient.convertToType(data['entertaining_relaxing'], 'Number');
             }
+            if (data.hasOwnProperty('largely_recommended_uncertainty')) {
+                obj['largely_recommended_uncertainty'] = ApiClient.convertToType(data['largely_recommended_uncertainty'], 'Number');
+            }
             if (data.hasOwnProperty('reliability_uncertainty')) {
                 obj['reliability_uncertainty'] = ApiClient.convertToType(data['reliability_uncertainty'], 'Number');
             }
@@ -246,6 +258,9 @@ class VideoSerializerV2 {
             }
             if (data.hasOwnProperty('entertaining_relaxing_uncertainty')) {
                 obj['entertaining_relaxing_uncertainty'] = ApiClient.convertToType(data['entertaining_relaxing_uncertainty'], 'Number');
+            }
+            if (data.hasOwnProperty('largely_recommended_quantile')) {
+                obj['largely_recommended_quantile'] = ApiClient.convertToType(data['largely_recommended_quantile'], 'Number');
             }
             if (data.hasOwnProperty('reliability_quantile')) {
                 obj['reliability_quantile'] = ApiClient.convertToType(data['reliability_quantile'], 'Number');
@@ -393,6 +408,12 @@ VideoSerializerV2.prototype['pareto_optimal'] = undefined;
 VideoSerializerV2.prototype['tournesol_score'] = 0.0;
 
 /**
+ * Should be largely recommended
+ * @member {Number} largely_recommended
+ */
+VideoSerializerV2.prototype['largely_recommended'] = undefined;
+
+/**
  * Reliable and not misleading
  * @member {Number} reliability
  */
@@ -447,6 +468,12 @@ VideoSerializerV2.prototype['better_habits'] = undefined;
 VideoSerializerV2.prototype['entertaining_relaxing'] = undefined;
 
 /**
+ * Uncertainty for largely_recommended
+ * @member {Number} largely_recommended_uncertainty
+ */
+VideoSerializerV2.prototype['largely_recommended_uncertainty'] = undefined;
+
+/**
  * Uncertainty for reliability
  * @member {Number} reliability_uncertainty
  */
@@ -499,6 +526,12 @@ VideoSerializerV2.prototype['better_habits_uncertainty'] = undefined;
  * @member {Number} entertaining_relaxing_uncertainty
  */
 VideoSerializerV2.prototype['entertaining_relaxing_uncertainty'] = undefined;
+
+/**
+ * Top quantile for largely_recommended for all rated videos for aggregated scores. 0.0=best, 1.0=worst
+ * @member {Number} largely_recommended_quantile
+ */
+VideoSerializerV2.prototype['largely_recommended_quantile'] = undefined;
 
 /**
  * Top quantile for reliability for all rated videos for aggregated scores. 0.0=best, 1.0=worst

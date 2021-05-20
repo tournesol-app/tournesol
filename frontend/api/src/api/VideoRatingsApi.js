@@ -53,6 +53,7 @@ export default class VideoRatingsApi {
      * @param {Number} opts.engaging Engaging and thought-provoking [preference override]
      * @param {Number} opts.entertainingRelaxing Entertaining and relaxing [preference override]
      * @param {Number} opts.importance Important and actionable [preference override]
+     * @param {Number} opts.largelyRecommended Should be largely recommended [preference override]
      * @param {Number} opts.laymanFriendly Layman-friendly [preference override]
      * @param {Number} opts.limit Number of results to return per page.
      * @param {Number} opts.offset The initial index from which to return the results.
@@ -76,6 +77,7 @@ export default class VideoRatingsApi {
         'engaging': opts['engaging'],
         'entertaining_relaxing': opts['entertainingRelaxing'],
         'importance': opts['importance'],
+        'largely_recommended': opts['largelyRecommended'],
         'layman_friendly': opts['laymanFriendly'],
         'limit': opts['limit'],
         'offset': opts['offset'],

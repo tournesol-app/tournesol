@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **user** | **Number** |  | [readonly] 
 **score** | **Number** |  | [readonly] [default to 0.0]
 **ratingNRatings** | **Number** | Number of ratings by me | [readonly] 
+**largelyRecommended** | **Number** | Should be largely recommended | [optional] 
 **reliability** | **Number** | Reliable and not misleading | [optional] 
 **importance** | **Number** | Important and actionable | [optional] 
 **engaging** | **Number** | Engaging and thought-provoking | [optional] 

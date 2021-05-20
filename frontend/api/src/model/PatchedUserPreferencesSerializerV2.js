@@ -52,6 +52,9 @@ class PatchedUserPreferencesSerializerV2 {
             if (data.hasOwnProperty('id')) {
                 obj['id'] = ApiClient.convertToType(data['id'], 'Number');
             }
+            if (data.hasOwnProperty('largely_recommended')) {
+                obj['largely_recommended'] = ApiClient.convertToType(data['largely_recommended'], 'Number');
+            }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Number');
             }
@@ -81,6 +84,9 @@ class PatchedUserPreferencesSerializerV2 {
             }
             if (data.hasOwnProperty('username')) {
                 obj['username'] = ApiClient.convertToType(data['username'], 'String');
+            }
+            if (data.hasOwnProperty('largely_recommended_enabled')) {
+                obj['largely_recommended_enabled'] = ApiClient.convertToType(data['largely_recommended_enabled'], 'Boolean');
             }
             if (data.hasOwnProperty('reliability_enabled')) {
                 obj['reliability_enabled'] = ApiClient.convertToType(data['reliability_enabled'], 'Boolean');
@@ -123,6 +129,12 @@ class PatchedUserPreferencesSerializerV2 {
  * @member {Number} id
  */
 PatchedUserPreferencesSerializerV2.prototype['id'] = undefined;
+
+/**
+ * Should be largely recommended
+ * @member {Number} largely_recommended
+ */
+PatchedUserPreferencesSerializerV2.prototype['largely_recommended'] = undefined;
 
 /**
  * Reliable and not misleading
@@ -183,6 +195,12 @@ PatchedUserPreferencesSerializerV2.prototype['entertaining_relaxing'] = undefine
  * @member {String} username
  */
 PatchedUserPreferencesSerializerV2.prototype['username'] = undefined;
+
+/**
+ * largely_recommended given for ratings
+ * @member {Boolean} largely_recommended_enabled
+ */
+PatchedUserPreferencesSerializerV2.prototype['largely_recommended_enabled'] = undefined;
 
 /**
  * reliability given for ratings

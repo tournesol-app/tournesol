@@ -149,6 +149,7 @@ export default class VideoCommentsApi {
      * @param {String} opts.engaging engaging
      * @param {String} opts.entertainingRelaxing entertaining_relaxing
      * @param {String} opts.importance importance
+     * @param {String} opts.largelyRecommended largely_recommended
      * @param {String} opts.laymanFriendly layman_friendly
      * @param {Number} opts.limit Number of results to return per page.
      * @param {Number} opts.offset The initial index from which to return the results.
@@ -174,6 +175,7 @@ export default class VideoCommentsApi {
         'engaging': opts['engaging'],
         'entertaining_relaxing': opts['entertainingRelaxing'],
         'importance': opts['importance'],
+        'largely_recommended': opts['largelyRecommended'],
         'layman_friendly': opts['laymanFriendly'],
         'limit': opts['limit'],
         'offset': opts['offset'],

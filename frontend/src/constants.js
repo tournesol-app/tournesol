@@ -4,6 +4,7 @@
 
 // Dictionary mapping quality features to their description
 export const featureNames = JSON.parse(`{
+    "largely_recommended": "Should be largely recommended",
     "reliability": "Reliable and not misleading",
     "importance": "Important and actionable",
     "engaging": "Engaging and thought-provoking",
@@ -17,6 +18,7 @@ export const featureNames = JSON.parse(`{
 
 // List of quality features in the correct order
 export const featureList = JSON.parse(`[
+    "largely_recommended",
     "reliability",
     "importance",
     "engaging",
@@ -30,6 +32,7 @@ export const featureList = JSON.parse(`[
 
 // Colors for quality features
 export const featureColors = JSON.parse(`{
+    "largely_recommended": "#ff00ff",
     "reliability": "#6573c3",
     "pedagogy": "#8561c5",
     "importance": "#ff784e",
@@ -52,10 +55,11 @@ export const DRF_RECAPTCHA_PUBLIC_KEY = JSON.parse('"get_yours_from_recaptcha"')
 
 // Is the feature enabled by-default?
 export const featureIsEnabledByDeFault = JSON.parse(`{
-    "reliability": true,
+    "largely_recommended": true,
+    "reliability": false,
     "pedagogy": false,
-    "importance": true,
-    "engaging": true,
+    "importance": false,
+    "engaging": false,
     "backfire_risk": false,
     "layman_friendly": false,
     "diversity_inclusion": false,

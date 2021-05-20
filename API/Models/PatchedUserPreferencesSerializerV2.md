@@ -4,6 +4,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | [**Integer**](integer.md) |  | [optional] [default to null]
+**largelyUnderscorerecommended** | [**Float**](float.md) | Should be largely recommended | [optional] [default to null]
 **reliability** | [**Float**](float.md) | Reliable and not misleading | [optional] [default to null]
 **importance** | [**Float**](float.md) | Important and actionable | [optional] [default to null]
 **engaging** | [**Float**](float.md) | Engaging and thought-provoking | [optional] [default to null]
@@ -14,6 +15,7 @@ Name | Type | Description | Notes
 **betterUnderscorehabits** | [**Float**](float.md) | Encourages better habits | [optional] [default to null]
 **entertainingUnderscorerelaxing** | [**Float**](float.md) | Entertaining and relaxing | [optional] [default to null]
 **username** | [**String**](string.md) | Username for this user preferences&#39; user | [optional] [default to null]
+**largelyUnderscorerecommendedUnderscoreenabled** | [**Boolean**](boolean.md) | largely_recommended given for ratings | [optional] [default to null]
 **reliabilityUnderscoreenabled** | [**Boolean**](boolean.md) | reliability given for ratings | [optional] [default to null]
 **importanceUnderscoreenabled** | [**Boolean**](boolean.md) | importance given for ratings | [optional] [default to null]
 **engagingUnderscoreenabled** | [**Boolean**](boolean.md) | engaging given for ratings | [optional] [default to null]

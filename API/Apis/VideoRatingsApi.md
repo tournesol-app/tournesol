@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 <a name="videoRatingStatistics"></a>
 # **videoRatingStatistics**
-> PaginatedVideoRatingsStatisticsSerializerV2List videoRatingStatistics(backfireRisk, betterHabits, diversityInclusion, engaging, entertainingRelaxing, importance, laymanFriendly, limit, offset, pedagogy, reliability, video, videoVideoId)
+> PaginatedVideoRatingsStatisticsSerializerV2List videoRatingStatistics(backfireRisk, betterHabits, diversityInclusion, engaging, entertainingRelaxing, importance, largelyRecommended, laymanFriendly, limit, offset, pedagogy, reliability, video, videoVideoId)
 
 
 
@@ -27,6 +27,7 @@ Name | Type | Description  | Notes
  **engaging** | **Float**| Engaging and thought-provoking [preference override] | [optional] [default to null]
  **entertainingRelaxing** | **Float**| Entertaining and relaxing [preference override] | [optional] [default to null]
  **importance** | **Float**| Important and actionable [preference override] | [optional] [default to null]
+ **largelyRecommended** | **Float**| Should be largely recommended [preference override] | [optional] [default to null]
  **laymanFriendly** | **Float**| Layman-friendly [preference override] | [optional] [default to null]
  **limit** | **Integer**| Number of results to return per page. | [optional] [default to null]
  **offset** | **Integer**| The initial index from which to return the results. | [optional] [default to null]

@@ -40,6 +40,7 @@ let opts = {
   'engaging': 3.4, // Number | Engaging and thought-provoking [preference override]
   'entertainingRelaxing': 3.4, // Number | Entertaining and relaxing [preference override]
   'importance': 3.4, // Number | Important and actionable [preference override]
+  'largelyRecommended': 3.4, // Number | Should be largely recommended [preference override]
   'laymanFriendly': 3.4, // Number | Layman-friendly [preference override]
   'limit': 56, // Number | Number of results to return per page.
   'offset': 56, // Number | The initial index from which to return the results.
@@ -68,6 +69,7 @@ Name | Type | Description  | Notes
  **engaging** | **Number**| Engaging and thought-provoking [preference override] | [optional] 
  **entertainingRelaxing** | **Number**| Entertaining and relaxing [preference override] | [optional] 
  **importance** | **Number**| Important and actionable [preference override] | [optional] 
+ **largelyRecommended** | **Number**| Should be largely recommended [preference override] | [optional] 
  **laymanFriendly** | **Number**| Layman-friendly [preference override] | [optional] 
  **limit** | **Number**| Number of results to return per page. | [optional] 
  **offset** | **Number**| The initial index from which to return the results. | [optional] 

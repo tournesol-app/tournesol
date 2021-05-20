@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **publicUsername** | **String** | The person who left the rating | 
 **score** | **Number** |  | [readonly] [default to 0.0]
 **nComparisons** | **Number** | Number of all pairwise comparisons for the video by the person | 
+**largelyRecommended** | **Number** | Should be largely recommended | [optional] 
 **reliability** | **Number** | Reliable and not misleading | [optional] 
 **importance** | **Number** | Important and actionable | [optional] 
 **engaging** | **Number** | Engaging and thought-provoking | [optional] 
