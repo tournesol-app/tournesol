@@ -236,7 +236,7 @@ tabulate==0.8.7
 tensorboard==2.4.0
 tensorboard-plugin-wit==1.6.0.post3
 tensorboardX==2.1
-tensorflow==2.4.0
+tensorflow==2.5.0
 tensorflow-estimator==2.4.0
 tensorflow-probability==0.12.1
 termcolor==1.1.0
