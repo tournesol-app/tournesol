@@ -70,7 +70,7 @@ Name | Type | Description  | Notes
 
 <a name="videoCommentsList"></a>
 # **videoCommentsList**
-> PaginatedVideoCommentsSerializerV2List videoCommentsList(backfireRisk, betterHabits, comment, diversityInclusion, engaging, entertainingRelaxing, importance, laymanFriendly, limit, offset, parentComment, pedagogy, reliability, userUserUsername, videoVideoId)
+> PaginatedVideoCommentsSerializerV2List videoCommentsList(backfireRisk, betterHabits, comment, diversityInclusion, engaging, entertainingRelaxing, importance, largelyRecommended, laymanFriendly, limit, offset, parentComment, pedagogy, reliability, userUserUsername, videoVideoId)
 
 
 
@@ -87,6 +87,7 @@ Name | Type | Description  | Notes
  **engaging** | **String**| engaging | [optional] [default to null]
  **entertainingRelaxing** | **String**| entertaining_relaxing | [optional] [default to null]
  **importance** | **String**| importance | [optional] [default to null]
+ **largelyRecommended** | **String**| largely_recommended | [optional] [default to null]
  **laymanFriendly** | **String**| layman_friendly | [optional] [default to null]
  **limit** | **Integer**| Number of results to return per page. | [optional] [default to null]
  **offset** | **Integer**| The initial index from which to return the results. | [optional] [default to null]

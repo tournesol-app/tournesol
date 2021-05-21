@@ -20,6 +20,7 @@ Name | Type | Description | Notes
 **children** | **Number** | Number of children comments | [optional] [readonly] 
 **datetimeAddAgo** | **String** | Human-readable x time units ago | [optional] [readonly] 
 **editedMAddedS** | **Number** | Edited minus created time in seconds | [optional] [readonly] 
+**largelyRecommended** | **Boolean** | Should be largely recommended | [optional] 
 **reliability** | **Boolean** | Reliable and not misleading | [optional] 
 **importance** | **Boolean** | Important and actionable | [optional] 
 **engaging** | **Boolean** | Engaging and thought-provoking | [optional] 

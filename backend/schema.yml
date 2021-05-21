@@ -1844,6 +1844,12 @@ paths:
         description: importance
         schema:
           type: string
+      - name: largely_recommended
+        required: false
+        in: query
+        description: largely_recommended
+        schema:
+          type: string
       - name: layman_friendly
         required: false
         in: query
@@ -2205,6 +2211,12 @@ paths:
           type: number
           format: float
         description: Important and actionable [preference override]
+      - in: query
+        name: largely_recommended
+        schema:
+          type: number
+          format: float
+        description: Should be largely recommended [preference override]
       - in: query
         name: layman_friendly
         schema:
@@ -2650,6 +2662,12 @@ paths:
         schema:
           type: string
       - in: query
+        name: largely_recommended
+        schema:
+          type: number
+          format: float
+        description: Should be largely recommended [preference override]
+      - in: query
         name: layman_friendly
         schema:
           type: number
@@ -3066,6 +3084,13 @@ components:
           format: float
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
+        largely_recommended:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Should be largely recommended
+          minimum: 0.0
         reliability:
           type: number
           format: float
@@ -3128,6 +3153,12 @@ components:
           maximum: 100.0
           nullable: true
           description: Entertaining and relaxing
+          minimum: 0.0
+        largely_recommended_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Should be largely recommended weight
           minimum: 0.0
         reliability_weight:
           type: number
@@ -3953,6 +3984,13 @@ components:
           format: float
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
+        largely_recommended:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Should be largely recommended
+          minimum: 0.0
         reliability:
           type: number
           format: float
@@ -4015,6 +4053,12 @@ components:
           maximum: 100.0
           nullable: true
           description: Entertaining and relaxing
+          minimum: 0.0
+        largely_recommended_weight:
+          type: number
+          format: float
+          maximum: 8
+          description: Should be largely recommended weight
           minimum: 0.0
         reliability_weight:
           type: number
@@ -4329,6 +4373,12 @@ components:
         id:
           type: integer
           readOnly: true
+        largely_recommended:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Should be largely recommended
+          minimum: 0.0
         reliability:
           type: number
           format: float
@@ -4387,6 +4437,9 @@ components:
           type: string
           readOnly: true
           description: Username for this user preferences' user
+        largely_recommended_enabled:
+          type: boolean
+          description: largely_recommended given for ratings
         reliability_enabled:
           type: boolean
           description: reliability given for ratings
@@ -4501,6 +4554,10 @@ components:
           format: float
           readOnly: true
           description: Edited minus created time in seconds
+        largely_recommended:
+          type: boolean
+          nullable: true
+          description: Should be largely recommended
         reliability:
           type: boolean
           nullable: true
@@ -4960,6 +5017,13 @@ components:
           allOf:
           - $ref: '#/components/schemas/ContextEnum'
           description: The page where slider change occurs
+        largely_recommended:
+          type: number
+          format: float
+          maximum: 100.0
+          nullable: true
+          description: Should be largely recommended
+          minimum: 0.0
         reliability:
           type: number
           format: float
@@ -5306,6 +5370,12 @@ components:
         id:
           type: integer
           readOnly: true
+        largely_recommended:
+          type: number
+          format: float
+          maximum: 100.0
+          description: Should be largely recommended
+          minimum: 0.0
         reliability:
           type: number
           format: float
@@ -5364,6 +5434,9 @@ components:
           type: string
           readOnly: true
           description: Username for this user preferences' user
+        largely_recommended_enabled:
+          type: boolean
+          description: largely_recommended given for ratings
         reliability_enabled:
           type: boolean
           description: reliability given for ratings
@@ -5478,6 +5551,10 @@ components:
           format: float
           readOnly: true
           description: Edited minus created time in seconds
+        largely_recommended:
+          type: boolean
+          nullable: true
+          description: Should be largely recommended
         reliability:
           type: boolean
           nullable: true
@@ -5581,6 +5658,10 @@ components:
           type: integer
           readOnly: true
           description: Number of ratings by me
+        largely_recommended:
+          type: number
+          format: float
+          description: Should be largely recommended
         reliability:
           type: number
           format: float
@@ -5645,6 +5726,10 @@ components:
         n_comparisons:
           type: integer
           description: Number of all pairwise comparisons for the video by the person
+        largely_recommended:
+          type: number
+          format: float
+          description: Should be largely recommended
         reliability:
           type: number
           format: float
@@ -5785,6 +5870,11 @@ components:
           nullable: true
           default: 0.0
           description: The total Tournesol score with uniform preferences (value=50.0)
+        largely_recommended:
+          type: number
+          format: float
+          readOnly: true
+          description: Should be largely recommended
         reliability:
           type: number
           format: float
@@ -5830,6 +5920,11 @@ components:
           format: float
           readOnly: true
           description: Entertaining and relaxing
+        largely_recommended_uncertainty:
+          type: number
+          format: float
+          readOnly: true
+          description: Uncertainty for largely_recommended
         reliability_uncertainty:
           type: number
           format: float
@@ -5875,6 +5970,12 @@ components:
           format: float
           readOnly: true
           description: Uncertainty for entertaining_relaxing
+        largely_recommended_quantile:
+          type: number
+          format: float
+          readOnly: true
+          description: Top quantile for largely_recommended for all rated videos for
+            aggregated scores. 0.0=best, 1.0=worst
         reliability_quantile:
           type: number
           format: float
@@ -5951,6 +6052,9 @@ components:
       - importance_quantile
       - importance_uncertainty
       - language
+      - largely_recommended
+      - largely_recommended_quantile
+      - largely_recommended_uncertainty
       - layman_friendly
       - layman_friendly_quantile
       - layman_friendly_uncertainty

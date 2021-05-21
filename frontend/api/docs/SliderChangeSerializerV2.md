@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **videoRight** | **String** |  | 
 **durationMs** | **Number** | Time from page load to this slider value (in milliseconds) | [optional] 
 **context** | [**ContextEnum**](ContextEnum.md) | The page where slider change occurs | [optional] 
+**largelyRecommended** | **Number** | Should be largely recommended | [optional] 
 **reliability** | **Number** | Reliable and not misleading | [optional] 
 **importance** | **Number** | Important and actionable | [optional] 
 **engaging** | **Number** | Engaging and thought-provoking | [optional] 

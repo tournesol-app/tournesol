@@ -75,6 +75,9 @@ class SliderChangeSerializerV2 {
             if (data.hasOwnProperty('context')) {
                 obj['context'] = ApiClient.convertToType(data['context'], ContextEnum);
             }
+            if (data.hasOwnProperty('largely_recommended')) {
+                obj['largely_recommended'] = ApiClient.convertToType(data['largely_recommended'], 'Number');
+            }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Number');
             }
@@ -141,6 +144,12 @@ SliderChangeSerializerV2.prototype['duration_ms'] = undefined;
  * @member {module:model/ContextEnum} context
  */
 SliderChangeSerializerV2.prototype['context'] = undefined;
+
+/**
+ * Should be largely recommended
+ * @member {Number} largely_recommended
+ */
+SliderChangeSerializerV2.prototype['largely_recommended'] = undefined;
 
 /**
  * Reliable and not misleading
