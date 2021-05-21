@@ -389,7 +389,7 @@ export default () => {
             <h1 className={classes.statistic}>
               {getStatistic('total_experts')}
             </h1>
-            users
+            contributors
           </Grid>
           <Grid item xs={4}>
             <h1 className={classes.statistic}>
@@ -409,7 +409,7 @@ export default () => {
           </Grid>
           <Grid item xs={4}>
             <h1 className={classes.statistic}>{getStatistic('weekly_active_ratings')}</h1>
-            weekly active contributors
+            new comparisons this week
           </Grid>
         </Grid>
 
