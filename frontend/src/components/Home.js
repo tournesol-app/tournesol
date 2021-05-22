@@ -395,13 +395,17 @@ export default () => {
             <h1 className={classes.statistic}>
               {getStatistic('certified_experts')}
             </h1>
-            <Typography paragraph>contributors certified by their institutional e-mail addresses</Typography>
+            <Typography paragraph>
+              contributors certified by their institutional e-mail addresses
+            </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <h1 className={classes.statistic}>
               {getStatistic('pairwise_comparisons')}
             </h1>
-            <Typography paragraph>comparison-based ratings between pairs of video contents</Typography>
+            <Typography paragraph>
+              comparison-based ratings between pairs of video contents
+            </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <h1 className={classes.statistic}>{getStatistic('n_rated_videos')}</h1>
