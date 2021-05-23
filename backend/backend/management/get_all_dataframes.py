@@ -8,6 +8,7 @@ from backend.rating_fields import VIDEO_FIELDS
 from django.contrib.auth.models import User as DjangoUser
 from django_pandas.io import read_frame
 
+from backend.constants import fields as constants
 
 def get_user_data(username):
     """Get user's personal data."""
@@ -84,7 +85,36 @@ def get_public_append_only_database_as_pd():
     """Get the public append-only database."""
     result_df = {}
 
-    result_df['all_video_scores'] = read_frame(Video.objects.all(), fieldnames=['id', 'video_id'] + VIDEO_FIELDS)
+    all_videos = Video.objects.all()
+    default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
+
+    video_df = read_frame(all_videos, fieldnames=['id', 'video_id'] + VIDEO_FIELDS)
+
+    # GresilleSiffle: I try to use
+    #
+    #   read_frame(
+    #       Video.objects.all().annotate(score=get_score_annotation(default_features)),
+    #       fieldnames=['id', 'video_id', 'score'] + VIDEO_FIELDS
+    #   )
+    #
+    # ... to add the Tournesol score directly in the data frame but the
+    # read_frame function doesn't seem to work when using extra fields
+    # (like score) that are not directly part of the Video model fields.
+    #
+    # the above code raise the exception:
+    #
+    #   module 'django.db.models.fields' has no attribute 'FieldDoesNotExist'
+    #
+    # ... and I can confirm the correct location of the
+    # exception FieldDoesNotExist is django.db.models.fields.exceptions
+    # and not django.db.models.fields like django panda seems to to think
+
+    video_df.insert(2, "score", [
+        sum(getattr(field, video) * value for field, value in zip(VIDEO_FIELDS, default_features))
+        for video in all_videos
+    ])
+
+    result_df['all_video_scores'] = video_df
 
     # all history for ratings, with both videos rated publicly
     qs = HistoricalExpertRating.objects.all()
