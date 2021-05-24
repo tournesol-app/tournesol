@@ -7,8 +7,10 @@ from backend.models import VideoComment, VideoCommentMarker, UserInformation, \
 from backend.rating_fields import VIDEO_FIELDS
 from django.contrib.auth.models import User as DjangoUser
 from django_pandas.io import read_frame
+from django.db.models import F
 
 from backend.constants import fields as constants
+
 
 def get_user_data(username):
     """Get user's personal data."""
@@ -83,36 +85,28 @@ def get_database_as_pd():
 
 def get_public_append_only_database_as_pd():
     """Get the public append-only database."""
-    result_df = {}
 
-    all_videos = Video.objects.all()
+    # a horrible hack to make django-pandas work with annotations
+    # see https://github.com/chrisdev/django-pandas/blob/master/django_pandas/io.py
+    # see https://github.com/chrisdev/django-pandas/issues/124
+    # TODO: fix it
+    import django
+    django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
+
+    result_df = {}
     default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
 
-    video_df = read_frame(all_videos, fieldnames=['id', 'video_id'] + VIDEO_FIELDS)
+    def get_score_annotation(user_preferences_vector):
+        """Returns an sql object annotating queries with the video ratings (sclar product)."""
+        return sum([
+            F(field) * value for field, value in zip(VIDEO_FIELDS, user_preferences_vector)
+        ])
 
-    # GresilleSiffle: I try to use
-    #
-    #   read_frame(
-    #       Video.objects.all().annotate(score=get_score_annotation(default_features)),
-    #       fieldnames=['id', 'video_id', 'score'] + VIDEO_FIELDS
-    #   )
-    #
-    # ... to add the Tournesol score directly in the data frame but the
-    # read_frame function doesn't seem to work when using extra fields
-    # (like score) that are not directly part of the Video model fields.
-    #
-    # the above code raise the exception:
-    #
-    #   module 'django.db.models.fields' has no attribute 'FieldDoesNotExist'
-    #
-    # ... and I can confirm the correct location of the
-    # exception FieldDoesNotExist is django.db.models.fields.exceptions
-    # and not django.db.models.fields like django panda seems to to think
-
-    video_df.insert(2, "score", [
-        sum(getattr(field, video) * value for field, value in zip(VIDEO_FIELDS, default_features))
-        for video in all_videos
-    ])
+    # all videos with the tournesol score and all criteria
+    video_df = read_frame(
+        Video.objects.all().annotate(score=get_score_annotation(default_features)),
+        fieldnames=['id', 'video_id', 'score'] + VIDEO_FIELDS
+    )
 
     result_df['all_video_scores'] = video_df
 
@@ -137,12 +131,6 @@ def get_public_append_only_database_as_pd():
 
     # adding _is_certified field
     qs = UserInformation._annotate_is_certified(qs)
-
-    # a horrible hack to make django-pandas work with annotations
-    # see https://github.com/chrisdev/django-pandas/blob/master/django_pandas/io.py
-    # TODO: fix it
-    import django
-    django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
 
     # Even if 'show my profile' is false, export 'username'.
     # If 'show my profile' is true, export 'First name',
