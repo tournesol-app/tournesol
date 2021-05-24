@@ -1,15 +1,17 @@
 from io import BytesIO, StringIO
 from zipfile import ZipFile
+
+from django_pandas.io import read_frame
 import pandas as pd
+
+from django.contrib.auth.models import User as DjangoUser
+from django.db.models import F
+
+from backend.constants import fields as constants
 from backend.models import Video, VideoRating, ExpertRating, HistoricalExpertRating
 from backend.models import VideoComment, VideoCommentMarker, UserInformation, \
     VideoRatingPrivacy
 from backend.rating_fields import VIDEO_FIELDS
-from django.contrib.auth.models import User as DjangoUser
-from django_pandas.io import read_frame
-from django.db.models import F
-
-from backend.constants import fields as constants
 
 
 def get_user_data(username):
