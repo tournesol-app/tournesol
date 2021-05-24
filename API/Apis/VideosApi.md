@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 <a name="apiV2VideoSearchTournesol"></a>
 # **apiV2VideoSearchTournesol**
-> PaginatedVideoSerializerV2List apiV2VideoSearchTournesol(backfireRisk, betterHabits, daysAgoGte, daysAgoLte, diversityInclusion, durationGte, durationLte, engaging, entertainingRelaxing, importance, language, laymanFriendly, limit, offset, ordering, pedagogy, reliability, search, searchModel, showAllMyVideos, videoId, viewsGte, viewsLte)
+> PaginatedVideoSerializerV2List apiV2VideoSearchTournesol(backfireRisk, betterHabits, daysAgoGte, daysAgoLte, diversityInclusion, durationGte, durationLte, engaging, entertainingRelaxing, importance, language, largelyRecommended, laymanFriendly, limit, offset, ordering, pedagogy, reliability, search, searchModel, showAllMyVideos, videoId, viewsGte, viewsLte)
 
 
 
@@ -40,6 +40,7 @@ Name | Type | Description  | Notes
  **entertainingRelaxing** | **Float**| Entertaining and relaxing [preference override] | [optional] [default to null]
  **importance** | **Float**| Important and actionable [preference override] | [optional] [default to null]
  **language** | **String**| language | [optional] [default to null]
+ **largelyRecommended** | **Float**| Should be largely recommended [preference override] | [optional] [default to null]
  **laymanFriendly** | **Float**| Layman-friendly [preference override] | [optional] [default to null]
  **limit** | **Integer**| Number of results to return per page. | [optional] [default to null]
  **offset** | **Integer**| The initial index from which to return the results. | [optional] [default to null]

@@ -16,6 +16,7 @@ comments = {
 }
 
 featureColors = {
+    'largely_recommended': '#ff00ff',
     'reliability': '#6573c3',
     'pedagogy': '#8561c5',
     'importance': '#ff784e',
@@ -28,10 +29,11 @@ featureColors = {
 }
 
 featureIsEnabledByDeFault = {
-    'reliability': True,
+    'largely_recommended': True,
+    'reliability': False,
     'pedagogy': False,
-    'importance': True,
-    'engaging': True,
+    'importance': False,
+    'engaging': False,
     'backfire_risk': False,
     'layman_friendly': False,
     'diversity_inclusion': False,

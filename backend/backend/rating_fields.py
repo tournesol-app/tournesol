@@ -11,6 +11,7 @@ from collections import OrderedDict
 MAX_VALUE = 100.
 
 VIDEO_FIELDS_DICT = OrderedDict([
+    ('largely_recommended', 'Should be largely recommended'),
     ('reliability', "Reliable and not misleading"),
     ('importance', "Important and actionable"),
     ('engaging', "Engaging and thought-provoking"),

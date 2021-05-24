@@ -73,6 +73,9 @@ class VideoRatingsStatisticsSerializerV2 {
             if (data.hasOwnProperty('n_comparisons')) {
                 obj['n_comparisons'] = ApiClient.convertToType(data['n_comparisons'], 'Number');
             }
+            if (data.hasOwnProperty('largely_recommended')) {
+                obj['largely_recommended'] = ApiClient.convertToType(data['largely_recommended'], 'Number');
+            }
             if (data.hasOwnProperty('reliability')) {
                 obj['reliability'] = ApiClient.convertToType(data['reliability'], 'Number');
             }
@@ -134,6 +137,12 @@ VideoRatingsStatisticsSerializerV2.prototype['score'] = 0.0;
  * @member {Number} n_comparisons
  */
 VideoRatingsStatisticsSerializerV2.prototype['n_comparisons'] = undefined;
+
+/**
+ * Should be largely recommended
+ * @member {Number} largely_recommended
+ */
+VideoRatingsStatisticsSerializerV2.prototype['largely_recommended'] = undefined;
 
 /**
  * Reliable and not misleading
