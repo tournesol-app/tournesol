@@ -5,7 +5,6 @@ from django_pandas.io import read_frame
 import pandas as pd
 
 from django.contrib.auth.models import User as DjangoUser
-from django.db.models import F
 
 from backend.api_v2.video_ratings import get_score_annotation
 from backend.constants import fields as constants
