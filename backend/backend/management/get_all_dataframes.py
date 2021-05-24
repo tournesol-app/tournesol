@@ -7,6 +7,7 @@ import pandas as pd
 from django.contrib.auth.models import User as DjangoUser
 from django.db.models import F
 
+from backend.api_v2.video_ratings import get_score_annotation
 from backend.constants import fields as constants
 from backend.models import Video, VideoRating, ExpertRating, HistoricalExpertRating
 from backend.models import VideoComment, VideoCommentMarker, UserInformation, \
@@ -97,12 +98,6 @@ def get_public_append_only_database_as_pd():
 
     result_df = {}
     default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
-
-    def get_score_annotation(user_preferences_vector):
-        """Returns an sql object annotating queries with the video ratings (sclar product)."""
-        return sum([
-            F(field) * value for field, value in zip(VIDEO_FIELDS, user_preferences_vector)
-        ])
 
     # all videos with the tournesol score and all criteria
     video_df = read_frame(
