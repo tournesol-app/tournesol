@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 import gin
 
 
@@ -76,6 +77,55 @@ class SparseVariableIndexLayer(tf.keras.layers.Layer):
         return tf.gather(self.v, indices_flat)
 
 
+@tf.function(experimental_relax_shapes=True)
+def sinh_loss(x, threshold=1e-1, threshold_high=10.0, eps=1e-6):
+    """First term of the new learning function: ln(2sinhx/x). See #88."""
+
+    # the function is even
+    x_abs = tf.abs(x)
+
+    # three options require different ranges for x
+    # so that there are no overflows
+    x_small = tf.clip_by_value(x_abs,
+                               clip_value_min=0,
+                               clip_value_max=threshold)
+
+    x_normal = tf.clip_by_value(x_abs,
+                                clip_value_min=threshold,
+                                clip_value_max=threshold_high)
+
+    x_large = tf.clip_by_value(x_abs,
+                               clip_value_min=threshold_high,
+                               clip_value_max=np.inf)
+
+    # Taylor expansion
+    option_close_to_0 = tf.math.pow(x_small, 2) / 6.0 + tf.math.log(2.0)
+
+    # original loss
+    option_far_from_0 = tf.math.log(2 * tf.math.sinh(x_normal) / x_normal)
+
+    # the function has an asymptote y~x+...
+    option_infty = - tf.math.log(x_large) + x_large
+
+    # Taylor or original?
+    condition_close_to_0 = tf.abs(x) < threshold
+
+    # original vs infty
+    condition_infty = tf.abs(x) >= threshold_high
+
+    # Taylor or original?
+    result = tf.where(condition=condition_close_to_0,
+                      x=option_close_to_0,
+                      y=option_far_from_0)
+
+    # original/Taylor VS infty
+    result = tf.where(condition=condition_infty,
+                      x=option_infty,
+                      y=result)
+
+    return result
+
+
 # get the loss function for this class
 @gin.configurable
 @tf.function(experimental_relax_shapes=True)
@@ -128,72 +178,65 @@ def loss_fcn_sparse(
 
     result = {}
 
+    # TERM 1/3: 'loss_fit' obtains scores from pairwise comparisons
     # 2D array (comparison_id, feature) -> float
     theta_eqv = tf.gather(model_tensor, expert_object_feature_v1_flat)
     theta_eqw = tf.gather(model_tensor, expert_object_feature_v2_flat)
 
-    #    print(theta_eqv.shape, theta_eqv)
-    #    print(theta_eqw.shape, theta_eqw)
-
-    # FIT LOSS SUM
+    # difference between scores of left and right videos
+    #  (theta_left - theta_right)
     theta_vw = theta_eqv - theta_eqw
-    # print(theta_vw.shape, cmp.shape)
     theta_vw_y = tf.math.multiply(theta_vw, cmp_flat)
 
-    #    print(cmp_flat.shape, theta_vw_y.shape)
-
+    # old learning function (softplus), see #88
     sp = tf.math.softplus(theta_vw_y)
+
+    # new learning function with sinh, see #88
+    # disabled until issues are resolved by Le
+    # TODO: enable this line and comment out the previous one
+    # when the loss is ready...
+    # sp = sinh_loss(theta_vw) + theta_vw_y
+
+    # multiply by comparison weights and flatten
     sp_weighted = tf.math.multiply(sp, weights_flat)
-
-    #    print(sp_weighted.shape)
-
     sp_weighted_flat = tf.reshape(sp_weighted, (-1,))
 
-    #    print(sp_weighted_flat.shape)
-
+    # some ratings might have nan as values, removing those
     sp_weighted_no_nan = tf.boolean_mask(
         sp_weighted_flat, tf.math.is_finite(sp_weighted_flat)
     )
 
-    #    print(sp_weighted_no_nan.shape)
-    # tf.print("original tensor")
-    # tf.print(sp_weighted_flat)
-
-    # tf.print("nonan tensor")
-    # tf.print(sp_weighted_no_nan)
-
+    # storing the result
     result["loss_fit"] = tf.reduce_sum(sp_weighted_no_nan)
 
-    # LOSS MODEL TO COMMON
+    # TERM 2/3: 'loss_m_to_common' brings individual scores close to
+    #  the aggregated ones
 
     # 2D array (regul_id, feature) -> float
     theta_eqv_common = tf.gather(model_tensor, expert_object_feature_all)
     s_qv = tf.gather(model_tensor, expert_object_feature_agg_all)
 
-    # print("IDX", idx_common.shape, s_qv.shape)
-
     # coefficient, shape: regul_id
     num_float = tf.cast(num_ratings_all_flat, tf.keras.backend.floatx())
     coef_yev = tf.divide(num_float, C + num_float)
-    # print(theta_eqv_common.shape, s_qv.shape)
-    # tf.print('thetacomm', theta_eqv_common)
-    # tf.print("sqv", s_qv)
+
+    # l1 term: aggregated - individual
     theta_s = tf.abs(theta_eqv_common - s_qv)
 
-    # print("THETAS", theta_s.shape, "COEF", coef_yev.shape, \
-    # "COEFR", coef_yev_repeated.shape)
-    # tf.print("thetas", theta_s)
-    # tf.print("coefyev", coef_yev_repeated)
+    # weighting the l1 term with the coefficient
     theta_s_withcoeff = tf.multiply(theta_s, coef_yev)
+
+    # storing the result
     result["loss_m_to_common"] = tf.reduce_sum(theta_s_withcoeff) * lambda_
 
-    # LOSS COMMON TO 0
+    # TERM 3/3: 'loss_common_to_1' brings aggregated scores close to 1
+    #  (=default_score_value)
     s_qv_common_to_1 = tf.gather(model_tensor, expert_object_feature_common_to_1)
 
+    # squared distance between scores and 1
     sm1 = tf.math.square(s_qv_common_to_1 - default_score_value)
 
-    # print(idx_common_to_1, s_qv_common_to_1, sm1)
-
+    # storing the result
     result["loss_common_to_1"] = tf.reduce_sum(sm1) * mu
 
     # TOTAL LOSS

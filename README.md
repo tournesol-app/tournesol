@@ -1,8 +1,12 @@
 # Tournesol: collaborative content recommendation
 
-This github hosts the code of the platform [Tournesol.app](https://tournesol.app).
+This github hosts the code of the platform [Tournesol.app](https://tournesol.app), 
+which aims to identify top videos of public utility by eliciting contributors' judgements on content quality. 
+We also have repositories for our [browser extension](http://github.com/tournesol-app/tournesol-chrome-extension/), 
+our [mobile application](http://github.com/tournesol-app/tournesol-mobile/) 
+and our [organizational/promotional strategies](http://github.com/tournesol-app/tournesol-meta/).
 
-See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php/Contribute_to_Tournesol) for details.
+Tournesol is a project of the [Tournesol association](https://wiki.tournesol.app/index.php/Tournesol_Association). Meet our team and brainstorm with us by joining our [Discord](https://discord.gg/TvsFB8RNBV).
 
 ![Home page of Tournesol.app](https://user-images.githubusercontent.com/10453308/115123905-9b6b4300-9fbf-11eb-8853-25552d13f7b0.png)
 
