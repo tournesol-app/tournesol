@@ -2,6 +2,8 @@ import os
 import shutil
 from uuid import uuid1
 
+from scipy.spatial.distance import cdist
+from functools import partial
 import numpy as np
 import pytest
 import tensorflow as tf
@@ -19,6 +21,7 @@ from backend.ml_model.preference_aggregation_featureless_tf_dense import (
 from backend.ml_model.preference_aggregation_featureless_tf_sparse import (
     SparseVariableIndexLayer,
     loss_fcn_sparse,
+    sinh_loss
 )
 from backend.ml_model.preference_aggregation_featureless_tf_dense import (
     loss_fcn_dense as loss_fcn_tf,
@@ -612,4 +615,46 @@ def test_np_tf_equal(execution_number):
         print(key, result_np[key], result_tf[key])
         assert np.allclose(
             result_np[key], result_tf[key], rtol=1e-3, atol=1e-3, equal_nan=True
+        )
+
+
+def test_sinh_loss():
+    def check_variable(out, thr=1e-4):
+        assert np.sum(np.isnan(out)) == 0
+        z = out.flatten().reshape(-1, 1)
+        dst = cdist(z, z)
+        dst[range(len(z)), range(len(z))] = 1.0
+        assert np.min(dst.flatten()) > thr, np.min(dst.flatten())
+
+    def gradient(f, x):
+        with tf.GradientTape() as tape:
+            y = f(x)
+            return tape.gradient(y, x)
+
+    x_rand = tf.Variable(np.random.randn(2, 3).astype(np.float32), trainable=True)
+    check_variable(sinh_loss(x_rand).numpy())
+    check_variable(gradient(sinh_loss, x_rand).numpy())
+
+    x_custom = tf.Variable(np.array([0, 0.05, 1, 10, 100, 1000], dtype=np.float32))
+    check_variable(sinh_loss(x_custom).numpy())
+    check_variable(gradient(sinh_loss, x_custom).numpy())
+
+    for delta in [1e-3, 1e-2, 1e-4]:
+        threshold = 1e-1
+        threshold_high = 10.0
+        x_border = tf.Variable(
+            np.array([0 + delta,
+                      threshold - delta, threshold + delta,
+                      threshold_high - delta, threshold_high + delta],
+                     dtype=np.float32),
+            trainable=True,
+        )
+
+        check_variable(sinh_loss(x_border, threshold=threshold,
+                                 threshold_high=threshold_high).numpy(),
+                       thr=1e-7)
+        check_variable(gradient(
+            partial(sinh_loss, threshold=threshold,
+                    threshold_high=threshold_high), x_border).numpy(),
+            thr=1e-8
         )

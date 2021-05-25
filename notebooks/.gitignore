@@ -1,3 +1,5 @@
 videos
+results_*.html
+results_*.pdf
 *.description
 *.info.json
