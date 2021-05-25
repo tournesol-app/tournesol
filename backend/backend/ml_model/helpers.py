@@ -71,4 +71,3 @@ def nan_to_zero(g):
     idx_non_finite = tf.where(~tf.math.is_finite(g))
     zeros = tf.zeros(len(idx_non_finite), dtype=g.dtype)
     return tf.tensor_scatter_nd_update(g, idx_non_finite, zeros)
-

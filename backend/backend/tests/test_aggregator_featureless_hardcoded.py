@@ -625,7 +625,7 @@ def test_sinh_loss():
         dst = cdist(z, z)
         dst[range(len(z)), range(len(z))] = 1.0
         assert np.min(dst.flatten()) > thr, np.min(dst.flatten())
-        
+
     def gradient(f, x):
         with tf.GradientTape() as tape:
             y = f(x)
@@ -650,9 +650,11 @@ def test_sinh_loss():
             trainable=True,
         )
 
-        check_variable(sinh_loss(x_border, threshold=threshold, threshold_high=threshold_high).numpy(),
+        check_variable(sinh_loss(x_border, threshold=threshold,
+                                 threshold_high=threshold_high).numpy(),
                        thr=1e-7)
         check_variable(gradient(
-            partial(sinh_loss, threshold=threshold, threshold_high=threshold_high), x_border).numpy(),
+            partial(sinh_loss, threshold=threshold,
+                    threshold_high=threshold_high), x_border).numpy(),
             thr=1e-8
         )

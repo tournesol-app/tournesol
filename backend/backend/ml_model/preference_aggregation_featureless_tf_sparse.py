@@ -105,7 +105,7 @@ def sinh_loss(x, threshold=1e-1, threshold_high=10.0, eps=1e-6):
     option_far_from_0 = tf.math.log(2 * tf.math.sinh(x_normal) / x_normal)
 
     # the function has an asymptote y~x+...
-    option_infty = - tf.math.log(x_large) + x_large    
+    option_infty = - tf.math.log(x_large) + x_large
 
     # Taylor or original?
     condition_close_to_0 = tf.abs(x) < threshold
