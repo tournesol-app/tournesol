@@ -15,8 +15,8 @@ DatabasePreferenceLearner.load = False
 # hyperparameter search ranges
 #C/loguniform.lower = 1e-3
 #C/loguniform.upper = 1e3
-lam/grid_search.values = [1e-2, 5e-2, 1e-1, 5e-1, 1, 5, 10]
-mu/grid_search.values = [1e-1, 5e-1, 1, 5, 10]
+lam/grid_search.values = [1e-1, 1, 10]
+mu/grid_search.values = [1e-1, 1, 10]
 
 # loss hyperparameters configuration
 # hypers/gin_dict.C = @C/loguniform()
