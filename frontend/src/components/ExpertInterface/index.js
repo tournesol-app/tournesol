@@ -845,9 +845,7 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
   // just loading settings
   if (state === null || state === undefined) {
     return (
-      <p>
-        <ExpertSettings setStateExternal={setState} />
-      </p>
+      <ExpertSettings setStateExternal={setState} />
     );
   }
 
@@ -876,7 +874,6 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
       {commentsOpen === 'left' && <SidePanel videoId={videoA} />}
 
       <div className={classes.centered}>
-
         <div className={classes.videoContainer}>
           <div id="video-left">
             <VideoSelector
@@ -1161,37 +1158,39 @@ export default ({ videoIdAOverride = null, videoIdBOverride = null,
               </Alert>
               )}
             </div>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                setShowIntro(true);
-              }}
-              size="small"
-            >
-              <InfoIcon /> Help
-            </Button>
-            <Button
-              style={{ marginLeft: 8 }}
-              variant="contained"
-              color="secondary"
-              onClick={() => setTourIndex(0)}
-              size="small"
-            >
-              <InfoIcon /> Start Tour
-            </Button>
-            &nbsp;
-            <Button
-              variant="contained"
-              color="secondary"
-              id="id_rating_settings"
-              onClick={() => {
-                setFormOpen(true);
-              }}
-              size="small"
-            >
-              <SettingsIcon /> Settings
-            </Button>
+            {showControls && (
+            <>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  setShowIntro(true);
+                }}
+                size="small"
+              >
+                <InfoIcon /> Help
+              </Button>
+              <Button
+                style={{ marginLeft: 8 }}
+                variant="contained"
+                color="secondary"
+                onClick={() => setTourIndex(0)}
+                size="small"
+              >
+                <InfoIcon /> Start Tour
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                id="id_rating_settings"
+                onClick={() => {
+                  setFormOpen(true);
+                }}
+                size="small"
+              >
+                <SettingsIcon /> Settings
+              </Button>
+            </>)}
           </>
         )}
       </div>
