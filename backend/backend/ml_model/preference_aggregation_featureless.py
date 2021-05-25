@@ -9,6 +9,7 @@ from backend.ml_model.helpers import (
     choice_or_all,
     arr_of_dicts_to_dict_of_arrays,
     convert_to_tf,
+    nan_to_zero,
 )
 from backend.ml_model.preference_aggregation import (
     PreferencePredictor,
@@ -22,6 +23,7 @@ tf.compat.v1.enable_eager_execution()
 Adam = gin.external_configurable(tf.keras.optimizers.Adam)
 SGD = gin.external_configurable(tf.keras.optimizers.SGD)
 Zeros = gin.external_configurable(tf.keras.initializers.Zeros)
+RandomNormal = gin.external_configurable(tf.keras.initializers.RandomNormal)
 
 
 @gin.configurable
@@ -447,14 +449,6 @@ class FeaturelessPreferenceLearningModel(PreferencePredictor):
         self.all_ratings.add_indices(indices)
 
 
-@tf.function(experimental_relax_shapes=True)
-def transform_grad(g):
-    """Replace nan with 0."""
-    idx_non_finite = tf.where(~tf.math.is_finite(g))
-    zeros = tf.zeros(len(idx_non_finite), dtype=g.dtype)
-    return tf.tensor_scatter_nd_update(g, idx_non_finite, zeros)
-
-
 @gin.configurable
 class FeaturelessMedianPreferenceAverageRegularizationAggregator(
     MedianPreferenceAggregator
@@ -577,6 +571,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(
             plt.subplot(1, plot_h, i)
             plt.title(key)
             plt.plot(losses[key])
+            plt.yscale('log')
 
     def fit(self, epochs=None, callback=None):
         """Fit with multiple epochs."""
@@ -854,7 +849,7 @@ class FeaturelessMedianPreferenceAverageRegularizationAggregator(
 
         # mem: +180mb
 
-        grads = [transform_grad(g) for g in grads]
+        grads = [nan_to_zero(g) for g in grads]
 
         # mem: +250mb
 
