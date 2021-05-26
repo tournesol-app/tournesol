@@ -1,16 +1,22 @@
-from backend.models import DjangoUser, UserPreferences, EmailDomain, \
-    UserInformation, VerifiableEmail, Video, ExpertRating, VideoRatingPrivacy
+from io import BytesIO, StringIO
+import zipfile
+
+from django_pandas.io import read_frame
 import numpy as np
-from backend.models import VIDEO_FIELDS
-from helpers import random_alphanumeric, create_test_video, login, logout, \
-    TIME_WAIT, get, open_tournesol
+import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
 from django.db.utils import IntegrityError
-from io import BytesIO, StringIO
-import zipfile
-import pandas as pd
+
+from backend.api_v2.video_ratings import get_score_annotation
+from backend.constants import fields as constants
+from backend.models import DjangoUser, UserPreferences, EmailDomain, \
+    UserInformation, VerifiableEmail, Video, ExpertRating, VideoRatingPrivacy
+from backend.models import VIDEO_FIELDS
+from helpers import random_alphanumeric, create_test_video, login, logout, \
+    TIME_WAIT, get, open_tournesol
 
 
 def create_toy_data(django_db_blocker, driver,
@@ -158,8 +164,10 @@ def test_download_privacy_public_database(driver, django_db_blocker):
 
     # print(data.content)
 
-    assert set(dfs.keys()) == set(['comparison_database.csv', 'contributors_public.csv']), \
-        f"Wrong files in archive: {dfs.keys()}"
+    assert set(dfs.keys()) == set(
+        ['comparison_database.csv', 'contributors_public.csv',
+         'all_video_scores.csv']
+    ), f"Wrong files in archive: {dfs.keys()}"
 
     # checking comparisons privacy
     df = dfs['comparison_database.csv']
@@ -210,3 +218,60 @@ def test_download_privacy_public_database(driver, django_db_blocker):
             assert f not in row, (f, row)
 
         print("Check for", username, "successful")
+
+
+def test_integrity_of_all_video_scores(driver, django_db_blocker):
+    """
+    Test the integrity of the public file all_video_scores.csv.
+
+    The file is considered correct if:
+        - it contains all videos of the database
+        - it contains only the expected columns
+        - it contains a correct calculation of the Tournesol score
+    """
+    create_toy_data(django_db_blocker=django_db_blocker, driver=driver,
+                    n_users=2, n_videos=4,
+                    n_ratings=2)
+
+    open_tournesol(driver)
+
+    WebDriverWait(driver, TIME_WAIT).until(
+        EC.presence_of_element_located((By.ID, "id_public_database_download")))
+
+    link = driver.find_element_by_id('id_public_database_download').get_attribute('href')
+
+    data = get(link)
+    assert data.ok
+    assert data.content
+    assert data.headers['content-type'] == 'application/zip'
+
+    zip_file = BytesIO(data.content)
+    dfs = {}
+    with zipfile.ZipFile(zip_file, 'r') as zf:
+        for fileinfo in zf.infolist():
+            content = zf.read(fileinfo).decode('ascii')
+            df = pd.read_csv(StringIO(content))
+            dfs[fileinfo.filename] = df
+
+    # the file must be in the public zip archive
+    assert "all_video_scores.csv" in dfs.keys()
+
+    df = dfs['all_video_scores.csv']
+    default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
+
+    # the file must contain only expected columns
+    assert set(df.columns) == set(["id", "video_id", "score"] + VIDEO_FIELDS)
+
+    with django_db_blocker.unblock():
+        # good ol' hack to make django-pandas work with annotations
+        import django
+        django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
+
+        # the file must contain all video in the database, with their correct
+        # Tournesol score and value for each criterion
+        video_df = read_frame(
+            Video.objects.all().annotate(score=get_score_annotation(default_features)),
+            fieldnames=['id', 'video_id', 'score'] + VIDEO_FIELDS
+        )
+
+        assert df.equals(video_df)
