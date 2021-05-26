@@ -31,10 +31,21 @@ class StatisticsSerializerV2 {
      * @param maxScore {Number} Maximal aggregated score over all videos and features
      * @param weeklyActiveRatings {Number} Number of ratings added within a week
      * @param nRatedVideos {Number} Total number of videos with ratings
+     * @param nSumComparisons {Number} Sum of all numbers of comparisons for all features
+     * @param nLargelyRecommendedComparisons {Number} Number of comparisons for largely_recommended
+     * @param nReliabilityComparisons {Number} Number of comparisons for reliability
+     * @param nImportanceComparisons {Number} Number of comparisons for importance
+     * @param nEngagingComparisons {Number} Number of comparisons for engaging
+     * @param nPedagogyComparisons {Number} Number of comparisons for pedagogy
+     * @param nLaymanFriendlyComparisons {Number} Number of comparisons for layman_friendly
+     * @param nDiversityInclusionComparisons {Number} Number of comparisons for diversity_inclusion
+     * @param nBackfireRiskComparisons {Number} Number of comparisons for backfire_risk
+     * @param nBetterHabitsComparisons {Number} Number of comparisons for better_habits
+     * @param nEntertainingRelaxingComparisons {Number} Number of comparisons for entertaining_relaxing
      */
-    constructor(certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos) { 
+    constructor(certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos, nSumComparisons, nLargelyRecommendedComparisons, nReliabilityComparisons, nImportanceComparisons, nEngagingComparisons, nPedagogyComparisons, nLaymanFriendlyComparisons, nDiversityInclusionComparisons, nBackfireRiskComparisons, nBetterHabitsComparisons, nEntertainingRelaxingComparisons) { 
         
-        StatisticsSerializerV2.initialize(this, certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos);
+        StatisticsSerializerV2.initialize(this, certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos, nSumComparisons, nLargelyRecommendedComparisons, nReliabilityComparisons, nImportanceComparisons, nEngagingComparisons, nPedagogyComparisons, nLaymanFriendlyComparisons, nDiversityInclusionComparisons, nBackfireRiskComparisons, nBetterHabitsComparisons, nEntertainingRelaxingComparisons);
     }
 
     /**
@@ -42,7 +53,7 @@ class StatisticsSerializerV2 {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos) { 
+    static initialize(obj, certifiedExperts, totalExperts, pairwiseComparisons, videos, minScore, maxScore, weeklyActiveRatings, nRatedVideos, nSumComparisons, nLargelyRecommendedComparisons, nReliabilityComparisons, nImportanceComparisons, nEngagingComparisons, nPedagogyComparisons, nLaymanFriendlyComparisons, nDiversityInclusionComparisons, nBackfireRiskComparisons, nBetterHabitsComparisons, nEntertainingRelaxingComparisons) { 
         obj['certified_experts'] = certifiedExperts;
         obj['total_experts'] = totalExperts;
         obj['pairwise_comparisons'] = pairwiseComparisons;
@@ -51,6 +62,17 @@ class StatisticsSerializerV2 {
         obj['max_score'] = maxScore;
         obj['weekly_active_ratings'] = weeklyActiveRatings;
         obj['n_rated_videos'] = nRatedVideos;
+        obj['n_sum_comparisons'] = nSumComparisons;
+        obj['n_largely_recommended_comparisons'] = nLargelyRecommendedComparisons;
+        obj['n_reliability_comparisons'] = nReliabilityComparisons;
+        obj['n_importance_comparisons'] = nImportanceComparisons;
+        obj['n_engaging_comparisons'] = nEngagingComparisons;
+        obj['n_pedagogy_comparisons'] = nPedagogyComparisons;
+        obj['n_layman_friendly_comparisons'] = nLaymanFriendlyComparisons;
+        obj['n_diversity_inclusion_comparisons'] = nDiversityInclusionComparisons;
+        obj['n_backfire_risk_comparisons'] = nBackfireRiskComparisons;
+        obj['n_better_habits_comparisons'] = nBetterHabitsComparisons;
+        obj['n_entertaining_relaxing_comparisons'] = nEntertainingRelaxingComparisons;
     }
 
     /**
@@ -87,6 +109,39 @@ class StatisticsSerializerV2 {
             }
             if (data.hasOwnProperty('n_rated_videos')) {
                 obj['n_rated_videos'] = ApiClient.convertToType(data['n_rated_videos'], 'Number');
+            }
+            if (data.hasOwnProperty('n_sum_comparisons')) {
+                obj['n_sum_comparisons'] = ApiClient.convertToType(data['n_sum_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_largely_recommended_comparisons')) {
+                obj['n_largely_recommended_comparisons'] = ApiClient.convertToType(data['n_largely_recommended_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_reliability_comparisons')) {
+                obj['n_reliability_comparisons'] = ApiClient.convertToType(data['n_reliability_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_importance_comparisons')) {
+                obj['n_importance_comparisons'] = ApiClient.convertToType(data['n_importance_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_engaging_comparisons')) {
+                obj['n_engaging_comparisons'] = ApiClient.convertToType(data['n_engaging_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_pedagogy_comparisons')) {
+                obj['n_pedagogy_comparisons'] = ApiClient.convertToType(data['n_pedagogy_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_layman_friendly_comparisons')) {
+                obj['n_layman_friendly_comparisons'] = ApiClient.convertToType(data['n_layman_friendly_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_diversity_inclusion_comparisons')) {
+                obj['n_diversity_inclusion_comparisons'] = ApiClient.convertToType(data['n_diversity_inclusion_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_backfire_risk_comparisons')) {
+                obj['n_backfire_risk_comparisons'] = ApiClient.convertToType(data['n_backfire_risk_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_better_habits_comparisons')) {
+                obj['n_better_habits_comparisons'] = ApiClient.convertToType(data['n_better_habits_comparisons'], 'Number');
+            }
+            if (data.hasOwnProperty('n_entertaining_relaxing_comparisons')) {
+                obj['n_entertaining_relaxing_comparisons'] = ApiClient.convertToType(data['n_entertaining_relaxing_comparisons'], 'Number');
             }
         }
         return obj;
@@ -142,6 +197,72 @@ StatisticsSerializerV2.prototype['weekly_active_ratings'] = undefined;
  * @member {Number} n_rated_videos
  */
 StatisticsSerializerV2.prototype['n_rated_videos'] = undefined;
+
+/**
+ * Sum of all numbers of comparisons for all features
+ * @member {Number} n_sum_comparisons
+ */
+StatisticsSerializerV2.prototype['n_sum_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for largely_recommended
+ * @member {Number} n_largely_recommended_comparisons
+ */
+StatisticsSerializerV2.prototype['n_largely_recommended_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for reliability
+ * @member {Number} n_reliability_comparisons
+ */
+StatisticsSerializerV2.prototype['n_reliability_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for importance
+ * @member {Number} n_importance_comparisons
+ */
+StatisticsSerializerV2.prototype['n_importance_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for engaging
+ * @member {Number} n_engaging_comparisons
+ */
+StatisticsSerializerV2.prototype['n_engaging_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for pedagogy
+ * @member {Number} n_pedagogy_comparisons
+ */
+StatisticsSerializerV2.prototype['n_pedagogy_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for layman_friendly
+ * @member {Number} n_layman_friendly_comparisons
+ */
+StatisticsSerializerV2.prototype['n_layman_friendly_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for diversity_inclusion
+ * @member {Number} n_diversity_inclusion_comparisons
+ */
+StatisticsSerializerV2.prototype['n_diversity_inclusion_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for backfire_risk
+ * @member {Number} n_backfire_risk_comparisons
+ */
+StatisticsSerializerV2.prototype['n_backfire_risk_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for better_habits
+ * @member {Number} n_better_habits_comparisons
+ */
+StatisticsSerializerV2.prototype['n_better_habits_comparisons'] = undefined;
+
+/**
+ * Number of comparisons for entertaining_relaxing
+ * @member {Number} n_entertaining_relaxing_comparisons
+ */
+StatisticsSerializerV2.prototype['n_entertaining_relaxing_comparisons'] = undefined;
 
 
 
