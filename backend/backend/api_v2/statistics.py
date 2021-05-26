@@ -12,24 +12,35 @@ import datetime
 from django.utils.timezone import make_aware
 
 
-class StatisticsSerializerV2(serializers.Serializer):
-    """Serialize statistics for the website."""
-    certified_experts = serializers.IntegerField(
-        help_text="Number of experts with certified e-mails")
-    total_experts = serializers.IntegerField(
-        help_text="Number of all experts")
-    pairwise_comparisons = serializers.IntegerField(
-        help_text="Total number of pairwise comparisons")
-    videos = serializers.IntegerField(
-        help_text="Total number of videos in the database")
-    min_score = serializers.FloatField(
-        help_text="Minimal aggregated score over all videos and features")
-    max_score = serializers.FloatField(
-        help_text="Maximal aggregated score over all videos and features")
-    weekly_active_ratings = serializers.IntegerField(
-        help_text="Number of ratings added within a week")
-    n_rated_videos = serializers.IntegerField(
-        help_text="Total number of videos with ratings")
+StatisticsSerializerV2 = type(
+    'StatisticsSerializerV2', (serializers.Serializer,),
+    {**dict(
+        __doc__="""Serialize statistics for the website.""",
+        certified_experts=serializers.IntegerField(
+            help_text="Number of experts with certified e-mails"),
+        total_experts=serializers.IntegerField(
+            help_text="Number of all experts"),
+        pairwise_comparisons=serializers.IntegerField(
+            help_text="Total number of pairwise comparisons"),
+        videos=serializers.IntegerField(
+            help_text="Total number of videos in the database"),
+        min_score=serializers.FloatField(
+            help_text="Minimal aggregated score over all videos and features"),
+        max_score=serializers.FloatField(
+            help_text="Maximal aggregated score over all videos and features"),
+        weekly_active_ratings=serializers.IntegerField(
+            help_text="Number of ratings added within a week"),
+        n_rated_videos=serializers.IntegerField(
+            help_text="Total number of videos with ratings"),
+
+        n_sum_comparisons=serializers.IntegerField(
+                help_text="Sum of all numbers of comparisons for all features"),
+     ),
+     **{f"n_{f}_comparisons": serializers.IntegerField(
+            help_text=f"Number of comparisons for {f}")
+        for f in VIDEO_FIELDS}
+     }
+)
 
 
 class StatisticsViewSetV2(viewsets.ViewSet, WithPKOverflowProtection):
@@ -80,5 +91,14 @@ class StatisticsViewSetV2(viewsets.ViewSet, WithPKOverflowProtection):
                                                         Q(expertrating_video_2__id=None)
                                                         ).distinct().count()
                 }
+
+        n_sum_comparisons = 0
+        for f in VIDEO_FIELDS:
+            val = ExpertRating.objects.filter(**{
+                f + '__isnull': False, f + '_weight__gt': 0}).distinct().count()
+            data[f"n_{f}_comparisons"] = val
+            n_sum_comparisons += val
+
+        data["n_sum_comparisons"] = n_sum_comparisons
 
         return Response(StatisticsSerializerV2(data, many=False).data)

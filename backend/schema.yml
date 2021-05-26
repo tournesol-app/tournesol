@@ -5122,11 +5122,55 @@ components:
         n_rated_videos:
           type: integer
           description: Total number of videos with ratings
+        n_sum_comparisons:
+          type: integer
+          description: Sum of all numbers of comparisons for all features
+        n_largely_recommended_comparisons:
+          type: integer
+          description: Number of comparisons for largely_recommended
+        n_reliability_comparisons:
+          type: integer
+          description: Number of comparisons for reliability
+        n_importance_comparisons:
+          type: integer
+          description: Number of comparisons for importance
+        n_engaging_comparisons:
+          type: integer
+          description: Number of comparisons for engaging
+        n_pedagogy_comparisons:
+          type: integer
+          description: Number of comparisons for pedagogy
+        n_layman_friendly_comparisons:
+          type: integer
+          description: Number of comparisons for layman_friendly
+        n_diversity_inclusion_comparisons:
+          type: integer
+          description: Number of comparisons for diversity_inclusion
+        n_backfire_risk_comparisons:
+          type: integer
+          description: Number of comparisons for backfire_risk
+        n_better_habits_comparisons:
+          type: integer
+          description: Number of comparisons for better_habits
+        n_entertaining_relaxing_comparisons:
+          type: integer
+          description: Number of comparisons for entertaining_relaxing
       required:
       - certified_experts
       - max_score
       - min_score
+      - n_backfire_risk_comparisons
+      - n_better_habits_comparisons
+      - n_diversity_inclusion_comparisons
+      - n_engaging_comparisons
+      - n_entertaining_relaxing_comparisons
+      - n_importance_comparisons
+      - n_largely_recommended_comparisons
+      - n_layman_friendly_comparisons
+      - n_pedagogy_comparisons
       - n_rated_videos
+      - n_reliability_comparisons
+      - n_sum_comparisons
       - pairwise_comparisons
       - total_experts
       - videos
