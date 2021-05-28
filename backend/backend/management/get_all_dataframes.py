@@ -1,20 +1,22 @@
 from io import BytesIO, StringIO
 from zipfile import ZipFile
+
+from django_pandas.io import read_frame
 import pandas as pd
+
+from django.contrib.auth.models import User as DjangoUser
+
+from backend.api_v2.video_ratings import get_score_annotation
+from backend.constants import fields as constants
 from backend.models import Video, VideoRating, ExpertRating, HistoricalExpertRating
 from backend.models import VideoComment, VideoCommentMarker, UserInformation, \
     VideoRatingPrivacy
 from backend.rating_fields import VIDEO_FIELDS
-from django.contrib.auth.models import User as DjangoUser
-from django_pandas.io import read_frame
 
 
 def get_user_data(username):
     """Get user's personal data."""
     dfs = {}
-
-    df = read_frame(Video.objects.all(), fieldnames=['id', 'video_id'] + VIDEO_FIELDS)
-    dfs['all_video_ratings'] = df
 
     df = read_frame(VideoRating.objects.filter(user__user__username=username).all())
     dfs['my_video_scores'] = df
@@ -85,7 +87,24 @@ def get_database_as_pd():
 
 def get_public_append_only_database_as_pd():
     """Get the public append-only database."""
+
+    # a horrible hack to make django-pandas work with annotations
+    # see https://github.com/chrisdev/django-pandas/blob/master/django_pandas/io.py
+    # see https://github.com/chrisdev/django-pandas/issues/124
+    # TODO: fix it
+    import django
+    django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
+
     result_df = {}
+    default_features = [constants['DEFAULT_PREFS_VAL'] for _ in VIDEO_FIELDS]
+
+    # all videos with the tournesol score and all criteria
+    video_df = read_frame(
+        Video.objects.all().annotate(score=get_score_annotation(default_features)),
+        fieldnames=['id', 'video_id', 'score'] + VIDEO_FIELDS
+    )
+
+    result_df['all_video_scores'] = video_df
 
     # all history for ratings, with both videos rated publicly
     qs = HistoricalExpertRating.objects.all()
@@ -108,12 +127,6 @@ def get_public_append_only_database_as_pd():
 
     # adding _is_certified field
     qs = UserInformation._annotate_is_certified(qs)
-
-    # a horrible hack to make django-pandas work with annotations
-    # see https://github.com/chrisdev/django-pandas/blob/master/django_pandas/io.py
-    # TODO: fix it
-    import django
-    django.db.models.fields.FieldDoesNotExist = django.core.exceptions.FieldDoesNotExist
 
     # Even if 'show my profile' is false, export 'username'.
     # If 'show my profile' is true, export 'First name',

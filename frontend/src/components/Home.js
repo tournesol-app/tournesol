@@ -401,10 +401,11 @@ export default () => {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <h1 className={classes.statistic}>
-              {getStatistic('pairwise_comparisons')}
+              {getStatistic('n_sum_comparisons')}
             </h1>
             <Typography paragraph>
-              comparison-based ratings between pairs of video contents
+              comparison-based ratings between pairs of video contents on
+              all quality features
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
