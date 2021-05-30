@@ -4,5 +4,6 @@
     - base
     - zsh
     - users
+    - postgresql
     
   become: true
