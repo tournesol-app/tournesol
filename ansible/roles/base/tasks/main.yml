@@ -1,0 +1,24 @@
+- name: Set Hostname
+  hostname:
+    name: tournesol
+
+- name: Install Minimal Set of Packages
+  apt:
+    name:
+      - unattended-upgrades
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - wget
+      - man-db
+      - htop
+      - net-tools
+      - dnsutils
+      - netcat
+      - python3
+      - git
+      - build-essential
+      - vim
+      - kitty-terminfo
+    update_cache: yes
