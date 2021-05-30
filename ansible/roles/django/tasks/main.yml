@@ -1,0 +1,67 @@
+- name: Install Python and UWSGI packages
+  apt:
+    name:
+      - python3-pip
+      - python3-venv
+      - virtualenv
+      - uwsgi
+      - uwsgi-plugin-python3
+    update_cache: yes
+
+- name: Create Django server directory
+  file:
+    path: /srv/tournesol
+    state: directory
+
+- name: Create Virtualenv for dummy project
+  pip:
+    name:
+      - Django
+      - uwsgi
+    virtualenv: /srv/tournesol/venv
+
+- name: Create dummy Django project
+  shell:
+    chdir: /srv/tournesol
+    cmd: . venv/bin/activate && django-admin startproject tournesol
+    creates: /srv/tournesol/tournesol
+
+- name: Create dummy Django app
+  shell:
+    chdir: /srv/tournesol/tournesol
+    cmd: . ../venv/bin/activate && python manage.py startapp backend
+    creates: /srv/tournesol/tournesol/backend
+
+- name: Authorize any hostname in dummy app
+  lineinfile:
+    dest: /srv/tournesol/tournesol/tournesol/settings.py
+    regexp: "^ALLOWED_HOSTS = "
+    line: "ALLOWED_HOSTS = ['*']"
+
+- name: Copy Nginx configuration
+  copy:
+    src: tournesol-nginx-conf
+    dest: /etc/nginx/sites-available/tournesol
+  notify: Reload Nginx
+
+- name: Copy UWSGI configuration
+  copy:
+    src: tournesol-uwsgi.ini
+    dest: /etc/uwsgi/apps-available/tournesol.ini
+  notify: Restart UWSGI
+
+- name: Enable Nginx configuration
+  file:
+    src: /etc/nginx/sites-available/tournesol
+    dest: /etc/nginx/sites-enabled/tournesol
+    state: link
+  notify: Reload Nginx
+
+- name: Enable UWSGI configuration
+  file:
+    src: /etc/uwsgi/apps-available/tournesol.ini
+    dest: /etc/uwsgi/apps-enabled/tournesol.ini
+    state: link
+  notify: Restart UWSGI
+
+- meta: flush_handlers

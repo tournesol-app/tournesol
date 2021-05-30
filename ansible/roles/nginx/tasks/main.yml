@@ -1,0 +1,13 @@
+- name: Install Nginx
+  apt:
+    name: nginx
+    update_cache: yes
+
+- name: Disable Nginx default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify:
+    - Reload Nginx
+
+- meta: flush_handlers

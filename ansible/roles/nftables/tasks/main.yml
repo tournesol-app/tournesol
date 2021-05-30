@@ -1,0 +1,19 @@
+- name: Install Nftables
+  apt:
+    name: nftables
+    update_cache: true
+
+- name: Copy Nftables Configuration File
+  template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+  notify: Reload Nftables
+
+- name: Ensure Nftables is Enabled and Running
+  systemd:
+    name: nftables
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- meta: flush_handlers

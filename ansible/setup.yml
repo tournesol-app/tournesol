@@ -5,5 +5,8 @@
     - zsh
     - users
     - postgresql
+    - nginx
+    - django
+    - nftables
     
   become: true
