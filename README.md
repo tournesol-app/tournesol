@@ -13,3 +13,9 @@
     * push your ssh key with `ssh-copy-id <username>@<vm-address>` using the password defined during installation
     * ssh into the VM, run `sudo visudo` to edit `/etc/sudoers` and change the line `%sudo	ALL=(ALL:ALL) ALL` into `%sudo	ALL=(ALL:ALL) NOPASSWD:ALL` to allow members of the `sudo` group to execute commands as root without entering their password
 
+## Provisioning
+- Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure
+- Check the administrators list in `ansible/group_vars/tournesol.yml`
+- Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes
+- Run `ansible-playbook -i inventory.yml -l tournesol-vm setup.yml --verbose` from `ansible` directory
+- If the kernel was updated, reboot the VM to start using the new one
