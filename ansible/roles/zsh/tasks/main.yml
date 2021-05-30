@@ -39,3 +39,5 @@
     url: https://git.io/antigen
     dest: /usr/local/bin/zsh-antigen/antigen.zsh
     creates: /usr/local/bin/zsh-antigen/antigen.zsh
+
+- meta: flush_handlers
