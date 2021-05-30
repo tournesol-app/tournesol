@@ -3,7 +3,7 @@ all:
     tournesol:
       hosts:
         tournesol-vm:
-          ansible_host: "192.168.122.228"
+          ansible_host: "192.168.122.233"
           ansible_user: "jst"
       vars:
         ansible_python_interpreter: /usr/bin/python3
