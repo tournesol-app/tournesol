@@ -1,0 +1,57 @@
+- name: Create Admin Group
+  group:
+    name: sudo
+
+- name: Add Admin Group Members to Sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "%sudo ALL"
+    line: "%sudo ALL=(ALL:ALL) NOPASSWD:ALL"
+
+- name: Create Users
+  user:
+    name: "{{item.name}}"
+    shell: "{{ item.shell | default('/usr/bin/zsh') }}"
+    state: "{{ item.state | default('present') }}"
+    groups:
+      - sudo
+    append: yes
+  with_items: "{{admin_users}}"
+
+- name: Copy Configuration for Admins
+  copy:
+    src: "admin-users/{{item.name}}/"
+    dest: "/home/{{item.name}}/"
+    owner: "{{item.name}}"
+    group: "{{item.name}}"
+    mode: u=rw,o=,g=
+    force: no
+  when: item.state is undefined or item.state != 'absent'
+  with_items: "{{admin_users}}"
+
+- name: Add Authorized Keys for Admins
+  authorized_key:
+    user: "{{item.name}}"
+    key: "{{ lookup('file', 'admin-users/{{item.name}}/.ssh/authorized_keys') }}"
+    exclusive: yes
+    state: "{{ item.state | default('present') }}"
+  when: item.state is undefined or item.state != 'absent'
+  with_items: "{{admin_users}}"
+
+- name: Delete Admin Users Passwords
+  user:
+    name: "{{item.name}}"
+    password: '!'
+  when: item.state is undefined or item.state != 'absent'
+  with_items: "{{admin_users}}"
+
+- name: Delete Root Password
+  user:
+    name: root
+    password: '!'
+
+- name: Disable SSH Password Authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "#?PasswordAuthentication"
+    line: "PasswordAuthentication no"

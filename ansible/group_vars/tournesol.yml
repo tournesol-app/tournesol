@@ -1,0 +1,3 @@
+admin_users:
+  - name: jst
+    shell: "/usr/bin/zsh"

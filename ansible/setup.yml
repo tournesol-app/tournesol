@@ -2,5 +2,6 @@
   roles:
     - base
     - zsh
+    - users
     
   become: true

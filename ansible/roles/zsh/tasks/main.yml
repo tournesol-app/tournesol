@@ -29,16 +29,6 @@
 
 - meta: flush_handlers
 
-- name: Install ZSH Configuration
-  copy:
-    src: .zshrc
-    dest: /etc/skel/.zshrc
-
-- name: Install P10k Configuration
-  copy:
-    src: .p10k.zsh
-    dest: /etc/skel/.p10k.zsh
-
 - name: Create Antigen Directory
   file:
     path: /usr/local/bin/zsh-antigen
