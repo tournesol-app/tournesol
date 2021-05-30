@@ -1,0 +1,3 @@
+- name: Refresh Fonts Cache
+  command:
+    cmd: fc-cache
