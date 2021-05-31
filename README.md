@@ -1,5 +1,5 @@
 ## Fetching Ubuntu Server Image and Verifying It
-- `./fetch-ubuntu-server-image.sh`
+- `./base-image/fetch-ubuntu-server-image.sh`
 
 ## Installing in a VM for Infrastructure Code Development
 - Create a VM using the installer from the previously downloaded ISO
