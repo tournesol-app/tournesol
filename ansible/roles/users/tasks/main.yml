@@ -11,7 +11,7 @@
 - name: Create Users
   user:
     name: "{{item.name}}"
-    shell: "{{ item.shell | default('/usr/bin/zsh') }}"
+    shell: "{{ item.shell | default('/usr/bin/bash') }}"
     state: "{{ item.state | default('present') }}"
     groups:
       - sudo
@@ -26,15 +26,6 @@
     group: "{{item.name}}"
     mode: u=rw,o=,g=
     force: no
-  when: item.state is undefined or item.state != 'absent'
-  with_items: "{{admin_users}}"
-
-- name: Add Authorized Keys for Admins
-  authorized_key:
-    user: "{{item.name}}"
-    key: "{{ lookup('file', 'admin-users/{{item.name}}/.ssh/authorized_keys') }}"
-    exclusive: yes
-    state: "{{ item.state | default('present') }}"
   when: item.state is undefined or item.state != 'absent'
   with_items: "{{admin_users}}"
 
