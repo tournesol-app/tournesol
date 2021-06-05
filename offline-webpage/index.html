@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            padding: 0px;
+            margin: 0px;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        h1 { 
+            background: #FFC800;
+            margin: 0px;
+            padding: 8px;
+            width: 100%;
+            text-align: center;
+
+            font-family: Ubuntu Mono;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 32px;
+            line-height: 32px;
+            color: #302500;
+        }
+        #content {
+            max-width: calc(100% - 8px);
+            width: 600px;
+        }
+        p {
+            font-family: Poppins;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 150%;
+            /* or 24px */
+
+
+            /* Primary/Neutral/N-20 */
+
+            color: #4A473E;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tournesol is temporarily offline</h1>
+    <div id="content">
+        <p>
+            Tournesol aims to identify top videos of public utility by eliciting contributors' judgements 
+            on content quality. Check-out our <a href="https://github.com/tournesol-app/tournesol">open 
+            source code</a>, or join our <a href="https://discord.gg/TvsFB8RNBV">Discord</a>.
+        </p>
+        <p>
+            Tournesol is currently offline, because we detected serious security vulnerabilities in our 
+            code base. We are running a thorough refactoring and audit of our backend codes (written with 
+            Django) to restart on more solid grounds. Unfortunately, because we are a small team of mostly 
+            volunteers, this effort may take us a couple of months.
+        </p>
+        <p>
+            If you can, please consider helping us, through coding or through
+            donations to safely get Tournesol back online as soon as possible.
+        </p>
+    </div>
+    <form action="https://www.paypal.com/donate" method="post" target="_top">
+        <input type="hidden" name="hosted_button_id" value="22T84YR7TZ762" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/CH/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        <img alt="" border="0" src="https://www.paypal.com/en_CH/i/scr/pixel.gif" width="1" height="1" />
+    </form>
+    <form action="/" method="post">
+        <label>Please notify me on that mail address when the site is back up:</label>
+        <input type="email" name="email-to-notify">
+        <input type="submit" value="Submit">
+    </form>
+</body>
