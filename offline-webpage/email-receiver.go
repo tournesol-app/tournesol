@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
+	"net"
 	"time"
 
 	"database/sql"
@@ -77,13 +77,16 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		socket := strings.Split(r.RemoteAddr, ":")
-		if len(socket) != 2 {
-			log.Printf("error while parsing client IP %v\n", socket)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			directIP, _, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				log.Printf("error while parsing client IP %v\n", r.RemoteAddr)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			ip = directIP
 		}
-		ip := socket[0]
 
 		now := time.Now().Unix()
 

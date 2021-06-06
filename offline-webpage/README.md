@@ -74,4 +74,4 @@ go build
   sudo systemctl daemon-reload && sudo systemctl enable --now offline-webpage
   ```
 
-- forward requests to `127.0.0.1:8080`
+- configure the proxy to forward requests to `127.0.0.1:8080` and to set `x-forwarded-for` header
