@@ -1,0 +1,17 @@
+DEBUG: True
+SECRET_KEY: g&*0o49mk(t&*vvdsfsdgfsdgsgesqdg5n*e7ars&$qz*lpi^s$k*
+ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+    - 0.0.0.0
+
+MAIN_URL: https://localhost:8000/
+
+DATABASE_NAME: tournesol
+DATABASE_USER: user
+DATABASE_PASSWORD: password
+
+STATIC_ROOT: /home/user/static
+MEDIA_ROOT: /home/user/media/
+
+EMAIL_BACKEND: console
