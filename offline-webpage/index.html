@@ -29,29 +29,33 @@
             line-height: 32px;
             color: #302500;
         }
-        #content {
+        .content {
             max-width: calc(100% - 8px);
             width: 600px;
-        }
-        p {
             font-family: Poppins;
             font-style: normal;
             font-weight: normal;
             font-size: 16px;
             line-height: 150%;
-            /* or 24px */
-
-
-            /* Primary/Neutral/N-20 */
-
             color: #4A473E;
+        }
+        .content input {
+            background: #FFFFFF;
+            /* Primary/Neutral/N-70 */
+
+            border: 1px solid #CDCABC;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+        form {
+            margin-top: 16px;
         }
     </style>
 </head>
 
 <body>
     <h1>Tournesol is temporarily offline</h1>
-    <div id="content">
+    <div class="content">
         <p>
             Tournesol aims to identify top videos of public utility by eliciting contributors' judgements 
             on content quality. Check-out our <a href="https://github.com/tournesol-app/tournesol">open 
@@ -73,9 +77,10 @@
         <input type="image" src="https://www.paypalobjects.com/en_US/CH/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
         <img alt="" border="0" src="https://www.paypal.com/en_CH/i/scr/pixel.gif" width="1" height="1" />
     </form>
-    <form action="/" method="post">
-        <label>Please notify me on that mail address when the site is back up:</label>
-        <input type="email" name="email-to-notify">
+    <form action="/" method="post" class="content">
+        <label>Register to be notified when Tournesol is back online:</label>
+        <br/>
+        <input placeholder="Your email" type="email" name="email-to-notify" required="true">
         <input type="submit" value="Submit">
     </form>
 </body>
