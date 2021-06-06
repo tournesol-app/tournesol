@@ -52,7 +52,7 @@ minNumRateLater = 6
 # number of top popular videos
 n_top_popular = 100
 
-fields = {
+ts_constants = {
     'featureNames': VIDEO_FIELDS_DICT,
     'featureList': VIDEO_FIELDS,
     'featureColors': featureColors,

@@ -208,3 +208,6 @@ VIDEO_FIELDS_DICT = OrderedDict([
 ])
 
 VIDEO_FIELDS = list(VIDEO_FIELDS_DICT.keys())
+
+# maximal weight to assign to a rating for a particular feature, see #41
+MAX_FEATURE_WEIGHT = 8

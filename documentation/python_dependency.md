@@ -23,3 +23,22 @@ https://pypi.org/project/Pyllow/
 
 Required for using imagefield in django
 
+### django-language-field
+https://github.com/audiolion/django-language-field
+
+Give a field with all language in Choicies
+
+### django-computed-property
+https://github.com/brechin/django-computed-property/
+
+Compute a field on save
+
+### tqdm
+https://github.com/tqdm/tqdm
+
+Progress bar for python
+
+### Fuzzysearch
+https://github.com/bevacqua/fuzzysearch
+
+Better algorithm for find result with partial text

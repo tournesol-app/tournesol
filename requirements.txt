@@ -1,17 +1,16 @@
 django==3.2.*
 PyYAML==5.4.1
-
 #rest framework
 djangorestframework==3.12.4
 markdown==3.3.4
 django-filter==2.4.0
 
 psycopg2-binary==2.8.6
-
 django-countries==7.2.1
-
 numpy==1.20.3
-
 Pillow==8.2.0
-
+django-language-field==0.0.3
+django-computed-property==0.3.0
+tqdm==4.61.0
+fuzzysearch==0.7.3
 
