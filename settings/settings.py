@@ -55,7 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
+    'tournesol',
 ]
+
+# Modèle utilisateur utilisé par Django (1.5+)
+AUTH_USER_MODEL = 'core.user'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -102,6 +107,9 @@ DATABASES = OrderedDict([
         'NUMBER': 42
     }]
 ])
+
+DRF_RECAPTCHA_PUBLIC_KEY = "DRF_RECAPTCHA_PUBLIC_KEY" in server_settings and server_settings["DRF_RECAPTCHA_PUBLIC_KEY"] or 'dsfsdfdsfsdfsdfsdf'
+DRF_RECAPTCHA_SECRET_KEY = "DRF_RECAPTCHA_SECRET_KEY" in server_settings and server_settings["DRF_RECAPTCHA_SECRET_KEY"] or 'dsfsdfdsfsdf'
 
 
 # Password validation
@@ -180,3 +188,23 @@ REST_FRAMEWORK = {
         'user': '1000000/hour'
     }
 }
+
+
+# Maximal value for a rating (0-100)
+# 0 means left video is best, 100 means right video is best
+MAX_VALUE = 100.
+
+VIDEO_FIELDS_DICT = OrderedDict([
+    ('largely_recommended', 'Should be largely recommended'),
+    ('reliability', "Reliable and not misleading"),
+    ('importance', "Important and actionable"),
+    ('engaging', "Engaging and thought-provoking"),
+    ('pedagogy', "Clear and pedagogical"),
+    ('layman_friendly', "Layman-friendly"),
+    ('diversity_inclusion', "Diversity and Inclusion"),
+    ('backfire_risk', "Resilience to backfiring risks"),
+    ('better_habits', 'Encourages better habits'),
+    ('entertaining_relaxing', 'Entertaining and relaxing'),
+])
+
+VIDEO_FIELDS = list(VIDEO_FIELDS_DICT.keys())

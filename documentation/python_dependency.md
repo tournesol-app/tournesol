@@ -15,3 +15,11 @@ https://github.com/SmileyChris/django-countries/
 
 Give a country field for models
 
+### Numpy
+https://numpy.org/
+
+### Pillow
+https://pypi.org/project/Pyllow/
+
+Required for using imagefield in django
+
