@@ -1,0 +1,17 @@
+[Unit]
+Description=Offline Webpage Go Server
+After=network.target
+Requires=network.target
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=0
+
+WorkingDirectory=/srv/offline-webpage
+ExecStart=/srv/offline-webpage/offline-webpage
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
