@@ -75,3 +75,9 @@ go build
   ```
 
 - configure the proxy to forward requests to `127.0.0.1:8080` and to set `x-forwarded-for` header
+
+## Show Registered Email Addresses
+
+```bash
+sudo -u www-data /srv/offline-webpage/get-emails.sh
+```
