@@ -43,8 +43,8 @@ func main() {
 		port:                     8080,
 		pageFile:                 "./index.html",
 		emailFormKey:             "email-to-notify",
-		throttlingDelay:          30,
-		throttlingMaxSubmissions: 2,
+		throttlingDelay:          60*60*24, // 1 day
+		throttlingMaxSubmissions: 10,
 	}
 
 	s := &server{
