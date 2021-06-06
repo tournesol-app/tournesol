@@ -333,3 +333,82 @@ class EmailDomain(models.Model):
     def __str__(self):
         """Get string representation."""
         return f"{self.domain} [{self.status}]"
+
+
+class Degree(models.Model):
+    """Educational degree."""
+    level = models.CharField(
+        null=False,
+        blank=False,
+        help_text="Degree level",
+        max_length=100)
+    domain = models.CharField(
+        null=False,
+        blank=False,
+        help_text="Degree domain",
+        max_length=100)
+    institution = models.CharField(
+        null=False,
+        blank=False,
+        help_text="Degree institution",
+        max_length=100)
+    user = models.ForeignKey(
+        null=True,
+        to=User,
+        help_text="User that the degree belongs to.",
+        on_delete=models.CASCADE,
+        related_name='degrees')
+    rank = models.IntegerField(default=0, help_text="Ordering field")
+
+    class Meta:
+        ordering = ['rank', 'level', 'domain', 'institution']
+        unique_together = ['level', 'domain', 'institution', 'user']
+
+    def __str__(self):
+        return f"{self.level}/{self.domain}/{self.institution}"
+
+
+class Expertise(models.Model):
+    """Expertise for a user."""
+    name = models.CharField(
+        null=False,
+        blank=False,
+        help_text="Expertise description",
+        max_length=100)
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        help_text="User for the expertise",
+        related_name="expertises",
+        null=True)
+    rank = models.IntegerField(default=0, help_text="Ordering field")
+
+    class Meta:
+        ordering = ['rank', 'name']
+        unique_together = ['name', 'user']
+
+    def __str__(self):
+        return self.name
+
+
+class ExpertiseKeyword(models.Model):
+    """Expertise keyword for a user."""
+    name = models.CharField(
+        null=False,
+        blank=False,
+        help_text="Expertise keyword description",
+        max_length=100)
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        help_text="User for the expertise keywords",
+        related_name="expertise_keywords",
+        null=True)
+    rank = models.IntegerField(default=0, help_text="Ordering field")
+
+    class Meta:
+        ordering = ['rank', 'name']
+        unique_together = ['name', 'user']
+
+    def __str__(self):
+        return self.name
