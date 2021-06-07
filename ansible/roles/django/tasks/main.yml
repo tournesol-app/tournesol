@@ -5,49 +5,69 @@
       - virtualenv
     update_cache: yes
 
-- name: Create Django server directory
-  file:
-    path: /srv/tournesol
-    state: directory
-
-- name: Create Virtualenv for dummy project
-  pip:
-    name:
-      - Django
-      - gunicorn
-      - uvicorn
-    virtualenv: /srv/tournesol/venv
-    virtualenv_python: python3.9
-
-- name: Create dummy Django project
-  shell:
-    chdir: /srv/tournesol
-    cmd: . venv/bin/activate && django-admin startproject tournesol
-    creates: /srv/tournesol/tournesol
-
-- name: Create dummy Django app
-  shell:
-    chdir: /srv/tournesol/tournesol
-    cmd: . ../venv/bin/activate && python manage.py startapp backend
-    creates: /srv/tournesol/tournesol/backend
-
-- name: Authorize any hostname in dummy app
-  lineinfile:
-    dest: /srv/tournesol/tournesol/tournesol/settings.py
-    regexp: "^ALLOWED_HOSTS = "
-    line: "ALLOWED_HOSTS = ['*']"
-
-- name: Copy Nginx configuration
-  copy:
-    src: tournesol-nginx-conf
-    dest: /etc/nginx/sites-available/tournesol
-  notify: Reload Nginx
-
 - name: Create Users
   user:
     name: gunicorn
     system: yes
     create_home: no
+
+- name: Create Django database
+  postgresql_db:
+    name: "{{django_database_name}}"
+  become: yes
+  become_user: postgres
+
+- name: Create Django database user
+  postgresql_user:
+    name: "{{django_database_user}}"
+    password: "{{django_database_password}}"
+    db: "{{django_database_name}}"
+  become: yes
+  become_user: postgres
+
+- name: Create Django settings directory
+  file:
+    path: /etc/tournesol
+    state: directory
+
+- name: Copy Django settings
+  template:
+    src: settings.yaml.j2
+    dest: /etc/tournesol/settings.yaml
+  notify: Reload Gunicorn
+
+- name: Create Django application directory
+  file:
+    path: /srv/tournesol-backend
+    state: directory
+    owner: gunicorn
+    group: gunicorn
+
+- name: Clone Django application repository
+  git:
+    repo: https://github.com/tournesol-app/tournesol-backend.git
+    dest: /srv/tournesol-backend
+    version: master
+  become: yes
+  become_user: gunicorn
+
+- name: Create Virtualenv for Django project
+  pip:
+    name:
+      - gunicorn
+      - uvicorn
+    virtualenv: /srv/tournesol-backend/venv
+    virtualenv_python: python3.9
+  become: yes
+  become_user: gunicorn
+
+- name: Install requirements for Django project
+  pip:
+    requirements: /srv/tournesol-backend/requirements.txt
+    virtualenv: /srv/tournesol-backend/venv
+    virtualenv_python: python3.9
+  become: yes
+  become_user: gunicorn
 
 - name: Copy Gunicorn service file
   copy:
@@ -67,37 +87,17 @@
     state: started
     daemon_reload: true
 
+- name: Copy Nginx configuration
+  copy:
+    src: tournesol-nginx-conf
+    dest: /etc/nginx/sites-available/tournesol
+  notify: Reload Nginx
+
 - name: Enable Nginx configuration
   file:
     src: /etc/nginx/sites-available/tournesol
     dest: /etc/nginx/sites-enabled/tournesol
     state: link
   notify: Reload Nginx
-
-- name: Create Django database
-  postgresql_db:
-    name: tournesol
-  become: yes
-  become_user: postgres
-
-- name: Create Django database user
-  postgresql_user:
-    name: tournesol
-    password: tournesol
-    db: tournesol
-  become: yes
-  become_user: postgres
-
-- name: Set database in Django settings
-  replace:
-    path: /srv/tournesol/tournesol/tournesol/settings.py
-    after: "DATABASES = {\n    'default' = {\n"
-    before: "\n    }\n}"
-    regexp: "[.\n]+"
-    replace: |
-          'ENGINE': 'django.contrib.gis.db.backends.postgis',
-          'NAME': 'tournesol',
-          'USER': 'tournesol',
-          'PASSWORD': 'tournesol',
 
 - meta: flush_handlers

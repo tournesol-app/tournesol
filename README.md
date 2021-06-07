@@ -16,16 +16,15 @@
 ## Provisioning
 - Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
-- Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes
-- Run `ansible-playbook -i inventory.yml -l tournesol-vm setup.yml --verbose` from `ansible` directory
+- Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them
+- Set the `DJANGO_DATABASE_PASSWORD` and `DJANGO_SECRET_KEY` to random values (i.e. `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)"`)
+- Run `./ansible/scripts/provisioning-vm.sh apply` (without `apply` it's a dry-run)
 - If the kernel was updated, reboot the VM to start using the new one
 
 ## TODO
-- Hardening UWSGI service if it makes sense: https://wiki.archlinux.org/title/UWSGI#Hardening_uWSGI_service
 - Setting a production target with hosting domain and certbot for TLS
 - Monitoring tools (munin? prometheus/grafana? external health checks?)
 - Alerting
-- Role to setup application database and user
 - Backup automation and monitoring (database mainly?)
 - Staging environment on the same VM?
 - Application artifacts retrieval with proper triggers on updates (CI integration, CD?)

@@ -11,25 +11,25 @@ map $http_upgrade $connection_upgrade {
 
 server {
     listen 80 deferred;
-    client_max_body_size 4G;
+    client_max_body_size 100M;
 
     # server_name example.com;
 
     keepalive_timeout 5;
 
     location /static {
-        root /var/www/html/static;
+        root /var/www/html;
     }
 
-    location /projects/project/media/{
+    location /media {
         internal;
-        alias /var/www/html/media/;
+        alias /var/www/html/media;
     }
 
     location / {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header Host $http_host;
+      proxy_set_header Host $host;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection $connection_upgrade;
       proxy_redirect off;

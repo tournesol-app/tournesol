@@ -12,8 +12,9 @@ Group=gunicorn
 # DynamicUser=yes
 # see http://0pointer.net/blog/dynamic-users-with-systemd.html
 RuntimeDirectory=gunicorn
-WorkingDirectory=/srv/tournesol/tournesol
-ExecStart=/srv/tournesol/venv/bin/gunicorn tournesol.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
+WorkingDirectory=/srv/tournesol-backend
+Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
+ExecStart=/srv/tournesol-backend/venv/bin/gunicorn settings.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5

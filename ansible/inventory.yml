@@ -3,8 +3,13 @@ all:
     tournesol:
       hosts:
         tournesol-vm:
-          ansible_host: "192.168.122.242"
+          ansible_host: "192.168.122.123"
           # ansible_user: "jst"
+          django_debug: "True"
+          django_main_url: "http://{{ansible_host}}/"
+          django_database_name: "tournesol"
+          django_database_user: "tournesol"
+
       vars:
         ansible_python_interpreter: /usr/bin/python3
         ansible_ssh_pipelining: true
