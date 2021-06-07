@@ -35,3 +35,15 @@
 - CDN?
 - Container based setup? Docker? k3s?
 - Cloud setup relying on managed services?
+
+## WIP
+
+```bash
+ssh 192.168.122.60 -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py migrate"'
+ssh 192.168.122.60 -- sudo mkdir /var/www/html/static
+ssh 192.168.122.60 -- sudo chmod o+rwx /var/www/html/static
+ssh 192.168.122.60 -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py collectstatic"'
+ssh 192.168.122.60 -- sudo chmod -R o-rwx /var/www/html/static
+ssh 192.168.122.60 -- sudo chown -R www-data:www-data /var/www/html/static
+ssh -t 192.168.122.60 -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createsuperuser"'
+```

@@ -3,7 +3,7 @@ all:
     tournesol:
       hosts:
         tournesol-vm:
-          ansible_host: "192.168.122.123"
+          ansible_host: "192.168.122.60"
           # ansible_user: "jst"
           django_debug: "True"
           django_main_url: "http://{{ansible_host}}/"
