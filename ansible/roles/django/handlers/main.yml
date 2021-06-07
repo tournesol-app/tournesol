@@ -4,8 +4,8 @@
     state: reloaded
     daemon_reload: true
 
-- name: Restart UWSGI
+- name: Reload Gunicorn
   systemd:
-    name: uwsgi
-    state: restarted
+    name: gunicorn
+    state: reloaded
     daemon_reload: true

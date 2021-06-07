@@ -1,24 +1,39 @@
-upstream django {
-    server unix:///run/uwsgi/app/tournesol/socket;
+# server {
+#     # if no Host match, close the connection to prevent host spoofing
+#     listen 80 default_server;
+#     return 444;
+# }
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
 }
 
-# configuration of the server
 server {
-    listen      80;
-    charset     utf-8;
+    listen 80 deferred;
+    client_max_body_size 4G;
 
-    client_max_body_size 75M;
+    # server_name example.com;
 
-    location /media  {
-        alias /srv/tournesol/tournesol/media;
-    }
+    keepalive_timeout 5;
 
     location /static {
-        alias /srv/tournesol/tournesol/static;
+        root /var/www/html/static;
+    }
+
+    location /projects/project/media/{
+        internal;
+        alias /var/www/html/media/;
     }
 
     location / {
-        uwsgi_pass  django;
-        include     uwsgi_params;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Host $http_host;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
+      proxy_redirect off;
+      proxy_buffering off;
+      proxy_pass http://unix:/run/gunicorn.sock;
     }
 }

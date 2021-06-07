@@ -1,11 +1,8 @@
-- name: Install Python and UWSGI packages
+- name: Install Python packages
   apt:
     name:
-      - python3-pip
-      - python3-venv
+      - python3.9
       - virtualenv
-      - uwsgi
-      - uwsgi-plugin-python3
     update_cache: yes
 
 - name: Create Django server directory
@@ -17,8 +14,10 @@
   pip:
     name:
       - Django
-      - uwsgi
+      - gunicorn
+      - uvicorn
     virtualenv: /srv/tournesol/venv
+    virtualenv_python: python3.9
 
 - name: Create dummy Django project
   shell:
@@ -44,11 +43,29 @@
     dest: /etc/nginx/sites-available/tournesol
   notify: Reload Nginx
 
-- name: Copy UWSGI configuration
+- name: Create Users
+  user:
+    name: gunicorn
+    system: yes
+    create_home: no
+
+- name: Copy Gunicorn service file
   copy:
-    src: tournesol-uwsgi.ini
-    dest: /etc/uwsgi/apps-available/tournesol.ini
-  notify: Restart UWSGI
+    src: gunicorn.service
+    dest: /etc/systemd/system/gunicorn.service
+  notify: Reload Gunicorn
+
+- name: Copy Gunicorn socket file
+  copy:
+    src: gunicorn.socket
+    dest: /etc/systemd/system/gunicorn.socket
+
+- name: Enable and start Gunicorn
+  systemd:
+    name: gunicorn.socket
+    enabled: true
+    state: started
+    daemon_reload: true
 
 - name: Enable Nginx configuration
   file:
@@ -57,11 +74,30 @@
     state: link
   notify: Reload Nginx
 
-- name: Enable UWSGI configuration
-  file:
-    src: /etc/uwsgi/apps-available/tournesol.ini
-    dest: /etc/uwsgi/apps-enabled/tournesol.ini
-    state: link
-  notify: Restart UWSGI
+- name: Create Django database
+  postgresql_db:
+    name: tournesol
+  become: yes
+  become_user: postgres
+
+- name: Create Django database user
+  postgresql_user:
+    name: tournesol
+    password: tournesol
+    db: tournesol
+  become: yes
+  become_user: postgres
+
+- name: Set database in Django settings
+  replace:
+    path: /srv/tournesol/tournesol/tournesol/settings.py
+    after: "DATABASES = {\n    'default' = {\n"
+    before: "\n    }\n}"
+    regexp: "[.\n]+"
+    replace: |
+          'ENGINE': 'django.contrib.gis.db.backends.postgis',
+          'NAME': 'tournesol',
+          'USER': 'tournesol',
+          'PASSWORD': 'tournesol',
 
 - meta: flush_handlers
