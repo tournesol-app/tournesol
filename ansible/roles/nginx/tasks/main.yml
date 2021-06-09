@@ -3,27 +3,31 @@
     name: ufw
     state: stopped
     enabled: false
+  ignore_errors: yes
 
 - name: Check if certificates are already present
   stat:
     path: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
   register: cert_file
+  when: letsencrypt_email is defined
 
 - name: Stop Nginx if certificates are not present
   systemd:
     name: nginx
     state: stopped
-  when: cert_file.stat.exists == False
+  when: letsencrypt_email is defined and cert_file.stat.exists == False
 
 - name: Run Certbot
   shell:
     cmd: "certbot certonly --standalone -d {{domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
     creates: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
 
 - name: Generate DH parameters
   shell:
     cmd: "openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048"
     creates: /etc/letsencrypt/ssl-dhparams.pem
+  when: letsencrypt_email is defined
 
 - name: Install Nginx
   apt:

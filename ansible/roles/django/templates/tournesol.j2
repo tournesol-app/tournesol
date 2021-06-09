@@ -1,8 +1,10 @@
+{% if letsencrypt_email is defined %}
 server {
     # if no Host match, close the connection to prevent host spoofing
     listen 80 default_server;
     return 444;
 }
+{% endif %}
 
 map $http_upgrade $connection_upgrade {
     default upgrade;
@@ -12,7 +14,9 @@ map $http_upgrade $connection_upgrade {
 server {
     client_max_body_size 100M;
 
+{% if letsencrypt_email is defined %}
     server_name {{domain_name}};
+{% endif %}
 
     keepalive_timeout 5;
 
@@ -35,7 +39,7 @@ server {
       proxy_buffering off;
       proxy_pass http://unix:/run/gunicorn.sock;
     }
-
+{% if letsencrypt_email is defined %}
     listen 443 ssl http2;
     ssl_certificate /etc/letsencrypt/live/{{domain_name}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{domain_name}}/privkey.pem;
@@ -45,8 +49,12 @@ server {
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Content-Type-Options nosniff;
     add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+{% else %}
+    listen 80;
+{% endif %}
 }
 
+{% if letsencrypt_email is defined %}
 server {
     if ($host = {{domain_name}}) {
         return 301 https://$host$request_uri;
@@ -57,3 +65,4 @@ server {
     server_name {{domain_name}};
     return 404;
 }
+{% endif %}

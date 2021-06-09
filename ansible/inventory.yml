@@ -3,7 +3,8 @@ all:
     tournesol:
       hosts:
         tournesol-vm:
-          ansible_host: "192.168.122.60"
+          ansible_host: "192.168.122.56"
+          machine_name: "tournesol"
           # ansible_user: "jst"
           django_debug: "True"
           django_main_url: "http://{{ansible_host}}/"
@@ -12,12 +13,12 @@ all:
         tournesol-staging:
           ansible_host: "tournesol.technocracy.dev"
           machine_name: "tournesol"
-          domain_name: "tournesol.technocracy.dev"
           # ansible_user: "jst"
           django_debug: "True"
           django_main_url: "http://{{ansible_host}}/"
           django_database_name: "tournesol"
           django_database_user: "tournesol"
+          domain_name: "tournesol.technocracy.dev"
           letsencrypt_email: "jst@kleis.ch"
 
       vars:

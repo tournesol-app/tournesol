@@ -19,7 +19,7 @@
 
 - name: Collect Django static assets
   shell:
-    cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py collectstatic"
+    cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py collectstatic --noinput"
     executable: /usr/bin/bash
   become: true
   become_user: gunicorn
