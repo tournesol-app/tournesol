@@ -3,3 +3,7 @@ admin_users:
     shell: "/usr/bin/zsh"
   - name: lpfaucon
     shell: "/usr/bin/zsh"
+  - name: sergei
+    shell: "/usr/bin/zsh"
+  - name: lenhoang
+    shell: "/usr/bin/zsh"
