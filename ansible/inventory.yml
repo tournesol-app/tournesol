@@ -15,7 +15,7 @@ all:
           machine_name: "tournesol"
           # ansible_user: "jst"
           django_debug: "True"
-          django_main_url: "http://{{ansible_host}}/"
+          django_main_url: "https://{{ansible_host}}/"
           django_database_name: "tournesol"
           django_database_user: "tournesol"
           domain_name: "tournesol.technocracy.dev"
