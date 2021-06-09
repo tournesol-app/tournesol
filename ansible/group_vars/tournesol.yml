@@ -1,3 +1,5 @@
 admin_users:
   - name: jst
     shell: "/usr/bin/zsh"
+  - name: lpfaucon
+    shell: "/usr/bin/zsh"
