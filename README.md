@@ -47,3 +47,30 @@ ssh 192.168.122.60 -- sudo chmod -R o-rwx /var/www/html/static
 ssh 192.168.122.60 -- sudo chown -R www-data:www-data /var/www/html/static
 ssh -t 192.168.122.60 -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createsuperuser"'
 ```
+
+## Staging Installation
+
+- create server
+- point a domain name to its IP and configure `ansible/inventory.yml` accordingly
+- login as root and run the following:
+
+```bash
+useradd -m <username>
+mkdir ~<username>/.ssh
+cp .ssh/authorized_keys ~<username>/.ssh/
+chown -R <username>:<username> ~<username>/.ssh
+gpasswd -a <username> sudo
+visudo
+# change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL`
+```
+
+- set the secrets in your environment `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export DJANGO_SECRET_KEY="$(base64 /dev/urandom | head -c 32)"`
+- run the playbook `./ansible/scripts/provisioning-staging.sh apply`
+- create a superuser: `ssh -t <username>@<domain_name> -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createsuperuser"'`
+
+useradd -m jst
+mkdir ~jst/.ssh
+cp .ssh/authorized_keys ~jst/.ssh/
+chown -R jst:jst ~jst/.ssh
+gpasswd -a jst sudo
+visudo
