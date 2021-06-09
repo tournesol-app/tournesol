@@ -41,7 +41,7 @@ curlify==2.2.1
 cycler==0.10.0
 decorator==4.4.2
 defusedxml==0.6.0
-Django==3.1.8
+Django==3.1.10
 django-annoying==0.10.6
 django-compat==1.0.15
 django-computed-property==0.3.0
