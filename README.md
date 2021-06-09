@@ -79,3 +79,11 @@ visudo
 - set the secrets in your environment `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export DJANGO_SECRET_KEY="$(base64 /dev/urandom | head -c 32)"`
 - run the playbook `./ansible/scripts/provisioning-staging.sh apply`
 - create a superuser: `ssh -t <username>@<domain_name> -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createsuperuser"'`
+
+## Retrieving Staging Secrets
+
+To run the playbook on the staging VM without changing the secrets, first fetch them and set them in your environment:
+
+```bash
+source ./ansible/scripts/get-staging-secrets.sh
+```
