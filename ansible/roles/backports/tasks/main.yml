@@ -1,0 +1,15 @@
+- name: Add Bullseye repository
+  apt_repository:
+    repo: deb http://deb.debian.org/debian/ bullseye main
+    state: present
+
+- name: Install Python and Certbot from Bullseye
+  apt:
+    name:
+      - python3.9
+      - virtualenv
+      - certbot
+      - python3-certbot-nginx
+    update_cache: yes
+    default_release: bullseye
+    autoremove: yes
