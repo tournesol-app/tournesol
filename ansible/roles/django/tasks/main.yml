@@ -1,11 +1,4 @@
-- name: Install Python packages
-  apt:
-    name:
-      - python3.9
-      - virtualenv
-    update_cache: yes
-
-- name: Create Users
+- name: Create Gunicorn user
   user:
     name: gunicorn
     system: yes
@@ -50,6 +43,9 @@
     version: master
   become: yes
   become_user: gunicorn
+  notify:
+    - Migrate Django database
+    - Collect Django static assets
 
 - name: Create Virtualenv for Django project
   pip:
@@ -80,6 +76,16 @@
     src: gunicorn.socket
     dest: /etc/systemd/system/gunicorn.socket
 
+- name: Create static assets directory
+  file:
+    path: /var/www/html/static
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rwx,g=rx,o=rx
+    state: directory
+  notify:
+    - Collect Django static assets
+
 - name: Enable and start Gunicorn
   systemd:
     name: gunicorn.socket
@@ -88,10 +94,11 @@
     daemon_reload: true
 
 - name: Copy Nginx configuration
-  copy:
-    src: tournesol-nginx-conf
+  template:
+    src: tournesol.j2
     dest: /etc/nginx/sites-available/tournesol
-  notify: Reload Nginx
+  notify:
+    - Reload Nginx
 
 - name: Enable Nginx configuration
   file:

@@ -9,3 +9,17 @@
     name: gunicorn
     state: reloaded
     daemon_reload: true
+
+- name: Migrate Django database
+  shell:
+    cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py migrate"
+    executable: /usr/bin/bash
+  become: true
+  become_user: gunicorn
+
+- name: Collect Django static assets
+  shell:
+    cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py collectstatic"
+    executable: /usr/bin/bash
+  become: true
+  become_user: gunicorn
