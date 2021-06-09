@@ -1,6 +1,11 @@
 - name: Set Hostname
   hostname:
-    name: tournesol
+    name: "{{machine_name}}"
+
+- name: Copy hosts file
+  template:
+    src: hosts
+    dest: /etc/hosts
 
 - name: Install Minimal Set of Packages
   apt:
