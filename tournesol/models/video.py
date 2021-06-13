@@ -129,7 +129,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     public_experts = ComputedJsonField(
         compute_from='get_certified_top_raters_list',
         null=False,
-        default="[]",
+        default=list,
         help_text=f"Top {ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW']} certified public "
                   "contributor usernames"
     )
