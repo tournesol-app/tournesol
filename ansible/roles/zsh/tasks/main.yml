@@ -6,12 +6,12 @@
       - fontconfig
     update_cache: yes
 
-- name: Create Fonts Directory
+- name: Create fonts directory
   file:
     path: /usr/local/share/fonts
     state: directory
 
-- name: Install Meslo Nerd Fonts Patched for Powerlevel10k
+- name: Install Meslo Nerd Fonts patched for Powerlevel10k
   uri:
     url: https://github.com/romkatv/powerlevel10k-media/raw/master/{{item.escaped_name}}
     dest: /usr/local/share/fonts/{{item.target_name}}
@@ -25,11 +25,11 @@
       target_name: MesloLGS-NF-Italic.ttf
     - escaped_name: MesloLGS%20NF%20Bold%20Italic.ttf
       target_name: MesloLGS-NF-Bold-Italic.ttf
-  notify: Refresh Fonts Cache
+  notify: Refresh fonts cache
 
 - meta: flush_handlers
 
-- name: Create Antigen Directory
+- name: Create Antigen directory
   file:
     path: /usr/local/bin/zsh-antigen
     state: directory

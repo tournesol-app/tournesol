@@ -1,4 +1,4 @@
-- name: Set Hostname
+- name: Set hostname
   hostname:
     name: "{{machine_name}}"
 
@@ -7,7 +7,7 @@
     src: hosts
     dest: /etc/hosts
 
-- name: Install Minimal Set of Packages
+- name: Install minimal set of packages
   apt:
     name:
       - unattended-upgrades

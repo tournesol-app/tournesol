@@ -3,7 +3,7 @@
     name: postgresql
     update_cache: yes
 
-- name: Install Ansible DB Client Helper
+- name: Install Ansible DB client helper
   apt:
     name: python3-psycopg2
     update_cache: yes

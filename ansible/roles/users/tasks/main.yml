@@ -1,14 +1,14 @@
-- name: Create Admin Group
+- name: Create admin group
   group:
     name: sudo
 
-- name: Add Admin Group Members to Sudoers
+- name: Add admin group members to sudoers
   lineinfile:
     dest: /etc/sudoers
     regexp: "%sudo ALL"
     line: "%sudo ALL=(ALL:ALL) NOPASSWD:ALL"
 
-- name: Create Users
+- name: Create users
   user:
     name: "{{item.name}}"
     shell: "{{ item.shell | default('/usr/bin/bash') }}"
@@ -18,7 +18,7 @@
     append: yes
   with_items: "{{admin_users}}"
 
-- name: Copy Configuration for Admins
+- name: Copy configuration for admins
   copy:
     src: "admin-users/{{item.name}}/"
     dest: "/home/{{item.name}}/"
@@ -29,19 +29,19 @@
   when: item.state is undefined or item.state != 'absent'
   with_items: "{{admin_users}}"
 
-- name: Delete Admin Users Passwords
+- name: Delete admin users passwords
   user:
     name: "{{item.name}}"
     password: '!'
   when: item.state is undefined or item.state != 'absent'
   with_items: "{{admin_users}}"
 
-- name: Delete Root Password
+- name: Delete root password
   user:
     name: root
     password: '!'
 
-- name: Disable SSH Password Authentication
+- name: Disable SSH password authentication
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: "#?PasswordAuthentication"

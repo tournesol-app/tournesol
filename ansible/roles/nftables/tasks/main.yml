@@ -3,13 +3,13 @@
     name: nftables
     update_cache: true
 
-- name: Copy Nftables Configuration File
+- name: Copy Nftables configuration file
   template:
     src: nftables.conf.j2
     dest: /etc/nftables.conf
   notify: Reload Nftables
 
-- name: Ensure Nftables is Enabled and Running
+- name: Ensure Nftables is enabled and running
   systemd:
     name: nftables
     state: started
