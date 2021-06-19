@@ -47,6 +47,7 @@
   notify:
     - Migrate Django database
     - Collect Django static assets
+    - Reload Gunicorn
 
 - name: Create Virtualenv for Django project
   pip:
