@@ -10,6 +10,7 @@ all:
           django_main_url: "http://{{ansible_host}}/"
           django_database_name: "tournesol"
           django_database_user: "tournesol"
+          backend_target_branch: "prometheus-metrics"
         tournesol-staging:
           ansible_host: "tournesol.technocracy.dev"
           machine_name: "tournesol"
@@ -20,6 +21,7 @@ all:
           django_database_user: "tournesol"
           domain_name: "tournesol.technocracy.dev"
           letsencrypt_email: "jst@kleis.ch"
+          backend_target_branch: "fix_with_dynamic"
 
       vars:
         ansible_python_interpreter: /usr/bin/python3

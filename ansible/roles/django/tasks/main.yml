@@ -40,7 +40,8 @@
   git:
     repo: https://github.com/tournesol-app/tournesol-backend.git
     dest: /srv/tournesol-backend
-    version: master
+    version: "{{backend_target_branch}}"
+    force: yes
   become: yes
   become_user: gunicorn
   notify:
