@@ -7,7 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django_countries import countries
 
-from..utils.constants import featureIsEnabledByDeFault
+from ..utils.constants import featureIsEnabledByDeFault
 from ..utils.models import EnumList, WithDynamicFields, WithFeatures
 from ..utils.validators import validate_avatar
 from settings.settings import MAX_VALUE, VIDEO_FIELDS, VIDEO_FIELDS_DICT
@@ -412,3 +412,6 @@ class ExpertiseKeyword(models.Model):
 
     def __str__(self):
         return self.name
+
+# adding dynamic fields
+WithDynamicFields.create_all()

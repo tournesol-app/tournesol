@@ -743,3 +743,5 @@ class ExpertRatingSliderChanges(models.Model, WithFeatures, WithDynamicFields):
         return "%s [%s] %s/%s at %s" % (self.user, self.context,
                                         self.video_left, self.video_right, self.datetime)
 
+# adding dynamic fields
+WithDynamicFields.create_all()

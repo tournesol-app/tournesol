@@ -18,6 +18,7 @@ def EnumList(*lst):
 
 class WithDynamicFields(object):
     """Add dynamically-created fields to a model."""
+    fields_created = False
 
     @staticmethod
     def _create_fields(self):
@@ -29,7 +30,9 @@ class WithDynamicFields(object):
         """Create all dynamic fields for all models."""
         subclasses = WithDynamicFields.__subclasses__()
         for scl in subclasses:
-            scl._create_fields()
+            if not scl.fields_created:
+                scl.fields_created = True
+                scl._create_fields()
 
 
 class WithFeatures(object):
