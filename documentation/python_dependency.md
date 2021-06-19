@@ -42,3 +42,8 @@ Progress bar for python
 https://github.com/bevacqua/fuzzysearch
 
 Better algorithm for find result with partial text
+
+### django-oauth-toolkit
+https://github.com/jazzband/django-oauth-toolkit
+
+Oauth toolkit for api auth

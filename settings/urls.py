@@ -14,8 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.http import HttpResponseForbidden
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('o/applications/', HttpResponseForbidden, name="create_app"),  # block for create app in oauth (admin only)
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]

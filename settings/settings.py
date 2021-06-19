@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'tournesol',
+    'oauth2_provider',
+    'rest_framework',
 ]
 
 # Modèle utilisateur utilisé par Django (1.5+)
@@ -152,6 +154,10 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
+}
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -172,8 +178,7 @@ REST_FRAMEWORK = {
     # as we are using Apache with basic auth
     # https://stackoverflow.com/questions/40094823/django-rest-framework-invalid-username-password
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication"
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ),
 
     # custom exception handling
