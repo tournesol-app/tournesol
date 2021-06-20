@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import (Comparison)
+
+
+@admin.register(Comparison)
+class ComparisonAdmin(admin.ModelAdmin):
+    pass

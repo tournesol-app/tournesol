@@ -94,12 +94,12 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
     # computed properties, updated via save signals,
     #  or via manage.py recompute_properties manage.py
 
-    COMPUTED_PROPERTIES = ['rating_n_experts', 'rating_n_ratings',
-                           'n_public_experts', 'n_private_experts', 'public_experts']
+    COMPUTED_PROPERTIES = ['rating_n_contributors', 'rating_n_ratings',
+                           'n_public_contributors', 'n_private_contributors', 'public_contributors']
 
     # computed via signals AND via recompute_properties command
-    rating_n_experts = computed_property.ComputedIntegerField(
-        compute_from='get_rating_n_experts',
+    rating_n_contributors = computed_property.ComputedIntegerField(
+        compute_from='get_rating_n_contributors',
         null=False,
         default=0,
         help_text="Total number of certified contributors who rated the video"
@@ -112,40 +112,39 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         help_text="Total number of pairwise comparisons for this video from certified contributors"
     )
 
-    n_public_experts = computed_property.ComputedIntegerField(
-        compute_from='get_n_public_experts',
+    n_public_contributors = computed_property.ComputedIntegerField(
+        compute_from='get_n_public_contributors',
         null=False,
         default=0,
         help_text="Number of certified contributors who rated this video publicly"
     )
 
-    n_private_experts = computed_property.ComputedIntegerField(
-        compute_from='get_n_private_experts',
+    n_private_contributors = computed_property.ComputedIntegerField(
+        compute_from='get_n_private_contributors',
         null=False,
         default=0,
         help_text="Number of certified contributors who rated this video privately"
     )
 
-    public_experts = ComputedJsonField(
+    public_contributors = ComputedJsonField(
         compute_from='get_certified_top_raters_list',
         null=False,
         default=list,
-        help_text=f"Top {ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW']} certified public "
-                  "contributor usernames"
+        help_text=f"Top {ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW']} certified public contributor usernames"
     )
 
     # COMPUTED properties implementation
 
     def get_certified_top_raters(self, add_user__username=None):
-        """Get certified raters for this video, sorted by number of ratings."""
+        """Get certified raters for this video, sorted by number of comparisons."""
 
         # logging.warning("get_certified_top_raters")
 
         if self.id is None:
             return User.objects.none()
 
-        filter_this_video = Q(user__userpreferences__expertrating__video_1=self) |\
-            Q(user__userpreferences__expertrating__video_2=self)
+        filter_this_video = Q(user__userpreferences__comparison__video_1=self) |\
+            Q(user__userpreferences__comparison__video_2=self)
 
         qs = User.objects.filter(filter_this_video)
         qs = User._annotate_is_certified(qs)
@@ -153,13 +152,13 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         if add_user__username:
             filter_query = filter_query | Q(user__username=add_user__username)
         qs = qs.filter(filter_query)
-        qs = qs.annotate(_n_ratings=Count('user__userpreferences__expertrating',
+        qs = qs.annotate(_n_comparisons=Count('user__userpreferences__comparison',
                                           filter_this_video))
         qs = qs.distinct()
-        qs = qs.order_by('-_n_ratings')
+        qs = qs.order_by('-_n_comparisons')
         return qs
 
-    # public rating and a public expert
+    # public rating and a public contributor
     FILTER_PUBLIC = Q(n_public_rating=1,
                       show_my_profile=True)
 
@@ -182,8 +181,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             )
 
             qs = qs.annotate(n_public_rating=Case(
-                    When(_is_public=True,
-                         then=Value(1)),
+                    When(_is_public=True, then=Value(1)),
                     default=Value(0),
                     output_field=IntegerField()))
         else:
@@ -201,36 +199,27 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
 
         return qs
 
-    def get_n_public_experts(self):
-        """Get the number of public certified experts who rated this video."""
+    def get_n_public_contributors(self):
+        """Get the number of public certified contributors who rated this video."""
 
-        # logging.warning("get_n_public_experts")
+        # logging.warning("get_n_public_contributors")
 
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
             filter(self.FILTER_PUBLIC).count()
 
-    def get_n_private_experts(self):
-        """Get the number of private certified experts who rated this video."""
-
-        # logging.warning("get_n_private_experts")
-
+    def get_n_private_contributors(self):
+        """Get the number of private certified contributors who rated this video."""
         return self.get_certified_top_raters_list(
                 limit=None, return_json=False, only_public=False).\
             filter(~self.FILTER_PUBLIC).count()
 
     def get_rating_n_ratings(self, user=None):
         """Number of associated ratings."""
-
-        # logging.warning("get_rating_n_ratings")
-
         return self.ratings(user=user).count()
 
-    def get_rating_n_experts(self):
-        """Number of experts in ratings."""
-
-        # logging.warning("get_rating_n_experts")
-
+    def get_rating_n_contributors(self):
+        """Number of contributors in ratings."""
         return self.ratings().values('user').distinct().count()
 
     # /COMPUTED properties implementation
@@ -361,7 +350,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         f = Q(video_1=self) | Q(video_2=self)
         if user is not None:
             f = f & Q(user=user)
-        qs = ExpertRating.objects.filter(f)
+        qs = Comparison.objects.filter(f)
         qs = User._annotate_is_certified(
             qs, prefix="user__user__")
         if only_certified:
@@ -456,7 +445,7 @@ class VideoRateLater(models.Model):
 
 
 class ContributorVideoRating(models.Model, WithFeatures, WithDynamicFields):
-    """Predictions by individual expert models."""
+    """Predictions by individual contributor models."""
     video = models.ForeignKey(
         Video,
         on_delete=models.CASCADE,
@@ -464,7 +453,7 @@ class ContributorVideoRating(models.Model, WithFeatures, WithDynamicFields):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="The expert with scores", related_name="contributorvideoratings")
+        help_text="The contributor", related_name="contributorvideoratings")
     is_public = models.BooleanField(default=False, null=False,
                                     help_text="Should the rating be public?")
 
@@ -530,7 +519,7 @@ class VideoSelectorSkips(models.Model):
         return f"{self.user}/{self.video}@{self.datetime_add}"
 
 
-class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
+class Comparison(models.Model, WithFeatures, WithDynamicFields):
     """Rating given by a user."""
 
     class Meta:
@@ -543,7 +532,7 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="Expert (user) who left the rating")
+        help_text="Contributor (user) who left the rating")
     video_1 = models.ForeignKey(
         Video,
         on_delete=models.CASCADE,
@@ -559,11 +548,11 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
         default=0,
         help_text="Time it took to rate the videos (in milliseconds)")
     datetime_lastedit = models.DateTimeField(
-        help_text="Time the rating was edited the last time",
+        help_text="Time the comparison was edited the last time",
         null=True, blank=True,
     )
     datetime_add = models.DateTimeField(
-        auto_now_add=True, help_text="Time the rating was added", null=True, blank=True)
+        auto_now_add=True, help_text="Time the comparison was added", null=True, blank=True)
     video_1_2_ids_sorted = computed_property.ComputedCharField(
         compute_from='video_first_second',
         max_length=50,
@@ -574,7 +563,7 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
     def _create_fields():
         """Adding score fields."""
         for field in VIDEO_FIELDS:
-            ExpertRating.add_to_class(
+            Comparison.add_to_class(
                 field,
                 models.FloatField(
                     blank=True,
@@ -585,7 +574,7 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
                         MinValueValidator(0.0),
                         MaxValueValidator(MAX_VALUE)]))
 
-            ExpertRating.add_to_class(
+            Comparison.add_to_class(
                 field + "_weight",
                 models.FloatField(
                     blank=False,
@@ -610,22 +599,18 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
     def sample_video_to_rate(username, T=1):
         """Get one video to rate, the more rated before, the less p to choose."""
 
-        # annotation: number of ratings for the video
-        annotate_num_ratings = Count(
-            'expertrating_video_1__id',
-            distinct=True) + Count(
-            'expertrating_video_2__id',
-            distinct=True)
+        # annotation: number of comparisons for the video
+        annotate_num_comparisons = Count('Comparison_video_1__id', distinct=True) + Count(
+            'Comparison_video_2__id', distinct=True
+        )
 
         class Exp(Func):
             """Exponent in sql."""
             function = 'Exp'
 
-        # annotating with number of ratings
-        videos = Video.objects.all().annotate(_num_ratings=annotate_num_ratings)
-        score_exp_annotate = Exp(-Value(T,
-                                        FloatField()) * F('_num_ratings'),
-                                 output_field=FloatField())
+        # annotating with number of comparisons
+        videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
+        score_exp_annotate = Exp(-Value(T, FloatField()) * F('_num_comparisons'), output_field=FloatField())
 
         # adding the exponent
         videos = videos.annotate(_score_exp=score_exp_annotate)
@@ -648,18 +633,18 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
     def sample_rated_video(username):
         """Get an already rated video, or a random one."""
 
-        # annotation: number of ratings for the video by username
-        annotate_num_ratings = Count(
-            'expertrating_video_1', filter=Q(
-                expertrating_video_1__user__user__username=username)) + Count(
-            'expertrating_video_2', filter=Q(
-                expertrating_video_2__user__user__username=username))
+        # annotation: number of comparisons for the video by username
+        annotate_num_comparisons = Count(
+            'Comparison_video_1', filter=Q(
+                Comparison_video_1__user__user__username=username)) + Count(
+            'Comparison_video_2', filter=Q(
+                Comparison_video_2__user__user__username=username))
 
-        # annotating with number of ratings
-        videos = Video.objects.all().annotate(_num_ratings=annotate_num_ratings)
+        # annotating with number of comparisons
+        videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
 
         # only selecting those already rated.
-        videos = videos.filter(_num_ratings__gt=0)
+        videos = videos.filter(_num_comparisons__gt=0)
 
         if not videos.count():
             logging.warning("No rated videos, returning a random one")
@@ -674,9 +659,9 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
     def sample_video(username, only_rated=False):
         """Sample video based on parameters."""
         if only_rated:
-            video = ExpertRating.sample_rated_video(username)
+            video = Comparison.sample_rated_video(username)
         else:
-            video = ExpertRating.sample_video_to_rate(username)
+            video = Comparison.sample_video_to_rate(username)
         return video
 
     def weights_vector(self):
@@ -695,7 +680,7 @@ class ExpertRating(models.Model, WithFeatures, WithDynamicFields):
         return "%s [%s/%s]" % (self.user, self.video_1, self.video_2)
 
 
-class ExpertRatingSliderChanges(models.Model, WithFeatures, WithDynamicFields):
+class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
     """Slider values in time for given videos."""
 
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
@@ -728,7 +713,7 @@ class ExpertRatingSliderChanges(models.Model, WithFeatures, WithDynamicFields):
     def _create_fields():
         """Adding score fields."""
         for field in VIDEO_FIELDS:
-            ExpertRatingSliderChanges.add_to_class(
+            ComparisonSliderChanges.add_to_class(
                 field,
                 models.FloatField(
                     blank=True,
