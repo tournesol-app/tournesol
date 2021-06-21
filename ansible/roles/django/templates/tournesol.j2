@@ -20,11 +20,11 @@ server {
 
     keepalive_timeout 5;
 
-    location /static {
+    location /static/ {
         root /var/www/html;
     }
 
-    location /media {
+    location /media/ {
         internal;
         alias /var/www/html/media;
     }
