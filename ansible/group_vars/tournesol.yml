@@ -1,3 +1,4 @@
+# users appearing here should also have a (possibly empty) roles/users/files/admin-users/<user_name> directory
 admin_users:
   - name: jst
     # keys can be put here or into roles/users/files/admin-users/<user_name>/.ssh/authorized_keys

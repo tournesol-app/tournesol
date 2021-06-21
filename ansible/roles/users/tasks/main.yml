@@ -40,7 +40,7 @@
     group: "{{item.name}}"
     mode: u=rw,o=,g=
     force: no
-  when: (item.state is undefined or item.state != 'absent') and (("admin-users/" + item.name) is directory)
+  when: (item.state is undefined or item.state != 'absent')
   with_items: "{{admin_users}}"
 
 - name: Make sure SSH configuration directory of admins exists
