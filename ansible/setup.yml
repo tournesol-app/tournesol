@@ -3,10 +3,13 @@
     - backports
     - upgrade
     - base
+    - nftables
     - zsh
     - users
     - postgresql
     - nginx
     - django
-    - nftables
+    - monitoring
+    - logging
+    - frontend
   become: true
