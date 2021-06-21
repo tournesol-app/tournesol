@@ -1,0 +1,54 @@
+- name: Create React user
+  user:
+    name: react
+    system: yes
+    create_home: yes
+
+- name: Create remote_tmp directory for React user
+  file:
+    path: /home/react/.ansible/tmp
+    state: directory
+    owner: react
+    group: react
+
+- name: Install NVM
+  shell:
+    cmd: curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/{{nvm_version}}/install.sh | NVM_DIR=/home/react/.nvm bash
+    creates: /home/react/.nvm/nvm.sh
+  become: yes
+  become_user: react
+
+- name: Check if Node version is installed
+  shell:
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} || true
+  register: nvm_use
+  become: yes
+  become_user: react
+  changed_when: "'You need to run \"nvm install lts/' in nvm_use.stderr"
+  notify:
+    - Install Node
+    - NPM install
+    - NPM build
+    - Copy frontend files
+
+- name: Create React application directory
+  file:
+    path: /srv/tournesol-frontend
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Clone React application repository
+  git:
+    # repo: https://github.com/tournesol-app/tournesol-frontend.git
+    repo: https://github.com/jstainer-kleis/tournesol-frontend.git
+    dest: /home/react/tournesol-frontend
+    version: "{{frontend_target_branch}}"
+  become: yes
+  become_user: react
+  notify:
+    - NPM install
+    - NPM build
+    - Copy frontend files
+
+- meta: flush_handlers

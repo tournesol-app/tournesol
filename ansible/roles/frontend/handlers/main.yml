@@ -1,0 +1,27 @@
+- name: Install Node
+  shell:
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm install --lts={{npm_lts_version}}
+  become: yes
+  become_user: react
+
+- name: NPM install
+  shell:
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && npm install
+    chdir: /home/react/tournesol-frontend
+  become: yes
+  become_user: react
+
+- name: NPM build
+  shell:
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && npm run build
+    chdir: /home/react/tournesol-frontend
+  become: yes
+  become_user: react
+
+- name: Copy frontend files
+  copy:
+    src: /home/react/tournesol-frontend/dist/
+    remote_src: yes
+    dest: /srv/tournesol-frontend
+    owner: www-data
+    group: www-data

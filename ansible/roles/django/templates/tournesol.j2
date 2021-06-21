@@ -20,6 +20,11 @@ server {
 
     keepalive_timeout 5;
 
+    location / {
+        root /srv/tournesol-frontend;
+        try_files $uri /index.html;
+    }
+
     location /static/ {
         root /var/www/html;
     }
