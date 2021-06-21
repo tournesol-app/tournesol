@@ -7,12 +7,13 @@ ALLOWED_HOSTS:
     - {{ansible_host}}
 
 MAIN_URL: {{django_main_url}}
+PREFIX_URI: {{django_prefix_uri}}
 
 DATABASE_NAME: {{django_database_name}}
 DATABASE_USER: {{django_database_user}}
 DATABASE_PASSWORD: {{django_database_password}}
 
 STATIC_ROOT: /var/www/html/static
-MEDIA_ROOT: /var/www/html/media/
+MEDIA_ROOT: /var/www/html/media
 
 EMAIL_BACKEND: console
