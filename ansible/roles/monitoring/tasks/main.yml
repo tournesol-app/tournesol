@@ -1,0 +1,192 @@
+- name: Install GeoIP database
+  apt:
+    name:
+      - geoip-database
+      - geoip-database-extra
+    update_cache: yes
+
+- name: Copy Nginx log format
+  copy:
+    src: nginx-log-format.conf
+    dest: /etc/nginx/conf.d/nginx-log-format.conf
+  notify: Reload Nginx
+
+- name: Copy Nginx stub_status endpoint configuration
+  copy:
+    src: stub_status
+    dest: /etc/nginx/sites-available/stub_status
+  notify: Reload Nginx
+
+- name: Enable Nginx stub_status endpoint
+  file:
+    src: /etc/nginx/sites-available/stub_status
+    dest: /etc/nginx/sites-enabled/stub_status
+    state: link
+  notify: Reload Nginx
+
+- meta: flush_handlers
+
+- name: Install Prometheus and exporters
+  apt:
+    name:
+      - prometheus
+      - prometheus-node-exporter
+      - prometheus-nginx-exporter
+      - prometheus-postgres-exporter
+    update_cache: yes
+
+- name: Enable and start Prometheus
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Enable and start Prometheus node exporter
+  systemd:
+    name: prometheus-node-exporter
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Enable and start Prometheus Nginx exporter
+  systemd:
+    name: prometheus-nginx-exporter
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Add Nginx exporter to Prometheus configuration
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    marker: "# {mark} ANSIBLE MANAGED BLOCK nginx"
+    block: |
+      #
+        - job_name: nginx
+          static_configs:
+            - targets: ['localhost:9113']
+  notify: Reload Prometheus
+
+- name: Connect to test database and remove an existing user's password
+  postgresql_user:
+    db: postgres
+    user: prometheus
+  become: yes
+  become_user: postgres
+  notify:
+    - Copy Postgresql exporter database user creation script
+    - Create Postgresql exporter database user
+    - Restart Prometheus Postgresql exporter
+
+- meta: flush_handlers
+
+- name: Configure Postgresql exporter connection string
+  lineinfile:
+    path: /etc/default/prometheus-postgres-exporter
+    regexp: '^DATA_SOURCE_NAME='
+    line: "DATA_SOURCE_NAME='user=prometheus host=/run/postgresql dbname=postgres'"
+  notify: Restart Prometheus Postgresql exporter
+
+- name: Enable and start Prometheus Postgresql exporter
+  systemd:
+    name: prometheus-postgres-exporter
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Add Postgresql exporter to Prometheus configuration
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    marker: "# {mark} ANSIBLE MANAGED BLOCK postgresql"
+    block: |
+      #
+        - job_name: postgresql
+          static_configs:
+            - targets: ['localhost:9187']
+  notify: Reload Prometheus
+
+- name: Add Django exporter over HTTP to Prometheus configuration
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    marker: "# {mark} ANSIBLE MANAGED BLOCK django"
+    block: |
+      #
+        - job_name: django
+          metrics_path: '/{{django_prefix_uri}}monitoring/metrics'
+          static_configs:
+            - targets: ['127.0.0.1:80']
+  when: letsencrypt_email is not defined
+  notify: Reload Prometheus
+
+- name: Add Django exporter over HTTPS to Prometheus configuration
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    marker: "# {mark} ANSIBLE MANAGED BLOCK django"
+    block: |
+      #
+        - job_name: django
+          metrics_path: '/{{django_prefix_uri}}monitoring/metrics'
+          scheme: 'https'
+          static_configs:
+            - targets: ['127.0.0.1:443']
+  when: letsencrypt_email is defined
+  notify: Reload Prometheus
+
+- meta: flush_handlers
+
+- name: Add Grafana repository signing key
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: Add Grafana repository
+  apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
+    state: present
+
+- name: Install Grafana
+  apt:
+    name: grafana
+    update_cache: yes
+  notify:
+    - Reset Grafana admin password
+    - Set Grafana default organization role
+    - Enable and restart Grafana
+    - Create Grafana Prometheus datasource
+
+- meta: flush_handlers
+
+- name: Create Grafana users for administrators
+  community.grafana.grafana_user:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    login: "{{item.name}}"
+    name: "{{ item.fullname | default(item.name) }}"
+    email: "{{ item.email | default(item.name + '@xxx.xxx') }}"
+    password: yopyop # temporary before switching to SSO (in between Grafana is exposed only through an SSH tunnel)
+    is_admin: yes
+    state: "{{ item.state | default('present') }}"
+  with_items: "{{admin_users}}"
+
+- name: Create Grafana dashboards
+  community.grafana.grafana_dashboard:
+    grafana_url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    dashboard_id: "{{item.id}}"
+    dashboard_revision: "{{item.rev}}"
+  with_items:
+    - id: 1860  # Node Exporter Full
+      rev: 23
+    - id: 9628  # PostgreSQL Database
+      rev: 7
+    - id: 12708 # NGINX exporter
+      rev: 1
+    - id: 9528  # a Django Prometheus
+      rev: 1
+    # This one has been forked and is imported in the logging role
+    # - id: 13865 # Analytics - NGINX / LOKI v2+ Data Source / Promtail v2+ Tool
+    #   rev: 6
