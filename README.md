@@ -65,11 +65,12 @@ ssh -t <username>@<server_address> -- sudo -u gunicorn 'bash -c "source /srv/tou
 - login as root and run the following:
 
 ```bash
-useradd -m <username>
-mkdir ~<username>/.ssh
-cp .ssh/authorized_keys ~<username>/.ssh/
-chown -R <username>:<username> ~<username>/.ssh
-gpasswd -a <username> sudo
+USERNAME=<username>
+useradd -m $USERNAME
+mkdir /home/$USERNAME/.ssh
+cp .ssh/authorized_keys /home/$USERNAME/.ssh/
+chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
+gpasswd -a $USERNAME sudo
 visudo
 # change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL`
 ```
