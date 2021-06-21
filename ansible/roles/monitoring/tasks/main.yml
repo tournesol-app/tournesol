@@ -130,7 +130,7 @@
           metrics_path: '/{{django_prefix_uri}}monitoring/metrics'
           scheme: 'https'
           static_configs:
-            - targets: ['127.0.0.1:443']
+            - targets: ['{{ansible_host}}']
   when: letsencrypt_email is defined
   notify: Reload Prometheus
 
