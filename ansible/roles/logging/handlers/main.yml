@@ -1,0 +1,34 @@
+- name: Reload Nginx
+  systemd:
+    name: nginx
+    state: reloaded
+    daemon_reload: yes
+
+- name: Restart Grafana
+  systemd:
+    name: grafana-server
+    state: restarted
+    daemon_reload: yes
+
+- name: Restart Loki
+  systemd:
+    name: loki
+    state: restarted
+    daemon_reload: yes
+
+- name: Restart Promtail
+  systemd:
+    name: promtail
+    state: restarted
+    daemon_reload: yes
+
+# Triggered on notice only because of a bug that makes it non-idempotent
+- name: Create Grafana Loki datasource
+  community.grafana.grafana_datasource:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    name: Loki
+    ds_type: "loki"
+    ds_url: "http://127.0.0.1:3100"
