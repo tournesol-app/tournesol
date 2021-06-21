@@ -27,5 +27,7 @@
       - vim
       - kitty-terminfo
       - unzip
+      - gpg
+      - gpg-agent
     install_recommends: no
     update_cache: yes
