@@ -150,6 +150,7 @@
     update_cache: yes
   notify:
     - Reset Grafana admin password
+    - Write Grafana admin password into root's home
     - Set Grafana default organization role
     - Enable and restart Grafana
     - Create Grafana Prometheus datasource
