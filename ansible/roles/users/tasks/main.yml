@@ -2,6 +2,13 @@
   group:
     name: sudo
 
+- name: Create remote_tmp directory for root user
+  file:
+    path: /root/.ansible/tmp
+    state: directory
+    owner: root
+    group: root
+
 - name: Add admin group members to sudoers
   lineinfile:
     dest: /etc/sudoers
@@ -18,6 +25,13 @@
     append: yes
   with_items: "{{admin_users}}"
 
+- name: Delete absent users home
+  file:
+    path: "/home/{{item.name}}"
+    state: absent
+  when: item.state is defined and item.state == 'absent' and item.delete_home is defined and item.delete_home
+  with_items: "{{admin_users}}"
+
 - name: Copy configuration for admins
   copy:
     src: "admin-users/{{item.name}}/"
@@ -26,20 +40,54 @@
     group: "{{item.name}}"
     mode: u=rw,o=,g=
     force: no
+  when: (item.state is undefined or item.state != 'absent') and (("admin-users/" + item.name) is directory)
+  with_items: "{{admin_users}}"
+
+- name: Make sure SSH configuration directory of admins exists
+  file:
+    path: "/home/{{item.name}}/.ssh"
+    state: directory
+    owner: "{{item.name}}"
+    group: "{{item.name}}"
+    mode: u=rwx,o=,g=
   when: item.state is undefined or item.state != 'absent'
+  with_items: "{{admin_users}}"
+
+- name: Check if SSH authorized_keys files of admins exists
+  stat:
+    path: "/home/{{item.name}}/.ssh/authorized_keys"
+  register: authorized_keys
+  when: item.state is undefined or item.state != 'absent'
+  with_items: "{{admin_users}}"
+
+- name: Make sure SSH authorized_keys files of admins exists
+  file:
+    path: "/home/{{item.item.name}}/.ssh/authorized_keys"
+    state: "{{ 'file' if item.stat.exists else 'touch' }}"
+    owner: "{{item.item.name}}"
+    group: "{{item.item.name}}"
+    mode: u=rw,o=,g=
+  when: item.item.state is undefined or item.item.state != 'absent'
+  with_items: "{{authorized_keys.results}}"
+
+- name: Make sure SSH authorized_keys files of admins exists
+  lineinfile:
+    path: "/home/{{item.name}}/.ssh/authorized_keys"
+    line: "{{item.ssh_public_key}}"
+  when: (item.state is undefined or item.state != 'absent') and item.ssh_public_key is defined
   with_items: "{{admin_users}}"
 
 - name: Delete admin users passwords
   user:
     name: "{{item.name}}"
-    password: '!'
+    password: "!"
   when: item.state is undefined or item.state != 'absent'
   with_items: "{{admin_users}}"
 
 - name: Delete root password
   user:
     name: root
-    password: '!'
+    password: "!"
 
 - name: Disable SSH password authentication
   lineinfile:
