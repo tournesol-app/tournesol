@@ -17,4 +17,5 @@ ansible-playbook -i inventory.yml -l tournesol-vm setup.yml \
   $CHECK \
   -e "django_database_password=$DJANGO_DATABASE_PASSWORD" \
   -e "django_secret_key=$DJANGO_SECRET_KEY" \
+  -e "grafana_admin_password=$GRAFANA_ADMIN_PASSWORD" \
 

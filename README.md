@@ -35,7 +35,7 @@
 - Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `domain_name` and `letsencrypt_email` variables)
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
 - Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them
-- Set the `DJANGO_DATABASE_PASSWORD` and `DJANGO_SECRET_KEY` to random values (i.e. `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)"`)
+- Set the `DJANGO_DATABASE_PASSWORD`, `DJANGO_SECRET_KEY` and `GRAFANA_ADMIN_PASSWORD` to random values (i.e. `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)"`)
 - Run `./ansible/scripts/provisioning-vm.sh apply` (without `apply` it's a dry-run)
 - If the kernel was updated, reboot the VM to start using the new one
 
