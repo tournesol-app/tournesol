@@ -1,9 +1,11 @@
 - name: Install Postgresql
   apt:
     name: postgresql
+    install_recommends: no
     update_cache: yes
 
 - name: Install Ansible DB client helper
   apt:
     name: python3-psycopg2
+    install_recommends: no
     update_cache: yes

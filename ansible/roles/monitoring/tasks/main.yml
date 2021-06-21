@@ -3,6 +3,7 @@
     name:
       - geoip-database
       - geoip-database-extra
+    install_recommends: no
     update_cache: yes
 
 - name: Copy Nginx log format
@@ -33,6 +34,7 @@
       - prometheus-node-exporter
       - prometheus-nginx-exporter
       - prometheus-postgres-exporter
+    install_recommends: no
     update_cache: yes
 
 - name: Enable and start Prometheus
@@ -147,6 +149,7 @@
 - name: Install Grafana
   apt:
     name: grafana
+    install_recommends: no
     update_cache: yes
   notify:
     - Reset Grafana admin password

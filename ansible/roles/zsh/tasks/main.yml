@@ -4,6 +4,7 @@
       - zsh
       - git
       - fontconfig
+    install_recommends: no
     update_cache: yes
 
 - name: Create fonts directory

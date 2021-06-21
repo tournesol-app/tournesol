@@ -12,6 +12,7 @@
 - name: Install Nftables
   apt:
     name: nftables
+    install_recommends: no
     update_cache: true
 
 - name: Copy Nftables configuration file

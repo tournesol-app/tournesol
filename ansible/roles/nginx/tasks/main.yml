@@ -25,6 +25,7 @@
 - name: Install Nginx
   apt:
     name: nginx
+    install_recommends: no
     update_cache: yes
 
 - name: Restrict TLS ssl_protocols
