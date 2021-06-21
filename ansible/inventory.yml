@@ -5,7 +5,7 @@ all:
 
         # VM for local development
         tournesol-vm:
-          ansible_host: "192.168.122.187"
+          ansible_host: "192.168.122.19"
           machine_name: "tournesol"
           # ansible_user: "jst"
 
@@ -33,9 +33,9 @@ all:
           django_database_name: "tournesol"
           django_database_user: "tournesol"
 
-          backend_target_branch: prometheus-metrics
+          backend_target_branch: serve-on-prefix
           loki_version: "v2.2.1"
-          frontend_target_branch: main
+          frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
 
