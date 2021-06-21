@@ -2,7 +2,7 @@
   user:
     name: gunicorn
     system: yes
-    create_home: no
+    create_home: yes
 
 - name: Create Django database
   postgresql_db:
@@ -32,6 +32,13 @@
 - name: Create Django application directory
   file:
     path: /srv/tournesol-backend
+    state: directory
+    owner: gunicorn
+    group: gunicorn
+
+- name: Create remote_tmp directory for Gunicorn user
+  file:
+    path: /home/gunicorn/.ansible/tmp
     state: directory
     owner: gunicorn
     group: gunicorn
