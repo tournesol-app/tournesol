@@ -1,0 +1,11 @@
+- name: Reload Nginx
+  systemd:
+    name: nginx
+    state: reloaded
+    daemon_reload: true
+
+- name: Write Mediawiki database password into root's home
+  shell: "echo \"{{mediawiki_database_password}}\" > /root/mediawiki_database_password && chmod go-rwx /root/mediawiki_database_password"
+
+- name: Write Mediawiki secret key into root's home
+  shell: "echo \"{{mediawiki_secret_key}}\" > /root/mediawiki_secret_key && chmod go-rwx /root/mediawiki_secret_key"

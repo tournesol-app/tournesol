@@ -1,0 +1,69 @@
+server {
+    client_max_body_size 100M;
+
+{% if letsencrypt_email is defined %}
+    server_name {{mediawiki_domain_name}};
+{% else %}
+    server_name {{mediawiki_domain_name}};
+{% endif %}
+
+    keepalive_timeout 5;
+
+  root /var/lib/mediawiki;
+  index index.php;
+    charset utf-8;
+    {# client_max_body_size    100m; # Equal or more than upload_max_filesize in /etc/php7/php.ini #}
+    client_body_timeout     60;
+
+    location / {
+        index index.php;
+        try_files $uri $uri/ @mediawiki;
+    }
+    location @mediawiki {
+        rewrite ^/(.*)$ /index.php;
+    }
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        {# fastcgi_index index.php; #}
+        {# fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name; #}
+        {# try_files $uri @mediawiki; #}
+    }
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        try_files $uri /index.php;
+        expires max;
+        log_not_found off;
+    }
+    # Restrictions based on the .htaccess files
+        location ~ ^/(cache|includes|maintenance|languages|serialized|tests|images/deleted)/ {
+        deny all;
+    }
+    location ~ ^/(bin|docs|extensions|includes|maintenance|mw-config|resources|serialized|tests)/ {
+        internal;
+    }
+    location ^~ /images/ {
+        try_files $uri /index.php;
+    }
+    location ~ /\. {
+        access_log off;
+        log_not_found off; 
+        deny all;
+    }
+    location /rest.php {
+        try_files $uri $uri/ /rest.php?$args;
+    }
+
+{% if letsencrypt_email is defined %}
+    listen 443 ssl http2;
+    ssl_certificate /etc/letsencrypt/live/{{mediawiki_domain_name}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{mediawiki_domain_name}}/privkey.pem;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options nosniff;
+    add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+{% else %}
+    listen 80;
+{% endif %}
+}

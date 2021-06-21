@@ -1,0 +1,85 @@
+- name: Check if Mediawiki certificates are already present
+  stat:
+    path: /etc/letsencrypt/live/{{mediawiki_domain_name}}/fullchain.pem
+  register: mediawiki_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if Mediawiki certificates are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and mediawiki_cert_file.stat.exists == False
+
+- name: Run Certbot for Mediawiki domain
+  shell:
+    cmd: "certbot certonly --standalone -d {{mediawiki_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{mediawiki_domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+- name: Install Mediawiki
+  apt:
+    name:
+      - mediawiki
+      - php-pgsql
+      - postgresql-contrib
+      - php-gd
+      - imagemagick
+      - php7.4-fpm
+    update_cache: yes
+    install_recommends: yes
+  notify:
+    - Write Mediawiki database password into root's home
+    - Write Mediawiki secret key into root's home
+
+- name: Create Mediawiki database
+  postgresql_db:
+    name: "{{mediawiki_database_name}}"
+  become: yes
+  become_user: postgres
+
+- name: Create Mediawiki database user
+  postgresql_user:
+    name: "{{mediawiki_database_user}}"
+    password: "{{mediawiki_database_password}}"
+    db: "{{mediawiki_database_name}}"
+  become: yes
+  become_user: postgres
+
+- name: Create Mediawiki database schema
+  postgresql_schema:
+    database: "{{mediawiki_database_name}}"
+    name: mediawiki
+    owner: "{{mediawiki_database_user}}"
+  become: yes
+  become_user: postgres
+
+- name: Copy Nginx Mediawiki configuration
+  template:
+    src: mediawiki.j2
+    dest: /etc/nginx/sites-available/mediawiki
+  notify:
+    - Reload Nginx
+
+- name: Enable Nginx Mediawiki configuration
+  file:
+    src: /etc/nginx/sites-available/mediawiki
+    dest: /etc/nginx/sites-enabled/mediawiki
+    state: link
+  notify: Reload Nginx
+
+- name: Copy Mediawiki configuration
+  template:
+    src: LocalSettings.php.j2
+    dest: /etc/mediawiki/LocalSettings.php
+  notify:
+    - Write Mediawiki database password into root's home
+    - Write Mediawiki secret key into root's home
+
+- name: Ensure Nginx is enabled and running
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- meta: flush_handlers

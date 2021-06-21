@@ -5,7 +5,7 @@ all:
 
         # VM for local development
         tournesol-vm:
-          ansible_host: "192.168.122.19"
+          ansible_host: "192.168.122.204"
           machine_name: "tournesol"
           # ansible_user: "jst"
 
@@ -20,6 +20,11 @@ all:
           frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
+
+          mediawiki_domain_name: wiki
+          mediawiki_database_name: mediawiki
+          mediawiki_database_user: mediawiki
+
 
         # Staging Vultr VM
         tournesol-staging:
@@ -42,6 +47,10 @@ all:
           # Setting these triggers TLS configuration
           domain_name: "tournesol.technocracy.dev"
           letsencrypt_email: "jst@kleis.ch"
+
+          mediawiki_domain_name: "wiki.{{domain_name}}"
+          mediawiki_database_name: mediawiki
+          mediawiki_database_user: mediawiki
 
 
       vars:
