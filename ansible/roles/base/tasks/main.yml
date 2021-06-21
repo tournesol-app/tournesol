@@ -26,4 +26,5 @@
       - build-essential
       - vim
       - kitty-terminfo
+      - unzip
     update_cache: yes
