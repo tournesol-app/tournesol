@@ -34,7 +34,7 @@
 - Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `domain_name` and `letsencrypt_email` variables)
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
 - Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them
-- Set the `DJANGO_DATABASE_PASSWORD`, `DJANGO_SECRET_KEY` and `GRAFANA_ADMIN_PASSWORD` to random values (i.e. `export <VARIABLE_NAME>="$(base64 /dev/urandom | head -c 32)"`)
+- Set the `DJANGO_DATABASE_PASSWORD`, `DJANGO_SECRET_KEY`, `GRAFANA_ADMIN_PASSWORD` and `MEDIAWIKI_DATABASE_PASSWORD` to random values (i.e. `export <VARIABLE_NAME>="$(base64 /dev/urandom | head -c 32)"`)
 - Run `./ansible/scripts/provisioning-vm.sh apply` (without `apply` it's a dry-run)
 
 ## TODO
@@ -75,7 +75,7 @@ visudo
 # change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL`
 ```
 
-- set the secrets in your environment `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export DJANGO_SECRET_KEY="$(base64 /dev/urandom | head -c 32) && export GRAFANA_ADMIN_PASSWORD="$(base64 /dev/urandom | head -c 32)"`
+- set the secrets in your environment `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export DJANGO_SECRET_KEY="$(base64 /dev/urandom | head -c 32) && export GRAFANA_ADMIN_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export MEDIAWIKI_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)"`
 - run the playbook `./ansible/scripts/provisioning-staging.sh apply`
 - create a superuser: `ssh -t <username>@<domain_name> -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createsuperuser"'`
 
@@ -84,5 +84,11 @@ visudo
 To run the playbook on the staging VM without changing the secrets, first fetch them and set them in your environment:
 
 ```bash
-source ./ansible/scripts/get-staging-secrets.sh
+source ./ansible/scripts/get-vm-secrets.sh
+```
+
+You can do the same with another VM or a different user name:
+
+```bash
+source ./ansible/scripts/get-vm-secrets.sh "192.168.122.19" "jst"
 ```
