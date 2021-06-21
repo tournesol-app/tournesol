@@ -44,6 +44,7 @@
     repo: https://github.com/jstainer-kleis/tournesol-frontend.git
     dest: /home/react/tournesol-frontend
     version: "{{frontend_target_branch}}"
+    force: yes
   become: yes
   become_user: react
   notify:
