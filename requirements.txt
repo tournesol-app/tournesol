@@ -15,3 +15,4 @@ django-computed-property==0.3.0
 tqdm==4.61.0
 fuzzysearch==0.7.3
 
+django-prometheus==2.1.0

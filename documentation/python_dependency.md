@@ -47,3 +47,8 @@ Better algorithm for find result with partial text
 https://github.com/jazzband/django-oauth-toolkit
 
 Oauth toolkit for api auth
+
+### django-prometheus
+https://github.com/korfuri/django-prometheus
+
+Used to provide django metrics for monitoring

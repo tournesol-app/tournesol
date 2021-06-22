@@ -19,6 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('monitoring/', include('django_prometheus.urls')),
     path('o/applications/', HttpResponseForbidden, name="create_app"),  # block for create app in oauth (admin only)
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
