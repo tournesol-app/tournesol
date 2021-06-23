@@ -1,10 +1,8 @@
-{% if letsencrypt_email is defined %}
 server {
     # if no Host match, close the connection to prevent host spoofing
     listen 80 default_server;
     return 444;
 }
-{% endif %}
 
 map $http_upgrade $connection_upgrade {
     default upgrade;
@@ -14,9 +12,7 @@ map $http_upgrade $connection_upgrade {
 server {
     client_max_body_size 100M;
 
-{% if letsencrypt_email is defined %}
     server_name {{domain_name}};
-{% endif %}
 
     keepalive_timeout 5;
 
