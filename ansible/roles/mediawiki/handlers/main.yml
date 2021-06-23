@@ -4,8 +4,39 @@
     state: reloaded
     daemon_reload: true
 
+- name: Restart MariaDB
+  systemd:
+    name: mariadb
+    state: restarted
+    daemon_reload: true
+
+- name: Install Mediawiki
+  command: |
+    php /var/lib/mediawiki/maintenance/install.php \
+    --confpath /tmp/LocalSettings.php \
+    --dbname "{{mediawiki_database_name}}" \
+    --dbuser "{{mediawiki_database_user}}" \
+    --dbpass "{{mediawiki_database_password}}" \
+    --installdbuser "{{mediawiki_database_user}}" \
+    --installdbpass "{{mediawiki_database_password}}" \
+    --pass "{{mediawiki_admin_password}}" \
+    --server http://{{mediawiki_domain_name}} \
+    --scriptpath / \
+    Tournesol \
+    admin
+  become: yes
+  become_user: www-data
+
 - name: Write Mediawiki database password into root's home
   shell: "echo \"{{mediawiki_database_password}}\" > /root/mediawiki_database_password && chmod go-rwx /root/mediawiki_database_password"
 
+- name: Write Mediawiki admin password into root's home
+  shell: "echo \"{{mediawiki_admin_password}}\" > /root/mediawiki_admin_password && chmod go-rwx /root/mediawiki_admin_password"
+
 - name: Write Mediawiki secret key into root's home
   shell: "echo \"{{mediawiki_secret_key}}\" > /root/mediawiki_secret_key && chmod go-rwx /root/mediawiki_secret_key"
+
+- name: Update Mediawiki database
+  command: "php /var/lib/mediawiki/maintenance/update.php"
+  become: yes
+  become_user: www-data

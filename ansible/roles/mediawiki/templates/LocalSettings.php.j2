@@ -57,15 +57,22 @@ $wgEnotifWatchlist = false; # UPO
 $wgEmailAuthentication = true;
 
 ## Database settings
-$wgDBtype = "postgres";
+# $wgDBtype = "postgres";
+$wgDBtype = "mysql";
 $wgDBserver = "127.0.0.1";
 $wgDBname = "{{mediawiki_database_name}}";
 $wgDBuser = "{{mediawiki_database_user}}";
 $wgDBpassword = "{{mediawiki_database_password}}";
 
+# MySQL specific settings
+$wgDBprefix = "";
+
+# MySQL table options to use during installation or update
+$wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=binary";
+
 # Postgres specific settings
-$wgDBport = "5432";
-$wgDBmwschema = "mediawiki";
+# $wgDBport = "5432";
+# $wgDBmwschema = "mediawiki";
 
 # Shared database table
 # This has no effect unless $wgSharedDB is also set.
@@ -138,3 +145,27 @@ wfLoadSkin( 'Vector' );
 
 # End of automatically generated settings.
 # Add more configuration options below.
+
+wfLoadExtension( 'Babel' );
+
+wfLoadExtension( 'cldr' );
+
+wfLoadExtension( 'CleanChanges' );
+$wgCCTrailerFilter = true;
+$wgCCUserFilter = false;
+$wgDefaultUserOptions['usenewrc'] = 1;
+
+wfLoadExtension( 'LocalisationUpdate' );
+$wgLocalisationUpdateDirectory = "$IP/cache";
+
+wfLoadExtension( 'Translate' );
+$wgGroupPermissions['user']['translate'] = true;
+$wgGroupPermissions['user']['translate-messagereview'] = true;
+$wgGroupPermissions['user']['translate-groupreview'] = true;
+$wgGroupPermissions['user']['translate-import'] = true;
+$wgGroupPermissions['sysop']['pagetranslation'] = true;
+$wgGroupPermissions['sysop']['translate-manage'] = true;
+$wgTranslateDocumentationLanguageCode = 'qqq';
+$wgExtraLanguageNames['qqq'] = 'Message documentation'; # No linguistic content. Used for documenting messages
+
+wfLoadExtension( 'UniversalLanguageSelector' );

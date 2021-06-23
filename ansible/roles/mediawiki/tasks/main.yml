@@ -20,38 +20,82 @@
   apt:
     name:
       - mediawiki
-      - php-pgsql
-      - postgresql-contrib
+      - php-mysql
+      # - php-pgsql
+      # - postgresql-contrib
+      - python3-pymysql
       - php-gd
       - imagemagick
       - php7.4-fpm
+      - mariadb-server
     update_cache: yes
     install_recommends: yes
   notify:
     - Write Mediawiki database password into root's home
     - Write Mediawiki secret key into root's home
 
+# - name: Set MariaDB to Listen on All Interfaces
+#   lineinfile:
+#     path: /etc/mysql/mariadb.conf.d/50-server.cnf
+#     regexp: "bind-address            ="
+#     line: "bind-address            = 0.0.0.0"
+#   notify: Restart MariaDB
+
+# - name: Set MariaDB to Listen on the Default Port
+#   lineinfile:
+#     path: /etc/mysql/mariadb.conf.d/50-server.cnf
+#     regexp: "port                   ="
+#     line: "port                   = 3306"
+#   notify: Restart MariaDB
+
+- meta: flush_handlers
+
+- name: Install DB Credentials
+  copy:
+    src: /etc/mysql/debian.cnf
+    remote_src: yes
+    dest: /root/.my.cnf
+    mode: 0600
+
 - name: Create Mediawiki database
-  postgresql_db:
+  mysql_db:
     name: "{{mediawiki_database_name}}"
-  become: yes
-  become_user: postgres
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  notify:
+    - Install Mediawiki
 
 - name: Create Mediawiki database user
-  postgresql_user:
+  mysql_user:
     name: "{{mediawiki_database_user}}"
     password: "{{mediawiki_database_password}}"
-    db: "{{mediawiki_database_name}}"
-  become: yes
-  become_user: postgres
+    priv: 'mediawiki.*:ALL'
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  notify:
+    - Install Mediawiki
 
-- name: Create Mediawiki database schema
-  postgresql_schema:
-    database: "{{mediawiki_database_name}}"
-    name: mediawiki
-    owner: "{{mediawiki_database_user}}"
-  become: yes
-  become_user: postgres
+- meta: flush_handlers
+
+# - name: Create Mediawiki database
+#   postgresql_db:
+#     name: "{{mediawiki_database_name}}"
+#   become: yes
+#   become_user: postgres
+
+# - name: Create Mediawiki database user
+#   postgresql_user:
+#     name: "{{mediawiki_database_user}}"
+#     password: "{{mediawiki_database_password}}"
+#     db: "{{mediawiki_database_name}}"
+#   become: yes
+#   become_user: postgres
+
+# - name: Create Mediawiki database schema
+#   postgresql_schema:
+#     database: "{{mediawiki_database_name}}"
+#     name: mediawiki
+#     owner: "{{mediawiki_database_user}}"
+#   become: yes
+#   become_user: postgres
 
 - name: Copy Nginx Mediawiki configuration
   template:
@@ -74,6 +118,28 @@
   notify:
     - Write Mediawiki database password into root's home
     - Write Mediawiki secret key into root's home
+
+- name: Download Mediawiki extensions
+  get_url:
+    url: "{{item.url}}"
+    dest: "/tmp/{{item.name}}"
+    checksum: "{{item.checksum}}"
+  with_items:
+    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2.sha256sum
+      name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+
+- name: Extract Mediawiki extensions
+  unarchive:
+    src: "/tmp/{{item.name}}"
+    remote_src: yes
+    dest: "/var/lib/mediawiki"
+  with_items:
+    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2.sha256sum
+      name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+  notify:
+    - Update Mediawiki database
 
 - name: Ensure Nginx is enabled and running
   systemd:

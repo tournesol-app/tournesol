@@ -1,18 +1,13 @@
 server {
     client_max_body_size 100M;
 
-{% if letsencrypt_email is defined %}
     server_name {{mediawiki_domain_name}};
-{% else %}
-    server_name {{mediawiki_domain_name}};
-{% endif %}
 
     keepalive_timeout 5;
 
   root /var/lib/mediawiki;
   index index.php;
     charset utf-8;
-    {# client_max_body_size    100m; # Equal or more than upload_max_filesize in /etc/php7/php.ini #}
     client_body_timeout     60;
 
     location / {
@@ -25,9 +20,6 @@ server {
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-        {# fastcgi_index index.php; #}
-        {# fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name; #}
-        {# try_files $uri @mediawiki; #}
     }
     location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
         try_files $uri /index.php;
