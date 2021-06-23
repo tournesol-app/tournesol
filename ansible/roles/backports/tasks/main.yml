@@ -1,6 +1,6 @@
 - name: Add Bullseye repository
   apt_repository:
-    repo: deb http://deb.debian.org/debian/ bullseye main
+    repo: "deb {{bullseye_mirror}} bullseye main"
     state: present
 
 - name: Install Python and Certbot from Bullseye
