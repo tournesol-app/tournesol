@@ -15,5 +15,8 @@ export GRAFANA_ADMIN_PASSWORD
 MEDIAWIKI_DATABASE_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_database_password)"
 export MEDIAWIKI_DATABASE_PASSWORD
 
+MEDIAWIKI_ADMIN_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_admin_password)"
+export MEDIAWIKI_ADMIN_PASSWORD
+
 MEDIAWIKI_SECRET_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_secret_key)"
 export MEDIAWIKI_SECRET_KEY

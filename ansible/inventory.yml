@@ -5,15 +5,18 @@ all:
 
         # VM for local development
         tournesol-vm:
-          ansible_host: "192.168.122.204"
-          machine_name: "tournesol"
-          # ansible_user: "jst"
+          ansible_host: tournesol-vm
+          machine_name: tournesol
+          # ansible_user: jst
+          domain_name: tournesol-vm
+
+          bullseye_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
-          django_main_url: "http://{{ansible_host}}/"
+          django_main_url: "http://{{domain_name}}/"
           django_prefix_uri: "api/"
-          django_database_name: "tournesol"
-          django_database_user: "tournesol"
+          django_database_name: tournesol
+          django_database_user: tournesol
 
           backend_target_branch: serve-on-prefix
           loki_version: "v2.2.1"
@@ -21,22 +24,25 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
 
-          mediawiki_domain_name: wiki
+          mediawiki_domain_name: tournesol-wiki
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
 
 
         # Staging Vultr VM
         tournesol-staging:
-          ansible_host: "tournesol.technocracy.dev"
-          machine_name: "tournesol"
-          # ansible_user: "jst"
+          ansible_host: tournesol.technocracy.dev
+          machine_name: tournesol
+          # ansible_user: jst
+          domain_name: tournesol.technocracy.dev
+
+          bullseye_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
-          django_main_url: "https://{{ansible_host}}/"
-          django_prefix_uri: "api/"
-          django_database_name: "tournesol"
-          django_database_user: "tournesol"
+          django_main_url: https://{{domain_name}}/
+          django_prefix_uri: api/
+          django_database_name: tournesol
+          django_database_user: tournesol
 
           backend_target_branch: serve-on-prefix
           loki_version: "v2.2.1"
@@ -44,9 +50,8 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
 
-          # Setting these triggers TLS configuration
-          domain_name: "tournesol.technocracy.dev"
-          letsencrypt_email: "jst@kleis.ch"
+          # Setting this triggers TLS configuration
+          letsencrypt_email: jst@kleis.ch
 
           mediawiki_domain_name: "wiki.{{domain_name}}"
           mediawiki_database_name: mediawiki

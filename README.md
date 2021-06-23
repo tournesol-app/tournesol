@@ -31,10 +31,11 @@
 ## Provisioning
 
 - make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
-- Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `domain_name` and `letsencrypt_email` variables)
+- Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `letsencrypt_email` variable)
+- One way to use the `ansible_host`, `domain_name` and `mediawiki_domain_name` variables is to let them as is (`tournesol-vm` and `tournesol-wiki`) and to put a `<VM_IP> tournesol-vm tournesol-wiki` line in your `/etc/hosts` file
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
 - Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them
-- Set the `DJANGO_DATABASE_PASSWORD`, `DJANGO_SECRET_KEY`, `GRAFANA_ADMIN_PASSWORD` and `MEDIAWIKI_DATABASE_PASSWORD` to random values (i.e. `export <VARIABLE_NAME>="$(base64 /dev/urandom | head -c 32)"`)
+- Set the `DJANGO_DATABASE_PASSWORD`, `DJANGO_SECRET_KEY`, `GRAFANA_ADMIN_PASSWORD`, `MEDIAWIKI_DATABASE_PASSWORD` and `MEDIAWIKI_ADMIN_PASSWORD` to random values (you can use the `source ./ansible/scripts/generate-secrets.sh` command)
 - Run `./ansible/scripts/provisioning-vm.sh apply` (without `apply` it's a dry-run)
 
 ## TODO
@@ -75,7 +76,7 @@ visudo
 # change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL`
 ```
 
-- set the secrets in your environment `export DJANGO_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export DJANGO_SECRET_KEY="$(base64 /dev/urandom | head -c 32) && export GRAFANA_ADMIN_PASSWORD="$(base64 /dev/urandom | head -c 32)" && export MEDIAWIKI_DATABASE_PASSWORD="$(base64 /dev/urandom | head -c 32)"`
+- set the secrets in your environment (`source ./ansible/scripts/generate-secrets.sh`)
 - run the playbook `./ansible/scripts/provisioning-staging.sh apply`
 - create a superuser: `ssh -t <username>@<domain_name> -- sudo -u gunicorn 'bash -c "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createsuperuser"'`
 

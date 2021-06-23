@@ -19,5 +19,6 @@ ansible-playbook -i inventory.yml -l tournesol-staging setup.yml \
   -e "django_secret_key=$DJANGO_SECRET_KEY" \
   -e "grafana_admin_password=$GRAFANA_ADMIN_PASSWORD" \
   -e "mediawiki_database_password=$MEDIAWIKI_DATABASE_PASSWORD" \
+  -e "mediawiki_admin_password=$MEDIAWIKI_ADMIN_PASSWORD" \
   -e "mediawiki_secret_key=$MEDIAWIKI_SECRET_KEY" \
 
