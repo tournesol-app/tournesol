@@ -121,7 +121,7 @@
     - Write Mediawiki secret key into root's home
     - Write Mediawiki admin password into root's home
 
-- name: Download Mediawiki extensions
+- name: Download Mediawiki language extensions
   get_url:
     url: "{{item.url}}"
     dest: "/tmp/{{item.name}}"
@@ -131,7 +131,15 @@
       checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2.sha256sum
       name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
 
-- name: Extract Mediawiki extensions
+- name: Download Mediawiki extensions
+  get_url:
+    url: "{{item.url}}"
+    dest: "/tmp/{{item.name}}"
+  with_items:
+    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_35-ce43800.tar.gz
+      name: Math-REL1_35-ce43800.tar.gz
+
+- name: Extract Mediawiki language extensions
   unarchive:
     src: "/tmp/{{item.name}}"
     remote_src: yes
@@ -140,6 +148,17 @@
     - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
       checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2.sha256sum
       name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+  notify:
+    - Update Mediawiki database
+
+- name: Extract Mediawiki extensions
+  unarchive:
+    src: "/tmp/{{item.name}}"
+    remote_src: yes
+    dest: "/var/lib/mediawiki/extensions"
+  with_items:
+    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_35-ce43800.tar.gz
+      name: Math-REL1_35-ce43800.tar.gz
   notify:
     - Update Mediawiki database
 
