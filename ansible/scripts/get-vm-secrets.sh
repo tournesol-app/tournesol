@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export VM_ADDR="${1:-"tournesol.technocracy.dev"}"
+export VM_ADDR="${1:-"staging.tournesol.app"}"
 export VM_USER="${2:-"$USER"}"
 
 DJANGO_SECRET_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^SECRET_KEY: \(.*\)$/\1/p')"

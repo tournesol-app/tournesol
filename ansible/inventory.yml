@@ -32,10 +32,10 @@ all:
 
         # Staging Vultr VM
         tournesol-staging:
-          ansible_host: tournesol.technocracy.dev
+          ansible_host: staging.tournesol.app
           machine_name: tournesol
           # ansible_user: jst
-          domain_name: tournesol.technocracy.dev
+          domain_name: staging.tournesol.app
           api_domain_name: "api.{{domain_name}}"
 
           bullseye_mirror: http://debian.ethz.ch/debian/
