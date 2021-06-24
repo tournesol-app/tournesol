@@ -4,10 +4,10 @@
     state: reloaded
     daemon_reload: true
 
-- name: Reload Gunicorn
+- name: Restart Gunicorn
   systemd:
     name: gunicorn
-    state: reloaded
+    state: restarted
     daemon_reload: true
 
 - name: Migrate Django database

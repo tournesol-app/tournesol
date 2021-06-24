@@ -27,7 +27,7 @@
   template:
     src: settings.yaml.j2
     dest: /etc/tournesol/settings.yaml
-  notify: Reload Gunicorn
+  notify: Restart Gunicorn
 
 - name: Create Django application directory
   file:
@@ -54,7 +54,7 @@
   notify:
     - Migrate Django database
     - Collect Django static assets
-    - Reload Gunicorn
+    - Restart Gunicorn
 
 - name: Create Virtualenv for Django project
   pip:
@@ -65,7 +65,7 @@
     virtualenv_python: python3.9
   become: yes
   become_user: gunicorn
-  notify: Reload Gunicorn
+  notify: Restart Gunicorn
 
 - name: Install requirements for Django project
   pip:
@@ -74,13 +74,13 @@
     virtualenv_python: python3.9
   become: yes
   become_user: gunicorn
-  notify: Reload Gunicorn
+  notify: Restart Gunicorn
 
 - name: Copy Gunicorn service file
   copy:
     src: gunicorn.service
     dest: /etc/systemd/system/gunicorn.service
-  notify: Reload Gunicorn
+  notify: Restart Gunicorn
 
 - name: Copy Gunicorn socket file
   copy:
