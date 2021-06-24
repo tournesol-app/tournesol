@@ -9,22 +9,23 @@ all:
           machine_name: tournesol
           # ansible_user: jst
           domain_name: tournesol-vm
+          api_domain_name: tournesol-api
 
           bullseye_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
-          django_main_url: "http://{{domain_name}}/"
-          django_prefix_uri: "api/"
+          django_main_url: "http://{{api_domain_name}}/"
           django_database_name: tournesol
           django_database_user: tournesol
 
-          backend_target_branch: serve-on-prefix
+          backend_target_branch: master
           loki_version: "v2.2.1"
           frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
 
           mediawiki_domain_name: tournesol-wiki
+          mediawiki_scheme: http
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
 
@@ -35,16 +36,16 @@ all:
           machine_name: tournesol
           # ansible_user: jst
           domain_name: tournesol.technocracy.dev
+          api_domain_name: "api.{{domain_name}}"
 
           bullseye_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
-          django_main_url: https://{{domain_name}}/
-          django_prefix_uri: api/
+          django_main_url: https://{{api_domain_name}}/
           django_database_name: tournesol
           django_database_user: tournesol
 
-          backend_target_branch: serve-on-prefix
+          backend_target_branch: master
           loki_version: "v2.2.1"
           frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
@@ -54,6 +55,7 @@ all:
           letsencrypt_email: jst@kleis.ch
 
           mediawiki_domain_name: "wiki.{{domain_name}}"
+          mediawiki_scheme: https
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
 

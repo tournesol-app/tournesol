@@ -1,9 +1,5 @@
 127.0.0.1    localhost
-{% if letsencrypt_email is defined %}
-127.0.1.1    {{machine_name}} {{domain_name}}
-{% else %}
-127.0.1.1    {{machine_name}}
-{% endif %}
+127.0.1.1    {{machine_name}} {{domain_name}} {{api_domain_name}}
 
 # The following lines are desirable for IPv6 capable hosts
 ::1          localhost ip6-localhost ip6-loopback

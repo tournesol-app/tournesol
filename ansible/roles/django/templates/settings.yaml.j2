@@ -4,11 +4,9 @@ ALLOWED_HOSTS:
     - localhost
     - 127.0.0.1
     - 0.0.0.0
-    - {{ansible_host}}
-    - {{domain_name}}
+    - {{api_domain_name}}
 
 MAIN_URL: {{django_main_url}}
-PREFIX_URI: {{django_prefix_uri}}
 
 DATABASE_NAME: {{django_database_name}}
 DATABASE_USER: {{django_database_user}}

@@ -20,7 +20,7 @@
     --installdbuser "{{mediawiki_database_user}}" \
     --installdbpass "{{mediawiki_database_password}}" \
     --pass "{{mediawiki_admin_password}}" \
-    --server http://{{mediawiki_domain_name}} \
+    --server {{mediawiki_scheme}}://{{mediawiki_domain_name}} \
     --scriptpath / \
     Tournesol \
     admin

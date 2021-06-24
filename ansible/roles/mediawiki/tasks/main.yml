@@ -33,6 +33,7 @@
   notify:
     - Write Mediawiki database password into root's home
     - Write Mediawiki secret key into root's home
+    - Write Mediawiki admin password into root's home
 
 # - name: Set MariaDB to Listen on All Interfaces
 #   lineinfile:
@@ -118,6 +119,7 @@
   notify:
     - Write Mediawiki database password into root's home
     - Write Mediawiki secret key into root's home
+    - Write Mediawiki admin password into root's home
 
 - name: Download Mediawiki extensions
   get_url:

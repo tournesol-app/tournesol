@@ -114,9 +114,9 @@
     block: |
       #
         - job_name: django
-          metrics_path: '/{{django_prefix_uri}}monitoring/metrics'
+          metrics_path: '/monitoring/metrics'
           static_configs:
-            - targets: ['127.0.0.1:80']
+            - targets: ['{{api_domain_name}}']
   when: letsencrypt_email is not defined
   notify: Reload Prometheus
 
@@ -127,10 +127,10 @@
     block: |
       #
         - job_name: django
-          metrics_path: '/{{django_prefix_uri}}monitoring/metrics'
+          metrics_path: '/monitoring/metrics'
           scheme: 'https'
           static_configs:
-            - targets: ['{{ansible_host}}']
+            - targets: ['{{api_domain_name}}']
   when: letsencrypt_email is defined
   notify: Reload Prometheus
 

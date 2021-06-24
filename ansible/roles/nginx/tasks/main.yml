@@ -1,19 +1,37 @@
-- name: Check if certificates are already present
+- name: Check if certificates for frontend are already present
   stat:
     path: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
   register: cert_file
   when: letsencrypt_email is defined
 
-- name: Stop Nginx if certificates are not present
+- name: Stop Nginx if certificates for frontend are not present
   systemd:
     name: nginx
     state: stopped
   when: letsencrypt_email is defined and cert_file.stat.exists == False
 
-- name: Run Certbot
+- name: Run Certbot for frontend
   shell:
     cmd: "certbot certonly --standalone -d {{domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
     creates: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+- name: Check if certificates for backend are already present
+  stat:
+    path: /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem
+  register: api_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if certificates for backend are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and api_cert_file.stat.exists == False
+
+- name: Run Certbot for backend
+  shell:
+    cmd: "certbot certonly --standalone -d {{api_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem
   when: letsencrypt_email is defined
 
 - name: Generate DH parameters
