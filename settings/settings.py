@@ -108,7 +108,7 @@ DATABASES = OrderedDict([
         'USER': 'DATABASE_USER' in server_settings and server_settings['DATABASE_USER'] or 'postgres',
         'PASSWORD': 'DATABASE_PASSWORD' in server_settings and server_settings['DATABASE_PASSWORD'] or '',
         'HOST': "DATABASE_HOST" in server_settings and server_settings["DATABASE_HOST"] or 'localhost',
-        'PORT': 5432,
+        'PORT': "DATABASE_PORT" in server_settings and server_settings["DATABASE_PORT"] or 5432,
         'NUMBER': 42
     }]
 ])
