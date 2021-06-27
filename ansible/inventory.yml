@@ -2,7 +2,6 @@ all:
   children:
     tournesol:
       hosts:
-
         # VM for local development
         tournesol-vm:
           ansible_host: tournesol-vm
@@ -14,11 +13,11 @@ all:
           bullseye_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
-          django_main_url: "http://{{api_domain_name}}/"
+          django_main_url: "http://{{api_domain_name}}"
           django_database_name: tournesol
           django_database_user: tournesol
 
-          backend_target_branch: master
+          backend_target_branch: oidc
           loki_version: "v2.2.1"
           frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
@@ -28,7 +27,6 @@ all:
           mediawiki_scheme: http
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
-
 
         # Staging Vultr VM
         tournesol-staging:
@@ -41,11 +39,11 @@ all:
           bullseye_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
-          django_main_url: https://{{api_domain_name}}/
+          django_main_url: https://{{api_domain_name}}
           django_database_name: tournesol
           django_database_user: tournesol
 
-          backend_target_branch: master
+          backend_target_branch: oidc
           loki_version: "v2.2.1"
           frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
@@ -58,7 +56,6 @@ all:
           mediawiki_scheme: https
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
-
 
       vars:
         ansible_python_interpreter: /usr/bin/python3

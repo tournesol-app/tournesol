@@ -35,8 +35,11 @@
     - Write Mediawiki database password into root's home
     - Write Mediawiki secret key into root's home
     - Write Mediawiki admin password into root's home
+    - Write Mediawiki OIDC client ID into root's home
+    - Write Mediawiki OIDC client secret into root's home
     - Create Mediawiki alternative root
     - Link Mediawiki alternative root
+    - Create OIDC application in Django database
 
 - meta: flush_handlers
 
@@ -109,6 +112,8 @@
     - Write Mediawiki database password into root's home
     - Write Mediawiki secret key into root's home
     - Write Mediawiki admin password into root's home
+    - Write Mediawiki OIDC client ID into root's home
+    - Write Mediawiki OIDC client secret into root's home
 
 - name: Download Mediawiki language extensions
   get_url:
@@ -127,6 +132,10 @@
   with_items:
     - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_35-ce43800.tar.gz
       name: Math-REL1_35-ce43800.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_35-d036ae0.tar.gz
+      name: PluggableAuth-REL1_35-d036ae0.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_35-19f4221.tar.gz
+      name: OpenIDConnect-REL1_35-19f4221.tar.gz
 
 - name: Extract Mediawiki language extensions
   unarchive:
@@ -148,7 +157,20 @@
   with_items:
     - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_35-ce43800.tar.gz
       name: Math-REL1_35-ce43800.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_35-d036ae0.tar.gz
+      name: PluggableAuth-REL1_35-d036ae0.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_35-19f4221.tar.gz
+      name: OpenIDConnect-REL1_35-19f4221.tar.gz
   notify:
+    - Run Composer
+    - Update Mediawiki database
+
+- name: Copy Composer configuration for OIDC extension dependencies
+  template:
+    src: composer.local.json.j2
+    dest: /var/lib/mediawiki/composer.local.json
+  notify:
+    - Run Composer
     - Update Mediawiki database
 
 - name: Ensure Nginx is enabled and running
