@@ -10,6 +10,17 @@
     state: restarted
     daemon_reload: true
 
+- name: Create Mediawiki alternative root
+  file:
+    path: /var/lib/mediawiki-w
+    state: directory
+
+- name: Link Mediawiki alternative root
+  file:
+    path: /var/lib/mediawiki-w/w
+    src: /var/lib/mediawiki
+    state: link
+
 - name: Install Mediawiki
   command: |
     php /var/lib/mediawiki/maintenance/install.php \
@@ -21,7 +32,7 @@
     --installdbpass "{{mediawiki_database_password}}" \
     --pass "{{mediawiki_admin_password}}" \
     --server {{mediawiki_scheme}}://{{mediawiki_domain_name}} \
-    --scriptpath / \
+    --scriptpath /w \
     Tournesol \
     admin
   become: yes
