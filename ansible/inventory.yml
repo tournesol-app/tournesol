@@ -30,10 +30,10 @@ all:
 
         # Staging Vultr VM
         tournesol-staging:
-          ansible_host: staging.tournesol.app
+          ansible_host: test.tournesol.app
           machine_name: tournesol
           # ansible_user: jst
-          domain_name: staging.tournesol.app
+          domain_name: test.tournesol.app
           api_domain_name: "api.{{domain_name}}"
 
           bullseye_mirror: http://debian.ethz.ch/debian/
