@@ -5,7 +5,7 @@ import logging
 
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models import (Q, F, Count, Func, Sum, Value, FloatField, IntegerField, Case, When)
+from django.db.models import (Q, F, Count, Func, Sum, Value, FloatField, IntegerField, Case, When, fields)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 
@@ -20,7 +20,7 @@ from tournesol.utils import VideoSearchEngine
 from settings.settings import VIDEO_FIELDS, VIDEO_FIELDS_DICT, MAX_VALUE, MAX_FEATURE_WEIGHT
 
 
-class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
+class Video(models.Model, WithFeatures, WithEmbedding):
     """One video."""
     video_id_regex = RegexValidator(youtubeVideoIdRegex,
                                     f'Video ID must match {youtubeVideoIdRegex}')
@@ -175,7 +175,7 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             # annotating with whether the rating is public
             pref_privacy = 'user__userpreferences__videoratingprivacy'
 
-            qs = ContributorVideoRating._annotate_privacy(
+            qs = ContributorRating._annotate_privacy(
                 qs=qs, prefix=pref_privacy,
                 field_user=None, filter_add={f'{pref_privacy}__video': self}
             )
@@ -245,45 +245,6 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
             video.full_clean()
             video.save()
             return video
-
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field in VIDEO_FIELDS:
-            # adding the field to user preferences
-            Video.add_to_class(
-                field,
-                models.FloatField(
-                    default=0,
-                    blank=False,
-                    help_text=VIDEO_FIELDS_DICT[field]))
-
-        for field in VIDEO_FIELDS:
-            # adding the field to user preferences
-            Video.add_to_class(
-                field + "_uncertainty",
-                models.FloatField(
-                    default=0,
-                    blank=False,
-                    help_text=f"Uncertainty for {field}"))
-
-        # quantiles
-        # computed in the Video.recompute_quantiles(),
-        #  called via the manage.py compute_quantile_pareto command
-        # should be computed after every ml_train command (see the devops script)
-        # SEE also: pareto_optimal field (defined above)
-        for field in VIDEO_FIELDS:
-            Video.add_to_class(
-                field + "_quantile",
-                models.FloatField(
-                    default=1.0,
-                    null=False,
-                    blank=False,
-                    validators=[
-                        MinValueValidator(0.0),
-                        MaxValueValidator(1.0)],
-                    help_text=f"Top quantile for {field} for all rated videos for "
-                              "aggregated scores. 0.0=best, 1.0=worst"))
 
     @property
     def best_text(self, min_len=5):
@@ -422,6 +383,47 @@ class Video(models.Model, WithFeatures, WithEmbedding, WithDynamicFields):
         Video.objects.bulk_update(video_objects, batch_size=200,
                                   fields=Video.COMPUTED_PROPERTIES + ['is_update_pending'])
 
+class VideoCriteriaScore(models.Model):
+    """Scores per criteria for Videos"""
+
+    video = models.ForeignKey(
+        to=Video,
+        on_delete=models.CASCADE,
+        help_text="Foreign key to the video",
+        related_name="criteria_scores"
+    )
+    criteria = models.TextField(
+        max_length=32,
+        help_text="Name of the criteria",
+    )
+    score = models.FloatField(
+        default=0, 
+        blank=False, 
+        help_text="Score of the given criteria",
+    )
+    uncertainty = models.FloatField(
+        default=0, 
+        blank=False,
+        help_text="Uncertainty about the video's score for the given criteria",
+    )
+    # TODO: ensure that the following works:
+    # quantiles are computed in the Video.recompute_quantiles(),
+    # called via the manage.py compute_quantile_pareto command
+    # should be computed after every ml_train command (see the devops script)
+    quantile = models.FloatField(
+        default=1.0,
+        null=False,
+        blank=False,
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
+        help_text="Top quantile for all rated videos for aggregated scores for the given criteria. 0.0=best, 1.0=worst",
+    )
+
+    class Meta:
+        unique_together = ['video', 'criteria']
+
+    def __str__(self):
+        return f"{self.video}/{self.criteria}/{self.score}"
+    
 
 class VideoRateLater(models.Model):
     """List of videos that a person wants to rate later."""
@@ -444,7 +446,7 @@ class VideoRateLater(models.Model):
         return f"{self.user}/{self.video}@{self.datetime_add}"
 
 
-class ContributorVideoRating(models.Model, WithFeatures, WithDynamicFields):
+class ContributorRating(models.Model, WithFeatures):
     """Predictions by individual contributor models."""
     video = models.ForeignKey(
         Video,
@@ -457,31 +459,42 @@ class ContributorVideoRating(models.Model, WithFeatures, WithDynamicFields):
     is_public = models.BooleanField(default=False, null=False,
                                     help_text="Should the rating be public?")
 
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field in VIDEO_FIELDS:
-            ContributorVideoRating.add_to_class(
-                field,
-                models.FloatField(
-                    default=0,
-                    blank=False,
-                    help_text=VIDEO_FIELDS_DICT[field]))
-
-        for field in VIDEO_FIELDS:
-            # adding the field to user preferences
-            ContributorVideoRating.add_to_class(
-                field + "_uncertainty",
-                models.FloatField(
-                    default=0,
-                    blank=False,
-                    help_text=f"Uncertainty for {field}"))
-
     class Meta:
         unique_together = ['user', 'video']
 
     def __str__(self):
         return "%s on %s" % (self.user, self.video)
+
+
+class ContributorRatingCriteriaScore(models.Model):
+    """Scores per criteria for contributors' algorithmic representatives"""
+
+    contributor_rating = models.ForeignKey(
+        to=ContributorRating,
+        help_text="Foreign key to the contributor's rating",
+        related_name="criteria_scores",
+        on_delete=models.CASCADE,
+    )
+    criteria = models.TextField(
+        max_length=32,
+        help_text="Name of the criteria",
+    )
+    score = models.FloatField(
+        default=0, 
+        blank=False, 
+        help_text="Score for the given criteria",
+    )
+    uncertainty = models.FloatField(
+        default=0, 
+        blank=False,
+        help_text="Uncertainty about the video's score for the given criteria",
+    )
+
+    class Meta:
+        unique_together = ['contributor_rating', 'criteria']
+
+    def __str__(self):
+        return f"{self.contributor_rating}/{self.criteria}/{self.score}"
 
 
 class VideoRatingThankYou(models.Model):
@@ -519,7 +532,7 @@ class VideoSelectorSkips(models.Model):
         return f"{self.user}/{self.video}@{self.datetime_add}"
 
 
-class Comparison(models.Model, WithFeatures, WithDynamicFields):
+class Comparison(models.Model, WithFeatures):
     """Rating given by a user."""
 
     class Meta:
@@ -558,31 +571,6 @@ class Comparison(models.Model, WithFeatures, WithDynamicFields):
         max_length=50,
         default=uuid.uuid1,
         help_text="Sorted pair of video IDs")
-
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field in VIDEO_FIELDS:
-            Comparison.add_to_class(
-                field,
-                models.FloatField(
-                    blank=True,
-                    null=True,
-                    default=None,
-                    help_text=VIDEO_FIELDS_DICT[field],
-                    validators=[
-                        MinValueValidator(0.0),
-                        MaxValueValidator(MAX_VALUE)]))
-
-            Comparison.add_to_class(
-                field + "_weight",
-                models.FloatField(
-                    blank=False,
-                    default=1,
-                    help_text=VIDEO_FIELDS_DICT[field] + " weight",
-                    validators=[
-                        MinValueValidator(0.0),
-                        MaxValueValidator(MAX_FEATURE_WEIGHT)]))
 
     @property
     def video_first_second(self, videos=None):
@@ -678,6 +666,42 @@ class Comparison(models.Model, WithFeatures, WithDynamicFields):
 
     def __str__(self):
         return "%s [%s/%s]" % (self.user, self.video_1, self.video_2)
+
+
+class ComparisonCriteriaScore(models.Model):
+    """Scores per criteria for comparisons submitted by contributors"""
+
+
+    comparison = models.ForeignKey(
+        to=Comparison,
+        help_text="Foreign key to the contributor's comparison",
+        related_name="criteria_scores",
+        on_delete=models.CASCADE,
+    )
+    criteria = models.TextField(
+        max_length=32,
+        help_text="Name of the criteria",
+    )
+    # TODO: currently scores range from [0, 100], update them to range from [-10, 10]
+    # and add validation
+    score = models.FloatField(
+        default=0, 
+        blank=False, 
+        help_text="Score for the given comparison",
+    )
+    # TODO: ask Lê if weights should be in a certain range (maybe always > 0)
+    # and add validation if required
+    weight = models.FloatField(
+        default=0, 
+        blank=False,
+        help_text="Weight of the comparison",
+    )
+
+    class Meta:
+        unique_together = ['comparison', 'criteria']
+
+    def __str__(self):
+        return f"{self.comparison}/{self.criteria}/{self.score}"
 
 
 class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
