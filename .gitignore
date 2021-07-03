@@ -1,2 +1,8 @@
 **__pycache__/
 .DS_Store
+venv/
+.flake8/
+.pylint/
+.pytest/
+.pytest_cache/
+.python-version

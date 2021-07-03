@@ -1,0 +1,100 @@
+version: 2.1
+
+workflows:
+  build-deploy:
+    jobs:
+      - flake8
+      - pylint
+      - pytest
+      - bandit
+
+jobs:
+  flake8:
+    docker:
+      - image: cimg/python:3.7.10
+    description: |
+      This job executes the flake8 checks on the code to validate its conformity to the PEP8.
+      For more informations, please refer to the documentation : https://pypi.org/project/flake8/
+    steps:
+      - checkout
+      - run:
+          name: Install the required dependencies
+          command: pip install -r tests/requirements.txt
+      - run:
+          name: Check all the app for style irregularities
+          command: flake8 --format=html --htmldir="${HOME}/.flake8"
+      - store_artifacts:
+          path: ~/.flake8
+  pylint:
+    docker:
+      - image: cimg/python:3.7.10
+    description: |
+      This job executes the pylint checks on the core and tournesol folders to perform a static
+      analysis on the modules. It allows the detection of many problems such as unused imports,
+      missing docstrings or newlines, etc.
+      For more informations, please refer to the documentation : https://pypi.org/project/pylint/
+    steps:
+      - checkout
+      - run:
+          name: Install the required dependencies
+          command: pip install -r tests/requirements.txt
+      - run:
+          name: Install the runtime dependencies needed by pylint
+          command: pip install -r requirements.txt
+      - run:
+          name: Create the folder to contain the pylint reports
+          command: mkdir "${HOME}/.pylint"
+      - run:
+          name: Check the tournesol folder for irregularities
+          command: |
+            eval cd "${CIRCLE_WORKING_DIRECTORY}" &&
+            export PYLINT_CODE=$(pylint -f json --output="${HOME}/.pylint/report.json" --ignore=migrations core tournesol; echo "$?")
+            echo "export PYLINT_CODE=${PYLINT_CODE}" > ${HOME}/.bashrc
+      - run:
+          name: Transform the JSON report into a readable HTML
+          command: |
+            pylint-json2html -o "${HOME}/.pylint/index.html" "${HOME}/.pylint/report.json";
+            source ${HOME}/.bashrc && exit $PYLINT_CODE
+      - store_artifacts:
+          path: ~/.pylint/index.html
+          destination: index.html
+  pytest:
+    docker:
+      - image: cimg/python:3.7.10
+    description: |
+      This job runs the tests suite using pytest as test runner. Tests are in the <repo>/tests folder.
+      For more informations, please refer to the documentation : https://docs.pytest.org/en/6.2.x/
+    steps:
+      - checkout
+      - run:
+          name: Install the required dependencies
+          command: pip install -r tests/requirements.txt
+      - run:
+          name: Create the folder to contain the pytest report
+          command: mkdir "${HOME}/.pytest"
+      - run:
+          name: Run the test suite
+          command: pytest --junit-xml=${HOME}/.pytest/junit.xml
+      - store_test_results:
+          path: ~/.pytest
+  bandit:
+    docker:
+      - image: cimg/python:3.7.10
+    description: |
+      This job runs the security checks with bandit to ensure that there are no
+      vulnerabilities in the application.
+      For more informations, please refer to the documentation : https://pypi.org/project/bandit/
+    steps:
+      - checkout
+      - run:
+          name: Install the required dependencies
+          command: pip install -r tests/requirements.txt
+      - run:
+          name: Create the folder to contain the bandit report
+          command: mkdir "${HOME}/.bandit"
+      - run:
+          name: Run the test suite
+          command: bandit -r "$(eval echo $CIRCLE_WORKING_DIRECTORY)" -f html -o "${HOME}/.bandit/report.html"
+      - store_artifacts:
+          path: ~/.bandit/report.html
+          destination: index.html
