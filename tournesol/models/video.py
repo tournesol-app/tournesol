@@ -395,6 +395,7 @@ class VideoCriteriaScore(models.Model):
     criteria = models.TextField(
         max_length=32,
         help_text="Name of the criteria",
+        db_index=True,
     )
     score = models.FloatField(
         default=0, 
@@ -478,6 +479,7 @@ class ContributorRatingCriteriaScore(models.Model):
     criteria = models.TextField(
         max_length=32,
         help_text="Name of the criteria",
+        db_index=True,
     )
     score = models.FloatField(
         default=0, 
@@ -681,6 +683,7 @@ class ComparisonCriteriaScore(models.Model):
     criteria = models.TextField(
         max_length=32,
         help_text="Name of the criteria",
+        db_index=True,
     )
     # TODO: currently scores range from [0, 100], update them to range from [-10, 10]
     # and add validation
