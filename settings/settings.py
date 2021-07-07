@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'tournesol',
     'oauth2_provider',
     'rest_framework',
+    'drf_spectacular'
 ]
 
 # Modèle utilisateur utilisé par Django (1.5+)
@@ -185,7 +186,6 @@ REST_FRAMEWORK = {
     ),
 
     # custom exception handling
-    'EXCEPTION_HANDLER': 'backend.api_v2.exception.handler',
 
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',

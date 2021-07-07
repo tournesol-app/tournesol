@@ -1,4 +1,4 @@
-django==3.2.*
+django==3.2.4
 PyYAML==5.4.1
 #rest framework
 djangorestframework==3.12.4
@@ -16,3 +16,5 @@ tqdm==4.61.0
 fuzzysearch==0.7.3
 
 django-prometheus==2.1.0
+
+drf_spectacular==0.17.2
