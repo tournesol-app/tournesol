@@ -94,7 +94,7 @@ jobs:
           command: mkdir "${HOME}/.bandit"
       - run:
           name: Run the test suite
-          command: bandit -r "$(eval echo $CIRCLE_WORKING_DIRECTORY)" -f html -o "${HOME}/.bandit/report.html"
+          command: bandit -r "$(eval echo $CIRCLE_WORKING_DIRECTORY)" -f html -o "${HOME}/.bandit/report.html" -c "bandit.yaml"
       - store_artifacts:
           path: ~/.bandit/report.html
           destination: index.html

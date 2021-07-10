@@ -1,0 +1,8 @@
+# This file holds the configuration for the bandit plugin checking
+# for security vulnerabilities in our application.
+exclude_dirs:
+  - '/tests/'
+
+# This allows us to skip the vulnerabilities concerning pickle as it
+# would require a bit more refactoring to completely get rid of it.
+skips: ['B403', 'B301']

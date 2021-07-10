@@ -70,7 +70,10 @@ class WithEmbedding(object):
 
     def set_embedding(self, np_array):
         """Set embedding from an np array."""
-        assert np_array.shape == (self.EMBEDDING_LEN,), "Wrong shape"
+        if np_array.shape != (self.EMBEDDING_LEN,):
+            # TODO : Create a dedicated exception class to have the possibility
+            #        to try/except it with ease.
+            raise AssertionError("Wrong shape")
         np_bytes = pickle.dumps(np_array)
         emb_encoded = base64.b64encode(np_bytes)
         setattr(self, self._EMBEDDING_FIELD, emb_encoded)
@@ -84,7 +87,9 @@ class WithEmbedding(object):
             return None
         if not isinstance(array, np.ndarray):
             return None
-        assert array.shape == (self.EMBEDDING_LEN,)
+        if array.shape != (self.EMBEDDING_LEN,):
+            # TODO : see above for dedicated class
+            raise AssertionError()
         return array
 
     @property

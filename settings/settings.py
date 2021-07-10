@@ -23,7 +23,7 @@ server_settings = {}
 SETTINGS_FILE = 'SETTINGS_FILE' in os.environ and os.environ['SETTINGS_FILE'] or '/etc/django/settings-tournesol.yaml'
 try:
     with open(SETTINGS_FILE, 'r') as f:
-        server_settings = yaml.load(f, Loader=yaml.FullLoader)
+        server_settings = yaml.full_load(f)
 except FileNotFoundError:
     print('No local settings.')
     pass
@@ -37,12 +37,15 @@ SECRET_KEY = 'SECRET_KEY' in server_settings and server_settings['SECRET_KEY'] o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEBUG' in server_settings and server_settings['DEBUG'] or False
 
-ALLOWED_HOSTS = 'ALLOWED_HOSTS' in server_settings and server_settings['ALLOWED_HOSTS'] or ['0.0.0.0', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = 'ALLOWED_HOSTS' in server_settings and server_settings['ALLOWED_HOSTS'] or ['127.0.0.1', 'localhost']
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'STATIC_ROOT' in server_settings and server_settings['STATIC_ROOT'] or '/tmp/static/'
-MEDIA_ROOT = 'MEDIA_ROOT' in server_settings and server_settings['MEDIA_ROOT'] or '/tmp/media/'
 MEDIA_URL = '/media/'
+
+# It is considered quite unsafe to use the /tmp directory, so we might as well use a dedicated root folder in HOME
+base_folder = f"{os.environ.get('HOME')}/.tournesol"
+STATIC_ROOT = 'STATIC_ROOT' in server_settings and server_settings['STATIC_ROOT'] or f"{base_folder}{STATIC_URL}"
+MEDIA_ROOT = 'MEDIA_ROOT' in server_settings and server_settings['MEDIA_ROOT'] or f"{base_folder}{MEDIA_URL}"
 
 MAIN_URL = 'MAIN_URL' in server_settings and server_settings['MAIN_URL'] or 'http://localhost:8000/'
 
