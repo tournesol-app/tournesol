@@ -4,7 +4,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 
-from settings.settings import VIDEO_FIELDS
+from settings.settings import CRITERIAS
 
 
 def fill_scores_from_old_models(apps, schema_editor):
@@ -24,7 +24,7 @@ def fill_scores_from_old_models(apps, schema_editor):
             quantile=getattr(video, f"{criteria}_quantile", 1.0),
         )
         for video in Video.objects.all()
-        for criteria in VIDEO_FIELDS
+        for criteria in CRITERIAS
     ])
 
     ContributorRatingCriteriaScore.objects.bulk_create([
@@ -35,7 +35,7 @@ def fill_scores_from_old_models(apps, schema_editor):
             uncertainty=getattr(rating, f"{criteria}_uncertainty"),
         )
         for rating in ContributorRating.objects.all()
-        for criteria in VIDEO_FIELDS
+        for criteria in CRITERIAS
     ])
 
     ComparisonCriteriaScore.objects.bulk_create([
@@ -46,7 +46,7 @@ def fill_scores_from_old_models(apps, schema_editor):
             weight=getattr(comparison, f"{criteria}_weight"),
         )
         for comparison in Comparison.objects.all()
-        for criteria in VIDEO_FIELDS
+        for criteria in CRITERIAS
         if getattr(comparison, criteria, None) is not None
     ])
 

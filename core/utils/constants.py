@@ -1,4 +1,4 @@
-from settings.settings import VIDEO_FIELDS_DICT, VIDEO_FIELDS, DRF_RECAPTCHA_PUBLIC_KEY
+from settings.settings import CRITERIAS_DICT, CRITERIAS, DRF_RECAPTCHA_PUBLIC_KEY
 
 comments = {
     'featureNames': 'Dictionary mapping quality features to their description',
@@ -53,8 +53,8 @@ minNumRateLater = 6
 n_top_popular = 100
 
 ts_constants = {
-    'featureNames': VIDEO_FIELDS_DICT,
-    'featureList': VIDEO_FIELDS,
+    'featureNames': CRITERIAS_DICT,
+    'featureList': CRITERIAS,
     'featureColors': featureColors,
     'SEARCH_DIVIDER_COEFF': 100 * 20,
     'SEARCH_FEATURE_CONST_ADD': 0.,

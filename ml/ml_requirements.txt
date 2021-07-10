@@ -1,0 +1,5 @@
+# TODO: add in this file the requirements for the ml routine
+
+torch==1.9.0
+numpy==1.20.3
+matplotlib==3.4.2 

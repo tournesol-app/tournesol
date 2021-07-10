@@ -8,7 +8,7 @@ from django.db.models import JSONField
 from computed_property.fields import ComputedField
 import numpy as np
 
-from settings.settings import VIDEO_FIELDS
+from settings.settings import CRITERIAS
 
 
 def EnumList(*lst):
@@ -51,7 +51,7 @@ class WithFeatures(object):
             else:
                 return x
 
-        return np.array([transform_nan(getattr(self, f + suffix)) for f in VIDEO_FIELDS])
+        return np.array([transform_nan(getattr(self, f + suffix)) for f in CRITERIAS])
 
     @property
     def features_as_vector(self):

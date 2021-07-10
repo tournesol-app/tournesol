@@ -17,7 +17,7 @@ from core.models import User
 from core.utils.models import (WithFeatures, WithDynamicFields, WithEmbedding, ComputedJsonField, query_or, query_and, EnumList)
 from core.utils.constants import youtubeVideoIdRegex,ts_constants
 from tournesol.utils import VideoSearchEngine
-from settings.settings import VIDEO_FIELDS, VIDEO_FIELDS_DICT, MAX_VALUE, MAX_FEATURE_WEIGHT
+from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE, MAX_FEATURE_WEIGHT
 
 
 class Video(models.Model, WithFeatures, WithEmbedding):
@@ -228,8 +228,8 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
     def get_pareto_optimal(self):
         """Compute pareto-optimality in sql. Runs in O(n^2) where n=num videos."""
-        f1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in VIDEO_FIELDS])
-        f2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in VIDEO_FIELDS])
+        f1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in CRITERIAS])
+        f2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in CRITERIAS])
 
         qs = Video.objects.filter(f1).filter(f2)
         return qs.count() == 0
@@ -283,7 +283,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         scores = VideoSearchEngine.score(
             self.short_text, self.features_as_vector)
 
-        for k, v in zip(VIDEO_FIELDS, self.features_as_vector):
+        for k, v in zip(CRITERIAS, self.features_as_vector):
             scores[k] = v
 
         return scores
@@ -323,11 +323,11 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     @staticmethod
     def recompute_quantiles():
         """Set {f}_quantile attribute for videos."""
-        quantiles_by_feature_by_id = {f: {} for f in VIDEO_FIELDS}
+        quantiles_by_feature_by_id = {f: {} for f in CRITERIAS}
 
         # go over all features
         # logging.warning("Computing quantiles...")
-        for f in tqdm(VIDEO_FIELDS):
+        for f in tqdm(CRITERIAS):
             # order by feature (descenting, because using the top quantile)
             qs = Video.objects.filter(**{f + "__isnull": False}).order_by('-' + f)
             quantiles_f = np.linspace(0.0, 1.0, len(qs))
@@ -338,12 +338,12 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         video_objects = []
         # TODO: use batched updates with bulk_update
         for v in tqdm(Video.objects.all()):
-            for f in VIDEO_FIELDS:
+            for f in CRITERIAS:
                 setattr(v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None))
             video_objects.append(v)
 
         Video.objects.bulk_update(video_objects, batch_size=200,
-                                  fields=[f + "_quantile" for f in VIDEO_FIELDS])
+                                  fields=[f + "_quantile" for f in CRITERIAS])
 
     @staticmethod
     def recompute_pareto():
@@ -742,14 +742,14 @@ class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
     @staticmethod
     def _create_fields():
         """Adding score fields."""
-        for field in VIDEO_FIELDS:
+        for field in CRITERIAS:
             ComparisonSliderChanges.add_to_class(
                 field,
                 models.FloatField(
                     blank=True,
                     null=True,
                     default=None,
-                    help_text=VIDEO_FIELDS_DICT[field],
+                    help_text=CRITERIAS_DICT[field],
                     validators=[
                         MinValueValidator(0.0),
                         MaxValueValidator(MAX_VALUE)]))

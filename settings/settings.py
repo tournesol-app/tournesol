@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'django_prometheus',
     'core',
     'tournesol',
+    'ml',
     'oauth2_provider',
     'rest_framework',
     'drf_spectacular'
@@ -205,7 +206,7 @@ REST_FRAMEWORK = {
 # 0 means left video is best, 100 means right video is best
 MAX_VALUE = 100.
 
-VIDEO_FIELDS_DICT = OrderedDict([
+CRITERIAS_DICT = OrderedDict([
     ('largely_recommended', 'Should be largely recommended'),
     ('reliability', "Reliable and not misleading"),
     ('importance', "Important and actionable"),
@@ -218,7 +219,7 @@ VIDEO_FIELDS_DICT = OrderedDict([
     ('entertaining_relaxing', 'Entertaining and relaxing'),
 ])
 
-VIDEO_FIELDS = list(VIDEO_FIELDS_DICT.keys())
+CRITERIAS = list(CRITERIAS_DICT.keys())
 
 # maximal weight to assign to a rating for a particular feature, see #41
 MAX_FEATURE_WEIGHT = 8

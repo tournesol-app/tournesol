@@ -10,7 +10,7 @@ from django_countries import countries
 from ..utils.constants import featureIsEnabledByDeFault
 from ..utils.models import EnumList, WithDynamicFields, WithFeatures
 from ..utils.validators import validate_avatar
-from settings.settings import MAX_VALUE, VIDEO_FIELDS, VIDEO_FIELDS_DICT
+from settings.settings import MAX_VALUE, CRITERIAS, CRITERIAS_DICT
 
 
 class User(AbstractUser):
@@ -204,13 +204,13 @@ class UserPreferences(models.Model, WithFeatures, WithDynamicFields):
     @staticmethod
     def _create_fields():
         """Adding score fields."""
-        for field in VIDEO_FIELDS:
+        for field in CRITERIAS:
             UserPreferences.add_to_class(
                 field,
                 models.FloatField(
                     default=0.0,
                     blank=False,
-                    help_text=VIDEO_FIELDS_DICT[field],
+                    help_text=CRITERIAS_DICT[field],
                     validators=[
                         MinValueValidator(0.0),
                         MaxValueValidator(MAX_VALUE)]))
