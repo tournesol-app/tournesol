@@ -18,3 +18,4 @@ fuzzysearch==0.7.3
 django-prometheus==2.1.0
 
 drf_spectacular==0.17.2
+django-rest-swagger=2.2.0

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'ml',
     'oauth2_provider',
     'rest_framework',
+    'rest_framework_swagger',
     'drf_spectacular'
 ]
 
@@ -84,10 +85,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'settings.urls'
 
+
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -198,7 +202,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '10000/hour',
         'user': '1000000/hour'
-    }
+    },
 }
 
 

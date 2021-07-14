@@ -52,3 +52,9 @@ Oauth toolkit for api auth
 https://github.com/korfuri/django-prometheus
 
 Used to provide django metrics for monitoring
+
+
+### django-rest-swagger
+https://github.com/marcgibbons/django-rest-swagger
+
+Used to generated automated documentation
