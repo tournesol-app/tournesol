@@ -1,11 +1,20 @@
-from .models import Comparison, ComparisonCriteriaScore, Video
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+
+from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater
 
 
 class VideoSerializer(ModelSerializer):
     class Meta:
         model = Video
-        fields = ["video_id",]
+        fields = ["video_id"]
+
+
+class VideoRateLaterSerializer(ModelSerializer):
+    video = VideoSerializer()
+
+    class Meta:
+        model = VideoRateLater
+        fields = ['video']
 
 
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
@@ -49,5 +58,3 @@ class ComparisonSerializerInverse(ModelSerializer):
 
     def get_video_2(self, obj):
         return VideoSerializer(obj.video_1).data
-
-
