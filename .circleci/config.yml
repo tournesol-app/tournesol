@@ -61,13 +61,22 @@ jobs:
   pytest:
     docker:
       - image: cimg/python:3.7.10
+      - image: circleci/postgres:12.2
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: tournesol
+          POSTGRES_PASSWORD: password
+
     description: |
       This job runs the tests suite using pytest as test runner. Tests are in the <repo>/tests folder.
       For more informations, please refer to the documentation : https://docs.pytest.org/en/6.2.x/
     steps:
       - checkout
       - run:
-          name: Install the required dependencies
+          name: Install the main dependencies
+          command: pip install -r requirements.txt
+      - run:
+          name: Install the test dependencies
           command: pip install -r tests/requirements.txt
       - run:
           name: Create the folder to contain the pytest report

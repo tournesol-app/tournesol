@@ -115,7 +115,7 @@ DATABASES = OrderedDict([
         'ENGINE': 'django_prometheus.db.backends.postgresql',
         'NAME': 'DATABASE_NAME' in server_settings and server_settings['DATABASE_NAME'] or 'tournesol',
         'USER': 'DATABASE_USER' in server_settings and server_settings['DATABASE_USER'] or 'postgres',
-        'PASSWORD': 'DATABASE_PASSWORD' in server_settings and server_settings['DATABASE_PASSWORD'] or '',
+        'PASSWORD': 'DATABASE_PASSWORD' in server_settings and server_settings['DATABASE_PASSWORD'] or 'password',
         'HOST': "DATABASE_HOST" in server_settings and server_settings["DATABASE_HOST"] or 'localhost',
         'PORT': "DATABASE_PORT" in server_settings and server_settings["DATABASE_PORT"] or 5432,
         'NUMBER': 42

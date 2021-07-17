@@ -9,3 +9,6 @@ bandit==1.7.0
 pytest==6.2.4
 pytest-mock==3.6.1
 faker==8.8.2
+
+# Pytest for django
+pytest-django==4.4.0

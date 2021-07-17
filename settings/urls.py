@@ -36,5 +36,4 @@ urlpatterns = [
         ),
         name="swagger-ui",
     ),
-    path('', include("tournesol.urls")),
 ]

@@ -55,7 +55,7 @@ class VideoRateLaterApi(TestCase):
         response = client.get(
             reverse('tournesol:video_rate_later_list', args=[user.pk])
         )
-        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_list(self):
         """
@@ -72,13 +72,13 @@ class VideoRateLaterApi(TestCase):
         response = client.get(
             reverse('tournesol:video_rate_later_list', args=[user.pk])
         )
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # user must see only its own rate later list
-        self.assertEquals(
+        self.assertEqual(
             len(response.data['results']), video_rate_later.count()
         )
-        self.assertEquals(
+        self.assertEqual(
             response.data['results'][0]['video']['video_id'],
             video_rate_later[0].video.video_id
         )
@@ -97,7 +97,7 @@ class VideoRateLaterApi(TestCase):
         response = client.get(
             reverse('tournesol:video_rate_later_list', args=[other.pk])
         )
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_anonymous_cant_create(self):
         """
@@ -112,7 +112,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_list', args=[user.pk]),
             data, format='json'
         )
-        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_create(self):
         """
@@ -134,7 +134,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_list', args=[user.pk]),
             data, format='json'
         )
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -156,7 +156,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_list', args=[user.pk]),
             data, format='json'
         )
-        self.assertEquals(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
     def test_authenticated_cant_create_others(self):
         """
@@ -179,7 +179,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_list', args=[other.pk]),
             data, format='json'
         )
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_anonymous_cant_fetch(self):
         """
@@ -192,7 +192,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_detail',
                     args=[user.pk, 'non_existing_video_id'])
         )
-        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_fetch(self):
         """
@@ -209,7 +209,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_detail',
                     args=[user.pk, video.video_id])
         )
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_authenticated_cant_fetch_others(self):
         """
@@ -228,7 +228,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_detail',
                     args=[other.pk, video.video_id])
         )
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_anonymous_cant_delete(self):
         """
@@ -241,7 +241,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_detail',
                     args=[user.pk, 'non_existing_video_id'])
         )
-        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_delete(self):
         """
@@ -258,7 +258,7 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_detail',
                     args=[user.pk, video.video_id])
         )
-        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_authenticated_cant_delete_others(self):
         """
@@ -277,4 +277,4 @@ class VideoRateLaterApi(TestCase):
             reverse('tournesol:video_rate_later_detail',
                     args=[other.pk, video.video_id])
         )
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
