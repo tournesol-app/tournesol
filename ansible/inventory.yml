@@ -50,7 +50,7 @@ all:
           npm_lts_version: fermium
 
           # Setting this triggers TLS configuration
-          letsencrypt_email: jst@kleis.ch
+          letsencrypt_email: tournesol.application@gmail.com
 
           mediawiki_domain_name: "wiki.{{domain_name}}"
           mediawiki_scheme: https
