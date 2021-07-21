@@ -8,6 +8,7 @@ import {
   closeDrawer,
   selectFrame,
 } from '../../drawerOpenSlice';
+import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -70,24 +71,30 @@ const SideBar = (props: any) => {
       </IconButton>
       <Divider />
       <List>
+        <Link to='/'>
         <ListItem button>
           <ListItemIcon>
             <Search color="primary" />
           </ListItemIcon>
-          <ListItemText primary="A" />
+          <ListItemText primary="Home" />
         </ListItem>
+        </Link>
+        <Link to='/login'>
         <ListItem button>
           <ListItemIcon>
             <Search color="primary" />
           </ListItemIcon>
-          <ListItemText primary="B" />
+          <ListItemText primary="Login" />
         </ListItem>
+        </Link>
+        <Link to='/comparisons'>
         <ListItem button>
           <ListItemIcon>
             <Search color="primary" />
           </ListItemIcon>
-          <ListItemText primary="C" />
+          <ListItemText primary="Comparisons" />
         </ListItem>
+        </Link>
       </List>
     </Drawer>
   );

@@ -1,13 +1,28 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import drawerOpenReducer from '../features/frame/drawerOpenSlice';
 import loginReducer from '../features/login/loginSlice';
+import comparisonsReducer from '../features/comparisons/comparisonsSlice';
+import { combineReducers } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+
+const persistConfig = {
+  key: 'root',
+  storage,
+}
+const rootReducer = combineReducers({
+  drawerOpen: drawerOpenReducer,
+  token: loginReducer,
+  comparisons: comparisonsReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    drawerOpen: drawerOpenReducer,
-    token: loginReducer,
-  },
+  reducer: persistedReducer,
 });
+
+export const persistor = persistStore(store);
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
