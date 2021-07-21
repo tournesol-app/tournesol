@@ -1,13 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { fetchAuthorization, fetchLogin, fetchToken, fetchTokenFromRefresh } from './loginAPI';
+import { fetchAuthorization, fetchLogin, fetchToken, fetchTokenFromRefresh, fetchUserInfo } from './loginAPI';
 
 export interface LoginState {
   logged: boolean;
   code: string;
   access_token: string;
+  access_token_expiration_date: string;
   refresh_token: string;
   id_token: string;
+  user_info: string;
   status: 'idle' | 'loading' | 'failed';
 }
 
@@ -15,8 +17,10 @@ const initialState: LoginState = {
   logged: false,
   code: '',
   access_token: '',
+  access_token_expiration_date: '',
   refresh_token: '',
   id_token: '',
+  user_info: '',
   status: 'idle',
 };
 
@@ -47,6 +51,14 @@ export const getTokenFromRefreshAsync = createAsyncThunk(
   'login/fetchTokenFromRefresh',
   async (refresh_token: string) => {
     const response = await fetchTokenFromRefresh(refresh_token);
+    return response.data;
+  }
+);
+
+export const getUserInfoAsync = createAsyncThunk(
+  'login/fetchUserInfo',
+  async (access_token: string) => {
+    const response = await fetchUserInfo(access_token);
     return response.data;
   }
 );
@@ -83,9 +95,12 @@ export const loginSlice = createSlice({
       })
       .addCase(getTokenAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.access_token = action.payload?.access_token ?? '';
-        state.refresh_token = action.payload?.refresh_token ?? '';
-        state.id_token = action.payload?.id_token ?? '';
+        state.access_token = action.payload.access_token;
+        let exp = new Date()
+        exp.setTime(new Date().getTime()+1000*action.payload.expires_in);
+        state.access_token_expiration_date = exp.toString();
+        state.refresh_token = action.payload.refresh_token;
+        state.id_token = action.payload.id_token;
       })
       .addCase(getTokenAsync.rejected, (state, action) => {
         state.status = 'idle';
@@ -95,10 +110,23 @@ export const loginSlice = createSlice({
       })
       .addCase(getTokenFromRefreshAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.access_token = action.payload?.access_token ?? '';
-        state.refresh_token = action.payload?.refresh_token ?? '';
+        state.access_token = action.payload.access_token;
+        let exp = new Date()
+        exp.setTime(new Date().getTime()+1000*action.payload.expires_in);
+        state.access_token_expiration_date = exp.toString();
+        state.refresh_token = action.payload.refresh_token;
       })
       .addCase(getTokenFromRefreshAsync.rejected, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(getUserInfoAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getUserInfoAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.user_info = action.payload;
+      })
+      .addCase(getUserInfoAsync.rejected, (state, action) => {
         state.status = 'idle';
       });
   },

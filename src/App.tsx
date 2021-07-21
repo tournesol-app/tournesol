@@ -8,6 +8,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import { PrivateRoute } from './features/login/Login'
 
 function App() {
   return (
@@ -17,9 +18,9 @@ function App() {
           <Route path="/login">
             <LoginPage />
           </Route>
-          <Route path="/comparisons">
+          <PrivateRoute path="/comparisons">
             <ComparisonsPage />
-          </Route>
+          </PrivateRoute>
           <Route path="/">
             <HomePage />
           </Route>

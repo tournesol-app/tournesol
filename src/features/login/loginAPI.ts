@@ -54,8 +54,8 @@ export const fetchAuthorization = async () => {
   const resp_params = new URLSearchParams(url.search);
   let code = resp_params.get('code');
   if (code == null) {
-      console.error('code not present')
-      return Promise.reject('code not present');
+    console.error('code not present')
+    return Promise.reject('code not present');
   }
   const resp_state = resp_params.get('state');
   if (state !== resp_state) {
@@ -85,7 +85,15 @@ export const fetchToken = async (code: string) => {
   );
   // console.log(response);
   const jresp = response.json().then((data) => {
-    if (data.access_token === undefined || data.refresh_token === undefined || data.id_token === undefined) {
+    if (
+      data.access_token === undefined
+      ||
+      data.refresh_token === undefined
+      ||
+      data.id_token === undefined
+      ||
+      data.expires_in === undefined
+    ) {
       console.error('tokens not present')
       return Promise.reject('tokens not present');
     }
@@ -114,11 +122,32 @@ export const fetchTokenFromRefresh = async (refresh_token: string) => {
   );
   // console.log(response);
   const jresp = response.json().then((data) => {
-    if (data.access_token === undefined || data.refresh_token === undefined) {
+    if (
+      data.access_token === undefined
+      ||
+      data.refresh_token === undefined
+      ||
+      data.expires_in === undefined
+    ) {
       console.error('tokens not present')
       return Promise.reject('tokens not present');
     }
     return data;
+  });
+  return { data: jresp };
+}
+
+export const fetchUserInfo = async (access_token: string) => {
+  const response = await fetch(api_url + '/o/userinfo/',
+    {
+      headers: {
+        'Authorization': 'Bearer ' + access_token,
+      },
+    }
+  );
+  console.log(response);
+  const jresp = response.json().then((data) => {
+    return JSON.stringify(data);
   });
   return { data: jresp };
 }
