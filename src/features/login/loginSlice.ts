@@ -22,9 +22,8 @@ const initialState: LoginState = {
 
 export const getLoginAsync = createAsyncThunk(
   'login/fetchLogin',
-  async ({username, password}: {username: string, password: string}) => {
-    const response = await fetchLogin(username, password);
-    return JSON.stringify(response.data);
+  async ({ username, password }: { username: string, password: string }) => {
+    await fetchLogin(username, password);
   }
 );
 
@@ -64,7 +63,10 @@ export const loginSlice = createSlice({
       })
       .addCase(getLoginAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.logged = JSON.parse(action.payload);
+        state.logged = true;
+      })
+      .addCase(getLoginAsync.rejected, (state, action) => {
+        state.status = 'idle';
       })
       .addCase(getAuthorizationAsync.pending, (state) => {
         state.status = 'loading';
@@ -73,22 +75,31 @@ export const loginSlice = createSlice({
         state.status = 'idle';
         state.code = action.payload;
       })
+      .addCase(getAuthorizationAsync.rejected, (state, action) => {
+        state.status = 'idle';
+      })
       .addCase(getTokenAsync.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(getTokenAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.access_token = action.payload.access_token?action.payload.access_token:'';
-        state.refresh_token = action.payload.refresh_token?action.payload.refresh_token:'';
-        state.id_token = action.payload.id_token?action.payload.id_token:'';
+        state.access_token = action.payload?.access_token ?? '';
+        state.refresh_token = action.payload?.refresh_token ?? '';
+        state.id_token = action.payload?.id_token ?? '';
+      })
+      .addCase(getTokenAsync.rejected, (state, action) => {
+        state.status = 'idle';
       })
       .addCase(getTokenFromRefreshAsync.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(getTokenFromRefreshAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.access_token = action.payload.access_token?action.payload.access_token:'';
-        state.refresh_token = action.payload.refresh_token?action.payload.refresh_token:'';
+        state.access_token = action.payload?.access_token ?? '';
+        state.refresh_token = action.payload?.refresh_token ?? '';
+      })
+      .addCase(getTokenFromRefreshAsync.rejected, (state, action) => {
+        state.status = 'idle';
       });
   },
 });

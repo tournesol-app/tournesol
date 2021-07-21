@@ -30,8 +30,11 @@ export const fetchLogin = async (username: string, password: string) => {
     }
   );
   // console.log(response);
-  if (response.url !== api_url + '/admin/') { console.error('login failed'); return { data: false }; }
-  return { data: true };
+  if (response.url !== api_url + '/admin/') {
+    console.error('login failed');
+    return Promise.reject('login failed');
+  }
+  return;
 }
 
 export const fetchAuthorization = async () => {
@@ -49,11 +52,16 @@ export const fetchAuthorization = async () => {
   // console.log(response);
   const url = new URL(response.url);
   const resp_params = new URLSearchParams(url.search);
-  // console.log(resp_params.get('code'));
   let code = resp_params.get('code');
-  if (code == null) { code = ''; }
+  if (code == null) {
+      console.error('code not present')
+      return Promise.reject('code not present');
+  }
   const resp_state = resp_params.get('state');
-  if (state !== resp_state) { console.error('states do not match'); return { data: '' }; }
+  if (state !== resp_state) {
+    console.error('states do not match');
+    return Promise.reject('states do not match');
+  }
   return { data: code };
 }
 
@@ -76,7 +84,14 @@ export const fetchToken = async (code: string) => {
     }
   );
   // console.log(response);
-  return { data: response.json() };
+  const jresp = response.json().then((data) => {
+    if (data.access_token === undefined || data.refresh_token === undefined || data.id_token === undefined) {
+      console.error('tokens not present')
+      return Promise.reject('tokens not present');
+    }
+    return data;
+  });
+  return { data: jresp };
 }
 
 export const fetchTokenFromRefresh = async (refresh_token: string) => {
@@ -98,5 +113,12 @@ export const fetchTokenFromRefresh = async (refresh_token: string) => {
     }
   );
   // console.log(response);
-  return { data: response.json() };
+  const jresp = response.json().then((data) => {
+    if (data.access_token === undefined || data.refresh_token === undefined) {
+      console.error('tokens not present')
+      return Promise.reject('tokens not present');
+    }
+    return data;
+  });
+  return { data: jresp };
 }
