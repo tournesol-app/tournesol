@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import drawerOpenReducer from '../features/frame/drawerOpenSlice';
+import loginReducer from '../features/login/loginSlice';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    drawerOpen: drawerOpenReducer,
+    token: loginReducer,
   },
 });
 
