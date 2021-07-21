@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { fetchAuthorization, fetchLogin, fetchToken, fetchTokenFromRefresh } from './loginAPI';
 
@@ -52,36 +52,10 @@ export const getTokenFromRefreshAsync = createAsyncThunk(
   }
 );
 
-interface getTokenPayload {
-  access_token: string;
-  refresh_token: string;
-  id_token: string;
-}
-
-interface getTokenFromRefreshPayload {
-  access_token: string;
-  refresh_token: string;
-}
-
 export const loginSlice = createSlice({
   name: 'login',
   initialState,
   reducers: {
-    getToken: (state, action: PayloadAction<getTokenPayload>) => {
-      state.access_token = action.payload.access_token;
-      state.refresh_token = action.payload.refresh_token;
-      state.id_token = action.payload.id_token;
-    },
-    getTokenFromRefresh: (state, action: PayloadAction<getTokenFromRefreshPayload>) => {
-      state.access_token = action.payload.access_token;
-      state.refresh_token = action.payload.refresh_token;
-    },
-    getAuthorization: (state, action: PayloadAction<string>) => {
-      state.code = action.payload;
-    },
-    getLogin: (state, action: PayloadAction<boolean>) => {
-      state.logged = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -118,8 +92,6 @@ export const loginSlice = createSlice({
       });
   },
 });
-
-export const { getToken } = loginSlice.actions;
 
 export const selectLogin = (state: RootState) => state.token;
 
