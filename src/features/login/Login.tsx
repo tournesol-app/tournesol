@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { TextField, Grid, Container, makeStyles, Button } from '@material-ui/core';
+import { Check, Clear } from '@material-ui/icons';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getAuthorizationAsync,
@@ -21,6 +22,8 @@ const Login = () => {
   const classes = useStyles();
   const login = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
+  const [username, setUsername] = useState('jst');
+  const [password, setPassword] = useState('yop');
 
   return (
     <div className="Login">
@@ -29,7 +32,15 @@ const Login = () => {
           <Grid item xs={12}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField fullWidth label="Email" name="email" size="small" variant="outlined" />
+                <TextField
+                  fullWidth
+                  label="Login"
+                  name="login"
+                  size="small"
+                  variant="outlined"
+                  onChange={(event) => setUsername(event.target.value)}
+                  defaultValue='jst'
+                />
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -39,32 +50,46 @@ const Login = () => {
                   size="small"
                   type="password"
                   variant="outlined"
+                  onChange={(event) => setPassword(event.target.value)}
+                  defaultValue='yop'
                 />
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} onClick={() => dispatch(getTokenAsync({code: [login.code], client_id: '83x0YNh0F4oq0aP5QOPEguAG5xOKKaYNL9M8H8xW', client_secret: 'xw39T12ej01eU6JJ5kxuRir1cuWRdMqipgBHSptAdGPf9e8HXSnzkaYIgZw3hnD2hO17Bd7HkPBbVink7Ly4F31jkiIOYfhndI5RX6MKsysaw1wCYHrOYmx2KBGo4OvI'}))}>
-            <Button color="secondary" fullWidth variant="contained">
-              Token
-            </Button>
-          </Grid>
-          <Grid item xs={12} onClick={() => dispatch(getTokenFromRefreshAsync({refresh_token: [login.refresh_token], client_id: '83x0YNh0F4oq0aP5QOPEguAG5xOKKaYNL9M8H8xW', client_secret: 'xw39T12ej01eU6JJ5kxuRir1cuWRdMqipgBHSptAdGPf9e8HXSnzkaYIgZw3hnD2hO17Bd7HkPBbVink7Ly4F31jkiIOYfhndI5RX6MKsysaw1wCYHrOYmx2KBGo4OvI'}))}>
-            <Button color="secondary" fullWidth variant="contained">
-              Refresh
-            </Button>
-          </Grid>
-          <Grid item xs={12} onClick={() => dispatch(getAuthorizationAsync({client_id: '83x0YNh0F4oq0aP5QOPEguAG5xOKKaYNL9M8H8xW', state: 'plop'}))}>
-            <Button color="secondary" fullWidth variant="contained">
-              Auth
-            </Button>
-          </Grid>
-          <Grid item xs={12} onClick={() => dispatch(getLoginAsync({username: 'jst', password: 'yop'}))}>
+          <Grid item xs={10} onClick={() => dispatch(getLoginAsync({ username: username, password: password }))}>
             <Button color="secondary" fullWidth variant="contained">
               Login
             </Button>
           </Grid>
+          <Grid item xs={2}>
+            {login.logged ? <Check /> : <Clear />}
+          </Grid>
+          <Grid item xs={10} onClick={() => dispatch(getAuthorizationAsync())}>
+            <Button color="secondary" fullWidth variant="contained">
+              Auth
+            </Button>
+          </Grid>
+          <Grid item xs={2}>
+            {(login.code !== '') ? <Check /> : <Clear />}
+          </Grid>
+          <Grid item xs={10} onClick={() => dispatch(getTokenAsync(login.code))}>
+            <Button color="secondary" fullWidth variant="contained">
+              Token
+            </Button>
+          </Grid>
+          <Grid item xs={2}>
+            {(login.access_token !== '') ? <Check /> : <Clear />}
+          </Grid>
+          <Grid item xs={12} onClick={() => dispatch(getTokenFromRefreshAsync(login.refresh_token))}>
+            <Button color="secondary" fullWidth variant="contained">
+              Refresh
+            </Button>
+          </Grid>
           <Grid item xs={12}>
-            <TextField fullWidth label="Token" name="token" size="small" InputProps={{ readOnly: true, }} value={login.token} />
+            <TextField fullWidth label="Authorization Code" name="code" size="small" InputProps={{ readOnly: true, }} value={login.code} />
+            <TextField fullWidth label="Access Token" name="access_token" size="small" InputProps={{ readOnly: true, }} value={login.access_token} />
+            <TextField fullWidth label="Refresh Token" name="refresh_token" size="small" InputProps={{ readOnly: true, }} value={login.refresh_token} />
+            <TextField fullWidth label="ID Token" name="id_token" size="small" InputProps={{ readOnly: true, }} value={login.id_token} />
           </Grid>
         </Grid>
       </Container>

@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const TopBar = (props: any) => {
+const TopBar = () => {
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
@@ -46,8 +46,8 @@ const TopBar = (props: any) => {
     >
       <Toolbar>
         {!drawerOpen &&
-          <IconButton>
-            <Menu onClick={() => dispatch(openDrawer())} />
+          <IconButton onClick={() => dispatch(openDrawer())}>
+            <Menu />
           </IconButton>
         }
         <Typography variant="h6" noWrap>
