@@ -29,7 +29,7 @@ export const fetchLogin = async (username: string, password: string) => {
       body: params.toString(),
     }
   );
-  console.log(response);
+  // console.log(response);
   if (response.url !== api_url + '/admin/') { console.error('login failed'); return { data: false }; }
   return { data: true };
 }
@@ -46,10 +46,10 @@ export const fetchAuthorization = async () => {
       credentials: 'include',
     }
   );
-  console.log(response);
+  // console.log(response);
   const url = new URL(response.url);
   const resp_params = new URLSearchParams(url.search);
-  console.log(resp_params.get('code'));
+  // console.log(resp_params.get('code'));
   let code = resp_params.get('code');
   if (code == null) { code = ''; }
   const resp_state = resp_params.get('state');
@@ -75,7 +75,7 @@ export const fetchToken = async (code: string) => {
       body: params.toString(),
     }
   );
-  console.log(response);
+  // console.log(response);
   return { data: response.json() };
 }
 
@@ -97,6 +97,6 @@ export const fetchTokenFromRefresh = async (refresh_token: string) => {
       body: params.toString(),
     }
   );
-  console.log(response);
+  // console.log(response);
   return { data: response.json() };
 }
