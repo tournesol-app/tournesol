@@ -17,7 +17,7 @@ all:
           django_database_name: tournesol
           django_database_user: tournesol
 
-          backend_target_branch: hardcoded-ip-in-README
+          backend_target_branch: auth
           loki_version: "v2.2.1"
           frontend_target_branch: npm-version-update
           nvm_version: "v0.38.0"
