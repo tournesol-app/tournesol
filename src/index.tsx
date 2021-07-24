@@ -3,30 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter } from 'react-router-dom'
 import { store, persistor } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { PersistGate } from 'redux-persist/integration/react';
-
-export const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#fdd835',
-    },
-    secondary: {
-      main: '#336600',
-    },
-  },
-  overrides: {
-    MuiDrawer: {
-      docked: {
-        width: 240,
-      },
-    },
-  },
-});
+import { theme } from './theme'
 
 ReactDOM.render(
   <React.StrictMode>

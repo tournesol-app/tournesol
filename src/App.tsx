@@ -4,7 +4,6 @@ import HomePage from './pages/home/Home';
 import LoginPage from './pages/login/Login';
 import ComparisonsPage from './pages/comparisons/Comparisons';
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
@@ -12,7 +11,6 @@ import { PrivateRoute } from './features/login/PrivateRoute'
 
 function App() {
   return (
-    <Router>
       <div className="App">
         <Switch>
           <Route path="/login">
@@ -26,7 +24,6 @@ function App() {
           </Route>
         </Switch>
       </div>
-    </Router>
   );
 }
 
