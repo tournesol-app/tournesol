@@ -13,7 +13,7 @@ export interface LoginState {
   status: 'idle' | 'loading' | 'failed';
 }
 
-const initialState: LoginState = {
+export const initialState: LoginState = {
   logged: false,
   code: '',
   access_token: '',
