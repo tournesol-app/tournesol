@@ -97,7 +97,7 @@ export const loginSlice = createSlice({
         state.status = 'idle';
         state.access_token = action.payload.access_token;
         let exp = new Date()
-        exp.setTime(new Date().getTime()+1000*action.payload.expires_in);
+        exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
         state.id_token = action.payload.id_token;
@@ -112,7 +112,7 @@ export const loginSlice = createSlice({
         state.status = 'idle';
         state.access_token = action.payload.access_token;
         let exp = new Date()
-        exp.setTime(new Date().getTime()+1000*action.payload.expires_in);
+        exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
       })

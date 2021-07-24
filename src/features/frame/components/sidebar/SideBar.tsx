@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const SideBar = (props: any) => {
+const SideBar = () => {
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
@@ -72,28 +72,28 @@ const SideBar = (props: any) => {
       <Divider />
       <List>
         <Link to='/'>
-        <ListItem button>
-          <ListItemIcon>
-            <Search color="primary" />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <Search color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItem>
         </Link>
         <Link to='/login'>
-        <ListItem button>
-          <ListItemIcon>
-            <Search color="primary" />
-          </ListItemIcon>
-          <ListItemText primary="Login" />
-        </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <Search color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Login" />
+          </ListItem>
         </Link>
         <Link to='/comparisons'>
-        <ListItem button>
-          <ListItemIcon>
-            <Search color="primary" />
-          </ListItemIcon>
-          <ListItemText primary="Comparisons" />
-        </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <Search color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Comparisons" />
+          </ListItem>
         </Link>
       </List>
     </Drawer>

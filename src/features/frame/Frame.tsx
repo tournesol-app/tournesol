@@ -4,7 +4,7 @@ import TopBar from './components/topbar/TopBar';
 import SideBar from './components/sidebar/SideBar';
 
 
-const Frame = (props: any) => {
+const Frame = () => {
     return (
         <div className="Frame">
             <TopBar />

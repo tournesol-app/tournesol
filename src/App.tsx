@@ -8,7 +8,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { PrivateRoute } from './features/login/Login'
+import { PrivateRoute } from './features/login/PrivateRoute'
 
 function App() {
   return (

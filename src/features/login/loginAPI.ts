@@ -8,7 +8,9 @@ const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
 export const fetchLogin = async (username: string, password: string) => {
   let csrfToken = Cookies.get("csrftoken");
   if (csrfToken === undefined) {
-    csrfToken = await fetch(api_url + '/admin/login/', { credentials: 'include', }).then(() => Cookies.get("csrftoken"));
+    csrfToken = await fetch(api_url + '/admin/login/',
+      { credentials: 'include', })
+      .then(() => Cookies.get("csrftoken"));
   }
   if (csrfToken === undefined) {
     csrfToken = "";
