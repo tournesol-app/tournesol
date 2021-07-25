@@ -1,13 +1,15 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
-import loginReducer, { initialState, LoginState } from './loginSlice';
+import { configureStore } from '@reduxjs/toolkit';
+import loginReducer, { initialState } from './loginSlice';
+import { LoginState } from './LoginState.model';
 import Login from './Login';
 import { MemoryRouter } from 'react-router-dom';
 import { Switch, Route } from 'react-router-dom';
 import { FetchMock } from '@react-mock/fetch';
-import { waitFor } from '@testing-library/dom';
+import { fireEvent, waitFor } from '@testing-library/dom';
+import { act } from 'react-dom/test-utils';
 
 describe('login feature', () => {
   const api_url = process.env.REACT_APP_API_URL;
@@ -20,17 +22,13 @@ describe('login feature', () => {
     fetchMocks: any;
   }) =>
     render(
-      <Provider
-        store={createStore(combineReducers({ token: loginReducer }), {
-          token: login,
-        })}
-      >
+      <Provider store={configureStore({ reducer: { token: loginReducer } })}>
         <MemoryRouter initialEntries={['/login']}>
           <Switch>
             <Route path="/login">
-              <FetchMock mocks={fetchMocks}>
-                <Login />
-              </FetchMock>
+              {/* <FetchMock mocks={fetchMocks}> */}
+              <Login />
+              {/* </FetchMock> */}
             </Route>
           </Switch>
         </MemoryRouter>
@@ -70,6 +68,9 @@ describe('login feature', () => {
       },
     ];
     let rendered = component({ login: initialState, fetchMocks: fetchMocks });
-    await waitFor(() => rendered.getAllByText(/Login/i));
+    act(() => {
+      fireEvent.click(rendered.getByRole('login-button'));
+    });
+    await waitFor(() => rendered.getAllByText(/User/i));
   });
 });
