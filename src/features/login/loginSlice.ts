@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
+import { LoginState } from './LoginState.model';
 import {
   fetchLogin,
   fetchToken,
@@ -7,23 +8,12 @@ import {
   fetchUserInfo,
 } from './loginAPI';
 
-export interface LoginState {
-  logged: boolean;
-  access_token: string;
-  access_token_expiration_date: string;
-  refresh_token: string;
-  id_token: string;
-  user_info: string;
-  status: 'idle' | 'loading' | 'failed';
-}
-
 export const initialState: LoginState = {
   logged: false,
   access_token: '',
   access_token_expiration_date: '',
   refresh_token: '',
   id_token: '',
-  user_info: '',
   status: 'idle',
 };
 
@@ -52,10 +42,7 @@ export const getTokenFromRefreshAsync = createAsyncThunk(
 
 export const getUserInfoAsync = createAsyncThunk(
   'login/fetchUserInfo',
-  async (access_token: string) => {
-    const response = await fetchUserInfo(access_token);
-    return response.data;
-  }
+  async (access_token: string) => await fetchUserInfo(access_token)
 );
 
 export const loginSlice = createSlice({

@@ -72,48 +72,65 @@ const Login = () => {
   return (
     <div className="Login">
       <Container className={classes.content} maxWidth="xs">
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Login"
-                  name="login"
-                  size="small"
-                  variant="outlined"
-                  onChange={(event) => setUsername(event.target.value)}
-                  defaultValue="jst"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Password"
-                  name="password"
-                  size="small"
-                  type="password"
-                  variant="outlined"
-                  onChange={(event) => setPassword(event.target.value)}
-                  defaultValue="yop"
-                />
-              </Grid>
+        {login.user_info ? (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="User"
+                name="user"
+                size="small"
+                variant="outlined"
+                InputProps={{ readOnly: true }}
+                value={login.user_info.username}
+              />
             </Grid>
           </Grid>
-          <Grid
-            item
-            xs={10}
-            onClick={() =>
-              dispatch(
-                getLoginAsync({ username: username, password: password })
-              )
-            }
-          >
-            <Button color="secondary" fullWidth variant="contained">
-              Login
-            </Button>
+        ) : (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Login"
+                    name="login"
+                    size="small"
+                    variant="outlined"
+                    onChange={(event) => setUsername(event.target.value)}
+                    defaultValue="jst"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    size="small"
+                    type="password"
+                    variant="outlined"
+                    onChange={(event) => setPassword(event.target.value)}
+                    defaultValue="yop"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid
+              item
+              xs={10}
+              onClick={() =>
+                dispatch(
+                  getLoginAsync({ username: username, password: password })
+                )
+              }
+              role="login-button"
+            >
+              <Button color="secondary" fullWidth variant="contained">
+                Login
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Container>
     </div>
   );

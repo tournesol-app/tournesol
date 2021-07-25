@@ -1,4 +1,4 @@
-import { LoginState } from './loginSlice';
+import { LoginState } from './LoginState.model';
 
 export const hasValidToken = (login: LoginState) => {
   if (!login.access_token || !login.access_token_expiration_date) {

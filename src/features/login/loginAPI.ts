@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie';
 import { v4 as uuid } from 'uuid';
+import { UserInfo } from './UserInfo.model';
 
 const api_url = process.env.REACT_APP_API_URL;
 const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
@@ -126,15 +127,14 @@ export const fetchTokenFromRefresh = async (refresh_token: string) => {
   return { data: jresp };
 };
 
-export const fetchUserInfo = async (access_token: string) => {
+export const fetchUserInfo = async (
+  access_token: string
+): Promise<UserInfo> => {
   const response = await fetch(api_url + '/o/userinfo/', {
     headers: {
       Authorization: 'Bearer ' + access_token,
     },
   });
-  console.log(response);
-  const jresp = response.json().then((data) => {
-    return JSON.stringify(data);
-  });
-  return { data: jresp };
+  // console.log(response);
+  return response.json();
 };
