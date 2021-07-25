@@ -31,6 +31,7 @@
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
     "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
+    "check-format": "prettier-eslint --list-different \"{,!(node_modules)/**/}*.{js,jsx,ts,tsx}\"",
     "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx,ts,tsx}\"",
     "prepare": "husky install"
   },
