@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
-  getAuthorizationAsync,
   getTokenAsync,
   // getTokenFromRefreshAsync,
   getLoginAsync,
@@ -18,6 +17,7 @@ import {
 } from './loginSlice';
 import { hasValidToken } from './tokenValidity';
 import { useLocation, useHistory } from 'react-router-dom';
+import { fetchAuthorization } from './loginAPI';
 
 const useStyles = makeStyles((theme: any) => ({
   content: {
@@ -32,6 +32,7 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState('jst');
   const [password, setPassword] = useState('yop');
+  const [code, setCode] = useState('');
   const history = useHistory();
   const location = useLocation();
   const { from }: any = location?.state ?? '';
@@ -40,19 +41,19 @@ const Login = () => {
     if (login.logged) {
       console.log('logged in');
       if (!hasValidToken(login)) {
-        dispatch(getAuthorizationAsync());
+        fetchAuthorization().then((res) => setCode(res.data));
       }
     }
   }, [login, dispatch]);
 
   useEffect(() => {
-    if (login.code) {
+    if (code) {
       console.log('code received');
       if (!hasValidToken(login)) {
-        dispatch(getTokenAsync(login.code));
+        dispatch(getTokenAsync(code));
       }
     }
-  }, [login, dispatch]);
+  }, [login, code, dispatch]);
 
   useEffect(() => {
     if (login.access_token) {

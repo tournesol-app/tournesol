@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import {
-  fetchAuthorization,
   fetchLogin,
   fetchToken,
   fetchTokenFromRefresh,
@@ -10,7 +9,6 @@ import {
 
 export interface LoginState {
   logged: boolean;
-  code: string;
   access_token: string;
   access_token_expiration_date: string;
   refresh_token: string;
@@ -21,7 +19,6 @@ export interface LoginState {
 
 export const initialState: LoginState = {
   logged: false,
-  code: '',
   access_token: '',
   access_token_expiration_date: '',
   refresh_token: '',
@@ -34,14 +31,6 @@ export const getLoginAsync = createAsyncThunk(
   'login/fetchLogin',
   async ({ username, password }: { username: string; password: string }) => {
     await fetchLogin(username, password);
-  }
-);
-
-export const getAuthorizationAsync = createAsyncThunk(
-  'login/fetchAuthorization',
-  async () => {
-    const response = await fetchAuthorization();
-    return response.data;
   }
 );
 
@@ -83,16 +72,6 @@ export const loginSlice = createSlice({
         state.logged = true;
       })
       .addCase(getLoginAsync.rejected, (state, action) => {
-        state.status = 'idle';
-      })
-      .addCase(getAuthorizationAsync.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getAuthorizationAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.code = action.payload;
-      })
-      .addCase(getAuthorizationAsync.rejected, (state, action) => {
         state.status = 'idle';
       })
       .addCase(getTokenAsync.pending, (state) => {
