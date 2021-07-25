@@ -32,7 +32,7 @@ export const comparisonsSlice = createSlice({
         state.status = 'idle';
         state.value = action.payload;
       })
-      .addCase(getComparisonsAsync.rejected, (state, action) => {
+      .addCase(getComparisonsAsync.rejected, (state) => {
         state.status = 'idle';
       });
   },

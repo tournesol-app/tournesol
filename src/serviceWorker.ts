@@ -21,7 +21,9 @@ const isLocalhost = Boolean(
 );
 
 type Config = {
+  // eslint-disable-next-line no-unused-vars
   onSuccess?: (registration: ServiceWorkerRegistration) => void;
+  // eslint-disable-next-line no-unused-vars
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
 };
 

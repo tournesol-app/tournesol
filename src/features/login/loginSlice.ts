@@ -67,11 +67,11 @@ export const loginSlice = createSlice({
       .addCase(getLoginAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(getLoginAsync.fulfilled, (state, action) => {
+      .addCase(getLoginAsync.fulfilled, (state) => {
         state.status = 'idle';
         state.logged = true;
       })
-      .addCase(getLoginAsync.rejected, (state, action) => {
+      .addCase(getLoginAsync.rejected, (state) => {
         state.status = 'idle';
       })
       .addCase(getTokenAsync.pending, (state) => {
@@ -86,7 +86,7 @@ export const loginSlice = createSlice({
         state.refresh_token = action.payload.refresh_token;
         state.id_token = action.payload.id_token;
       })
-      .addCase(getTokenAsync.rejected, (state, action) => {
+      .addCase(getTokenAsync.rejected, (state) => {
         state.status = 'idle';
       })
       .addCase(getTokenFromRefreshAsync.pending, (state) => {
@@ -100,7 +100,7 @@ export const loginSlice = createSlice({
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
       })
-      .addCase(getTokenFromRefreshAsync.rejected, (state, action) => {
+      .addCase(getTokenFromRefreshAsync.rejected, (state) => {
         state.status = 'idle';
       })
       .addCase(getUserInfoAsync.pending, (state) => {
@@ -110,7 +110,7 @@ export const loginSlice = createSlice({
         state.status = 'idle';
         state.user_info = action.payload;
       })
-      .addCase(getUserInfoAsync.rejected, (state, action) => {
+      .addCase(getUserInfoAsync.rejected, (state) => {
         state.status = 'idle';
       });
   },
