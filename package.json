@@ -28,7 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
     "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
     "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx,ts,tsx}\"",
@@ -66,6 +66,7 @@
     "openapi-typescript": "^4.0.2",
     "openapi-typescript-codegen": "^0.9.3",
     "prettier": "^2.3.2",
-    "prettier-eslint-cli": "^5.0.1"
+    "prettier-eslint-cli": "^5.0.1",
+    "react-test-renderer": "^17.0.2"
   }
 }
