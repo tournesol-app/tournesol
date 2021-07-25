@@ -31,7 +31,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
-    "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx,ts,tsx}\""
+    "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx,ts,tsx}\"",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -61,6 +62,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^7.0.1",
     "openapi-typescript": "^4.0.2",
     "openapi-typescript-codegen": "^0.9.3",
     "prettier": "^2.3.2",
