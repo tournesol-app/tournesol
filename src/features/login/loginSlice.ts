@@ -10,10 +10,7 @@ import {
 
 export const initialState: LoginState = {
   logged: false,
-  access_token: '',
-  access_token_expiration_date: '',
-  refresh_token: '',
-  id_token: '',
+  need_refresh: false,
   status: 'idle',
 };
 
@@ -60,6 +57,7 @@ export const loginSlice = createSlice({
       })
       .addCase(getLoginAsync.rejected, (state) => {
         state.status = 'idle';
+        state.logged = false;
       })
       .addCase(getTokenAsync.pending, (state) => {
         state.status = 'loading';
@@ -75,6 +73,7 @@ export const loginSlice = createSlice({
       })
       .addCase(getTokenAsync.rejected, (state) => {
         state.status = 'idle';
+        console.log('attempt at exchanging code for token failed');
       })
       .addCase(getTokenFromRefreshAsync.pending, (state) => {
         state.status = 'loading';
@@ -86,9 +85,17 @@ export const loginSlice = createSlice({
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
+        state.need_refresh = false;
       })
       .addCase(getTokenFromRefreshAsync.rejected, (state) => {
         state.status = 'idle';
+        console.log(
+          'attempt at refreshing access_token failed, erasing access, refresh and id tokens'
+        );
+        state.access_token = undefined;
+        state.refresh_token = undefined;
+        state.id_token = undefined;
+        state.need_refresh = false;
       })
       .addCase(getUserInfoAsync.pending, (state) => {
         state.status = 'loading';
@@ -99,6 +106,12 @@ export const loginSlice = createSlice({
       })
       .addCase(getUserInfoAsync.rejected, (state) => {
         state.status = 'idle';
+        console.log(
+          'attempt at retrieving user info failed, erasing access and id tokens'
+        );
+        state.access_token = undefined;
+        state.id_token = undefined;
+        state.need_refresh = true;
       });
   },
 });

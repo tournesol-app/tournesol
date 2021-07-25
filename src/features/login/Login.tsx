@@ -10,10 +10,10 @@ import {
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getTokenAsync,
-  // getTokenFromRefreshAsync,
   getLoginAsync,
   getUserInfoAsync,
   selectLogin,
+  getTokenFromRefreshAsync,
 } from './loginSlice';
 import { hasValidToken } from './tokenValidity';
 import { useLocation, useHistory } from 'react-router-dom';
@@ -33,37 +33,65 @@ const Login = () => {
   const [username, setUsername] = useState('jst');
   const [password, setPassword] = useState('yop');
   const [code, setCode] = useState('');
+  const [validToken, setValidToken] = useState(false);
   const history = useHistory();
   const location = useLocation();
   const { from }: any = location?.state ?? '';
 
   useEffect(() => {
-    if (login.logged) {
-      console.log('logged in');
-      if (!hasValidToken(login)) {
-        fetchAuthorization().then((res) => setCode(res.data));
+    if (hasValidToken(login)) {
+      if (!validToken) {
+        setValidToken(true);
+      }
+    } else {
+      if (validToken) {
+        setValidToken(false);
       }
     }
-  }, [login, dispatch]);
+  }, [login]);
+
+  useEffect(() => {
+    if (!validToken && login.logged && !code) {
+      console.log('logged in, fetching code');
+      fetchAuthorization().then((res) => setCode(res.data));
+    }
+  }, [validToken, login.logged, code]);
 
   useEffect(() => {
     if (code) {
-      console.log('code received');
-      if (!hasValidToken(login)) {
-        dispatch(getTokenAsync(code));
-      }
+      console.log('code received, exchanging it for tokens');
+      dispatch(getTokenAsync(code))
+        .then(() => {
+          console.log('code exchanged for token, erasing code');
+          setCode('');
+        })
+        .catch((error) => {
+          console.error(
+            'attempt at exchanging code for token failed: ' +
+              error +
+              ', erasing code'
+          );
+          setCode('');
+        });
     }
-  }, [login, code, dispatch]);
+  }, [code]);
 
   useEffect(() => {
     if (login.access_token) {
-      console.log('access token received');
+      console.log('access token received, fetching user info');
       dispatch(getUserInfoAsync(login.access_token));
     }
   }, [login.access_token, dispatch]);
 
   useEffect(() => {
-    if (!!login.user_info && from !== '') {
+    if (login.need_refresh && login.refresh_token) {
+      console.log('token invalid but refresh token present, trying to refresh');
+      dispatch(getTokenFromRefreshAsync(login.refresh_token));
+    }
+  }, [login.need_refresh, login.access_token, dispatch]);
+
+  useEffect(() => {
+    if (login.user_info && from !== '') {
       console.log('user info received');
       history.replace(from);
     }
