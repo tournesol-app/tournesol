@@ -1,12 +1,15 @@
 import React from 'react';
 import clsx from 'clsx';
-import { AppBar, Typography, IconButton, Toolbar, makeStyles } from '@material-ui/core';
+import {
+  AppBar,
+  Typography,
+  IconButton,
+  Toolbar,
+  makeStyles,
+} from '@material-ui/core';
 import { Menu, WbSunny } from '@material-ui/icons';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
-import {
-  openDrawer,
-  selectFrame,
-} from '../../drawerOpenSlice';
+import { openDrawer, selectFrame } from '../../drawerOpenSlice';
 
 const drawerWidth = 240;
 
@@ -45,11 +48,11 @@ const TopBar = () => {
       })}
     >
       <Toolbar>
-        {!drawerOpen &&
+        {!drawerOpen && (
           <IconButton onClick={() => dispatch(openDrawer())}>
             <Menu />
           </IconButton>
-        }
+        )}
         <Typography variant="h6" noWrap>
           Tournesol
         </Typography>
@@ -57,6 +60,6 @@ const TopBar = () => {
       </Toolbar>
     </AppBar>
   );
-}
+};
 
 export default TopBar;

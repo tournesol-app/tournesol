@@ -10,4 +10,4 @@ export const hasValidToken = (login: LoginState) => {
     return false;
   }
   return true;
-}
+};

@@ -4,10 +4,10 @@ import Frame from '../../features/frame/Frame';
 
 function ComparisonsPage() {
   return (
-      <div className="ComparisonsPage">
-        <Frame />
-        <Comparisons />
-      </div>
+    <div className="ComparisonsPage">
+      <Frame />
+      <Comparisons />
+    </div>
   );
 }
 

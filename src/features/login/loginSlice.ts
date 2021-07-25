@@ -1,6 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { fetchAuthorization, fetchLogin, fetchToken, fetchTokenFromRefresh, fetchUserInfo } from './loginAPI';
+import {
+  fetchAuthorization,
+  fetchLogin,
+  fetchToken,
+  fetchTokenFromRefresh,
+  fetchUserInfo,
+} from './loginAPI';
 
 export interface LoginState {
   logged: boolean;
@@ -26,7 +32,7 @@ export const initialState: LoginState = {
 
 export const getLoginAsync = createAsyncThunk(
   'login/fetchLogin',
-  async ({ username, password }: { username: string, password: string }) => {
+  async ({ username, password }: { username: string; password: string }) => {
     await fetchLogin(username, password);
   }
 );
@@ -66,8 +72,7 @@ export const getUserInfoAsync = createAsyncThunk(
 export const loginSlice = createSlice({
   name: 'login',
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getLoginAsync.pending, (state) => {
@@ -96,7 +101,7 @@ export const loginSlice = createSlice({
       .addCase(getTokenAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.access_token = action.payload.access_token;
-        let exp = new Date()
+        let exp = new Date();
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
@@ -111,7 +116,7 @@ export const loginSlice = createSlice({
       .addCase(getTokenFromRefreshAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.access_token = action.payload.access_token;
-        let exp = new Date()
+        let exp = new Date();
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;

@@ -15,12 +15,12 @@ export const PrivateRoute = ({ children, ...rest }: any) => {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
-              state: { from: location }
+              pathname: '/login',
+              state: { from: location },
             }}
           />
         )
       }
     />
   );
-}
+};

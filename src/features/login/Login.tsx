@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { TextField, Grid, Container, makeStyles, Button } from '@material-ui/core';
+import {
+  TextField,
+  Grid,
+  Container,
+  makeStyles,
+  Button,
+} from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getAuthorizationAsync,
@@ -40,7 +46,7 @@ const Login = () => {
   }, [login, dispatch]);
 
   useEffect(() => {
-    if (!!login.code) {
+    if (login.code) {
       console.log('code received');
       if (!hasValidToken(login)) {
         dispatch(getTokenAsync(login.code));
@@ -49,7 +55,7 @@ const Login = () => {
   }, [login, dispatch]);
 
   useEffect(() => {
-    if (!!login.access_token) {
+    if (login.access_token) {
       console.log('access token received');
       dispatch(getUserInfoAsync(login.access_token));
     }
@@ -76,7 +82,7 @@ const Login = () => {
                   size="small"
                   variant="outlined"
                   onChange={(event) => setUsername(event.target.value)}
-                  defaultValue='jst'
+                  defaultValue="jst"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -88,12 +94,20 @@ const Login = () => {
                   type="password"
                   variant="outlined"
                   onChange={(event) => setPassword(event.target.value)}
-                  defaultValue='yop'
+                  defaultValue="yop"
                 />
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={10} onClick={() => dispatch(getLoginAsync({ username: username, password: password }))}>
+          <Grid
+            item
+            xs={10}
+            onClick={() =>
+              dispatch(
+                getLoginAsync({ username: username, password: password })
+              )
+            }
+          >
             <Button color="secondary" fullWidth variant="contained">
               Login
             </Button>
@@ -102,6 +116,6 @@ const Login = () => {
       </Container>
     </div>
   );
-}
+};
 
 export default Login;

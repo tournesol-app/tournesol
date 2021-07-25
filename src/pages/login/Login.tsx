@@ -4,10 +4,10 @@ import Login from '../../features/login/Login';
 
 function LoginPage() {
   return (
-      <div className="LoginPage">
-        <Frame />
-        <Login />
-      </div>
+    <div className="LoginPage">
+      <Frame />
+      <Login />
+    </div>
   );
 }
 

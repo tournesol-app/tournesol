@@ -30,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi"
+    "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
+    "format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx,ts,tsx}\""
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,12 +49,21 @@
     ]
   },
   "devDependencies": {
+    "@react-mock/fetch": "^0.3.0",
     "@testing-library/dom": ">=5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^26.0.24",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "openapi-typescript": "^4.0.2",
-    "openapi-typescript-codegen": "^0.9.3"
+    "openapi-typescript-codegen": "^0.9.3",
+    "prettier": "^2.3.2",
+    "prettier-eslint-cli": "^5.0.1"
   }
 }

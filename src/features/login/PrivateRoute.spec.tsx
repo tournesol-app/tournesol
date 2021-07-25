@@ -3,32 +3,32 @@ import { render } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
-import loginReducer, { initialState, LoginState } from './loginSlice'
+import loginReducer, { initialState, LoginState } from './loginSlice';
 import { PrivateRoute } from './PrivateRoute';
 import { MemoryRouter } from 'react-router-dom';
-import {
-  Switch,
-  Route,
-} from "react-router-dom";
+import { Switch, Route } from 'react-router-dom';
 
 const renderComponent = ({
-  login, targetPath, loginPage, protectedPage
+  login,
+  targetPath,
+  loginPage,
+  protectedPage,
 }: {
-  login: LoginState,
-  targetPath: string,
-  loginPage: string,
-  protectedPage: string,
+  login: LoginState;
+  targetPath: string;
+  loginPage: string;
+  protectedPage: string;
 }) =>
   render(
-    <Provider store={createStore(combineReducers({ token: loginReducer }), { token: login })}>
-      <MemoryRouter>
+    <Provider
+      store={createStore(combineReducers({ token: loginReducer }), {
+        token: login,
+      })}
+    >
+      <MemoryRouter initialEntries={[targetPath]}>
         <Switch>
-          <Route path="/login">
-            {loginPage}
-          </Route>
-          <PrivateRoute path={targetPath}>
-            {protectedPage}
-          </PrivateRoute>
+          <Route path="/login">{loginPage}</Route>
+          <PrivateRoute path={targetPath}>{protectedPage}</PrivateRoute>
         </Switch>
       </MemoryRouter>
     </Provider>
@@ -44,7 +44,7 @@ test('renders protected page when logged', async () => {
 
   const { getByText } = renderComponent({
     login: login,
-    targetPath: '/',
+    targetPath: '/protected',
     loginPage: 'login_marker',
     protectedPage: 'protected_marker',
   });
@@ -54,7 +54,7 @@ test('renders protected page when logged', async () => {
 test('renders login page when not logged', async () => {
   const { getByText } = renderComponent({
     login: initialState,
-    targetPath: '/',
+    targetPath: '/protected',
     loginPage: 'login_marker',
     protectedPage: 'protected_marker',
   });

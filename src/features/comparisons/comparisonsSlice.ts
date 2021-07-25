@@ -22,8 +22,7 @@ export const getComparisonsAsync = createAsyncThunk(
 export const comparisonsSlice = createSlice({
   name: 'comparisons',
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getComparisonsAsync.pending, (state) => {

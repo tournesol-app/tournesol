@@ -3,9 +3,9 @@ import Frame from '../../features/frame/Frame';
 
 function HomePage() {
   return (
-      <div className="HomePage">
-        <Frame />
-      </div>
+    <div className="HomePage">
+      <Frame />
+    </div>
   );
 }
 

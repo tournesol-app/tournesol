@@ -1,14 +1,19 @@
 import React from 'react';
 import clsx from 'clsx';
-import { IconButton, ListItem, ListItemText, ListItemIcon, Divider, Drawer, List } from '@material-ui/core';
+import {
+  IconButton,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Drawer,
+  List,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Search, ChevronLeft } from '@material-ui/icons';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
-import {
-  closeDrawer,
-  selectFrame,
-} from '../../drawerOpenSlice';
-import { Link } from "react-router-dom";
+import { closeDrawer, selectFrame } from '../../drawerOpenSlice';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -66,12 +71,15 @@ const SideBar = () => {
         }),
       }}
     >
-      <IconButton className={classes.toolbar} onClick={() => dispatch(closeDrawer())}>
+      <IconButton
+        className={classes.toolbar}
+        onClick={() => dispatch(closeDrawer())}
+      >
         <ChevronLeft />
       </IconButton>
       <Divider />
       <List>
-        <Link to='/'>
+        <Link to="/">
           <ListItem button>
             <ListItemIcon>
               <Search color="primary" />
@@ -79,7 +87,7 @@ const SideBar = () => {
             <ListItemText primary="Home" />
           </ListItem>
         </Link>
-        <Link to='/login'>
+        <Link to="/login">
           <ListItem button>
             <ListItemIcon>
               <Search color="primary" />
@@ -87,7 +95,7 @@ const SideBar = () => {
             <ListItemText primary="Login" />
           </ListItem>
         </Link>
-        <Link to='/comparisons'>
+        <Link to="/comparisons">
           <ListItem button>
             <ListItemIcon>
               <Search color="primary" />
@@ -98,6 +106,6 @@ const SideBar = () => {
       </List>
     </Drawer>
   );
-}
+};
 
 export default SideBar;
