@@ -33,7 +33,11 @@ const Login = () => {
   const [username, setUsername] = useState('jst');
   const [password, setPassword] = useState('yop');
   const [code, setCode] = useState('');
-  const [validToken, setValidToken] = useState(false);
+  const [validToken, setValidToken] = useState(hasValidToken(login));
+  const [shouldTryRefresh, setShouldTryRefresh] = useState(
+    login.refresh_token && !hasValidToken(login)
+  );
+  const [gotUserInfo, setGotUserInfo] = useState(!!login.user_info);
   const history = useHistory();
   const location = useLocation();
   const { from }: any = location?.state ?? '';
@@ -48,14 +52,20 @@ const Login = () => {
         setValidToken(false);
       }
     }
-  }, [login]);
+  }, [login, validToken]);
 
   useEffect(() => {
-    if (!validToken && login.logged && !code) {
+    if (
+      login.status == 'idle' &&
+      !validToken &&
+      !shouldTryRefresh &&
+      login.logged &&
+      !code
+    ) {
       console.log('logged in, fetching code');
       fetchAuthorization().then((res) => setCode(res.data));
     }
-  }, [validToken, login.logged, code]);
+  }, [validToken, login, code, shouldTryRefresh]);
 
   useEffect(() => {
     if (code) {
@@ -74,28 +84,30 @@ const Login = () => {
           setCode('');
         });
     }
-  }, [code]);
+  }, [code, dispatch]);
 
   useEffect(() => {
-    if (login.access_token) {
+    if (!gotUserInfo && login.access_token) {
       console.log('access token received, fetching user info');
       dispatch(getUserInfoAsync(login.access_token));
     }
-  }, [login.access_token, dispatch]);
+  }, [login.access_token, dispatch, gotUserInfo]);
 
   useEffect(() => {
-    if (login.need_refresh && login.refresh_token) {
+    if (!validToken && shouldTryRefresh && login.refresh_token) {
       console.log('token invalid but refresh token present, trying to refresh');
+      setShouldTryRefresh(false);
       dispatch(getTokenFromRefreshAsync(login.refresh_token));
     }
-  }, [login.need_refresh, login.access_token, dispatch]);
+  }, [validToken, shouldTryRefresh, login.refresh_token, dispatch]);
 
   useEffect(() => {
-    if (login.user_info && from !== '') {
+    if (!gotUserInfo && login.user_info && from !== '') {
       console.log('user info received');
       history.replace(from);
+      setGotUserInfo(true);
     }
-  }, [login.user_info, history, from]);
+  }, [login.user_info, history, from, gotUserInfo]);
 
   return (
     <div className="Login">

@@ -34,7 +34,7 @@ const Comparisons = () => {
                 item
                 xs={12}
                 onClick={() =>
-                  dispatch(getComparisonsAsync(token.access_token))
+                  dispatch(getComparisonsAsync(token?.access_token ?? ''))
                 }
               >
                 <Button color="secondary" fullWidth variant="contained">
