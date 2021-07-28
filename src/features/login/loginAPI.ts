@@ -14,7 +14,8 @@ export const fetchLogin = async (username: string, password: string) => {
     }).then(() => Cookies.get('csrftoken'));
   }
   if (csrfToken === undefined) {
-    csrfToken = '';
+    console.error('no CSRF token found');
+    return Promise.reject('login failed');
   }
   let params = new URLSearchParams();
   params.append('username', username);
