@@ -15,7 +15,7 @@ const initialState: ComparisonsState = {
 export const getComparisonsAsync = createAsyncThunk(
   'comparisons/fetchComparisons',
   async (access_token: string) => {
-    return await fetchComparisons(access_token);
+    return JSON.stringify((await fetchComparisons(access_token)).results);
   }
 );
 
