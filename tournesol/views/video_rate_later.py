@@ -11,7 +11,7 @@ from tournesol.serializers import VideoRateLaterSerializer
 class VideoRateLaterList(mixins.ListModelMixin, mixins.CreateModelMixin,
                          generics.GenericAPIView):
     """
-    List all video of a user's rate later list, or add a video to the list.
+    List all videos of a user's rate later list, or add a video to the list.
     """
 
     serializer_class = VideoRateLaterSerializer

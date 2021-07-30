@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import (User, UserPreferences, Degree, Expertise, ExpertiseKeyword, EmailDomain, VerifiableEmail)
+from .models import (User, UserPreference, Degree, Expertise, ExpertiseKeyword, EmailDomain, VerifiableEmail)
 
 
-@admin.register(UserPreferences)
+@admin.register(UserPreference)
 class UserPreferencesAdmin(admin.ModelAdmin):
     pass
 

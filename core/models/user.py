@@ -168,7 +168,7 @@ class User(AbstractUser):
     @property
     def user_preferences(self):
         """Preferences for this user."""
-        return UserPreferences.objects.get(user=self)
+        return UserPreference.objects.get(user=self)
 
     @property
     def is_certified(self):
@@ -189,7 +189,7 @@ class User(AbstractUser):
         return True if any_rejected else False
 
 
-class UserPreferences(models.Model, WithFeatures, WithDynamicFields):
+class UserPreference(models.Model, WithFeatures, WithDynamicFields):
     """One user with preferences."""
     user = models.OneToOneField(
         User,
@@ -205,7 +205,7 @@ class UserPreferences(models.Model, WithFeatures, WithDynamicFields):
     def _create_fields():
         """Adding score fields."""
         for field in CRITERIAS:
-            UserPreferences.add_to_class(
+            UserPreference.add_to_class(
                 field,
                 models.FloatField(
                     default=0.0,
@@ -215,7 +215,7 @@ class UserPreferences(models.Model, WithFeatures, WithDynamicFields):
                         MinValueValidator(0.0),
                         MaxValueValidator(MAX_VALUE)]))
 
-            UserPreferences.add_to_class(
+            UserPreference.add_to_class(
                 field + '_enabled',
                 models.BooleanField(
                     default=featureIsEnabledByDeFault[field],
