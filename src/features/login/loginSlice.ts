@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { LoginState } from './LoginState.model';
-import { fetchToken, fetchTokenFromRefresh, fetchUserInfo } from './loginAPI';
+import { fetchToken, fetchTokenFromRefresh } from './loginAPI';
 
 export const initialState: LoginState = {
   status: 'idle',
@@ -23,11 +23,6 @@ export const getTokenFromRefreshAsync = createAsyncThunk(
   }
 );
 
-export const getUserInfoAsync = createAsyncThunk(
-  'login/fetchUserInfo',
-  async (access_token: string) => await fetchUserInfo(access_token)
-);
-
 export const loginSlice = createSlice({
   name: 'login',
   initialState,
@@ -44,7 +39,6 @@ export const loginSlice = createSlice({
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
-        state.id_token = action.payload.id_token;
       })
       .addCase(getTokenAsync.rejected, (state) => {
         state.status = 'idle';
@@ -68,22 +62,6 @@ export const loginSlice = createSlice({
         );
         state.access_token = undefined;
         state.refresh_token = undefined;
-        state.id_token = undefined;
-      })
-      .addCase(getUserInfoAsync.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getUserInfoAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.user_info = action.payload;
-      })
-      .addCase(getUserInfoAsync.rejected, (state) => {
-        state.status = 'idle';
-        console.log(
-          'attempt at retrieving user info failed, erasing access and id tokens'
-        );
-        state.access_token = undefined;
-        state.id_token = undefined;
       });
   },
 });

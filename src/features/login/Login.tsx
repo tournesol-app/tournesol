@@ -10,7 +10,6 @@ import {
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getTokenAsync,
-  getUserInfoAsync,
   selectLogin,
   getTokenFromRefreshAsync,
 } from './loginSlice';
@@ -34,7 +33,6 @@ const Login = () => {
   const [shouldTryRefresh, setShouldTryRefresh] = useState(
     login.refresh_token && !hasValidToken(login)
   );
-  const [gotUserInfo, setGotUserInfo] = useState(!!login.user_info);
   const history = useHistory();
   const location = useLocation();
   const { from }: any = location?.state ?? '';
@@ -52,13 +50,6 @@ const Login = () => {
   }, [login, validToken]);
 
   useEffect(() => {
-    if (!gotUserInfo && login.access_token) {
-      console.log('access token received, fetching user info');
-      dispatch(getUserInfoAsync(login.access_token));
-    }
-  }, [login.access_token, dispatch, gotUserInfo]);
-
-  useEffect(() => {
     if (!validToken && shouldTryRefresh && login.refresh_token) {
       console.log('token invalid but refresh token present, trying to refresh');
       setShouldTryRefresh(false);
@@ -67,17 +58,16 @@ const Login = () => {
   }, [validToken, shouldTryRefresh, login.refresh_token, dispatch]);
 
   useEffect(() => {
-    if (!gotUserInfo && login.user_info && from !== '') {
-      console.log('user info received');
+    if (validToken && from !== '') {
+      console.log('logged in, redirecting');
       history.replace(from);
-      setGotUserInfo(true);
     }
-  }, [login.user_info, history, from, gotUserInfo]);
+  }, [validToken, history, from]);
 
   return (
     <div className="Login">
       <Container className={classes.content} maxWidth="xs">
-        {login.user_info ? (
+        {validToken ? (
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <TextField
@@ -87,7 +77,7 @@ const Login = () => {
                 size="small"
                 variant="outlined"
                 InputProps={{ readOnly: true }}
-                value={login.user_info.username}
+                value={username}
               />
             </Grid>
           </Grid>

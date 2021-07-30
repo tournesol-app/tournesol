@@ -11,17 +11,13 @@ import { Provider } from 'react-redux';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
 import fetchMock from 'fetch-mock-jest';
-import Cookies from 'js-cookie';
 import Login from './Login';
 import { LoginState } from './LoginState.model';
 import {
   initialState,
   getTokenAsync,
-  getLoginAsync,
-  getUserInfoAsync,
   getTokenFromRefreshAsync,
 } from './loginSlice';
-import { fetchAuthorization } from './loginAPI';
 
 interface MockState {
   token: LoginState;
@@ -38,117 +34,18 @@ describe('login feature', () => {
   fetchMock
     .mock(
       {
-        url: api_url + '/admin/login/',
-        method: 'GET',
-      },
-      () => {
-        Cookies.set('csrftoken', 'dummy_csrf', { expires: 1, path: '' });
-        return {
-          status: 200,
-        };
-      }
-    )
-    .mock(
-      {
         name: 'valid_login',
-        url: api_url + '/admin/login/',
+        url: api_url + '/o/token/',
         method: 'POST',
+        headers: {
+          Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+        },
         functionMatcher: (_, { body }) => {
           const params = new URLSearchParams(body?.toString());
           return (
+            params.get('grant_type') === 'password' &&
             params.get('username') === 'jst' &&
             params.get('password') === 'yop' &&
-            params.get('csrfmiddlewaretoken') === 'dummy_csrf'
-          );
-        },
-      },
-      {
-        status: 302,
-        redirectUrl: api_url + '/admin/',
-      }
-    )
-    .mock(
-      {
-        name: 'invalid_login',
-        url: api_url + '/admin/login/',
-        method: 'POST',
-        functionMatcher: (_, { body }) => {
-          const params = new URLSearchParams(body?.toString());
-          return (
-            params.get('username') !== 'jst' ||
-            params.get('password') !== 'yop' ||
-            params.get('csrfmiddlewaretoken') !== 'dummy_csrf'
-          );
-        },
-      },
-      {
-        status: 302,
-        redirectUrl: api_url + '/admin/login/',
-      }
-    )
-    .mock(
-      {
-        url: api_url + '/o/authorize/',
-        method: 'GET',
-        query: {
-          response_type: 'code',
-          client_id: client_id,
-          redirect_uri: api_url + '/admin/',
-        },
-      },
-      (url: any) => {
-        const reqParams = new URLSearchParams(url);
-        const state = reqParams.get('state');
-        const params = new URLSearchParams();
-        params.set('code', 'dummy_code');
-        params.set('state', state ?? '');
-        return {
-          status: 302,
-          redirectUrl: api_url + '/admin/login/?' + params.toString(),
-        };
-      }
-    )
-    .mock(
-      {
-        name: 'token_from_code',
-        url: api_url + '/o/token/',
-        method: 'POST',
-        functionMatcher: (_, { body }) => {
-          const params = new URLSearchParams(body?.toString());
-          return (
-            params.get('code') === 'dummy_code' &&
-            params.get('redirect_uri') === api_url + '/admin/' &&
-            params.get('grant_type') === 'authorization_code' &&
-            params.get('client_id') === client_id &&
-            params.get('client_secret') == client_secret &&
-            params.get('scope') === 'read write groups'
-          );
-        },
-      },
-      {
-        status: 200,
-        body: {
-          access_token: 'dummy_access_token',
-          refresh_token: 'dummy_refresh_token',
-          id_token: 'dummy_id_token',
-          expires_in: 3600,
-        },
-      },
-      { sendAsJson: true }
-    )
-    .mock(
-      {
-        name: 'token_from_refresh_token',
-        url: api_url + '/o/token/',
-        method: 'POST',
-        functionMatcher: (_, { body }) => {
-          const params = new URLSearchParams(body?.toString());
-          return (
-            params.get('refresh_token') === 'dummy_refresh_token' &&
-            params.get('redirect_uri') === api_url + '/admin/' &&
-            params.get('grant_type') === 'refresh_token' &&
-            params.get('client_id') === client_id &&
-            params.get('client_secret') == client_secret &&
             params.get('scope') === 'read write groups'
           );
         },
@@ -165,23 +62,56 @@ describe('login feature', () => {
     )
     .mock(
       {
-        url: api_url + '/o/userinfo/',
-        method: 'GET',
+        name: 'invalid_login',
+        url: api_url + '/o/token/',
+        method: 'POST',
+        functionMatcher: (_, { headers, body }) => {
+          const params = new URLSearchParams(body?.toString());
+          if (!headers) {
+            return false;
+          }
+          return (
+            params.get('grant_type') === 'password' &&
+            (headers.Authorization !==
+              'Basic ' + btoa(client_id + ':' + client_secret) ||
+              params.get('username') !== 'jst' ||
+              params.get('password') !== 'yop' ||
+              params.get('scope') !== 'read write groups')
+          );
+        },
+      },
+      {
+        status: 401,
+        body: {},
+      },
+      { sendAsJson: true }
+    )
+    .mock(
+      {
+        name: 'token_from_refresh_token',
+        url: api_url + '/o/token/',
+        method: 'POST',
         headers: {
-          Authorization: 'Bearer dummy_access_token',
+          Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+        },
+        functionMatcher: (_, { body }) => {
+          const params = new URLSearchParams(body?.toString());
+          return (
+            params.get('grant_type') === 'refresh_token' &&
+            params.get('refresh_token') === 'dummy_refresh_token' &&
+            params.get('scope') === 'read write groups'
+          );
         },
       },
       {
         status: 200,
         body: {
-          sub: 'dummy_sub',
-          username: 'dummy_username',
-          preferred_username: 'dummy_preferred_username',
-          email: 'dummy_email',
-          first_name: 'dummy_first_name',
-          last_name: 'dummy_last_name',
+          access_token: 'dummy_new_access_token',
+          refresh_token: 'dummy_new_refresh_token',
+          expires_in: 3600,
         },
-      }
+      },
+      { sendAsJson: true }
     );
 
   const component = ({ store }: { store: MockStoreEnhanced<MockState> }) =>
@@ -203,11 +133,11 @@ describe('login feature', () => {
     component({ store: store });
     const arg = { username: 'jst', password: 'yop' };
     await act(async () => {
-      await store.dispatch(getLoginAsync(arg));
+      await store.dispatch(getTokenAsync(arg));
     });
     const want = [
       {
-        type: 'login/fetchLogin/pending',
+        type: 'login/fetchToken/pending',
         payload: undefined,
         meta: {
           arg: arg,
@@ -216,8 +146,12 @@ describe('login feature', () => {
         },
       },
       {
-        type: 'login/fetchLogin/fulfilled',
-        payload: undefined,
+        type: 'login/fetchToken/fulfilled',
+        payload: {
+          access_token: 'dummy_new_access_token',
+          refresh_token: 'dummy_new_refresh_token',
+          expires_in: 3600,
+        },
         meta: {
           arg: arg,
           requestId: expect.stringMatching(/.*/),
@@ -239,11 +173,11 @@ describe('login feature', () => {
       password: 'dummy_invalid_password',
     };
     await act(async () => {
-      await store.dispatch(getLoginAsync(arg));
+      await store.dispatch(getTokenAsync(arg));
     });
     const want = [
       {
-        type: 'login/fetchLogin/pending',
+        type: 'login/fetchToken/pending',
         payload: undefined,
         meta: {
           arg: arg,
@@ -252,10 +186,10 @@ describe('login feature', () => {
         },
       },
       {
-        type: 'login/fetchLogin/rejected',
+        type: 'login/fetchToken/rejected',
         payload: undefined,
         error: {
-          message: 'login failed',
+          message: 'login failed: tokens not present',
         },
         meta: {
           aborted: false,
@@ -264,50 +198,6 @@ describe('login feature', () => {
           rejectedWithValue: false,
           requestId: expect.stringMatching(/.*/),
           requestStatus: 'rejected',
-        },
-      },
-    ];
-    expect(store.getActions()).toMatchObject(want);
-    expect(store.getActions()[0].meta.requestId).toEqual(
-      store.getActions()[1].meta.requestId
-    );
-  });
-  it('handles successful authorization', async () => {
-    let resp: { data: string } = { data: '' };
-    await act(async () => {
-      resp = await fetchAuthorization();
-    });
-    expect(resp.data).toEqual('dummy_code');
-  });
-  it('handles token retrieval from code', async () => {
-    const state = { token: initialState };
-    const store = mockStore(state);
-    component({ store: store });
-    await act(async () => {
-      await store.dispatch(getTokenAsync('dummy_code'));
-    });
-    const want = [
-      {
-        type: 'login/fetchToken/pending',
-        payload: undefined,
-        meta: {
-          arg: 'dummy_code',
-          requestId: expect.stringMatching(/.*/),
-          requestStatus: 'pending',
-        },
-      },
-      {
-        type: 'login/fetchToken/fulfilled',
-        payload: {
-          access_token: 'dummy_access_token',
-          refresh_token: 'dummy_refresh_token',
-          id_token: 'dummy_id_token',
-          expires_in: 3600,
-        },
-        meta: {
-          arg: 'dummy_code',
-          requestId: expect.stringMatching(/.*/),
-          requestStatus: 'fulfilled',
         },
       },
     ];
@@ -342,45 +232,6 @@ describe('login feature', () => {
         },
         meta: {
           arg: 'dummy_refresh_token',
-          requestId: expect.stringMatching(/.*/),
-          requestStatus: 'fulfilled',
-        },
-      },
-    ];
-    expect(store.getActions()).toMatchObject(want);
-    expect(store.getActions()[0].meta.requestId).toEqual(
-      store.getActions()[1].meta.requestId
-    );
-  });
-  it('handles userinfo retrieval', async () => {
-    const state = { token: initialState };
-    const store = mockStore(state);
-    component({ store: store });
-    await act(async () => {
-      await store.dispatch(getUserInfoAsync('dummy_access_token'));
-    });
-    const want = [
-      {
-        type: 'login/fetchUserInfo/pending',
-        payload: undefined,
-        meta: {
-          arg: 'dummy_access_token',
-          requestId: expect.stringMatching(/.*/),
-          requestStatus: 'pending',
-        },
-      },
-      {
-        type: 'login/fetchUserInfo/fulfilled',
-        payload: {
-          sub: 'dummy_sub',
-          username: 'dummy_username',
-          preferred_username: 'dummy_preferred_username',
-          email: 'dummy_email',
-          first_name: 'dummy_first_name',
-          last_name: 'dummy_last_name',
-        },
-        meta: {
-          arg: 'dummy_access_token',
           requestId: expect.stringMatching(/.*/),
           requestStatus: 'fulfilled',
         },
