@@ -3,7 +3,7 @@ import torch
 import random
 from os import makedirs
 
-from .plots import plot_metrics, plot_density
+from .plots import plot_metrics, plot_density, plot_s_predict_gt
 
 """
 Visualisation methods, mainly for testing and debugging
@@ -110,3 +110,10 @@ def scores_stats(glob_scores):
             PATH_PLOTS,
             "scores.png"
         )
+
+
+def s_stats(licch):
+    """ Prints and plots about s parameters """
+    if licch.test_mode:
+        s_predicted = [s.detach().item() for s in licch.all_nodes('s')]
+        plot_s_predict_gt(s_predicted, licch.s_gt,  PATH_PLOTS)

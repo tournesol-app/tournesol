@@ -202,7 +202,7 @@ def test_test_mode():
                                             dens=0.999
                                             )
     licch, _ = _set_licchavi(comps_fake, 'test', verb=-1,
-                             ground_truths=(glob_gt, loc_gt))
+                             ground_truths=(glob_gt, loc_gt, s_gt))
     epochs = 2
     licch.train(epochs, -1)
     assert nb_users == len(s_gt)

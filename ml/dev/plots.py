@@ -47,22 +47,23 @@ STYLES = get_style()  # generator for looping styles
 COLORS = get_color()
 
 
-def title_save(title=None, path=None, suff=".png"):
+def _title_save(title=None, path=None, suff=".png"):
     ''' Adds title and saves plot '''
     if title is not None:
         plt.title(title)
     if path is not None:
         plt.savefig(path + suff)
+    plt.clf()
 
 
-def legendize(y, x="Epochs"):
+def _legendize(y, x="Epochs"):
     ''' Labels axis of plt plot '''
     plt.xlabel(x)
     plt.ylabel(y)
     plt.legend()
 
 
-def means_bounds(arr):
+def _means_bounds(arr):
     '''
     arr: 2D array of values (one line is one run)
 
@@ -77,65 +78,52 @@ def means_bounds(arr):
     return means, low, up
 
 
-# ----------- to display multiple accuracy curves on same plot -----------
-def add_acc_var(arr, label):
-    ''' from array add curve of accuracy '''
-    acc = arr[:, 3, :]
-    means, low, up = means_bounds(acc)
-    epochs = range(1, len(means) + 1)
-    plt.plot(epochs, means, label=label, linestyle=next(STYLES))
-    plt.fill_between(epochs, up, low, alpha=0.4)
-
-
 # ------------- utility for what follows -------------------------
-def plot_var(l_hist, l_metrics):
+def _plot_var(l_hist, l_metrics):
     ''' add curve of asked indexes of history to the plot '''
     epochs = range(1, len(l_hist[0]['fit']) + 1)
     for metric in l_metrics:
         vals = np.asarray(
             [hist[metric] for hist in l_hist]
         )
-        vals_m, vals_l, vals_u = means_bounds(vals)
+        vals_m, vals_l, vals_u = _means_bounds(vals)
         style, color = next(STYLES), next(COLORS)
         plt.plot(epochs, vals_m, label=METRICS[metric]["lab"],
                  linestyle=style, color=color)
         plt.fill_between(epochs, vals_u, vals_l, alpha=INTENS, color=color)
 
 
-def plotfull_var(l_hist, l_metrics, title=None, path=None, show=False):
+def _plotfull_var(l_hist, l_metrics, title=None, path=None):
     ''' plot metrics asked in -l_metrics and save if -path provided '''
-    plot_var(l_hist, l_metrics)
+    _plot_var(l_hist, l_metrics)
     metric = l_metrics[0]
-    legendize(METRICS[metric]["ord"])
-    title_save(title, path, suff=" {}.png".format(METRICS[metric]["f_name"]))
-    if show:
-        plt.show()
-    plt.clf()
+    _legendize(METRICS[metric]["ord"])
+    _title_save(title, path, suff=" {}.png".format(METRICS[metric]["f_name"]))
 
 
 # ------- groups of metrics on a same plot -----------
 def loss_var(l_hist, title=None, path=None):
     ''' plot losses with variance from a list of historys '''
-    plotfull_var(l_hist, ['fit', 's', 'gen', 'reg'], title, path)
+    _plotfull_var(l_hist, ['fit', 's', 'gen', 'reg'], title, path)
 
 
 def l2_var(l_hist, title=None, path=None):
     '''plot l2 norm of gen model from a list of historys'''
-    plotfull_var(l_hist, ['l2_norm'], title, path)
+    _plotfull_var(l_hist, ['l2_norm'], title, path)
 
 
 def gradsp_var(l_hist, title=None, path=None):
     ''' plot scalar product of gradients between 2 consecutive epochs
         from a list of historys
     '''
-    plotfull_var(l_hist, ['grad_sp', 'grad_norm'], title, path)
+    _plotfull_var(l_hist, ['grad_sp', 'grad_norm'], title, path)
 
 
 def error_var(l_hist, title=None, path=None):
     ''' Plots difference between predictions and ground truths
     from a list of historys
     '''
-    plotfull_var(l_hist, ['error_glob', 'error_loc'], title, path)
+    _plotfull_var(l_hist, ['error_glob', 'error_loc'], title, path)
 
 
 # plotting all the metrics we have
@@ -144,9 +132,9 @@ def plot_metrics(l_hist, title=None, path=None):
     loss_var(l_hist, title, path)
     l2_var(l_hist, title, path)
     gradsp_var(l_hist, title, path)
-    if 'error_glob' in l_hist[0]:
-        plotfull_var(l_hist, ['error_glob'], title, path)
-        plotfull_var(l_hist, ['error_loc'], title, path)
+    if 'error_glob' in l_hist[0]:  # if we are in test mode
+        _plotfull_var(l_hist, ['error_glob'], title, path)
+        _plotfull_var(l_hist, ['error_loc'], title, path)
 
 
 # histogram
@@ -157,6 +145,17 @@ def plot_density(tens, title=None, path=None, name="hist.png"):
     """
     arr = np.asarray(tens)
     _ = plt.hist(arr, density=False, label=title, bins=40)
-    legendize("Number", "Value")
-    title_save(title, path, name)
-    plt.clf()
+    _legendize("Number", "Value")
+    _title_save(title, path, name)
+
+
+# cloud of points
+def plot_s_predict_gt(s_predict, s_gt, path, name='s_correlation.png'):
+    """ Saves cloud of point of s parameters (test mode only)
+
+    s_predict (float list): predicted s parameters
+    s_gt (float list): ground truth s parameters
+    """
+    plt.plot(s_predict, s_gt, 'ro')
+    _legendize('ground truths', 'predicted')
+    _title_save('s parameters', path, name)

@@ -88,8 +88,9 @@ class Licchavi():
 
                         'l2_norm': [], 'grad_sp': [], 'grad_norm': []}
         if test_mode:
-            self.glob_gt = []  # global scores ground truth
-            self.loc_gt = []  # local scores ground truth
+            self.glob_gt = []  # global scores ground truths
+            self.loc_gt = []  # local scores ground truths
+            self.s_gt = []  # s parameters ground truths
             self.history['error_loc'] = []
             self.history['error_glob'] = []
 
@@ -183,7 +184,7 @@ class Licchavi():
         self._show(f"Total number of nodes : {self.nb_nodes}", 1)
         loginf('Models updated')
 
-    def set_ground_truths(self, glob_gt, loc_gt):
+    def set_ground_truths(self, glob_gt, loc_gt, s_gt):
         """ Puts ground truths in Licchavi (for experiments only)
 
         glob_gt (float array): generated global scores
@@ -194,6 +195,8 @@ class Licchavi():
             logging.warning('Not in test mode')
         self.glob_gt = glob_gt
         self.loc_gt = [dict(node) for node in loc_gt]
+        self.s_gt = s_gt
+        print(s_gt)
 
     def output_scores(self):
         """ Returns video scores both global and local

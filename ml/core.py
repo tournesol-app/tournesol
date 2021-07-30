@@ -7,7 +7,7 @@ from ml.licchavi import Licchavi
 from ml.handle_data import (
     select_criteria, shape_data, distribute_data,
     distribute_data_from_save, format_out_loc, format_out_glob)
-from ml.dev.visualisation import licch_stats, scores_stats
+from ml.dev.visualisation import licch_stats, scores_stats, s_stats
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
 FOLDER_PATH = "ml/checkpoints/"
@@ -86,9 +86,10 @@ def _train_predict(
     glob, loc = licch.output_scores()
     if save:
         licch.save_models(fullpath)
-    if verb >= 1:  # some prints and plots
+    if TOURNESOL_DEV:  # some prints and plots
         licch_stats(licch)
         scores_stats(glob[1])
+        s_stats(licch)
     return glob, loc, uncertainties
 
 
