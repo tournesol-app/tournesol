@@ -1,30 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { LoginState } from './LoginState.model';
-import {
-  fetchLogin,
-  fetchToken,
-  fetchTokenFromRefresh,
-  fetchUserInfo,
-} from './loginAPI';
+import { fetchToken, fetchTokenFromRefresh, fetchUserInfo } from './loginAPI';
 
 export const initialState: LoginState = {
-  logged: false,
-  need_refresh: false,
   status: 'idle',
 };
 
-export const getLoginAsync = createAsyncThunk(
-  'login/fetchLogin',
-  async ({ username, password }: { username: string; password: string }) => {
-    await fetchLogin(username, password);
-  }
-);
-
 export const getTokenAsync = createAsyncThunk(
   'login/fetchToken',
-  async (code: string) => {
-    const response = await fetchToken(code);
+  async ({ username, password }: { username: string; password: string }) => {
+    const response = await fetchToken({ username, password });
     return response.data;
   }
 );
@@ -48,17 +34,6 @@ export const loginSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getLoginAsync.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getLoginAsync.fulfilled, (state) => {
-        state.status = 'idle';
-        state.logged = true;
-      })
-      .addCase(getLoginAsync.rejected, (state) => {
-        state.status = 'idle';
-        state.logged = false;
-      })
       .addCase(getTokenAsync.pending, (state) => {
         state.status = 'loading';
       })
@@ -85,7 +60,6 @@ export const loginSlice = createSlice({
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
-        state.need_refresh = false;
       })
       .addCase(getTokenFromRefreshAsync.rejected, (state) => {
         state.status = 'idle';
@@ -95,7 +69,6 @@ export const loginSlice = createSlice({
         state.access_token = undefined;
         state.refresh_token = undefined;
         state.id_token = undefined;
-        state.need_refresh = false;
       })
       .addCase(getUserInfoAsync.pending, (state) => {
         state.status = 'loading';
@@ -111,7 +84,6 @@ export const loginSlice = createSlice({
         );
         state.access_token = undefined;
         state.id_token = undefined;
-        state.need_refresh = true;
       });
   },
 });

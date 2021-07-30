@@ -10,14 +10,12 @@ import {
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getTokenAsync,
-  getLoginAsync,
   getUserInfoAsync,
   selectLogin,
   getTokenFromRefreshAsync,
 } from './loginSlice';
 import { hasValidToken } from './tokenValidity';
 import { useLocation, useHistory } from 'react-router-dom';
-import { fetchAuthorization } from './loginAPI';
 
 const useStyles = makeStyles((theme: any) => ({
   content: {
@@ -32,7 +30,6 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState('jst');
   const [password, setPassword] = useState('yop');
-  const [code, setCode] = useState('');
   const [validToken, setValidToken] = useState(hasValidToken(login));
   const [shouldTryRefresh, setShouldTryRefresh] = useState(
     login.refresh_token && !hasValidToken(login)
@@ -53,38 +50,6 @@ const Login = () => {
       }
     }
   }, [login, validToken]);
-
-  useEffect(() => {
-    if (
-      login.status == 'idle' &&
-      !validToken &&
-      !shouldTryRefresh &&
-      login.logged &&
-      !code
-    ) {
-      console.log('logged in, fetching code');
-      fetchAuthorization().then((res) => setCode(res.data));
-    }
-  }, [validToken, login, code, shouldTryRefresh]);
-
-  useEffect(() => {
-    if (code) {
-      console.log('code received, exchanging it for tokens');
-      dispatch(getTokenAsync(code))
-        .then(() => {
-          console.log('code exchanged for token, erasing code');
-          setCode('');
-        })
-        .catch((error) => {
-          console.error(
-            'attempt at exchanging code for token failed: ' +
-              error +
-              ', erasing code'
-          );
-          setCode('');
-        });
-    }
-  }, [code, dispatch]);
 
   useEffect(() => {
     if (!gotUserInfo && login.access_token) {
@@ -160,7 +125,7 @@ const Login = () => {
               xs={10}
               onClick={() =>
                 dispatch(
-                  getLoginAsync({ username: username, password: password })
+                  getTokenAsync({ username: username, password: password })
                 )
               }
               role="login-button"
