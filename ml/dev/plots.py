@@ -159,3 +159,14 @@ def plot_s_predict_gt(s_predict, s_gt, path, name='s_correlation.png'):
     plt.plot(s_predict, s_gt, 'ro')
     _legendize('ground truths', 'predicted')
     _title_save('s parameters', path, name)
+
+
+def plot_loc_uncerts(l_nb_comps, l_uncerts, path, name='uncertainties.png'):
+    """ Saves local uncertainties in function of number of ratings
+
+    l_nb_vids (int list): number of comparisons for each video by each user
+    l_uncert (float list): uncertainty for each video of each user
+    """
+    plt.plot(l_nb_comps, l_uncerts, 'ro')
+    _legendize('uncertainty', 'number of comparisons')
+    _title_save('Local uncertainties', path, name)

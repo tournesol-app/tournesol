@@ -449,7 +449,6 @@ class Licchavi():
         if compute_uncertainty:
             time_uncert = time()
             uncert_loc = get_uncertainty_loc(self)
-            loginf(f'Uncertainty time: {time() - time_uncert}')
             uncert_glob = get_uncertainty_glob(self)
             loginf(f'Uncertainty time: {time() - time_uncert}')
             return uncert_glob, uncert_loc  # self.train() returns uncertainty
