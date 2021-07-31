@@ -12,6 +12,7 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 # Loss hyperparameters
 Licchavi.w = 1  # generalisation term ponderation
 Licchavi.w0 = 1  # regularisation term ponderation
+models_dist_huber.d = 0.1 # pseudo-Huber loss parameter (d → 0 for absolute value)
 
 
 # Training hyperparameters

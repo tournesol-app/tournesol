@@ -1,4 +1,5 @@
 import torch
+import gin
 
 """
 Losses used in "licchavi.py"
@@ -163,6 +164,7 @@ def _huber(x, d):
     return d * (torch.sqrt(1 + (x/d)**2) - 1)
 
 
+@gin.configurable
 def models_dist_huber(model1, model2, mask=None, vidx=-1, d=1):
     ''' Pseudo-Huber distance between 2 models
 
@@ -171,7 +173,7 @@ def models_dist_huber(model1, model2, mask=None, vidx=-1, d=1):
         model2 (float tensor): scoring model
         mask (bool tensor): subspace in which to compute distance
         vidx (int): video index if only one is computed (-1 for all)
-        d (float): psudo-Huber loss parameter (d → 0 for absolute value)
+        d (float): pseudo-Huber loss parameter (d → 0 for absolute value)
 
     Returns:
         (scalar float tensor): distance between the 2 models
