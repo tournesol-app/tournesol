@@ -6,8 +6,8 @@ from ml.data_utility import (
     reverse_idxs, sort_by_first, expand_dic, expand_tens)
 from ml.handle_data import select_criteria, shape_data, distribute_data
 from ml.losses import (
-    _bbt_loss, _approx_bbt_loss, get_s_loss,
-    models_dist, model_norm)
+    _bbt_loss, _approx_bbt_loss, get_s_loss, round_loss,
+    models_dist, models_dist_huber, model_norm)
 from ml.metrics import (
     extract_grad, scalar_product, _random_signs, get_uncertainty_glob,
     check_equilibrium_glob, check_equilibrium_loc, get_uncertainty_loc)
@@ -168,6 +168,16 @@ def test_models_dist():
     assert models_dist(model1, model2, mask=mask) == 4.2
 
 
+def test_models_dist_huber():
+    d = 1
+    model1 = torch.tensor([1, 2, 4, 7])
+    model2 = torch.tensor([3, -2, -5, 9.2])
+    mask = torch.tensor([True, False, False, True])
+    assert round_loss(models_dist_huber(model1, model2, d=d), 2) == 13.83
+    mask_res = round_loss(models_dist_huber(model1, model2, mask=mask, d=d), 2)
+    assert mask_res == 2.65
+
+
 def test_model_norm():
     model = torch.tensor([1, 2, -4.4, 7])
     assert model_norm(model) == 73.36  # squared l2 norm
@@ -265,7 +275,8 @@ def test_check_equilibrium_glob():
 def test_check_equilibrium_loc():
     """ checks equilibrium at initialisation """
     licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    eq = check_equilibrium_loc(0.01, licch)
+    _ = licch.train(5)
+    eq = check_equilibrium_loc(0.1, licch)
     assert 0.4 <= eq <= 1
 
 

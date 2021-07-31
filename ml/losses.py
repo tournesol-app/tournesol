@@ -151,6 +151,41 @@ def models_dist(model1, model2, pow=(1, 1), mask=None, vidx=-1):
     return dist
 
 
+def _huber(x, d):
+    """ Pseudo-Huber loss function
+
+    x (float tensor): input
+    d (float): parameter (d → 0 for absolute value)
+
+    Returns:
+        (float): Huber loss
+    """
+    return d * (torch.sqrt(1 + (x/d)**2) - 1)
+
+
+def models_dist_huber(model1, model2, mask=None, vidx=-1, d=1):
+    ''' Pseudo-Huber distance between 2 models
+
+    Args:
+        model1 (float tensor): scoring model
+        model2 (float tensor): scoring model
+        mask (bool tensor): subspace in which to compute distance
+        vidx (int): video index if only one is computed (-1 for all)
+        d (float): psudo-Huber loss parameter (d → 0 for absolute value)
+
+    Returns:
+        (scalar float tensor): distance between the 2 models
+    '''
+    if vidx == -1:  # if we want several coordinates
+        if mask is None:  # if we want all coordinates
+            dist = (_huber(model1 - model2, d)).sum()
+        else:
+            dist = (_huber((model1 - model2) * mask, d)).sum()
+    else:  # if we want only one coordinate
+        dist = _huber(model1[vidx] - model2[vidx], d)
+    return dist
+
+
 def model_norm(model, pow=(2, 1), vidx=-1):
     ''' norm of a model (l2 squared by default)
 
@@ -169,7 +204,7 @@ def model_norm(model, pow=(2, 1), vidx=-1):
 
 
 # losses used in "licchavi.py"
-def loss_fit_s_gen(licch, vidx=-1, uid=-1):
+def loss_fit_s_gen(licch, vidx=-1, uid=-1):  # FIXME shorten
     """ Computes local and generalisation terms of loss
 
     Args:
@@ -197,7 +232,7 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):
         )
         if vidx == -1:  # only if all loss is computed
             s_loss += get_s_loss(node.s)  # FIXME not accessed?
-        g = models_dist(
+        g = models_dist_huber(
             node.model,    # local model
             licch.global_model,  # general model
             mask=node.mask,     # mask
@@ -216,7 +251,7 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):
             )
             if vidx == -1:  # only if all loss is computed
                 s_loss += get_s_loss(node.s)
-            g = models_dist(
+            g = models_dist_huber(
                 node.model,    # local model
                 licch.global_model,  # general model
                 mask=node.mask,     # mask
@@ -240,7 +275,7 @@ def loss_gen_reg(licch, vidx=-1):
     """
     gen_loss, reg_loss = 0, 0
     for node in licch.nodes.values():
-        g = models_dist(
+        g = models_dist_huber(
             node.model,    # local model
             licch.global_model,  # general model
             mask=node.mask,     # mask
