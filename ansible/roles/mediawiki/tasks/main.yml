@@ -102,7 +102,8 @@
     src: /etc/nginx/sites-available/mediawiki
     dest: /etc/nginx/sites-enabled/mediawiki
     state: link
-  notify: Reload Nginx
+  notify: 
+    - Reload Nginx
 
 - name: Copy Mediawiki configuration
   template:
@@ -114,6 +115,7 @@
     - Write Mediawiki admin password into root's home
     - Write Mediawiki OIDC client ID into root's home
     - Write Mediawiki OIDC client secret into root's home
+    - Reload Nginx
 
 - name: Download Mediawiki language extensions
   get_url:
@@ -148,6 +150,7 @@
       name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
   notify:
     - Update Mediawiki database
+    - Reload Nginx
 
 - name: Extract Mediawiki extensions
   unarchive:
@@ -164,6 +167,7 @@
   notify:
     - Run Composer
     - Update Mediawiki database
+    - Reload Nginx
 
 - name: Copy Composer configuration for OIDC extension dependencies
   template:
@@ -172,6 +176,7 @@
   notify:
     - Run Composer
     - Update Mediawiki database
+    - Reload Nginx
 
 - name: Ensure Nginx is enabled and running
   systemd:
