@@ -17,9 +17,9 @@ all:
           django_database_name: tournesol
           django_database_user: tournesol
 
-          backend_target_branch: auth
+          backend_target_branch: dev-env
           loki_version: "v2.2.1"
-          frontend_target_branch: npm-version-update
+          frontend_target_branch: password-login-flow
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
 

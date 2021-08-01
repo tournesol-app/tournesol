@@ -48,8 +48,8 @@
   become: yes
   become_user: react
   notify:
-    - NPM install
-    - NPM build
+    - Yarn install
+    - Yarn build
     - Copy frontend files
 
 - meta: flush_handlers

@@ -6,6 +6,10 @@ ALLOWED_HOSTS:
     - 0.0.0.0
     - {{api_domain_name}}
 
+CORS_ALLOWED_ORIGINS:
+    - "https://{{domain_name}}"
+CORS_ALLOW_CREDENTIALS: true
+
 MAIN_URL: {{django_main_url}}/
 
 DATABASE_NAME: {{django_database_name}}
@@ -17,6 +21,8 @@ MEDIA_ROOT: /var/www/html/media
 
 EMAIL_BACKEND: console
 
+ACCESS_TOKEN_EXPIRE_SECONDS: 36000 # 10h
+REFRESH_TOKEN_EXPIRE_SECONDS: 604800 # 1w
 OIDC_ENABLED: true
 OIDC_ISS_ENDPOINT: {{django_main_url}}
 OIDC_RSA_PRIVATE_KEY: |

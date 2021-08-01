@@ -4,16 +4,16 @@
   become: yes
   become_user: react
 
-- name: NPM install
+- name: Yarn install
   shell:
-    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && npm install
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && yarn
     chdir: /home/react/tournesol-frontend
   become: yes
   become_user: react
 
-- name: NPM build
+- name: Yarn build
   shell:
-    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && npm run build
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && yarn build
     chdir: /home/react/tournesol-frontend
   become: yes
   become_user: react
