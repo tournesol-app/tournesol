@@ -14,6 +14,7 @@ export const fetchToken = async ({
   params.append('username', username);
   params.append('password', password);
   params.append('scope', 'read write groups');
+  params.append('response_type', 'code id_token token');
   const response = await fetch(api_url + '/o/token/', {
     method: 'POST',
     mode: 'cors',
