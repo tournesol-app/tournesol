@@ -6,77 +6,84 @@ Losses used in "licchavi.py"
 Main file is "ml_train.py"
 """
 
-def predict(input, tens):
+
+def predict(input, tens, mask=None):
     ''' Predicts score according to a model
 
     Args:
+        input (bool 2D tensor): one line is a one-hot encoded video index
         tens (float tensor): tensor = model
-        input (bool tensor: tensor one-hot encoding video
+        mask (bool tensor): one element is bool for using this comparison
 
-    Returns: 
-        float tensor: score of the video according to the model
+    Returns:
+        (2D float tensor): score of the videos according to the model
     '''
+    if input.shape[1] == 0:  # if empty input
+        return torch.zeros((1, 1))
+    if mask is not None:
+        return torch.where(
+            mask,
+            torch.matmul(input.float(), tens),
+            torch.zeros(1)
+        )
     return torch.matmul(input.float(), tens)
 
+
 # losses (used in licchavi.py)
-def fbbt(t,r):
-    ''' fbbt loss function 
+def _bbt_loss(t, r):
+    ''' Binomial Bradley-Terry loss function (used for test only)
+
+    Used only for testing
 
     Args:
-        t (float tensor): s * (ya - yb).
-        r (float tensor): rating given by user.
+        t (float tensor): batch of (s * (ya - yb))
+        r (float tensor): batch of ratings given by user.
 
     Returns:
-        float tensor: empirical loss for one comparison.
+        (float tensor): sum of empirical losses for all comparisons of one user
     '''
-    return torch.log(abs(torch.sinh(t)/t)) + r * t + torch.log(torch.tensor(2))
+    two = torch.tensor(2)
+    losses = torch.log(abs(torch.sinh(t)/t)) + r * t + torch.log(two)
+    return sum(losses)
 
-def hfbbt(t,r):
-    ''' Approximated fbbt loss function 
+
+@torch.jit.script  # to optimize computation time
+def _approx_bbt_loss(t, r):
+    ''' Approximated Binomial Bradley-Terry loss function (used in Licchavi)
 
     Args:
-        t (float tensor): s * (ya - yb).
-        r (float tensor): rating given by user.
+        t (float tensor): batch of (s * (ya - yb))
+        r (float tensor): batch of ratings given by user.
 
     Returns:
-        float tensor: empirical loss for one comparison.
+        (float tensor): sum of empirical losses for all comparisons of one user
     '''
-    if abs(t) <= 0.01:
-        return t**2 / 6 + r *t + torch.log(torch.tensor(2))
-    elif abs(t) < 10:
-        return torch.log(2 * torch.sinh(t) / t) + r * t
-    else:
-        return abs(t) - torch.log(abs(t)) + r * t
 
-def fit_loss(s, ya, yb, r):  
-    ''' Loss for one comparison 
-    
-    Args:
-        s (float tensor): s parameter.
-        ya (float tensor): predicted score of video a.
-        yb (float tensor): predicted score of video b.
-        r (float tensor): rating given by user between a and b.
+    small = abs(t) <= 0.01
+    medium = torch.logical_and((abs(t) < 10), (abs(t) > 0.01))
+    big = abs(t) >= 10
+    zer = torch.zeros(1)
+    loss = 0
 
-    Returns:
-         float tensor: empirical loss for this comparison.
-    '''
-    loss = hfbbt(s * (ya - yb), r)   
+    loss += torch.where(
+        small,
+        t**2 / 6 + r * t + torch.log(torch.tensor(2)),
+        zer
+    ).sum()
+    tt = torch.where(t != 0, t, torch.ones(1))  # trick to avoid zeros so NaNs
+    loss += torch.where(
+        medium,
+        torch.log(2 * torch.sinh(tt) / tt) + r * tt,
+        zer
+    ).sum()
+    loss += torch.where(big, abs(tt) - torch.log(abs(tt)) + r * tt, zer).sum()
+
     return loss
 
-def s_loss(s):
-    ''' Second term of local loss (for one node) 
-    
-    Args:
-        s (float tensor): s parameter.
-    
-    Returns:
-        float tensor: second half of local loss
-    '''
-    return (0.5 * s**2 - torch.log(s))
 
-def node_local_loss(model, s, a_batch, b_batch, r_batch):
-    ''' fitting loss for one node, includes s_loss 
-    
+def get_fit_loss(model, s, a_batch, b_batch, r_batch, vidx=-1):
+    """ Fitting loss for one node
+
     Args:
         model (float tensor): node local model.
         s (float tensor): s parameter.
@@ -85,16 +92,42 @@ def node_local_loss(model, s, a_batch, b_batch, r_batch):
         r_batch (float tensor): rating provided by user.
 
     Returns:
-        float: node local loss.
-    '''
-    ya_batch = predict(a_batch, model)
-    yb_batch = predict(b_batch, model)
-    loss = 0 
-    for ya,yb,r in zip(ya_batch, yb_batch, r_batch):
-        loss += fit_loss(s, ya, yb, r)
-    return loss + s_loss(s) 
+        (float scalar tensor): fitting loss.
+    """
+    if vidx != -1:  # loss for only one video (for uncertainty computation)
 
-def models_dist(model1, model2, pow=(1,1), mask=None):  
+        idxs = torch.tensor(
+            [idx for idx, ab in enumerate(zip(a_batch, b_batch))
+                if (ab[0][vidx] or ab[1][vidx])],
+            dtype=torch.long
+        )
+
+        if idxs.shape[0] == 0:  # if user didnt rate video
+            return torch.scalar_tensor(0)
+
+        ya_batch = predict(a_batch[idxs], model)
+        yb_batch = predict(b_batch[idxs], model)
+        loss = _approx_bbt_loss(s * (ya_batch - yb_batch), r_batch[idxs])
+    else:
+        ya_batch = predict(a_batch, model)
+        yb_batch = predict(b_batch, model)
+        loss = _approx_bbt_loss(s * (ya_batch - yb_batch), r_batch)
+    return loss
+
+
+def get_s_loss(s):
+    ''' Scaling loss for one node
+
+    Args:
+        s (float tensor): s parameter.
+
+    Returns:
+        float tensor: second half of local loss
+    '''
+    return 0.5 * s**2 - torch.log(s)
+
+
+def models_dist(model1, model2, pow=(1, 1), mask=None, vidx=-1):
     ''' distance between 2 models (l1 by default)
 
     Args:
@@ -102,36 +135,125 @@ def models_dist(model1, model2, pow=(1,1), mask=None):
         model2 (float tensor): scoring model
         pow (float, float): (internal power, external power)
         mask (bool tensor): subspace in which to compute distance
+        vidx (int): video index if only one is computed (-1 for all)
 
     Returns:
-        float: distance between the 2 models
+        (scalar float tensor): distance between the 2 models
     '''
     q, p = pow
-    if mask is None:
-        mask = [torch.ones_like(param) for param in [model1]]
-    dist = sum(
-                (((theta - rho) * coef)**q).abs().sum() for theta, rho, coef 
-                                        in zip([model1], [model2], mask)
-                )**p
+    if vidx == -1:  # if we want several coordinates
+        if mask is None:  # if we want all coordinates
+            dist = ((model1 - model2)**q).abs().sum()**p
+        else:
+            dist = (((model1 - model2) * mask)**q).abs().sum()**p
+    else:  # if we want only one coordinate
+        dist = abs(model1[vidx] - model2[vidx])**(q*p)
     return dist
 
-def model_norm(model, pow=(2,1)): 
+
+def model_norm(model, pow=(2, 1), vidx=-1):
     ''' norm of a model (l2 squared by default)
 
     Args:
         model (float tensor): scoring model
         pow (float, float): (internal power, external power)
+        vidx (int): video index if only one is computed (-1 for all)
 
-    Returns: 
-        float: norm of the model
+    Returns:
+        (float scalar tensor): norm of the model
     '''
     q, p = pow
-    norm = sum((param**q).abs().sum() for param in [model])**p
-    return norm
+    if vidx != -1:  # if we use only one video
+        return abs(model[vidx])**(q*p)
+    return (model**q).abs().sum()**p
 
-def round_loss(tens, dec=0): 
+
+# losses used in "licchavi.py"
+def loss_fit_s_gen(licch, vidx=-1, uid=-1):
+    """ Computes local and generalisation terms of loss
+
+    Args:
+        licch (Licchavi()): licchavi object
+        vidx (int): video index if we are interested in partial loss
+                                    (-1 for all indexes)
+        uid (int): user ID if we are interested in partial loss
+                                    (-1 for all users)
+
+    Returns:
+        (float tensor): sum of local terms of loss
+        (float tensor): generalisation term of loss
+    """
+
+    fit_loss, s_loss, gen_loss = 0, 0, 0
+    if uid != -1:  # if we want only one user
+        node = licch.nodes[uid]
+        fit_loss += get_fit_loss(
+            node.model,  # local model
+            node.s,     # s
+            node.vid1,  # id_batch1
+            node.vid2,  # id_batch2
+            node.r,     # r_batch
+            vidx
+        )
+        if vidx == -1:  # only if all loss is computed
+            s_loss += get_s_loss(node.s)  # FIXME not accessed?
+        g = models_dist(
+            node.model,    # local model
+            licch.global_model,  # general model
+            mask=node.mask,     # mask
+            vidx=vidx      # video index if we want partial loss
+        )
+        gen_loss += node.w * g  # node weight  * generalisation term
+    else:  # if we want all users
+        for node in licch.nodes.values():
+            fit_loss += get_fit_loss(
+                node.model,  # local model
+                node.s,     # s
+                node.vid1,  # id_batch1
+                node.vid2,  # id_batch2
+                node.r,     # r_batch
+                vidx
+            )
+            if vidx == -1:  # only if all loss is computed
+                s_loss += get_s_loss(node.s)
+            g = models_dist(
+                node.model,    # local model
+                licch.global_model,  # general model
+                mask=node.mask,     # mask
+                vidx=vidx      # video index if we want partial loss
+            )
+            gen_loss += node.w * g  # node weight  * generalisation term
+    return fit_loss, s_loss, gen_loss
+
+
+def loss_gen_reg(licch, vidx=-1):
+    """ Computes generalisation and regularisation terms of loss
+
+    Args:
+        licch (Licchavi()): licchavi object
+        vidx (int): video index if we are interested in partial loss
+                            (-1 for all indexes)
+
+    Returns:
+        (float tensor): generalisation term of loss
+        (float tensor): regularisation loss (of general model)
+    """
+    gen_loss, reg_loss = 0, 0
+    for node in licch.nodes.values():
+        g = models_dist(
+            node.model,    # local model
+            licch.global_model,  # general model
+            mask=node.mask,     # mask
+            vidx=vidx
+        )
+        gen_loss += node.w * g  # node weight * generalisation term
+    reg_loss = licch.w0 * model_norm(licch.global_model, vidx=vidx)
+    return gen_loss, reg_loss
+
+
+def round_loss(tens, dec=0):
     ''' from an input scalar tensor or int/float returns rounded int/float '''
-    if type(tens)==int or type(tens)==float:
+    if type(tens) is int or type(tens) is float:
         return round(tens, dec)
     else:
         return round(tens.item(), dec)

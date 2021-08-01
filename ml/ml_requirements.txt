@@ -1,5 +1,8 @@
-# TODO: add in this file the requirements for the ml routine
-
+# production
 torch==1.9.0
 numpy==1.20.3
+gin-config==0.4.0 
+
+# dev
 matplotlib==3.4.2 
+scipy==1.7.0

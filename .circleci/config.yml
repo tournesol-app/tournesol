@@ -79,6 +79,9 @@ jobs:
           name: Install the test dependencies
           command: pip install -r tests/requirements.txt
       - run:
+          name: Install the machine-learning dependencies
+          command: pip install -r ml/ml_requirements.txt
+      - run:
           name: Create the folder to contain the pytest report
           command: mkdir "${HOME}/.pytest"
       - run:
