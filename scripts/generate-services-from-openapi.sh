@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuxo pipefail
 
-CURRENT_DIR="$(dirname "$0")"
+CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 cd "$CURRENT_DIR"
 
 source "../.env.development"
