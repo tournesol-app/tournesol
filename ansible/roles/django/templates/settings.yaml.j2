@@ -6,7 +6,11 @@ ALLOWED_HOSTS:
     - 0.0.0.0
     - {{api_domain_name}}
 
-MAIN_URL: {{django_main_url}}
+CORS_ALLOWED_ORIGINS:
+    - "{{frontend_scheme}}://{{domain_name}}"
+CORS_ALLOW_CREDENTIALS: true
+
+MAIN_URL: {{django_main_url}}/
 
 DATABASE_NAME: {{django_database_name}}
 DATABASE_USER: {{django_database_user}}
@@ -16,3 +20,12 @@ STATIC_ROOT: /var/www/html/static
 MEDIA_ROOT: /var/www/html/media
 
 EMAIL_BACKEND: console
+
+LOGIN_URL: "/admin/login/"
+
+ACCESS_TOKEN_EXPIRE_SECONDS: 36000 # 10h
+REFRESH_TOKEN_EXPIRE_SECONDS: 604800 # 1w
+OIDC_ENABLED: true
+OIDC_ISS_ENDPOINT: {{django_main_url}}
+OIDC_RSA_PRIVATE_KEY: |
+  {{django_oidc_rsa_private_key | b64decode | indent(2)}}

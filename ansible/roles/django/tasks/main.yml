@@ -29,6 +29,12 @@
     dest: /etc/tournesol/settings.yaml
   notify: Restart Gunicorn
 
+- name: Copy Django OIDC RSA private key
+  template:
+    src: django_oidc_rsa_private_key.j2
+    dest: /root/django_oidc_rsa_private_key
+    mode: u=rw,g=,o=
+
 - name: Create Django application directory
   file:
     path: /srv/tournesol-backend

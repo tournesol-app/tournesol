@@ -11,6 +11,23 @@
     owner: react
     group: react
 
+- name: Add Yarn Repository Key
+  apt_key:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    state: present
+
+- name: Add Yarn Repository
+  apt_repository:
+    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+    state: present
+
+- name: Install Yarn
+  apt:
+    name:
+      - yarn
+    install_recommends: no
+    update_cache: yes
+
 - name: Install NVM
   shell:
     cmd: curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/{{nvm_version}}/install.sh | NVM_DIR=/home/react/.nvm bash
@@ -27,9 +44,12 @@
   changed_when: "'You need to run \"nvm install lts/' in nvm_use.stderr"
   notify:
     - Install Node
-    - NPM install
-    - NPM build
+    - Yarn install
+    - Yarn build
     - Copy frontend files
+    - Write Frontend OAuth client ID into root's home
+    - Write Frontend OAuth client secret into root's home
+    - Create Frontend OAuth application in Django database
 
 - name: Create React application directory
   file:
@@ -40,16 +60,23 @@
 
 - name: Clone React application repository
   git:
-    # repo: https://github.com/tournesol-app/tournesol-frontend.git
-    repo: https://github.com/jstainer-kleis/tournesol-frontend.git
+    repo: https://github.com/tournesol-app/tournesol-frontend.git
     dest: /home/react/tournesol-frontend
     version: "{{frontend_target_branch}}"
     force: yes
   become: yes
   become_user: react
   notify:
-    - NPM install
-    - NPM build
+    - Yarn install
+    - Yarn build
+    - Generate Client from OpenAPI Specification
     - Copy frontend files
+
+- name: Copy Frontend Configuration
+  template:
+    src: .env.j2
+    dest: /home/react/tournesol-frontend/.env
+    owner: react
+    group: react
 
 - meta: flush_handlers

@@ -176,3 +176,13 @@ wfLoadExtension( 'VisualEditor' );
 
 wfLoadExtension( 'Math' );
 $wgDefaultUserOptions['math'] = 'mathml';
+
+wfLoadExtension( 'PluggableAuth' );
+$wgGroupPermissions['*']['autocreateaccount'] = true;
+
+wfLoadExtension( 'OpenIDConnect' );
+$wgOpenIDConnect_Config['{{django_main_url}}/o/'] = [
+	'scope' => ['openid'],
+	'clientID' => '{{mediawiki_oidc_client_id}}',
+	'clientsecret' => '{{mediawiki_oidc_client_secret}}',
+];
