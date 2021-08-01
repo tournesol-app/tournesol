@@ -48,6 +48,11 @@ https://github.com/jazzband/django-oauth-toolkit
 
 Oauth toolkit for api auth
 
+### django-cors-headers
+https://github.com/adamchainz/django-cors-headers
+
+CORS middleware
+
 ### django-prometheus
 https://github.com/korfuri/django-prometheus
 

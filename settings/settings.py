@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'tournesol',
     'ml',
     'oauth2_provider',
+    'corsheaders',
     'rest_framework',
     'rest_framework_swagger',
     'drf_spectacular'
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -167,9 +169,22 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 OAUTH2_PROVIDER = {
-    # this is the list of available scopes
-    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
+    "OIDC_ENABLED": server_settings.get("OIDC_ENABLED", False),
+    "OIDC_RSA_PRIVATE_KEY": server_settings.get("OIDC_RSA_PRIVATE_KEY", 'dsfsdfdsfsdfsdfsdf'),
+    "SCOPES": {
+        'openid': 'OpenID Connect scope',
+        'read': 'Read scope',
+        'write': 'Write scope',
+        'groups': 'Access to your groups',
+    },
+    "OAUTH2_VALIDATOR_CLASS": "core.oauth_validator.CustomOAuth2Validator",
+    "OIDC_ISS_ENDPOINT": server_settings.get("OIDC_ISS_ENDPOINT", ''),
+    "ACCESS_TOKEN_EXPIRE_SECONDS": server_settings.get("ACCESS_TOKEN_EXPIRE_SECONDS", 36000), # 10h
+    "REFRESH_TOKEN_EXPIRE_SECONDS": server_settings.get("REFRESH_TOKEN_EXPIRE_SECONDS", 604800), # 1w
 }
+
+CORS_ALLOWED_ORIGINS = server_settings.get('CORS_ALLOWED_ORIGINS', [])
+CORS_ALLOW_CREDENTIALS = server_settings.get('CORS_ALLOW_CREDENTIALS', False)
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

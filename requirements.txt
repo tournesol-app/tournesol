@@ -5,6 +5,7 @@ djangorestframework==3.12.4
 markdown==3.3.4
 django-filter==2.4.0
 django-oauth-toolkit==1.5.0
+django-cors-headers==3.7.0
 
 psycopg2-binary==2.8.6
 django-countries==7.2.1
