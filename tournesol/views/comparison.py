@@ -34,7 +34,7 @@ class ComparisonViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=False)
     def list_comparison(self, request, *args, **kwargs):
         """
-        Get a liste of comparison with video_id as search parameter
+        Get a list of comparisons with video_id as search parameter
         """
         video = request.query_params.get('video')
         limit = request.query_params.get('limit') if request.query_params.get('limit') and \
