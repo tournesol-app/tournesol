@@ -4,7 +4,7 @@ set -Eeuxo pipefail
 CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 cd "$CURRENT_DIR"
 
-if [[ "$NODE_ENV" == "production" ]]; then
+if [[ "${NODE_ENV:-"development"}" == "production" ]]; then
     source "../.env"
 else
     source "../.env.development"
