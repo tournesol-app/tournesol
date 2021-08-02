@@ -275,7 +275,7 @@ def test_check_equilibrium_glob():
 def test_check_equilibrium_loc():
     """ checks equilibrium at initialisation """
     licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    _ = licch.train(5)
+    # _ = licch.train(5)
     eq = check_equilibrium_loc(0.1, licch)
     assert 0.4 <= eq <= 1
 

@@ -174,6 +174,7 @@ def models_dist_huber(model1, model2, mask=None, vidx=-1, d=1):
         mask (bool tensor): subspace in which to compute distance
         vidx (int): video index if only one is computed (-1 for all)
         d (float): pseudo-Huber loss parameter (d → 0 for absolute value)
+                        (defined in hyperparameters.gin)
 
     Returns:
         (scalar float tensor): distance between the 2 models
