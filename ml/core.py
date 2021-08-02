@@ -20,11 +20,25 @@ logging.basicConfig(filename='ml/ml_logs.log', level=logging.INFO)
 def _get_licchavi(
         nb_vids, vid_vidx, criteria,
         device, verb, ground_truths, licchavi_class):
-    """ Used to decide wether to use Licchavi() or LicchaviDev() class """
+    """ Used to decide wether to use Licchavi() or LicchaviDev() class
+
+    nb_vids (int): number of videos
+    vid_vidx (dictionnary): dictionnary of {video ID: video index}
+    criteria (str): comparison criteria learnt
+    device (str): device used (cpu/gpu)
+    ground_truths (float array, couples list list, float array)
+    verb (float): verbosity level
+    global, local and s parmaeters ground truths (test mode only)
+    licchavi_class (Licchavi()): training structure used
+                                        (Licchavi or LicchaviDev)
+
+    Returns:
+        (Licchavi()): Licchavi or LicchaviDev object
+    """
     if licchavi_class == Licchavi:
         return Licchavi(
-            nb_vids, vid_vidx, criteria,
-            test_mode=False, verb=verb)
+            nb_vids, vid_vidx, criteria, verb=verb)
+    # only in dev mode
     else:
         test_mode = ground_truths is not None
         licch = licchavi_class(
@@ -47,8 +61,8 @@ def _set_licchavi(
     resume (bool): wether to resume previous training or not
     verb (int): verbosity level
     device (str): device used (cpu/gpu)
-    ground_truths (float array, couples list list): global and local ground
-                                                    truths (generated scores)
+    ground_truths (float array, couples list list, float array):
+        global, local and s parmaeters ground truths (test mode only)
     licchavi_class (Licchavi()): training structure used
                                         (Licchavi or LicchaviDev)
 
@@ -120,6 +134,8 @@ def ml_run(
     save (bool): wether to save result of training or not
     verb (int): verbosity level
     device (str): device used (cpu/gpu)
+    ground_truths (float array, couples list list, float array):
+        global, local and s parmaeters ground truths (test mode only)
     licchavi_class (Licchavi()): training structure used
                                         (Licchavi or LicchaviDev)
 

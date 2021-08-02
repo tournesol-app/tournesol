@@ -47,23 +47,22 @@ def get_s(device='cpu'):
 class Licchavi():
     """ Training structure including local models and general one """
     def __init__(
-            self, nb_vids, vid_vidx, crit,
-            test_mode=False, device='cpu', verb=1,
+            self, nb_vids, vid_vidx, crit, device='cpu', verb=1,
             # configured with gin in "hyperparameters.gin"
             lr_node=None, lr_s=None, lr_gen=None,
             gen_freq=None, w0=None, w=None):
         """
         nb_vids (int): number of different videos rated by
                         at least one contributor for this criteria
-        vid_vidx (dictionnary): dictionnary of {vID: idx}
+        vid_vidx (dictionnary): dictionnary of {video ID: video index}
         crit (str): comparison criteria learnt
-        test_mode (bool): wether we use fake data or not
+        device (str): device used (cpu/gpu)
+        verb (float): verbosity level
         """
         self.verb = verb
         self.nb_vids = nb_vids  # number of parameters of the model
         self.vid_vidx = vid_vidx  # {video ID : video index}
         self.criteria = crit  # criteria learnt by this Licchavi
-        self.test_mode = test_mode  # boolean for fake data usage
         self.device = device  # device used (cpu/gpu)
 
         self.opt = torch.optim.SGD   # optimizer
@@ -87,12 +86,6 @@ class Licchavi():
         self.history = {'fit': [], 's': [], 'gen': [], 'reg': [],  # metrics
 
                         'l2_norm': [], 'grad_sp': [], 'grad_norm': []}
-        if test_mode:
-            self.glob_gt = []  # global scores ground truths
-            self.loc_gt = []  # local scores ground truths
-            self.s_gt = []  # s parameters ground truths
-            self.history['error_loc'] = []
-            self.history['error_glob'] = []
 
         self.users = []  # user IDs
 
@@ -183,19 +176,6 @@ class Licchavi():
         }
         self._show(f"Total number of nodes : {self.nb_nodes}", 1)
         loginf('Models updated')
-
-    def set_ground_truths(self, glob_gt, loc_gt, s_gt):
-        """ Puts ground truths in Licchavi (for experiments only)
-
-        glob_gt (float array): generated global scores
-        loc_gt (list of list of couples): (vid, local score) for each video
-                                                            of each node
-        """
-        if not self.test_mode:
-            logging.warning('Not in test mode')
-        self.glob_gt = glob_gt
-        self.loc_gt = [dict(node) for node in loc_gt]
-        self.s_gt = s_gt
 
     def output_scores(self):
         """ Returns video scores both global and local
@@ -302,31 +282,6 @@ class Licchavi():
             node.opt.zero_grad(set_to_none=True)  # node optimizer
         self.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
-    def _test_errors(self):
-        """ Returns errors (for test mode only)
-
-        Returns:
-            (float): global mean squared distance between
-                                predicted and ground truth
-            (float): local mean squared distance between
-                                predicted and ground truth
-        """
-        with torch.no_grad():
-            glob_out, loc_out = self.output_scores()
-            if len(glob_out[1]) != len(self.glob_gt):
-                logging.error('Some videos have not been rated')
-            glob_errors = (glob_out[1] - self.glob_gt)**2
-            glob_mean_error = float(sum(glob_errors)) / self.nb_vids
-
-            loc_error, nb_loc = 0, 0
-            for uid, predictions in zip(self.nodes, loc_out[1]):
-                for i, score_pred in zip(self.loc_gt[int(uid)], predictions):
-                    score_gt = self.loc_gt[int(uid)][i]
-                    loc_error += float((score_pred - score_gt)**2)
-                    nb_loc += 1
-            loc_mean_error = loc_error / nb_loc
-        return glob_mean_error, loc_mean_error
-
     def _update_hist(self, epoch, fit, s, gen, reg):
         """ Updates history (at end of epoch) """
         self.history['fit'].append(round_loss(fit))
@@ -344,13 +299,6 @@ class Licchavi():
         self.last_grad = deepcopy(extract_grad(self.global_model))
         grad_norm = scalar_product(grad_gen, grad_gen)
         self.history['grad_norm'].append(grad_norm)
-
-        # when we use generated data with ground truths
-        # if self.test_mode:
-        #     factor_glob, factor_loc = 1, 1  # for visualisation only
-        #     glob_error, loc_error = self._test_errors()
-        #     self.history['error_glob'].append(glob_error * factor_glob)
-        #     self.history['error_loc'].append(loc_error * factor_loc)
 
     def _old(self, years):
         """ Increments age of nodes (during training) """

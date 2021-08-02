@@ -15,11 +15,20 @@ class LicchaviDev(Licchavi):
     def __init__(
             self, nb_vids, vid_vidx, crit,
             test_mode=False, device='cpu', verb=1):
+        """
+        nb_vids (int): number of different videos rated by
+                        at least one contributor for this criteria
+        vid_vidx (dictionnary): dictionnary of {video ID: video index}
+        crit (str): comparison criteria learnt
+        test_mode (bool): wether we use fake data or not
+        device (str): device used (cpu/gpu)
+        verb (float): verbosity level
+        """
         # Inits Licchavi class
-        super().__init__(
-            nb_vids, vid_vidx, crit,
-            test_mode=test_mode, device=device, verb=verb)
-        # Inits attibutes required for test_mode
+        super().__init__(nb_vids, vid_vidx, crit, device=device, verb=verb)
+
+        self.test_mode = test_mode
+        # Inits attributes required for test_mode
         if test_mode:
             self.glob_gt = []  # global scores ground truths
             self.loc_gt = []  # local scores ground truths
