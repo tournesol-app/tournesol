@@ -134,7 +134,6 @@ def uncert_stats(licch, loc_uncerts):
 
 def output_infos(licch, glob, loc, uncertainties):
     """ Prints and plots for dev mode """
-    print("infooooooooo")
     licch_stats(licch)
     scores_stats(glob[1])
     s_stats(licch)
