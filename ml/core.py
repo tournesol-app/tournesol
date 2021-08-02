@@ -7,8 +7,7 @@ from ml.licchavi import Licchavi
 from ml.handle_data import (
     select_criteria, shape_data, distribute_data,
     distribute_data_from_save, format_out_loc, format_out_glob)
-from ml.dev.visualisation import (licch_stats, scores_stats, s_stats, 
-                                  uncert_stats)
+
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
 FOLDER_PATH = "ml/checkpoints/"
@@ -78,7 +77,7 @@ def _train_predict(
     Returns :
     - (list of all vIDS , tensor of global video scores)
     - (list of arrays of local vIDs , list of tensors of local video scores)
-    (float list list, float list): uncertainty of local scores, 
+    (float list list, float list): uncertainty of local scores,
                                     uncertainty of global scores
                                     (None, None) if not computed
     '''
@@ -88,12 +87,6 @@ def _train_predict(
     glob, loc = licch.output_scores()
     if save:
         licch.save_models(fullpath)
-    if TOURNESOL_DEV:  # some prints and plots
-        licch_stats(licch)
-        scores_stats(glob[1])
-        s_stats(licch)
-        if uncertainties[1] is not None:
-            uncert_stats(licch, uncertainties[1])
     return glob, loc, uncertainties
 
 
@@ -113,11 +106,11 @@ def ml_run(
     device (str): device used (cpu/gpu)
 
     Returns:
-    - video_scores: list of [video_id: int, criteria_name: str,
+        (list list): list of [video_id: int, criteria_name: str,
                                 score: float, uncertainty: float]
-    - contributor_rating_scores: list o
-    [   contributor_id: int, video_id: int, criteria_name: str,
-        score: float, uncertainty: float]
+        (list list): list of
+        [   contributor_id: int, video_id: int, criteria_name: str,
+            score: float, uncertainty: float]
     """  # FIXME: not better to regroup contributors in same list or smthg ?
     ml_run_time = time()
     glob_scores, loc_scores = [], []
@@ -144,6 +137,8 @@ def ml_run(
         loc_scores += out_loc
 
     logging.info(f'ml_run() total time : {round(time() - ml_run_time)}')
+    if TOURNESOL_DEV:  # return more information in dev mode
+        return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
     return glob_scores, loc_scores
 
 

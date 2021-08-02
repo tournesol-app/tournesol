@@ -1,4 +1,4 @@
-from .visualisation import seedall, disp_one_by_line
+from .visualisation import seedall, disp_one_by_line, output_infos
 # from .fake_data import generate_data
 
 """
@@ -33,16 +33,20 @@ def run_experiment(comparison_data):
     #     dens=0.8,
     #     noise=0.02)
     print(len(comparison_data))
-    glob_scores, loc_scores = ml_run(
-        comparison_data[:],
+    glob_scores, loc_scores, infos = ml_run(
+        comparison_data[:10000],
         EPOCHS,
         ["reliability"],
         resume=False,
-        save=True,
+        save=False,
         verb=1,
-        compute_uncertainty=True,
+        compute_uncertainty=False,
         # ground_truths=(glob_gt, loc_gt, s_gt)
         )
+
+    # some prints and plots
+    output_infos(*infos)
+
     # check_one(200, glob_scores, loc_scores)
     # # for c in comparison_data:
     # #     if c[3]=="largely_recommended":

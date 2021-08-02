@@ -121,7 +121,7 @@ def s_stats(licch):
 
 
 def uncert_stats(licch, loc_uncerts):
-    """ Prints and plots about incertainty """
+    """ Prints and plots about uncertainty """
     l_nb_comps, l_uncerts = [], []
     vid_vidx = licch.vid_vidx
     for uncerts, node in zip(loc_uncerts, licch.nodes.values()):
@@ -130,3 +130,12 @@ def uncert_stats(licch, loc_uncerts):
             l_nb_comps.append(nb_comps[vid_vidx[int(vid)]].item())
             l_uncerts.append(uncert)
     plot_loc_uncerts(l_nb_comps, l_uncerts, PATH_PLOTS)
+
+
+def output_infos(licch, glob, loc, uncertainties):
+    """ Prints and plots for dev mode """
+    licch_stats(licch)
+    scores_stats(glob[1])
+    s_stats(licch)
+    if uncertainties[1] is not None:
+        uncert_stats(licch, uncertainties[1])

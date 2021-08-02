@@ -310,7 +310,7 @@ def test_ml_run():
         resume=False,
         save=False,
         verb=-1
-    )
+    )[:2]
     assert nb_vids <= len(glob_scores) <= vids_per_user
     assert len(contributor_scores) == nb_users * vids_per_user
 
@@ -342,7 +342,7 @@ def test_simple_train():
                                      criterias=["test"],
                                      resume=False,
                                      save=True,  # FIXME change path
-                                     verb=-1)
+                                     verb=-1)[:2]
     nb = [0, 0, 0, 0]
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]
@@ -372,7 +372,7 @@ def test_simple_train():
                                 criterias=["test"],
                                 resume=True,  # FIXME change path
                                 save=True,  # FIXME change path
-                                verb=-1)
+                                verb=-1)[:2]
     assert glob_scores == glob_scores2
     assert loc_scores == loc_scores2
 
@@ -382,7 +382,7 @@ def test_simple_train():
                                 criterias=["test"],
                                 resume=True,
                                 save=False,  # FIXME change path
-                                verb=-1)
+                                verb=-1)[:2]
     nb = [0, 0, 0, 0]
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]
