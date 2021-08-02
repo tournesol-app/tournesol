@@ -17,11 +17,28 @@ os.makedirs(FOLDER_PATH, exist_ok=True)
 logging.basicConfig(filename='ml/ml_logs.log', level=logging.INFO)
 
 
+def _get_licchavi(
+        nb_vids, vid_vidx, criteria,
+        device, verb, ground_truths, licchavi_class):
+    """ Used to decide wether to use Licchavi() or LicchaviDev() class """
+    if licchavi_class == Licchavi:
+        return Licchavi(
+            nb_vids, vid_vidx, criteria,
+            test_mode=False, verb=verb)
+    else:
+        test_mode = ground_truths is not None
+        licch = licchavi_class(
+            nb_vids, vid_vidx, criteria, test_mode, device, verb)
+        if test_mode:
+            licch.set_ground_truths(*ground_truths)
+        return licch
+
+
 def _set_licchavi(
         comparison_data, criteria,
         fullpath=None, resume=False,
         verb=2, device='cpu',
-        ground_truths=None):
+        ground_truths=None, licchavi_class=Licchavi):
     ''' Shapes data and inputs it in Licchavi to initialize
 
     comparison_data (list of lists): output of fetch_data()
@@ -32,6 +49,8 @@ def _set_licchavi(
     device (str): device used (cpu/gpu)
     ground_truths (float array, couples list list): global and local ground
                                                     truths (generated scores)
+    licchavi_class (Licchavi()): training structure used
+                                        (Licchavi or LicchaviDev)
 
     Returns :
         (Licchavi()): Licchavi object initialized with data
@@ -40,26 +59,23 @@ def _set_licchavi(
     # shape data
     one_crit_data = select_criteria(comparison_data, criteria)
     full_data = shape_data(one_crit_data)
-    test_mode = ground_truths is not None
     # set licchavi using data
     if resume:
         nodes_dic, users_ids, vid_vidx = distribute_data_from_save(full_data,
                                                                    fullpath,
                                                                    device)
-        licch = Licchavi(
+        licch = _get_licchavi(
             len(vid_vidx), vid_vidx, criteria,
-            test_mode, device, verb
+            device, verb, ground_truths, licchavi_class
         )
         licch.load_and_update(nodes_dic, users_ids, fullpath)
     else:
         nodes_dic, users_ids, vid_vidx = distribute_data(full_data, device)
-        licch = Licchavi(
+        licch = _get_licchavi(
             len(vid_vidx), vid_vidx, criteria,
-            test_mode, device, verb
+            device, verb, ground_truths, licchavi_class
         )
         licch.set_allnodes(nodes_dic, users_ids)
-    if test_mode:
-        licch.set_ground_truths(*ground_truths)
     return licch, users_ids  # FIXME we can do without users_ids ?
 
 
@@ -93,8 +109,8 @@ def _train_predict(
 @gin.configurable
 def ml_run(
         comparison_data, epochs, criterias,
-        resume=False, save=True, verb=1, device='cpu',
-        ground_truths=None, compute_uncertainty=False):
+        resume=False, save=True, verb=1, device='cpu', ground_truths=None,
+        compute_uncertainty=False, licchavi_class=Licchavi):
     """ Runs the ml algorithm for all criterias
 
     comparison_data (list of lists): output of fetch_data()
@@ -104,6 +120,8 @@ def ml_run(
     save (bool): wether to save result of training or not
     verb (int): verbosity level
     device (str): device used (cpu/gpu)
+    licchavi_class (Licchavi()): training structure used
+                                        (Licchavi or LicchaviDev)
 
     Returns:
         (list list): list of [video_id: int, criteria_name: str,
@@ -123,7 +141,7 @@ def ml_run(
         licch, users_ids = _set_licchavi(
             comparison_data, criteria,
             fullpath, resume, verb, device,
-            ground_truths
+            ground_truths, licchavi_class=licchavi_class
         )
         # training and predicting
         glob, loc, uncertainties = _train_predict(

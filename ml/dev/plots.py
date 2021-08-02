@@ -98,7 +98,7 @@ def _plotfull_var(l_hist, l_metrics, title=None, path=None):
     _plot_var(l_hist, l_metrics)
     metric = l_metrics[0]
     _legendize(METRICS[metric]["ord"])
-    _title_save(title, path, suff=" {}.png".format(METRICS[metric]["f_name"]))
+    _title_save(title, path, suff="{}.png".format(METRICS[metric]["f_name"]))
 
 
 # ------- groups of metrics on a same plot -----------
@@ -143,7 +143,7 @@ def plot_density(tens, title=None, path=None, name="hist.png"):
 
     tens (tensor): data of which we want repartition
     """
-    arr = np.asarray(tens)
+    arr = np.array(tens)
     _ = plt.hist(arr, density=False, label=title, bins=40)
     _legendize("Number", "Value")
     _title_save(title, path, name)

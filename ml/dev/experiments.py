@@ -1,9 +1,10 @@
+from .licchavi_dev import LicchaviDev
 from .visualisation import seedall, disp_one_by_line, output_infos
-# from .fake_data import generate_data
+from .fake_data import generate_data
 
 """
 Not used in production, for testing only
-Module called from "ml_train.py" only if env var TOURNESOL_DEV is True
+Module called from "ml_train_dev.py" only if env var TOURNESOL_DEV is True
 
 Used to perform some tests on ml algorithm (custom data, plots, ...)
 """
@@ -28,31 +29,26 @@ def run_experiment(comparison_data):
     """ trains and outputs some stats """
     from ..core import ml_run
     seedall(9996465)
-    # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-    #     40, 27, 30,
-    #     dens=0.8,
-    #     noise=0.02)
+    glob_gt, loc_gt, s_gt, comps_fake = generate_data(
+        5, 3, 5,  # 40, 27, 30,
+        dens=0.8,
+        noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        comparison_data[:10000],
+        comps_fake,
         EPOCHS,
-        ["reliability"],
+        ["test"],
+        licchavi_class=LicchaviDev,
         resume=False,
         save=False,
         verb=1,
         compute_uncertainty=False,
-        # ground_truths=(glob_gt, loc_gt, s_gt)
+        ground_truths=(glob_gt, loc_gt, s_gt)
         )
 
     # some prints and plots
     output_infos(*infos)
 
-    # check_one(200, glob_scores, loc_scores)
-    # # for c in comparison_data:
-    # #     if c[3]=="largely_recommended":
-    # #         print(c)
-    # # print(s_fake)
-    # #disp_fake_pred(glob_gt, glob_scores)
-    disp_one_by_line(glob_scores[:20])
-    disp_one_by_line(loc_scores[:20])
+    disp_one_by_line(glob_scores[:2])
+    disp_one_by_line(loc_scores[:2])
     print("glob:", len(glob_scores), "local:",  len(loc_scores))

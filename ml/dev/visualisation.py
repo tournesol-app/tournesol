@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 import random
-from os import makedirs
 
+from ml.data_utility import replace_dir
 from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
                     plot_loc_uncerts)
 
@@ -13,7 +13,7 @@ Main file is "ml_train.py"
 """
 
 PATH_PLOTS = "ml/plots/"
-makedirs(PATH_PLOTS, exist_ok=True)
+replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
 
 
 # debug helpers
@@ -134,6 +134,7 @@ def uncert_stats(licch, loc_uncerts):
 
 def output_infos(licch, glob, loc, uncertainties):
     """ Prints and plots for dev mode """
+    print("infooooooooo")
     licch_stats(licch)
     scores_stats(glob[1])
     s_stats(licch)

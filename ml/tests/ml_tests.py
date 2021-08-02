@@ -192,24 +192,6 @@ def test_get_s():
     assert s.shape == torch.Size([1])
 
 
-def test_test_mode():
-    """ Tests on Licchavi class test mode (generated data mode) """
-    nb_vids, nb_users, vids_per_user = 7, 2, 7
-    glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-                                            nb_vids,
-                                            nb_users,
-                                            vids_per_user,
-                                            dens=0.999
-                                            )
-    licch, _ = _set_licchavi(comps_fake, 'test', verb=-1,
-                             ground_truths=(glob_gt, loc_gt, s_gt))
-    epochs = 2
-    licch.train(epochs, -1)
-    assert nb_users == len(s_gt)
-    assert licch.test_mode
-    assert len(licch.history['error_loc']) == epochs
-
-
 # -------- metrics.py --------------
 def test_extract_grad():
     model = torch.ones(4, requires_grad=True)

@@ -196,7 +196,6 @@ class Licchavi():
         self.glob_gt = glob_gt
         self.loc_gt = [dict(node) for node in loc_gt]
         self.s_gt = s_gt
-        print(s_gt)
 
     def output_scores(self):
         """ Returns video scores both global and local
@@ -347,11 +346,11 @@ class Licchavi():
         self.history['grad_norm'].append(grad_norm)
 
         # when we use generated data with ground truths
-        if self.test_mode:
-            factor_glob, factor_loc = 1, 1  # for visualisation only
-            glob_error, loc_error = self._test_errors()
-            self.history['error_glob'].append(glob_error * factor_glob)
-            self.history['error_loc'].append(loc_error * factor_loc)
+        # if self.test_mode:
+        #     factor_glob, factor_loc = 1, 1  # for visualisation only
+        #     glob_error, loc_error = self._test_errors()
+        #     self.history['error_glob'].append(glob_error * factor_glob)
+        #     self.history['error_loc'].append(loc_error * factor_loc)
 
     def _old(self, years):
         """ Increments age of nodes (during training) """

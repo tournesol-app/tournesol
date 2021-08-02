@@ -2,6 +2,8 @@ import torch
 import numpy as np
 import json
 import pickle
+import os
+import shutil
 
 """
 Utility functions used in "handle_data.py"
@@ -128,6 +130,14 @@ def expand_dic(vid_vidx, l_vid_new):
             vid_vidx[vid_new] = idx
             idx += 1
     return vid_vidx
+
+
+# folder manipulation
+def replace_dir(path):
+    ''' create or replace directory '''
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
 
 
 # save and load data
