@@ -3,7 +3,8 @@ import torch
 import random
 from os import makedirs
 
-from .plots import plot_metrics, plot_density
+from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
+                    plot_loc_uncerts)
 
 """
 Visualisation methods, mainly for testing and debugging
@@ -110,3 +111,22 @@ def scores_stats(glob_scores):
             PATH_PLOTS,
             "scores.png"
         )
+
+
+def s_stats(licch):
+    """ Prints and plots about s parameters """
+    if licch.test_mode:
+        s_predicted = [s.detach().item() for s in licch.all_nodes('s')]
+        plot_s_predict_gt(s_predicted, licch.s_gt, PATH_PLOTS)
+
+
+def uncert_stats(licch, loc_uncerts):
+    """ Prints and plots about incertainty """
+    l_nb_comps, l_uncerts = [], []
+    vid_vidx = licch.vid_vidx
+    for uncerts, node in zip(loc_uncerts, licch.nodes.values()):
+        nb_comps = torch.sum(node.vid1, axis=0) + torch.sum(node.vid2, axis=0)
+        for uncert, vid in zip(uncerts, node.vids):
+            l_nb_comps.append(nb_comps[vid_vidx[int(vid)]].item())
+            l_uncerts.append(uncert)
+    plot_loc_uncerts(l_nb_comps, l_uncerts, PATH_PLOTS)

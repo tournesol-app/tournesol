@@ -1,4 +1,5 @@
 from .visualisation import seedall, disp_one_by_line
+# from .fake_data import generate_data
 
 """
 Not used in production, for testing only
@@ -26,20 +27,21 @@ EPOCHS = 60
 def run_experiment(comparison_data):
     """ trains and outputs some stats """
     from ..core import ml_run
-    seedall(45)
+    seedall(9996465)
     # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-    #     500, 300, 20,
-    #     dens=0.6,
+    #     40, 27, 30,
+    #     dens=0.8,
     #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores = ml_run(
-        comparison_data,
+        comparison_data[:],
         EPOCHS,
         ["reliability"],
         resume=False,
         save=True,
         verb=1,
         compute_uncertainty=True,
+        # ground_truths=(glob_gt, loc_gt, s_gt)
         )
     # check_one(200, glob_scores, loc_scores)
     # # for c in comparison_data:
