@@ -55,13 +55,8 @@ def _fake_s(nb_s, multiple_scales=True):
         (float array): random independant s parameters
     '''
     if multiple_scales:
-        right = np.random.exponential(0.3, nb_s) + 1  # more than 1
-        left = np.maximum(- np.random.exponential(0.08, nb_s) + 1, 0.2)  # less
-        choice = np.random.randint(0, 2, nb_s, dtype=bool)
-        s_params = np.where(choice, right, left)
-    else:
-        s_params = np.ones(nb_s)
-    return s_params
+        return np.random.gamma(4, scale=0.3, size=nb_s)
+    return np.ones(nb_s)
 
 
 def _rate_density(r, a, b, s):
