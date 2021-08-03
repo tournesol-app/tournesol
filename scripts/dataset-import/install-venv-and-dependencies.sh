@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-DIR="$(dirname "$0")"
+DIR="$(realpath -e "$(dirname "$0")")"
 cd "$DIR"
 
 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl

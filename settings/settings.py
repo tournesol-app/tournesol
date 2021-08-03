@@ -32,22 +32,22 @@ except FileNotFoundError:
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'SECRET_KEY' in server_settings and server_settings['SECRET_KEY'] or 'django-insecure-(=8(97oj$3)!#j!+^&bh_+5v5&1pfpzmaos#z80c!ia5@9#jz1'
+SECRET_KEY = server_settings.get('SECRET_KEY', 'django-insecure-(=8(97oj$3)!#j!+^&bh_+5v5&1pfpzmaos#z80c!ia5@9#jz1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'DEBUG' in server_settings and server_settings['DEBUG'] or False
+DEBUG = server_settings.get('DEBUG', False)
 
-ALLOWED_HOSTS = 'ALLOWED_HOSTS' in server_settings and server_settings['ALLOWED_HOSTS'] or ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = server_settings.get('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 # It is considered quite unsafe to use the /tmp directory, so we might as well use a dedicated root folder in HOME
 base_folder = f"{os.environ.get('HOME')}/.tournesol"
-STATIC_ROOT = 'STATIC_ROOT' in server_settings and server_settings['STATIC_ROOT'] or f"{base_folder}{STATIC_URL}"
-MEDIA_ROOT = 'MEDIA_ROOT' in server_settings and server_settings['MEDIA_ROOT'] or f"{base_folder}{MEDIA_URL}"
+STATIC_ROOT = server_settings.get('STATIC_ROOT', f"{base_folder}{STATIC_URL}")
+MEDIA_ROOT = server_settings.get('MEDIA_ROOT', f"{base_folder}{MEDIA_URL}")
 
-MAIN_URL = 'MAIN_URL' in server_settings and server_settings['MAIN_URL'] or 'http://localhost:8000/'
+MAIN_URL = server_settings.get('MAIN_URL', 'http://localhost:8000/')
 
 # Application definition
 
@@ -115,17 +115,17 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 DATABASES = OrderedDict([
     ['default', {
         'ENGINE': 'django_prometheus.db.backends.postgresql',
-        'NAME': 'DATABASE_NAME' in server_settings and server_settings['DATABASE_NAME'] or 'tournesol',
-        'USER': 'DATABASE_USER' in server_settings and server_settings['DATABASE_USER'] or 'postgres',
-        'PASSWORD': 'DATABASE_PASSWORD' in server_settings and server_settings['DATABASE_PASSWORD'] or 'password',
-        'HOST': "DATABASE_HOST" in server_settings and server_settings["DATABASE_HOST"] or 'localhost',
-        'PORT': "DATABASE_PORT" in server_settings and server_settings["DATABASE_PORT"] or 5432,
+        'NAME': server_settings.get('DATABASE_NAME', 'tournesol'),
+        'USER': server_settings.get('DATABASE_USER', 'postgres'),
+        'PASSWORD': server_settings.get('DATABASE_PASSWORD', 'password'),
+        'HOST': server_settings.get("DATABASE_HOST", 'localhost'),
+        'PORT': server_settings.get("DATABASE_PORT", 5432),
         'NUMBER': 42
     }]
 ])
 
-DRF_RECAPTCHA_PUBLIC_KEY = "DRF_RECAPTCHA_PUBLIC_KEY" in server_settings and server_settings["DRF_RECAPTCHA_PUBLIC_KEY"] or 'dsfsdfdsfsdfsdfsdf'
-DRF_RECAPTCHA_SECRET_KEY = "DRF_RECAPTCHA_SECRET_KEY" in server_settings and server_settings["DRF_RECAPTCHA_SECRET_KEY"] or 'dsfsdfdsfsdf'
+DRF_RECAPTCHA_PUBLIC_KEY = server_settings.get("DRF_RECAPTCHA_PUBLIC_KEY", 'dsfsdfdsfsdfsdfsdf')
+DRF_RECAPTCHA_SECRET_KEY = server_settings.get("DRF_RECAPTCHA_SECRET_KEY", 'dsfsdfdsfsdf')
 
 
 # Password validation
@@ -182,6 +182,7 @@ OAUTH2_PROVIDER = {
     "ACCESS_TOKEN_EXPIRE_SECONDS": server_settings.get("ACCESS_TOKEN_EXPIRE_SECONDS", 36000), # 10h
     "REFRESH_TOKEN_EXPIRE_SECONDS": server_settings.get("REFRESH_TOKEN_EXPIRE_SECONDS", 604800), # 1w
 }
+LOGIN_URL = server_settings.get('LOGIN_URL', '')
 
 CORS_ALLOWED_ORIGINS = server_settings.get('CORS_ALLOWED_ORIGINS', [])
 CORS_ALLOW_CREDENTIALS = server_settings.get('CORS_ALLOW_CREDENTIALS', False)
