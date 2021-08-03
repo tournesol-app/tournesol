@@ -1,6 +1,6 @@
 from .licchavi_dev import LicchaviDev
 from .visualisation import seedall, disp_one_by_line, output_infos
-from .fake_data import generate_data
+# from .fake_data import generate_data
 
 """
 Not used in production, for testing only
@@ -22,33 +22,33 @@ TEST_DATA = [
 ]
 
 NAME = ""
-EPOCHS = 60
+EPOCHS = 100
 
 
 def run_experiment(comparison_data):
     """ trains and outputs some stats """
     from ..core import ml_run
-    seedall(9996465)
-    glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-        5, 3, 5,  # 40, 27, 30,
-        dens=0.8,
-        noise=0.02)
+    seedall(4496465)
+    # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
+    #     5, 3, 5,  # 40, 27, 30,
+    #     dens=0.8,
+    #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        comps_fake,
+        comparison_data[:],
         EPOCHS,
-        ["test"],
+        ["largely_recommended"],
         licchavi_class=LicchaviDev,
         resume=False,
         save=False,
         verb=1,
-        compute_uncertainty=False,
-        ground_truths=(glob_gt, loc_gt, s_gt)
+        compute_uncertainty=True,
+        # ground_truths=(glob_gt, loc_gt, s_gt)
         )
 
     # some prints and plots
     output_infos(*infos)
 
-    disp_one_by_line(glob_scores[:2])
-    disp_one_by_line(loc_scores[:2])
+    disp_one_by_line(glob_scores[:20])
+    disp_one_by_line(loc_scores[:20])
     print("glob:", len(glob_scores), "local:",  len(loc_scores))

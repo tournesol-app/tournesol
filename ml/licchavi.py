@@ -36,6 +36,11 @@ USAGE:
 
 
 def get_model(nb_vids, device='cpu'):
+    custom = 0
+    if custom:
+        model = torch.ones(nb_vids, device=device) * custom
+        model.requires_grad = True
+        return model
     return torch.zeros(nb_vids, requires_grad=True, device=device)
 
 

@@ -167,6 +167,6 @@ def plot_loc_uncerts(l_nb_comps, l_uncerts, path, name='uncertainties.png'):
     l_nb_vids (int list): number of comparisons for each video by each user
     l_uncert (float list): uncertainty for each video of each user
     """
-    plt.plot(l_nb_comps, l_uncerts, 'ro', label='uncertainty')
+    plt.plot(l_nb_comps, l_uncerts, 'ro', label='uncertainty', ms=0.5)
     _legendize('uncertainty', 'number of comparisons')
     _title_save('Local uncertainties', path, name)
