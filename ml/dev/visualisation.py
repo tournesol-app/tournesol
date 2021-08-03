@@ -128,7 +128,7 @@ def uncert_stats(licch, loc_uncerts):
         nb_comps = torch.sum(node.vid1, axis=0) + torch.sum(node.vid2, axis=0)
         for uncert, vid in zip(uncerts, node.vids):
             l_nb_comps.append(nb_comps[vid_vidx[int(vid)]].item())
-            l_uncerts.append(uncert)
+            l_uncerts.append(uncert.item())
     plot_loc_uncerts(l_nb_comps, l_uncerts, PATH_PLOTS)
 
 
