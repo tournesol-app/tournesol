@@ -4,7 +4,7 @@ from copy import deepcopy
 import logging
 from statistics import median
 
-from .losses import round_loss, loss_fit_s_gen, loss_gen_reg, models_dist
+from .losses import round_loss, loss_fit_s_gen, loss_gen_reg, models_dist_huber
 
 """
 Metrics used for training monitoring in "licchavi.py"
@@ -87,8 +87,8 @@ def get_uncertainty_glob(licch):
             distances = []
             for node in licch.nodes.values():
                 if all_vids[vidx] in node.vids:
-                    dist = models_dist(node.model, licch.global_model,
-                                       vidx=vidx)
+                    dist = models_dist_huber(node.model, licch.global_model,
+                                             vidx=vidx)
                     distances.append(dist.item())
             uncerts[vidx] = _global_uncert(distances)
     return uncerts
