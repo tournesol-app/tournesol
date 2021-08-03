@@ -55,7 +55,7 @@ class Licchavi():
             self, nb_vids, vid_vidx, crit, device='cpu', verb=1,
             # configured with gin in "hyperparameters.gin"
             lr_node=None, lr_s=None, lr_gen=None,
-            gen_freq=None, w0=None, w=None):
+            gen_freq=None, nu=None, w0=None, w=None):
         """
         nb_vids (int): number of different videos rated by
                         at least one contributor for this criteria
@@ -77,6 +77,7 @@ class Licchavi():
         self.lr_s = lr_s     # local learning rate for s parameter
         self.lr_gen = lr_gen  # global learning rate (global scores)
         self.gen_freq = gen_freq  # generalisation frequency (>=1)
+        self.nu = nu  # importance of s_loss term
         self.w0 = w0     # regularisation strength
         self.w = w   # default weight for a node
 
@@ -323,7 +324,7 @@ class Licchavi():
         for node in self.nodes.values():
             if node.s <= 0:
                 with torch.no_grad():
-                    node.s[0] = 0.4
+                    node.s[0] = 0.0001
                     logging.warning('Regulating negative s')
 
     def _print_losses(self, tot, fit, s, gen, reg):

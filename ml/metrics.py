@@ -88,7 +88,7 @@ def get_uncertainty_glob(licch):
             for node in licch.nodes.values():
                 if all_vids[vidx] in node.vids:
                     dist = models_dist_huber(node.model, licch.global_model,
-                                             vidx=vidx)
+                                             vidx=vidx, d=node.delta_na)
                     distances.append(dist.item())
             uncerts[vidx] = _global_uncert(distances)
     return uncerts

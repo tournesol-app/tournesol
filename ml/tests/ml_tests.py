@@ -252,14 +252,15 @@ def test_check_equilibrium_glob():
     licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
     eq = check_equilibrium_glob(0.001, licch)
     assert eq == 1.0
+    assert type(eq) is float
 
 
 def test_check_equilibrium_loc():
     """ checks equilibrium at initialisation """
     licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    # _ = licch.train(5)
     eq = check_equilibrium_loc(0.1, licch)
-    assert 0.4 <= eq <= 1
+    assert 0 <= eq <= 1
+    assert type(eq) is float
 
 
 # --------- core.py ------------

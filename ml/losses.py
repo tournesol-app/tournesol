@@ -37,14 +37,14 @@ def _bbt_loss(t, r):
     Used only for testing
 
     Args:
-        t (float tensor): batch of (s * (ya - yb))
+        t (float tensor): batch of (ya - yb)
         r (float tensor): batch of ratings given by user.
 
     Returns:
         (float tensor): sum of empirical losses for all comparisons of one user
     '''
     two = torch.tensor(2)
-    losses = torch.log(abs(torch.sinh(t)/t)) + r * t + torch.log(two)
+    losses = torch.log(torch.sinh(t)/t) + r * t + torch.log(two)
     return sum(losses)
 
 
@@ -53,7 +53,7 @@ def _approx_bbt_loss(t, r):
     ''' Approximated Binomial Bradley-Terry loss function (used in Licchavi)
 
     Args:
-        t (float tensor): batch of (s * (ya - yb))
+        t (float tensor): batch of (ya - yb)
         r (float tensor): batch of ratings given by user.
 
     Returns:
@@ -108,11 +108,11 @@ def get_fit_loss(model, s, a_batch, b_batch, r_batch, vidx=-1):
 
         ya_batch = predict(a_batch[idxs], model)
         yb_batch = predict(b_batch[idxs], model)
-        loss = _approx_bbt_loss(s * (ya_batch - yb_batch), r_batch[idxs])
+        loss = _approx_bbt_loss(ya_batch - yb_batch, r_batch[idxs])
     else:
         ya_batch = predict(a_batch, model)
         yb_batch = predict(b_batch, model)
-        loss = _approx_bbt_loss(s * (ya_batch - yb_batch), r_batch)
+        loss = _approx_bbt_loss(ya_batch - yb_batch, r_batch)
     return loss
 
 
@@ -156,7 +156,7 @@ def _huber(x, d):
     """ Pseudo-Huber loss function
 
     x (float tensor): input
-    d (float): parameter (d → 0 for absolute value)
+    d (float tensor): parameters (d → 0 for absolute value)
 
     Returns:
         (float): Huber loss
@@ -165,7 +165,7 @@ def _huber(x, d):
 
 
 @gin.configurable
-def models_dist_huber(model1, model2, mask=None, vidx=-1, d=1):
+def models_dist_huber(model1, model2, mask=None, s=1, vidx=-1, d=1):
     ''' Pseudo-Huber distance between 2 models
 
     Args:
@@ -173,19 +173,20 @@ def models_dist_huber(model1, model2, mask=None, vidx=-1, d=1):
         model2 (float tensor): scoring model
         mask (bool tensor): subspace in which to compute distance
         vidx (int): video index if only one is computed (-1 for all)
-        d (float): pseudo-Huber loss parameter (d → 0 for absolute value)
-                        (defined in hyperparameters.gin)
+        d (float tensor): pseudo-Huber loss parameters
+                            (d → 0 for absolute value)
+                            (defined in hyperparameters.gin)
 
     Returns:
         (scalar float tensor): distance between the 2 models
     '''
     if vidx == -1:  # if we want several coordinates
         if mask is None:  # if we want all coordinates
-            dist = (_huber(model1 - model2, d)).sum()
+            dist = (_huber(s * (model1 - model2), d)).sum()
         else:
-            dist = (_huber((model1 - model2) * mask, d)).sum()
+            dist = (_huber(s * (model1 - model2) * mask, d)).sum()
     else:  # if we want only one coordinate
-        dist = _huber(model1[vidx] - model2[vidx], d)
+        dist = _huber(s * (model1[vidx] - model2[vidx]), d[vidx])
     return dist
 
 
@@ -234,12 +235,14 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):  # FIXME shorten
             vidx
         )
         if vidx == -1:  # only if all loss is computed
-            s_loss += get_s_loss(node.s)  # FIXME not accessed?
+            s_loss += licch.nu * get_s_loss(node.s)  # FIXME not accessed?
         g = models_dist_huber(
             node.model,    # local model
             licch.global_model,  # general model
             mask=node.mask,     # mask
-            vidx=vidx      # video index if we want partial loss
+            s=node.s,
+            vidx=vidx,      # video index if we want partial loss
+            d=node.delta_na
         )
         gen_loss += node.w * g  # node weight  * generalisation term
     else:  # if we want all users
@@ -250,15 +253,17 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):  # FIXME shorten
                 node.vid1,  # id_batch1
                 node.vid2,  # id_batch2
                 node.r,     # r_batch
-                vidx
+                vidx=vidx
             )
             if vidx == -1:  # only if all loss is computed
-                s_loss += get_s_loss(node.s)
+                s_loss += licch.nu * get_s_loss(node.s)
             g = models_dist_huber(
                 node.model,    # local model
                 licch.global_model,  # general model
                 mask=node.mask,     # mask
-                vidx=vidx      # video index if we want partial loss
+                s=node.s,
+                vidx=vidx,     # video index if we want partial loss
+                d=node.delta_na
             )
             gen_loss += node.w * g  # node weight  * generalisation term
     return fit_loss, s_loss, gen_loss
@@ -282,7 +287,9 @@ def loss_gen_reg(licch, vidx=-1):
             node.model,    # local model
             licch.global_model,  # general model
             mask=node.mask,     # mask
-            vidx=vidx
+            s=node.s,
+            vidx=vidx,
+            d=node.delta_na
         )
         gen_loss += node.w * g  # node weight * generalisation term
     reg_loss = licch.w0 * model_norm(licch.global_model, vidx=vidx)

@@ -10,6 +10,7 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 
 
 # Loss hyperparameters
+Licchavi.nu = 1  # scaling parameter term ponderation
 Licchavi.w = 1  # generalisation term ponderation
 Licchavi.w0 = 1  # regularisation term ponderation
 models_dist_huber.d = 0.01 # pseudo-Huber loss parameter (d → 0 for absolute value)
@@ -17,7 +18,7 @@ models_dist_huber.d = 0.01 # pseudo-Huber loss parameter (d → 0 for absolute v
 
 # Training hyperparameters
 Licchavi.lr_node = 0.9  # learning rate of local models
-Licchavi.lr_s = 0.1  # learning rate of s individual parameters
+Licchavi.lr_s = 0.08  # learning rate of s individual parameters
 Licchavi.lr_gen = 0.09  # learning rate of general model
 Licchavi.gen_freq = 1  # number of general model steps for one local step
 
