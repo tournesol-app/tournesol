@@ -15,25 +15,25 @@ Main file "ml_train.py"
 
 # metrics on models
 def extract_grad(model):
-    ''' returns list of gradients of a model
+    """returns list of gradients of a model
 
     model (float tensor): torch tensor with gradients
 
     Returns:
         (float tensor list): list of gradients of the model
-    '''
+    """
     return [p.grad for p in [model]]
 
 
 def scalar_product(l_grad1, l_grad2):
-    ''' scalar product of 2 lists of gradients
+    """scalar product of 2 lists of gradients
 
     l_grad1 (float tensor list): list of gradients of a model
     l_grad2 (float tensor list): list of gradients of a model
 
     Returns:
         (float): scalar product of the gradients
-    '''
+    """
     s = 0
     for g1, g2 in zip(l_grad1, l_grad2):
         s += (g1 * g2).sum()
@@ -41,7 +41,7 @@ def scalar_product(l_grad1, l_grad2):
 
 
 def replace_coordinate(tens, score, idx):
-    """ Replaces one coordinate of the tensor
+    """Replaces one coordinate of the tensor
 
     Args:
         tens (float tensor): local model
@@ -58,7 +58,7 @@ def replace_coordinate(tens, score, idx):
 
 # ------ to compute uncertainty -------
 def _global_uncert(values, prior=4, weight=5):
-    """ Returns posterior value of median
+    """Returns posterior value of median
 
     prior(float): value of prior median
     weight (int): weight of prior
@@ -68,11 +68,11 @@ def _global_uncert(values, prior=4, weight=5):
         (float): global uncertainty for one video
     """
     full_values = values + [prior] * weight
-    return median(full_values) / len(values)**0.5
+    return median(full_values) / len(values) ** 0.5
 
 
 def get_uncertainty_glob(licch):
-    """ Returns uncertainty for all global scores
+    """Returns uncertainty for all global scores
 
     Args:
         licch (Licchavi()): licchavi object
@@ -87,15 +87,14 @@ def get_uncertainty_glob(licch):
             distances = []
             for node in licch.nodes.values():
                 if all_vids[vidx] in node.vids:
-                    dist = models_dist(node.model, licch.global_model,
-                                       vidx=vidx)
+                    dist = models_dist(node.model, licch.global_model, vidx=vidx)
                     distances.append(dist.item())
             uncerts[vidx] = _global_uncert(distances)
     return uncerts
 
 
 def _get_hessian_fun_loc(licch, uid, vidx):
-    """ Gives loss in function of local model for hessian computation
+    """Gives loss in function of local model for hessian computation
 
     Args:
         licch (Licchavi()): licchavi object
@@ -105,8 +104,9 @@ def _get_hessian_fun_loc(licch, uid, vidx):
     Returns:
         (scalar tensor -> float) function giving loss according to one score
     """
+
     def get_loss(score):
-        """ Used to compute its second derivative to get uncertainty
+        """Used to compute its second derivative to get uncertainty
 
         input (float scalar tensor): one score
 
@@ -117,11 +117,12 @@ def _get_hessian_fun_loc(licch, uid, vidx):
         licch.nodes[uid].model = new_model
         fit_loss, _, gen_loss = loss_fit_s_gen(licch, vidx, uid)
         return fit_loss + gen_loss
+
     return get_loss
 
 
 def get_uncertainty_loc(licch):
-    """ Returns uncertainty for all local scores
+    """Returns uncertainty for all local scores
 
     Args:
         licch (Licchavi()): licchavi object
@@ -129,17 +130,17 @@ def get_uncertainty_loc(licch):
     Returns:
         (float tensor list): uncertainty for all local scores
     """
-    logging.info('Computing uncertainty')
+    logging.info("Computing uncertainty")
     local_uncert = []
     for uid, node in licch.nodes.items():  # for all nodes
         local_uncerts = []
         for vid in node.vids:  # for all videos of the node
             vidx = licch.vid_vidx[vid]  # video index
-            score = node.model[vidx:vidx+1].detach()
+            score = node.model[vidx : vidx + 1].detach()
             score = deepcopy(score)
             fun = _get_hessian_fun_loc(licch, uid, vidx)
             deriv2 = hessian(fun, score)
-            uncert = deriv2**(-0.5)
+            uncert = deriv2 ** (-0.5)
             local_uncerts.append(uncert)
         local_uncert.append(local_uncerts)
     return local_uncert
@@ -147,7 +148,7 @@ def get_uncertainty_loc(licch):
 
 # -------- to check equilibrium ------
 def _random_signs(epsilon, nb_vids):
-    """ Returns a tensor whith binary random coordinates
+    """Returns a tensor whith binary random coordinates
 
     epsilon (float): scores increment before computing gradient
     nb_vids (int): length of output tensor
@@ -160,7 +161,7 @@ def _random_signs(epsilon, nb_vids):
 
 
 def check_equilibrium_glob(epsilon, licch):
-    """ Returns proportion of global scores which have converged
+    """Returns proportion of global scores which have converged
 
     Args:
         licch (Licchavi()): licchavi object
@@ -172,7 +173,7 @@ def check_equilibrium_glob(epsilon, licch):
     incr = _random_signs(epsilon, nbvid)
 
     def _one_side_glob(increment):
-        """ increment (float tensor): coordinates are +/- epsilon """
+        """increment (float tensor): coordinates are +/- epsilon"""
         for node in licch.nodes.values():
             node.opt.zero_grad(set_to_none=True)  # node optimizer
         licch.opt_gen.zero_grad(set_to_none=True)  # general optimizer
@@ -198,7 +199,7 @@ def check_equilibrium_glob(epsilon, licch):
 
 
 def check_equilibrium_loc(epsilon, licch):
-    """ Returns proportion of local scores which have converged
+    """Returns proportion of local scores which have converged
 
     Args:
         licch (Licchavi()): licchavi object
@@ -211,7 +212,7 @@ def check_equilibrium_loc(epsilon, licch):
     incr = _random_signs(epsilon, nbvid)
 
     def _one_side_loc(increment):
-        """ increment (float tensor): coordinates are +/- epsilon """
+        """increment (float tensor): coordinates are +/- epsilon"""
         l_derivs = torch.empty(nbn, nbvid)
         # resetting gradients
         for node in licch.nodes.values():

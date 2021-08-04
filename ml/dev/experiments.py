@@ -25,7 +25,7 @@ EPOCHS = 60
 
 
 def run_experiment(comparison_data):
-    """ trains and outputs some stats """
+    """trains and outputs some stats"""
     from ..core import ml_run
     seedall(9996465)
     # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
@@ -51,4 +51,4 @@ def run_experiment(comparison_data):
     # #disp_fake_pred(glob_gt, glob_scores)
     disp_one_by_line(glob_scores[:20])
     disp_one_by_line(loc_scores[:20])
-    print("glob:", len(glob_scores), "local:",  len(loc_scores))
+    print("glob:", len(glob_scores), "local:", len(loc_scores))

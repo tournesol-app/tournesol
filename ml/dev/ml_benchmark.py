@@ -13,7 +13,7 @@ Main file is "ml_train.py"
 
 
 def time_this(func, iterations=1, description=""):
-    """ Times a function
+    """Times a function
 
     func (None -> None): function to time
     iterations (int): number of iterations to average on
@@ -23,18 +23,13 @@ def time_this(func, iterations=1, description=""):
         (None): Prints average time for tested function to run
     """
     duration = timeit.Timer(func).timeit(number=iterations)
-    avg_duration = duration/iterations
-    print(f'On average {description} took {avg_duration} seconds')
+    avg_duration = duration / iterations
+    print(f"On average {description} took {avg_duration} seconds")
 
 
 # ------ prepare some inputs -----------
 nb_vids, nb_users, vids_per_user = 1000, 30, 30
-FAKE_DATA, _, _ = generate_data(
-    nb_vids,
-    nb_users,
-    vids_per_user,
-    dens=0.8
-)
+FAKE_DATA, _, _ = generate_data(nb_vids, nb_users, vids_per_user, dens=0.8)
 T, R = torch.tensor([-2.1]), torch.tensor([-0.8])
 S = torch.tensor([0.9])
 
@@ -58,7 +53,7 @@ def bm_ml_run():
         resume=False,
         save=False,
         verb=-1,
-        gpu=False
+        gpu=False,
     )
 
 
@@ -80,9 +75,9 @@ def bm_fit_loss_batch():
 
 
 # =========== running tests ==================
-if __name__ == '__main__':
+if __name__ == "__main__":
     time_this(bm_ml_run, 1, "ml_run()")
     time_this(bm_bbt_loss, 10000, "_bbt_loss()")
     time_this(bm_approx_bbt_loss, 10000, "_approx_bbt_loss()")
-    time_this(bm_get_s_loss, 10000, 'get_s_loss()')
+    time_this(bm_get_s_loss, 10000, "get_s_loss()")
     time_this(bm_fit_loss_batch, 100, "fit_loss_batch()")

@@ -1,3 +1,7 @@
+"""
+Utils methods for Tournesol's core app
+"""
+
 from django.forms import ValidationError
 
 
@@ -9,5 +13,4 @@ def validate_avatar(fieldfile_obj, mb_limit=5):
     # print("VALIDATION", fieldfile_obj, fieldfile_obj.size)
     filesize = fieldfile_obj.size
     if filesize > mb_limit * 1024 * 1024:
-        raise ValidationError(
-            {"avatar": "Max file size is %s MB" % str(mb_limit)})
+        raise ValidationError({"avatar": "Max file size is %s MB" % str(mb_limit)})

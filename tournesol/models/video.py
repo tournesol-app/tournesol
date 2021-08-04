@@ -1,11 +1,19 @@
-import json
-import numpy as np
+"""
+Models for Tournesol's main functions, including contributor's comparison,
+aggregated judgements, videos, and videos scores per criterias
+"""
+
 import uuid
 import logging
+import numpy as np
 
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models import (Q, F, Count, Func, Sum, Value, FloatField, IntegerField, Case, When, fields)
+from django.db.models import (
+    Q,
+    F,
+    Count,
+)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 
@@ -14,71 +22,89 @@ from languages.languages import LANGUAGES
 from tqdm.auto import tqdm
 
 from core.models import User
-from core.utils.models import (WithFeatures, WithDynamicFields, WithEmbedding, ComputedJsonField, query_or, query_and, EnumList)
-from core.utils.constants import youtubeVideoIdRegex,ts_constants
+from core.utils.models import (
+    WithFeatures,
+    WithDynamicFields,
+    WithEmbedding,
+    ComputedJsonField,
+    query_or,
+    query_and,
+    enum_list,
+)
+from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX, TS_CONSTANTS
 from tournesol.utils import VideoSearchEngine
-from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE, MAX_FEATURE_WEIGHT
+from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
 
 
 class Video(models.Model, WithFeatures, WithEmbedding):
     """One video."""
-    video_id_regex = RegexValidator(youtubeVideoIdRegex,
-                                    f'Video ID must match {youtubeVideoIdRegex}')
+
+    video_id_regex = RegexValidator(
+        YOUTUBE_VIDEO_ID_REGEX, f"Video ID must match {YOUTUBE_VIDEO_ID_REGEX}"
+    )
 
     video_id = models.CharField(
         max_length=20,
         unique=True,
-        help_text=f"Video ID from YouTube URL, matches {youtubeVideoIdRegex}",
-        validators=[video_id_regex])
-    name = models.CharField(max_length=1000, help_text="Video Title",
-                            blank=True)
+        help_text=f"Video ID from YouTube URL, matches {YOUTUBE_VIDEO_ID_REGEX}",
+        validators=[video_id_regex],
+    )
+    name = models.CharField(max_length=1000, help_text="Video Title", blank=True)
     description = models.TextField(
-        null=True, help_text="Video Description from the web page",
-        blank=True)
+        null=True, help_text="Video Description from the web page", blank=True
+    )
     caption_text = models.TextField(
-        null=True, help_text="Processed video caption (subtitle) text",
-        blank=True)
+        null=True, help_text="Processed video caption (subtitle) text", blank=True
+    )
     embedding = models.BinaryField(
         null=True,
         help_text="NumPy array with BERT embedding for caption_text, shape("
-                  "EMBEDDING_LEN,)")
+        "EMBEDDING_LEN,)",
+    )
     info = models.TextField(
-        null=True, blank=True,
-        help_text="Additional information (json)")
+        null=True, blank=True, help_text="Additional information (json)"
+    )
     duration = models.DurationField(null=True, help_text="Video duration", blank=True)
     language = models.CharField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         max_length=10,
-        help_text="Language of the video", choices=LANGUAGES)
+        help_text="Language of the video",
+        choices=LANGUAGES,
+    )
     publication_date = models.DateField(
-        null=True, help_text="Video publication date", blank=True)
-    metadata_timestamp = models.DateTimeField(blank=True,
-                                              null=True,
-                                              help_text="Timestamp the metadata was uploaded")
+        null=True, help_text="Video publication date", blank=True
+    )
+    metadata_timestamp = models.DateTimeField(
+        blank=True, null=True, help_text="Timestamp the metadata was uploaded"
+    )
     views = models.IntegerField(null=True, help_text="Number of views", blank=True)
     uploader = models.CharField(
         max_length=1000,
-        null=True, blank=True,
-        help_text="Name of the channel (uploader)")
+        null=True,
+        blank=True,
+        help_text="Name of the channel (uploader)",
+    )
 
-    add_time = models.DateTimeField(null=True,
-                                    auto_now_add=True,
-                                    help_text="Time the video was added to Tournesol")
-    last_download_time = models.DateTimeField(null=True,
-                                              blank=True,
-                                              help_text="Last time download of metadata"
-                                                        " was attempted")
-    wrong_url = models.BooleanField(default=False,
-                                    help_text="Is the URL incorrect")
+    add_time = models.DateTimeField(
+        null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
+    )
+    last_download_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Last time download of metadata" " was attempted",
+    )
+    wrong_url = models.BooleanField(default=False, help_text="Is the URL incorrect")
     is_unlisted = models.BooleanField(default=False, help_text="Is the video unlisted")
-    download_attempts = models.IntegerField(default=0, help_text="Number of times video"
-                                                                 " was downloaded")
+    download_attempts = models.IntegerField(
+        default=0, help_text="Number of times video" " was downloaded"
+    )
     download_failed = models.BooleanField(
-        default=False, help_text="Was last download unsuccessful")
+        default=False, help_text="Was last download unsuccessful"
+    )
 
     is_update_pending = models.BooleanField(
-            default=False,
-            help_text="If true, recompute properties"
+        default=False, help_text="If true, recompute properties"
     )
 
     # computed in the Video.recompute_pareto(),
@@ -89,149 +115,194 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     pareto_optimal = models.BooleanField(
         null=False,
         default=False,
-        help_text="Is the video pareto-optimal based on aggregated scores?")
+        help_text="Is the video pareto-optimal based on aggregated scores?",
+    )
 
     # computed properties, updated via save signals,
     #  or via manage.py recompute_properties manage.py
 
-    COMPUTED_PROPERTIES = ['rating_n_contributors', 'rating_n_ratings',
-                           'n_public_contributors', 'n_private_contributors', 'public_contributors']
+    COMPUTED_PROPERTIES = [
+        "rating_n_contributors",
+        "rating_n_ratings",
+        "n_public_contributors",
+        "n_private_contributors",
+        "public_contributors",
+    ]
 
     # computed via signals AND via recompute_properties command
     rating_n_contributors = computed_property.ComputedIntegerField(
-        compute_from='get_rating_n_contributors',
+        compute_from="get_rating_n_contributors",
         null=False,
         default=0,
-        help_text="Total number of certified contributors who rated the video"
+        help_text="Total number of certified contributors who rated the video",
     )
 
     rating_n_ratings = computed_property.ComputedIntegerField(
-        compute_from='get_rating_n_ratings',
+        compute_from="get_rating_n_ratings",
         null=False,
         default=0,
-        help_text="Total number of pairwise comparisons for this video from certified contributors"
+        help_text="Total number of pairwise comparisons for this video"
+                  "from certified contributors",
     )
 
     n_public_contributors = computed_property.ComputedIntegerField(
-        compute_from='get_n_public_contributors',
+        compute_from="get_n_public_contributors",
         null=False,
         default=0,
-        help_text="Number of certified contributors who rated this video publicly"
+        help_text="Number of certified contributors who rated this video publicly",
     )
 
     n_private_contributors = computed_property.ComputedIntegerField(
-        compute_from='get_n_private_contributors',
+        compute_from="get_n_private_contributors",
         null=False,
         default=0,
-        help_text="Number of certified contributors who rated this video privately"
+        help_text="Number of certified contributors who rated this video privately",
     )
 
     public_contributors = ComputedJsonField(
-        compute_from='get_certified_top_raters_list',
+        compute_from="get_certified_top_raters_list",
         null=False,
         default=list,
-        help_text=f"Top {ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW']} certified public contributor usernames"
+        help_text=f"Top {TS_CONSTANTS['N_PUBLIC_CONTRIBUTORS_SHOW']}"
+                  f" certified public contributor usernames",
     )
 
     # COMPUTED properties implementation
     # TODO create _annotate_is_certified function
-    def get_certified_top_raters(self, add_user__username=None):
+    def get_certified_top_raters(
+        self,
+        # add_user__username=None
+    ):
         """Get certified raters for this video, sorted by number of comparisons."""
+        # TODO: re-enable showing names of public contributors on recommended videos
 
         # logging.warning("get_certified_top_raters")
 
-        if self.id is None:
-            return User.objects.none()
+        # if self.id is None:
+        #     return User.objects.none()
 
-        filter_this_video = Q(comparisons__video_1=self) |\
-            Q(comparisons__video_2=self)
+        # filter_this_video = Q(comparisons__video_1=self) | Q(comparisons__video_2=self)
 
-        qs = User.objects.filter(filter_this_video)
-        # qs = User._annotate_is_certified(qs)
-        # filter_query = Q(_is_certified=True)
-        # if add_user__username:
-        #     filter_query = filter_query | Q(user__username=add_user__username)
-        # qs = qs.filter(filter_query)
-        # qs = qs.annotate(_n_comparisons=Count('user__userpreferences__comparison',
-        #                                   filter_this_video))
-        qs = qs.distinct()
-        # qs = qs.order_by('-_n_comparisons')
-        return qs
+        # qs = User.objects.filter(filter_this_video)
+        # # qs = User._annotate_is_certified(qs)
+        # # filter_query = Q(_is_certified=True)
+        # # if add_user__username:
+        # #     filter_query = filter_query | Q(user__username=add_user__username)
+        # # qs = qs.filter(filter_query)
+        # # qs = qs.annotate(_n_comparisons=Count('user__userpreferences__comparison',
+        # #                                   filter_this_video))
+        # qs = qs.distinct()
+        # # qs = qs.order_by('-_n_comparisons')
+        # return qs
+
+        return None
 
     # public rating and a public contributor
-    FILTER_PUBLIC = Q(n_public_rating=1,
-                      show_my_profile=True)
+    FILTER_PUBLIC = Q(n_public_rating=1, show_my_profile=True)
 
     def get_certified_top_raters_list(
-            self, limit=ts_constants['N_PUBLIC_CONTRIBUTORS_SHOW'], only_public=True,
-            return_json=True):
+        self,
+        # limit=TS_CONSTANTS["N_PUBLIC_CONTRIBUTORS_SHOW"],
+        # only_public=True,
+        # return_json=True,
+    ):
         """Compute the top certified public top raters and return JSON."""
+        # TODO: re-enable making comparisons and rating public
 
         # logging.warning("get_certified_top_raters_list")
 
-        qs = self.get_certified_top_raters()
+        # qs = self.get_certified_top_raters()
 
-        if qs.count() > 0:
-            # annotating with whether the rating is public
-            pref_privacy = 'user__userpreferences__videoratingprivacy'
+        # if qs.count() > 0:
+        #     # annotating with whether the rating is public
+        #     pref_privacy = "user__userpreferences__videoratingprivacy"
 
-            qs = ContributorRating._annotate_privacy(
-                qs=qs, prefix=pref_privacy,
-                field_user=None, filter_add={f'{pref_privacy}__video': self}
-            )
+        #     qs = ContributorRating._annotate_privacy(
+        #         qs=qs,
+        #         prefix=pref_privacy,
+        #         field_user=None,
+        #         filter_add={f"{pref_privacy}__video": self},
+        #     )
 
-            qs = qs.annotate(n_public_rating=Case(
-                    When(_is_public=True, then=Value(1)),
-                    default=Value(0),
-                    output_field=IntegerField()))
-        else:
-            # dummy value in case if we are creating a video
-            qs = qs.annotate(n_public_rating=Value(0, output_field=IntegerField()))
+        #     qs = qs.annotate(
+        #         n_public_rating=Case(
+        #             When(_is_public=True, then=Value(1)),
+        #             default=Value(0),
+        #             output_field=IntegerField(),
+        #         )
+        #     )
+        # else:
+        #     # dummy value in case if we are creating a video
+        #     qs = qs.annotate(n_public_rating=Value(0, output_field=IntegerField()))
 
-        if only_public:
-            qs = qs.filter(self.FILTER_PUBLIC)
+        # if only_public:
+        #     qs = qs.filter(self.FILTER_PUBLIC)
 
-        if limit is not None:
-            qs = qs[:limit]
+        # if limit is not None:
+        #     qs = qs[:limit]
 
-        if return_json:
-            return json.dumps([{'username': user.user.username} for user in qs])
+        # if return_json:
+        #     return json.dumps([{"username": user.user.username} for user in qs])
 
-        return qs
+        # return qs
+
+        return []
 
     def get_n_public_contributors(self):
         """Get the number of public certified contributors who rated this video."""
 
+        # TODO: re-enable counting the number of contributors for a given video
         # logging.warning("get_n_public_contributors")
 
-        return self.get_certified_top_raters_list(
-                limit=None, return_json=False, only_public=False).\
-            filter(self.FILTER_PUBLIC).count()
+        # return (
+        #     self.get_certified_top_raters_list(
+        #         limit=None, return_json=False, only_public=False
+        #     )
+        #     .filter(self.FILTER_PUBLIC)
+        #     .count()
+        # )
+        return 1
 
     def get_n_private_contributors(self):
         """Get the number of private certified contributors who rated this video."""
-        return self.get_certified_top_raters_list(
-                limit=None, return_json=False, only_public=False).\
-            filter(~self.FILTER_PUBLIC).count()
+        # TODO: re-enable counting the number of contributors for a given video
+
+        # return (
+        #     self.get_certified_top_raters_list(
+        #         limit=None, return_json=False, only_public=False
+        #     )
+        #     .filter(~self.FILTER_PUBLIC)
+        #     .count()
+        # )
+        return 1
 
     def get_rating_n_ratings(self, user=None):
         """Number of associated ratings."""
         if user:
-            return Comparison.objects.filter(Q(video_1=self) | Q(video_2=self)).filter(user=user).count()
+            return (
+                Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
+                .filter(user=user)
+                .count()
+            )
         return Comparison.objects.filter(Q(video_1=self) | Q(video_2=self)).count()
 
     def get_rating_n_contributors(self):
         """Number of contributors in ratings."""
-        return Comparison.objects.filter(Q(video_1=self) | Q(video_2=self)).order_by("user").distinct("user").count()
+        return (
+            Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
+            .order_by("user")
+            .distinct("user")
+            .count()
+        )
 
     # /COMPUTED properties implementation
 
     def get_pareto_optimal(self):
         """Compute pareto-optimality in sql. Runs in O(n^2) where n=num videos."""
-        f1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in CRITERIAS])
-        f2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in CRITERIAS])
+        f_1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in CRITERIAS])
+        f_2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in CRITERIAS])
 
-        qs = Video.objects.filter(f1).filter(f2)
+        qs = Video.objects.filter(f_1).filter(f_2)
         return qs.count() == 0
 
     @staticmethod
@@ -254,10 +325,10 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         priorities = [self.caption_text, self.description, self.name]
 
         # going over all priorities
-        for v in priorities:
+        for priority in priorities:
             # selecting one that exists
-            if v is not None and len(v) >= min_len:
-                return v
+            if priority is not None and len(priority) >= min_len:
+                return priority
         return None
 
     @property
@@ -265,13 +336,14 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         """Return concat of caption, description, title."""
         options = [self.caption_text, self.description, self.name]
         options = filter(lambda x: x is not None, options)
-        return ' '.join(options)
+        return " ".join(options)
 
     @property
     def short_text(self):
+        """Returns a short string representation of a video"""
         options = [self.name, self.uploader, self.description]
         options = filter(lambda x: x is not None, options)
-        return ' '.join(options)[:100]
+        return " ".join(options)[:100]
 
     @property
     def score_info(self):
@@ -280,18 +352,17 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
     def _score_info(self):
         """Outputs a total score for this video given a user."""
-        scores = VideoSearchEngine.score(
-            self.short_text, self.features_as_vector)
+        scores = VideoSearchEngine.score(self.short_text, self.features_as_vector)
 
-        for k, v in zip(CRITERIAS, self.features_as_vector):
-            scores[k] = v
+        for criteria, score_vector in zip(CRITERIAS, self.features_as_vector):
+            scores[criteria] = score_vector
 
         return scores
 
     def score_fcn(self):
         """Outputs a total score for this video given a user."""
         info = self._score_info()
-        return info['preferences_term'] + info['phrase_term']
+        return info["preferences_term"] + info["phrase_term"]
 
     # @property
     # def score(self):
@@ -300,13 +371,15 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
     def __str__(self):
         is_correct = self.name and not self.wrong_url and self.views
-        correct_str = 'VALID' if is_correct else 'INVALID'
+        correct_str = "VALID" if is_correct else "INVALID"
         return f"{self.video_id}, {correct_str}"
 
     @property
     def tournesol_score(self):
+        """Overall score computed for a video based on aggregated contributions"""
         # computed by a query
         return 0.0
+
     # TODO create _annotate_is_certified function
     # def ratings(self, user=None, only_certified=True):
     #     """All associated certified ratings."""
@@ -329,7 +402,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         # logging.warning("Computing quantiles...")
         for f in tqdm(CRITERIAS):
             # order by feature (descenting, because using the top quantile)
-            qs = Video.objects.filter(**{f + "__isnull": False}).order_by('-' + f)
+            qs = Video.objects.filter(**{f + "__isnull": False}).order_by("-" + f)
             quantiles_f = np.linspace(0.0, 1.0, len(qs))
             for i, v in tqdm(enumerate(qs)):
                 quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
@@ -339,11 +412,14 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         # TODO: use batched updates with bulk_update
         for v in tqdm(Video.objects.all()):
             for f in CRITERIAS:
-                setattr(v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None))
+                setattr(
+                    v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None)
+                )
             video_objects.append(v)
 
-        Video.objects.bulk_update(video_objects, batch_size=200,
-                                  fields=[f + "_quantile" for f in CRITERIAS])
+        Video.objects.bulk_update(
+            video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
+        )
 
     @staticmethod
     def recompute_pareto():
@@ -358,11 +434,13 @@ class Video(models.Model, WithFeatures, WithEmbedding):
                 v.pareto_optimal = new_pareto
             video_objects.append(v)
 
-        Video.objects.bulk_update(video_objects, batch_size=200,
-                                  fields=['pareto_optimal'])
+        Video.objects.bulk_update(
+            video_objects, batch_size=200, fields=["pareto_optimal"]
+        )
 
     @staticmethod
     def recompute_computed_properties(only_pending=False):
+        """Routine to pre-compute some tournesol statistics for each video"""
         qs = Video.objects.all()
 
         if only_pending:
@@ -382,8 +460,12 @@ class Video(models.Model, WithFeatures, WithEmbedding):
             # computing new values
             video_objects.append(process_video(v))
 
-        Video.objects.bulk_update(video_objects, batch_size=200,
-                                  fields=Video.COMPUTED_PROPERTIES + ['is_update_pending'])
+        Video.objects.bulk_update(
+            video_objects,
+            batch_size=200,
+            fields=Video.COMPUTED_PROPERTIES + ["is_update_pending"],
+        )
+
 
 class VideoCriteriaScore(models.Model):
     """Scores per criteria for Videos"""
@@ -392,7 +474,7 @@ class VideoCriteriaScore(models.Model):
         to=Video,
         on_delete=models.CASCADE,
         help_text="Foreign key to the video",
-        related_name="criteria_scores"
+        related_name="criteria_scores",
     )
     criteria = models.TextField(
         max_length=32,
@@ -418,11 +500,12 @@ class VideoCriteriaScore(models.Model):
         null=False,
         blank=False,
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
-        help_text="Top quantile for all rated videos for aggregated scores for the given criteria. 0.0=best, 1.0=worst",
+        help_text="Top quantile for all rated videos for aggregated scores"
+                  "for the given criteria. 0.0=best, 1.0=worst",
     )
 
     class Meta:
-        unique_together = ['video', 'criteria']
+        unique_together = ["video", "criteria"]
 
     def __str__(self):
         return f"{self.video}/{self.criteria}/{self.score}"
@@ -430,20 +513,30 @@ class VideoCriteriaScore(models.Model):
 
 class VideoRateLater(models.Model):
     """List of videos that a person wants to rate later."""
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE,
-                             help_text="Person who saves the video", related_name="videoratelaters")
-    video = models.ForeignKey(to=Video, on_delete=models.CASCADE,
-                              help_text="Video in the rate later list", related_name="videoratelaters")
 
-    datetime_add = models.DateTimeField(auto_now_add=True,
-                                        help_text="Time the video was added to the"
-                                                  " rate later list",
-                                        null=True,
-                                        blank=True)
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        help_text="Person who saves the video",
+        related_name="videoratelaters",
+    )
+    video = models.ForeignKey(
+        to=Video,
+        on_delete=models.CASCADE,
+        help_text="Video in the rate later list",
+        related_name="videoratelaters",
+    )
+
+    datetime_add = models.DateTimeField(
+        auto_now_add=True,
+        help_text="Time the video was added to the" " rate later list",
+        null=True,
+        blank=True,
+    )
 
     class Meta:
-        unique_together = ['user', 'video']
-        ordering = ['user', '-datetime_add']
+        unique_together = ["user", "video"]
+        ordering = ["user", "-datetime_add"]
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"
@@ -451,19 +544,25 @@ class VideoRateLater(models.Model):
 
 class ContributorRating(models.Model, WithFeatures):
     """Predictions by individual contributor models."""
+
     video = models.ForeignKey(
         Video,
         on_delete=models.CASCADE,
-        help_text="Video being scored", related_name="contributorvideoratings")
+        help_text="Video being scored",
+        related_name="contributorvideoratings",
+    )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="The contributor", related_name="contributorvideoratings")
-    is_public = models.BooleanField(default=False, null=False,
-                                    help_text="Should the rating be public?")
+        help_text="The contributor",
+        related_name="contributorvideoratings",
+    )
+    is_public = models.BooleanField(
+        default=False, null=False, help_text="Should the rating be public?"
+    )
 
     class Meta:
-        unique_together = ['user', 'video']
+        unique_together = ["user", "video"]
 
     def __str__(self):
         return "%s on %s" % (self.user, self.video)
@@ -495,7 +594,7 @@ class ContributorRatingCriteriaScore(models.Model):
     )
 
     class Meta:
-        unique_together = ['contributor_rating', 'criteria']
+        unique_together = ["contributor_rating", "criteria"]
 
     def __str__(self):
         return f"{self.contributor_rating}/{self.criteria}/{self.score}"
@@ -503,17 +602,25 @@ class ContributorRatingCriteriaScore(models.Model):
 
 class VideoRatingThankYou(models.Model):
     """Thank you for recommendations."""
-    video = models.ForeignKey(Video, on_delete=models.CASCADE,
-                              help_text="Video thanked for")
-    thanks_from = models.ForeignKey(User, on_delete=models.CASCADE,
-                                    help_text="Who thanks for the video",
-                                    related_name="thanks_from")
-    thanks_to = models.ForeignKey(User, on_delete=models.CASCADE,
-                                  help_text="Who receives the thanks",
-                                  related_name="thanks_to")
+
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE, help_text="Video thanked for"
+    )
+    thanks_from = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        help_text="Who thanks for the video",
+        related_name="thanks_from",
+    )
+    thanks_to = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        help_text="Who receives the thanks",
+        related_name="thanks_to",
+    )
 
     class Meta:
-        unique_together = ['video', 'thanks_from', 'thanks_to']
+        unique_together = ["video", "thanks_from", "thanks_to"]
 
     def __str__(self):
         return "%s to %s for %s" % (self.thanks_from, self.thanks_to, self.video)
@@ -521,16 +628,24 @@ class VideoRatingThankYou(models.Model):
 
 class VideoSelectorSkips(models.Model):
     """Count video being skipped in the Video Selector."""
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE,
-                             related_name="skipped_videos", null=False,
-                             help_text="Person who skips the videos")
-    video = models.ForeignKey(to=Video, on_delete=models.CASCADE,
-                              related_name="skips", null=False,
-                              help_text="Video being skipped")
-    datetime_add = models.DateTimeField(auto_now_add=True,
-                                        help_text="Time the video was skipped",
-                                        null=True,
-                                        blank=True)
+
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name="skipped_videos",
+        null=False,
+        help_text="Person who skips the videos",
+    )
+    video = models.ForeignKey(
+        to=Video,
+        on_delete=models.CASCADE,
+        related_name="skips",
+        null=False,
+        help_text="Video being skipped",
+    )
+    datetime_add = models.DateTimeField(
+        auto_now_add=True, help_text="Time the video was skipped", null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"
@@ -540,42 +655,53 @@ class Comparison(models.Model, WithFeatures):
     """Rating given by a user."""
 
     class Meta:
-        unique_together = ['user', 'video_1_2_ids_sorted']
+        unique_together = ["user", "video_1_2_ids_sorted"]
         constraints = [
-            models.CheckConstraint(check=~Q(video_1=F('video_2')),
-                                   name='videos_cannot_be_equal')
+            models.CheckConstraint(
+                check=~Q(video_1=F("video_2")), name="videos_cannot_be_equal"
+            )
         ]
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="comparisons",
-        help_text="Contributor (user) who left the rating")
+        help_text="Contributor (user) who left the rating",
+    )
     video_1 = models.ForeignKey(
         Video,
         on_delete=models.CASCADE,
-        related_name='comparisons_video_1',
-        help_text="Left video to compare")
+        related_name="comparisons_video_1",
+        help_text="Left video to compare",
+    )
     video_2 = models.ForeignKey(
         Video,
         on_delete=models.CASCADE,
-        related_name='comparisons_video_2',
-        help_text="Right video to compare")
+        related_name="comparisons_video_2",
+        help_text="Right video to compare",
+    )
     duration_ms = models.FloatField(
         null=True,
         default=0,
-        help_text="Time it took to rate the videos (in milliseconds)")
+        help_text="Time it took to rate the videos (in milliseconds)",
+    )
     datetime_lastedit = models.DateTimeField(
         help_text="Time the comparison was edited the last time",
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     datetime_add = models.DateTimeField(
-        auto_now_add=True, help_text="Time the comparison was added", null=True, blank=True)
+        auto_now_add=True,
+        help_text="Time the comparison was added",
+        null=True,
+        blank=True,
+    )
     video_1_2_ids_sorted = computed_property.ComputedCharField(
-        compute_from='video_first_second',
+        compute_from="video_first_second",
         max_length=50,
         default=uuid.uuid1,
-        help_text="Sorted pair of video IDs")
+        help_text="Sorted pair of video IDs",
+    )
 
     @property
     def video_first_second(self, videos=None):
@@ -589,38 +715,44 @@ class Comparison(models.Model, WithFeatures):
         return f"{a}_{b}"
 
     @staticmethod
-    def sample_video_to_rate(username, T=1):
-        """Get one video to rate, the more rated before, the less p to choose."""
+    def sample_video_to_rate(username, rated_count=1):
+        """Get one video to rate, the more rated before, the less probable to choose."""
+        # TODO: re-enable sampling videos for rating
 
-        # annotation: number of comparisons for the video
-        annotate_num_comparisons = Count('Comparison_video_1__id', distinct=True) + Count(
-            'Comparison_video_2__id', distinct=True
-        )
+        # # annotation: number of comparisons for the video
+        # annotate_num_comparisons = Count(
+        #     "Comparison_video_1__id", distinct=True
+        # ) + Count("Comparison_video_2__id", distinct=True)
 
-        class Exp(Func):
-            """Exponent in sql."""
-            function = 'Exp'
+        # class Exp(Func):
+        #     """Exponent in sql."""
 
-        # annotating with number of comparisons
-        videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
-        score_exp_annotate = Exp(-Value(T, FloatField()) * F('_num_comparisons'), output_field=FloatField())
+        #     function = "Exp"
 
-        # adding the exponent
-        videos = videos.annotate(_score_exp=score_exp_annotate)
+        # # annotating with number of comparisons
+        # videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
+        # score_exp_annotate = Exp(
+        #     -Value(rated_count, FloatField()) * F("_num_comparisons"), output_field=FloatField()
+        # )
 
-        # statistical total sum
-        score_exp_sum = videos.aggregate(
-            _score_exp_sum=Sum('_score_exp'))['_score_exp_sum']
+        # # adding the exponent
+        # videos = videos.annotate(_score_exp=score_exp_annotate)
 
-        # re-computing by dividing by the total sum
-        videos = videos.annotate(
-            _score_exp_div=F('_score_exp') / score_exp_sum)
+        # # statistical total sum
+        # score_exp_sum = videos.aggregate(_score_exp_sum=Sum("_score_exp"))[
+        #     "_score_exp_sum"
+        # ]
 
-        # choosing a random video ID
-        ids, ps = zip(*videos.values_list('id', '_score_exp_div'))
-        random_video_id = np.random.choice(ids, p=ps)
+        # # re-computing by dividing by the total sum
+        # videos = videos.annotate(_score_exp_div=F("_score_exp") / score_exp_sum)
 
-        return Video.objects.get(id=random_video_id)
+        # # choosing a random video ID
+        # ids, scores = zip(*videos.values_list("id", "_score_exp_div"))
+        # random_video_id = np.random.choice(ids, p=scores)
+
+        # return Video.objects.get(id=random_video_id)
+
+        return None
 
     @staticmethod
     def sample_rated_video(username):
@@ -628,10 +760,12 @@ class Comparison(models.Model, WithFeatures):
 
         # annotation: number of comparisons for the video by username
         annotate_num_comparisons = Count(
-            'Comparison_video_1', filter=Q(
-                Comparison_video_1__user__user__username=username)) + Count(
-            'Comparison_video_2', filter=Q(
-                Comparison_video_2__user__user__username=username))
+            "Comparison_video_1",
+            filter=Q(Comparison_video_1__user__user__username=username),
+        ) + Count(
+            "Comparison_video_2",
+            filter=Q(Comparison_video_2__user__user__username=username),
+        )
 
         # annotating with number of comparisons
         videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
@@ -644,7 +778,7 @@ class Comparison(models.Model, WithFeatures):
             videos = Video.objects.all()
 
         # selecting a random ID
-        random_id = np.random.choice([x[0] for x in videos.values_list('id')])
+        random_id = np.random.choice([x[0] for x in videos.values_list("id")])
 
         return Video.objects.get(id=random_id)
 
@@ -663,10 +797,10 @@ class Comparison(models.Model, WithFeatures):
 
     def save(self, *args, **kwargs):
         """Save the object data."""
-        if not kwargs.pop('ignore_lastedit', False):
+        if not kwargs.pop("ignore_lastedit", False):
             self.datetime_lastedit = timezone.now()
         if self.pk is None:
-            kwargs['force_insert'] = True
+            kwargs["force_insert"] = True
         return super().save(*args, **kwargs)
 
     def __str__(self):
@@ -675,7 +809,6 @@ class Comparison(models.Model, WithFeatures):
 
 class ComparisonCriteriaScore(models.Model):
     """Scores per criteria for comparisons submitted by contributors"""
-
 
     comparison = models.ForeignKey(
         to=Comparison,
@@ -704,7 +837,7 @@ class ComparisonCriteriaScore(models.Model):
     )
 
     class Meta:
-        unique_together = ['comparison', 'criteria']
+        unique_together = ["comparison", "criteria"]
 
     def __str__(self):
         return f"{self.comparison}/{self.criteria}/{self.score}"
@@ -713,31 +846,47 @@ class ComparisonCriteriaScore(models.Model):
 class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
     """Slider values in time for given videos."""
 
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE,
-                             help_text="Person changing the sliders",
-                             null=True)
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        help_text="Person changing the sliders",
+        null=True,
+    )
 
-    video_left = models.ForeignKey(to=Video, on_delete=models.CASCADE,
-                                   help_text="Left video", related_name="slider_left",
-                                   null=True)
-    video_right = models.ForeignKey(to=Video, on_delete=models.CASCADE,
-                                    help_text="Right video", related_name="slider_right",
-                                    null=True)
+    video_left = models.ForeignKey(
+        to=Video,
+        on_delete=models.CASCADE,
+        help_text="Left video",
+        related_name="slider_left",
+        null=True,
+    )
+    video_right = models.ForeignKey(
+        to=Video,
+        on_delete=models.CASCADE,
+        help_text="Right video",
+        related_name="slider_right",
+        null=True,
+    )
 
     datetime = models.DateTimeField(
         auto_now_add=True,
         help_text="Time the values are added",
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
 
     duration_ms = models.FloatField(
         null=True,
         default=0,
-        help_text="Time from page load to this slider value (in milliseconds)")
+        help_text="Time from page load to this slider value (in milliseconds)",
+    )
 
-    context = models.CharField(choices=EnumList("RATE", "DIS", "INC"),
-                               max_length=10, default="RATE",
-                               help_text="The page where slider change occurs")
+    context = models.CharField(
+        choices=enum_list("RATE", "DIS", "INC"),
+        max_length=10,
+        default="RATE",
+        help_text="The page where slider change occurs",
+    )
 
     @staticmethod
     def _create_fields():
@@ -750,13 +899,19 @@ class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
                     null=True,
                     default=None,
                     help_text=CRITERIAS_DICT[field],
-                    validators=[
-                        MinValueValidator(0.0),
-                        MaxValueValidator(MAX_VALUE)]))
+                    validators=[MinValueValidator(0.0), MaxValueValidator(MAX_VALUE)],
+                ),
+            )
 
     def __str__(self):
-        return "%s [%s] %s/%s at %s" % (self.user, self.context,
-                                        self.video_left, self.video_right, self.datetime)
+        return "%s [%s] %s/%s at %s" % (
+            self.user,
+            self.context,
+            self.video_left,
+            self.video_right,
+            self.datetime,
+        )
+
 
 # adding dynamic fields
 WithDynamicFields.create_all()

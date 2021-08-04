@@ -6,7 +6,6 @@ venv/
 /ml/checkpoints/
 .flake8/
 .pylint/
-.pylintrc
 .pytest/
 .pytest_cache/
 .python-version

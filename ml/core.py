@@ -15,15 +15,19 @@ FOLDER_PATH = "ml/checkpoints/"
 FILENAME = "models_weights"
 PATH = FOLDER_PATH + FILENAME
 os.makedirs(FOLDER_PATH, exist_ok=True)
-logging.basicConfig(filename='ml/ml_logs.log', level=logging.INFO)
+logging.basicConfig(filename="ml/ml_logs.log", level=logging.INFO)
 
 
 def _set_licchavi(
-        comparison_data, criteria,
-        fullpath=None, resume=False,
-        verb=2, device='cpu',
-        ground_truths=None):
-    ''' Shapes data and inputs it in Licchavi to initialize
+    comparison_data,
+    criteria,
+    fullpath=None,
+    resume=False,
+    verb=2,
+    device="cpu",
+    ground_truths=None,
+):
+    """Shapes data and inputs it in Licchavi to initialize
 
     comparison_data (list of lists): output of fetch_data()
     criteria (str): rating criteria
@@ -37,27 +41,21 @@ def _set_licchavi(
     Returns :
         (Licchavi()): Licchavi object initialized with data
         (int array): array of users IDs in order
-    '''
+    """
     # shape data
     one_crit_data = select_criteria(comparison_data, criteria)
     full_data = shape_data(one_crit_data)
     test_mode = ground_truths is not None
     # set licchavi using data
     if resume:
-        nodes_dic, users_ids, vid_vidx = distribute_data_from_save(full_data,
-                                                                   fullpath,
-                                                                   device)
-        licch = Licchavi(
-            len(vid_vidx), vid_vidx, criteria,
-            test_mode, device, verb
+        nodes_dic, users_ids, vid_vidx = distribute_data_from_save(
+            full_data, fullpath, device
         )
+        licch = Licchavi(len(vid_vidx), vid_vidx, criteria, test_mode, device, verb)
         licch.load_and_update(nodes_dic, users_ids, fullpath)
     else:
         nodes_dic, users_ids, vid_vidx = distribute_data(full_data, device)
-        licch = Licchavi(
-            len(vid_vidx), vid_vidx, criteria,
-            test_mode, device, verb
-        )
+        licch = Licchavi(len(vid_vidx), vid_vidx, criteria, test_mode, device, verb)
         licch.set_allnodes(nodes_dic, users_ids)
     if test_mode:
         licch.set_ground_truths(*ground_truths)
@@ -65,9 +63,9 @@ def _set_licchavi(
 
 
 def _train_predict(
-        licch, epochs,
-        fullpath=None, save=False, verb=2, compute_uncertainty=False):
-    ''' Trains models and returns video scores for one criteria
+    licch, epochs, fullpath=None, save=False, verb=2, compute_uncertainty=False
+):
+    """Trains models and returns video scores for one criteria
 
     licch (Licchavi()): licchavi object innitialized with data
     epochs (int): maximum number of training epochs
@@ -81,7 +79,7 @@ def _train_predict(
     (float list list, float list): uncertainty of local scores, 
                                     uncertainty of global scores
                                     (None, None) if not computed
-    '''
+    """
     uncertainties = licch.train(
         epochs,
         compute_uncertainty=compute_uncertainty)
@@ -99,10 +97,17 @@ def _train_predict(
 
 @gin.configurable
 def ml_run(
-        comparison_data, epochs, criterias,
-        resume=False, save=True, verb=1, device='cpu',
-        ground_truths=None, compute_uncertainty=False):
-    """ Runs the ml algorithm for all criterias
+    comparison_data,
+    epochs,
+    criterias,
+    resume=False,
+    save=True,
+    verb=1,
+    device="cpu",
+    ground_truths=None,
+    compute_uncertainty=False,
+):
+    """Runs the ml algorithm for all criterias
 
     comparison_data (list of lists): output of fetch_data()
     epochs (int): number of epochs of gradient descent for Licchavi
@@ -124,18 +129,15 @@ def ml_run(
 
     for criteria in criterias:
         logging.info("PROCESSING " + criteria)
-        fullpath = PATH + '_' + criteria
+        fullpath = PATH + "_" + criteria
 
         # preparing data
         licch, users_ids = _set_licchavi(
-            comparison_data, criteria,
-            fullpath, resume, verb, device,
-            ground_truths
+            comparison_data, criteria, fullpath, resume, verb, device, ground_truths
         )
         # training and predicting
         glob, loc, uncertainties = _train_predict(
-            licch, epochs, fullpath, save, verb,
-            compute_uncertainty=compute_uncertainty
+            licch, epochs, fullpath, save, verb, compute_uncertainty=compute_uncertainty
         )
         # putting in required shape for output
         out_glob = format_out_glob(glob, criteria, uncertainties[0])
@@ -143,9 +145,9 @@ def ml_run(
         glob_scores += out_glob
         loc_scores += out_loc
 
-    logging.info(f'ml_run() total time : {round(time() - ml_run_time)}')
+    logging.info(f"ml_run() total time : {round(time() - ml_run_time)}")
     return glob_scores, loc_scores
 
 
 # parse parameters written in "hyperparameters.gin"
-gin.parse_config_file('ml/hyperparameters.gin')
+gin.parse_config_file("ml/hyperparameters.gin")

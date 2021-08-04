@@ -5,11 +5,15 @@ import logging
 from logging import info as loginf
 import gin
 
-from .losses import (model_norm, round_loss, predict, loss_fit_s_gen,
-                     loss_gen_reg)
-from .metrics import (extract_grad, get_uncertainty_loc, get_uncertainty_glob,
-                      check_equilibrium_glob, check_equilibrium_loc,
-                      scalar_product)
+from .losses import model_norm, round_loss, predict, loss_fit_s_gen, loss_gen_reg
+from .metrics import (
+    extract_grad,
+    get_uncertainty_loc,
+    get_uncertainty_glob,
+    check_equilibrium_glob,
+    check_equilibrium_loc,
+    scalar_product,
+)
 from .data_utility import expand_tens, one_hot_vids
 from .nodes import Node
 from .dev.visualisation import disp_one_by_line
@@ -35,23 +39,34 @@ USAGE:
 """
 
 
-def get_model(nb_vids, device='cpu'):
+def get_model(nb_vids, device="cpu"):
     return torch.zeros(nb_vids, requires_grad=True, device=device)
 
 
-def get_s(device='cpu'):
+def get_s(device="cpu"):
     return torch.ones(1, requires_grad=True, device=device)
 
 
 @gin.configurable
-class Licchavi():
-    """ Training structure including local models and general one """
+class Licchavi:
+    """Training structure including local models and general one"""
+
     def __init__(
-            self, nb_vids, vid_vidx, crit,
-            test_mode=False, device='cpu', verb=1,
-            # configured with gin in "hyperparameters.gin"
-            lr_node=None, lr_s=None, lr_gen=None,
-            gen_freq=None, w0=None, w=None):
+        self,
+        nb_vids,
+        vid_vidx,
+        crit,
+        test_mode=False,
+        device="cpu",
+        verb=1,
+        # configured with gin in "hyperparameters.gin"
+        lr_node=None,
+        lr_s=None,
+        lr_gen=None,
+        gen_freq=None,
+        w0=None,
+        w=None,
+    ):
         """
         nb_vids (int): number of different videos rated by
                         at least one contributor for this criteria
@@ -66,15 +81,15 @@ class Licchavi():
         self.test_mode = test_mode  # boolean for fake data usage
         self.device = device  # device used (cpu/gpu)
 
-        self.opt = torch.optim.SGD   # optimizer
+        self.opt = torch.optim.SGD  # optimizer
 
         # defined in "hyperparameters.gin"
-        self.lr_node = lr_node    # local learning rate (local scores)
-        self.lr_s = lr_s     # local learning rate for s parameter
+        self.lr_node = lr_node  # local learning rate (local scores)
+        self.lr_s = lr_s  # local learning rate for s parameter
         self.lr_gen = lr_gen  # global learning rate (global scores)
         self.gen_freq = gen_freq  # generalisation frequency (>=1)
-        self.w0 = w0     # regularisation strength
-        self.w = w   # default weight for a node
+        self.w0 = w0  # regularisation strength
+        self.w = w  # default weight for a node
 
         self.get_model = get_model  # neural network to use
         self.global_model = self.get_model(nb_vids, device)
@@ -84,9 +99,15 @@ class Licchavi():
 
         self.nb_nodes = 0
         self.nodes = {}
-        self.history = {'fit': [], 's': [], 'gen': [], 'reg': [],  # metrics
-
-                        'l2_norm': [], 'grad_sp': [], 'grad_norm': []}
+        self.history = {
+            "fit": [],
+            "s": [],
+            "gen": [],
+            "reg": [],  # metrics
+            "l2_norm": [],
+            "grad_sp": [],
+            "grad_norm": [],
+        }
         if test_mode:
             self.glob_gt = []  # global scores ground truths
             self.loc_gt = []  # local scores ground truths
@@ -97,7 +118,7 @@ class Licchavi():
         self.users = []  # user IDs
 
     def _show(self, msg, level):
-        """ Utility for handling logging messages
+        """Utility for handling logging messages
 
         msg (str): info message
         level (float): minimum level of verbosity to show -msg
@@ -107,16 +128,16 @@ class Licchavi():
 
     # ------------ input and output --------------------
     def _get_default(self):
-        """ Returns: - (default s, default model, default age) """
+        """Returns: - (default s, default model, default age)"""
         model_plus = (
             get_s(self.device),  # s
             self.get_model(self.nb_vids, self.device),  # model
-            0  # age
+            0,  # age
         )
         return model_plus
 
     def _get_saved(self, loc_models_old, id, nb_new):
-        """ Returns saved parameters updated or default
+        """Returns saved parameters updated or default
 
         loc_models_old (dictionnary): saved parameters in dictionnary of tuples
                                         {user ID: (s, model, age)}
@@ -135,7 +156,7 @@ class Licchavi():
         return triple
 
     def set_allnodes(self, data_dic, users_ids):
-        """ Puts data in Licchavi and create a model for each node
+        """Puts data in Licchavi and create a model for each node
 
         data_dic (dictionnary): {userID: (vID1_batch, vID2_batch,
                                             rating_batch, single_vIDs, masks)}
@@ -144,24 +165,22 @@ class Licchavi():
         nb = len(data_dic)
         self.nb_nodes = nb
         self.users = users_ids
-        self.nodes = {id: Node(
-            *data,
-            *self._get_default(),
-            self.w,
-            self.lr_node,
-            self.lr_s,
-            self.opt
-        ) for id, data in zip(users_ids, data_dic.values())}
+        self.nodes = {
+            id: Node(
+                *data, *self._get_default(), self.w, self.lr_node, self.lr_s, self.opt
+            )
+            for id, data in zip(users_ids, data_dic.values())
+        }
         self._show("Total number of nodes : {}".format(self.nb_nodes), 1)
 
     def load_and_update(self, data_dic, user_ids, fullpath):
-        """ Loads models and expands them as required
+        """Loads models and expands them as required
 
         data_dic (dictionnary):  {userID: (vID1_batch, vID2_batch,
                                     rating_batch, single_vIDs, masks)}
         user_ids (int array): users IDs
         """
-        loginf('Loading models')
+        loginf("Loading models")
         saved_data = torch.load(fullpath)
         self.criteria, dic_old, gen_model_old, loc_models_old = saved_data
         nb_new = self.nb_vids - len(dic_old)  # number of new videos
@@ -178,11 +197,12 @@ class Licchavi():
                 self.w,
                 self.lr_node,
                 self.lr_s,
-                self.opt
-               ) for id, data in zip(user_ids, data_dic.values())
+                self.opt,
+            )
+            for id, data in zip(user_ids, data_dic.values())
         }
         self._show(f"Total number of nodes : {self.nb_nodes}", 1)
-        loginf('Models updated')
+        loginf("Models updated")
 
     def set_ground_truths(self, glob_gt, loc_gt, s_gt):
         """ Puts ground truths in Licchavi (for experiments only)
@@ -192,14 +212,14 @@ class Licchavi():
                                                             of each node
         """
         if not self.test_mode:
-            logging.warning('Not in test mode')
+            logging.warning("Not in test mode")
         self.glob_gt = glob_gt
         self.loc_gt = [dict(node) for node in loc_gt]
         self.s_gt = s_gt
         print(s_gt)
 
     def output_scores(self):
-        """ Returns video scores both global and local
+        """Returns video scores both global and local
 
         Returns :
         - (tensor of all vIDS , tensor of global video scores)
@@ -220,56 +240,65 @@ class Licchavi():
         return (vids_batch, glob_scores), (list_vids_batchs, loc_scores)
 
     def save_models(self, fullpath):
-        """ Saves age and global and local weights, detached (no gradients) """
-        loginf('Saving models')
-        local_data = {id:  (node.s,            # s
-                            node.model.detach(),   # model
-                            node.age            # age
-                            ) for id, node in self.nodes.items()}
+        """Saves age and global and local weights, detached (no gradients)"""
+        loginf("Saving models")
+        local_data = {
+            id: (node.s, node.model.detach(), node.age)  # s  # model  # age
+            for id, node in self.nodes.items()
+        }
         saved_data = (
             self.criteria,
             self.vid_vidx,
             self.global_model.detach(),
-            local_data
+            local_data,
         )
         torch.save(saved_data, fullpath)
-        loginf('Models saved')
+        loginf("Models saved")
 
     # --------- utility --------------
     def all_nodes(self, key):
-        """ Returns a generator of one parameter for all nodes """
+        """Returns a generator of one parameter for all nodes"""
         for node in self.nodes.values():
             yield getattr(node, key)
 
     def stat_s(self):
-        """ Prints s stats """
-        l_s = [(round_loss(s, 2), id) for s, id in zip(self.all_nodes("s"),
-                                                       self.nodes.keys())]
+        """Prints s stats"""
+        l_s = [
+            (round_loss(s, 2), id)
+            for s, id in zip(self.all_nodes("s"), self.nodes.keys())
+        ]
         tens = torch.tensor(l_s)
         disp_one_by_line(l_s)
         tens = tens[:, 0]
         print("mean of s: ", round_loss(torch.mean(tens), 2))
-        print("min and max of s: ",
-              round_loss(torch.min(tens), 2),
-              round_loss(torch.max(tens), 2))
+        print(
+            "min and max of s: ",
+            round_loss(torch.min(tens), 2),
+            round_loss(torch.max(tens), 2),
+        )
         print("var of s: ", round_loss(torch.var(tens), 2))
 
     # ---------- methods for training ------------
     def _set_lr(self):
-        """ Sets learning rates of optimizers """
+        """Sets learning rates of optimizers"""
         for node in self.nodes.values():
-            node.opt.param_groups[0]['lr'] = self.lr_node  # node optimizer
+            node.opt.param_groups[0]["lr"] = self.lr_node  # node optimizer
             # FIXME update lr_s (not useful currently)
-        self.opt_gen.param_groups[0]['lr'] = self.lr_gen
+        self.opt_gen.param_groups[0]["lr"] = self.lr_gen
 
     @gin.configurable
     def _lr_schedule(
-            self, epoch,
-            # configured with gin in "hyperparameters.gin"
-            decay_rush, decay_fine,
-            precision, epsilon,
-            min_lr_fine, lr_rush_duration):
-        """ Changes learning rates in a (hopefully) smart way
+        self,
+        epoch,
+        # configured with gin in "hyperparameters.gin"
+        decay_rush,
+        decay_fine,
+        precision,
+        epsilon,
+        min_lr_fine,
+        lr_rush_duration,
+    ):
+        """Changes learning rates in a (hopefully) smart way
 
         epoch (int): current epoch
         verb (int): verbosity level
@@ -288,23 +317,23 @@ class Licchavi():
                 self.lr_gen *= decay_fine
                 self.lr_node *= decay_fine
             frac_glob = check_equilibrium_glob(epsilon, self)
-            self._show(f'Global eq({epsilon}): {round(frac_glob, 3)}', 1)
+            self._show(f"Global eq({epsilon}): {round(frac_glob, 3)}", 1)
             if frac_glob > precision:
                 frac_loc = check_equilibrium_loc(epsilon, self)
-                self._show(f'Local eq({epsilon}): {round(frac_loc, 3)}', 1)
+                self._show(f"Local eq({epsilon}): {round(frac_loc, 3)}", 1)
                 if frac_loc > precision:
-                    loginf('Early Stopping')
+                    loginf("Early Stopping")
                     return True
         return False
 
     def _zero_opt(self):
-        """ Sets gradients of all models """
+        """Sets gradients of all models"""
         for node in self.nodes.values():
             node.opt.zero_grad(set_to_none=True)  # node optimizer
         self.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
     def _test_errors(self):
-        """ Returns errors (for test mode only)
+        """Returns errors (for test mode only)
 
         Returns:
             (float): global mean squared distance between
@@ -315,51 +344,51 @@ class Licchavi():
         with torch.no_grad():
             glob_out, loc_out = self.output_scores()
             if len(glob_out[1]) != len(self.glob_gt):
-                logging.error('Some videos have not been rated')
-            glob_errors = (glob_out[1] - self.glob_gt)**2
+                logging.error("Some videos have not been rated")
+            glob_errors = (glob_out[1] - self.glob_gt) ** 2
             glob_mean_error = float(sum(glob_errors)) / self.nb_vids
 
             loc_error, nb_loc = 0, 0
             for uid, predictions in zip(self.nodes, loc_out[1]):
                 for i, score_pred in zip(self.loc_gt[int(uid)], predictions):
                     score_gt = self.loc_gt[int(uid)][i]
-                    loc_error += float((score_pred - score_gt)**2)
+                    loc_error += float((score_pred - score_gt) ** 2)
                     nb_loc += 1
             loc_mean_error = loc_error / nb_loc
         return glob_mean_error, loc_mean_error
 
     def _update_hist(self, epoch, fit, s, gen, reg):
-        """ Updates history (at end of epoch) """
-        self.history['fit'].append(round_loss(fit))
-        self.history['s'].append(round_loss(s))
-        self.history['gen'].append(round_loss(gen))
-        self.history['reg'].append(round_loss(reg))
+        """Updates history (at end of epoch)"""
+        self.history["fit"].append(round_loss(fit))
+        self.history["s"].append(round_loss(s))
+        self.history["gen"].append(round_loss(gen))
+        self.history["reg"].append(round_loss(reg))
         norm = model_norm(self.global_model, pow=(2, 0.5))
-        self.history['l2_norm'].append(round_loss(norm, 3))
+        self.history["l2_norm"].append(round_loss(norm, 3))
         grad_gen = extract_grad(self.global_model)
         if epoch > 1:  # no previous model for first epoch
             scal_grad = scalar_product(self.last_grad, grad_gen)
-            self.history['grad_sp'].append(scal_grad)
+            self.history["grad_sp"].append(scal_grad)
         else:
-            self.history['grad_sp'].append(0)  # default value for first epoch
+            self.history["grad_sp"].append(0)  # default value for first epoch
         self.last_grad = deepcopy(extract_grad(self.global_model))
         grad_norm = scalar_product(grad_gen, grad_gen)
-        self.history['grad_norm'].append(grad_norm)
+        self.history["grad_norm"].append(grad_norm)
 
         # when we use generated data with ground truths
         if self.test_mode:
             factor_glob, factor_loc = 1, 1  # for visualisation only
             glob_error, loc_error = self._test_errors()
-            self.history['error_glob'].append(glob_error * factor_glob)
-            self.history['error_loc'].append(loc_error * factor_loc)
+            self.history["error_glob"].append(glob_error * factor_glob)
+            self.history["error_loc"].append(loc_error * factor_loc)
 
     def _old(self, years):
-        """ Increments age of nodes (during training) """
+        """Increments age of nodes (during training)"""
         for node in self.nodes.values():
             node.age += years
 
     def _do_step(self, fit_step):
-        """ Makes step for appropriate optimizer(s) """
+        """Makes step for appropriate optimizer(s)"""
         if fit_step:  # updating local or global alternatively
             for node in self.nodes.values():
                 node.opt.step()  # node optimizer
@@ -367,25 +396,27 @@ class Licchavi():
             self.opt_gen.step()
 
     def _regul_s(self):
-        """ regulate s parameters """
+        """regulate s parameters"""
         for node in self.nodes.values():
             if node.s <= 0:
                 with torch.no_grad():
                     node.s[0] = 0.4
-                    logging.warning('Regulating negative s')
+                    logging.warning("Regulating negative s")
 
     def _print_losses(self, tot, fit, s, gen, reg):
-        """ Prints losses into log info """
+        """Prints losses into log info"""
         fit, s = round_loss(fit, 2), round_loss(s, 2)
         gen, reg = round_loss(gen, 2), round_loss(reg, 2)
 
-        loginf(f'total loss : {tot}\nfitting : {fit}, '
-               f's : {s}, generalisation : {gen}, regularisation : {reg}')
+        loginf(
+            f"total loss : {tot}\nfitting : {fit}, "
+            f"s : {s}, generalisation : {gen}, regularisation : {reg}"
+        )
 
     # ====================  TRAINING ==================
 
     def train(self, nb_epochs=1, compute_uncertainty=False):
-        """ training loop
+        """training loop
 
         nb_epochs (int): (maximum) number of training epochs
         compute_uncertainty (bool): wether to compute uncertainty
@@ -395,7 +426,7 @@ class Licchavi():
             (float list list, float list): uncertainty of local scores
                                             (None, None) if not computed
         """
-        loginf('STARTING TRAINING')
+        loginf("STARTING TRAINING")
         time_train = time()
 
         # initialisation to avoid undefined variables at epoch 1
@@ -414,10 +445,12 @@ class Licchavi():
             time_ep = time()
 
             for step in range(1, nb_steps + 1):
-                fit_step = (step == 1)  # fitting on first step only
+                fit_step = step == 1  # fitting on first step only
 
-                self._show(f'step : {step}/{nb_steps} '
-                           f'{"(fit)" if fit_step else "(gen)"}', 2)
+                self._show(
+                    f"step : {step}/{nb_steps} " f'{"(fit)" if fit_step else "(gen)"}',
+                    2,
+                )
                 self._zero_opt()  # resetting gradients
 
                 # ----------------    Licchavi loss  -------------------------
@@ -431,39 +464,37 @@ class Licchavi():
                     loss = gen_loss + reg_loss
 
                 if self.verb >= 2:
-                    total_loss = round_loss(fit_loss + s_loss
-                                            + gen_loss + reg_loss)
-                    self._print_losses(total_loss, fit_loss, s_loss,
-                                       gen_loss, reg_loss)
+                    total_loss = round_loss(fit_loss + s_loss + gen_loss + reg_loss)
+                    self._print_losses(total_loss, fit_loss, s_loss, gen_loss, reg_loss)
                 # Gradient descent
                 loss.backward()
                 self._do_step(fit_step)
 
             self._update_hist(epoch, fit_loss, s_loss, gen_loss, reg_loss)
             self._old(1)  # aging all nodes of 1 epoch
-            self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
+            self._show(f"epoch time :{round(time() - time_ep, 2)}", 1.5)
 
         # ----------------- end of training -------------------------------
-        loginf('END OF TRAINING')
-        loginf(f'training time :{round(time() - time_train, 2)}')
+        loginf("END OF TRAINING")
+        loginf(f"training time :{round(time() - time_train, 2)}")
         if compute_uncertainty:
             time_uncert = time()
             uncert_loc = get_uncertainty_loc(self)
             uncert_glob = get_uncertainty_glob(self)
-            loginf(f'Uncertainty time: {time() - time_uncert}')
+            loginf(f"Uncertainty time: {time() - time_uncert}")
             return uncert_glob, uncert_loc  # self.train() returns uncertainty
         return None, None  # if uncertainty not computed
 
     # ------------ to check for problems --------------------------
     def check(self):
-        """ Performs some tests on internal parameters adequation """
+        """Performs some tests on internal parameters adequation"""
         # population check
-        b1 = (self.nb_nodes == len(self.nodes))
+        b1 = self.nb_nodes == len(self.nodes)
         # history check
-        reference = self.history['fit']
+        reference = self.history["fit"]
         b2 = all([len(v) == len(reference) for v in self.history.values()])
 
-        if (b1 and b2):
+        if b1 and b2:
             loginf("No Problem")
         else:
             logging.warning("Coherency problem in Licchavi object ")

@@ -22,7 +22,7 @@ jobs:
           command: pip install -r tests/requirements.txt
       - run:
           name: Check all the app for style irregularities
-          command: flake8 --format=html --htmldir="${HOME}/.flake8"
+          command: flake8 tournesol core --exclude=migrations,tests,dev,__init__.py --max-line-length 99 --format=html --htmldir="${HOME}/.flake8"
       - store_artifacts:
           path: ~/.flake8
   pylint:

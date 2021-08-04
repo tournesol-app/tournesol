@@ -2,15 +2,25 @@ import numpy as np
 import torch
 
 from ml.data_utility import (
-    rescale_rating, get_all_vids, get_mask,
-    reverse_idxs, sort_by_first, expand_dic, expand_tens)
+    rescale_rating,
+    get_all_vids,
+    get_mask,
+    reverse_idxs,
+    sort_by_first,
+    expand_dic,
+    expand_tens,
+)
 from ml.handle_data import select_criteria, shape_data, distribute_data
-from ml.losses import (
-    _bbt_loss, _approx_bbt_loss, get_s_loss,
-    models_dist, model_norm)
+from ml.losses import _bbt_loss, _approx_bbt_loss, get_s_loss, models_dist, model_norm
 from ml.metrics import (
-    extract_grad, scalar_product, _random_signs, get_uncertainty_glob,
-    check_equilibrium_glob, check_equilibrium_loc, get_uncertainty_loc)
+    extract_grad,
+    scalar_product,
+    _random_signs,
+    get_uncertainty_glob,
+    check_equilibrium_glob,
+    check_equilibrium_loc,
+    get_uncertainty_loc,
+)
 from ml.licchavi import Licchavi, get_model, get_s
 from ml.dev.fake_data import generate_data
 from ml.core import _set_licchavi, _train_predict, ml_run
@@ -24,20 +34,20 @@ Main file is "ml_train.py"
 
 
 TEST_DATA = [
-                [1, 100, 101, "test", 100, 0],
-                [1, 101, 102, "test", 100, 0],
-                [1, 104, 105, "test", 100, 0],
-                [0, 100, 101, "test", 0, 0],
-                [1, 104, 105, "test", 37, 0],
-                [2, 104, 105, "test", 100, 0],
-                [7, 966, 965, "test", 4, 0],
-                [0, 100, 101, "largely_recommended", 100, 0],
-            ]
-CRITERIAS = ['test']
+    [1, 100, 101, "test", 100, 0],
+    [1, 101, 102, "test", 100, 0],
+    [1, 104, 105, "test", 100, 0],
+    [0, 100, 101, "test", 0, 0],
+    [1, 104, 105, "test", 37, 0],
+    [2, 104, 105, "test", 100, 0],
+    [7, 966, 965, "test", 4, 0],
+    [0, 100, 101, "largely_recommended", 100, 0],
+]
+CRITERIAS = ["test"]
 
 
 def _dic_inclusion(a, b):
-    """ checks if a is included in
+    """checks if a is included in
 
     a (dictionnary)
     b (dictionnary)
@@ -80,7 +90,7 @@ def test_reverse_idx():
     size = 20
     vids = np.arange(0, size, 2)
     vid_vidx = reverse_idxs(vids)  # {vid: vidx} dic
-    vids2 = np.zeros(size//2)
+    vids2 = np.zeros(size // 2)
     for vid in vids:
         vids2[vid_vidx[vid]] = vid
     print(vids, vids2)
@@ -94,7 +104,7 @@ def test_expand_tens():
     output = expand_tens(tens, len2)
     assert len(output) == len1 + len2  # good final length
     # expanded with zeros and with gradient needed
-    assert (output[len1 + 1:] == torch.zeros(len2)).all()
+    assert (output[len1 + 1 :] == torch.zeros(len2)).all()
     assert output.requires_grad
 
 
@@ -126,15 +136,18 @@ def test_shape_data():
     ]
     output = shape_data(l_ratings)
     assert isinstance(output, np.ndarray)
-    assert output.shape == (3, 4)   # output shape
+    assert output.shape == (3, 4)  # output shape
     assert np.max(abs(output[:, 3])) <= 1  # range of scores
 
 
 def test_distribute_data():
-    arr = np.array([[0, 100, 101, 1],
-                    [1, 100, 101, -1],
-                    [0, 101, 102, 0],
-                    ])
+    arr = np.array(
+        [
+            [0, 100, 101, 1],
+            [1, 100, 101, -1],
+            [0, 101, 102, 0],
+        ]
+    )
     arr[1][0] = 3  # comparison 1 is performed by user or id 3
     nodes_dic, user_ids, vid_vidx = distribute_data(arr)
     assert len(nodes_dic) == 2  # number of nodes
@@ -193,7 +206,7 @@ def test_get_s():
 
 
 def test_test_mode():
-    """ Tests on Licchavi class test mode (generated data mode) """
+    """Tests on Licchavi class test mode (generated data mode)"""
     nb_vids, nb_users, vids_per_user = 7, 2, 7
     glob_gt, loc_gt, s_gt, comps_fake = generate_data(
                                             nb_vids,
@@ -207,7 +220,7 @@ def test_test_mode():
     licch.train(epochs, -1)
     assert nb_users == len(s_gt)
     assert licch.test_mode
-    assert len(licch.history['error_loc']) == epochs
+    assert len(licch.history["error_loc"]) == epochs
 
 
 # -------- metrics.py --------------
@@ -236,7 +249,7 @@ def test_random_signs():
 
 
 def test_get_uncertainty_glob():
-    licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
+    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
     licch.train(3, -1)
     uncert_glob = get_uncertainty_glob(licch)
     assert type(uncert_glob) is torch.Tensor
@@ -245,7 +258,7 @@ def test_get_uncertainty_glob():
 
 
 def test_get_uncertainty_loc():
-    licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
+    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
     licch.train(3, -1)
     uncert_loc = get_uncertainty_loc(licch)
     assert type(uncert_loc) is list
@@ -256,22 +269,22 @@ def test_get_uncertainty_loc():
 
 
 def test_check_equilibrium_glob():
-    """ checks equilibrium at initialisation """
-    licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
+    """checks equilibrium at initialisation"""
+    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
     eq = check_equilibrium_glob(0.001, licch)
     assert eq == 1.0
 
 
 def test_check_equilibrium_loc():
-    """ checks equilibrium at initialisation """
-    licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
+    """checks equilibrium at initialisation"""
+    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
     eq = check_equilibrium_loc(0.01, licch)
     assert 0.4 <= eq <= 1
 
 
 # --------- core.py ------------
 def test_set_licchavi():
-    licch, users_ids = _set_licchavi(TEST_DATA, 'test')
+    licch, users_ids = _set_licchavi(TEST_DATA, "test")
     print(type(users_ids))
     print(np.array(licch.nodes.keys()))
     print(licch.nodes.keys() == users_ids)
@@ -286,7 +299,7 @@ def test_set_licchavi():
 
 
 def test_train_predict():
-    licch, users_ids = _set_licchavi(TEST_DATA, 'test', verb=-1)
+    licch, users_ids = _set_licchavi(TEST_DATA, "test", verb=-1)
     glob, loc, _ = _train_predict(licch, 1, verb=-1)
     assert len(glob) == len(loc) == 2  # good output shape
     assert len(users_ids) == len(loc[1])  # good nb of users
@@ -297,19 +310,11 @@ def test_train_predict():
 
 
 def test_ml_run():
-    """ checks that outputs of training have normal length """
+    """checks that outputs of training have normal length"""
     nb_vids, nb_users, vids_per_user = 5, 3, 5
-    _, _, _, comps_fake = generate_data(nb_vids,
-                                        nb_users,
-                                        vids_per_user,
-                                        dens=0.999)
+    _, _, _, comps_fake = generate_data(nb_vids, nb_users, vids_per_user, dens=0.999)
     glob_scores, contributor_scores = ml_run(
-        comps_fake,
-        epochs=1,
-        criterias=["test"],
-        resume=False,
-        save=False,
-        verb=-1
+        comps_fake, epochs=1, criterias=["test"], resume=False, save=False, verb=-1
     )
     assert nb_vids <= len(glob_scores) <= vids_per_user
     assert len(contributor_scores) == nb_users * vids_per_user
@@ -317,32 +322,34 @@ def test_ml_run():
 
 # ======= scores quality tests =============
 def _id_score_assert(id, score, glob):
-    """ assert that the video with this -id has this -score """
+    """assert that the video with this -id has this -score"""
     if glob[0] == id:
         assert glob[2] == score
 
 
 def test_simple_train():
-    """ test coherency of results for few epochs and very light data """
+    """test coherency of results for few epochs and very light data"""
     comparison_data = [
-                        [1, 101, 102, "test", 100, 0],
-                        [2, 100, 101, "largely_recommended", 100, 0],
-                        [1, 104, 105, "test", 30, 0],
-                        [99, 100, 101, "largely_recommended", 100, 0],
-                        [2, 108, 107, "test", 10, 0],
-                        [0, 100, 102, "test", 70, 0],
-                        [0, 104, 105, "test", 70, 0],
-                        [0, 109, 110, "test", 50, 0],
-                        [2, 107, 108, "test", 10, 0],
-                        [1, 100, 101, "test", 100, 0],
-                        [3, 200, 201, "test", 85, 0],
-                        ]
-    glob_scores, loc_scores = ml_run(comparison_data,
-                                     epochs=2,
-                                     criterias=["test"],
-                                     resume=False,
-                                     save=True,  # FIXME change path
-                                     verb=-1)
+        [1, 101, 102, "test", 100, 0],
+        [2, 100, 101, "largely_recommended", 100, 0],
+        [1, 104, 105, "test", 30, 0],
+        [99, 100, 101, "largely_recommended", 100, 0],
+        [2, 108, 107, "test", 10, 0],
+        [0, 100, 102, "test", 70, 0],
+        [0, 104, 105, "test", 70, 0],
+        [0, 109, 110, "test", 50, 0],
+        [2, 107, 108, "test", 10, 0],
+        [1, 100, 101, "test", 100, 0],
+        [3, 200, 201, "test", 85, 0],
+    ]
+    glob_scores, loc_scores = ml_run(
+        comparison_data,
+        epochs=2,
+        criterias=["test"],
+        resume=False,
+        save=True,  # FIXME change path
+        verb=-1,
+    )
     nb = [0, 0, 0, 0]
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]
@@ -367,22 +374,24 @@ def test_simple_train():
 
     # testing resume mode
     glob_scores2, loc_scores2 = ml_run(
-                                comparison_data,
-                                epochs=0,
-                                criterias=["test"],
-                                resume=True,  # FIXME change path
-                                save=True,  # FIXME change path
-                                verb=-1)
+        comparison_data,
+        epochs=0,
+        criterias=["test"],
+        resume=True,  # FIXME change path
+        save=True,  # FIXME change path
+        verb=-1,
+    )
     assert glob_scores == glob_scores2
     assert loc_scores == loc_scores2
 
     glob_scores, loc_scores = ml_run(
-                                comparison_data,
-                                epochs=2,
-                                criterias=["test"],
-                                resume=True,
-                                save=False,  # FIXME change path
-                                verb=-1)
+        comparison_data,
+        epochs=2,
+        criterias=["test"],
+        resume=True,
+        save=False,  # FIXME change path
+        verb=-1,
+    )
     nb = [0, 0, 0, 0]
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]

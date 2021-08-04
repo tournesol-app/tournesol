@@ -7,7 +7,7 @@ import logging
 
 # ----------- fake data generation ---------------
 def _fake_glob_scores(nb_vid, scale=1):
-    """ Creates fake global scores for test
+    """Creates fake global scores for test
 
     nb_vid (int): number of videos "generated"
     scale (float): variance of generated global scores
@@ -20,7 +20,7 @@ def _fake_glob_scores(nb_vid, scale=1):
 
 
 def _fake_loc_scores(distribution, glob_scores, loc_noise):
-    """ Creates fake local scores for test
+    """Creates fake local scores for test
 
     distribution (int list): list of videos rated by the user
     glob_scores (float array): fake global scores
@@ -38,29 +38,28 @@ def _fake_loc_scores(distribution, glob_scores, loc_noise):
         pick_idxs = random.sample(all_idxs, nb_vids)  # videos rated by user
         noises = np.random.laplace(size=nb_vids, scale=b)  # random noise
         node = [
-            (idx, glob_scores[idx] + noise) for idx, noise
-            in zip(pick_idxs, noises)
+            (idx, glob_scores[idx] + noise) for idx, noise in zip(pick_idxs, noises)
         ]  # list of (video id , video local score)
         l_nodes.append(node)
     return l_nodes
 
 
 def _fake_s(nb_s, multiple_scales=True):
-    ''' Returns random s parameters
+    """Returns random s parameters
 
     nb_s (int): number of s parameters required
     multiple_scales (bool): wether to draw s parameters or set all to 1
 
     Returns:
         (float array): random independant s parameters
-    '''
+    """
     if multiple_scales:
         return np.random.gamma(4, scale=0.3, size=nb_s)
     return np.ones(nb_s)
 
 
 def _rate_density(r, a, b, s):
-    """ Returns density of r knowing a and b
+    """Returns density of r knowing a and b
 
     r (float in [-1, 1]): comparison rate
     a (float): local score of video a
@@ -71,12 +70,12 @@ def _rate_density(r, a, b, s):
         (float): density of r knowing a and b
     """
     t = s * (a - b)
-    dens = t * exp(-r*t) / (2 * sinh(t))
+    dens = t * exp(-r * t) / (2 * sinh(t))
     return dens
 
 
 def _get_rd_rate(a, b, s):
-    """ Gives a random comparison score
+    """Gives a random comparison score
 
     a (float): local score of video a
     b (float): local score of video b
@@ -85,15 +84,17 @@ def _get_rd_rate(a, b, s):
     Returns:
         (float): random comparison score
     """
+
     class my_pdf(st.rv_continuous):
         def _pdf(self, r):
             return _rate_density(r, a, b, s)
-    my_cv = my_pdf(a=-1, b=1, name='my_pdf')
+
+    my_cv = my_pdf(a=-1, b=1, name="my_pdf")
     return my_cv.rvs()
 
 
 def _unscale_rating(r):
-    """ Converts [-1,1] to [0, 100] """
+    """Converts [-1,1] to [0, 100]"""
     return (r + 1) * 50
 
 
@@ -114,7 +115,7 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
     all_comps = []
     for uid, node in enumerate(l_nodes):  # for each node
         if uid % 50 == 0:
-            logging.info(f'Node number {uid}')
+            logging.info(f"Node number {uid}")
         s = s_params[uid]
         nbvid = len(node)
         for vidx1, video in enumerate(node):  # for each video
@@ -129,10 +130,8 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
     return all_comps
 
 
-def generate_data(
-        nb_vid, nb_users, vids_per_user,
-        dens=0.8, scale=0.5, noise=0.1):
-    """ Generates fake input data for testing
+def generate_data(nb_vid, nb_users, vids_per_user, dens=0.8, scale=0.5, noise=0.1):
+    """Generates fake input data for testing
 
     nb_vid (int): number of videos
     nb_user (int): number of users
@@ -154,9 +153,9 @@ def generate_data(
     s_params = _fake_s(nb_users)
     distr = [vids_per_user] * nb_users
     glob = _fake_glob_scores(nb_vid, scale=scale)
-    logging.info(f'{nb_vid} global scores generated')
+    logging.info(f"{nb_vid} global scores generated")
     loc = _fake_loc_scores(distr, glob, noise)
-    logging .info(f'{vids_per_user} local scores generated per user')
+    logging.info(f"{vids_per_user} local scores generated per user")
     comp = _fake_comparisons(loc, s_params, dens)
-    logging.info(f'{len(comp)} comparisons generated')
+    logging.info(f"{len(comp)} comparisons generated")
     return glob, loc, s_params, comp

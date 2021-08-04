@@ -1,5 +1,5 @@
-
 import os
+
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
 if TOURNESOL_DEV:  # safety net to ensure pyplot is never loaded in production
     import matplotlib.pyplot as plt
@@ -17,27 +17,25 @@ INTENS = 0.4  # intensity of coloration
 METRICS = {
     "fit": {"lab": "fit", "ord": "Training Loss", "f_name": "loss"},
     "s": {"lab": "s", "ord": "Training Loss", "f_name": "loss"},
-    'gen': {"lab": "gen", "ord": "Training Loss", "f_name": "loss"},
-    'reg': {"lab": "reg", "ord": "Training Loss", "f_name": "loss"},
-    'l2_norm': {"lab": "l2_norm", "ord": "l2 norm", "f_name": "l2norm"},
-    'grad_sp': {"lab": "grad_sp", "ord": "Scalar Product", "f_name": "grad"},
-    'grad_norm': {
-        "lab": "grad_norm", "ord": "Scalar Product", "f_name": "grad"},
-    'error_glob': {
-        "lab": "error_glob", "ord": 'Error', "f_name": "error_glob"},
-    'error_loc': {"lab": "error_loc", "ord": 'Error', "f_name": "error_loc"}
+    "gen": {"lab": "gen", "ord": "Training Loss", "f_name": "loss"},
+    "reg": {"lab": "reg", "ord": "Training Loss", "f_name": "loss"},
+    "l2_norm": {"lab": "l2_norm", "ord": "l2 norm", "f_name": "l2norm"},
+    "grad_sp": {"lab": "grad_sp", "ord": "Scalar Product", "f_name": "grad"},
+    "grad_norm": {"lab": "grad_norm", "ord": "Scalar Product", "f_name": "grad"},
+    "error_glob": {"lab": "error_glob", "ord": "Error", "f_name": "error_glob"},
+    "error_loc": {"lab": "error_loc", "ord": "Error", "f_name": "error_loc"},
 }  # FIXME simplify
 
 
 def get_style():
-    '''gives different line styles for plots'''
+    """gives different line styles for plots"""
     styles = ["-", "-.", ":", "--"]
     for i in range(10000):
         yield styles[i % 4]
 
 
 def get_color():
-    '''gives different line colors for plots'''
+    """gives different line colors for plots"""
     colors = ["red", "green", "blue", "grey"]
     for i in range(10000):
         yield colors[i % 4]
@@ -88,8 +86,9 @@ def _plot_var(l_hist, l_metrics):
         )
         vals_m, vals_l, vals_u = _means_bounds(vals)
         style, color = next(STYLES), next(COLORS)
-        plt.plot(epochs, vals_m, label=METRICS[metric]["lab"],
-                 linestyle=style, color=color)
+        plt.plot(
+            epochs, vals_m, label=METRICS[metric]["lab"], linestyle=style, color=color
+        )
         plt.fill_between(epochs, vals_u, vals_l, alpha=INTENS, color=color)
 
 
@@ -120,7 +119,7 @@ def gradsp_var(l_hist, title=None, path=None):
 
 
 def error_var(l_hist, title=None, path=None):
-    ''' Plots difference between predictions and ground truths
+    '''Plots difference between predictions and ground truths
     from a list of historys
     '''
     _plotfull_var(l_hist, ['error_glob', 'error_loc'], title, path)
@@ -128,7 +127,7 @@ def error_var(l_hist, title=None, path=None):
 
 # plotting all the metrics we have
 def plot_metrics(l_hist, title=None, path=None):
-    '''plot and save the different metrics from list of historys'''
+    """plot and save the different metrics from list of historys"""
     loss_var(l_hist, title, path)
     l2_var(l_hist, title, path)
     gradsp_var(l_hist, title, path)
@@ -139,7 +138,7 @@ def plot_metrics(l_hist, title=None, path=None):
 
 # histogram
 def plot_density(tens, title=None, path=None, name="hist.png"):
-    """ Saves histogram of repartition
+    """Saves histogram of repartition
 
     tens (tensor): data of which we want repartition
     """

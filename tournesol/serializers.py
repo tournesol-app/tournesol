@@ -1,3 +1,7 @@
+"""
+Serializer used by Tournesol's API
+"""
+
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater
@@ -14,7 +18,7 @@ class VideoRateLaterSerializer(ModelSerializer):
 
     class Meta:
         model = VideoRateLater
-        fields = ['video']
+        fields = ["video"]
 
 
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
@@ -31,7 +35,8 @@ class ComparisonCriteriaScoreSerializerInverse(ModelSerializer):
         exclude = ["id"]
 
     def get_score(self, obj):
-        return obj.score*-1
+        """Returns the score of a comparison for a given criteria"""
+        return obj.score * -1
 
 
 class ComparisonSerializer(ModelSerializer):
@@ -54,7 +59,9 @@ class ComparisonSerializerInverse(ModelSerializer):
         exclude = ["video_1_2_ids_sorted", "id"]
 
     def get_video_1(self, obj):
+        """Returns serialized first video of the comparison"""
         return VideoSerializer(obj.video_2).data
 
     def get_video_2(self, obj):
+        """Returns serialized second video of the comparison"""
         return VideoSerializer(obj.video_1).data
