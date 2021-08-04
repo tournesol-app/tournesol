@@ -30,9 +30,8 @@ class Node:
         self.mask = mask
         self.s = s
         self.model = model
-        self.age = age  # number of epochs the node has been trained
+        self.age = age
         self.w = w
-
         self.lr_s = lr_s / len(vid1)
         self.opt = opt(
             [
@@ -42,11 +41,9 @@ class Node:
             lr=lr_node
         )
 
-        self.nb_comps = self._count_comps()
-        self.delta_na = 1 / torch.sqrt(self.nb_comps)
-        for i, val in enumerate(self.delta_na):
-            if torch.isinf(val):
-                self.delta_na[i] = 1
+        self.nb_comps = self._count_comps()  # number of comparisons
+        self.delta_na = 1 / torch.sqrt(self.nb_comps)  # needed for loss later
+        _ = torch.nan_to_num_(self.delta_na)  # avoiding NaNs
 
     def _count_comps(self):
         """ Counts number of comparisons for each video
