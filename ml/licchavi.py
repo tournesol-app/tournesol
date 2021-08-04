@@ -336,6 +336,45 @@ class Licchavi():
                f's : {s}, generalisation : {gen}, regularisation : {reg}')
 
     # ====================  TRAINING ==================
+    def _do_epoch(self, epoch, nb_epochs):
+        """ Trains for one epoch
+
+        epoch (int): current epoch
+        nb_epochs (int): (maximum) number of epochs
+        """
+        self._show("epoch {}/{}".format(epoch, nb_epochs), 1)
+        time_ep = time()
+
+        nb_steps = self.gen_freq + 1  # one fitting step
+        for step in range(1, nb_steps + 1):
+            fit_step = (step == 1)  # fitting on first step only
+
+            self._show(f'step : {step}/{nb_steps} '
+                       f'{"(fit)" if fit_step else "(gen)"}', 2)
+            self._zero_opt()  # resetting gradients
+
+            # ----------------    Licchavi loss  -------------------------
+            # only first 3 terms of loss updated
+            if fit_step:
+                fit_loss, s_loss, gen_loss = loss_fit_s_gen(self)
+                loss = fit_loss + s_loss + gen_loss
+            # only last 2 terms of loss updated
+            else:
+                gen_loss, reg_loss = loss_gen_reg(self)
+                loss = gen_loss + reg_loss
+
+            if self.verb >= 2:
+                total_loss = round_loss(fit_loss + s_loss
+                                        + gen_loss + reg_loss)
+                self._print_losses(total_loss, fit_loss, s_loss,
+                                   gen_loss, reg_loss)
+            # Gradient descent
+            loss.backward()
+            self._do_step(fit_step)
+
+        self._update_hist(epoch, fit_loss, s_loss, gen_loss, reg_loss)
+        self._old(1)  # aging all nodes of 1 epoch
+        self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
 
     def train(self, nb_epochs=1, compute_uncertainty=False):
         """ training loop
@@ -345,61 +384,25 @@ class Licchavi():
             at the end or not (takes time)
 
         Returns:
-            (float list list, float list): uncertainty of local scores
+            (float list list, float tensor): uncertainty of local scores
                                             (None, None) if not computed
         """
         loginf('STARTING TRAINING')
         time_train = time()
 
-        # initialisation to avoid undefined variables at epoch 1
-        loss, fit_loss, s_loss, gen_loss, reg_loss = 0, 0, 0, 0, 0
-
         # training loop
-        nb_steps = self.gen_freq + 1  # one fitting step
         for epoch in range(1, nb_epochs + 1):
             early_stop = self._lr_schedule(epoch)
             if early_stop:
                 break  # don't do this epoch nor any other
             self._set_lr()
             self._regul_s()
+            self._do_epoch(epoch, nb_epochs)
 
-            self._show("epoch {}/{}".format(epoch, nb_epochs), 1)
-            time_ep = time()
+        loginf('END OF TRAINING'
+               f'training time :{round(time() - time_train, 2)}')
 
-            for step in range(1, nb_steps + 1):
-                fit_step = (step == 1)  # fitting on first step only
-
-                self._show(f'step : {step}/{nb_steps} '
-                           f'{"(fit)" if fit_step else "(gen)"}', 2)
-                self._zero_opt()  # resetting gradients
-
-                # ----------------    Licchavi loss  -------------------------
-                # only first 3 terms of loss updated
-                if fit_step:
-                    fit_loss, s_loss, gen_loss = loss_fit_s_gen(self)
-                    loss = fit_loss + s_loss + gen_loss
-                # only last 2 terms of loss updated
-                else:
-                    gen_loss, reg_loss = loss_gen_reg(self)
-                    loss = gen_loss + reg_loss
-
-                if self.verb >= 2:
-                    total_loss = round_loss(fit_loss + s_loss
-                                            + gen_loss + reg_loss)
-                    self._print_losses(total_loss, fit_loss, s_loss,
-                                       gen_loss, reg_loss)
-                # Gradient descent
-                loss.backward()
-                self._do_step(fit_step)
-
-            self._update_hist(epoch, fit_loss, s_loss, gen_loss, reg_loss)
-            self._old(1)  # aging all nodes of 1 epoch
-            self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
-
-        # ----------------- end of training -------------------------------
-        loginf('END OF TRAINING')
-        loginf(f'training time :{round(time() - time_train, 2)}')
-        if compute_uncertainty:
+        if compute_uncertainty:  # FIXME make separate method ?
             time_uncert = time()
             uncert_loc = get_uncertainty_loc(self)
             uncert_glob = get_uncertainty_glob(self)
