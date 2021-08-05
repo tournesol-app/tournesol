@@ -3,6 +3,7 @@ import torch
 import random
 
 from ml.data_utility import replace_dir
+from ml.losses import round_loss
 from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
                     plot_loc_uncerts)
 
@@ -74,13 +75,31 @@ def measure_diff(fakes, preds):
     return diff/len(preds)
 
 
+def print_s(licch):
+    """ Prints s stats """
+    l_s = [(round_loss(s, 2), id) for s, id in zip(
+        licch.all_nodes("s"),
+        licch.nodes.keys()
+    )]
+    tens = torch.tensor(l_s)
+    disp_one_by_line(l_s)
+    tens = tens[:, 0]
+    print("mean of s: ", round_loss(torch.mean(tens), 2))
+    print(
+        "min and max of s: ",
+        round_loss(torch.min(tens), 2),
+        round_loss(torch.max(tens), 2)
+    )
+    print("var of s: ", round_loss(torch.var(tens), 2))
+
+
 def licch_stats(licch):
     ''' gives some statistics about Licchavi object '''
     print('LICCH_SATS')
     licch.check()  # some tests
     h = licch.history
     print("nb_nodes", licch.nb_nodes)
-    licch.stat_s()  # print stats on s parameters
+    print_s(licch)  # print stats on s parameters
     with torch.no_grad():
         gen_s = licch.all_nodes("s")
         l_s = [s.item() for s in gen_s]

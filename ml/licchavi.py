@@ -11,7 +11,6 @@ from .metrics import (
     check_equilibrium_glob, check_equilibrium_loc)
 from .data_utility import expand_tens, one_hot_vids
 from .nodes import Node
-from .dev.visualisation import disp_one_by_line
 
 """
 Machine Learning algorithm, used in "core.py"
@@ -234,19 +233,6 @@ class Licchavi():
         """ Returns a generator of one parameter for all nodes """
         for node in self.nodes.values():
             yield getattr(node, key)
-
-    def stat_s(self):
-        """ Prints s stats """
-        l_s = [(round_loss(s, 2), id) for s, id in zip(self.all_nodes("s"),
-                                                       self.nodes.keys())]
-        tens = torch.tensor(l_s)
-        disp_one_by_line(l_s)
-        tens = tens[:, 0]
-        print("mean of s: ", round_loss(torch.mean(tens), 2))
-        print("min and max of s: ",
-              round_loss(torch.min(tens), 2),
-              round_loss(torch.max(tens), 2))
-        print("var of s: ", round_loss(torch.var(tens), 2))
 
     # ---------- methods for training ------------
     def _set_lr(self):
