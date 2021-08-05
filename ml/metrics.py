@@ -48,7 +48,6 @@ def replace_coordinate(tens, score, idx):
 
 
 # ------ Licchavi history computation -----------
-
 def _metric_grad(licch, args):
     """ Returns scalar product of gradients between last and current epoch """
     grad_gen = licch.global_model.grad
@@ -96,18 +95,18 @@ def _metric_diff_loc(licch, args):
                     pow=(2, 0.5),
                     mask=node.mask
                 )
-        licch.last_epoch['diff_loc'] = deepcopy(list(licch.all_nodes['model']))
+        licch.last_epoch['diff_loc'] = deepcopy(list(licch.all_nodes('model')))
     return diff_loc
 
 
 def _metric_diff_s(licch, args):
     """ s parameters variation between 2 epochs """
     with torch.no_grad():
-        diff_s = 0
+        diff_s = torch.zeros(1)
         if args[4] > 1:
             for uidx, node in enumerate(licch.nodes.values()):
                 diff_s += (licch.last_epoch['diff_s'][uidx] - node.s)**2
-        licch.last_epoch['diff_s'] = deepcopy(list(licch.all_nodes['s']))
+        licch.last_epoch['diff_s'] = deepcopy(list(licch.all_nodes('s')))
     return torch.sqrt(diff_s).item()
 
 
@@ -121,10 +120,10 @@ METRICS_FUNCS = {
     'grad_sp': _metric_grad,
     'grad_norm': lambda licch, args:
         scalar_product(licch.global_model.grad, licch.global_model.grad),
-    'l2_norm_loc': lambda licch, args: _metric_norm_loc,
-    'diff_loc': lambda licch, args: _metric_diff_loc,
-    'diff_glob': lambda licch, args: _metric_diff_glob,
-    'diff_s': lambda licch, args: _metric_diff_s
+    'norm_loc': _metric_norm_loc,
+    'diff_loc': _metric_diff_loc,
+    'diff_glob': _metric_diff_glob,
+    'diff_s': _metric_diff_s
 }
 
 

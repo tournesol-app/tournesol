@@ -36,5 +36,5 @@ _lr_schedule.epsilon = 0.1  # strength of equilibrium asked
 Licchavi.metrics = [
     'loss_fit', 'loss_s', 'loss_gen', 'loss_reg', 'l2_norm', 'grad_sp', 
     'grad_norm',
-    'l2_norm_loc', 'diff_loc', 'diff_glob', 'diff_s'
+    'norm_loc', 'diff_loc', 'diff_glob', 'diff_s'
 ] 

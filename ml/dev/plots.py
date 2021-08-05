@@ -25,7 +25,11 @@ METRICS = {
         "lab": "grad_norm", "ord": "Scalar Product", "f_name": "grad"},
     'error_glob': {
         "lab": "error_glob", "ord": 'Error', "f_name": "error_glob"},
-    'error_loc': {"lab": "error_loc", "ord": 'Error', "f_name": "error_loc"}
+    'error_loc': {"lab": "error_loc", "ord": 'Error', "f_name": "error_loc"},
+    'norm_loc': {"lab": "norm_loc", "ord": 'norm', "f_name": "norm_loc"},
+    'diff_glob': {"lab": "diff_glob", "ord": 'Diff', "f_name": "diff_glob"},
+    'diff_loc': {"lab": "diff_loc", "ord": 'Diff', "f_name": "diff_loc"},
+    'diff_s': {"lab": "diff_s", "ord": 'Diff', "f_name": "diff_s"},
 }  # FIXME simplify
 
 
@@ -72,6 +76,7 @@ def _means_bounds(arr):
     - array of (mean - var)
     - array of (mean + var)
     '''
+    print(arr)
     means = np.mean(arr, axis=0)
     var = np.var(arr, axis=0)
     low, up = means - var, means + var
@@ -135,6 +140,10 @@ def plot_metrics(l_hist, title=None, path=None):
     loss_var(l_hist, title, path)
     l2_var(l_hist, title, path)
     gradsp_var(l_hist, title, path)
+    _plotfull_var(l_hist, ['norm_loc'], title, path)
+    _plotfull_var(l_hist, ['diff_loc'], title, path)
+    _plotfull_var(l_hist, ['diff_glob'], title, path)
+    _plotfull_var(l_hist, ['diff_s'], title, path)
     if 'error_glob' in l_hist[0]:  # if we are in test mode
         _plotfull_var(l_hist, ['error_glob'], title, path)
         _plotfull_var(l_hist, ['error_loc'], title, path)
