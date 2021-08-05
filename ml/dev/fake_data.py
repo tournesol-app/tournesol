@@ -4,6 +4,11 @@ from math import exp, sinh
 import scipy.stats as st
 import logging
 
+from ml.core import TOURNESOL_DEV
+
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
+
 
 # ----------- fake data generation ---------------
 def _fake_glob_scores(nb_vid, scale=1):

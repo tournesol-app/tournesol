@@ -2,11 +2,14 @@ import numpy as np
 import torch
 import random
 
+from ml.core import TOURNESOL_DEV
 from ml.data_utility import replace_dir
 from ml.losses import round_loss
 from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
                     plot_loc_uncerts)
 
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 """
 Visualisation methods, mainly for testing and debugging
 

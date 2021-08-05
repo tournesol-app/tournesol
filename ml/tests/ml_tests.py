@@ -12,7 +12,6 @@ from ml.metrics import (
     scalar_product, _random_signs, get_uncertainty_glob,
     check_equilibrium_glob, check_equilibrium_loc, get_uncertainty_loc)
 from ml.licchavi import Licchavi, get_model, get_s
-from ml.dev.fake_data import generate_data
 from ml.core import _set_licchavi, _train_predict, ml_run
 
 
@@ -284,21 +283,16 @@ def test_train_predict():
 
 def test_ml_run():
     """ checks that outputs of training have normal length """
-    nb_vids, nb_users, vids_per_user = 5, 3, 5
-    _, _, _, comps_fake = generate_data(nb_vids,
-                                        nb_users,
-                                        vids_per_user,
-                                        dens=0.999)
     glob_scores, contributor_scores = ml_run(
-        comps_fake,
+        TEST_DATA,
         epochs=1,
         criterias=["test"],
         resume=False,
         save=False,
         verb=-1
     )[:2]
-    assert nb_vids <= len(glob_scores) <= vids_per_user
-    assert len(contributor_scores) == nb_users * vids_per_user
+    assert len(glob_scores) == 7
+    assert len(contributor_scores) == 11
 
 
 # ======= scores quality tests =============

@@ -1,10 +1,10 @@
+import matplotlib.pyplot as plt
+import numpy as np
 
-import os
-TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
-if TOURNESOL_DEV:  # safety net to ensure pyplot is never loaded in production
-    import matplotlib.pyplot as plt
-    import numpy as np
+from ml.core import TOURNESOL_DEV
 
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 """
 Not used in production, for testing only
 Used in "experiments.py"
@@ -105,7 +105,7 @@ def _plotfull_var(l_hist, l_metrics, title=None, path=None):
 def loss_var(l_hist, title=None, path=None):
     ''' plot losses with variance from a list of historys '''
     _plotfull_var(
-        l_hist, ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'], 
+        l_hist, ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
         title, path
     )
 

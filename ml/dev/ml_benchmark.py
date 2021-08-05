@@ -1,10 +1,13 @@
 import timeit
 import torch
 
+from ml.core import TOURNESOL_DEV
 from ml.losses import _bbt_loss, _approx_bbt_loss, get_fit_loss, get_s_loss
 from .fake_data import generate_data
 from ..core import ml_run
 
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 """
 Module used for testing performances (speed)
 
