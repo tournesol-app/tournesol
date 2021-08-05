@@ -5,11 +5,10 @@ import logging
 from logging import info as loginf
 import gin
 
-from .losses import (model_norm, round_loss, predict, loss_fit_s_gen,
-                     loss_gen_reg)
-from .metrics import (extract_grad, get_uncertainty_loc, get_uncertainty_glob,
-                      check_equilibrium_glob, check_equilibrium_loc,
-                      scalar_product)
+from .losses import (round_loss, predict, loss_fit_s_gen, loss_gen_reg)
+from .metrics import (
+    get_uncertainty_loc, get_uncertainty_glob, update_hist,
+    check_equilibrium_glob, check_equilibrium_loc)
 from .data_utility import expand_tens, one_hot_vids
 from .nodes import Node
 from .dev.visualisation import disp_one_by_line
@@ -52,10 +51,22 @@ def get_s(device='cpu'):
 class Licchavi():
     """ Training structure including local models and general one """
     def __init__(
-            self, nb_vids, vid_vidx, crit, device='cpu', verb=1,
+            self,
+            nb_vids,
+            vid_vidx,
+            crit,
+            device='cpu',
+            verb=1,
             # configured with gin in "hyperparameters.gin"
-            lr_node=None, lr_s=None, lr_gen=None,
-            gen_freq=None, nu=None, w0=None, w=None):
+            metrics=None,
+            lr_node=None,
+            lr_s=None,
+            lr_gen=None,
+            gen_freq=None,
+            nu=None,
+            w0=None,
+            w=None
+            ):
         """
         nb_vids (int): number of different videos rated by
                         at least one contributor for this criteria
@@ -89,11 +100,9 @@ class Licchavi():
 
         self.nb_nodes = 0
         self.nodes = {}
-        self.history = {'fit': [], 's': [], 'gen': [], 'reg': [],  # metrics
+        self.history = {metric: [] for metric in metrics}
 
-                        'l2_norm': [], 'grad_sp': [], 'grad_norm': []}
-
-        self.users = []  # user IDs
+        self.users = []  # users IDs
 
     def _show(self, msg, level):
         """ Utility for handling logging messages
@@ -288,24 +297,6 @@ class Licchavi():
             node.opt.zero_grad(set_to_none=True)  # node optimizer
         self.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
-    def _update_hist(self, epoch, fit, s, gen, reg):
-        """ Updates history (at end of epoch) """
-        self.history['fit'].append(round_loss(fit))
-        self.history['s'].append(round_loss(s))
-        self.history['gen'].append(round_loss(gen))
-        self.history['reg'].append(round_loss(reg))
-        norm = model_norm(self.global_model, pow=(2, 0.5))
-        self.history['l2_norm'].append(round_loss(norm, 3))
-        grad_gen = extract_grad(self.global_model)
-        if epoch > 1:  # no previous model for first epoch
-            scal_grad = scalar_product(self.last_grad, grad_gen)
-            self.history['grad_sp'].append(scal_grad)
-        else:
-            self.history['grad_sp'].append(0)  # default value for first epoch
-        self.last_grad = deepcopy(extract_grad(self.global_model))
-        grad_norm = scalar_product(grad_gen, grad_gen)
-        self.history['grad_norm'].append(grad_norm)
-
     def _old(self, years):
         """ Increments age of nodes (during training) """
         for node in self.nodes.values():
@@ -372,7 +363,7 @@ class Licchavi():
             loss.backward()
             self._do_step(fit_step)
 
-        self._update_hist(epoch, fit_loss, s_loss, gen_loss, reg_loss)
+        update_hist(self, (fit_loss, s_loss, gen_loss, reg_loss, epoch))
         self._old(1)  # aging all nodes of 1 epoch
         self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
 
@@ -399,8 +390,8 @@ class Licchavi():
             self._regul_s()
             self._do_epoch(epoch, nb_epochs)
 
-        loginf('END OF TRAINING'
-               f'training time :{round(time() - time_train, 2)}')
+        loginf('END OF TRAINING\n'
+               f'Training time: {round(time() - time_train, 2)}')
 
         if compute_uncertainty:  # FIXME make separate method ?
             time_uncert = time()
@@ -416,7 +407,7 @@ class Licchavi():
         # population check
         b1 = (self.nb_nodes == len(self.nodes))
         # history check
-        reference = self.history['fit']
+        reference = list(self.history.values())[0]
         b2 = all([len(v) == len(reference) for v in self.history.values()])
 
         if (b1 and b2):

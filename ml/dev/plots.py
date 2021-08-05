@@ -15,10 +15,10 @@ Main file is "ml_train.py"
 INTENS = 0.4  # intensity of coloration
 # tuple of dic of label, ordinate legend, filename
 METRICS = {
-    "fit": {"lab": "fit", "ord": "Training Loss", "f_name": "loss"},
-    "s": {"lab": "s", "ord": "Training Loss", "f_name": "loss"},
-    'gen': {"lab": "gen", "ord": "Training Loss", "f_name": "loss"},
-    'reg': {"lab": "reg", "ord": "Training Loss", "f_name": "loss"},
+    'loss_fit': {"lab": 'loss_fit', "ord": "Training Loss", "f_name": "loss"},
+    'loss_s': {"lab": 'loss_s', "ord": "Training Loss", "f_name": "loss"},
+    'loss_gen': {"lab": 'loss_gen', "ord": "Training Loss", "f_name": "loss"},
+    'loss_reg': {"lab": 'loss_reg', "ord": "Training Loss", "f_name": "loss"},
     'l2_norm': {"lab": "l2_norm", "ord": "l2 norm", "f_name": "l2norm"},
     'grad_sp': {"lab": "grad_sp", "ord": "Scalar Product", "f_name": "grad"},
     'grad_norm': {
@@ -81,7 +81,7 @@ def _means_bounds(arr):
 # ------------- utility for what follows -------------------------
 def _plot_var(l_hist, l_metrics):
     ''' add curve of asked indexes of history to the plot '''
-    epochs = range(1, len(l_hist[0]['fit']) + 1)
+    epochs = range(1, len(l_hist[0]['loss_fit']) + 1)
     for metric in l_metrics:
         vals = np.asarray(
             [hist[metric] for hist in l_hist]
@@ -104,7 +104,10 @@ def _plotfull_var(l_hist, l_metrics, title=None, path=None):
 # ------- groups of metrics on a same plot -----------
 def loss_var(l_hist, title=None, path=None):
     ''' plot losses with variance from a list of historys '''
-    _plotfull_var(l_hist, ['fit', 's', 'gen', 'reg'], title, path)
+    _plotfull_var(
+        l_hist, ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'], 
+        title, path
+    )
 
 
 def l2_var(l_hist, title=None, path=None):
@@ -156,7 +159,7 @@ def plot_s_predict_gt(s_predict, s_gt, path, name='s_correlation.png'):
     s_predict (float list): predicted s parameters
     s_gt (float list): ground truth s parameters
     """
-    plt.plot(s_predict, s_gt, 'ro', label='s')
+    plt.plot(s_predict, s_gt, 'ro', label='loss_s')
     _legendize('ground truths', 'predicted')
     _title_save('s parameters', path, name)
 

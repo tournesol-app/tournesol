@@ -10,23 +10,31 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 
 
 # Loss hyperparameters
-Licchavi.nu = 1  # scaling parameter term ponderation
+Licchavi.nu = 5  # scaling parameter term ponderation
 Licchavi.w = 1  # generalisation term ponderation
 Licchavi.w0 = 1  # regularisation term ponderation
 
 
 # Training hyperparameters
-Licchavi.lr_node = 0.9  # learning rate of local models
-Licchavi.lr_s = 0.08  # learning rate of s individual parameters
-Licchavi.lr_gen = 0.09  # learning rate of general model
+Licchavi.lr_node = 1  # learning rate of local models
+Licchavi.lr_s = 0.05  # learning rate of s individual parameters
+Licchavi.lr_gen = 0.05  # learning rate of general model
 Licchavi.gen_freq = 1  # number of general model steps for one local step
 
 
 # learning rate scheduler
-_lr_schedule.lr_rush_duration = 8  # duration of "rush phase" (nb of epochs)
-_lr_schedule.decay_rush = 0.97  # decay during "rush phase"
-_lr_schedule.decay_fine = 0.9  # decay during fine tuning phase
+_lr_schedule.lr_rush_duration = 20  # duration of "rush phase" (nb of epochs)
+_lr_schedule.decay_rush = 0.9  # decay during "rush phase"
+_lr_schedule.decay_fine = 1  # decay during fine tuning phase
 _lr_schedule.min_lr_fine = 0.001  # minimum (local) learning rate
 
 _lr_schedule.precision = 0.97 #proportion of parameters at eq for early stopping
 _lr_schedule.epsilon = 0.1  # strength of equilibrium asked
+
+
+# metrics to compute during training
+Licchavi.metrics = [
+    'loss_fit', 'loss_s', 'loss_gen', 'loss_reg', 'l2_norm', 'grad_sp', 
+    'grad_norm',
+    'l2_norm_loc', 'diff_loc', 'diff_glob', 'diff_s'
+] 

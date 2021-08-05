@@ -4,7 +4,8 @@ from copy import deepcopy
 import logging
 from statistics import median
 
-from .losses import round_loss, loss_fit_s_gen, loss_gen_reg, models_dist_huber
+from .losses import (
+    round_loss, loss_fit_s_gen, loss_gen_reg, models_dist_huber, model_norm)
 
 """
 Metrics used for training monitoring in "licchavi.py"
@@ -14,17 +15,6 @@ Main file "ml_train.py"
 
 
 # metrics on models
-def extract_grad(model):
-    ''' returns list of gradients of a model
-
-    model (float tensor): torch tensor with gradients
-
-    Returns:
-        (float tensor list): list of gradients of the model
-    '''
-    return [p.grad for p in [model]]
-
-
 def scalar_product(l_grad1, l_grad2):
     ''' scalar product of 2 lists of gradients
 
@@ -54,6 +44,45 @@ def replace_coordinate(tens, score, idx):
     size = len(tens)
     left, _, right = torch.split(tens, [idx, 1, size - idx - 1])
     return torch.cat([left, score, right])
+
+
+# ------ Licchavi history computation -----------
+
+def _metric_grad(licch, args):
+    """ Returns scalar product of gradients between last and current epoch """
+    grad_gen = licch.global_model.grad
+    if args[4] > 1:  # no previous model for first epoch
+        scal_grad = scalar_product(licch.last_grad, grad_gen)
+    else:
+        scal_grad = 0  # default value for first epoch
+    licch.last_grad = deepcopy(licch.global_model.grad)
+    return scal_grad
+
+
+METRICS_FUNCS = {
+    'loss_fit': lambda licch, args: round_loss(args[0]),
+    'loss_s': lambda licch, args: round_loss(args[1]),
+    'loss_gen': lambda licch, args: round_loss(args[2]),
+    'loss_reg': lambda licch, args: round_loss(args[3]),
+    'l2_norm': lambda licch, args:
+        round_loss(model_norm(licch.global_model, pow=(2, 0.5)), 3),
+    'grad_sp': _metric_grad,
+    'grad_norm': lambda licch, args:
+        scalar_product(licch.global_model.grad, licch.global_model.grad),
+    'l2_norm_loc': lambda licch, args: 0,
+    'diff_loc': lambda licch, args: 0,
+    'diff_glob': lambda licch, args: 0,
+    'diff_s': lambda licch, args: 0
+}
+
+
+def update_hist(licch, args):
+    """ Updates Licchavi history for all metrics asked
+
+    args (tuple): losses and current epoch number
+    """
+    for metric in licch.history:
+        licch.history[metric].append(METRICS_FUNCS[metric](licch, args))
 
 
 # ------ to compute uncertainty -------

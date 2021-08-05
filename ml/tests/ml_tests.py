@@ -9,7 +9,7 @@ from ml.losses import (
     _bbt_loss, _approx_bbt_loss, get_s_loss, round_loss,
     models_dist, models_dist_huber, model_norm)
 from ml.metrics import (
-    extract_grad, scalar_product, _random_signs, get_uncertainty_glob,
+    scalar_product, _random_signs, get_uncertainty_glob,
     check_equilibrium_glob, check_equilibrium_loc, get_uncertainty_loc)
 from ml.licchavi import Licchavi, get_model, get_s
 from ml.dev.fake_data import generate_data
@@ -186,7 +186,7 @@ def test_model_norm():
 # --------- licchavi.py ------------
 def test_Licchavi():
     licch = Licchavi(0, {}, "test")
-    assert type(licch.lr_node) is float  # default gin applied parameters
+    assert type(licch.lr_node) is float or int  # gin applied parameters
     # TODO add more tests here
 
 
@@ -203,14 +203,6 @@ def test_get_s():
 
 
 # -------- metrics.py --------------
-def test_extract_grad():
-    model = torch.ones(4, requires_grad=True)
-    loss = model.sum() * 2
-    loss.backward()
-    for a, b in zip(extract_grad(model)[0], torch.ones(4) * 2):
-        assert a == b
-
-
 def test_scalar_product():
     l_grad1 = [torch.ones(2), torch.ones(3)]
     l_grad2 = [torch.zeros(2), torch.ones(3)]
