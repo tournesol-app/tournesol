@@ -5,7 +5,8 @@ import logging
 from statistics import median
 
 from .losses import (
-    round_loss, loss_fit_s_gen, loss_gen_reg, models_dist_huber, model_norm)
+    round_loss, loss_fit_s_gen, loss_gen_reg, models_dist_huber,
+    model_norm, models_dist)
 
 """
 Metrics used for training monitoring in "licchavi.py"
@@ -52,11 +53,62 @@ def _metric_grad(licch, args):
     """ Returns scalar product of gradients between last and current epoch """
     grad_gen = licch.global_model.grad
     if args[4] > 1:  # no previous model for first epoch
-        scal_grad = scalar_product(licch.last_grad, grad_gen)
+        scal_grad = scalar_product(licch.last_epoch['grad_sp'], grad_gen)
     else:
         scal_grad = 0  # default value for first epoch
-    licch.last_grad = deepcopy(licch.global_model.grad)
+    licch.last_epoch['grad_sp'] = deepcopy(licch.global_model.grad)
     return scal_grad
+
+
+def _metric_norm_loc(licch, args):
+    """ Returns l2 norm of local scores """
+    norm = 0
+    with torch.no_grad():
+        for node in licch.nodes.values():
+            norm += model_norm(node.model, pow=(2, 0.5))
+    return norm
+
+
+def _metric_diff_glob(licch, args):
+    """ Global scores variation between 2 epochs """
+    with torch.no_grad():
+        if args[4] > 1:
+            diff_glob = models_dist(
+                licch.last_epoch['diff_glob'],
+                licch.global_model,
+                pow=(2, 0.5)
+            )
+        else:
+            diff_glob = 0
+        licch.last_epoch['diff_glob'] = deepcopy(licch.global_model)
+    return diff_glob
+
+
+def _metric_diff_loc(licch, args):
+    """ Local scores variation between 2 epochs """
+    with torch.no_grad():
+        diff_loc = 0
+        if args[4] > 1:
+            for uidx, node in enumerate(licch.nodes.values()):
+                diff_loc += models_dist(
+                    licch.last_epoch['diff_loc'][uidx],
+                    node.model,
+                    pow=(2, 0.5),
+                    mask=node.mask
+                )
+        licch.last_epoch['diff_loc'] = deepcopy(list(licch.all_nodes['model']))
+    return diff_loc
+
+
+def _metric_diff_s(licch, args):
+    """ s parameters variation between 2 epochs """
+    with torch.no_grad():
+        diff_s = 0
+        if args[4] > 1:
+            for uidx, node in enumerate(licch.nodes.values()):
+                diff_s += (licch.last_epoch['diff_s'][uidx] - node.s)**2
+        licch.last_epoch['diff_s'] = deepcopy(list(licch.all_nodes['s']))
+    return torch.sqrt(diff_s).item()
 
 
 METRICS_FUNCS = {
@@ -69,10 +121,10 @@ METRICS_FUNCS = {
     'grad_sp': _metric_grad,
     'grad_norm': lambda licch, args:
         scalar_product(licch.global_model.grad, licch.global_model.grad),
-    'l2_norm_loc': lambda licch, args: 0,
-    'diff_loc': lambda licch, args: 0,
-    'diff_glob': lambda licch, args: 0,
-    'diff_s': lambda licch, args: 0
+    'l2_norm_loc': lambda licch, args: _metric_norm_loc,
+    'diff_loc': lambda licch, args: _metric_diff_loc,
+    'diff_glob': lambda licch, args: _metric_diff_glob,
+    'diff_s': lambda licch, args: _metric_diff_s
 }
 
 

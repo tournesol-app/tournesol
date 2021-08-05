@@ -1,5 +1,4 @@
 import torch
-from copy import deepcopy
 from time import time
 import logging
 from logging import info as loginf
@@ -93,15 +92,18 @@ class Licchavi():
 
         self.get_model = get_model  # neural network to use
         self.global_model = self.get_model(nb_vids, device)
-        self.init_model = deepcopy(self.global_model)  # saved for metrics
-        self.last_grad = None
         self.opt_gen = self.opt([self.global_model], lr=self.lr_gen)
 
         self.nb_nodes = 0
         self.nodes = {}
-        self.history = {metric: [] for metric in metrics}
-
         self.users = []  # users IDs
+
+        # history stuff
+        self.history = {metric: [] for metric in metrics}
+        comparative_metrics = ['diff_loc', 'diff_glob', 'diff_s', 'grad_sp']
+        self.last_epoch = {
+            metric: None for metric in comparative_metrics if metric in metrics
+        }
 
     def _show(self, msg, level):
         """ Utility for handling logging messages
