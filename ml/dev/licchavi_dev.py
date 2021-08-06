@@ -90,7 +90,7 @@ class LicchaviDev(Licchavi):
             self.history['error_glob'].append(glob_error * factor_glob)
             self.history['error_loc'].append(loc_error * factor_loc)
 
-    def _do_epoch(self, epoch, nb_epochs):
+    def _do_epoch(self, *args):
         """ Overwritting _do_epoch to print lr """
         logging.info(f'lr_gen: {self.lr_gen}')
-        super()._do_epoch(epoch, nb_epochs)
+        return super()._do_epoch(*args)

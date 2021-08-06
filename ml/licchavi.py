@@ -315,11 +315,15 @@ class Licchavi():
                f's : {s}, generalisation : {gen}, regularisation : {reg}')
 
     # ====================  TRAINING ==================
-    def _do_epoch(self, epoch, nb_epochs):
+    def _do_epoch(self, epoch, nb_epochs, reg_loss):
         """ Trains for one epoch
 
         epoch (int): current epoch
         nb_epochs (int): (maximum) number of epochs
+        reg_loss (float tensor): regulation term of loss
+
+        Returns:
+            (float tensor): regulation term of loss (actualized)
         """
         self._show("epoch {}/{}".format(epoch, nb_epochs), 1)
         time_ep = time()
@@ -354,6 +358,7 @@ class Licchavi():
         update_hist(self, (fit_loss, s_loss, gen_loss, reg_loss, epoch))
         self._old(1)  # aging all nodes of 1 epoch
         self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
+        return reg_loss  # to have it next epoch
 
     def train(self, nb_epochs=1, compute_uncertainty=False):
         """ training loop
@@ -370,13 +375,14 @@ class Licchavi():
         time_train = time()
 
         # training loop
+        reg_loss = 0  # for epoch 0 if verb=2
         for epoch in range(1, nb_epochs + 1):
             early_stop = self._lr_schedule(epoch)
             if early_stop:
                 break  # don't do this epoch nor any other
             self._set_lr()
             self._regul_s()
-            self._do_epoch(epoch, nb_epochs)
+            reg_loss = self._do_epoch(epoch, nb_epochs, reg_loss)
 
         loginf('END OF TRAINING\n'
                f'Training time: {round(time() - time_train, 2)}')

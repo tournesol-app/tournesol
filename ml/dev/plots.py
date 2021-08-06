@@ -76,7 +76,6 @@ def _means_bounds(arr):
     - array of (mean - var)
     - array of (mean + var)
     '''
-    print(arr)
     means = np.mean(arr, axis=0)
     var = np.var(arr, axis=0)
     low, up = means - var, means + var
