@@ -1,4 +1,5 @@
 import logging
+import gin
 
 from tournesol.models.video import (
                             ComparisonCriteriaScore, ContributorRating,
@@ -6,7 +7,7 @@ from tournesol.models.video import (
 from django.core.management.base import BaseCommand
 
 from settings.settings import CRITERIAS
-from ml.core import ml_run, TOURNESOL_DEV
+from ml.core import ml_run, TOURNESOL_DEV, HP_PATH
 
 """
 Machine Learning main python file
@@ -44,6 +45,9 @@ USAGE:
     mode
 - run "python manage.py ml_train"
 """
+
+# parse parameters written in "hyperparameters.gin"
+gin.parse_config_file(HP_PATH)
 
 
 def fetch_data():

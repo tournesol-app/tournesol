@@ -10,6 +10,7 @@ from ml.handle_data import (
 
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
+HP_PATH = 'ml/hyperparameters.gin'
 FOLDER_PATH = "ml/checkpoints/"
 FILENAME = "models_weights"
 PATH = FOLDER_PATH + FILENAME
@@ -174,7 +175,3 @@ def ml_run(
     if TOURNESOL_DEV:  # return more information in dev mode
         return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
     return glob_scores, loc_scores
-
-
-# parse parameters written in "hyperparameters.gin"
-gin.parse_config_file('ml/hyperparameters.gin')

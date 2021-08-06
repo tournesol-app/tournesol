@@ -1,4 +1,5 @@
 import logging
+import gin
 
 from django.core.management.base import BaseCommand
 
@@ -20,6 +21,9 @@ USAGE:
 - set env variable TOURNESOL_DEV to 1 to use this module
 - run "python manage.py ml_train_dev"
 """
+
+# parse parameters written in "hyperparameters_dev.gin"
+gin.parse_config_file('ml/dev/hyperparameters_dev.gin')
 
 
 class Command(BaseCommand):

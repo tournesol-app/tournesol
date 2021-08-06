@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import gin
 
 from ml.data_utility import (
     rescale_rating, get_all_vids, get_mask,
@@ -12,7 +13,7 @@ from ml.metrics import (
     scalar_product, _random_signs, get_uncertainty_glob,
     check_equilibrium_glob, check_equilibrium_loc, get_uncertainty_loc)
 from ml.licchavi import Licchavi, get_model, get_s
-from ml.core import _set_licchavi, _train_predict, ml_run
+from ml.core import _set_licchavi, _train_predict, ml_run, HP_PATH
 
 
 """
@@ -20,6 +21,9 @@ Test module for ml
 
 Main file is "ml_train.py"
 """
+
+# parse parameters written in "hyperparameters.gin"
+gin.parse_config_file(HP_PATH)
 
 
 TEST_DATA = [
