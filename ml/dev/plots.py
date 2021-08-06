@@ -105,40 +105,15 @@ def _plotfull_var(l_hist, l_metrics, title=None, path=None):
     _title_save(title, path, suff="{}.png".format(METRICS[metric]["f_name"]))
 
 
-# ------- groups of metrics on a same plot -----------
-def loss_var(l_hist, title=None, path=None):
-    """ plot losses with variance from a list of historys """
+# plotting all the metrics we have
+def plot_metrics(l_hist, title=None, path=None):
+    """plot and save the different metrics from list of historys"""
     _plotfull_var(
         l_hist, ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
         title, path
     )
-
-
-def l2_var(l_hist, title=None, path=None):
-    """plot l2 norm of gen model from a list of historys"""
     _plotfull_var(l_hist, ['l2_norm'], title, path)
-
-
-def gradsp_var(l_hist, title=None, path=None):
-    """ plot scalar product of gradients between 2 consecutive epochs
-        from a list of historys
-    """
     _plotfull_var(l_hist, ['grad_sp', 'grad_norm'], title, path)
-
-
-def error_var(l_hist, title=None, path=None):
-    """ Plots difference between predictions and ground truths
-    from a list of historys
-    """
-    _plotfull_var(l_hist, ['error_glob', 'error_loc'], title, path)
-
-
-# plotting all the metrics we have
-def plot_metrics(l_hist, title=None, path=None):
-    """plot and save the different metrics from list of historys"""
-    loss_var(l_hist, title, path)
-    l2_var(l_hist, title, path)
-    gradsp_var(l_hist, title, path)
     _plotfull_var(l_hist, ['norm_loc'], title, path)
     _plotfull_var(l_hist, ['diff_loc'], title, path)
     _plotfull_var(l_hist, ['diff_glob'], title, path)
@@ -160,7 +135,7 @@ def plot_density(tens, title=None, path=None, name="hist.png"):
     _title_save(title, path, name)
 
 
-# cloud of points
+# -------- clouds of points ----------
 def plot_s_predict_gt(s_predict, s_gt, path, name='s_correlation.png'):
     """ Saves cloud of point of s parameters (test mode only)
 
