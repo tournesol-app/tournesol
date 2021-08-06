@@ -13,24 +13,20 @@ Main file is "ml_train.py"
 """
 
 INTENS = 0.4  # intensity of coloration
-# tuple of dic of label, ordinate legend, filename
-METRICS = {
-    'loss_fit': {"lab": 'loss_fit', "ord": "Training Loss", "f_name": "loss"},
-    'loss_s': {"lab": 'loss_s', "ord": "Training Loss", "f_name": "loss"},
-    'loss_gen': {"lab": 'loss_gen', "ord": "Training Loss", "f_name": "loss"},
-    'loss_reg': {"lab": 'loss_reg', "ord": "Training Loss", "f_name": "loss"},
-    'l2_norm': {"lab": "l2_norm", "ord": "l2 norm", "f_name": "l2norm"},
-    'grad_sp': {"lab": "grad_sp", "ord": "Scalar Product", "f_name": "grad"},
-    'grad_norm': {
-        "lab": "grad_norm", "ord": "Scalar Product", "f_name": "grad"},
-    'error_glob': {
-        "lab": "error_glob", "ord": 'Error', "f_name": "error_glob"},
-    'error_loc': {"lab": "error_loc", "ord": 'Error', "f_name": "error_loc"},
-    'norm_loc': {"lab": "norm_loc", "ord": 'norm', "f_name": "norm_loc"},
-    'diff_glob': {"lab": "diff_glob", "ord": 'Diff', "f_name": "diff_glob"},
-    'diff_loc': {"lab": "diff_loc", "ord": 'Diff', "f_name": "diff_loc"},
-    'diff_s': {"lab": "diff_s", "ord": 'Diff', "f_name": "diff_s"},
-}  # FIXME simplify
+
+PLOTS = {
+    'loss': ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
+    'l2norm': ['l2_norm'],
+    'grad': ['grad_sp', 'grad_norm'],
+    'norm_loc': ['norm_loc'],
+    'diff_glob': ['diff_glob'],
+    'diff_loc': ['diff_loc'],
+    'diff_s': ['diff_s'],
+
+    # in test mode only (generated data)
+    'error_glob': ['error_glob'],
+    'error_loc': ['error_loc'],
+}
 
 
 def get_style():
@@ -83,8 +79,9 @@ def _means_bounds(arr):
 
 
 # ------------- utility for what follows -------------------------
-def _plot_var(l_hist, l_metrics):
+def _plot_var(l_hist, plot_name):
     """ add curve of asked indexes of history to the plot """
+    l_metrics = PLOTS[plot_name]
     epochs = range(1, len(l_hist[0][l_metrics[0]]) + 1)
     for metric in l_metrics:
         vals = np.asarray(
@@ -92,35 +89,25 @@ def _plot_var(l_hist, l_metrics):
         )
         vals_m, vals_l, vals_u = _means_bounds(vals)
         style, color = next(STYLES), next(COLORS)
-        plt.plot(epochs, vals_m, label=METRICS[metric]["lab"],
+        plt.plot(epochs, vals_m, label=metric,
                  linestyle=style, color=color)
         plt.fill_between(epochs, vals_u, vals_l, alpha=INTENS, color=color)
 
 
-def _plotfull_var(l_hist, l_metrics, title=None, path=None):
+def _plotfull_var(l_hist, plot_name, title=None, path=None):
     """ plot metrics asked in -l_metrics and save if -path provided """
+    l_metrics = PLOTS[plot_name]
     if all([metric in l_hist[0] for metric in l_metrics]):
-        _plot_var(l_hist, l_metrics)
-        metric = l_metrics[0]
-        _legendize(METRICS[metric]["ord"])
-        _title_save(title, path, "{}.png".format(METRICS[metric]["f_name"]))
+        _plot_var(l_hist, plot_name)
+        _legendize(plot_name)
+        _title_save(title, path, plot_name + '.png')
 
 
 # plotting all the metrics we have
 def plot_metrics(l_hist, title=None, path=None):
-    """plot and save the different metrics from list of historys"""
-    _plotfull_var(
-        l_hist, ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
-        title, path
-    )
-    _plotfull_var(l_hist, ['l2_norm'], title, path)
-    _plotfull_var(l_hist, ['grad_sp', 'grad_norm'], title, path)
-    _plotfull_var(l_hist, ['norm_loc'], title, path)
-    _plotfull_var(l_hist, ['diff_loc'], title, path)
-    _plotfull_var(l_hist, ['diff_glob'], title, path)
-    _plotfull_var(l_hist, ['diff_s'], title, path)
-    _plotfull_var(l_hist, ['error_glob'], title, path)
-    _plotfull_var(l_hist, ['error_loc'], title, path)
+    """ Plots and saves the different metrics from list of historys """
+    for plot_name in PLOTS:
+        _plotfull_var(l_hist, plot_name, title, path)
 
 
 # histogram
