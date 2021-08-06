@@ -1,5 +1,4 @@
 import torch
-import gin
 
 """
 Losses used in "licchavi.py"
@@ -9,7 +8,7 @@ Main file is "ml_train.py"
 
 
 def predict(input, tens, mask=None):
-    ''' Predicts score according to a model
+    """ Predicts score according to a model
 
     Args:
         input (bool 2D tensor): one line is a one-hot encoded video index
@@ -18,7 +17,7 @@ def predict(input, tens, mask=None):
 
     Returns:
         (2D float tensor): score of the videos according to the model
-    '''
+    """
     if input.shape[1] == 0:  # if empty input
         return torch.zeros((1, 1))
     if mask is not None:
@@ -32,7 +31,7 @@ def predict(input, tens, mask=None):
 
 # losses (used in licchavi.py)
 def _bbt_loss(t, r):
-    ''' Binomial Bradley-Terry loss function (used for test only)
+    """ Binomial Bradley-Terry loss function (used for test only)
 
     Used only for testing
 
@@ -42,7 +41,7 @@ def _bbt_loss(t, r):
 
     Returns:
         (float tensor): sum of empirical losses for all comparisons of one user
-    '''
+    """
     two = torch.tensor(2)
     losses = torch.log(torch.sinh(t)/t) + r * t + torch.log(two)
     return sum(losses)
@@ -50,7 +49,7 @@ def _bbt_loss(t, r):
 
 @torch.jit.script  # to optimize computation time
 def _approx_bbt_loss(t, r):
-    ''' Approximated Binomial Bradley-Terry loss function (used in Licchavi)
+    """ Approximated Binomial Bradley-Terry loss function (used in Licchavi)
 
     Args:
         t (float tensor): batch of (ya - yb)
@@ -58,7 +57,7 @@ def _approx_bbt_loss(t, r):
 
     Returns:
         (float tensor): sum of empirical losses for all comparisons of one user
-    '''
+    """
 
     small = abs(t) <= 0.01
     medium = torch.logical_and((abs(t) < 10), (abs(t) > 0.01))
@@ -117,19 +116,19 @@ def get_fit_loss(model, s, a_batch, b_batch, r_batch, vidx=-1):
 
 
 def get_s_loss(s):
-    ''' Scaling loss for one node
+    """ Scaling loss for one node
 
     Args:
         s (float tensor): s parameter.
 
     Returns:
         float tensor: second half of local loss
-    '''
+    """
     return 0.5 * s**2 - torch.log(s)
 
 
 def models_dist(model1, model2, pow=(1, 1), mask=None, vidx=-1):
-    ''' distance between 2 models (l1 by default)
+    """ distance between 2 models (l1 by default)
 
     Args:
         model1 (float tensor): scoring model
@@ -140,7 +139,7 @@ def models_dist(model1, model2, pow=(1, 1), mask=None, vidx=-1):
 
     Returns:
         (scalar float tensor): distance between the 2 models
-    '''
+    """
     q, p = pow
     if vidx == -1:  # if we want several coordinates
         if mask is None:  # if we want all coordinates
@@ -164,9 +163,8 @@ def _huber(x, d):
     return d * (torch.sqrt(1 + (x/d)**2) - 1)
 
 
-@gin.configurable
 def models_dist_huber(model1, model2, mask=None, s=1, vidx=-1, d=1):
-    ''' Pseudo-Huber distance between 2 models
+    """ Pseudo-Huber distance between 2 models
 
     Args:
         model1 (float tensor): scoring model
@@ -179,7 +177,7 @@ def models_dist_huber(model1, model2, mask=None, s=1, vidx=-1, d=1):
 
     Returns:
         (scalar float tensor): distance between the 2 models
-    '''
+    """
     if vidx == -1:  # if we want several coordinates
         if mask is None:  # if we want all coordinates
             dist = (_huber(s * (model1 - model2), d)).sum()
@@ -191,7 +189,7 @@ def models_dist_huber(model1, model2, mask=None, s=1, vidx=-1, d=1):
 
 
 def model_norm(model, pow=(2, 1), vidx=-1):
-    ''' norm of a model (l2 squared by default)
+    """ norm of a model (l2 squared by default)
 
     Args:
         model (float tensor): scoring model
@@ -200,7 +198,7 @@ def model_norm(model, pow=(2, 1), vidx=-1):
 
     Returns:
         (float scalar tensor): norm of the model
-    '''
+    """
     q, p = pow
     if vidx != -1:  # if we use only one video
         return abs(model[vidx])**(q*p)
@@ -246,7 +244,7 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):  # FIXME shorten
         )
         gen_loss += node.w * g  # node weight  * generalisation term
     else:  # if we want all users
-        for node in licch.nodes.values():
+        for id, node in licch.nodes.items():
             fit_loss += get_fit_loss(
                 node.model,  # local model
                 node.s,     # s
@@ -257,6 +255,7 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):  # FIXME shorten
             )
             if vidx == -1:  # only if all loss is computed
                 s_loss += licch.nu * get_s_loss(node.s)
+
             g = models_dist_huber(
                 node.model,    # local model
                 licch.global_model,  # general model
@@ -297,7 +296,7 @@ def loss_gen_reg(licch, vidx=-1):
 
 
 def round_loss(tens, dec=0):
-    ''' from an input scalar tensor or int/float returns rounded int/float '''
+    """ from an input scalar tensor or int/float returns rounded int/float """
     if type(tens) is int or type(tens) is float:
         return round(tens, dec)
     else:

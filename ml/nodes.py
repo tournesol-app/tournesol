@@ -43,7 +43,7 @@ class Node:
 
         self.nb_comps = self._count_comps()  # number of comparisons
         self.delta_na = 1 / torch.sqrt(self.nb_comps)  # needed for loss later
-        _ = torch.nan_to_num_(self.delta_na)  # avoiding NaNs
+        _ = torch.nan_to_num_(self.delta_na, posinf=1)  # avoiding NaNs
 
     def _count_comps(self):
         """ Counts number of comparisons for each video

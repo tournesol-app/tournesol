@@ -17,14 +17,14 @@ Licchavi.w0 = 1  # regularisation term ponderation
 
 # Training hyperparameters
 Licchavi.lr_node = 1  # learning rate of local models
-Licchavi.lr_s = 0.05  # learning rate of s individual parameters
-Licchavi.lr_gen = 0.05  # learning rate of general model
+Licchavi.lr_s = 0.005  # learning rate of s individual parameters
+Licchavi.lr_gen = 0.1  # learning rate of general model
 Licchavi.gen_freq = 1  # number of general model steps for one local step
 
 
 # learning rate scheduler
-_lr_schedule.lr_rush_duration = 20  # duration of "rush phase" (nb of epochs)
-_lr_schedule.decay_rush = 0.9  # decay during "rush phase"
+_lr_schedule.lr_rush_duration = 50  # duration of "rush phase" (nb of epochs)
+_lr_schedule.decay_rush = 0.97  # decay during "rush phase"
 _lr_schedule.decay_fine = 1  # decay during fine tuning phase
 _lr_schedule.min_lr_fine = 0.001  # minimum (local) learning rate
 

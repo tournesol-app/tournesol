@@ -51,14 +51,14 @@ def _fake_loc_scores(distribution, glob_scores, loc_noise):
 
 
 def _fake_s(nb_s, multiple_scales=True):
-    ''' Returns random s parameters
+    """ Returns random s parameters
 
     nb_s (int): number of s parameters required
     multiple_scales (bool): wether to draw s parameters or set all to 1
 
     Returns:
         (float array): random independant s parameters
-    '''
+    """
     if multiple_scales:
         return np.random.gamma(4, scale=0.3, size=nb_s)
     return np.ones(nb_s)

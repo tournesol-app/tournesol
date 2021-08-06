@@ -53,7 +53,7 @@ def _set_licchavi(
         fullpath=None, resume=False,
         verb=2, device='cpu',
         ground_truths=None, licchavi_class=Licchavi):
-    ''' Shapes data and inputs it in Licchavi to initialize
+    """ Shapes data and inputs it in Licchavi to initialize
 
     comparison_data (list of lists): output of fetch_data()
     criteria (str): rating criteria
@@ -69,7 +69,7 @@ def _set_licchavi(
     Returns :
         (Licchavi()): Licchavi object initialized with data
         (int array): array of users IDs in order
-    '''
+    """
     # shape data
     one_crit_data = select_criteria(comparison_data, criteria)
     full_data = shape_data(one_crit_data)
@@ -96,7 +96,7 @@ def _set_licchavi(
 def _train_predict(
         licch, epochs,
         fullpath=None, save=False, verb=2, compute_uncertainty=False):
-    ''' Trains models and returns video scores for one criteria
+    """ Trains models and returns video scores for one criteria
 
     licch (Licchavi()): licchavi object innitialized with data
     epochs (int): maximum number of training epochs
@@ -110,7 +110,7 @@ def _train_predict(
     (float list list, float list): uncertainty of local scores,
                                     uncertainty of global scores
                                     (None, None) if not computed
-    '''
+    """
     uncertainties = licch.train(
         epochs,
         compute_uncertainty=compute_uncertainty)

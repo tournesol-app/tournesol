@@ -30,15 +30,15 @@ NAME = ""
 def run_experiment(comparison_data):
     """ trains and outputs some stats """
     from ..core import ml_run
-    seedall(65498722)
+    seedall(654)
     # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
     #     5, 3, 5,  # 40, 27, 30,
     #     dens=0.8,
     #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        comparison_data[:10000],
-        epochs=10,
+        comparison_data[:],
+        epochs=100,
         criterias=["reliability"],
         licchavi_class=LicchaviDev,
         resume=False,

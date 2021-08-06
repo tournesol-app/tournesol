@@ -6,7 +6,7 @@ from ml.licchavi import Licchavi
 
 if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
-    
+
 """ LicchaviDev(Licchavi) class used for experiments only
 
 Allows to use ground truths of generated data
@@ -92,5 +92,4 @@ class LicchaviDev(Licchavi):
 
     def _do_epoch(self, *args):
         """ Overwritting _do_epoch to print lr """
-        logging.info(f'lr_gen: {self.lr_gen}')
         return super()._do_epoch(*args)

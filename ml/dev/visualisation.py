@@ -22,7 +22,7 @@ replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
 
 # debug helpers
 def check_one(vid, comp_glob, comp_loc):
-    ''' prints global and local scores for one video '''
+    """ prints global and local scores for one video """
     print("all we have on video: ", vid)
     for score in comp_glob:
         if score[0] == vid:
@@ -33,7 +33,7 @@ def check_one(vid, comp_glob, comp_loc):
 
 
 def seedall(s):
-    ''' seeds all sources of randomness '''
+    """ seeds all sources of randomness """
     reproducible = (s >= 0)
     torch.manual_seed(s)
     random.seed(s)
@@ -44,7 +44,7 @@ def seedall(s):
 
 
 def disp_one_by_line(it):
-    ''' prints one iteration by line '''
+    """ prints one iteration by line """
     for obj in it:
         print(obj)
 
@@ -97,7 +97,7 @@ def print_s(licch):
 
 
 def licch_stats(licch):
-    ''' gives some statistics about Licchavi object '''
+    """ gives some statistics about Licchavi object """
     print('LICCH_SATS')
     licch.check()  # some tests
     h = licch.history
@@ -116,10 +116,10 @@ def licch_stats(licch):
 
 
 def scores_stats(glob_scores):
-    ''' gives statistics on global scores
+    """ gives statistics on global scores
 
     glob_scores: torch tensor of global scores
-    '''
+    """
     print('SCORES_STATS')
     var = torch.var(glob_scores)
     mini, maxi = (torch.min(glob_scores).item(),

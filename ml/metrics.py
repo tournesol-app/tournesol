@@ -17,14 +17,14 @@ Main file "ml_train.py"
 
 # metrics on models
 def scalar_product(l_grad1, l_grad2):
-    ''' scalar product of 2 lists of gradients
+    """ scalar product of 2 lists of gradients
 
     l_grad1 (float tensor list): list of gradients of a model
     l_grad2 (float tensor list): list of gradients of a model
 
     Returns:
         (float): scalar product of the gradients
-    '''
+    """
     s = 0
     for g1, g2 in zip(l_grad1, l_grad2):
         s += (g1 * g2).sum()

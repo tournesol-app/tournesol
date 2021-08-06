@@ -34,14 +34,14 @@ METRICS = {
 
 
 def get_style():
-    '''gives different line styles for plots'''
+    """gives different line styles for plots"""
     styles = ["-", "-.", ":", "--"]
     for i in range(10000):
         yield styles[i % 4]
 
 
 def get_color():
-    '''gives different line colors for plots'''
+    """gives different line colors for plots"""
     colors = ["red", "green", "blue", "grey"]
     for i in range(10000):
         yield colors[i % 4]
@@ -52,7 +52,7 @@ COLORS = get_color()
 
 
 def _title_save(title=None, path=None, suff=".png"):
-    ''' Adds title and saves plot '''
+    """ Adds title and saves plot """
     if title is not None:
         plt.title(title)
     if path is not None:
@@ -61,21 +61,21 @@ def _title_save(title=None, path=None, suff=".png"):
 
 
 def _legendize(y, x="Epochs"):
-    ''' Labels axis of plt plot '''
+    """ Labels axis of plt plot """
     plt.xlabel(x)
     plt.ylabel(y)
     plt.legend()
 
 
 def _means_bounds(arr):
-    '''
+    """
     arr: 2D array of values (one line is one run)
 
     Returns:
     - array of means
     - array of (mean - var)
     - array of (mean + var)
-    '''
+    """
     means = np.mean(arr, axis=0)
     var = np.var(arr, axis=0)
     low, up = means - var, means + var
@@ -84,7 +84,7 @@ def _means_bounds(arr):
 
 # ------------- utility for what follows -------------------------
 def _plot_var(l_hist, l_metrics):
-    ''' add curve of asked indexes of history to the plot '''
+    """ add curve of asked indexes of history to the plot """
     epochs = range(1, len(l_hist[0]['loss_fit']) + 1)
     for metric in l_metrics:
         vals = np.asarray(
@@ -98,7 +98,7 @@ def _plot_var(l_hist, l_metrics):
 
 
 def _plotfull_var(l_hist, l_metrics, title=None, path=None):
-    ''' plot metrics asked in -l_metrics and save if -path provided '''
+    """ plot metrics asked in -l_metrics and save if -path provided """
     _plot_var(l_hist, l_metrics)
     metric = l_metrics[0]
     _legendize(METRICS[metric]["ord"])
@@ -107,7 +107,7 @@ def _plotfull_var(l_hist, l_metrics, title=None, path=None):
 
 # ------- groups of metrics on a same plot -----------
 def loss_var(l_hist, title=None, path=None):
-    ''' plot losses with variance from a list of historys '''
+    """ plot losses with variance from a list of historys """
     _plotfull_var(
         l_hist, ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
         title, path
@@ -115,27 +115,27 @@ def loss_var(l_hist, title=None, path=None):
 
 
 def l2_var(l_hist, title=None, path=None):
-    '''plot l2 norm of gen model from a list of historys'''
+    """plot l2 norm of gen model from a list of historys"""
     _plotfull_var(l_hist, ['l2_norm'], title, path)
 
 
 def gradsp_var(l_hist, title=None, path=None):
-    ''' plot scalar product of gradients between 2 consecutive epochs
+    """ plot scalar product of gradients between 2 consecutive epochs
         from a list of historys
-    '''
+    """
     _plotfull_var(l_hist, ['grad_sp', 'grad_norm'], title, path)
 
 
 def error_var(l_hist, title=None, path=None):
-    ''' Plots difference between predictions and ground truths
+    """ Plots difference between predictions and ground truths
     from a list of historys
-    '''
+    """
     _plotfull_var(l_hist, ['error_glob', 'error_loc'], title, path)
 
 
 # plotting all the metrics we have
 def plot_metrics(l_hist, title=None, path=None):
-    '''plot and save the different metrics from list of historys'''
+    """plot and save the different metrics from list of historys"""
     loss_var(l_hist, title, path)
     l2_var(l_hist, title, path)
     gradsp_var(l_hist, title, path)
