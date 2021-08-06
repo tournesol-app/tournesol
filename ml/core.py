@@ -7,8 +7,7 @@ from ml.licchavi import Licchavi
 from ml.handle_data import (
     select_criteria, shape_data, distribute_data,
     distribute_data_from_save, format_out_loc, format_out_glob)
-from ml.dev.visualisation import (licch_stats, scores_stats, s_stats, 
-                                  uncert_stats)
+
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
 FOLDER_PATH = "ml/checkpoints/"
@@ -16,6 +15,37 @@ FILENAME = "models_weights"
 PATH = FOLDER_PATH + FILENAME
 os.makedirs(FOLDER_PATH, exist_ok=True)
 logging.basicConfig(filename="ml/ml_logs.log", level=logging.INFO)
+
+
+def _get_licchavi(
+        nb_vids, vid_vidx, criteria,
+        device, verb, ground_truths, licchavi_class):
+    """ Used to decide wether to use Licchavi() or LicchaviDev() class
+
+    nb_vids (int): number of videos
+    vid_vidx (dictionnary): dictionnary of {video ID: video index}
+    criteria (str): comparison criteria learnt
+    device (str): device used (cpu/gpu)
+    ground_truths (float array, couples list list, float array)
+    verb (float): verbosity level
+    global, local and s parmaeters ground truths (test mode only)
+    licchavi_class (Licchavi()): training structure used
+                                        (Licchavi or LicchaviDev)
+
+    Returns:
+        (Licchavi()): Licchavi or LicchaviDev object
+    """
+    if licchavi_class == Licchavi:
+        return Licchavi(
+            nb_vids, vid_vidx, criteria, verb=verb)
+    # only in dev mode
+    else:
+        test_mode = ground_truths is not None
+        licch = licchavi_class(
+            nb_vids, vid_vidx, criteria, test_mode, device, verb)
+        if test_mode:
+            licch.set_ground_truths(*ground_truths)
+        return licch
 
 
 def _set_licchavi(
@@ -26,6 +56,7 @@ def _set_licchavi(
     verb=2,
     device="cpu",
     ground_truths=None,
+    licchavi_class=Licchavi,
 ):
     """Shapes data and inputs it in Licchavi to initialize
 
@@ -35,8 +66,10 @@ def _set_licchavi(
     resume (bool): wether to resume previous training or not
     verb (int): verbosity level
     device (str): device used (cpu/gpu)
-    ground_truths (float array, couples list list): global and local ground
-                                                    truths (generated scores)
+    ground_truths (float array, couples list list, float array):
+        global, local and s parmaeters ground truths (test mode only)
+    licchavi_class (Licchavi()): training structure used
+                                        (Licchavi or LicchaviDev)
 
     Returns :
         (Licchavi()): Licchavi object initialized with data
@@ -45,20 +78,32 @@ def _set_licchavi(
     # shape data
     one_crit_data = select_criteria(comparison_data, criteria)
     full_data = shape_data(one_crit_data)
-    test_mode = ground_truths is not None
     # set licchavi using data
     if resume:
         nodes_dic, users_ids, vid_vidx = distribute_data_from_save(
             full_data, fullpath, device
         )
-        licch = Licchavi(len(vid_vidx), vid_vidx, criteria, test_mode, device, verb)
+        licch = _get_licchavi(
+            len(vid_vidx), 
+            vid_vidx, 
+            criteria,
+            device, 
+            verb, 
+            ground_truths, 
+            licchavi_class
+        )
         licch.load_and_update(nodes_dic, users_ids, fullpath)
     else:
         nodes_dic, users_ids, vid_vidx = distribute_data(full_data, device)
-        licch = Licchavi(len(vid_vidx), vid_vidx, criteria, test_mode, device, verb)
+        licch = _get_licchavi(
+            len(vid_vidx), 
+            vid_vidx, criteria,
+            device, 
+            verb, 
+            ground_truths, 
+            licchavi_class
+        )
         licch.set_allnodes(nodes_dic, users_ids)
-    if test_mode:
-        licch.set_ground_truths(*ground_truths)
     return licch, users_ids  # FIXME we can do without users_ids ?
 
 
@@ -76,7 +121,7 @@ def _train_predict(
     Returns :
     - (list of all vIDS , tensor of global video scores)
     - (list of arrays of local vIDs , list of tensors of local video scores)
-    (float list list, float list): uncertainty of local scores, 
+    (float list list, float list): uncertainty of local scores,
                                     uncertainty of global scores
                                     (None, None) if not computed
     """
@@ -86,12 +131,6 @@ def _train_predict(
     glob, loc = licch.output_scores()
     if save:
         licch.save_models(fullpath)
-    if TOURNESOL_DEV:  # some prints and plots
-        licch_stats(licch)
-        scores_stats(glob[1])
-        s_stats(licch)
-        if uncertainties[1] is not None:
-            uncert_stats(licch, uncertainties[1])
     return glob, loc, uncertainties
 
 
@@ -106,6 +145,7 @@ def ml_run(
     device="cpu",
     ground_truths=None,
     compute_uncertainty=False,
+    licchavi_class=Licchavi,
 ):
     """Runs the ml algorithm for all criterias
 
@@ -116,13 +156,17 @@ def ml_run(
     save (bool): wether to save result of training or not
     verb (int): verbosity level
     device (str): device used (cpu/gpu)
+    ground_truths (float array, couples list list, float array):
+        global, local and s parmaeters ground truths (test mode only)
+    licchavi_class (Licchavi()): training structure used
+                                        (Licchavi or LicchaviDev)
 
     Returns:
-    - video_scores: list of [video_id: int, criteria_name: str,
+        (list list): list of [video_id: int, criteria_name: str,
                                 score: float, uncertainty: float]
-    - contributor_rating_scores: list o
-    [   contributor_id: int, video_id: int, criteria_name: str,
-        score: float, uncertainty: float]
+        (list list): list of
+        [   contributor_id: int, video_id: int, criteria_name: str,
+            score: float, uncertainty: float]
     """  # FIXME: not better to regroup contributors in same list or smthg ?
     ml_run_time = time()
     glob_scores, loc_scores = [], []
@@ -133,11 +177,14 @@ def ml_run(
 
         # preparing data
         licch, users_ids = _set_licchavi(
-            comparison_data, criteria, fullpath, resume, verb, device, ground_truths
+            comparison_data, criteria,
+            fullpath, resume, verb, device,
+            ground_truths, licchavi_class=licchavi_class
         )
         # training and predicting
         glob, loc, uncertainties = _train_predict(
-            licch, epochs, fullpath, save, verb, compute_uncertainty=compute_uncertainty
+            licch, epochs, fullpath, save, verb, 
+            compute_uncertainty=compute_uncertainty
         )
         # putting in required shape for output
         out_glob = format_out_glob(glob, criteria, uncertainties[0])
@@ -145,7 +192,9 @@ def ml_run(
         glob_scores += out_glob
         loc_scores += out_loc
 
-    logging.info(f"ml_run() total time : {round(time() - ml_run_time)}")
+    logging.info(f'ml_run() total time : {round(time() - ml_run_time)}')
+    if TOURNESOL_DEV:  # return more information in dev mode
+        return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
     return glob_scores, loc_scores
 
 

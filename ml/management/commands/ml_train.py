@@ -1,3 +1,5 @@
+import logging
+
 from tournesol.models.video import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -130,10 +132,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         comparison_data = fetch_data()
         if TOURNESOL_DEV:
-            from ml.dev.experiments import run_experiment
-
-            run_experiment(comparison_data)
-        else:
+            logging.error('You must turn TOURNESOL_DEV to 0 to use this')
+        else:  # production mode
             glob_scores, loc_scores = ml_run(
                 comparison_data, criterias=CRITERIAS, save=True, verb=-1
             )

@@ -205,24 +205,6 @@ def test_get_s():
     assert s.shape == torch.Size([1])
 
 
-def test_test_mode():
-    """Tests on Licchavi class test mode (generated data mode)"""
-    nb_vids, nb_users, vids_per_user = 7, 2, 7
-    glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-                                            nb_vids,
-                                            nb_users,
-                                            vids_per_user,
-                                            dens=0.999
-                                            )
-    licch, _ = _set_licchavi(comps_fake, 'test', verb=-1,
-                             ground_truths=(glob_gt, loc_gt, s_gt))
-    epochs = 2
-    licch.train(epochs, -1)
-    assert nb_users == len(s_gt)
-    assert licch.test_mode
-    assert len(licch.history["error_loc"]) == epochs
-
-
 # -------- metrics.py --------------
 def test_extract_grad():
     model = torch.ones(4, requires_grad=True)
@@ -314,8 +296,13 @@ def test_ml_run():
     nb_vids, nb_users, vids_per_user = 5, 3, 5
     _, _, _, comps_fake = generate_data(nb_vids, nb_users, vids_per_user, dens=0.999)
     glob_scores, contributor_scores = ml_run(
-        comps_fake, epochs=1, criterias=["test"], resume=False, save=False, verb=-1
-    )
+        comps_fake,
+        epochs=1,
+        criterias=["test"],
+        resume=False,
+        save=False,
+        verb=-1
+    )[:2]
     assert nb_vids <= len(glob_scores) <= vids_per_user
     assert len(contributor_scores) == nb_users * vids_per_user
 
@@ -330,26 +317,26 @@ def _id_score_assert(id, score, glob):
 def test_simple_train():
     """test coherency of results for few epochs and very light data"""
     comparison_data = [
-        [1, 101, 102, "test", 100, 0],
-        [2, 100, 101, "largely_recommended", 100, 0],
-        [1, 104, 105, "test", 30, 0],
-        [99, 100, 101, "largely_recommended", 100, 0],
-        [2, 108, 107, "test", 10, 0],
-        [0, 100, 102, "test", 70, 0],
-        [0, 104, 105, "test", 70, 0],
-        [0, 109, 110, "test", 50, 0],
-        [2, 107, 108, "test", 10, 0],
-        [1, 100, 101, "test", 100, 0],
-        [3, 200, 201, "test", 85, 0],
-    ]
+                        [1, 101, 102, "test", 100, 0],
+                        [2, 100, 101, "largely_recommended", 100, 0],
+                        [1, 104, 105, "test", 30, 0],
+                        [99, 100, 101, "largely_recommended", 100, 0],
+                        [2, 108, 107, "test", 10, 0],
+                        [0, 100, 102, "test", 70, 0],
+                        [0, 104, 105, "test", 70, 0],
+                        [0, 109, 110, "test", 50, 0],
+                        [2, 107, 108, "test", 10, 0],
+                        [1, 100, 101, "test", 100, 0],
+                        [3, 200, 201, "test", 85, 0],
+                        ]
     glob_scores, loc_scores = ml_run(
         comparison_data,
         epochs=2,
         criterias=["test"],
         resume=False,
         save=True,  # FIXME change path
-        verb=-1,
-    )
+        verb=-1
+    )[:2]
     nb = [0, 0, 0, 0]
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]
@@ -379,8 +366,8 @@ def test_simple_train():
         criterias=["test"],
         resume=True,  # FIXME change path
         save=True,  # FIXME change path
-        verb=-1,
-    )
+        verb=-1
+    )[:2]
     assert glob_scores == glob_scores2
     assert loc_scores == loc_scores2
 
@@ -390,8 +377,8 @@ def test_simple_train():
         criterias=["test"],
         resume=True,
         save=False,  # FIXME change path
-        verb=-1,
-    )
+        verb=-1
+    )[:2]
     nb = [0, 0, 0, 0]
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]
