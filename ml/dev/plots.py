@@ -16,8 +16,8 @@ INTENS = 0.4  # intensity of coloration
 
 PLOTS = {
     'loss': ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
-    'l2norm': ['l2_norm'],
     'grad': ['grad_sp', 'grad_norm'],
+    'norm_glob': ['norm_glob'],
     'norm_loc': ['norm_loc'],
     'diff_glob': ['diff_glob'],
     'diff_loc': ['diff_loc'],
@@ -94,20 +94,20 @@ def _plot_var(l_hist, plot_name):
         plt.fill_between(epochs, vals_u, vals_l, alpha=INTENS, color=color)
 
 
-def _plotfull_var(l_hist, plot_name, title=None, path=None):
+def _plotfull_var(l_hist, plot_name, path=None):
     """ plot metrics asked in -l_metrics and save if -path provided """
     l_metrics = PLOTS[plot_name]
     if all([metric in l_hist[0] for metric in l_metrics]):
         _plot_var(l_hist, plot_name)
         _legendize(plot_name)
-        _title_save(title, path, plot_name + '.png')
+        _title_save(plot_name, path, plot_name + '.png')
 
 
 # plotting all the metrics we have
-def plot_metrics(l_hist, title=None, path=None):
+def plot_metrics(l_hist, path=None):
     """ Plots and saves the different metrics from list of historys """
     for plot_name in PLOTS:
-        _plotfull_var(l_hist, plot_name, title, path)
+        _plotfull_var(l_hist, plot_name, path)
 
 
 # histogram

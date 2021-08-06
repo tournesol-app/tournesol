@@ -115,7 +115,7 @@ METRICS_FUNCS = {
     'loss_s': lambda licch, args: round_loss(args[1]),
     'loss_gen': lambda licch, args: round_loss(args[2]),
     'loss_reg': lambda licch, args: round_loss(args[3]),
-    'l2_norm': lambda licch, args:
+    'norm_glob': lambda licch, args:
         round_loss(model_norm(licch.global_model, pow=(2, 0.5)), 3),
     'grad_sp': _metric_grad,
     'grad_norm': lambda licch, args:
