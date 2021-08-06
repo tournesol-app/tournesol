@@ -85,7 +85,7 @@ def _means_bounds(arr):
 # ------------- utility for what follows -------------------------
 def _plot_var(l_hist, l_metrics):
     """ add curve of asked indexes of history to the plot """
-    epochs = range(1, len(l_hist[0]['loss_fit']) + 1)
+    epochs = range(1, len(l_hist[0][l_metrics[0]]) + 1)
     for metric in l_metrics:
         vals = np.asarray(
             [hist[metric] for hist in l_hist]
@@ -99,10 +99,11 @@ def _plot_var(l_hist, l_metrics):
 
 def _plotfull_var(l_hist, l_metrics, title=None, path=None):
     """ plot metrics asked in -l_metrics and save if -path provided """
-    _plot_var(l_hist, l_metrics)
-    metric = l_metrics[0]
-    _legendize(METRICS[metric]["ord"])
-    _title_save(title, path, suff="{}.png".format(METRICS[metric]["f_name"]))
+    if all([metric in l_hist[0] for metric in l_metrics]):
+        _plot_var(l_hist, l_metrics)
+        metric = l_metrics[0]
+        _legendize(METRICS[metric]["ord"])
+        _title_save(title, path, suff="{}.png".format(METRICS[metric]["f_name"]))
 
 
 # plotting all the metrics we have
@@ -118,9 +119,8 @@ def plot_metrics(l_hist, title=None, path=None):
     _plotfull_var(l_hist, ['diff_loc'], title, path)
     _plotfull_var(l_hist, ['diff_glob'], title, path)
     _plotfull_var(l_hist, ['diff_s'], title, path)
-    if 'error_glob' in l_hist[0]:  # if we are in test mode
-        _plotfull_var(l_hist, ['error_glob'], title, path)
-        _plotfull_var(l_hist, ['error_loc'], title, path)
+    _plotfull_var(l_hist, ['error_glob'], title, path)
+    _plotfull_var(l_hist, ['error_loc'], title, path)
 
 
 # histogram
