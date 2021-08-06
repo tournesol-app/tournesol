@@ -103,7 +103,7 @@ def _plotfull_var(l_hist, l_metrics, title=None, path=None):
         _plot_var(l_hist, l_metrics)
         metric = l_metrics[0]
         _legendize(METRICS[metric]["ord"])
-        _title_save(title, path, suff="{}.png".format(METRICS[metric]["f_name"]))
+        _title_save(title, path, "{}.png".format(METRICS[metric]["f_name"]))
 
 
 # plotting all the metrics we have

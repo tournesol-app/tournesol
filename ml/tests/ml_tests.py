@@ -83,10 +83,9 @@ def test_reverse_idx():
     size = 20
     vids = np.arange(0, size, 2)
     vid_vidx = reverse_idxs(vids)  # {vid: vidx} dic
-    vids2 = np.zeros(size//2)
+    vids2 = np.zeros(size // 2)
     for vid in vids:
         vids2[vid_vidx[vid]] = vid
-    print(vids, vids2)
     assert (vids2 == vids).all()  # output can reconstitute input
     assert isinstance(vid_vidx, dict)  # output is a dictionnary
 
@@ -261,9 +260,6 @@ def test_check_equilibrium_loc():
 # --------- core.py ------------
 def test_set_licchavi():
     licch, users_ids = _set_licchavi(TEST_DATA, 'test')
-    print(type(users_ids))
-    print(np.array(licch.nodes.keys()))
-    print(licch.nodes.keys() == users_ids)
     assert list(licch.nodes.keys()) == list(users_ids)
     assert licch.lr_gen > 0
     for node in licch.nodes.values():
@@ -340,7 +336,6 @@ def test_simple_train():
         if glob[0] == 102:  # best rated video
             best = glob[2]
         if glob[0] == 100:  # worst rated video
-            print(glob)
             worst = glob[2]
         if glob[0] == 200:  # test symetric scores
             sym = glob[2]
