@@ -110,6 +110,30 @@ def _metric_diff_s(licch, args):
     return torch.sqrt(diff_s).item()
 
 
+def _metric_error_glob(licch, args):
+    """ Error between predicted and ground truths (dev mode only) """
+    with torch.no_grad():
+        glob_out, _ = licch.output_scores()
+        if len(glob_out[1]) != len(licch.glob_gt):
+            logging.error('Some videos have not been rated')
+        glob_errors = (glob_out[1] - licch.glob_gt)**2
+        glob_mean_error = float(sum(glob_errors)) / licch.nb_vids
+    return glob_mean_error
+
+
+def _metric_error_loc(licch, args):
+    """ Error between predicted and ground truths (dev mode only) """
+    loc_error, nb_loc = 0, 0
+    _, loc_out = licch.output_scores()
+    for uid, predictions in zip(licch.nodes, loc_out[1]):
+        for i, score_pred in zip(licch.loc_gt[int(uid)], predictions):
+            score_gt = licch.loc_gt[int(uid)][i]
+            loc_error += float((score_pred - score_gt)**2)
+            nb_loc += 1
+    loc_mean_error = loc_error / nb_loc
+    return loc_mean_error
+
+
 METRICS_FUNCS = {
     'loss_fit': lambda licch, args: round_loss(args[0]),
     'loss_s': lambda licch, args: round_loss(args[1]),
@@ -123,7 +147,9 @@ METRICS_FUNCS = {
     'norm_loc': _metric_norm_loc,
     'diff_loc': _metric_diff_loc,
     'diff_glob': _metric_diff_glob,
-    'diff_s': _metric_diff_s
+    'diff_s': _metric_diff_s,
+    'error_glob': _metric_error_glob,
+    'error_loc': _metric_error_loc
 }
 
 
