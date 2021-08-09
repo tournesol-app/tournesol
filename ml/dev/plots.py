@@ -79,7 +79,7 @@ def _means_bounds(arr):
 
 
 # ------------- utility for what follows -------------------------
-def _plot_var(l_hist, plot_name):
+def _plot_var(l_hist, plot_name, focus=False):
     """ add curve of asked indexes of history to the plot """
     l_metrics = PLOTS[plot_name]
     epochs = range(1, len(l_hist[0][l_metrics[0]]) + 1)
@@ -91,6 +91,8 @@ def _plot_var(l_hist, plot_name):
         style, color = next(STYLES), next(COLORS)
         plt.plot(epochs, vals_m, label=metric,
                  linestyle=style, color=color)
+        if focus:
+            plt.ylim([0, np.mean(vals_m)])
         plt.fill_between(epochs, vals_u, vals_l, alpha=INTENS, color=color)
 
 
