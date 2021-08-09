@@ -222,49 +222,41 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):  # FIXME shorten
     """
 
     fit_loss, s_loss, gen_loss = 0, 0, 0
-    if uid != -1:  # if we want only one user
-        node = licch.nodes[uid]
+
+    def _one_node_loss(fit_loss, s_loss, gen_loss, node, vidx=-1):
         fit_loss += get_fit_loss(
-            node.model,  # local model
-            node.s,     # s
-            node.vid1,  # id_batch1
-            node.vid2,  # id_batch2
+            node.model,
+            node.s,
+            node.vid1,  # idx1_batch
+            node.vid2,  # idx2_batch
             node.r,     # r_batch
-            vidx
+            vidx=vidx   # video index if we want partial loss
         )
         if vidx == -1:  # only if all loss is computed
-            s_loss += licch.nu * get_s_loss(node.s)  # FIXME not accessed?
+            s_loss += licch.nu * get_s_loss(node.s)
+
         g = models_dist_huber(
-            node.model,    # local model
-            licch.global_model,  # general model
-            mask=node.mask,     # mask
+            node.model,
+            licch.global_model,
+            mask=node.mask,
             s=node.s,
-            vidx=vidx,      # video index if we want partial loss
+            vidx=vidx,     # video index if we want partial loss
             d=node.delta_na
         )
         gen_loss += node.w * g  # node weight  * generalisation term
-    else:  # if we want all users
-        for id, node in licch.nodes.items():
-            fit_loss += get_fit_loss(
-                node.model,  # local model
-                node.s,     # s
-                node.vid1,  # id_batch1
-                node.vid2,  # id_batch2
-                node.r,     # r_batch
-                vidx=vidx
-            )
-            if vidx == -1:  # only if all loss is computed
-                s_loss += licch.nu * get_s_loss(node.s)
 
-            g = models_dist_huber(
-                node.model,    # local model
-                licch.global_model,  # general model
-                mask=node.mask,     # mask
-                s=node.s,
-                vidx=vidx,     # video index if we want partial loss
-                d=node.delta_na
+        return fit_loss, s_loss, gen_loss
+
+    if uid != -1:  # if we want only one user
+        node = licch.nodes[uid]
+        fit_loss, s_loss, gen_loss = _one_node_loss(
+            fit_loss, s_loss, gen_loss, node, vidx=vidx
+        )
+    else:  # if we want all users
+        for node in licch.nodes.values():
+            fit_loss, s_loss, gen_loss = _one_node_loss(
+                fit_loss, s_loss, gen_loss, node, vidx=vidx
             )
-            gen_loss += node.w * g  # node weight  * generalisation term
     return fit_loss, s_loss, gen_loss
 
 
