@@ -131,15 +131,19 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
         if uid % 50 == 0:
             logging.info('Node number %s', uid)
         s_param = s_params[uid]
-        nbvid = len(node)
         for vidx1, video in enumerate(node):  # for each video
-            nb_comp = int(dens * (nbvid - vidx1))  # number of comparisons
-            following_videos = range(vidx1 + 1, nbvid)
-            pick_idxs = random.sample(following_videos, nb_comp)
+            nb_comp = int(dens * (len(node) - vidx1))  # number of comparisons
+            pick_idxs = random.sample(range(vidx1 + 1, len(node)), nb_comp)
             for vidx2 in pick_idxs:  # for each second video drawn
                 rating = _get_rd_rate(video[1], node[vidx2][1], s_param)
-                rate = _unscale_rating(rating)  # rescale to [0, 100]
-                comp = [uid, video[0], node[vidx2][0], crit, rate, 0]
+                comp = [
+                    uid,
+                    video[0],
+                    node[vidx2][0],
+                    crit,
+                    _unscale_rating(rating),  # rescale to [0, 100]
+                    0
+                ]
                 all_comps.append(comp)
     return all_comps
 

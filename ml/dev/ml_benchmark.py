@@ -31,7 +31,7 @@ def time_this(func, iterations=1, description=""):
 
 # ------ prepare some inputs -----------
 nb_vids, nb_users, vids_per_user = 1000, 30, 30
-FAKE_DATA, _, _ = generate_data(
+_, _, _, FAKE_COMPS = generate_data(
     nb_vids,
     nb_users,
     vids_per_user,
@@ -53,14 +53,13 @@ R_BATCH = torch.ones(NB_COMPS)
 def bm_ml_run():
     """ ml_run() benchmark """
     epochs = 10
-    _, _ = ml_run(
-        FAKE_DATA,
+    _, _, _ = ml_run(
+        FAKE_COMPS,
         epochs=epochs,
         criterias=["reliability"],
         resume=False,
         save=False,
         verb=-1,
-        gpu=False
     )
 
 

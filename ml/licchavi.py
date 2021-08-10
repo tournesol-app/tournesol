@@ -244,9 +244,9 @@ class Licchavi():
     def _lr_schedule(
             self, epoch,
             # configured with gin in "hyperparameters.gin"
-            decay_rush, decay_fine,
-            precision, epsilon,
-            min_lr_fine, lr_rush_duration):
+            decay_rush=None, decay_fine=None,
+            precision=None, epsilon=None,
+            min_lr_fine=None, lr_rush_duration=None):
         """ Changes learning rates in a (hopefully) smart way
 
         epoch (int): current epoch

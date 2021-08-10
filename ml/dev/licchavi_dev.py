@@ -13,6 +13,7 @@ if not TOURNESOL_DEV:
 
 
 class LicchaviDev(Licchavi):
+    """ Licchavi class for development experiments """
     def __init__(
             self, nb_vids, vid_vidx, crit,
             test_mode=False, device='cpu', verb=1):
