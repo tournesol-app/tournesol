@@ -1,16 +1,18 @@
-from ml.core import TOURNESOL_DEV
-from .licchavi_dev import LicchaviDev
-from .visualisation import seedall, disp_one_by_line, output_infos
-from .fake_data import generate_data
-
-if not TOURNESOL_DEV:
-    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 """
 Not used in production, for testing only
 Module called from "ml_train_dev.py" only if env var TOURNESOL_DEV is True
 
 Used to perform some tests on ml algorithm (custom data, plots, ...)
 """
+
+from ml.core import TOURNESOL_DEV
+from .licchavi_dev import LicchaviDev
+from .visualisation import seedall, disp_one_by_line, output_infos
+from ..core import ml_run
+
+
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 
 
 TEST_DATA = [
@@ -29,7 +31,6 @@ NAME = ""
 
 def run_experiment(comparison_data):
     """ trains and outputs some stats """
-    from ..core import ml_run
     seedall(654)
     # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
     #     40, 27, 30,
