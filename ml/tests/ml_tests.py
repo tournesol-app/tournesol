@@ -175,8 +175,8 @@ def test_models_dist_huber():
     model1 = torch.tensor([1, 2, 4, 7])
     model2 = torch.tensor([3, -2, -5, 9.2])
     mask = torch.tensor([True, False, False, True])
-    assert round_loss(models_dist_huber(model1, model2, d=d), 2) == 13.83
-    mask_res = round_loss(models_dist_huber(model1, model2, mask=mask, d=d), 2)
+    assert round_loss(models_dist_huber(model1, model2, strength=d), 2) == 13.83
+    mask_res = round_loss(models_dist_huber(model1, model2, mask=mask, strength=d), 2)
     assert mask_res == 2.65
 
 
@@ -188,7 +188,7 @@ def test_model_norm():
 # --------- licchavi.py ------------
 def test_Licchavi():
     licch = Licchavi(0, {}, "test")
-    assert type(licch.lr_node) is float or int  # gin applied parameters
+    assert type(licch.lr_loc) is float or int  # gin applied parameters
     # TODO add more tests here
 
 
@@ -261,11 +261,11 @@ def test_check_equilibrium_loc():
 def test_set_licchavi():
     licch, users_ids = _set_licchavi(TEST_DATA, 'test')
     assert list(licch.nodes.keys()) == list(users_ids)
-    assert licch.lr_gen > 0
+    assert licch.lr_glob > 0
     for node in licch.nodes.values():
         assert node.model.requires_grad is True
         assert node.model.sum() == 0
-    assert licch.w0 > 0
+    assert licch.w0_par > 0
     assert licch.global_model.requires_grad is True
     assert licch.global_model.sum() == 0
 

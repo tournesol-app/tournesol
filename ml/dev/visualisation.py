@@ -139,7 +139,7 @@ def scores_stats(glob_scores):
 def s_stats(licch):
     """ Prints and plots about s parameters """
     if licch.test_mode:
-        s_predicted = [s.detach().item() for s in licch.all_nodes('s')]
+        s_predicted = [s.detach().item() for s in licch.all_nodes('s_param')]
         plot_s_predict_gt(s_predicted, licch.s_gt, PATH_PLOTS)
 
 

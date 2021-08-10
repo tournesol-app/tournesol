@@ -10,15 +10,15 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 
 
 # Loss hyperparameters
-Licchavi.nu = 5  # scaling parameter term ponderation
-Licchavi.w = 1  # generalisation term ponderation
-Licchavi.w0 = 1  # regularisation term ponderation
+Licchavi.nu_par = 5  # scaling parameter term ponderation
+Licchavi.w_loc = 1  # generalisation term ponderation
+Licchavi.w0_par = 1  # regularisation term ponderation
 
 
 # Training hyperparameters
-Licchavi.lr_node = 1  # learning rate of local models
+Licchavi.lr_loc = 1  # learning rate of local models
 Licchavi.lr_s = 0.005  # learning rate of s individual parameters
-Licchavi.lr_gen = 0.1  # learning rate of general model
+Licchavi.lr_glob = 0.1  # learning rate of general model
 Licchavi.gen_freq = 1  # number of general model steps for one local step
 
 

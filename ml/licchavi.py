@@ -1,3 +1,19 @@
+"""
+Machine Learning algorithm, used in "core.py"
+ML model and decentralised structure are here
+
+Structure:
+- Licchavi class is the structure designed to include
+    a global model and one for each node
+-- read Licchavi __init__ comments to better understand
+
+Usage:
+- hardcode training hyperparameters in "hyperparameters.py"
+- use Licchavi.set_allnodes() to populate nodes
+- use Licchavi.train() to train the models
+- use Licchavi.output_scores() to get the results
+"""
+
 import logging
 from logging import info as loginf
 from time import time
@@ -11,37 +27,18 @@ from .metrics import (
 from .data_utility import expand_tens, one_hot_vids
 from .nodes import Node
 
-"""
-Machine Learning algorithm, used in "core.py"
 
-Organisation:
-- ML model and decentralised structure are here
-- Main file is "ml_train.py"
-
-Structure:
-- Licchavi class is the structure designed to include
-    a global model and one for each node
--- read Licchavi __init__ comments to better understand
-
-USAGE:
-- hardcode training hyperparameters in "hyperparameters.py"
-- use get_licchavi() to get an empty Licchavi structure
-- use Licchavi.set_allnodes() to populate nodes
-- use Licchavi.train() to train the models
-- use Licchavi.output_scores() to get the results
-"""
-
-
-def get_model(nb_vids, device='cpu'):
-    custom = 0
-    if custom:
-        model = torch.ones(nb_vids, device=device) * custom
+def get_model(nb_vids, device='cpu', bias_init=0):
+    """ Returns an initialized scoring model """
+    if bias_init:
+        model = torch.ones(nb_vids, device=device) * bias_init
         model.requires_grad = True
         return model
     return torch.zeros(nb_vids, requires_grad=True, device=device)
 
 
 def get_s(device='cpu'):
+    """ Returns an initialized s parameter """
     return torch.ones(1, requires_grad=True, device=device)
 
 
@@ -57,13 +54,13 @@ class Licchavi():
             verb=1,
             # configured with gin in "hyperparameters.gin"
             metrics=None,
-            lr_node=None,
+            lr_loc=None,
             lr_s=None,
-            lr_gen=None,
+            lr_glob=None,
             gen_freq=None,
-            nu=None,
-            w0=None,
-            w=None
+            nu_par=None,
+            w0_par=None,
+            w_loc=None
             ):
         """
         nb_vids (int): number of different videos rated by
@@ -82,17 +79,17 @@ class Licchavi():
         self.opt = torch.optim.SGD   # optimizer
 
         # defined in "hyperparameters.gin"
-        self.lr_node = lr_node    # local learning rate (local scores)
+        self.lr_loc = lr_loc    # local learning rate (local scores)
         self.lr_s = lr_s     # local learning rate for s parameter
-        self.lr_gen = lr_gen  # global learning rate (global scores)
+        self.lr_glob = lr_glob  # global learning rate (global scores)
         self.gen_freq = gen_freq  # generalisation frequency (>=1)
-        self.nu = nu  # importance of s_loss term
-        self.w0 = w0     # regularisation strength
-        self.w = w   # default weight for a node
+        self.nu_par = nu_par  # importance of s_loss term
+        self.w0_par = w0_par     # regularisation strength
+        self.w_loc = w_loc   # default weight for a node
 
         self.get_model = get_model  # neural network to use
         self.global_model = self.get_model(nb_vids, device)
-        self.opt_gen = self.opt([self.global_model], lr=self.lr_gen)
+        self.opt_gen = self.opt([self.global_model], lr=self.lr_glob)
 
         self.nb_nodes = 0
         self.nodes = {}
@@ -136,9 +133,9 @@ class Licchavi():
             (s, model, age), updated or default
         """
         if uid in loc_models_old:
-            s, mod, age = loc_models_old[uid]
+            s_param, mod, age = loc_models_old[uid]
             mod = expand_tens(mod, nb_new, self.device)
-            triple = (s, mod, age)
+            triple = (s_param, mod, age)
         else:
             triple = self._get_default()
         return triple
@@ -155,8 +152,8 @@ class Licchavi():
         self.nodes = {id: Node(
             *data,
             *self._get_default(),
-            self.w,
-            self.lr_node,
+            self.w_loc,
+            self.lr_loc,
             self.lr_s,
             self.opt
         ) for id, data in zip(users_ids, data_dic.values())}
@@ -175,7 +172,7 @@ class Licchavi():
         nb_new = self.nb_vids - len(dic_old)  # number of new videos
         # initialize scores for new videos
         self.global_model = expand_tens(gen_model_old, nb_new, self.device)
-        self.opt_gen = self.opt([self.global_model], lr=self.lr_gen)
+        self.opt_gen = self.opt([self.global_model], lr=self.lr_glob)
         self.users = user_ids
         nbn = len(user_ids)
         self.nb_nodes = nbn
@@ -183,8 +180,8 @@ class Licchavi():
             id: Node(
                 *data,
                 *self._get_saved(loc_models_old, id, nb_new),
-                self.w,
-                self.lr_node,
+                self.w_loc,
+                self.lr_loc,
                 self.lr_s,
                 self.opt
                ) for id, data in zip(user_ids, data_dic.values())
@@ -216,7 +213,7 @@ class Licchavi():
     def save_models(self, fullpath):
         """ Saves age and global and local weights, detached (no gradients) """
         loginf('Saving models')
-        local_data = {id:  (node.s,            # s
+        local_data = {id:  (node.s_param,            # s
                             node.model.detach(),   # model
                             node.age            # age
                             ) for id, node in self.nodes.items()}
@@ -239,9 +236,9 @@ class Licchavi():
     def _set_lr(self):
         """ Sets learning rates of optimizers """
         for node in self.nodes.values():
-            node.opt.param_groups[0]['lr'] = self.lr_node  # node optimizer
+            node.opt.param_groups[0]['lr'] = self.lr_loc  # node optimizer
             # FIXME update lr_s (not useful currently)
-        self.opt_gen.param_groups[0]['lr'] = self.lr_gen
+        self.opt_gen.param_groups[0]['lr'] = self.lr_glob
 
     @gin.configurable
     def _lr_schedule(
@@ -261,13 +258,13 @@ class Licchavi():
 
         # phase 1  : rush (high lr to increase l2 norm fast)
         if epoch <= lr_rush_duration:
-            self.lr_gen *= decay_rush
-            self.lr_node *= decay_rush
+            self.lr_glob *= decay_rush
+            self.lr_loc *= decay_rush
         # phase 2 : fine tuning (low lr), we monitor equilibrium for early stop
         elif epoch % 2 == 0:
-            if self.lr_node >= min_lr_fine / decay_fine:
-                self.lr_gen *= decay_fine
-                self.lr_node *= decay_fine
+            if self.lr_loc >= min_lr_fine / decay_fine:
+                self.lr_glob *= decay_fine
+                self.lr_loc *= decay_fine
             frac_glob = check_equilibrium_glob(epsilon, self)
             self._show(f'Global eq({epsilon}): {round(frac_glob, 3)}', 1)
             if frac_glob > precision:
@@ -300,18 +297,19 @@ class Licchavi():
     def _regul_s(self):
         """ regulate s parameters """
         for node in self.nodes.values():
-            if node.s <= 0:
+            if node.s_param <= 0:
                 with torch.no_grad():
-                    node.s[0] = 0.0001
+                    node.s_param[0] = 0.0001
                     logging.warning('Regulating negative s')
 
-    def _print_losses(self, tot, fit, s, gen, reg):
+    def _print_losses(self, tot, fit, s_param, gen, reg):
         """ Prints losses into log info """
-        fit, s = round_loss(fit, 2), round_loss(s, 2)
+        fit, s_param = round_loss(fit, 2), round_loss(s_param, 2)
         gen, reg = round_loss(gen, 2), round_loss(reg, 2)
 
         loginf(f'total loss : {tot}\nfitting : {fit}, '
-               f's : {s}, generalisation : {gen}, regularisation : {reg}')
+               f's : {s_param}, generalisation : {gen}, regularisation : {reg}'
+            )
 
     # ====================  TRAINING ==================
     def _do_epoch(self, epoch, nb_epochs, reg_loss):

@@ -44,13 +44,12 @@ def _get_licchavi(
         return Licchavi(
             nb_vids, vid_vidx, criteria, verb=verb)
     # only in dev mode
-    else:
-        test_mode = ground_truths is not None
-        licch = licchavi_class(
-            nb_vids, vid_vidx, criteria, test_mode, device, verb)
-        if test_mode:
-            licch.set_ground_truths(*ground_truths)
-        return licch
+    test_mode = ground_truths is not None
+    licch = licchavi_class(
+        nb_vids, vid_vidx, criteria, test_mode, device, verb)
+    if test_mode:
+        licch.set_ground_truths(*ground_truths)
+    return licch
 
 
 def _set_licchavi(

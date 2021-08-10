@@ -23,10 +23,10 @@ def scalar_product(l_grad1, l_grad2):
     Returns:
         (float): scalar product of the gradients
     """
-    s = 0
-    for g1, g2 in zip(l_grad1, l_grad2):
-        s += (g1 * g2).sum()
-    return round_loss(s, 4)
+    scalar_prod = 0
+    for grad1, grad2 in zip(l_grad1, l_grad2):
+        scalar_prod += (grad1 * grad2).sum()
+    return round_loss(scalar_prod, 4)
 
 
 def replace_coordinate(tens, score, idx):
@@ -62,7 +62,7 @@ def _metric_norm_loc(licch, args):
     norm = 0
     with torch.no_grad():
         for node in licch.nodes.values():
-            norm += model_norm(node.model, pow=(2, 0.5))
+            norm += model_norm(node.model, powers=(2, 0.5))
     return norm
 
 
@@ -73,7 +73,7 @@ def _metric_diff_glob(licch, args):
             diff_glob = models_dist(
                 licch.last_epoch['diff_glob'],
                 licch.global_model,
-                pow=(2, 0.5)
+                powers=(2, 0.5)
             )
         else:
             diff_glob = 0
@@ -90,7 +90,7 @@ def _metric_diff_loc(licch, args):
                 diff_loc += models_dist(
                     licch.last_epoch['diff_loc'][uidx],
                     node.model,
-                    pow=(2, 0.5),
+                    powers=(2, 0.5),
                     mask=node.mask
                 )
         licch.last_epoch['diff_loc'] = deepcopy(list(licch.all_nodes('model')))
@@ -103,8 +103,8 @@ def _metric_diff_s(licch, args):
         diff_s = torch.zeros(1)
         if args[4] > 1:
             for uidx, node in enumerate(licch.nodes.values()):
-                diff_s += (licch.last_epoch['diff_s'][uidx] - node.s)**2
-        licch.last_epoch['diff_s'] = deepcopy(list(licch.all_nodes('s')))
+                diff_s += (licch.last_epoch['diff_s'][uidx] - node.s_param)**2
+        licch.last_epoch['diff_s'] = deepcopy(list(licch.all_nodes('s_param')))
     return torch.sqrt(diff_s).item()
 
 
@@ -138,7 +138,7 @@ METRICS_FUNCS = {
     'loss_gen': lambda licch, args: round_loss(args[2]),
     'loss_reg': lambda licch, args: round_loss(args[3]),
     'norm_glob': lambda licch, args:
-        round_loss(model_norm(licch.global_model, pow=(2, 0.5)), 3),
+        round_loss(model_norm(licch.global_model, powers=(2, 0.5)), 3),
     'grad_sp': _metric_grad,
     'grad_norm': lambda licch, args:
         scalar_product(licch.global_model.grad, licch.global_model.grad),
@@ -192,7 +192,7 @@ def get_uncertainty_glob(licch):
             for node in licch.nodes.values():
                 if all_vids[vidx] in node.vids:
                     dist = models_dist_huber(node.model, licch.global_model,
-                                             vidx=vidx, d=node.delta_na)
+                                             vidx=vidx, strength=node.delta_na)
                     distances.append(dist.item())
             uncerts[vidx] = _global_uncert(distances)
     return uncerts

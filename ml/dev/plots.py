@@ -74,8 +74,7 @@ def _means_bounds(arr):
     """
     means = np.mean(arr, axis=0)
     var = np.var(arr, axis=0)
-    low, up = means - var, means + var
-    return means, low, up
+    return means, means - var, means + var
 
 
 # ------------- utility for what follows -------------------------
@@ -99,7 +98,7 @@ def _plot_var(l_hist, plot_name, focus=False):
 def _plotfull_var(l_hist, plot_name, path=None):
     """ plot metrics asked in -l_metrics and save if -path provided """
     l_metrics = PLOTS[plot_name]
-    if all([metric in l_hist[0] for metric in l_metrics]):
+    if all(metric in l_hist[0] for metric in l_metrics):
         _plot_var(l_hist, plot_name)
         _legendize(plot_name)
         _title_save(plot_name, path, plot_name + '.png')
