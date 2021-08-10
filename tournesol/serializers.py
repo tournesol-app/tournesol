@@ -4,13 +4,19 @@ Serializer used by Tournesol's API
 
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater
+from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater, VideoCriteriaScore
 
 
 class VideoSerializer(ModelSerializer):
     class Meta:
         model = Video
         fields = ["video_id"]
+
+
+class VideoCriteriaScoreSerializer(ModelSerializer):
+    class Meta:
+        model = VideoCriteriaScore
+        fields = "__all__"
 
 
 class VideoRateLaterSerializer(ModelSerializer):

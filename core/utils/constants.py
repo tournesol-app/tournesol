@@ -48,7 +48,7 @@ featureIsEnabledByDeFault = {
 YOUTUBE_VIDEO_ID_REGEX_SYMBOL = "[A-Za-z0-9-_]"
 
 # The whole video ID
-YOUTUBE_VIDEO_ID_REGEX = rf"^{YOUTUBE_VIDEO_ID_REGEX_SYMBOL}+$"
+YOUTUBE_VIDEO_ID_REGEX = rf"^{YOUTUBE_VIDEO_ID_REGEX_SYMBOL}"+"{11}$"
 
 # minimal number of videos to add to redirect to rating, see #281
 MIN_NUM_RATE_LATER = 6
