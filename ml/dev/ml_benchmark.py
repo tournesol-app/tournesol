@@ -1,18 +1,17 @@
+"""
+Module used for testing performances (speed)
+(To be improved) # TODO
+"""
 import timeit
 import torch
 
-from ml.core import TOURNESOL_DEV
+from ml.core import ml_run, TOURNESOL_DEV
 from ml.losses import _bbt_loss, _approx_bbt_loss, get_fit_loss, get_s_loss
 from .fake_data import generate_data
-from ..core import ml_run
+
 
 if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
-"""
-Module used for testing performances (speed)
-
-Main file is "ml_train.py"
-"""
 
 
 def time_this(func, iterations=1, description=""):

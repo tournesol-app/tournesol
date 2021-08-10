@@ -1,50 +1,20 @@
+"""
+Machine Learning command module
+
+USAGE:
+- run "python manage.py ml_train"
+"""
 import logging
 import gin
 
-from tournesol.models.video import (
-                            ComparisonCriteriaScore, ContributorRating,
-                            ContributorRatingCriteriaScore, VideoCriteriaScore)
 from django.core.management.base import BaseCommand
+from tournesol.models.video import (
+    ComparisonCriteriaScore, ContributorRating,
+    ContributorRatingCriteriaScore, VideoCriteriaScore)
 
 from settings.settings import CRITERIAS
 from ml.core import ml_run, TOURNESOL_DEV, HP_PATH
 
-"""
-Machine Learning main python file
-
-Organisation:
-- main file is here
-- Data is handled in "handle_data.py"
-- ML model and decentralised structure are in "licchavi.py"
-- Licchavi is called in "core.py"
-
-Notations:
-- node = user : contributor
-- vid = vID : video, video ID
-- rating : rating provided by a contributor between 2 videos,
-                                        in [0,100] or [-1,1]
-- score : score of a video outputted by the algorithm, around [-2, 2]
-- glob, loc : global, local
-- idx, vidx : index, video index
-- l_someting : list of someting
-- arr : numpy array
-- tens : torch tensor
-- dic : dictionnary
-- verb : verbosity level
-- VARIABLE_NAME : global variable
-
-Structure:
-- fetch_data() provides data from the database
-- ml_run() uses this data as input, trains via shape_train_predict()
-     and returns video scores
-- save_data() takes these scores and save them to the database
-- these 3 are called by Django at the end of this file
-
-USAGE:
-- set env variable TOURNESOL_DEV to 1 for experimenting, don't for production
-    mode
-- run "python manage.py ml_train"
-"""
 
 # parse parameters written in "hyperparameters.gin"
 gin.parse_config_file(HP_PATH)
@@ -121,6 +91,7 @@ def save_data(video_scores, contributor_rating_scores):
 
 
 class Command(BaseCommand):
+    """ Django Command class """
     help = 'Runs the ml'
 
     def handle(self, *args, **options):

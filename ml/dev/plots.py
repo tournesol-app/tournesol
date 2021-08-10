@@ -1,3 +1,8 @@
+"""
+Not used in production, for testing only
+Used in "experiments.py"
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -5,12 +10,7 @@ from ml.core import TOURNESOL_DEV
 
 if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
-"""
-Not used in production, for testing only
-Used in "experiments.py"
 
-Main file is "ml_train.py"
-"""
 
 INTENS = 0.4  # intensity of coloration
 

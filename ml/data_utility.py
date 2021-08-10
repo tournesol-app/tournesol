@@ -1,15 +1,14 @@
-import torch
-import numpy as np
+"""
+Utility functions used in "handle_data.py"
+"""
+
 import json
 import pickle
 import os
 import shutil
 
-"""
-Utility functions used in "handle_data.py"
-
-Main file is "ml_train.py"
-"""
+import torch
+import numpy as np
 
 
 def rescale_rating(rating):

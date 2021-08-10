@@ -1,8 +1,17 @@
+"""" Module used to generate artificial comparisons to have ground truths.
+
+(These ground truths are theoretical parameters, not exactly the ones
+the algorithm is supposed to output)
+
+Use generate_data() function.
+"""
+
 import random
-import numpy as np
-from math import exp, sinh
-import scipy.stats as st
 import logging
+from math import exp, sinh
+
+import numpy as np
+import scipy.stats as st
 
 from ml.core import TOURNESOL_DEV
 
@@ -37,11 +46,11 @@ def _fake_loc_scores(distribution, glob_scores, loc_noise):
                                             of each node
     """
     all_idxs = range(len(glob_scores))
-    b = loc_noise  # scale of laplace noise
+    scale = loc_noise  # scale of laplace noise
     l_nodes = []
     for nb_vids in distribution:  # for each node
         pick_idxs = random.sample(all_idxs, nb_vids)  # videos rated by user
-        noises = np.random.laplace(size=nb_vids, scale=b)  # random noise
+        noises = np.random.laplace(size=nb_vids, scale=scale)  # random noise
         node = [
             (idx, glob_scores[idx] + noise) for idx, noise
             in zip(pick_idxs, noises)
@@ -119,7 +128,7 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
     all_comps = []
     for uid, node in enumerate(l_nodes):  # for each node
         if uid % 50 == 0:
-            logging.info(f'Node number {uid}')
+            logging.info('Node number %s', uid)
         s = s_params[uid]
         nbvid = len(node)
         for vidx1, video in enumerate(node):  # for each video
@@ -159,9 +168,9 @@ def generate_data(
     s_params = _fake_s(nb_users)
     distr = [vids_per_user] * nb_users
     glob = _fake_glob_scores(nb_vids, scale=scale)
-    logging.info(f'{nb_vids} global scores generated')
+    logging.info('%s global scores generated', nb_vids)
     loc = _fake_loc_scores(distr, glob, noise)
-    logging .info(f'{vids_per_user} local scores generated per user')
+    logging .info('%s local scores generated per user', vids_per_user)
     comp = _fake_comparisons(loc, s_params, dens)
-    logging.info(f'{len(comp)} comparisons generated')
+    logging.info('%s comparisons generated', len(comp))
     return glob, loc, s_params, comp

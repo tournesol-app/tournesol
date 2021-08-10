@@ -1,17 +1,16 @@
-from ml.losses import round_loss
-import numpy as np
-import torch
+"""
+To prepare data from training and reshape it after training
+"""
+
 import logging
 
+import numpy as np
+import torch
+
+from ml.losses import round_loss
 from .data_utility import (
     get_batch_r, rescale_rating, sort_by_first,
     reverse_idxs, get_mask, get_all_vids, expand_dic, one_hot_vids)
-
-"""
-To prepare data from training and reshape it after training
-
-Main file is "ml_train.py"
-"""
 
 
 def select_criteria(comparison_data, crit):
@@ -30,7 +29,7 @@ def select_criteria(comparison_data, crit):
         if (comp[3] == crit and comp[4] is not None)
     ]
     if len(l_ratings) == 0:
-        logging.warning(f'No comparison for this criteria ({crit})')
+        logging.warning('No comparison for this criteria (%s)',crit)
     return l_ratings
 
 
@@ -64,13 +63,13 @@ def _distribute_data_handler(
     """
     nodes_dic = {}
 
-    for i, id in enumerate(user_ids):
+    for i, uid in enumerate(user_ids):
         node_arr = arr[first_of_each[i]: first_of_each[i + 1], :]
 
         batch1 = one_hot_vids(vid_vidx, node_arr[:, 1], device)
         batch2 = one_hot_vids(vid_vidx, node_arr[:, 2], device)
 
-        nodes_dic[id] = (
+        nodes_dic[uid] = (
             batch1, batch2,
             get_batch_r(node_arr, device),
             get_all_vids(node_arr),
@@ -188,10 +187,10 @@ def format_out_loc(loc, users_ids, crit, uncerts):
     vids, scores = loc
     for user_id, user_vids, user_scores, uidx in zip(
             users_ids, vids, scores, range(len(loc[0]))):
-        for i in range(len(user_vids)):
+        for i, vids in enumerate(user_vids):
             out = [
                 int(user_id),
-                int(user_vids[i].item()),
+                int(vids.item()),
                 crit,
                 round_loss(user_scores[i], 2),
                 0 if uncerts is None else round_loss(uncerts[uidx][i], 2)

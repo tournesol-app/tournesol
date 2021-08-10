@@ -1,10 +1,8 @@
-import torch
-
 """
 Node class used in "licchavi.py"
-
-Main file is "ml_train.py"
 """
+
+import torch
 
 
 class Node:

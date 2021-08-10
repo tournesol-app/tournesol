@@ -1,7 +1,7 @@
 from ml.core import TOURNESOL_DEV
 from .licchavi_dev import LicchaviDev
 from .visualisation import seedall, disp_one_by_line, output_infos
-# from .fake_data import generate_data
+from .fake_data import generate_data
 
 if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
@@ -32,12 +32,12 @@ def run_experiment(comparison_data):
     from ..core import ml_run
     seedall(654)
     # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-    #     5, 3, 5,  # 40, 27, 30,
+    #     40, 27, 30,
     #     dens=0.8,
     #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        comparison_data[:],
+        TEST_DATA,
         epochs=100,
         criterias=["reliability"],
         licchavi_class=LicchaviDev,

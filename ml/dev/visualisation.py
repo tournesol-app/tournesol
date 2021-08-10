@@ -1,20 +1,20 @@
+"""
+Visualisation methods, mainly for testing and debugging
+"""
+import random
+
 import numpy as np
 import torch
-import random
 
 from ml.core import TOURNESOL_DEV
 from ml.data_utility import replace_dir
 from ml.losses import round_loss
-from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
-                    plot_loc_uncerts)
+from .plots import (
+    plot_metrics, plot_density, plot_s_predict_gt, plot_loc_uncerts)
 
 if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
-"""
-Visualisation methods, mainly for testing and debugging
 
-Main file is "ml_train.py"
-"""
 
 PATH_PLOTS = "ml/plots/"
 replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
@@ -32,30 +32,31 @@ def check_one(vid, comp_glob, comp_loc):
             print(score)
 
 
-def seedall(s):
+def seedall(seed):
     """ seeds all sources of randomness """
-    reproducible = (s >= 0)
-    torch.manual_seed(s)
-    random.seed(s)
-    np.random.seed(s)
+    reproducible = (seed >= 0)
+    torch.manual_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
     torch.backends.cudnn.deterministic = reproducible
     torch.backends.cudnn.benchmark = not reproducible
-    print("\nSeeded all to", s)
+    print("\nSeeded all to", seed)
 
 
-def disp_one_by_line(it):
+def disp_one_by_line(iterat):
     """ prints one iteration by line """
-    for obj in it:
+    for obj in iterat:
         print(obj)
 
 
 def disp_fake_pred(fakes, preds):
+    """ Prints gt and predictions side by side """
     print("FAKE PREDICTED")
     diff = 0
     for fake, pred in zip(fakes, preds):
-        f, p = round(fake, 2), pred[2]
-        print(f, p)
-        diff += 100 * abs(f - p)**2
+        fake, pred = round(fake, 2), pred[2]
+        print(fake, pred)
+        diff += 100 * abs(fake - pred)**2
     print('mean dist**2 =', diff/len(preds))
 
 
@@ -73,8 +74,8 @@ def measure_diff(fakes, preds):
     """
     diff = 0
     for fake, pred in zip(fakes, preds):
-        f, p = round(fake, 2), pred[2]
-        diff += 100 * abs(f - p)**2
+        fake, pred = round(fake, 2), pred[2]
+        diff += 100 * abs(fake - pred)**2
     return diff/len(preds)
 
 
@@ -100,7 +101,7 @@ def licch_stats(licch):
     """ gives some statistics about Licchavi object """
     print('LICCH_SATS')
     licch.check()  # some tests
-    h = licch.history
+    hist = licch.history
     print("nb_nodes", licch.nb_nodes)
     print_s(licch)  # print stats on s parameters
     with torch.no_grad():
@@ -112,7 +113,7 @@ def licch_stats(licch):
             PATH_PLOTS,
             "s_params.png"
         )
-    plot_metrics([h], path=PATH_PLOTS)
+    plot_metrics([hist], path=PATH_PLOTS)
 
 
 def scores_stats(glob_scores):

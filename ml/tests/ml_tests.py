@@ -272,7 +272,7 @@ def test_set_licchavi():
 
 def test_train_predict():
     licch, users_ids = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    glob, loc, _ = _train_predict(licch, 1, verb=-1)
+    glob, loc, _ = _train_predict(licch, 1)
     assert len(glob) == len(loc) == 2  # good output shape
     assert len(users_ids) == len(loc[1])  # good nb of users
     for vids, scores in zip(*loc):

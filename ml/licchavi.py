@@ -1,7 +1,7 @@
-import torch
-from time import time
 import logging
 from logging import info as loginf
+from time import time
+import torch
 import gin
 
 from .losses import (round_loss, predict, loss_fit_s_gen, loss_gen_reg)
@@ -124,19 +124,19 @@ class Licchavi():
         )
         return model_plus
 
-    def _get_saved(self, loc_models_old, id, nb_new):
+    def _get_saved(self, loc_models_old, uid, nb_new):
         """ Returns saved parameters updated or default
 
         loc_models_old (dictionnary): saved parameters in dictionnary of tuples
                                         {user ID: (s, model, age)}
-        id (int): id of node (user)
+        uid (int): ID of node (user)
         nb_new (int): number of new videos (since save)
 
         Returns:
             (s, model, age), updated or default
         """
-        if id in loc_models_old:
-            s, mod, age = loc_models_old[id]
+        if uid in loc_models_old:
+            s, mod, age = loc_models_old[uid]
             mod = expand_tens(mod, nb_new, self.device)
             triple = (s, mod, age)
         else:
@@ -150,8 +150,7 @@ class Licchavi():
                                             rating_batch, single_vIDs, masks)}
         users_ids (int array): users IDs
         """
-        nb = len(data_dic)
-        self.nb_nodes = nb
+        self.nb_nodes = len(data_dic)
         self.users = users_ids
         self.nodes = {id: Node(
             *data,
@@ -206,8 +205,8 @@ class Licchavi():
         with torch.no_grad():
             glob_scores = self.global_model
             for node in self.nodes.values():
-                input = one_hot_vids(self.vid_vidx, node.vids, self.device)
-                output = predict(input, node.model)
+                entry = one_hot_vids(self.vid_vidx, node.vids, self.device)
+                output = predict(entry, node.model)
                 loc_scores.append(output)
                 list_vids_batchs.append(node.vids)
             vids_batch = list(self.vid_vidx.keys())
@@ -399,12 +398,12 @@ class Licchavi():
     def check(self):
         """ Performs some tests on internal parameters adequation """
         # population check
-        b1 = (self.nb_nodes == len(self.nodes))
+        bool1 = (self.nb_nodes == len(self.nodes))
         # history check
         reference = list(self.history.values())[0]
-        b2 = all([len(v) == len(reference) for v in self.history.values()])
+        bool2 = all(len(v) == len(reference) for v in self.history.values())
 
-        if (b1 and b2):
+        if (bool1 and bool2):
             loginf("No Problem")
         else:
             logging.warning("Coherency problem in Licchavi object ")

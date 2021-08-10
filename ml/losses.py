@@ -1,10 +1,8 @@
-import torch
-
 """
 Losses used in "licchavi.py"
-
-Main file is "ml_train.py"
 """
+
+import torch
 
 
 def predict(input, tens, mask=None):
@@ -289,7 +287,6 @@ def loss_gen_reg(licch, vidx=-1):
 
 def round_loss(tens, dec=0):
     """ from an input scalar tensor or int/float returns rounded int/float """
-    if type(tens) is int or type(tens) is float:
+    if isinstance(tens, (int, float)):
         return round(tens, dec)
-    else:
-        return round(tens.item(), dec)
+    return round(tens.item(), dec)

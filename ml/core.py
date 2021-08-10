@@ -1,3 +1,7 @@
+"""
+Module containting the ml_run() function used in ml_train()
+between fetch_data() and save_data()
+"""
 import os
 import logging
 from time import time
@@ -96,7 +100,7 @@ def _set_licchavi(
 
 def _train_predict(
         licch, epochs,
-        fullpath=None, save=False, verb=2, compute_uncertainty=False):
+        fullpath=None, save=False, compute_uncertainty=False):
     """ Trains models and returns video scores for one criteria
 
     licch (Licchavi()): licchavi object innitialized with data
@@ -104,6 +108,7 @@ def _train_predict(
     fullpath (str): path where to save trained models
     save (bool): wether to save the result of training or not
     verb (int): verbosity level
+    compute_uncertainty (bool): wether to compute uncertainty or not (slow)
 
     Returns :
     - (list of all vIDS , tensor of global video scores)
@@ -137,6 +142,7 @@ def ml_run(
     device (str): device used (cpu/gpu)
     ground_truths (float array, couples list list, float array):
         global, local and s parmaeters ground truths (test mode only)
+    compute_uncertainty (bool): wether to compute uncertainty or not (slow)
     licchavi_class (Licchavi()): training structure used
                                         (Licchavi or LicchaviDev)
 
@@ -151,7 +157,7 @@ def ml_run(
     glob_scores, loc_scores = [], []
 
     for criteria in criterias:
-        logging.info("PROCESSING " + criteria)
+        logging.info('PROCESSING %s', criteria)
         fullpath = PATH + '_' + criteria
 
         # preparing data
@@ -162,7 +168,7 @@ def ml_run(
         )
         # training and predicting
         glob, loc, uncertainties = _train_predict(
-            licch, epochs, fullpath, save, verb,
+            licch, epochs, fullpath, save,
             compute_uncertainty=compute_uncertainty
         )
         # putting in required shape for output
@@ -171,7 +177,7 @@ def ml_run(
         glob_scores += out_glob
         loc_scores += out_loc
 
-    logging.info(f'ml_run() total time : {round(time() - ml_run_time)}')
+    logging.info('ml_run() total time : %s', round(time() - ml_run_time))
     if TOURNESOL_DEV:  # return more information in dev mode
         return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
     return glob_scores, loc_scores
