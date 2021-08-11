@@ -167,7 +167,7 @@ def _huber(x, strength):
 
 
 def models_dist_huber(
-    model1, model2, mask=None, s_param=1, vidx=-1, strength=1):
+        model1, model2, mask=None, s_param=1, vidx=-1, strength=1):
     """ Pseudo-Huber distance between 2 models
 
     Args:

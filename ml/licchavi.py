@@ -307,9 +307,10 @@ class Licchavi():
         fit, s_param = round_loss(fit, 2), round_loss(s_param, 2)
         gen, reg = round_loss(gen, 2), round_loss(reg, 2)
 
-        loginf(f'total loss : {tot}\nfitting : {fit}, '
-               f's : {s_param}, generalisation : {gen}, regularisation : {reg}'
-            )
+        loginf(
+            f'total loss : {tot}\nfitting : {fit}, '
+            f's : {s_param}, generalisation : {gen}, regularisation : {reg}'
+        )
 
     # ====================  TRAINING ==================
     def _do_epoch(self, epoch, nb_epochs, reg_loss):
