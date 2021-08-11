@@ -1,5 +1,17 @@
+"""
+Defines Admin interface for Tournesol's core app
+"""
+
 from django.contrib import admin
-from .models import (User, UserPreference, Degree, Expertise, ExpertiseKeyword, EmailDomain, VerifiableEmail)
+from .models import (
+    User,
+    UserPreference,
+    Degree,
+    Expertise,
+    ExpertiseKeyword,
+    EmailDomain,
+    VerifiableEmail,
+)
 
 
 @admin.register(UserPreference)
@@ -35,4 +47,3 @@ class EmailDomainAdmin(admin.ModelAdmin):
 @admin.register(VerifiableEmail)
 class VerifiableEmailAdmin(admin.ModelAdmin):
     pass
-

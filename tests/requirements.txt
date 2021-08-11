@@ -3,6 +3,7 @@ flake8==3.9.2
 flake8-html==0.4.1
 pylint==2.8.3
 pylint-json2html==0.3.0
+pylint-django==2.4.4
 bandit==1.7.0
 
 # Unit tests tools

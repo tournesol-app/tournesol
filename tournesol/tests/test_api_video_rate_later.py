@@ -37,11 +37,13 @@ class VideoRateLaterApi(TestCase):
         user1 = User.objects.create(username=self._user)
         user2 = User.objects.create(username=self._other)
 
-        video1 = Video.objects.create(video_id="test_video_id_1",
-                                      name=self._users_video)
+        video1 = Video.objects.create(
+            video_id="test_video_id_1", name=self._users_video
+        )
 
-        video2 = Video.objects.create(video_id="test_video_id_2",
-                                      name=self._others_video)
+        video2 = Video.objects.create(
+            video_id="test_video_id_2", name=self._others_video
+        )
 
         VideoRateLater.objects.create(user=user1, video=video1)
         VideoRateLater.objects.create(user=user2, video=video2)
@@ -53,7 +55,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
         user = User.objects.get(username=self._user)
         response = client.get(
-            reverse('tournesol:video_rate_later_list', args=[user.pk])
+            reverse("tournesol:video_rate_later_list", args=[user.pk])
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -64,23 +66,22 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        video_rate_later = VideoRateLater.objects.select_related('video') \
-            .filter(user=user)
+        video_rate_later = VideoRateLater.objects.select_related("video").filter(
+            user=user
+        )
         client.force_authenticate(user=user)
 
         # authorization check
         response = client.get(
-            reverse('tournesol:video_rate_later_list', args=[user.pk])
+            reverse("tournesol:video_rate_later_list", args=[user.pk])
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # user must see only its own rate later list
+        self.assertEqual(len(response.data["results"]), video_rate_later.count())
         self.assertEqual(
-            len(response.data['results']), video_rate_later.count()
-        )
-        self.assertEqual(
-            response.data['results'][0]['video']['video_id'],
-            video_rate_later[0].video.video_id
+            response.data["results"][0]["video"]["video_id"],
+            video_rate_later[0].video.video_id,
         )
 
     def test_authenticated_cant_list_others(self):
@@ -95,7 +96,7 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse('tournesol:video_rate_later_list', args=[other.pk])
+            reverse("tournesol:video_rate_later_list", args=[other.pk])
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -109,8 +110,9 @@ class VideoRateLaterApi(TestCase):
         data = {"video.video_id": "random_video_id"}
 
         response = client.post(
-            reverse('tournesol:video_rate_later_list', args=[user.pk]),
-            data, format='json'
+            reverse("tournesol:video_rate_later_list", args=[user.pk]),
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -122,17 +124,14 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {
-            "video.video_id": Video.objects.get(
-                name=self._others_video
-            ).video_id
-        }
+        data = {"video.video_id": Video.objects.get(name=self._others_video).video_id}
 
         client.force_authenticate(user=user)
 
         response = client.post(
-            reverse('tournesol:video_rate_later_list', args=[user.pk]),
-            data, format='json'
+            reverse("tournesol:video_rate_later_list", args=[user.pk]),
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -144,17 +143,14 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {
-            "video.video_id": Video.objects.get(
-                name=self._users_video
-            ).video_id
-        }
+        data = {"video.video_id": Video.objects.get(name=self._users_video).video_id}
 
         client.force_authenticate(user=user)
 
         response = client.post(
-            reverse('tournesol:video_rate_later_list', args=[user.pk]),
-            data, format='json'
+            reverse("tournesol:video_rate_later_list", args=[user.pk]),
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
@@ -167,17 +163,14 @@ class VideoRateLaterApi(TestCase):
 
         user = User.objects.get(username=self._user)
         other = User.objects.get(username=self._other)
-        data = {
-            "video.video_id": Video.objects.get(
-                name=self._users_video
-            ).video_id
-        }
+        data = {"video.video_id": Video.objects.get(name=self._users_video).video_id}
 
         client.force_authenticate(user=user)
 
         response = client.post(
-            reverse('tournesol:video_rate_later_list', args=[other.pk]),
-            data, format='json'
+            reverse("tournesol:video_rate_later_list", args=[other.pk]),
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -189,8 +182,10 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
         user = User.objects.get(username=self._user)
         response = client.get(
-            reverse('tournesol:video_rate_later_detail',
-                    args=[user.pk, 'non_existing_video_id'])
+            reverse(
+                "tournesol:video_rate_later_detail",
+                args=[user.pk, "non_existing_video_id"],
+            )
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -206,8 +201,7 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse('tournesol:video_rate_later_detail',
-                    args=[user.pk, video.video_id])
+            reverse("tournesol:video_rate_later_detail", args=[user.pk, video.video_id])
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -225,8 +219,9 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse('tournesol:video_rate_later_detail',
-                    args=[other.pk, video.video_id])
+            reverse(
+                "tournesol:video_rate_later_detail", args=[other.pk, video.video_id]
+            )
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -238,8 +233,10 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
         user = User.objects.get(username=self._user)
         response = client.delete(
-            reverse('tournesol:video_rate_later_detail',
-                    args=[user.pk, 'non_existing_video_id'])
+            reverse(
+                "tournesol:video_rate_later_detail",
+                args=[user.pk, "non_existing_video_id"],
+            )
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -255,8 +252,7 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.delete(
-            reverse('tournesol:video_rate_later_detail',
-                    args=[user.pk, video.video_id])
+            reverse("tournesol:video_rate_later_detail", args=[user.pk, video.video_id])
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -274,7 +270,8 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.delete(
-            reverse('tournesol:video_rate_later_detail',
-                    args=[other.pk, video.video_id])
+            reverse(
+                "tournesol:video_rate_later_detail", args=[other.pk, video.video_id]
+            )
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

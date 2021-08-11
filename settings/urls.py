@@ -19,14 +19,14 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('monitoring/', include('django_prometheus.urls')),
-    path('o/applications/', HttpResponseForbidden, name="create_app"),  # block for create app in oauth (admin only)
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-
+    path("admin/", admin.site.urls),
+    path("monitoring/", include("django_prometheus.urls")),
+    path(
+        "o/applications/", HttpResponseForbidden, name="create_app"
+    ),  # block for create app in oauth (admin only)
+    path("o/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     #  API
-    path('', include('tournesol.urls')),
-
+    path("", include("tournesol.urls")),
     #  SWAGGER
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

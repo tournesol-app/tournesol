@@ -1,3 +1,3 @@
-from django.db import models
-
-
+"""
+Views for Tournesol's core app
+"""

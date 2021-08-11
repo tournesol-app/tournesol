@@ -1,3 +1,7 @@
+"""
+Utils methods for Tournesol's core app
+"""
+
 import base64
 import pickle
 from functools import reduce
@@ -11,19 +15,19 @@ import numpy as np
 from settings.settings import CRITERIAS
 
 
-def EnumList(*lst):
+def enum_list(*lst):
     """Create choices=... for a list."""
     return zip(lst, lst)
 
 
 class WithDynamicFields(object):
     """Add dynamically-created fields to a model."""
+
     fields_created = False
 
     @staticmethod
     def _create_fields(self):
         """Override this method to create dynamic fields."""
-        pass
 
     @staticmethod
     def create_all():
@@ -35,7 +39,7 @@ class WithDynamicFields(object):
                 scl._create_fields()
 
 
-class WithFeatures(object):
+class WithFeatures:
     """An object containing features."""
 
     # subtract this value from all returned vectors
@@ -44,12 +48,12 @@ class WithFeatures(object):
     def _features_as_vector_fcn(self, suffix=""):
         """Get features a vector, append suffix to field names."""
 
-        def transform_nan(x):
+        def transform_nan(num):
             """None -> np.nan."""
-            if x is None:
+            if num is None:
                 return np.nan
             else:
-                return x
+                return num
 
         return np.array([transform_nan(getattr(self, f + suffix)) for f in CRITERIAS])
 
@@ -66,7 +70,8 @@ class WithFeatures(object):
 
 class WithEmbedding(object):
     """Define embedding setters and getters."""
-    _EMBEDDING_FIELD = 'embedding'
+
+    _EMBEDDING_FIELD = "embedding"
 
     def set_embedding(self, np_array):
         """Set embedding from an np array."""
@@ -102,26 +107,25 @@ class WithEmbedding(object):
 
 class ComputedJsonField(ComputedField, JSONField):
     """A JSON field that is computed from other fields."""
-    pass
 
 
-def filter_reduce(lst, fcn, name='_'):
+def filter_reduce(lst, fcn, name="_"):
     """Reduce a list of filters."""
     lst_orig = lst
     lst = [x for x in lst if x is not None]
     if not lst:
-        logging.warning(f"{name} query with en empty list of operands, returning None: {lst_orig}")
+        logging.warning(
+            f"{name} query with en empty list of operands, returning None: {lst_orig}"
+        )
         return None
     return reduce(fcn, lst)
 
 
 def query_or(lst):
     """Combine query parts with OR."""
-    return filter_reduce(lst, fcn=(lambda x, y: x | y),
-                         name='OR')
+    return filter_reduce(lst, fcn=(lambda x, y: x | y), name="OR")
 
 
 def query_and(lst):
     """Combine query parts with AND."""
-    return filter_reduce(lst, fcn=(lambda x, y: x & y),
-                         name='AND')
+    return filter_reduce(lst, fcn=(lambda x, y: x & y), name="AND")

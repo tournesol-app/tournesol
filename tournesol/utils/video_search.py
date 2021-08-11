@@ -1,6 +1,9 @@
-from fuzzysearch import find_near_matches
+"""
+TODO: verifies this module and possibly re-enable its use
+Old comment about this file: 'Unused, using SQL queries now'
+"""
 
-"""Unused, using SQL queries now."""
+from fuzzysearch import find_near_matches
 
 
 class VideoSearchEngine(object):
@@ -24,25 +27,24 @@ class VideoSearchEngine(object):
             return -9999
 
         matches = find_near_matches(
-            phrase.lower(),
-            v_text.lower(),
-            max_l_dist=max_l_dist)
+            phrase.lower(), v_text.lower(), max_l_dist=max_l_dist
+        )
 
-        return sum([1 - 1. * m.dist / (max_l_dist + 1) for m in matches])
+        return sum([1 - 1.0 * m.dist / (max_l_dist + 1) for m in matches])
 
     @staticmethod
-    def score(
-            v_text,
-            v_features,
-            video_search_phrase_coeff=VIDEO_SEARCH_COEFF):
+    def score(v_text, v_features, video_search_phrase_coeff=VIDEO_SEARCH_COEFF):
         """Default score function (fuzzy)."""
         result = {}
         eng = VideoSearchEngine
-        result['preferences_term'] = (
-            eng.user_features @ v_features) if (eng.user_features is not None) else 0.0
-        result['phrase_term'] = eng._fuzzysearch_score_fcn(
-            v_text, eng.search_phrase) if (
-                eng.search_phrase is not None and eng.search_phrase) else 0.0
-        result['phrase_term'] *= video_search_phrase_coeff
+        result["preferences_term"] = (
+            (eng.user_features @ v_features) if (eng.user_features is not None) else 0.0
+        )
+        result["phrase_term"] = (
+            eng._fuzzysearch_score_fcn(v_text, eng.search_phrase)
+            if (eng.search_phrase is not None and eng.search_phrase)
+            else 0.0
+        )
+        result["phrase_term"] *= video_search_phrase_coeff
 
         return result

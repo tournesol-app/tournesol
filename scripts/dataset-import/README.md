@@ -2,7 +2,7 @@
 
 ```bash
 # setup connection
-export VM_ADDR="192.168.122.19"
+export VM_ADDR="tournesol-vm"
 export VM_USER="$USER"
 
 # nuke database tables
@@ -29,7 +29,7 @@ If you want to empty your database before:
 
 ```bash
 # setup connection
-VM_ADDR="192.168.122.19"
+VM_ADDR="tournesol-vm"
 VM_USER="$USER"
 
 # nuke database tables
@@ -42,7 +42,7 @@ Import the dump:
 
 ```bash
 # setup connection
-VM_ADDR="192.168.122.19"
+VM_ADDR="tournesol-vm"
 VM_USER="$USER"
 
 tar xvf dump.sql.tgz
