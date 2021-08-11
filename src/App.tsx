@@ -1,9 +1,10 @@
 import React from 'react';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+
 import HomePage from './pages/home/Home';
 import LoginPage from './pages/login/Login';
 import ComparisonsPage from './pages/comparisons/Comparisons';
-import { Switch, Route } from 'react-router-dom';
+import DonatePage from './pages/donate/Donate';
 import { PrivateRoute } from './features/login/PrivateRoute';
 
 function App() {
@@ -16,6 +17,12 @@ function App() {
         <PrivateRoute path="/comparisons">
           <ComparisonsPage />
         </PrivateRoute>
+        <Route path="/donate">
+          <DonatePage />
+        </Route>
+        <Route path="/signup">
+          <p>TODO: sign-up page</p>
+        </Route>
         <Route path="/">
           <HomePage />
         </Route>

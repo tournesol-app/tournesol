@@ -1,30 +1,30 @@
 import React from 'react';
 import clsx from 'clsx';
+import { Link } from 'react-router-dom';
 import {
-  IconButton,
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
   Drawer,
   List,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Search, ChevronLeft } from '@material-ui/icons';
-import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
-import { closeDrawer, selectFrame } from '../../drawerOpenSlice';
-import { Link } from 'react-router-dom';
+import { Search } from '@material-ui/icons';
 
-const drawerWidth = 240;
+import { useAppSelector } from '../../../../app/hooks';
+import { selectFrame } from '../../drawerOpenSlice';
+import { topBarHeight } from '../topbar/TopBar';
+
+export const sideBarWidth = 240;
 
 const useStyles = makeStyles((theme: any) => ({
   drawer: {
-    width: drawerWidth,
+    width: sideBarWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
   },
   drawerOpen: {
-    width: drawerWidth,
+    width: sideBarWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -41,20 +41,14 @@ const useStyles = makeStyles((theme: any) => ({
       width: theme.spacing(7) + 1,
     },
   },
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
+  drawerPaper: {
+    top: topBarHeight,
   },
 }));
 
 const SideBar = () => {
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
-  const dispatch = useAppDispatch();
   return (
     <Drawer
       variant="permanent"
@@ -65,19 +59,12 @@ const SideBar = () => {
         [classes.drawerClose]: !drawerOpen,
       })}
       classes={{
-        paper: clsx({
+        paper: clsx(classes.drawerPaper, {
           [classes.drawerOpen]: drawerOpen,
           [classes.drawerClose]: !drawerOpen,
         }),
       }}
     >
-      <IconButton
-        className={classes.toolbar}
-        onClick={() => dispatch(closeDrawer())}
-      >
-        <ChevronLeft />
-      </IconButton>
-      <Divider />
       <List>
         <Link to="/">
           <ListItem button>
