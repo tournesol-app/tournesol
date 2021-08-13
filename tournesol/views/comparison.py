@@ -3,9 +3,8 @@ API endpoint to manipulate contributor's comparisons
 """
 
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -69,22 +68,41 @@ class ComparisonViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ance
             return Response("No comparison found", status=404)
         return Response(ComparisonSerializer(comparisons, many=True).data)
 
+    def get_video(self, request_data):
+        """
+            Tries to fetch the video from Tournesol's database and returns an appropriate error
+            message if it is not found
+        """
+        try:
+            video_id = request_data['video_id']
+        except KeyError:
+            return None, Response(
+                {"detail": "Incorrect format for video ids"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        video_query = Video.objects.filter(video_id=video_id)
+        if not video_query:
+            return None, Response(
+                {"detail": f"The video with id {video_id} does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return video_query.first(), None
+
     def create(self, request, *args, **kwargs):
-        video_1_id = request.data.get("video_1", "")
-        video_1 = get_object_or_404(Video, video_id=video_1_id)
-        video_2_id = request.data.get("video_2", "")
-        video_2 = get_object_or_404(Video, video_id=video_2_id)
+        video_1, error = self.get_video(request.data.get("video_1", ""))
+        if error:
+            return error
+        video_2, error = self.get_video(request.data.get("video_2", ""))
+        if error:
+            return error
+
         criterias = request.data.get("criteria_scores", [])
         duration_ms = request.data.get("duration_ms", 0)
         comparisons = Comparison.objects.filter(
-            video_1__video_id=video_1_id,
-            video_2__video_id=video_2_id,
-            user=request.user,
+            video_1=video_1, video_2=video_2, user=request.user
         )
         comparisons_inv = Comparison.objects.filter(
-            video_1__video_id=video_2_id,
-            video_2__video_id=video_1_id,
-            user=request.user,
+            video_1=video_2, video_2=video_1, user=request.user
         )
         if comparisons or comparisons_inv:
             return self.update(request, *args, **kwargs)
@@ -104,22 +122,19 @@ class ComparisonViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ance
         return Response(ComparisonSerializer(comparison).data)
 
     def update(self, request, *args, **kwargs):
-        video_1_id = request.data.get("video_1", "")
-        get_object_or_404(Video, video_id=video_1_id)
-        video_2_id = request.data.get("video_2", "")
-        get_object_or_404(Video, video_id=video_2_id)
+        video_1, error = self.get_video(request.data.get("video_1", ""))
+        if error:
+            return error
+        video_2, error = self.get_video(request.data.get("video_2", ""))
+        if error:
+            return error
+
         criterias = request.data.get("criteria_scores", [])
         duration_ms = request.data.get("duration_ms", 0)
         comparisons = Comparison.objects.filter(
-            video_1__video_id=video_1_id,
-            video_2__video_id=video_2_id,
-            user=request.user,
-        )
+            video_1=video_1, video_2=video_2, user=request.user)
         comparisons_inv = Comparison.objects.filter(
-            video_1__video_id=video_2_id,
-            video_2__video_id=video_1_id,
-            user=request.user,
-        )
+            video_1=video_2, video_2=video_1, user=request.user)
         if not comparisons and not comparisons_inv:
             return self.create(request, *args, **kwargs)
         if comparisons:
