@@ -22,12 +22,12 @@ urlpatterns = [
     path("", include(router.urls)),
     # VideoRateLater API
     path(
-        "users/<int:user_id>/video_rate_later/",
+        "users/<str:username>/video_rate_later/",
         VideoRateLaterList.as_view(),
         name="video_rate_later_list",
     ),
     path(
-        "users/<int:user_id>/video_rate_later/<str:video_id>/",
+        "users/<str:username>/video_rate_later/<str:video_id>/",
         VideoRateLaterDetail.as_view(),
         name="video_rate_later_detail",
     )
