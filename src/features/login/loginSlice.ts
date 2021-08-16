@@ -35,7 +35,7 @@ export const loginSlice = createSlice({
       .addCase(getTokenAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.access_token = action.payload.access_token;
-        let exp = new Date();
+        const exp = new Date();
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
@@ -50,7 +50,7 @@ export const loginSlice = createSlice({
       .addCase(getTokenFromRefreshAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.access_token = action.payload.access_token;
-        let exp = new Date();
+        const exp = new Date();
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;

@@ -40,7 +40,7 @@ describe('private route wrapper', () => {
     const anHourInMS = 1000 * 60 * 60;
     const now = new Date();
     const anHourLater = new Date(now.getTime() + anHourInMS);
-    let login = { ...initialState };
+    const login = { ...initialState };
     login.access_token = 'dummy_token';
     login.access_token_expiration_date = anHourLater.toString();
 

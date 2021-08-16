@@ -7,6 +7,7 @@ import {
   ListItemIcon,
   Drawer,
   List,
+  Theme,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
@@ -17,7 +18,7 @@ import { topBarHeight } from '../topbar/TopBar';
 
 export const sideBarWidth = 240;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
     width: sideBarWidth,
     flexShrink: 0,

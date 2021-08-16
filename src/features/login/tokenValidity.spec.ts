@@ -10,19 +10,19 @@ describe('login validity', () => {
     expect(hasValidToken(initialState)).toEqual(false);
   });
   it('should handle expired token', () => {
-    let expiredTokenState = { ...initialState };
+    const expiredTokenState = { ...initialState };
     expiredTokenState.access_token = 'dummy_token';
     expiredTokenState.access_token_expiration_date = anHourAgo.toString();
     expect(hasValidToken(expiredTokenState)).toEqual(false);
   });
   it('should handle empty token', () => {
-    let emptyTokenState = { ...initialState };
+    const emptyTokenState = { ...initialState };
     emptyTokenState.access_token = '';
     emptyTokenState.access_token_expiration_date = anHourLater.toString();
     expect(hasValidToken(emptyTokenState)).toEqual(false);
   });
   it('should handle valid token', () => {
-    let validTokenState = { ...initialState };
+    const validTokenState = { ...initialState };
     validTokenState.access_token = 'dummy_token';
     validTokenState.access_token_expiration_date = anHourLater.toString();
     expect(hasValidToken(validTokenState)).toEqual(true);

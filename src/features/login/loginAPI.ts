@@ -9,7 +9,7 @@ export const fetchToken = async ({
   username: string;
   password: string;
 }) => {
-  let params = new URLSearchParams();
+  const params = new URLSearchParams();
   params.append('grant_type', 'password');
   params.append('username', username);
   params.append('password', password);
@@ -40,7 +40,7 @@ export const fetchToken = async ({
 };
 
 export const fetchTokenFromRefresh = async (refresh_token: string) => {
-  let params = new URLSearchParams();
+  const params = new URLSearchParams();
   params.append('refresh_token', refresh_token);
   params.append('grant_type', 'refresh_token');
   params.append('scope', 'read write groups');

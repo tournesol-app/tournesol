@@ -12,10 +12,11 @@
       "modules": true
     }
   },
-  "plugins": ["prettier", "react", "react-hooks"],
-  "extends": ["prettier", "eslint:recommended", "plugin:react/recommended", "plugin:react-hooks/recommended"],
+  "plugins": [],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended", "plugin:react-hooks/recommended", "plugin:prettier/recommended"],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "settings": {
     "react": {

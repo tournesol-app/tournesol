@@ -16,6 +16,17 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
+### `yarn lint`
+
+Runs the linter and returns lint errors.
+
+This check is automatically enforced on commit using a pre-commit hook. Use `git commit --no-verify` to bypass this check (e.g. to commit on a branch with work in progress).
+
+### `yarn lint:fix`
+
+Attempts to fix lint problems automatically using `eslint --fix`.<br />
+This is especially useful to apply `prettier` format rules, if they are not enforced by your IDE.
+
 ### `yarn test`
 
 Launches the test runner in the interactive watch mode.<br />

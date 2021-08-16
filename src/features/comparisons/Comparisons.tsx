@@ -6,12 +6,13 @@ import {
   Container,
   makeStyles,
   Button,
+  Theme,
 } from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getComparisonsAsync, selectComparisons } from './comparisonsSlice';
 import { selectLogin } from '../login/loginSlice';
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   content: {
     marginTop: '64px',
     padding: theme.spacing(3),

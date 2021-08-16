@@ -27,8 +27,8 @@
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
     "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
-    "check-format": "prettier-eslint --list-different \"{,src/,src/**/,!(node_modules|build|src/services)/**/}*.{js,jsx,ts,tsx}\"",
-    "format": "prettier-eslint --write \"{,src/,src/**/,!(node_modules|build|src/services)/**/}*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint src --ext '.js,.jsx,.ts,.tsx'",
+    "lint:fix": "eslint --fix src --ext '.js,.jsx,.ts,.tsx'",
     "prepare": "husky install"
   },
   "eslintConfig": {
@@ -65,7 +65,6 @@
     "openapi-typescript": "^4.0.2",
     "openapi-typescript-codegen": "^0.9.3",
     "prettier": "^2.3.2",
-    "prettier-eslint-cli": "^5.0.1",
     "react-test-renderer": "^17.0.2",
     "redux-mock-store": "^1.5.4"
   }

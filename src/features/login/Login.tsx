@@ -6,6 +6,7 @@ import {
   Container,
   makeStyles,
   Button,
+  Theme,
 } from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -15,8 +16,9 @@ import {
 } from './loginSlice';
 import { hasValidToken } from './tokenValidity';
 import { useLocation, useHistory } from 'react-router-dom';
+import RedirectState from './RedirectState';
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   content: {
     marginTop: '64px',
     padding: theme.spacing(3),
@@ -35,7 +37,7 @@ const Login = () => {
   );
   const history = useHistory();
   const location = useLocation();
-  const { from }: any = location?.state ?? '';
+  const { from } = (location?.state ?? {}) as RedirectState;
 
   useEffect(() => {
     if (hasValidToken(login)) {
@@ -58,7 +60,7 @@ const Login = () => {
   }, [validToken, shouldTryRefresh, login.refresh_token, dispatch]);
 
   useEffect(() => {
-    if (validToken && from !== '') {
+    if (validToken && from) {
       console.log('logged in, redirecting');
       history.replace(from);
     }
