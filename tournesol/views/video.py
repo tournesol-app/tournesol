@@ -1,20 +1,20 @@
 """
-API endpoint to maniuplate videos
+API endpoint to manipulate videos
 """
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-from tournesol.serializers import VideoCriteriaScoreSerializer, VideoSerializer
-from tournesol.models import VideoCriteriaScore, Video
+from ..serializers import VideoCriteriaScoreSerializer, VideoSerializer
+from ..models import VideoCriteriaScore, Video
 
 
 class VideoViewSet(viewsets.ModelViewSet):
 
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-    permission_classes = []  # To unlock authentification required
+    permission_classes = []  # To unlock authentication required
 
     def retrieve(self, request, *args, **kwargs):
         """

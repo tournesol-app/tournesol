@@ -1,15 +1,16 @@
 """
-API endpoint to maniuplate contributor's rate later list
+API endpoint to manipulate contributor's rate later list
 """
 
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+
 from rest_framework import generics, mixins, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from tournesol.models import Video, VideoRateLater
-from tournesol.serializers import VideoRateLaterSerializer
+from ..models import Video, VideoRateLater
+from ..serializers import VideoRateLaterSerializer
 
 
 def verify_username(request, username):
