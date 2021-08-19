@@ -9,6 +9,18 @@ export DJANGO_SECRET_KEY
 DJANGO_DATABASE_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^DATABASE_PASSWORD: \(.*\)$/\1/p')"
 export DJANGO_DATABASE_PASSWORD
 
+DJANGO_EMAIL_HOST="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^EMAIL_HOST: \(.*\)$/\1/p')"
+export DJANGO_EMAIL_HOST
+
+DJANGO_EMAIL_PORT="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^EMAIL_PORT: \(.*\)$/\1/p')"
+export DJANGO_EMAIL_PORT
+
+DJANGO_EMAIL_USER="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^EMAIL_HOST_USER: \(.*\)$/\1/p')"
+export DJANGO_EMAIL_USER
+
+DJANGO_EMAIL_PASSWORD="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^EMAIL_HOST_PASSWORD: \(.*\)$/\1/p')"
+export DJANGO_EMAIL_PASSWORD
+
 DJANGO_OIDC_RSA_PRIVATE_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/django_oidc_rsa_private_key)"
 export DJANGO_OIDC_RSA_PRIVATE_KEY
 

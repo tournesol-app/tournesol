@@ -29,3 +29,17 @@ OIDC_ENABLED: true
 OIDC_ISS_ENDPOINT: {{django_main_url}}
 OIDC_RSA_PRIVATE_KEY: |
   {{django_oidc_rsa_private_key | b64decode | indent(2)}}
+
+{% if django_email_backend == "smtp" %}
+REST_REGISTRATION_MAIN_URL: "{{frontend_scheme}}://{{domain_name}}/"
+
+EMAIL_BACKEND: 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST: {{django_email_host}}
+EMAIL_PORT: {{django_email_port}}
+EMAIL_HOST_USER: {{django_email_user}}
+EMAIL_HOST_PASSWORD: {{django_email_password}}
+EMAIL_USE_TLS: true
+EMAIL_USE_SSL: false
+{% else %}
+EMAIL_BACKEND: 'django.core.mail.backends.console.EmailBackend'
+{% endif %}

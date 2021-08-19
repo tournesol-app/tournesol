@@ -18,6 +18,10 @@ ansible-playbook -i inventory.yml -l tournesol-staging setup.yml \
   -e "django_database_password=$DJANGO_DATABASE_PASSWORD" \
   -e "django_secret_key=$DJANGO_SECRET_KEY" \
   -e "django_oidc_rsa_private_key=\"$(base64 <<< "$DJANGO_OIDC_RSA_PRIVATE_KEY")\"" \
+  -e "django_email_host=${DJANGO_EMAIL_HOST:-""}" \
+  -e "django_email_port=${DJANGO_EMAIL_PORT:-""}" \
+  -e "django_email_user=${DJANGO_EMAIL_USER:-""}" \
+  -e "django_email_password=${DJANGO_EMAIL_PASSWORD:-""}" \
   -e "frontend_oauth_client_id=$FRONTEND_OAUTH_CLIENT_ID" \
   -e "frontend_oauth_client_secret=$FRONTEND_OAUTH_CLIENT_SECRET" \
   -e "grafana_admin_password=$GRAFANA_ADMIN_PASSWORD" \
