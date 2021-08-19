@@ -30,4 +30,5 @@ ansible-playbook -i inventory.yml -l tournesol-vm setup.yml \
   -e "mediawiki_secret_key=$MEDIAWIKI_SECRET_KEY" \
   -e "mediawiki_oidc_client_id=$MEDIAWIKI_OIDC_CLIENT_ID" \
   -e "mediawiki_oidc_client_secret=$MEDIAWIKI_OIDC_CLIENT_SECRET" \
-
+  -e "swagger_ui_oauth2_client_id=$SWAGGER_UI_OAUTH2_CLIENT_ID" \
+  -e "swagger_ui_oauth2_client_secret=$SWAGGER_UI_OAUTH2_CLIENT_SECRET" \

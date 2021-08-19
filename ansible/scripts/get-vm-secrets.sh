@@ -47,3 +47,9 @@ export MEDIAWIKI_OIDC_CLIENT_ID
 
 MEDIAWIKI_OIDC_CLIENT_SECRET="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/mediawiki_oidc_client_secret)"
 export MEDIAWIKI_OIDC_CLIENT_SECRET
+
+SWAGGER_UI_OAUTH2_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/swagger_ui_oauth2_client_id)"
+export SWAGGER_UI_OAUTH2_CLIENT_ID
+
+SWAGGER_UI_OAUTH2_CLIENT_SECRET="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/swagger_ui_oauth2_client_secret)"
+export SWAGGER_UI_OAUTH2_CLIENT_SECRET

@@ -34,6 +34,10 @@
     src: django_oidc_rsa_private_key.j2
     dest: /root/django_oidc_rsa_private_key
     mode: u=rw,g=,o=
+  notify:
+    - Write Swagger UI OAuth client ID into root's home
+    - Write Swagger UI OAuth client secret into root's home
+    - Create Swagger UI OAuth application in Django database
 
 - name: Create Django application directory
   file:
