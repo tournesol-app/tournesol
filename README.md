@@ -1,5 +1,15 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
+## Setup
+
+This frontend works using Tournesol's backend from [this repository](https://github.com/tournesol-app/tournesol-backend)
+
+Setup:
+1. On the backend repository, start the backend server using the script `dev-env/run-docker-compose.sh` 
+2. On the frontend repository, install frontend dependencies: `yarn install`
+3. Generate openapi service with the script `generate-services-from-openapi.sh` 
+4. Start the local frontend server: `yarn start`
+
 ## Available Scripts
 
 In the project directory, you can run:
