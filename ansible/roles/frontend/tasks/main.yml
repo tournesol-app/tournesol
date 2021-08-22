@@ -41,7 +41,7 @@
   register: nvm_use
   become: yes
   become_user: react
-  changed_when: "'You need to run \"nvm install lts/' in nvm_use.stderr"
+  changed_when: '''You need to run "nvm install lts/'' in nvm_use.stderr'
   notify:
     - Install Node
     - Yarn install

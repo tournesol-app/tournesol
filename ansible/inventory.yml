@@ -35,7 +35,7 @@ all:
             - https://staging.tournesol.app/
             - https://api.staging.tournesol.app/admin
             - https://wiki.staging.tournesol.app/
-          
+
           grafana_domain_name: tournesol-grafana
           grafana_scheme: http
 
