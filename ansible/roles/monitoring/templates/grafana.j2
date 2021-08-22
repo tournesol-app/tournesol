@@ -1,0 +1,32 @@
+server {
+    client_max_body_size 100M;
+
+    server_name {{grafana_domain_name}};
+
+    keepalive_timeout 5;
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_redirect off;
+        proxy_buffering off;
+        proxy_pass http://localhost:3000;
+    }
+
+{% if letsencrypt_email is defined %}
+    listen 443 ssl http2;
+    ssl_certificate /etc/letsencrypt/live/{{grafana_domain_name}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{grafana_domain_name}}/privkey.pem;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options nosniff;
+    add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+{% else %}
+    listen 80;
+{% endif %}
+}

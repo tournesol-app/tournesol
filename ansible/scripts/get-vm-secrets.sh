@@ -54,6 +54,12 @@ export SWAGGER_UI_OAUTH2_CLIENT_ID
 SWAGGER_UI_OAUTH2_CLIENT_SECRET="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/swagger_ui_oauth2_client_secret)"
 export SWAGGER_UI_OAUTH2_CLIENT_SECRET
 
+GRAFANA_OIDC_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/grafana_oidc_client_id)"
+export GRAFANA_OIDC_CLIENT_ID
+
+GRAFANA_OIDC_CLIENT_SECRET="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/grafana_oidc_client_secret)"
+export GRAFANA_OIDC_CLIENT_SECRET
+
 DISCORD_ALERTING_WEBHOOK="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/discord_alerting_webhook)" && \
 export DISCORD_ALERTING_WEBHOOK || \
 echo "no Discord alerting webhook set"

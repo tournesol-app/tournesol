@@ -1,3 +1,21 @@
+- name: Check if Grafana certificates are already present
+  stat:
+    path: /etc/letsencrypt/live/{{grafana_domain_name}}/fullchain.pem
+  register: grafana_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if Grafana certificates are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and grafana_cert_file.stat.exists == False
+
+- name: Run Certbot for Grafana domain
+  shell:
+    cmd: "certbot certonly --standalone -d {{grafana_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{grafana_domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
 - name: Install GeoIP database
   apt:
     name:
@@ -154,25 +172,97 @@
   notify:
     - Reset Grafana admin password
     - Write Grafana admin password into root's home
-    - Set Grafana default organization role
+    # - Set Grafana default organization role
+    - Write Grafana OIDC client ID into root's home
+    - Write Grafana OIDC client secret into root's home
+    - Create Grafana OIDC application in Django database
     - Enable and restart Grafana
     - Create Grafana Prometheus datasource
 
+- name: Setup Grafana server parameters
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[server\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK SERVER"
+    block: |
+      root_url = {{grafana_scheme}}://{{grafana_domain_name}}/
+      domain = {{grafana_domain_name}}
+  notify:
+    - Enable and restart Grafana
+
+- name: Setup Grafana auth
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[auth\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK AUTH"
+    block: |
+      disable_login_form = true
+      ;oauth_auto_login = true
+  notify:
+    - Enable and restart Grafana
+
+- name: Disable Grafana basic auth
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[auth\\.basic\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK BASIC AUTH"
+    block: |
+      enabled = true
+  notify:
+    - Enable and restart Grafana
+
+- name: Configure OIDC for Grafana
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[auth\\.generic_oauth\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK OIDC"
+    block: |
+      enabled = true
+      name = Django OAuth
+      allow_sign_up = true
+      client_id = {{grafana_oidc_client_id}}
+      client_secret = {{grafana_oidc_client_secret}}
+      scopes = openid
+      auth_url = {{django_main_url}}/o/authorize/
+      token_url = {{django_main_url}}/o/token/
+      api_url = {{django_main_url}}/o/userinfo/
+      role_attribute_strict = true
+      role_attribute_path = role == 'admin' && 'Admin'
+      name_attribute_path = username
+  notify:
+    - Enable and restart Grafana
+
 - meta: flush_handlers
 
-- name: Create Grafana users for administrators
-  community.grafana.grafana_user:
-    url: "http://127.0.0.1:3000"
-    url_username: admin
-    url_password: "{{grafana_admin_password}}"
-    validate_certs: no
-    login: "{{item.name}}"
-    name: "{{ item.fullname | default(item.name) }}"
-    email: "{{ item.email | default(item.name + '@xxx.xxx') }}"
-    password: yopyop # temporary before switching to SSO (in between Grafana is exposed only through an SSH tunnel)
-    is_admin: yes
-    state: "{{ item.state | default('present') }}"
-  with_items: "{{admin_users}}"
+- name: Copy Nginx Grafana configuration
+  template:
+    src: grafana.j2
+    dest: /etc/nginx/sites-available/grafana
+  notify:
+    - Reload Nginx
+
+- name: Enable Nginx Grafana configuration
+  file:
+    src: /etc/nginx/sites-available/grafana
+    dest: /etc/nginx/sites-enabled/grafana
+    state: link
+  notify: 
+    - Reload Nginx
+
+# - name: Create Grafana users for administrators
+#   community.grafana.grafana_user:
+#     url: "http://127.0.0.1:3000"
+#     url_username: admin
+#     url_password: "{{grafana_admin_password}}"
+#     validate_certs: no
+#     login: "{{item.name}}"
+#     name: "{{ item.fullname | default(item.name) }}"
+#     email: "{{ item.email | default(item.name + '@xxx.xxx') }}"
+#     password: yopyop # temporary before switching to SSO (in between Grafana is exposed only through an SSH tunnel)
+#     is_admin: yes
+#     # state: "{{ item.state | default('present') }}"
+#     state: absent
+#   with_items: "{{admin_users}}"
 
 - name: Create Discord notification channel
   register: discord_notification_channel
@@ -211,10 +301,19 @@
     # - id: 13865 # Analytics - NGINX / LOKI v2+ Data Source / Promtail v2+ Tool
     #   rev: 6
 
+- name: Write Grafana OIDC client ID and secret into root's home
+  template:
+    dest: "/root/{{item}}"
+    src: "{{item}}.j2"
+    mode: u=rw,go=
+  with_items:
+    - grafana_oidc_client_id
+    - grafana_oidc_client_secret
+
 - name: Write Discord alerting webhook into root's home
   template:
     dest: /root/discord_alerting_webhook
-    src: discord-alerting-webhook.j2
+    src: discord_alerting_webhook.j2
     mode: u=rw,go=
   when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
 
@@ -244,6 +343,7 @@
       - libxcb-dri3-0 # undocumented but needed
     install_recommends: no
     update_cache: yes
+  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
 
 - name: Install Grafana plugins
   community.grafana.grafana_plugin:
@@ -252,6 +352,7 @@
   with_items:
     - name: grafana-image-renderer
       version: "3.0.1"
+  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
   notify: Enable and restart Grafana
 
 - name: Copy external URLs monitoring script
