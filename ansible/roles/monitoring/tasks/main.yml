@@ -171,10 +171,7 @@
     update_cache: yes
   notify:
     - Reset Grafana admin password
-    - Write Grafana admin password into root's home
     # - Set Grafana default organization role
-    - Write Grafana OIDC client ID into root's home
-    - Write Grafana OIDC client secret into root's home
     - Create Grafana OIDC application in Django database
     - Enable and restart Grafana
     - Create Grafana Prometheus datasource
@@ -301,12 +298,13 @@
     # - id: 13865 # Analytics - NGINX / LOKI v2+ Data Source / Promtail v2+ Tool
     #   rev: 6
 
-- name: Write Grafana OIDC client ID and secret into root's home
+- name: Write Grafana secrets into root's home
   template:
     dest: "/root/{{item}}"
     src: "{{item}}.j2"
     mode: u=rw,go=
   with_items:
+    - grafana_admin_password
     - grafana_oidc_client_id
     - grafana_oidc_client_secret
 

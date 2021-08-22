@@ -24,12 +24,6 @@
   become: true
   become_user: gunicorn
 
-- name: Write Swagger UI OAuth client ID into root's home
-  shell: "echo \"{{swagger_ui_oauth2_client_id}}\" > /root/swagger_ui_oauth2_client_id && chmod go-rwx /root/swagger_ui_oauth2_client_id"
-
-- name: Write Swagger UI OAuth client secret into root's home
-  shell: "echo \"{{swagger_ui_oauth2_client_secret}}\" > /root/swagger_ui_oauth2_client_secret && chmod go-rwx /root/swagger_ui_oauth2_client_secret"
-
 - name: Create Swagger UI OAuth application in Django database
   shell: 
     cmd: now=$(date -I) && psql -d tournesol <<< "insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('{{swagger_ui_oauth2_client_id}}', '{{api_scheme}}://{{api_domain_name}}/docs/', 'confidential', 'password', '{{swagger_ui_oauth2_client_secret}}','Swagger UI', true, 'RS256', '$now', '$now');"

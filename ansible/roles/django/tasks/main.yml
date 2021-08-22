@@ -35,9 +35,16 @@
     dest: /root/django_oidc_rsa_private_key
     mode: u=rw,g=,o=
   notify:
-    - Write Swagger UI OAuth client ID into root's home
-    - Write Swagger UI OAuth client secret into root's home
     - Create Swagger UI OAuth application in Django database
+
+- name: Copy Swagger UI OAuth client ID and secret
+  template:
+    src: "{{item}}.j2"
+    dest: "/root/{{item}}"
+    mode: u=rw,g=,o=
+  with_items:
+    - swagger_ui_oauth2_client_id
+    - swagger_ui_oauth2_client_secret
 
 - name: Create Django application directory
   file:
