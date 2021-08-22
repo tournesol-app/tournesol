@@ -171,6 +171,7 @@
     update_cache: yes
   notify:
     - Reset Grafana admin password
+    # - Set Grafana default organization role
     - Create Grafana OIDC application in Django database
     - Enable and restart Grafana
     - Create Grafana Prometheus datasource
