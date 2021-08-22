@@ -117,3 +117,17 @@
     validate_certs: no
     path: /tmp/nginx-loki-dashboard.json
     overwrite: yes
+
+- name: Copy Grafana alerting dashboard
+  template:
+    dest: /tmp/grafana-alerting-dashboard.json
+    src: alerting-dashboard.json.j2
+
+- name: Create Grafana alerting dashboard
+  community.grafana.grafana_dashboard:
+    grafana_url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    path: /tmp/grafana-alerting-dashboard.json
+    overwrite: yes
