@@ -14,6 +14,7 @@ class CustomOAuth2Validator(OAuth2Validator):
             "email": request.user.email,
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
+            "role": "admin" if request.user.is_superuser else "user",
         }
 
     def get_userinfo_claims(self, request):
