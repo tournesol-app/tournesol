@@ -85,7 +85,7 @@
 - name: Configure Postgresql exporter connection string
   lineinfile:
     path: /etc/default/prometheus-postgres-exporter
-    regexp: '^DATA_SOURCE_NAME='
+    regexp: "^DATA_SOURCE_NAME="
     line: "DATA_SOURCE_NAME='user=prometheus host=/run/postgresql dbname=postgres'"
   notify: Restart Prometheus Postgresql exporter
 
@@ -199,13 +199,13 @@
     dashboard_id: "{{item.id}}"
     dashboard_revision: "{{item.rev}}"
   with_items:
-    - id: 1860  # Node Exporter Full
+    - id: 1860 # Node Exporter Full
       rev: 23
-    - id: 9628  # PostgreSQL Database
+    - id: 9628 # PostgreSQL Database
       rev: 7
     - id: 12708 # NGINX exporter
       rev: 1
-    - id: 9528  # a Django Prometheus
+    - id: 9528 # a Django Prometheus
       rev: 1
     # This one has been forked and is imported in the logging role
     # - id: 13865 # Analytics - NGINX / LOKI v2+ Data Source / Promtail v2+ Tool
