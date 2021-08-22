@@ -19,7 +19,7 @@ all:
           django_database_user: tournesol
           django_email_backend: console
 
-          backend_target_branch: admin-role-in-userinfo
+          backend_target_branch: main
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
@@ -56,7 +56,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
 
-          backend_target_branch: admin-role-in-userinfo
+          backend_target_branch: main
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
