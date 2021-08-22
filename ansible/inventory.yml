@@ -21,7 +21,7 @@ all:
 
           backend_target_branch: registration-mails-password-management
           loki_version: "v2.2.1"
-          frontend_target_branch: main
+          frontend_target_branch: codegen-fix
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: http
@@ -55,7 +55,7 @@ all:
 
           backend_target_branch: registration-mails-password-management
           loki_version: "v2.2.1"
-          frontend_target_branch: main
+          frontend_target_branch: codegen-fix
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
