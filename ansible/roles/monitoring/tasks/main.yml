@@ -171,7 +171,6 @@
     update_cache: yes
   notify:
     - Reset Grafana admin password
-    # - Set Grafana default organization role
     - Create Grafana OIDC application in Django database
     - Enable and restart Grafana
     - Create Grafana Prometheus datasource
@@ -260,22 +259,6 @@
 #     # state: "{{ item.state | default('present') }}"
 #     state: absent
 #   with_items: "{{admin_users}}"
-
-- name: Create Discord notification channel
-  register: discord_notification_channel
-  community.grafana.grafana_notification_channel:
-    grafana_url: "http://127.0.0.1:3000"
-    url_username: admin
-    url_password: "{{grafana_admin_password}}"
-    validate_certs: no
-    uid: discord
-    name: Tournesol Discord
-    type: discord
-    discord_url: "{{discord_alerting_webhook}}"
-    is_default: yes
-    include_image: yes
-    reminder_frequency: 5m
-  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
 
 - name: Create Discord notification channel
   register: discord_notification_channel
