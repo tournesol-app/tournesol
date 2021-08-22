@@ -174,6 +174,22 @@
     state: "{{ item.state | default('present') }}"
   with_items: "{{admin_users}}"
 
+- name: Create Discord notification channel
+  register: discord_notification_channel
+  community.grafana.grafana_notification_channel:
+    grafana_url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    uid: discord
+    name: Tournesol Discord
+    type: discord
+    discord_url: "{{discord_alerting_webhook}}"
+    is_default: yes
+    include_image: yes
+    reminder_frequency: 5m
+  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+
 - name: Create Grafana dashboards
   community.grafana.grafana_dashboard:
     grafana_url: "http://127.0.0.1:3000"
@@ -201,6 +217,42 @@
     src: discord-alerting-webhook.j2
     mode: u=rw,go=
   when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+
+# https://grafana.com/docs/grafana/latest/administration/image_rendering/#grafana-image-renderer-plugin-and-remote-rendering-service
+- name: Install Grafana image renderer plugin dependencies
+  apt:
+    name:
+      - libxdamage1
+      - libxext6
+      - libxi6
+      - libxtst6
+      - libnss3
+      - libcups2
+      - libxss1
+      - libxrandr2
+      - libasound2
+      - libatk1.0-0
+      - libatk-bridge2.0-0
+      - libpangocairo-1.0-0
+      - libpango-1.0-0
+      - libcairo2
+      - libatspi2.0-0
+      - libgtk3.0-cil
+      - libgdk3.0-cil
+      - libx11-xcb-dev
+      - libgbm1
+      - libxcb-dri3-0 # undocumented but needed
+    install_recommends: no
+    update_cache: yes
+
+- name: Install Grafana plugins
+  community.grafana.grafana_plugin:
+    name: "{{item.name}}"
+    version: "{{item.version}}"
+  with_items:
+    - name: grafana-image-renderer
+      version: "3.0.1"
+  notify: Enable and restart Grafana
 
 - name: Copy external URLs monitoring script
   template:
