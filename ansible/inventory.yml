@@ -11,7 +11,7 @@ all:
           api_domain_name: tournesol-api
           api_scheme: http
 
-          bullseye_mirror: http://debian.ethz.ch/debian/
+          buster_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
           django_main_url: "http://{{api_domain_name}}"
@@ -48,7 +48,7 @@ all:
           api_domain_name: "api.{{domain_name}}"
           api_scheme: https
 
-          bullseye_mirror: http://debian.ethz.ch/debian/
+          buster_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
           django_main_url: https://{{api_domain_name}}
