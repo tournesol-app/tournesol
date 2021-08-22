@@ -1,3 +1,11 @@
+- name: Install Python and virtualenv
+  apt:
+    name:
+      - python3.9
+      - virtualenv
+    install_recommends: no
+    update_cache: yes
+
 - name: Create Gunicorn user
   user:
     name: gunicorn
