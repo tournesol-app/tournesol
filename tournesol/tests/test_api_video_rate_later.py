@@ -124,7 +124,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video.video_id": Video.objects.get(name=self._others_video).video_id}
+        data = {"video": {"video_id": Video.objects.get(name=self._others_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -143,7 +143,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video.video_id": Video.objects.get(name=self._users_video).video_id}
+        data = {"video": {"video_id": Video.objects.get(name=self._users_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -163,7 +163,7 @@ class VideoRateLaterApi(TestCase):
 
         user = User.objects.get(username=self._user)
         other = User.objects.get(username=self._other)
-        data = {"video.video_id": Video.objects.get(name=self._users_video).video_id}
+        data = {"video": {"video_id": Video.objects.get(name=self._users_video).video_id}}
 
         client.force_authenticate(user=user)
 

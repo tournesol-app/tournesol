@@ -20,7 +20,7 @@ def verify_username(request, username):
 
 
 class VideoRateLaterList(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+    mixins.ListModelMixin, generics.GenericAPIView
 ):
     """
     List all videos of a user's rate later list, or add a video to the list.
@@ -55,11 +55,11 @@ class VideoRateLaterList(
         verify_username(request, kwargs["username"])
 
         try:
-            video = get_object_or_404(Video, video_id=request.data["video.video_id"])
+            video = get_object_or_404(Video, video_id=request.data["video"]["video_id"])
         except KeyError:
             return Response(
                 {
-                    "detail": "Required field video.video_id not fount.",
+                    "detail": "Required field video.video_id not found.",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
