@@ -194,3 +194,33 @@
     # This one has been forked and is imported in the logging role
     # - id: 13865 # Analytics - NGINX / LOKI v2+ Data Source / Promtail v2+ Tool
     #   rev: 6
+
+- name: Write Discord alerting webhook into root's home
+  template:
+    dest: /root/discord_alerting_webhook
+    src: discord-alerting-webhook.j2
+    mode: u=rw,go=
+  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+
+- name: Copy external URLs monitoring script
+  template:
+    dest: /usr/local/bin/external-urls-monitoring.sh
+    src: external-urls-monitoring.sh.j2
+    mode: a=rx
+
+- name: Copy external URLs monitoring service
+  copy:
+    dest: /etc/systemd/system/external-urls-monitoring.service
+    src: external-urls-monitoring.service
+
+- name: Copy external URLs monitoring timer
+  copy:
+    dest: /etc/systemd/system/external-urls-monitoring.timer
+    src: external-urls-monitoring.timer
+
+- name: Enable and start external URLs monitoring timer
+  systemd:
+    name: external-urls-monitoring.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

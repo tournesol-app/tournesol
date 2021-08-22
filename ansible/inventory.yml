@@ -31,6 +31,11 @@ all:
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
 
+          monitored_urls:
+            - https://staging.tournesol.app/
+            - https://api.staging.tournesol.app/admin
+            - https://wiki.staging.tournesol.app/
+
         # Staging Vultr VM
         tournesol-staging:
           ansible_host: staging.tournesol.app
@@ -63,6 +68,8 @@ all:
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
 
+          monitored_urls:
+            - https://tournesol.app/
 
       vars:
         ansible_python_interpreter: /usr/bin/python3

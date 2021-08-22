@@ -1,0 +1,7 @@
+[Unit]
+Description=External URLs monitoring
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/external-urls-monitoring.sh
+DynamicUser=yes
