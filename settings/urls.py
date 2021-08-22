@@ -18,7 +18,12 @@ from django.http import HttpResponseForbidden
 from django.urls import path, include
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
+from rest_registration.api.urls import urlpatterns as original_registration_urlpatterns
+exclude_patterns = ["login", "logout"]
+filtered_registration_urls = [pattern for pattern in original_registration_urlpatterns if pattern.name not in exclude_patterns]
+
 urlpatterns = [
+    path('accounts/', include(filtered_registration_urls)),
     path("admin/", admin.site.urls),
     path("monitoring/", include("django_prometheus.urls")),
     path(

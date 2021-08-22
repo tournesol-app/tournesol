@@ -1,4 +1,4 @@
-Python et Django Dependency 
+Python et Django Dependencies
 ===
 
 
@@ -8,7 +8,12 @@ https://docs.djangoproject.com
 ### Django rest framework
 https://github.com/encode/django-rest-framework
 
-Create api api with django
+Create API with django
+
+### Django rest registration
+https://github.com/apragacz/django-rest-registration
+
+Registration, profile, password and email management
 
 ### Django-countries
 https://github.com/SmileyChris/django-countries/
@@ -58,8 +63,7 @@ https://github.com/korfuri/django-prometheus
 
 Used to provide django metrics for monitoring
 
+### Spectacular
+https://github.com/tfranzel/drf-spectacular
 
-### django-rest-swagger
-https://github.com/marcgibbons/django-rest-swagger
-
-Used to generated automated documentation
+Used to generate OpenAPI documentation exposed by Swagger UI
