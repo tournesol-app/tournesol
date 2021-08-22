@@ -2,7 +2,7 @@ version: "3.9"
    
 services:
   db:
-    image: postgres
+    image: postgres:buster
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:

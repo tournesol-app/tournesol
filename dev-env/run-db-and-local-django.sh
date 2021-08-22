@@ -7,6 +7,9 @@ cd "$CURRENT_DIR"
 
 sudo rm -rf data static media
 
+mkdir data
+sudo chown -R 999:999 data
+
 docker-compose up --force-recreate -d db
 
 sleep 30
