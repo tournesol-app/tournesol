@@ -21,7 +21,7 @@ all:
 
           backend_target_branch: admin-role-in-userinfo
           loki_version: "v2.2.1"
-          frontend_target_branch: codegen-fix
+          frontend_target_branch: main
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: http
@@ -58,7 +58,7 @@ all:
 
           backend_target_branch: admin-role-in-userinfo
           loki_version: "v2.2.1"
-          frontend_target_branch: codegen-fix
+          frontend_target_branch: main
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
