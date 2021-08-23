@@ -1,6 +1,5 @@
 - hosts: tournesol
   roles:
-    - backports
     - upgrade
     - base
     - nftables

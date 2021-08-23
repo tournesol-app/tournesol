@@ -20,6 +20,18 @@
   apt:
     name:
       - geoip-database
+      # - geoip-database-extra
+    install_recommends: no
+    update_cache: yes
+
+- name: Add Buster repository
+  apt_repository:
+    repo: "deb {{buster_mirror}} buster main"
+    state: present
+
+- name: Install GeoIP database extra from Buster
+  apt:
+    name:
       - geoip-database-extra
     install_recommends: no
     update_cache: yes

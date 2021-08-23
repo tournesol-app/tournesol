@@ -1,3 +1,11 @@
+- name: Install Certbot
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    install_recommends: no
+    update_cache: yes
+
 - name: Check if certificates for frontend are already present
   stat:
     path: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem

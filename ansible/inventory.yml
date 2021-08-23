@@ -11,7 +11,7 @@ all:
           api_domain_name: tournesol-api
           api_scheme: http
 
-          bullseye_mirror: http://debian.ethz.ch/debian/
+          buster_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
           django_main_url: "http://{{api_domain_name}}"
@@ -19,7 +19,7 @@ all:
           django_database_user: tournesol
           django_email_backend: console
 
-          backend_target_branch: admin-role-in-userinfo
+          backend_target_branch: main
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
@@ -48,7 +48,7 @@ all:
           api_domain_name: "api.{{domain_name}}"
           api_scheme: https
 
-          bullseye_mirror: http://debian.ethz.ch/debian/
+          buster_mirror: http://debian.ethz.ch/debian/
 
           django_debug: "True"
           django_main_url: https://{{api_domain_name}}
@@ -56,7 +56,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
 
-          backend_target_branch: admin-role-in-userinfo
+          backend_target_branch: main
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
