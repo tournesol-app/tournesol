@@ -208,6 +208,17 @@
     owner: www-data
     group: www-data
 
+- name: Create Mediawiki automysqlbackup directory
+  file:
+    state: directory
+    path: /backups/mediawiki/automysqlbackup
+
+- name: Set Mediawiki automysqlbackup directory
+  lineinfile:
+    path: /etc/default/automysqlbackup
+    regexp: '^BACKUPDIR='
+    line: BACKUPDIR=/backups/mediawiki/automysqlbackup
+
 - name: Copy Mediawiki XML backups script
   template:
     src: backup-mediawiki.sh.j2
