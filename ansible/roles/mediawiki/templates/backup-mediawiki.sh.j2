@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+now="$(date +"%Y_%m_%d_%H_%M")"
+mkdir -p "/backups/mediawiki/$now"
+
+php dumpBackup.php --full --quiet > "/tmp/$now-dump.xml"
+tar cvzf "/backups/mediawiki/$now/xml.tgz" "/tmp/$now-dump.xml"
+rm "/tmp/$now-dump.xml"
+
+tar zcvhf "/backups/mediawiki/$now/fs.tgz" /var/lib/mediawiki
+
+mysqldump \
+    -u "{{mediawiki_database_user}}" \
+    --password="{{mediawiki_database_password}}" \
+    "{{mediawiki_database_name}}" \
+    | gzip > "/backups/mediawiki/$now/db.tgz"

@@ -188,3 +188,45 @@
     daemon_reload: yes
 
 - meta: flush_handlers
+
+- name: Install automysqlbackup
+  apt:
+    name: automysqlbackup
+    update_cache: yes
+    install_recommends: no
+
+- name: Create backups directory
+  file:
+    state: directory
+    path: /backups
+    mode: a=rwx
+
+- name: Create Mediawiki backups directory
+  file:
+    state: directory
+    path: /backups/mediawiki
+    owner: www-data
+    group: www-data
+
+- name: Copy Mediawiki XML backups script
+  template:
+    src: backup-mediawiki.sh.j2
+    dest: /usr/local/bin/backup-mediawiki.sh
+    mode: a=rx
+
+- name: Install Mediawiki XML backups service
+  template:
+    src: mediawiki-backups.service
+    dest: /etc/systemd/system/mediawiki-backups.service
+
+- name: Install Mediawiki XML backups timer
+  template:
+    src: mediawiki-backups.timer
+    dest: /etc/systemd/system/mediawiki-backups.timer
+
+- name: Enable Mediawiki XML backups timer
+  systemd:
+    name: mediawiki-backups.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
