@@ -144,3 +144,29 @@
   notify: Reload Nginx
 
 - meta: flush_handlers
+
+- name: Copy ML training service
+  template:
+    dest: /etc/systemd/system/ml-train.service
+    src: ml-train.service.j2
+
+- name: Copy ML training timer
+  template:
+    dest: /etc/systemd/system/ml-train.timer
+    src: ml-train.timer.j2
+
+- name: Install requirements for ML training
+  pip:
+    requirements: /srv/tournesol-backend/ml/ml_requirements.txt
+    virtualenv: /srv/tournesol-backend/venv
+    virtualenv_python: python3.9
+  become: yes
+  become_user: gunicorn
+  notify: Restart Gunicorn
+
+- name: Enable and start ML training timer
+  systemd:
+    name: ml-train.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

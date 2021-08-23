@@ -1,0 +1,8 @@
+[Unit]
+Description=Train ML
+
+[Timer]
+OnCalendar={{ml_train_schedule}}
+
+[Install]
+WantedBy=timers.target
