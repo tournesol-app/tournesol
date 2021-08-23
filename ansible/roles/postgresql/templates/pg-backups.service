@@ -1,0 +1,9 @@
+[Unit]
+Description=Postgresql Backup
+
+[Service]
+Type=oneshot
+User=postgres
+Group=postgres
+Environment="PGPASSWORD={{django_database_password}}"
+ExecStart=/usr/local/bin/pg_backup_rotated.sh -c /etc/postgresql/pg_backup.config
