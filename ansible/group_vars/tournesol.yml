@@ -15,7 +15,7 @@ admin_users:
 
   - name: lenhoang
     shell: "/usr/bin/zsh"
-  
+
   - name: adrien
     shell: "/usr/bin/zsh"
 

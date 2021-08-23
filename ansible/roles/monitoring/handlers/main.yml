@@ -36,13 +36,20 @@
   become_user: grafana
 
 - name: Write Grafana admin password into root's home
-  shell: "echo \"{{grafana_admin_password}}\" > /root/grafana_admin_password && chmod go-rwx /root/grafana_admin_password"
+  shell: 'echo "{{grafana_admin_password}}" > /root/grafana_admin_password && chmod go-rwx /root/grafana_admin_password'
 
-- name: Set Grafana default organization role
-  lineinfile:
-    path: /etc/grafana/grafana.ini
-    regexp: '^;auto_assign_org_role = '
-    line: auto_assign_org_role = Admin
+# - name: Set Grafana default organization role
+#   lineinfile:
+#     path: /etc/grafana/grafana.ini
+#     regexp: '^;auto_assign_org_role = '
+#     line: auto_assign_org_role = Admin
+
+- name: Create Grafana OIDC application in Django database
+  shell:
+    cmd: now=$(date -I) && psql -d tournesol <<< "insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('{{grafana_oidc_client_id}}', '{{grafana_scheme}}://{{grafana_domain_name}}/login/generic_oauth', 'confidential', 'authorization-code', '{{grafana_oidc_client_secret}}','Grafana', true, 'RS256', '$now', '$now');"
+    executable: /usr/bin/bash
+  become: yes
+  become_user: postgres
 
 - name: Enable and restart Grafana
   systemd:

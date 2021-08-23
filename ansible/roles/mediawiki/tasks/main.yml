@@ -32,11 +32,6 @@
     update_cache: yes
     install_recommends: yes
   notify:
-    - Write Mediawiki database password into root's home
-    - Write Mediawiki secret key into root's home
-    - Write Mediawiki admin password into root's home
-    - Write Mediawiki OIDC client ID into root's home
-    - Write Mediawiki OIDC client secret into root's home
     - Create Mediawiki alternative root
     - Link Mediawiki alternative root
     - Create OIDC application in Django database
@@ -61,7 +56,7 @@
   mysql_user:
     name: "{{mediawiki_database_user}}"
     password: "{{mediawiki_database_password}}"
-    priv: 'mediawiki.*:ALL'
+    priv: "mediawiki.*:ALL"
     login_unix_socket: /var/run/mysqld/mysqld.sock
   notify:
     - Install Mediawiki
@@ -102,19 +97,26 @@
     src: /etc/nginx/sites-available/mediawiki
     dest: /etc/nginx/sites-enabled/mediawiki
     state: link
-  notify: 
+  notify:
     - Reload Nginx
+
+- name: Copy Mediawiki secrets
+  template:
+    src: "{{item}}.j2"
+    dest: "/root/{{item}}"
+    mode: u=rw,g=,o=
+  with_items:
+    - mediawiki_admin_password
+    - mediawiki_database_password
+    - mediawiki_secret_key
+    - mediawiki_oidc_client_id
+    - mediawiki_oidc_client_secret
 
 - name: Copy Mediawiki configuration
   template:
     src: LocalSettings.php.j2
     dest: /etc/mediawiki/LocalSettings.php
   notify:
-    - Write Mediawiki database password into root's home
-    - Write Mediawiki secret key into root's home
-    - Write Mediawiki admin password into root's home
-    - Write Mediawiki OIDC client ID into root's home
-    - Write Mediawiki OIDC client secret into root's home
     - Reload Nginx
 
 - name: Download Mediawiki language extensions

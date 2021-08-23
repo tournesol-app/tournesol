@@ -41,15 +41,22 @@
   register: nvm_use
   become: yes
   become_user: react
-  changed_when: "'You need to run \"nvm install lts/' in nvm_use.stderr"
+  changed_when: '''You need to run "nvm install lts/'' in nvm_use.stderr'
   notify:
     - Install Node
     - Yarn install
     - Yarn build
     - Copy frontend files
-    - Write Frontend OAuth client ID into root's home
-    - Write Frontend OAuth client secret into root's home
     - Create Frontend OAuth application in Django database
+
+- name: Copy Frontend OAuth client ID and secret
+  template:
+    src: "{{item}}.j2"
+    dest: "/root/{{item}}"
+    mode: u=rw,g=,o=
+  with_items:
+    - frontend_oauth_client_id
+    - frontend_oauth_client_secret
 
 - name: Create React application directory
   file:

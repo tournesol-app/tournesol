@@ -19,7 +19,7 @@ all:
           django_database_user: tournesol
           django_email_backend: console
 
-          backend_target_branch: registration-mails-password-management
+          backend_target_branch: admin-role-in-userinfo
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
@@ -30,6 +30,14 @@ all:
           mediawiki_scheme: http
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
+
+          monitored_urls:
+            - https://staging.tournesol.app/
+            - https://api.staging.tournesol.app/admin
+            - https://wiki.staging.tournesol.app/
+
+          grafana_domain_name: tournesol-grafana
+          grafana_scheme: http
 
         # Staging Vultr VM
         tournesol-staging:
@@ -48,7 +56,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
 
-          backend_target_branch: registration-mails-password-management
+          backend_target_branch: admin-role-in-userinfo
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
@@ -63,6 +71,11 @@ all:
           mediawiki_database_name: mediawiki
           mediawiki_database_user: mediawiki
 
+          monitored_urls:
+            - https://tournesol.app/
+
+          grafana_domain_name: "grafana.{{domain_name}}"
+          grafana_scheme: https
 
       vars:
         ansible_python_interpreter: /usr/bin/python3

@@ -96,10 +96,16 @@ server {
     if ($host = {{api_domain_name}}) {
         return 301 https://$host$request_uri;
     }
+    if ($host = {{mediawiki_domain_name}}) {
+        return 301 https://$host$request_uri;
+    }
+    if ($host = {{grafana_domain_name}}) {
+        return 301 https://$host$request_uri;
+    }
 
     listen 80 deferred;
 
-    server_name {{domain_name}} {{api_domain_name}};
+    server_name {{domain_name}} {{api_domain_name}} {{mediawiki_domain_name}} {{grafana_domain_name}};
     return 404;
 }
 {% endif %}

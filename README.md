@@ -32,7 +32,7 @@
 
 - make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
 - Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `letsencrypt_email` variable)
-- One way to use the `ansible_host`, `domain_name` and `mediawiki_domain_name` variables is to let them as is (`tournesol-vm` and `tournesol-wiki`) and to put a `<VM_IP> tournesol-vm tournesol-wiki` line in your `/etc/hosts` file
+- One way to use the `ansible_host`, `domain_name` and `mediawiki_domain_name` variables is to let them as is (`tournesol-vm`, `tournesol-api`, `tournesol-wiki` and `tournesol-grafana`) and to put a `<VM_IP> tournesol-vm tournesol-api tournesol-wiki tournesol-grafana` line in your `/etc/hosts` file
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
 - Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them
 - Set the `DJANGO_DATABASE_PASSWORD`, `DJANGO_SECRET_KEY`, `GRAFANA_ADMIN_PASSWORD`, `MEDIAWIKI_DATABASE_PASSWORD` and `MEDIAWIKI_ADMIN_PASSWORD` to random values (you can use the `source ./ansible/scripts/generate-secrets.sh` command)

@@ -32,3 +32,6 @@ ansible-playbook -i inventory.yml -l tournesol-staging setup.yml \
   -e "mediawiki_oidc_client_secret=$MEDIAWIKI_OIDC_CLIENT_SECRET" \
   -e "swagger_ui_oauth2_client_id=$SWAGGER_UI_OAUTH2_CLIENT_ID" \
   -e "swagger_ui_oauth2_client_secret=$SWAGGER_UI_OAUTH2_CLIENT_SECRET" \
+  -e "grafana_oidc_client_id=$GRAFANA_OIDC_CLIENT_ID" \
+  -e "grafana_oidc_client_secret=$GRAFANA_OIDC_CLIENT_SECRET" \
+  -e "discord_alerting_webhook=${DISCORD_ALERTING_WEBHOOK:-""}" \

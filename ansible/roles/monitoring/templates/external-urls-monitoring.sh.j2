@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+URLS='{{monitored_urls | join(' ')}}'
+
+for u in $URLS
+do
+    echo "checking $u"
+    wget -qO /dev/null "$u" && echo "$u OK" || (
+        echo "error checking $u"
+{% if discord_alerting_webhook is defined and discord_alerting_webhook != "" %}
+        wget -qO /dev/null \
+        --post-data='{"content": "health check of '"$u"' failed"}' \
+        --header='Content-Type:application/json' \
+        '{{discord_alerting_webhook}}?wait=true'
+        echo "alert sent"
+{% endif %}
+    )
+done

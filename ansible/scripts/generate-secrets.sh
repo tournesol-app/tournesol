@@ -38,3 +38,9 @@ export SWAGGER_UI_OAUTH2_CLIENT_ID
 
 SWAGGER_UI_OAUTH2_CLIENT_SECRET="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 128 | head -n 1)"
 export SWAGGER_UI_OAUTH2_CLIENT_SECRET
+
+GRAFANA_OIDC_CLIENT_ID="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)"
+export GRAFANA_OIDC_CLIENT_ID
+
+GRAFANA_OIDC_CLIENT_SECRET="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 128 | head -n 1)"
+export GRAFANA_OIDC_CLIENT_SECRET
