@@ -11,10 +11,12 @@ from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListOnlyApi
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 from .views.user import CurrentUserView
+from .views.ratings import ContributorRatingViewSet
 
 
 router = routers.DefaultRouter()
 router.register(r'video', VideoViewSet)
+router.register(r'users/me/contributor_ratings', ContributorRatingViewSet)
 
 app_name = "tournesol"
 urlpatterns = [

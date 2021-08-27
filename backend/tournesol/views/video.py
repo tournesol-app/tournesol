@@ -27,7 +27,7 @@ class VideoViewSet(viewsets.ModelViewSet):
     serializer_class = VideoSerializer
     permission_classes = []  # To unlock authentication required
 
-    def retrieve(self, request, pk, *args, **kwargs):
+    def retrieve(self, request, pk):
         """
         Get video details and criteria that are related to it
         """

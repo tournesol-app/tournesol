@@ -9,6 +9,7 @@ from rest_framework import serializers
 from rest_framework.serializers import Serializer, ModelSerializer
 
 from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater, VideoCriteriaScore
+from .models import ContributorRating
 
 
 class VideoSerializer(ModelSerializer):
@@ -133,7 +134,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         video_2 = Video.objects.get(video_id=video_id_2)
 
         # get default values directly from the model
-        default_duration_ms = Comparison._meta.get_field("duration_ms").get_default()
+        default_duration_ms = Comparison._meta.get_field(
+            "duration_ms").get_default()
 
         comparison = Comparison.objects.create(
             video_1=video_1, video_2=video_2, user=validated_data.get("user"),
@@ -174,7 +176,8 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         Also add `video_a` and `video_b` fields to make the representation
         consistent across all comparison serializers.
         """
-        ret = super(ComparisonUpdateSerializer, self).to_representation(instance)
+        ret = super(ComparisonUpdateSerializer,
+                    self).to_representation(instance)
 
         video_1_repr = VideoReadOnlySerializer().to_representation(instance.video_1)
         video_2_repr = VideoReadOnlySerializer().to_representation(instance.video_2)
@@ -215,3 +218,11 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
             instance.criteria_scores.create(**criteria_score)
 
         return instance
+
+
+class ContributorRatingSerializer(ModelSerializer):
+    video = VideoSerializer()
+
+    class Meta:
+        model = ContributorRating
+        exclude = ["id"]
