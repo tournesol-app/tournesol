@@ -216,7 +216,7 @@
 - name: Set Mediawiki automysqlbackup directory
   lineinfile:
     path: /etc/default/automysqlbackup
-    regexp: '^BACKUPDIR='
+    regexp: "^BACKUPDIR="
     line: BACKUPDIR=/backups/mediawiki/automysqlbackup
 
 - name: Copy Mediawiki XML backups script

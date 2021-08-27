@@ -35,9 +35,6 @@
   become: yes
   become_user: grafana
 
-- name: Write Grafana admin password into root's home
-  shell: 'echo "{{grafana_admin_password}}" > /root/grafana_admin_password && chmod go-rwx /root/grafana_admin_password'
-
 # - name: Set Grafana default organization role
 #   lineinfile:
 #     path: /etc/grafana/grafana.ini
