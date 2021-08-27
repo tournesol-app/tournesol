@@ -24,6 +24,13 @@
   become: true
   become_user: gunicorn
 
+- name: Populate Django DB from Public Dataset
+  shell:
+    cmd: cd /tmp && tar xvf /srv/tournesol-backend/scripts/dataset-import/dump-for-migrations-core-0004-tournesol-0007.sql.tgz && psql -1 -d tournesol < dump.sql && rm dump.sql
+    executable: /usr/bin/bash
+  become: yes
+  become_user: postgres
+
 - name: Create Swagger UI OAuth application in Django database
   shell:
     cmd: now=$(date -I) && psql -d tournesol <<< "insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('{{swagger_ui_oauth2_client_id}}', '{{api_scheme}}://{{api_domain_name}}/docs/', 'confidential', 'password', '{{swagger_ui_oauth2_client_secret}}','Swagger UI', true, 'RS256', '$now', '$now');"

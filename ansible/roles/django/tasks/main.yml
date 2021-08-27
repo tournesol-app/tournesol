@@ -43,6 +43,7 @@
     dest: /root/django_oidc_rsa_private_key
     mode: u=rw,g=,o=
   notify:
+    - Populate Django DB from Public Dataset
     - Create Swagger UI OAuth application in Django database
 
 - name: Copy Swagger UI OAuth client ID and secret
