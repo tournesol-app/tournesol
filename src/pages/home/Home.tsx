@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import Frame from '../../features/frame/Frame';
 import { topBarHeight } from '../../features/frame/components/topbar/TopBar';
 
 const useStyles = makeStyles(() => ({
@@ -99,7 +98,6 @@ const Home = () => {
 function HomePage() {
   return (
     <div>
-      <Frame />
       <Home />
     </div>
   );

@@ -1,10 +1,8 @@
 import React from 'react';
-import Frame from '../../features/frame/Frame';
 
 const DonatePage = () => {
   return (
     <div>
-      <Frame />
       <div
         style={{
           marginLeft: 64,

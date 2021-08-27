@@ -11,7 +11,10 @@ export const getTokenAsync = createAsyncThunk(
   'login/fetchToken',
   async ({ username, password }: { username: string; password: string }) => {
     const response = await fetchToken({ username, password });
-    return response.data;
+    return {
+      username: username,
+      ...(await response.data),
+    };
   }
 );
 
@@ -39,6 +42,7 @@ export const loginSlice = createSlice({
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
+        state.username = action.payload.username;
       })
       .addCase(getTokenAsync.rejected, (state) => {
         state.status = 'idle';

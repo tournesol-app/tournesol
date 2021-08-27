@@ -10,11 +10,16 @@ import {
   Theme,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Search } from '@material-ui/icons';
 
 import { useAppSelector } from '../../../../app/hooks';
 import { selectFrame } from '../../drawerOpenSlice';
 import { topBarHeight } from '../topbar/TopBar';
+import {
+  Home as HomeIcon,
+  AccountCircle as AccountCircleIcon,
+  Compare as CompareIcon,
+  WatchLater as WatchLaterIcon,
+} from '@material-ui/icons';
 
 export const sideBarWidth = 240;
 
@@ -70,7 +75,7 @@ const SideBar = () => {
         <Link to="/">
           <ListItem button>
             <ListItemIcon>
-              <Search color="primary" />
+              <HomeIcon color="action" />
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
@@ -78,7 +83,7 @@ const SideBar = () => {
         <Link to="/login">
           <ListItem button>
             <ListItemIcon>
-              <Search color="primary" />
+              <AccountCircleIcon color="action" />
             </ListItemIcon>
             <ListItemText primary="Login" />
           </ListItem>
@@ -86,9 +91,17 @@ const SideBar = () => {
         <Link to="/comparisons">
           <ListItem button>
             <ListItemIcon>
-              <Search color="primary" />
+              <CompareIcon color="action" />
             </ListItemIcon>
             <ListItemText primary="Comparisons" />
+          </ListItem>
+        </Link>
+        <Link to="/rate_later">
+          <ListItem button>
+            <ListItemIcon>
+              <WatchLaterIcon color="action" />
+            </ListItemIcon>
+            <ListItemText primary="Rate later" />
           </ListItem>
         </Link>
       </List>
