@@ -11,19 +11,19 @@ class VideoApi(TestCase):
 
     """
 
-    def test_upload_video(self):
+    def test_upload_video_without_API_key(self):
         factory = APIClient()
         response = factory.post(
             "/video/",
-            {'video_id':'AZERTYUIOPV'},
+            {'video_id':'NeADlWSDFAQ'},
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_upload_video_already_exist(self):
-        Video.objects.create(video_id="lsORjv-zerh")
+    def test_upload_video_already_exist_without_API_key(self):
+        Video.objects.create(video_id="NeADlWSDFAQ")
         client = APIClient()
-        data={'video_id':'lsORjv-zerh'}
+        data={'video_id':'NeADlWSDFAQ'}
         response = client.post(
             "/video/",
             data,
@@ -48,20 +48,21 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def get_existing_video(self):
-        Video.objects.create(video_id='AZERTYUIOPV')
+        Video.objects.create(video_id='NeADlWSDFAQ')
         factory = APIClient()
         response = factory.get(
             "/video/",
-            {'video_id':'AZERTYUIOPV'},
+            {'video_id':'NeADlWSDFAQ'},
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response[0].video_id, 'NeADlWSDFAQ')
     
     def get_existing_video(self):
         factory = APIClient()
         response = factory.get(
             "/video/",
-            {'video_id':'AZERTYUIOPV'},
+            {'video_id':'NeADlWSDFAQ'},
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -25,3 +25,13 @@ Django app for tournesol app.
 ## Dependencies
 
 Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` depend on [expect](https://core.tcl-lang.org/expect/index) for superuser unattended creation.
+
+# Setup Google Api Key
+
+* Go to https://console.cloud.google.com/apis/ and create a new project named `tournesol`
+
+* Setup you credentials by getting a API key. Do not restrict its use for development purpose.
+
+* Once you have created your API key, put it into `YOUTUBE_API_KEY` environment variable (`export YOUTUBE_API_KEY=xxx`)
+
+* Then go to https://console.cloud.google.com/apis/credentials/consent, and add a user test (typicaly your gmail account)

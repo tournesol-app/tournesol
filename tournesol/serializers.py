@@ -10,7 +10,7 @@ from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater, 
 class VideoSerializer(ModelSerializer):
     class Meta:
         model = Video
-        fields = ["video_id"]
+        fields = ["video_id", "name", "description", "publication_date", "views", "uploader"]
 
 
 class VideoCriteriaScoreSerializer(ModelSerializer):
