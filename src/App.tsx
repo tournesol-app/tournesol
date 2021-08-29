@@ -8,12 +8,16 @@ import DonatePage from './pages/donate/Donate';
 import RateLaterPage from './pages/rateLater/RateLater';
 import Frame from './features/frame/Frame';
 import { PrivateRoute } from './features/login/PrivateRoute';
+import VideoCardPage from './pages/videos/VideoCard';
 
 function App() {
   return (
     <div className="App">
       <Frame>
         <Switch>
+          <Route path="/video/:video_id">
+            <VideoCardPage />
+          </Route>
           <Route path="/login">
             <LoginPage />
           </Route>

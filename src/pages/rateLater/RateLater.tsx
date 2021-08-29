@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback } from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
-import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
+
 import { useAppSelector } from 'src/app/hooks';
 import { selectLogin } from 'src/features/login/loginSlice';
 import {
@@ -11,8 +11,9 @@ import {
 } from 'src/features/rateLater/rateLaterAPI';
 import RateLaterPagination from 'src/features/rateLater/RateLaterPagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
-import { VideoRateLater, Video } from 'src/services/openapi';
+import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
+import VideoCard from 'src/features/videos/VideoCard';
 
 const useStyles = makeStyles({
   rateLaterIntro: {
@@ -43,45 +44,6 @@ const useStyles = makeStyles({
   },
 });
 
-// Temporary placeholder for the VideoCard component
-const VideoCard = ({ video }: { video: Video }) => (
-  <Paper elevation={4} style={{ margin: '12px 0' }}>
-    <Grid container justifyContent="space-between">
-      <Grid item>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            width: '320px',
-            height: '180px',
-            background:
-              'linear-gradient(135deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%)',
-          }}
-        >
-          <PlayCircleFilledWhiteIcon
-            style={{ fontSize: 60, flex: 1, color: '#0008' }}
-          />
-        </div>
-      </Grid>
-      <Grid
-        item
-        xs={true}
-        container
-        direction="column"
-        alignItems="flex-start"
-        style={{ padding: '12px' }}
-      >
-        <Grid item>
-          <Typography variant="h5">Title</Typography>
-        </Grid>
-        <Grid item>
-          <a href={`https://youtu.be/${video.video_id}`}>{video.video_id}</a>
-        </Grid>
-      </Grid>
-    </Grid>
-  </Paper>
-);
-
 const RateLaterPage = () => {
   const classes = useStyles();
   const loginState = useAppSelector(selectLogin);
@@ -92,6 +54,8 @@ const RateLaterPage = () => {
   const [rateLaterList, setRateLaterList] = React.useState<VideoRateLater[]>(
     []
   );
+
+  console.log(rateLaterList);
 
   const limit = 5;
 

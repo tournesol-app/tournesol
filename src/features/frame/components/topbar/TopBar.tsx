@@ -139,7 +139,7 @@ const TopBar = () => {
           <Menu />
         </IconButton>
         <Link to="/home">
-          <img src="svg/Logo.svg" alt="logo" />
+          <img src="/svg/Logo.svg" alt="logo" />
         </Link>
         <div className={classes.search}>
           <input
@@ -148,7 +148,7 @@ const TopBar = () => {
             id="input_text"
           ></input>
           <button type="submit" className={classes.searchButton}>
-            <img src="svg/Search.svg" alt="search" />
+            <img src="/svg/Search.svg" alt="search" />
           </button>
         </div>
 

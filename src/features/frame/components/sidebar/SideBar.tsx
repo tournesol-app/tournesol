@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SideBar = () => {
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
+  if (!drawerOpen) return null;
   return (
     <Drawer
       variant="permanent"
