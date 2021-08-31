@@ -5,4 +5,5 @@ Main tournesol API endpoints
 """
 
 from .comparison import *
+from .video import *
 from .video_rate_later import *

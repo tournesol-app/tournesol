@@ -51,6 +51,15 @@ class VideoCriteriaScoreSerializer(ModelSerializer):
         fields = "__all__"
 
 
+class VideoSerializerWithCriteria(ModelSerializer):
+    criteria_scores = VideoCriteriaScoreSerializer(many=True)
+
+    class Meta:
+        model = Video
+        fields = ["video_id", "name", "description", "publication_date",
+                  "views", "uploader", "criteria_scores"]
+
+
 class VideoRateLaterSerializer(ModelSerializer):
     video = VideoSerializer()
 

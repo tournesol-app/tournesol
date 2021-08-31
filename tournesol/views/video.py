@@ -1,37 +1,92 @@
 """
 API endpoint to manipulate videos
 """
+from collections import OrderedDict
 
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from django.utils import timezone
+from django.db.models import Q
+
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from ..serializers import VideoCriteriaScoreSerializer, VideoSerializer
-from ..models import VideoCriteriaScore, Video
+from ..serializers import VideoSerializerWithCriteria, VideoSerializer
+from ..models import Video
 from tournesol.utils.api_youtube import youtube_video_details
 
 
 class VideoViewSet(viewsets.ModelViewSet):
-
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
     permission_classes = []  # To unlock authentication required
 
-    def retrieve(self, request, pk):
+    def retrieve(self, request, pk, *args, **kwargs):
         """
         Get video details and criteria that are related to it
         """
-
         video = get_object_or_404(Video, video_id=pk)
-        video_serialized = VideoSerializer(video)
-        video_criterias = VideoCriteriaScore.objects.filter(
-            video=video
-        )
-        criterias_serialized = VideoCriteriaScoreSerializer(video_criterias, many=True)
-        return Response(
-            (video_serialized.data, criterias_serialized.data),
-            status=status.HTTP_200_OK
-        )
+        video_serialized = VideoSerializerWithCriteria(video)
+        return Response(video_serialized.data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = Video.objects.all()
+        search = request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(Q(name__icontains=search) |
+                                       Q(description__icontains=search))
+
+        limit = request.query_params.get('limit')
+        if limit and limit.isdigit():
+            limit = int(limit)
+        else:
+            limit = 10
+
+        offset = request.query_params.get('offset')
+        if offset and offset.isdigit():
+            offset = int(offset)
+        else:
+            offset = 0
+
+        date_lte = request.query_params.get('date_lte') \
+            if request.query_params.get('date_lte') else ""
+        if date_lte:
+            try:
+                date_lte = timezone.datetime.strptime(date_lte, '%d-%m-%y-%H-%M-%S')
+                queryset = queryset.filter(publication_date__lte=date_lte)
+            except ValueError:
+                pass
+        date_gte = request.query_params.get('date_gte') \
+            if request.query_params.get('date_gte') else ""
+        if date_gte:
+            try:
+                date_gte = timezone.datetime.strptime(date_gte, '%d-%m-%y-%H-%M-%S')
+                queryset = queryset.filter(publication_date__gte=date_gte)
+            except ValueError:
+                pass
+        language = request.query_params.get('language') \
+            if request.query_params.get('language') else ""
+        queryset = queryset.filter(language=language) if language else queryset
+        data = []
+        for video in queryset.prefetch_related("criteria_scores"):
+            total = 0
+            for score in video.criteria_scores.all():
+                score_query_weight = request.query_params.get(score.criteria) \
+                    if request.query_params.get(score.criteria) \
+                    and request.query_params.get(score.criteria).isdigit() else 50
+                total += score.score * score_query_weight
+            video.total = total
+            data.append(video)
+        data.sort(key=lambda x: x.total, reverse=True)
+        count = len(data)
+        data = data[offset:offset+limit]
+        data_serialised = [VideoSerializerWithCriteria(video).data for video in data]
+        return Response(OrderedDict([('count', str(count)), ('results', data_serialised)]))
+
+    def update(self, request, *args, **kwargs):
+        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def create(self, request, *args, **kwargs):
         """
