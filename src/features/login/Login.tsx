@@ -29,8 +29,8 @@ const Login = () => {
   const classes = useStyles();
   const login = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
-  const [username, setUsername] = useState('jst');
-  const [password, setPassword] = useState('yop');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [validToken, setValidToken] = useState(hasValidToken(login));
   const [shouldTryRefresh, setShouldTryRefresh] = useState(
     login.refresh_token && !hasValidToken(login)
@@ -95,7 +95,6 @@ const Login = () => {
                     size="small"
                     variant="outlined"
                     onChange={(event) => setUsername(event.target.value)}
-                    defaultValue="jst"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -107,7 +106,6 @@ const Login = () => {
                     type="password"
                     variant="outlined"
                     onChange={(event) => setPassword(event.target.value)}
-                    defaultValue="yop"
                   />
                 </Grid>
               </Grid>

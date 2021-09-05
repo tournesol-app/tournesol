@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
+import Toolbar from '@material-ui/core/Toolbar';
+
 import { Menu } from '@material-ui/icons';
 
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
@@ -14,8 +18,8 @@ export const topBarHeight = 80;
 
 const useStyles = makeStyles((theme) => ({
   appBar: { zIndex: theme.zIndex.drawer + 1 },
-  grow: {
-    flexGrow: 1,
+  container: {
+    width: '100%',
   },
   toolbar: {
     display: 'flex',
@@ -24,23 +28,23 @@ const useStyles = makeStyles((theme) => ({
     height: topBarHeight,
     padding: 4,
   },
-  sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
+  logo: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   search: {
-    position: 'absolute',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-
   searchTerm: {
-    width: '484px',
     border: '1px solid #F1EFE7',
     borderRight: 'none',
     padding: '5px',
     height: '36px',
-    borderRadius: '4px',
+    borderRadius: '4px 0px 0px 4px',
     boxSizing: 'border-box',
     outline: 'none',
     color: '#9dbfaf',
@@ -49,118 +53,123 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 400,
     fontSize: '18px',
     lineHeight: '28px',
+    width: 472,
+    maxWidth: 'calc(100% - 76px)',
   },
-
   searchButton: {
     width: '76px',
-    right: '0px',
-    top: '0px',
-    bottom: '0px',
     height: '36px',
     border: '1px solid #F1EFE7',
     background: '#F1EFE7',
     color: '#fff',
     cursor: 'pointer',
-    position: 'absolute',
-    'border-radius': '0px 4px 4px 0px',
+    borderRadius: '0px 4px 4px 0px',
   },
-
-  LogInButton: {
+  AccountInfo: {
+    display: 'flex',
+    flexFlow: 'row wrap',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  HeaderButton: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     padding: '11px 16px',
-
     position: 'static',
-
-    /* Primary/Sunflower/A-30 */
-
-    border: '2px solid #806300',
     boxSizing: 'border-box',
     borderRadius: '4px',
-    background: '#FFC800',
-
-    /* Inside Auto Layout */
-
     flex: 'none',
     order: 1,
     flexGrow: 0,
-    marginRight: '16px',
-
     fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'bold',
     fontSize: '16px',
     lineHeight: '18px',
-    color: '#806300',
+    height: 36,
+    margin: 1,
   },
-
   JoinUsButton: {
-    /* Auto Layout */
-
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: '11px 16px',
-
-    position: 'static',
-
     border: '2px solid #3198C4',
-    boxSizing: 'border-box',
     background: '#3198C4',
-    borderRadius: '4px',
-
-    /* Inside Auto Layout */
-
-    flex: 'none',
-    order: 1,
-    flexGrow: 0,
-    marginRight: '0px',
-
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    lineHeight: '18px',
     color: '#FFFFFF',
+  },
+  LogInButton: {
+    border: '2px solid #806300',
+    background: '#FFC800',
+    color: '#806300',
   },
 }));
 
-const TopBar = () => {
+const Logo = () => {
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
+
+  return (
+    <Grid item md={4} xs={4} className={classes.logo}>
+      <IconButton
+        onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
+      >
+        <Menu />
+      </IconButton>
+      <Link to="/home">
+        <Hidden xsDown>
+          <img src="/svg/Logo.svg" alt="logo" />
+        </Hidden>
+        <Hidden smUp>
+          <img src="/svg/LogoSmall.svg" alt="logo" />
+        </Hidden>
+      </Link>
+    </Grid>
+  );
+};
+
+const Search = () => {
+  const classes = useStyles();
+  return (
+    <Grid md={4} className={classes.search}>
+      <input type="text" className={classes.searchTerm} id="input_text"></input>
+      <button type="submit" className={classes.searchButton}>
+        <img src="/svg/Search.svg" alt="search" />
+      </button>
+    </Grid>
+  );
+};
+
+const AccountInfo = () => {
+  const classes = useStyles();
+  return (
+    <Grid item md={4} xs={8} className={classes.AccountInfo}>
+      <Link
+        className={clsx(classes.LogInButton, classes.HeaderButton)}
+        to="/login"
+      >
+        Log in
+      </Link>
+      <Link
+        className={clsx(classes.JoinUsButton, classes.HeaderButton)}
+        to="/signup"
+      >
+        Join us
+      </Link>
+    </Grid>
+  );
+};
+
+const TopBar = () => {
+  const classes = useStyles();
   return (
     <AppBar position="sticky" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
-        <IconButton
-          onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
-        >
-          <Menu />
-        </IconButton>
-        <Link to="/home">
-          <img src="/svg/Logo.svg" alt="logo" />
-        </Link>
-        <div className={classes.search}>
-          <input
-            type="text"
-            className={classes.searchTerm}
-            id="input_text"
-          ></input>
-          <button type="submit" className={classes.searchButton}>
-            <img src="/svg/Search.svg" alt="search" />
-          </button>
-        </div>
-
-        <div className={classes.grow} />
-        <div className={classes.sectionDesktop}>
-          <Link className={classes.LogInButton} to="/login">
-            Log in
-          </Link>
-          <Link className={classes.JoinUsButton} to="/signup">
-            Join us
-          </Link>
-        </div>
+        <Grid container className={classes.container}>
+          <Logo />
+          <Hidden smDown>
+            <Search />
+          </Hidden>
+          <AccountInfo />
+        </Grid>
       </Toolbar>
     </AppBar>
   );

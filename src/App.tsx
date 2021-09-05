@@ -12,33 +12,31 @@ import VideoCardPage from './pages/videos/VideoCard';
 
 function App() {
   return (
-    <div className="App">
-      <Frame>
-        <Switch>
-          <Route path="/video/:video_id">
-            <VideoCardPage />
-          </Route>
-          <Route path="/login">
-            <LoginPage />
-          </Route>
-          <PrivateRoute path="/comparisons">
-            <ComparisonsPage />
-          </PrivateRoute>
-          <PrivateRoute path="/rate_later">
-            <RateLaterPage />
-          </PrivateRoute>
-          <Route path="/donate">
-            <DonatePage />
-          </Route>
-          <Route path="/signup">
-            <p>TODO: sign-up page</p>
-          </Route>
-          <Route path="/">
-            <HomePage />
-          </Route>
-        </Switch>
-      </Frame>
-    </div>
+    <Frame>
+      <Switch>
+        <Route path="/video/:video_id">
+          <VideoCardPage />
+        </Route>
+        <Route path="/login">
+          <LoginPage />
+        </Route>
+        <PrivateRoute path="/comparisons">
+          <ComparisonsPage />
+        </PrivateRoute>
+        <PrivateRoute path="/rate_later">
+          <RateLaterPage />
+        </PrivateRoute>
+        <Route path="/donate">
+          <DonatePage />
+        </Route>
+        <Route path="/signup">
+          <p>TODO: sign-up page</p>
+        </Route>
+        <Route path="/">
+          <HomePage />
+        </Route>
+      </Switch>
+    </Frame>
   );
 }
 

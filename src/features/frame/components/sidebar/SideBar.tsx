@@ -9,7 +9,8 @@ import {
   List,
   Theme,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import { useAppSelector } from '../../../../app/hooks';
 import { selectFrame } from '../../drawerOpenSlice';
@@ -20,6 +21,9 @@ import {
   Compare as CompareIcon,
   WatchLater as WatchLaterIcon,
 } from '@material-ui/icons';
+
+import { useAppDispatch } from '../../../../app/hooks';
+import { closeDrawer } from '../../drawerOpenSlice';
 
 export const sideBarWidth = 240;
 
@@ -43,24 +47,28 @@ const useStyles = makeStyles((theme: Theme) => ({
     }),
     overflowX: 'hidden',
     width: theme.spacing(7) + 1,
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(7) + 1,
-    },
   },
   drawerPaper: {
     top: topBarHeight,
+    [theme.breakpoints.down('sm')]: {
+      top: 0,
+    },
   },
 }));
 
 const SideBar = () => {
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
-  if (!drawerOpen) return null;
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Drawer
-      variant="permanent"
+      variant={isSmallScreen ? 'temporary' : 'permanent'}
       anchor="left"
-      open={true}
+      open={drawerOpen}
+      onClose={() => dispatch(closeDrawer())}
       className={clsx(classes.drawer, {
         [classes.drawerOpen]: drawerOpen,
         [classes.drawerClose]: !drawerOpen,
@@ -72,7 +80,7 @@ const SideBar = () => {
         }),
       }}
     >
-      <List>
+      <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
         <Link to="/">
           <ListItem button>
             <ListItemIcon>

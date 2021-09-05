@@ -15,6 +15,7 @@ const useStyles = makeStyles({
   main: {
     flexGrow: 1,
     padding: '24px',
+    overflow: 'hidden',
   },
 });
 
