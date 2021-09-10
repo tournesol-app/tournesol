@@ -6,7 +6,6 @@ const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
 
 export const getVideoInformation = (
   videoId: string,
-  // eslint-disable-next-line no-unused-vars
   callback: (m: Video) => void
 ) => {
   // TODO: replace this custom method with the automatically generated `VideoService.videoRetrieve``
@@ -23,11 +22,7 @@ export const getVideoInformation = (
       return response.json();
     })
     .then((data) => {
-      const name = data[0]['name'];
-      const publication_date = data[0]['publication_date'];
-      const uploader = data[0]['uploader'];
-      const views = data[0]['views'];
-      const description = data[0]['description'];
+      const { name, publication_date, uploader, views, description } = data;
       callback({
         name,
         publication_date,

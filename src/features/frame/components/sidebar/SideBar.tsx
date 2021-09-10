@@ -20,6 +20,7 @@ import {
   AccountCircle as AccountCircleIcon,
   Compare as CompareIcon,
   WatchLater as WatchLaterIcon,
+  VideoLibrary,
 } from '@material-ui/icons';
 
 import { useAppDispatch } from '../../../../app/hooks';
@@ -111,6 +112,14 @@ const SideBar = () => {
               <WatchLaterIcon color="action" />
             </ListItemIcon>
             <ListItemText primary="Rate later" />
+          </ListItem>
+        </Link>
+        <Link to="/recommendations">
+          <ListItem button>
+            <ListItemIcon>
+              <VideoLibrary color="action" />
+            </ListItemIcon>
+            <ListItemText primary="Recommendation" />
           </ListItem>
         </Link>
       </List>

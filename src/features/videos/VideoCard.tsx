@@ -9,6 +9,7 @@ import type { Video } from 'src/services/openapi';
 const useStyles = makeStyles(() => ({
   main: {
     margin: 4,
+    maxWidth: 1000,
   },
   title: {
     fontFamily: 'Poppins',
