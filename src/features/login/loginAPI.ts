@@ -1,6 +1,18 @@
+import { JSONObject } from 'src/utils/types';
+
 const api_url = process.env.REACT_APP_API_URL;
 const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
 const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
+
+export class LoginError extends Error {
+  public readonly data: JSONObject;
+
+  constructor(data: JSONObject) {
+    const message = data?.error_description || 'Login failed.';
+    super(String(message));
+    this.data = data;
+  }
+}
 
 export const fetchToken = async ({
   username,
@@ -15,24 +27,27 @@ export const fetchToken = async ({
   params.append('password', password);
   params.append('scope', 'read write groups');
   params.append('response_type', 'code id_token token');
-  const response = await fetch(api_url + '/o/token/', {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
-    },
-    body: params.toString(),
-  });
-  // console.log(response);
+  let response;
+  try {
+    response = await fetch(api_url + '/o/token/', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+      },
+      body: params.toString(),
+    });
+  } catch {
+    return Promise.reject('Connection to server failed.');
+  }
   const jresp = response.json().then((data) => {
     if (
       data.access_token === undefined ||
       data.refresh_token === undefined ||
       data.expires_in === undefined
     ) {
-      console.error('login failed: tokens not present');
-      return Promise.reject('login failed: tokens not present');
+      return Promise.reject(new LoginError(data));
     }
     return data;
   });

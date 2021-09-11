@@ -1,33 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  TextField,
-  Grid,
-  Container,
-  makeStyles,
-  Button,
-  Theme,
-} from '@material-ui/core';
+import { TextField, Grid, Button } from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getTokenAsync,
   selectLogin,
   getTokenFromRefreshAsync,
 } from './loginSlice';
+import { LoginState } from './LoginState.model';
 import { hasValidToken } from './tokenValidity';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, Redirect } from 'react-router-dom';
 import RedirectState from './RedirectState';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  content: {
-    marginTop: '64px',
-    padding: theme.spacing(3),
-  },
-}));
+import { Alert, ContentHeader, ContentBox } from 'src/components';
 
 const Login = () => {
-  const classes = useStyles();
-  const login = useAppSelector(selectLogin);
+  const login: LoginState = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -35,9 +22,9 @@ const Login = () => {
   const [shouldTryRefresh, setShouldTryRefresh] = useState(
     login.refresh_token && !hasValidToken(login)
   );
-  const history = useHistory();
+  const [loginError, setLoginError] = useState<Error | null>(null);
   const location = useLocation();
-  const { from } = (location?.state ?? {}) as RedirectState;
+  const { from: fromUrl } = (location?.state ?? {}) as RedirectState;
 
   useEffect(() => {
     if (hasValidToken(login)) {
@@ -59,75 +46,74 @@ const Login = () => {
     }
   }, [validToken, shouldTryRefresh, login.refresh_token, dispatch]);
 
-  useEffect(() => {
-    if (validToken && from) {
-      console.log('logged in, redirecting');
-      history.replace(from);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoginError(null);
+    const result: unknown = await dispatch(
+      getTokenAsync({ username: username, password: password })
+    );
+    const resultWithError = result as { error: Error | undefined };
+    if (resultWithError.error) {
+      setLoginError(resultWithError.error);
     }
-  }, [validToken, history, from]);
+  };
+
+  if (validToken) {
+    if (fromUrl) {
+      return <Redirect to={fromUrl} />;
+    } else {
+      return <Redirect to="/" />;
+    }
+  }
 
   return (
-    <div className="Login">
-      <Container className={classes.content} maxWidth="xs">
-        {validToken ? (
-          <Grid container spacing={3}>
+    <>
+      <ContentHeader title="Log in to Tournesol" />
+      <ContentBox maxWidth="xs">
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3} direction="column" alignItems="stretch">
             <Grid item xs={12}>
               <TextField
+                required
                 fullWidth
-                label="User"
-                name="user"
+                label="Username"
+                name="username"
+                color="secondary"
                 size="small"
                 variant="outlined"
-                InputProps={{ readOnly: true }}
-                value={username}
+                autoFocus={true}
+                onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
-          </Grid>
-        ) : (
-          <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Login"
-                    name="login"
-                    size="small"
-                    variant="outlined"
-                    onChange={(event) => setUsername(event.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    name="password"
-                    size="small"
-                    type="password"
-                    variant="outlined"
-                    onChange={(event) => setPassword(event.target.value)}
-                  />
-                </Grid>
-              </Grid>
+              <TextField
+                required
+                fullWidth
+                label="Password"
+                name="password"
+                color="secondary"
+                size="small"
+                type="password"
+                variant="outlined"
+                onChange={(event) => setPassword(event.target.value)}
+              />
             </Grid>
-            <Grid
-              item
-              xs={10}
-              onClick={() =>
-                dispatch(
-                  getTokenAsync({ username: username, password: password })
-                )
-              }
-              role="login-button"
-            >
-              <Button color="secondary" fullWidth variant="contained">
-                Login
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                color="secondary"
+                fullWidth
+                variant="contained"
+                disabled={login.status == 'loading'}
+              >
+                Log In
               </Button>
             </Grid>
           </Grid>
-        )}
-      </Container>
-    </div>
+          {loginError && <Alert>❌ {loginError.message}</Alert>}
+        </form>
+      </ContentBox>
+    </>
   );
 };
 
