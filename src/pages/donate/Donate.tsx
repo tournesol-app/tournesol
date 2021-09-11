@@ -1,21 +1,26 @@
 import React from 'react';
 
+import Typography from '@material-ui/core/Typography';
+
 const DonatePage = () => {
   return (
-    <div>
+    <div
+      style={{
+        marginTop: 24,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       <div
         style={{
-          marginLeft: 64,
-          maxWidth: 'calc(100% - 8px)',
-          width: 600,
+          maxWidth: '100%',
+          width: 640,
           color: '#4A473E',
+          padding: 24,
         }}
       >
-        <p>
-          Tournesol aims to identify top videos of public utility by eliciting
-          contributors&#39; judgements on content quality.
-        </p>
-        <p>
+        <Typography paragraph>
           Because we are a small team of mostly volunteers, the development of
           Tournesol is slower than we would like it to be. If you can, please
           consider helping us, through coding or through donations. Check-out
@@ -24,12 +29,18 @@ const DonatePage = () => {
             open source code
           </a>
           , or join our <a href="https://discord.gg/TvsFB8RNBV">Discord</a>.{' '}
-        </p>
+        </Typography>
 
         <form
           action="https://www.paypal.com/donate"
           method="post"
           target="_top"
+          style={{
+            marginTop: 24,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
           <input type="hidden" name="hosted_button_id" value="22T84YR7TZ762" />
           <input

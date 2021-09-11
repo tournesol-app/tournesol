@@ -129,7 +129,7 @@ const Logo = () => {
 const Search = () => {
   const classes = useStyles();
   return (
-    <Grid md={4} className={classes.search}>
+    <Grid item md={4} className={classes.search}>
       <input type="text" className={classes.searchTerm} id="input_text"></input>
       <button type="submit" className={classes.searchButton}>
         <img src="/svg/Search.svg" alt="search" />

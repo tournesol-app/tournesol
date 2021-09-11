@@ -15,7 +15,13 @@ import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: 24,
+    [theme.breakpoints.down('sm')]: {
+      padding: '24px 4px 24px 4px',
+    },
+  },
   rateLaterIntro: {
     textAlign: 'center',
     display: 'flex',
@@ -42,7 +48,7 @@ const useStyles = makeStyles({
     top: `${topBarHeight}px`,
     padding: '6px',
   },
-});
+}));
 
 const RateLaterPage = () => {
   const classes = useStyles();
@@ -96,7 +102,7 @@ const RateLaterPage = () => {
   }, [loadList]);
 
   return (
-    <>
+    <div className={classes.root}>
       <div className={classes.rateLaterIntro}>
         <Typography variant="h5">Add videos to your rate-later list</Typography>
         <br />
@@ -156,7 +162,7 @@ const RateLaterPage = () => {
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
