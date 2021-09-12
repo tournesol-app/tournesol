@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import clsx from 'clsx';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -13,6 +12,7 @@ import { Menu } from '@material-ui/icons';
 
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
+import AccountInfo from './AccountInfo';
 
 export const topBarHeight = 80;
 
@@ -65,41 +65,6 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     borderRadius: '0px 4px 4px 0px',
   },
-  AccountInfo: {
-    display: 'flex',
-    flexFlow: 'row wrap',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  HeaderButton: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: '11px 16px',
-    position: 'static',
-    boxSizing: 'border-box',
-    borderRadius: '4px',
-    flex: 'none',
-    order: 1,
-    flexGrow: 0,
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    lineHeight: '18px',
-    height: 36,
-    margin: 1,
-  },
-  JoinUsButton: {
-    border: '2px solid #3198C4',
-    background: '#3198C4',
-    color: '#FFFFFF',
-  },
-  LogInButton: {
-    border: '2px solid #806300',
-    background: '#FFC800',
-    color: '#806300',
-  },
 }));
 
 const Logo = () => {
@@ -150,26 +115,6 @@ const Search = () => {
           <img src="/svg/Search.svg" alt="search" />
         </button>
       </form>
-    </Grid>
-  );
-};
-
-const AccountInfo = () => {
-  const classes = useStyles();
-  return (
-    <Grid item md={4} xs={8} className={classes.AccountInfo}>
-      <Link
-        className={clsx(classes.LogInButton, classes.HeaderButton)}
-        to="/login"
-      >
-        Log in
-      </Link>
-      <Link
-        className={clsx(classes.JoinUsButton, classes.HeaderButton)}
-        to="/signup"
-      >
-        Join us
-      </Link>
     </Grid>
   );
 };

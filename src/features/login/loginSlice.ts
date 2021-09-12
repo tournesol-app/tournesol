@@ -29,7 +29,15 @@ export const getTokenFromRefreshAsync = createAsyncThunk(
 export const loginSlice = createSlice({
   name: 'login',
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state: LoginState) => {
+      state.status = 'idle';
+      state.access_token = undefined;
+      state.refresh_token = undefined;
+      state.access_token_expiration_date = undefined;
+      state.username = undefined;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTokenAsync.pending, (state) => {
@@ -71,5 +79,6 @@ export const loginSlice = createSlice({
 });
 
 export const selectLogin = (state: RootState) => state.token;
+export const { logout } = loginSlice.actions;
 
 export default loginSlice.reducer;

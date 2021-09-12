@@ -189,7 +189,7 @@ describe('login feature', () => {
         type: 'login/fetchToken/rejected',
         payload: undefined,
         error: {
-          message: 'login failed: tokens not present',
+          message: 'Login failed.',
         },
         meta: {
           aborted: false,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { selectLogin } from './loginSlice';
-import { hasValidToken } from './tokenValidity';
+import { isLoggedIn } from './loginUtils';
 import { Route, Redirect } from 'react-router-dom';
 import RedirectState from './RedirectState';
 
@@ -16,7 +16,7 @@ export const PrivateRoute = ({ children, ...rest }: Props) => {
     <Route
       {...rest}
       render={({ location }) =>
-        hasValidToken(login) ? (
+        isLoggedIn(login) ? (
           children
         ) : (
           <Redirect

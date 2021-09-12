@@ -1,5 +1,5 @@
 import { initialState } from './loginSlice';
-import { hasValidToken } from './tokenValidity';
+import { hasValidToken } from './loginUtils';
 
 describe('login validity', () => {
   const anHourInMS = 1000 * 60 * 60;

@@ -8,7 +8,7 @@ import {
   getTokenFromRefreshAsync,
 } from './loginSlice';
 import { LoginState } from './LoginState.model';
-import { hasValidToken } from './tokenValidity';
+import { hasValidToken } from './loginUtils';
 import { useLocation, Redirect } from 'react-router-dom';
 import RedirectState from './RedirectState';
 import { Alert, ContentHeader, ContentBox } from 'src/components';

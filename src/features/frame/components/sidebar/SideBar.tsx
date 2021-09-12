@@ -17,7 +17,6 @@ import { selectFrame } from '../../drawerOpenSlice';
 import { topBarHeight } from '../topbar/TopBar';
 import {
   Home as HomeIcon,
-  AccountCircle as AccountCircleIcon,
   Compare as CompareIcon,
   WatchLater as WatchLaterIcon,
   VideoLibrary,
@@ -88,14 +87,6 @@ const SideBar = () => {
               <HomeIcon color="action" />
             </ListItemIcon>
             <ListItemText primary="Home" />
-          </ListItem>
-        </Link>
-        <Link to="/login">
-          <ListItem button>
-            <ListItemIcon>
-              <AccountCircleIcon color="action" />
-            </ListItemIcon>
-            <ListItemText primary="Login" />
           </ListItem>
         </Link>
         <Link to="/comparisons">
