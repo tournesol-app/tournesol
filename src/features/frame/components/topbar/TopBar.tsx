@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    height: '100%',
   },
   searchTerm: {
     border: '1px solid #F1EFE7',
