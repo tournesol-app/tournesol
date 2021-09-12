@@ -5,11 +5,12 @@ const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
 const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
 
 export const getRecommendedVideos = (
+  searchString: string,
   language: string,
   date: string,
   callback: (m: PaginatedVideoList) => void
 ) => {
-  fetch(`${api_url}/video`, {
+  fetch(`${api_url}/video/`.concat(searchString), {
     // /?language=` + language + '&date=' + date if you wan to add parameters
     method: 'GET',
     mode: 'cors',

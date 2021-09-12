@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { PaginatedVideoList } from 'src/services/openapi';
 
 import { getRecommendedVideos } from './RecommendationApi';
@@ -16,6 +17,7 @@ function VideoRecommendationFromFilters() {
   conversionTime.set('Week', dayInMillisecondes * 7);
   conversionTime.set('Month', dayInMillisecondes * 7 * 31);
   conversionTime.set('Year', dayInMillisecondes * 365);
+
   const dateConversion = () => {
     const dateNow = Date.now();
     if (date != 'Any') {
@@ -27,8 +29,11 @@ function VideoRecommendationFromFilters() {
     }
   };
 
+  const searchParams = useLocation().search;
+
   useEffect(() => {
     getRecommendedVideos(
+      searchParams,
       language,
       dateConversion(),
       (videos: PaginatedVideoList) => {
@@ -36,7 +41,7 @@ function VideoRecommendationFromFilters() {
       }
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, date]);
+  }, [searchParams, language, date]);
 
   return (
     <VideoRecommendationCard

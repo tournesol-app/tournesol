@@ -119,7 +119,7 @@ const SideBar = () => {
             <ListItemIcon>
               <VideoLibrary color="action" />
             </ListItemIcon>
-            <ListItemText primary="Recommendation" />
+            <ListItemText primary="Recommendations" />
           </ListItem>
         </Link>
       </List>

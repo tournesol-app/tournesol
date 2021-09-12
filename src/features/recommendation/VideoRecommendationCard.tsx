@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { PaginatedVideoList } from 'src/services/openapi';
 import VideoList from '../videos/VideoList';
-import SearchFilter from './Searchfilter';
+import SearchFilter from './SearchFilter';
 
 function VideoRecommendationCard(props: {
   date: string;

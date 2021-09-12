@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -128,12 +128,28 @@ const Logo = () => {
 
 const Search = () => {
   const classes = useStyles();
+  const history = useHistory();
+  const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formElements = form.elements as typeof form.elements & {
+      searchInput: HTMLInputElement;
+    };
+    history.push('/recommendations/?search=' + formElements.searchInput.value);
+  };
+
   return (
-    <Grid item md={4} className={classes.search}>
-      <input type="text" className={classes.searchTerm} id="input_text"></input>
-      <button type="submit" className={classes.searchButton}>
-        <img src="/svg/Search.svg" alt="search" />
-      </button>
+    <Grid item md={4}>
+      <form onSubmit={onSubmit} className={classes.search}>
+        <input
+          type="text"
+          className={classes.searchTerm}
+          id="searchInput"
+        ></input>
+        <button type="submit" className={classes.searchButton}>
+          <img src="/svg/Search.svg" alt="search" />
+        </button>
+      </form>
     </Grid>
   );
 };
