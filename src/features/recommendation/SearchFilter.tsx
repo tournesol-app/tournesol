@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { useLocation, useHistory } from 'react-router-dom';
 import {
   FormControlLabel,
   makeStyles,
@@ -30,19 +31,43 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function SearchFilter(props: {
-  date: string;
-  language: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}) {
+function SearchFilter() {
+  const history = useHistory();
+  const paramsString = useLocation().search;
+  const searchParams = new URLSearchParams(paramsString);
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
-  const dateChoices = ['Any', 'Today', 'Week', 'Month', 'Year'];
-  const languageChoices = ['English', 'French'];
+  const dateChoices = ['Today', 'Week', 'Month', 'Year'];
+  const languageChoices = {
+    en: 'English',
+    fr: 'French',
+    de: 'German',
+  };
+  const date = searchParams.get('date') || 'Any';
+  const language = searchParams.get('language') || '';
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    pushNewURL('date', event.target.name);
+  };
+
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    pushNewURL('language', event.target.name);
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  function pushNewURL(key: string, value: string) {
+    const searchParams = new URLSearchParams(paramsString);
+    if (searchParams.get(key) === value) {
+      searchParams.delete(key);
+    } else {
+      searchParams.delete(key);
+      searchParams.append(key, value);
+    }
+    history.push('/recommendations/?' + searchParams.toString());
+  }
 
   return (
     <div className="main">
@@ -73,8 +98,8 @@ function SearchFilter(props: {
                 <Checkbox
                   icon={<CheckCircleOutline />}
                   checkedIcon={<CheckCircle />}
-                  checked={props.date == label}
-                  onChange={props.onChange}
+                  checked={date == label}
+                  onChange={handleDateChange}
                   name={label}
                 />
               }
@@ -87,21 +112,23 @@ function SearchFilter(props: {
           <Typography variant="h5" component="h2">
             Language
           </Typography>
-          {languageChoices.map((label) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  icon={<CheckCircleOutline />}
-                  checkedIcon={<CheckCircle />}
-                  checked={props.language == label}
-                  onChange={props.onChange}
-                  name={label}
-                />
-              }
-              label={label}
-              key={label}
-            />
-          ))}
+          {Object.entries(languageChoices).map(
+            ([language_key, language_value]) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    icon={<CheckCircleOutline />}
+                    checkedIcon={<CheckCircle />}
+                    checked={language == language_key}
+                    onChange={handleLanguageChange}
+                    name={language_key}
+                  />
+                }
+                label={language_value}
+                key={language_key}
+              />
+            )
+          )}
         </div>
       </Collapse>
     </div>
