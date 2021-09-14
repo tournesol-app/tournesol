@@ -1,22 +1,22 @@
-django==3.2.4
-PyYAML==5.4.1
-#rest framework
-djangorestframework==3.12.4
-markdown==3.3.4
-django-filter==2.4.0
-django-oauth-toolkit==1.5.0
-django-cors-headers==3.7.0
-
-psycopg2-binary==2.8.6
-django-countries==7.2.1
-numpy==1.20.3
-Pillow==8.2.0
-django-language-field==0.0.3
+Django==3.2.6
 django-computed-property==0.3.0
-tqdm==4.61.0
-fuzzysearch==0.7.3
-
+django-cors-headers==3.7.0
+django-countries==7.2.1
+django-filter==2.4.0
+django-language-field==0.0.3
+django-oauth-toolkit==1.5.0
 django-prometheus==2.1.0
+django-rest-registration==0.6.4
+djangorestframework==3.12.4
+drf-spectacular==0.17.3
+fuzzysearch==0.7.3
+numpy==1.21.2
+Pillow==8.2.0
+psycopg2-binary==2.8.6
+pytest==6.2.4
+PyYAML==5.4.1
+tqdm==4.62.1
 
-drf_spectacular==0.17.2
-django-rest-swagger==2.2.0
+#API Youtube data
+google-api-python-client==2.15.0
+google-auth-httplib2==0.1.0

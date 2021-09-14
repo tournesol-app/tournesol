@@ -10,6 +10,7 @@ import numpy as np
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import (
+    ObjectDoesNotExist,
     Q,
     F,
     Count,
@@ -713,6 +714,33 @@ class Comparison(models.Model, WithFeatures):
         a, b = min(videos), max(videos)
         b = max(videos)
         return f"{a}_{b}"
+
+    @staticmethod
+    def get_comparison(user, video_id_1, video_id_2):
+        """
+        Return a tuple with the user's comparison between two videos, and
+        True is the comparison is made in the reverse way, False instead.
+
+        Raise django.db.model.ObjectDoesNotExist if no comparison is found.
+        """
+        try:
+            comparison = Comparison.objects.get(
+                video_1__video_id=video_id_1,
+                video_2__video_id=video_id_2,
+                user=user
+            )
+        except ObjectDoesNotExist:
+            pass
+        else:
+            return comparison, False
+
+        comparison = Comparison.objects.get(
+            video_1__video_id=video_id_2,
+            video_2__video_id=video_id_1,
+            user=user
+        )
+
+        return comparison, True
 
     @staticmethod
     def sample_video_to_rate(username, rated_count=1):

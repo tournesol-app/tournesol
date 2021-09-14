@@ -1,0 +1,183 @@
+{
+  "id": "ca2426c5-38b2-4d85-ad6d-4fa92a189e85",
+  "version": "2.0",
+  "name": "Tournesol",
+  "url": "http://127.0.0.1:8000",
+  "tests": [{
+    "id": "29d1b20e-44e9-454f-87c2-85c5815eb46a",
+    "name": "Swagger UI Login",
+    "commands": [{
+      "id": "9b6eef96-2b3c-49d5-8531-7043f845e185",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return \"jst\"",
+      "targets": [],
+      "value": "username"
+    }, {
+      "id": "b76799d6-2bd9-41ae-af2d-a0fee797b51d",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return \"yop\"",
+      "targets": [],
+      "value": "password"
+    }, {
+      "id": "b6250cba-ecdc-4a9c-97d5-c731747f8190",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return \"vY17xBi0MZKZCotrfma5ympAd0hq30OudU78HZAY\"",
+      "targets": [],
+      "value": "client_id"
+    }, {
+      "id": "54ed33a0-a6a3-4820-b855-1997be70a05d",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return \"ZJ5FZeHomIgq6uNpVgNKwJiXDfFZz1HijDhsQJlXXnFKF6R7bUqc49Dv5MNL3cYTUrE1axrTtJTSr6IkHCc417ye8bLR8facpmhD4TwQqg7ktIQ047Y2Xp0rRcKLlIvq\"",
+      "targets": [],
+      "value": "client_secret"
+    }, {
+      "id": "f123f8b1-90f9-4158-ab9e-b338023bdf59",
+      "comment": "",
+      "command": "open",
+      "target": "/docs/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b8bcc326-d45a-466e-869f-dc49814be376",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn > span",
+      "targets": [
+        ["css=.btn > span", "css:finder"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/button/span", "xpath:idRelative"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Authorize')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "01af980a-46fa-4ac3-aada-53c161b9cf59",
+      "comment": "",
+      "command": "type",
+      "target": "id=oauth_username",
+      "targets": [
+        ["id=oauth_username", "id"],
+        ["css=#oauth_username", "css:finder"],
+        ["xpath=//input[@id='oauth_username']", "xpath:attributes"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div/div/section/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "${username}"
+    }, {
+      "id": "ebd89844-48a9-4782-8000-1168e72cf571",
+      "comment": "",
+      "command": "type",
+      "target": "id=oauth_password",
+      "targets": [
+        ["id=oauth_password", "id"],
+        ["css=#oauth_password", "css:finder"],
+        ["xpath=//input[@id='oauth_password']", "xpath:attributes"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div/div[2]/section/input", "xpath:idRelative"],
+        ["xpath=//div[2]/section/input", "xpath:position"]
+      ],
+      "value": "${password}"
+    }, {
+      "id": "472d2333-40e0-4639-bb5a-81019880efde",
+      "comment": "",
+      "command": "select",
+      "target": "id=password_type",
+      "targets": [],
+      "value": "label=Request body"
+    }, {
+      "id": "2c10fa48-1d70-4d6b-ac73-72a73a7c2c11",
+      "comment": "",
+      "command": "type",
+      "target": "id=client_id",
+      "targets": [
+        ["id=client_id", "id"],
+        ["css=#client_id", "css:finder"],
+        ["xpath=//input[@id='client_id']", "xpath:attributes"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[2]/section/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[2]/section/input", "xpath:position"]
+      ],
+      "value": "${client_id}"
+    }, {
+      "id": "f578c4ad-3a30-4e02-b2cb-12a9855ed734",
+      "comment": "",
+      "command": "type",
+      "target": "id=client_secret",
+      "targets": [
+        ["id=client_secret", "id"],
+        ["css=#client_secret", "css:finder"],
+        ["xpath=//input[@id='client_secret']", "xpath:attributes"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[3]/section/input", "xpath:idRelative"],
+        ["xpath=//div[3]/section/input", "xpath:position"]
+      ],
+      "value": "${client_secret}"
+    }, {
+      "id": "58b88d17-e358-4420-a45d-22636e427ada",
+      "comment": "",
+      "command": "click",
+      "target": "css=.wrapper:nth-child(3) .item",
+      "targets": [
+        ["css=.wrapper:nth-child(3) .item", "css:finder"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[4]/div[2]/div/label/span", "xpath:idRelative"],
+        ["xpath=//div[2]/div/label/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d52836d8-1880-4321-a211-1d8b0a026185",
+      "comment": "",
+      "command": "click",
+      "target": "css=.wrapper:nth-child(4) .item",
+      "targets": [
+        ["css=.wrapper:nth-child(4) .item", "css:finder"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[4]/div[3]/div/label/span", "xpath:idRelative"],
+        ["xpath=//div[3]/div/label/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "95629f27-63b9-43ea-945f-12c25982325a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.wrapper:nth-child(5) .item",
+      "targets": [
+        ["css=.wrapper:nth-child(5) .item", "css:finder"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[4]/div[4]/div/label/span", "xpath:idRelative"],
+        ["xpath=//div[4]/div/label/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6d42f42a-f158-4303-875c-51a71f57cc8e",
+      "comment": "",
+      "command": "click",
+      "target": "css=.modal-btn:nth-child(1)",
+      "targets": [
+        ["css=.modal-btn:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[5]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7a923910-3749-458e-8372-557fd2f8f99c",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-done",
+      "targets": [
+        ["css=.btn-done", "css:finder"],
+        ["xpath=//div[@id='swagger-ui']/div/div[2]/div[2]/section/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[4]/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Close')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "ba84368b-e575-4bb1-a6e1-1adbccaeb794",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["29d1b20e-44e9-454f-87c2-85c5815eb46a"]
+  }],
+  "urls": ["http://127.0.0.1:8000/"],
+  "plugins": []
+}

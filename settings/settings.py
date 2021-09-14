@@ -69,9 +69,32 @@ INSTALLED_APPS = [
     "oauth2_provider",
     "corsheaders",
     "rest_framework",
-    "rest_framework_swagger",
     "drf_spectacular",
+    'rest_registration',
 ]
+
+REST_REGISTRATION_MAIN_URL = server_settings.get('REST_REGISTRATION_MAIN_URL', 'http://127.0.0.1:3000/')
+REST_REGISTRATION = {
+    'REGISTER_VERIFICATION_ENABLED': True,
+    'REGISTER_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'verify-user/',
+    'REGISTER_VERIFICATION_ONE_TIME_USE': True,
+    'RESET_PASSWORD_VERIFICATION_ENABLED': True,
+    'RESET_PASSWORD_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'reset-password/',
+    'RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND': False, # to be set to True to prevent user enumeration
+    'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': True,
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
+    'REGISTER_EMAIL_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'verify-email/',
+    'VERIFICATION_FROM_EMAIL': 'noreply@tournesol.app',
+}
+
+EMAIL_BACKEND = server_settings.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = server_settings.get('EMAIL_HOST', '')
+EMAIL_PORT = server_settings.get('EMAIL_PORT', '')
+EMAIL_HOST_USER = server_settings.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = server_settings.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = server_settings.get('EMAIL_USE_TLS', '')
+EMAIL_USE_SSL = server_settings.get('EMAIL_USE_SSL', '')
+
 
 # Modèle utilisateur utilisé par Django (1.5+)
 AUTH_USER_MODEL = "core.user"
@@ -90,7 +113,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "settings.urls"
-
 
 TEMPLATES = [
     {
@@ -241,3 +263,27 @@ CRITERIAS = list(CRITERIAS_DICT.keys())
 
 # maximal weight to assign to a rating for a particular feature, see #41
 MAX_FEATURE_WEIGHT = 8
+
+SPECTACULAR_SETTINGS = {
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "oauth2RedirectUrl": MAIN_URL + "docs/",
+    },
+    'SWAGGER_UI_OAUTH2_CONFIG': {
+        "clientId": server_settings.get("SWAGGER_UI_OAUTH2_CLIENT_ID",""),
+        "clientSecret": server_settings.get("SWAGGER_UI_OAUTH2_CLIENT_SECRET",""),
+        "appName": "Swagger UI",
+        "scopes": "read write groups",
+    },
+    'SECURITY': [{
+        'oauth2': ['read write groups'],
+    }],
+    'OAUTH2_FLOWS': ["password"],
+    'OAUTH2_AUTHORIZATION_URL': None,
+    'OAUTH2_TOKEN_URL': MAIN_URL + "o/token/",
+    'OAUTH2_REFRESH_URL': MAIN_URL + "o/token/",
+    'OAUTH2_SCOPES': "read write groups",
+}
+
+YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "")

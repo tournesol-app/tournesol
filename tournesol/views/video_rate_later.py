@@ -1,19 +1,26 @@
 """
-API endpoint to maniuplate contributor's rate later list
+API endpoint to manipulate contributor's rate later list
 """
 
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+
 from rest_framework import generics, mixins, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from tournesol.models import Video, VideoRateLater
-from tournesol.serializers import VideoRateLaterSerializer
+from ..models import Video, VideoRateLater
+from ..serializers import VideoRateLaterSerializer
+
+
+def verify_username(request, username):
+    """ Fails if username is different from request.user """
+    if request.user.username != username:
+        raise PermissionDenied("403 Forbidden")
 
 
 class VideoRateLaterList(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+    mixins.ListModelMixin, generics.GenericAPIView
 ):
     """
     List all videos of a user's rate later list, or add a video to the list.
@@ -22,13 +29,11 @@ class VideoRateLaterList(
     serializer_class = VideoRateLaterSerializer
 
     def get_queryset(self):
-        return VideoRateLater.objects.filter(user__pk=self.kwargs["user_id"])
+        return VideoRateLater.objects.filter(user__username=self.kwargs["username"])
 
     def get(self, request, *args, **kwargs):
         """API call to return list of rate_later videos"""
-        if request.user.pk != self.kwargs["user_id"]:
-            raise PermissionDenied("403 Forbidden")
-
+        verify_username(request, kwargs["username"])
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -47,15 +52,14 @@ class VideoRateLaterList(
                  the video is already in the rate later list
                  or there is an other error with the database request
         """
-        if request.user.pk != self.kwargs["user_id"]:
-            raise PermissionDenied("403 Forbidden")
+        verify_username(request, kwargs["username"])
 
         try:
-            video = get_object_or_404(Video, video_id=request.data["video.video_id"])
+            video = get_object_or_404(Video, video_id=request.data["video"]["video_id"])
         except KeyError:
             return Response(
                 {
-                    "detail": "Required field video.video_id not fount.",
+                    "detail": "Required field video.video_id not found.",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -90,14 +94,10 @@ class VideoRateLaterDetail(
 
     def get(self, request, *args, **kwargs):
         """Fetch a video from user's rate later list"""
-        if request.user.pk != self.kwargs["user_id"]:
-            raise PermissionDenied("403 Forbidden")
-
+        verify_username(request, kwargs["username"])
         return self.retrieve(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Deletes a video from user's rate later list"""
-        if request.user.pk != self.kwargs["user_id"]:
-            raise PermissionDenied("403 Forbidden")
-
+        verify_username(request, kwargs["username"])
         return self.destroy(request, *args, **kwargs)

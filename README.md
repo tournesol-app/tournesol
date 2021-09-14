@@ -1,31 +1,37 @@
-Tournesol Backend
-===
+# Tournesol Backend
 
 Django app for tournesol app.
 
-
 # Installation
 
-* Create a postgres database.
+- Create a postgres database.
 
+- Create a config file in /etc/django/settings-tournesol.yaml. You can find an example in documentation folder.
 
-* Create a config file in /etc/django/settings-tournesol.yaml. You can find an example in documentation folder.
+- You can set a different path with ENV variable SETTINGS_FILE.
 
+- Create a python env and install the requirements
+  `pip install -r requirements.txt`
 
-* You can set a different path with ENV variable SETTINGS_FILE.
+- Install migrations on database
+  `python manage.py migrate`
 
+- Create superuser
+  `python manage.py createsuperuser`
 
-* Create a python env and install the requirements
-``pip install -r requirements.txt``
+- Run the server
+  `python manage.py runserver`
 
+## Dependencies
 
-* Install migrations on database
-``python manage.py migrate``
-  
+Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` depend on [expect](https://core.tcl-lang.org/expect/index) for superuser unattended creation.
 
-* Create superuser
-``python manage.py createsuperuser``
+# Setup Google Api Key
 
+* Go to https://console.cloud.google.com/apis/ and create a new project named `tournesol`
 
-* Run the server
-``python manage.py runserver``
+* Setup you credentials by getting a API key. Do not restrict its use for development purpose.
+
+* Once you have created your API key, put it into `YOUTUBE_API_KEY` environment variable (`export YOUTUBE_API_KEY=xxx`)
+
+* Then go to https://console.cloud.google.com/apis/credentials/consent, and add a user test (typicaly your gmail account)
