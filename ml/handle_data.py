@@ -35,8 +35,6 @@ def select_criteria(comparison_data, crit):
     l_ratings = [
         comp for comp in comparison_data if (comp[3] == crit and comp[4] is not None)
     ]
-    if len(l_ratings) == 0:
-        logging.warning(f"No comparison for this criteria ({crit})")
     return l_ratings
 
 
