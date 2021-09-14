@@ -146,6 +146,12 @@
 
 - meta: flush_handlers
 
+- name: Copy Discord ML training failure alert
+  template:
+    dest: /usr/local/bin/discord-ml-fail-alert.sh
+    src: discord-ml-fail-alert.sh.j2
+    mode: a=rx
+
 - name: Copy ML training service
   template:
     dest: /etc/systemd/system/ml-train.service
