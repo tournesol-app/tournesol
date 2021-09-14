@@ -4,12 +4,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
 
-import type { Video } from 'src/services/openapi';
+import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
 
 const useStyles = makeStyles(() => ({
   main: {
     margin: 4,
     maxWidth: 1000,
+    width: 'calc(100% - 8px)',
   },
   title: {
     fontFamily: 'Poppins',
@@ -37,23 +38,20 @@ const useStyles = makeStyles(() => ({
   },
   summary: {
     flex: 1,
-    maxHeight: 105,
+    maxHeight: 85,
     fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'normal',
-    fontSize: '14px',
+    fontSize: '11px',
     color: '#4A473E',
     overflow: 'auto',
   },
   application_details: {
-    marginTop: '-6px',
-    width: '150%',
+    width: '100%',
     display: 'flex',
     flexWrap: 'wrap',
-    alignContent: 'space-between',
-  },
-  tournesol: {
-    marginTop: '-5px',
+    alignItems: 'center',
+    padding: 4,
   },
   nb_tournesol: {
     fontFamily: 'Poppins',
@@ -61,12 +59,12 @@ const useStyles = makeStyles(() => ({
     fontWeight: 'bold',
     fontSize: '32px',
     lineHeight: '32px',
-    display: 'flex',
-    alignItems: 'center',
-    color: '#6A6658',
-    marginLeft: '8.92px',
-    marginTop: 0,
-    marginRight: '24px',
+    // display: 'flex',
+    // alignItems: 'center',
+    // color: '#6A6658',
+    // marginLeft: '8.92px',
+    // marginTop: '5px',
+    // marginRight: '24px',
   },
   ratings: {
     marginRight: '4px',
@@ -95,12 +93,12 @@ const useStyles = makeStyles(() => ({
     fontSize: '15px',
     lineHeight: '22px',
     color: '#847F6E',
-    marginLeft: '24px',
-    marginTop: '12px',
+    marginLeft: 16,
+    display: 'flex',
+    alignItems: 'center',
   },
   logo: {
-    marginLeft: '9.27px',
-    marginTop: '-16px',
+    marginLeft: 8,
   },
   top: {
     display: 'flex',
@@ -119,12 +117,32 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function VideoCard({ video }: { video: Video }) {
+type VideoWithCriteriaScore = Video & {
+  criteria_scores?: Array<ComparisonCriteriaScore>;
+};
+
+function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
   const classes = useStyles();
   const video_id = video.video_id;
   const video_url = 'https://www.youtube.com/embed/'.concat(video_id);
+  let total_score = 0;
+  let max_score = -Infinity;
+  let min_score = Infinity;
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  let max_criteria: string = '';
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  let min_criteria: string = '';
+  video.criteria_scores?.forEach((criteria) => {
+    total_score += criteria.score != undefined ? 10 * criteria.score : 0;
+    if (criteria.score != undefined && criteria.score > max_score) {
+      max_score = criteria.score;
+      max_criteria = criteria.criteria;
+    } else if (criteria.score != undefined && criteria.score < min_score) {
+      min_score = criteria.score;
+      min_criteria = criteria.criteria;
+    }
+  });
   // TODO: this is commented out because it will included in a future release
-  // const nb_tournesol = 80;
   // const nb_ratings = 51;
   // const nb_contributors = 18;
 
@@ -168,31 +186,40 @@ function VideoCard({ video }: { video: Video }) {
               alt="logo"
             /> */}
         </div>
-        {/* TODO: This is commented out because these features are not yet supported
         <div className={classes.application_details}>
-          <div className="cropped">
-            <img
-              className={classes.tournesol}
-              src={'/svg/tournesol.svg'}
-              alt="logo"
-            />
-          </div>
-          <p className={classes.nb_tournesol}>{nb_tournesol}</p>
-          <p className={classes.ratings}>{nb_ratings} Ratings by</p>
-          <p className={classes.contributors}>{nb_contributors} contributors</p>
-          <p className={classes.rated}>Rated high:</p>
-          <img
-            className={classes.logo}
-            src={'/svg/Reliable and not misleading.svg'}
-            alt="logo"
-          />
-          <p className={classes.rated}>Rated low:</p>
-          <img
-            className={classes.logo}
-            src="/svg/Reliable and not misleading.svg"
-            alt="logo"
-          />
-        </div> */}
+          {max_criteria.length > 0 && (
+            <>
+              <div className={classes.logo}>
+                <img
+                  className="tournesol"
+                  src={'/svg/tournesol.svg'}
+                  alt="logo"
+                />
+              </div>
+              <span className={classes.nb_tournesol}>
+                {total_score.toFixed(0)}
+              </span>
+              {/*<p className={classes.ratings}>{nb_ratings} Ratings by</p>
+          <p className={classes.contributors}>{nb_contributors} contributors</p> */}
+              <div className={classes.rated}>
+                <span>Rated high:</span>
+                <img
+                  className={classes.logo}
+                  src={`/svg/${max_criteria}.svg`}
+                  alt={max_criteria}
+                />
+              </div>
+              <div className={classes.rated}>
+                <span>Rated low:</span>
+                <img
+                  className={classes.logo}
+                  src={`/svg/${min_criteria}.svg`}
+                  alt={min_criteria}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </Grid>
     </Grid>
   );

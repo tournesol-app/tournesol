@@ -5,8 +5,9 @@ import {
   makeStyles,
   Typography,
   Checkbox,
+  Collapse,
+  Button,
 } from '@material-ui/core';
-import { Collapse, IconButton } from '@material-ui/core';
 import {
   CheckCircle,
   CheckCircleOutline,
@@ -20,7 +21,7 @@ const useStyles = makeStyles(() => ({
   },
   filter: {
     color: '#506AD4',
-    marginLeft: '8px',
+    margin: '8px',
   },
   collapse: {
     display: 'flex',
@@ -45,15 +46,17 @@ function SearchFilter(props: {
 
   return (
     <div className="main">
-      <IconButton
-        className="second"
-        onClick={handleExpandClick}
+      <Button
+        color="secondary"
+        size="large"
+        className={classes.filter}
+        startIcon={!expanded ? <ExpandMore /> : <ExpandLess />}
         aria-expanded={expanded}
         aria-label="show more"
+        onClick={handleExpandClick}
       >
-        {!expanded ? <ExpandMore /> : <ExpandLess />}
-        <p className={classes.filter}>FILTERS</p>
-      </IconButton>
+        Filters
+      </Button>
       <Collapse
         className={classes.collapse}
         in={expanded}
