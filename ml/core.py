@@ -173,14 +173,14 @@ def ml_run(
 
             # training and predicting
             glob, loc, uncertainties = _train_predict(
-                licch, epochs, fullpath, save, verb,
-                compute_uncertainty=compute_uncertainty
-            )
-            # putting in required shape for output
-            out_glob = format_out_glob(glob, criteria, uncertainties[0])
-            out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
-            glob_scores += out_glob
-            loc_scores += out_loc
+            licch, epochs, fullpath, save,
+            compute_uncertainty=compute_uncertainty
+        )
+        # putting in required shape for output
+        out_glob = format_out_glob(glob, criteria, uncertainties[0])
+        out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
+        glob_scores += out_glob
+        loc_scores += out_loc
 
     logging.info('ml_run() total time : %s', round(time() - ml_run_time))
     if TOURNESOL_DEV:  # return more information in dev mode
