@@ -105,7 +105,7 @@ class ComparisonApiTestCase(TestCase):
             video_2__video_id=self._video_id_01
         )
         self.assertFalse(comparisons.exists())
-        self.assertEquals(
+        self.assertEqual(
             Comparison.objects.all().count(),
             initial_comparisons_nbr
         )
@@ -142,40 +142,40 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # check the database integrity
-        self.assertEquals(comparisons_nbr,
-                          initial_comparisons_nbr + 1)
+        self.assertEqual(comparisons_nbr,
+                         initial_comparisons_nbr + 1)
 
-        self.assertEquals(comparison.user, user)
-        self.assertEquals(comparison.video_1.video_id,
-                          data["video_a"]["video_id"])
-        self.assertEquals(comparison.video_2.video_id,
-                          data["video_b"]["video_id"])
-        self.assertEquals(comparison.duration_ms, data["duration_ms"])
+        self.assertEqual(comparison.user, user)
+        self.assertEqual(comparison.video_1.video_id,
+                         data["video_a"]["video_id"])
+        self.assertEqual(comparison.video_2.video_id,
+                         data["video_b"]["video_id"])
+        self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
         comparison_criteria_scores = comparison.criteria_scores.all()
-        self.assertEquals(comparison_criteria_scores.count(), 1)
-        self.assertEquals(comparison_criteria_scores[0].criteria,
-                          data["criteria_scores"][0]["criteria"])
-        self.assertEquals(comparison_criteria_scores[0].score,
-                          data["criteria_scores"][0]["score"])
-        self.assertEquals(comparison_criteria_scores[0].weight,
-                          data["criteria_scores"][0]["weight"])
+        self.assertEqual(comparison_criteria_scores.count(), 1)
+        self.assertEqual(comparison_criteria_scores[0].criteria,
+                         data["criteria_scores"][0]["criteria"])
+        self.assertEqual(comparison_criteria_scores[0].score,
+                         data["criteria_scores"][0]["score"])
+        self.assertEqual(comparison_criteria_scores[0].weight,
+                         data["criteria_scores"][0]["weight"])
 
         # check the representation integrity
-        self.assertEquals(response.data["video_a"]["video_id"],
-                          data["video_a"]["video_id"])
-        self.assertEquals(response.data["video_b"]["video_id"],
-                          data["video_b"]["video_id"])
-        self.assertEquals(response.data["duration_ms"],
-                          data["duration_ms"])
+        self.assertEqual(response.data["video_a"]["video_id"],
+                         data["video_a"]["video_id"])
+        self.assertEqual(response.data["video_b"]["video_id"],
+                         data["video_b"]["video_id"])
+        self.assertEqual(response.data["duration_ms"],
+                         data["duration_ms"])
 
-        self.assertEquals(len(response.data["criteria_scores"]), 1)
-        self.assertEquals(response.data["criteria_scores"][0]["criteria"],
-                          data["criteria_scores"][0]["criteria"])
-        self.assertEquals(response.data["criteria_scores"][0]["score"],
-                          data["criteria_scores"][0]["score"])
-        self.assertEquals(response.data["criteria_scores"][0]["weight"],
-                          data["criteria_scores"][0]["weight"])
+        self.assertEqual(len(response.data["criteria_scores"]), 1)
+        self.assertEqual(response.data["criteria_scores"][0]["criteria"],
+                         data["criteria_scores"][0]["criteria"])
+        self.assertEqual(response.data["criteria_scores"][0]["score"],
+                         data["criteria_scores"][0]["score"])
+        self.assertEqual(response.data["criteria_scores"][0]["weight"],
+                         data["criteria_scores"][0]["weight"])
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -227,8 +227,8 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         # the database must contain exactly one more comparison, not two
-        self.assertEquals(Comparison.objects.all().count(),
-                          initial_comparisons_nbr + 1)
+        self.assertEqual(Comparison.objects.all().count(),
+                         initial_comparisons_nbr + 1)
 
     def test_anonymous_cant_list(self):
         """
@@ -257,14 +257,14 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEquals(response.data["count"], comparisons_made.count())
-        self.assertEquals(len(response.data["results"]), comparisons_made.count())
+        self.assertEqual(response.data["count"], comparisons_made.count())
+        self.assertEqual(len(response.data["results"]), comparisons_made.count())
 
         # currently the GET API returns an unordered list, so the assertions
         # are made unordered too
         for comparison in response.data["results"]:
-            self.assertEquals(comparison["video_a"]["video_id"],
-                              self._video_id_01)
+            self.assertEqual(comparison["video_a"]["video_id"],
+                             self._video_id_01)
             self.assertIn(comparison["video_b"]["video_id"],
                           [self._video_id_02, self._video_id_04])
             self.assertIn(comparison["duration_ms"], [102, 104])
@@ -291,17 +291,17 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEquals(response.data["count"], comparisons_made.count())
-        self.assertEquals(len(response.data["results"]), comparisons_made.count())
+        self.assertEqual(response.data["count"], comparisons_made.count())
+        self.assertEqual(len(response.data["results"]), comparisons_made.count())
 
         # currently the GET API returns an unordered list, so the assertions
         # are made unordered too
         for comparison in response.data["results"]:
             if comparison["video_a"]["video_id"] != self._video_id_02:
-                self.assertEquals(comparison["video_b"]["video_id"],
+                self.assertEqual(comparison["video_b"]["video_id"],
                                   self._video_id_02)
 
-            self.assertEquals(comparison["duration_ms"], 102)
+            self.assertEqual(comparison["duration_ms"], 102)
 
     def test_anonymous_cant_read(self):
         """
@@ -336,11 +336,11 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEquals(response.data["video_a"]["video_id"],
-                          self._video_id_01)
-        self.assertEquals(response.data["video_b"]["video_id"],
-                          self._video_id_02)
-        self.assertEquals(response.data["duration_ms"], 102)
+        self.assertEqual(response.data["video_a"]["video_id"],
+                         self._video_id_01)
+        self.assertEqual(response.data["video_b"]["video_id"],
+                         self._video_id_02)
+        self.assertEqual(response.data["duration_ms"], 102)
 
     def test_authenticated_can_read_reverse(self):
         """
@@ -371,8 +371,8 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEquals(response.data["video_a"]["video_id"],
-                          self._video_id_02)
-        self.assertEquals(response.data["video_b"]["video_id"],
-                          self._video_id_01)
-        self.assertEquals(response.data["duration_ms"], 102)
+        self.assertEqual(response.data["video_a"]["video_id"],
+                         self._video_id_02)
+        self.assertEqual(response.data["video_b"]["video_id"],
+                         self._video_id_01)
+        self.assertEqual(response.data["duration_ms"], 102)
