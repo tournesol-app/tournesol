@@ -70,7 +70,7 @@ class VideoViewSet(viewsets.ModelViewSet):
         for video in queryset.prefetch_related("criteria_scores"):
             total = 0
             for score in video.criteria_scores.all():
-                score_query_weight = request.query_params.get(score.criteria) \
+                score_query_weight = int(request.query_params.get(score.criteria)) \
                     if request.query_params.get(score.criteria) \
                     and request.query_params.get(score.criteria).isdigit() else 50
                 total += score.score * score_query_weight
