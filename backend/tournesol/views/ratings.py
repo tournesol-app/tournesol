@@ -5,7 +5,6 @@ API endpoint to manipulate contributor ratings
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
 
 from ..models import ContributorRating, Video
 from ..serializers import ContributorRatingSerializer
@@ -31,3 +30,12 @@ class ContributorRatingViewSet(viewsets.ModelViewSet):
         self.queryset.filter(user=request.user)
         ratings_serialized = ContributorRatingSerializer(self.queryset, many=True)
         return Response(ratings_serialized.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def create(self, request, *args, **kwargs):
+        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
