@@ -134,8 +134,8 @@
     url: "{{item.url}}"
     dest: "/tmp/{{item.name}}"
   with_items:
-    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-8c7c35b.tar.gz
-      name: Math-REL1_36-8c7c35b.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-2891f9e.tar.gz
+      name: Math-REL1_36-2891f9e.tar.gz
     - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-027be98.tar.gz
       name: PluggableAuth-REL1_36-027be98.tar.gz
     - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-37a0df5.tar.gz
@@ -160,8 +160,8 @@
     remote_src: yes
     dest: "/var/lib/mediawiki/extensions"
   with_items:
-    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_35-ce43800.tar.gz
-      name: Math-REL1_35-ce43800.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-2891f9e.tar.gz
+      name: Math-REL1_36-2891f9e.tar.gz
     - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_35-d036ae0.tar.gz
       name: PluggableAuth-REL1_35-d036ae0.tar.gz
     - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_35-19f4221.tar.gz
