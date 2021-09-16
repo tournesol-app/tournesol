@@ -10,6 +10,12 @@
     install_recommends: no
     update_cache: yes
 
+- name: Copy Discord Postgres backup failure alert
+  template:
+    dest: /usr/local/bin/postgres-backup-fail-alert.sh
+    src: discord-postgres-backup-fail-alert.sh.j2
+    mode: a=rx
+
 - name: Create Postgresql backups directory
   file:
     state: directory
