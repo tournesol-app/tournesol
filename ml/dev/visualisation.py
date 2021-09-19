@@ -81,8 +81,8 @@ def measure_diff(fakes, preds):
 
 def print_s(licch):
     """ Prints s stats """
-    l_s = [(round_loss(s, 2), id) for s, id in zip(
-        licch.all_nodes("s"),
+    l_s = [(round_loss(s_par, 2), uid) for s_par, uid in zip(
+        licch.all_nodes("s_param"),
         licch.nodes.keys()
     )]
     tens = torch.tensor(l_s)
@@ -105,8 +105,8 @@ def licch_stats(licch):
     print("nb_nodes", licch.nb_nodes)
     print_s(licch)  # print stats on s parameters
     with torch.no_grad():
-        gen_s = licch.all_nodes("s")
-        l_s = [s.item() for s in gen_s]
+        gen_s = licch.all_nodes("s_param")
+        l_s = [s_par.item() for s_par in gen_s]
         plot_density(
             l_s,
             "s parameters",
