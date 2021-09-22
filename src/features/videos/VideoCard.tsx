@@ -134,10 +134,18 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
   let min_criteria: string = '';
   video.criteria_scores?.forEach((criteria) => {
     total_score += criteria.score != undefined ? 10 * criteria.score : 0;
-    if (criteria.score != undefined && criteria.score > max_score) {
+    if (
+      criteria.score != undefined &&
+      criteria.score > max_score &&
+      criteria.criteria != 'largely_recommanded'
+    ) {
       max_score = criteria.score;
       max_criteria = criteria.criteria;
-    } else if (criteria.score != undefined && criteria.score < min_score) {
+    } else if (
+      criteria.score != undefined &&
+      criteria.score < min_score &&
+      criteria.criteria != 'largely_recommanded'
+    ) {
       min_score = criteria.score;
       min_criteria = criteria.criteria;
     }
