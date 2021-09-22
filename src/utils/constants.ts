@@ -1,4 +1,5 @@
-export const filterCriteriaNames = {
+export const criteriaNames = {
+  largely_recommended: 'Should be largely recommended',
   reliability: 'Reliable & not misleading',
   pedagogy: 'Clear & pedagogical',
   importance: 'Important and actionable',

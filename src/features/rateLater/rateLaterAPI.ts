@@ -1,4 +1,5 @@
-import { UsersService, VideoService } from 'src/services/openapi';
+import { ensureVideoExistOrCreate } from 'src/utils/video';
+import { UsersService } from 'src/services/openapi';
 import { OpenAPI } from 'src/services/openapi/core/OpenAPI';
 import { LoginState } from '../login/LoginState.model';
 
@@ -29,24 +30,7 @@ export const addToRateLaterList = async (
   }
   OpenAPI.TOKEN = login_state.access_token;
 
-  // FIXME: should the video be created automatically?
-  // And if so, shouldn't the backend be responsible for it?
-  // It's currently impractical to check if the API error
-  // is blocking or not.
-  try {
-    await VideoService.videoCreate({ video_id });
-  } catch (err) {
-    if (
-      err.status === 400 &&
-      err.body?.video_id?.[0]?.includes('already exists')
-    ) {
-      console.debug(
-        'Video already exists in the database: API error can be ignored'
-      );
-    } else {
-      throw err;
-    }
-  }
+  await ensureVideoExistOrCreate(video_id);
 
   return UsersService.usersVideoRateLaterCreate(login_state.username, {
     video: { video_id },

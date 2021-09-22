@@ -9,6 +9,7 @@ import {
   List,
   Theme,
 } from '@material-ui/core';
+import ListIcon from '@material-ui/icons/FormatListBulleted';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -92,9 +93,17 @@ const SideBar = () => {
         <Link to="/comparisons">
           <ListItem button>
             <ListItemIcon>
+              <ListIcon color="action" />
+            </ListItemIcon>
+            <ListItemText primary="My Comparisons" />
+          </ListItem>
+        </Link>
+        <Link to="/comparison">
+          <ListItem button>
+            <ListItemIcon>
               <CompareIcon color="action" />
             </ListItemIcon>
-            <ListItemText primary="Comparisons" />
+            <ListItemText primary="Contribute" />
           </ListItem>
         </Link>
         <Link to="/rate_later">

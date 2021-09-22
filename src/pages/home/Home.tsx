@@ -110,7 +110,7 @@ const Navigation = () => {
 
   return (
     <div className={classes.menu}>
-      <Link to="/comparisons" className={classes.menuLink}>
+      <Link to="/comparison" className={classes.menuLink}>
         CONTRIBUTE
       </Link>
       <a
