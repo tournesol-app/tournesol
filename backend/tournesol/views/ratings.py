@@ -19,7 +19,6 @@ class ContributorRatingViewSet(viewsets.ModelViewSet):
         """
         Get video details and criteria that are related to it
         """
-
         video = get_object_or_404(Video, video_id=pk)
         ratings = get_object_or_404(ContributorRating, video=video, user=request.user)
         ratings_serialized = ContributorRatingSerializer(ratings)
