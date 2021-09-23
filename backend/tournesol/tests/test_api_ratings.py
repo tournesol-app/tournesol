@@ -55,7 +55,7 @@ class RatingApi(TestCase):
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["video"]["video_id"],'6QDWbKnwRcc')
+        self.assertEqual(response.data["video"]["video_id"], '6QDWbKnwRcc')
 
     def test_list(self):
         factory = APIClient()
