@@ -1,5 +1,4 @@
-export const criteriaNames = {
-  largely_recommended: 'Should be largely recommended',
+const mainCriteriaNames: { [s: string]: string } = {
   reliability: 'Reliable & not misleading',
   pedagogy: 'Clear & pedagogical',
   importance: 'Important and actionable',
@@ -10,3 +9,8 @@ export const criteriaNames = {
   better_habits: 'Encourages better habits',
   backfire_risk: 'Resilience to backfiring risks',
 };
+
+const allCriteriaNames = { ...mainCriteriaNames };
+allCriteriaNames['largely_recommended'] = 'Should be largely recommended';
+
+export { mainCriteriaNames, allCriteriaNames };

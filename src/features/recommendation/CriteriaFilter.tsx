@@ -9,7 +9,7 @@ import {
   Slider,
   Tooltip,
 } from '@material-ui/core';
-import { criteriaNames } from 'src/utils/constants';
+import { mainCriteriaNames } from 'src/utils/constants';
 
 const useStyles = makeStyles(() => ({
   featuresContainer: {
@@ -110,7 +110,7 @@ function CriteriaFilter({
         Criteria
       </Typography>
       <Grid container>
-        {Object.entries(criteriaNames).map(([feature, feature_name]) => (
+        {Object.entries(mainCriteriaNames).map(([feature, feature_name]) => (
           <Grid item xs={12} sm={6} key={feature}>
             <div
               id={`id_container_feature_${feature}`}

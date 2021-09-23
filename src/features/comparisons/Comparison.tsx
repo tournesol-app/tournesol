@@ -10,7 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
-import { criteriaNames } from 'src/utils/constants';
+import { allCriteriaNames } from 'src/utils/constants';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -119,7 +119,7 @@ const ComparisonComponent = ({
   return (
     <div className={classes.root}>
       <div className={classes.centered}>
-        {Object.entries(criteriaNames).map(([criteria, criteria_name]) => (
+        {Object.entries(allCriteriaNames).map(([criteria, criteria_name]) => (
           <div
             key={criteria}
             id={`id_container_criteria_${criteria}`}

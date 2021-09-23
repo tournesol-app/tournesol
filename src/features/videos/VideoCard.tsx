@@ -4,6 +4,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
 
+import { mainCriteriaNames } from 'src/utils/constants';
 import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
 
 const useStyles = makeStyles(() => ({
@@ -137,14 +138,14 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
     if (
       criteria.score != undefined &&
       criteria.score > max_score &&
-      criteria.criteria != 'largely_recommanded'
+      criteria.criteria != 'largely_recommended'
     ) {
       max_score = criteria.score;
       max_criteria = criteria.criteria;
     } else if (
       criteria.score != undefined &&
       criteria.score < min_score &&
-      criteria.criteria != 'largely_recommanded'
+      criteria.criteria != 'largely_recommended'
     ) {
       min_score = criteria.score;
       min_criteria = criteria.criteria;
@@ -202,6 +203,7 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
                   className="tournesol"
                   src={'/svg/tournesol.svg'}
                   alt="logo"
+                  title="Overall score"
                 />
               </div>
               <span className={classes.nb_tournesol}>
@@ -215,7 +217,7 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
                   className={classes.logo}
                   src={`/svg/${max_criteria}.svg`}
                   alt={max_criteria}
-                  title={max_criteria}
+                  title={mainCriteriaNames[max_criteria]}
                 />
               </div>
               <div className={classes.rated}>
@@ -224,7 +226,7 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
                   className={classes.logo}
                   src={`/svg/${min_criteria}.svg`}
                   alt={min_criteria}
-                  title={min_criteria}
+                  title={mainCriteriaNames[min_criteria]}
                 />
               </div>
             </>
