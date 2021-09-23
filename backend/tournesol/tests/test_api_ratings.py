@@ -20,18 +20,7 @@ class RatingApi(TestCase):
         user = User.objects.get(username=self._user)
         factory.force_authenticate(user=user)
         response = factory.post(
-            "/users/me/contributor_ratings/NeADlWSDFAQ",
-            args=[user.username],
-            format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
-    def test_try_to_update(self):
-        factory = APIClient()
-        user = User.objects.get(username=self._user)
-        factory.force_authenticate(user=user)
-        response = factory.put(
-            "/users/me/contributor_ratings/NeADlWSDFAQ",
+            "/users/me/contributor_ratings/",
             {'video_id':'NeADlWSDFAQ'},
             args=[user.username],
             format="json"
