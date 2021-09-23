@@ -103,7 +103,14 @@ class VideoViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
-            yt_info = youtube_video_details(request.data["video_id"])["items"][0]
+            yt_response = youtube_video_details(request.data["video_id"])
+            yt_items = yt_response.get("items", [])
+            if len(yt_items) == 0:
+                return Response(
+                    "The video has not been found. `video_id` may be incorrect.",
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            yt_info = yt_items[0]
             title = yt_info["snippet"]["title"]
             nb_views = yt_info["statistics"]["viewCount"]
             published_date = str(yt_info["snippet"]["publishedAt"])

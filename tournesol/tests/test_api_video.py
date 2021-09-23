@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
@@ -157,6 +158,81 @@ class VideoApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    @patch("tournesol.views.video.youtube_video_details")
+    def test_create_video_with_youtube_api(self, mock_youtube):
+        mock_youtube.return_value = {
+            "items": [
+                {
+                    "contentDetails": {
+                        "caption": "true",
+                        "contentRating": {},
+                        "definition": "hd",
+                        "dimension": "2d",
+                        "duration": "PT21M3S",
+                        "licensedContent": True,
+                        "projection": "rectangular"
+                    },
+                    "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
+                    "id": "NeADlWSDFAQ",
+                    "kind": "youtube#video",
+                    "snippet": {
+                        "categoryId": "22",
+                        "channelId": "UCAuUUnT6oDeKwE6v1NGQxug",
+                        "channelTitle": "TED",
+                        "defaultAudioLanguage": "en",
+                        "defaultLanguage": "en",
+                        "description": "Video description",
+                        "liveBroadcastContent": "none",
+                        "localized": {},
+                        "publishedAt": "2012-10-01T15:27:35Z",
+                        "tags": [],
+                        "thumbnails": {},
+                        "title": "Video title"
+                    },
+                    "statistics": {
+                        "commentCount": "8887",
+                        "dislikeCount": "5773",
+                        "favoriteCount": "0",
+                        "likeCount": "307433",
+                        "viewCount": "20186268"
+                    }
+                }
+            ],
+            "kind": "youtube#videoListResponse",
+            "pageInfo": {
+                "resultsPerPage": 1,
+                "totalResults": 1
+            }
+        }
+
+        client = APIClient()
+        response = client.post(
+            "/video/",
+            data={"video_id": "NeADlWSDFAQ"},
+            format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        self.assertEqual(response.json()["name"], "Video title")
+
+    @patch("tournesol.views.video.youtube_video_details")
+    def test_create_video_with_with_youtube_api_no_result(self, mock_youtube):
+        mock_youtube.return_value = {
+            "items": [],
+            "kind": "youtube#videoListResponse",
+            "pageInfo": {
+                "resultsPerPage": 0,
+                "totalResults": 0
+            }
+        }
+
+        client = APIClient()
+        response = client.post(
+            "/video/",
+            data={"video_id": "NeADlWSDFAQ"},
+            format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_upload_video_already_exist_without_API_key(self):
         Video.objects.create(video_id="NeADlWSDFAQ")
         client = APIClient()
@@ -184,22 +260,13 @@ class VideoApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
-    def get_existing_video(self):
-        Video.objects.create(video_id='NeADlWSDFAQ')
+    def test_get_existing_video(self):
         factory = APIClient()
-        response = factory.get(
-            "/video/",
-            {'video_id':'NeADlWSDFAQ'},
-            format="json"
-        )
+        response = factory.get("/video/video_id_01/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response[0].video_id, 'NeADlWSDFAQ')
+        self.assertEqual(response.json()["video_id"], 'video_id_01')
     
-    def get_existing_video(self):
+    def test_get_non_existing_video(self):
         factory = APIClient()
-        response = factory.get(
-            "/video/",
-            {'video_id':'NeADlWSDFAQ'},
-            format="json"
-        )
+        response = factory.get("/video/video_id_00/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
