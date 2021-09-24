@@ -46,6 +46,9 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  img_criteria: {
+    padding: 4,
+  },
 }));
 
 const ComparisonComponent = ({
@@ -135,6 +138,12 @@ const ComparisonComponent = ({
                 alignItems="center"
                 container
               >
+                {criteria != 'largely_recommended' && (
+                  <img
+                    className={classes.img_criteria}
+                    src={`/svg/${criteria}.svg`}
+                  />
+                )}
                 <Typography>
                   <a
                     href={`${handleWikiUrl(
