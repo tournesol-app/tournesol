@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 
 import { Link } from 'react-router-dom';
-import { Button } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -51,9 +51,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '6px',
   },
   video: {
-    display: 'flex',
     alignItems: 'center',
-    textAlign: 'center',
   },
 }));
 
@@ -162,14 +160,18 @@ const RateLaterPage = () => {
           }}
         >
           {rateLaterList.map(({ video }) => (
-            <div className={classes.video} key={video.video_id}>
-              <VideoCard video={video} />
-              <Button size="small" variant="contained" color="primary">
-                <Link to={`/comparison/?videoA=${video.video_id}`}>
-                  Compare this video
-                </Link>
-              </Button>
-            </div>
+            <Grid container className={classes.video} key={video.video_id}>
+              <Grid item xs={12} sm={10}>
+                <VideoCard video={video} />
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button size="small" variant="contained" color="primary">
+                  <Link to={`/comparison/?videoA=${video.video_id}`}>
+                    Compare this video
+                  </Link>
+                </Button>
+              </Grid>
+            </Grid>
           ))}
         </div>
       </div>
