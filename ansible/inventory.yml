@@ -89,6 +89,52 @@ all:
 
           postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
 
+        # Production Vultr VM
+        tournesol-prod:
+          ansible_host: tournesol.app
+          machine_name: tournesol
+          # ansible_user: jst
+          domain_name: tournesol.app
+          api_domain_name: "api.{{domain_name}}"
+          api_scheme: https
+
+          buster_mirror: http://debian.ethz.ch/debian/
+
+          django_debug: "True"
+          django_main_url: https://{{api_domain_name}}
+          django_database_name: tournesol
+          django_database_user: tournesol
+          django_email_backend: smtp
+
+          backend_target_branch: fix-attempt
+          loki_version: "v2.2.1"
+          frontend_target_branch: main
+          nvm_version: "v0.38.0"
+          npm_lts_version: fermium
+          frontend_scheme: https
+
+          # Setting this triggers TLS configuration
+          letsencrypt_email: tournesol.application@gmail.com
+
+          mediawiki_domain_name: "wiki.{{domain_name}}"
+          mediawiki_scheme: https
+          mediawiki_database_name: mediawiki
+          mediawiki_database_user: mediawiki
+
+          monitored_urls:
+            - https://staging.tournesol.app/
+            - https://api.staging.tournesol.app/admin
+            - https://wiki.staging.tournesol.app/
+
+          grafana_domain_name: "grafana.{{domain_name}}"
+          grafana_scheme: https
+
+          ml_train_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
+          mediawiki_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
+          postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
       vars:
         ansible_python_interpreter: /usr/bin/python3
         ansible_ssh_pipelining: true
