@@ -12,6 +12,7 @@ all:
           api_scheme: http
 
           buster_mirror: http://debian.ethz.ch/debian/
+          upgrade_packages: true
 
           django_debug: "True"
           django_main_url: "http://{{api_domain_name}}"
@@ -55,6 +56,7 @@ all:
           api_scheme: https
 
           buster_mirror: http://debian.ethz.ch/debian/
+          upgrade_packages: true
 
           django_debug: "True"
           django_main_url: https://{{api_domain_name}}
@@ -99,6 +101,7 @@ all:
           api_scheme: https
 
           buster_mirror: http://debian.ethz.ch/debian/
+          upgrade_packages: false
 
           django_debug: "True"
           django_main_url: https://{{api_domain_name}}

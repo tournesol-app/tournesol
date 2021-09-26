@@ -3,11 +3,13 @@
     name: "*"
     state: latest
     update_cache: yes
+  when: upgrade_packages == True
 
 - name: Upgrade the OS (apt-get dist-upgrade)
   apt:
     upgrade: dist
     update_cache: yes
+  when: upgrade_packages == True
 
 - name: Check if a reboot is needed
   stat:
