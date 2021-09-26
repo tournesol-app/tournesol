@@ -83,6 +83,8 @@ all:
 
           monitored_urls:
             - https://tournesol.app/
+            - https://api.tournesol.app/admin
+            - https://wiki.tournesol.app/
 
           grafana_domain_name: "grafana.{{domain_name}}"
           grafana_scheme: https
