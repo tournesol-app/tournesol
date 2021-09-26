@@ -30,6 +30,7 @@
     executable: /usr/bin/bash
   become: yes
   become_user: postgres
+  when: populate_django_db_from_public_dataset == True
 
 - name: Create Swagger UI OAuth application in Django database
   shell:
