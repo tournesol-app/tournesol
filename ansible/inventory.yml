@@ -66,7 +66,7 @@ all:
           django_email_backend: smtp
           populate_django_db_from_public_dataset: false
 
-          backend_target_branch: fix-attempt
+          backend_target_branch: main
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
