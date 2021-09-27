@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +8,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from ..models import Video, Comparison
+from ..models import Video, Comparison, ComparisonCriteriaScore
 
 
 class ComparisonApiTestCase(TestCase):
@@ -81,13 +83,22 @@ class ComparisonApiTestCase(TestCase):
             ),
         ])
 
+    def _remove_optional_fields(self, comparison):
+        comparison.pop("duration_ms", None)
+
+        if "criteria_scores" in comparison:
+            for criteria_score in comparison["criteria_scores"]:
+                criteria_score.pop("weight", None)
+
+        return comparison
+
     def test_anonymous_cant_create(self):
         """
         An anonymous user can't create a comparison.
         """
         client = APIClient()
         initial_comparisons_nbr = Comparison.objects.all().count()
-        data = self.non_existing_comparison.copy()
+        data = deepcopy(self.non_existing_comparison)
 
         response = client.post(
             reverse("tournesol:comparisons_me_list"), data, format="json",
@@ -123,7 +134,7 @@ class ComparisonApiTestCase(TestCase):
 
         user = User.objects.get(username=self._user)
         initial_comparisons_nbr = Comparison.objects.filter(user=user).count()
-        data = self.non_existing_comparison.copy()
+        data = deepcopy(self.non_existing_comparison)
 
         client.force_authenticate(user=user)
 
@@ -153,7 +164,8 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
         comparison_criteria_scores = comparison.criteria_scores.all()
-        self.assertEqual(comparison_criteria_scores.count(), 1)
+        self.assertEqual(comparison_criteria_scores.count(),
+                         len(data["criteria_scores"]))
         self.assertEqual(comparison_criteria_scores[0].criteria,
                          data["criteria_scores"][0]["criteria"])
         self.assertEqual(comparison_criteria_scores[0].score,
@@ -169,13 +181,92 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.data["duration_ms"],
                          data["duration_ms"])
 
-        self.assertEqual(len(response.data["criteria_scores"]), 1)
+        self.assertEqual(len(response.data["criteria_scores"]),
+                         len(data["criteria_scores"]))
         self.assertEqual(response.data["criteria_scores"][0]["criteria"],
                          data["criteria_scores"][0]["criteria"])
         self.assertEqual(response.data["criteria_scores"][0]["score"],
                          data["criteria_scores"][0]["score"])
         self.assertEqual(response.data["criteria_scores"][0]["weight"],
                          data["criteria_scores"][0]["weight"])
+
+    def test_authenticated_can_create_without_optional(self):
+        """
+        An authenticated user can create a new comparison with only required
+        fields.
+
+        All optional fields of the comparison and its related criteria are
+        tested.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_comparisons_nbr = Comparison.objects.filter(user=user).count()
+        data = self._remove_optional_fields(deepcopy(self.non_existing_comparison))
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            reverse("tournesol:comparisons_me_list"), data, format="json",
+        )
+
+        comparison = Comparison.objects.select_related("user", "video_1", "video_2").get(
+            user=user,
+            video_1__video_id=data["video_a"]["video_id"],
+            video_2__video_id=data["video_b"]["video_id"],
+        )
+        comparisons_nbr = Comparison.objects.filter(user=user).count()
+
+        # check the authorization
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # check the database integrity (only the criteria scores part)
+        self.assertEqual(comparisons_nbr,
+                         initial_comparisons_nbr + 1)
+
+        self.assertEqual(comparison.duration_ms,
+                         Comparison._meta.get_field("duration_ms").get_default())
+
+        comparison_criteria_scores = comparison.criteria_scores.all()
+        self.assertEqual(comparison_criteria_scores.count(),
+                         len(data["criteria_scores"]))
+        self.assertEqual(comparison_criteria_scores[0].weight, 1)
+
+    def test_authenticated_cant_create_criteria_scores_without_mandatory(self):
+        """
+        An authenticated user can't create a new comparison without explicitly
+        providing a `creteria` and a `score` field for each criterion.
+
+        Only required fields of the comparison's criteria are tested.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_comparisons_nbr = Comparison.objects.filter(user=user).count()
+
+        data = deepcopy(self.non_existing_comparison)
+        data["criteria_scores"][0].pop("score")
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            reverse("tournesol:comparisons_me_list"), data, format="json",
+        )
+        comparisons_nbr = Comparison.objects.filter(user=user).count()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
+
+        data = deepcopy(self.non_existing_comparison)
+        data["criteria_scores"][0].pop("criteria")
+
+        response = client.post(
+            reverse("tournesol:comparisons_me_list"), data, format="json",
+        )
+        comparisons_nbr = Comparison.objects.filter(user=user).count()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -185,7 +276,7 @@ class ComparisonApiTestCase(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = self.non_existing_comparison.copy()
+        data = deepcopy(self.non_existing_comparison)
 
         client.force_authenticate(user=user)
 
@@ -208,7 +299,7 @@ class ComparisonApiTestCase(TestCase):
 
         user = User.objects.get(username=self._user)
         initial_comparisons_nbr = Comparison.objects.all().count()
-        data = self.non_existing_comparison.copy()
+        data = deepcopy(self.non_existing_comparison)
 
         client.force_authenticate(user=user)
 

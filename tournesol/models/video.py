@@ -852,14 +852,12 @@ class ComparisonCriteriaScore(models.Model):
     # TODO: currently scores range from [0, 100], update them to range from [-10, 10]
     # and add validation
     score = models.FloatField(
-        default=0,
-        blank=False,
         help_text="Score for the given comparison",
     )
     # TODO: ask Lê if weights should be in a certain range (maybe always > 0)
     # and add validation if required
     weight = models.FloatField(
-        default=0,
+        default=1,
         blank=False,
         help_text="Weight of the comparison",
     )

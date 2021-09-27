@@ -137,10 +137,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
         for criteria_score in validated_data.pop("criteria_scores"):
             ComparisonCriteriaScore.objects.create(
-                criteria=criteria_score.get("criteria"),
-                score=criteria_score.get("score"),
-                weight=criteria_score.get("weight"),
-                comparison=comparison
+                comparison=comparison,
+                **criteria_score
             )
 
         return comparison
@@ -209,10 +207,6 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         instance.criteria_scores.all().delete()
 
         for criteria_score in validated_data.pop("criteria_scores"):
-            instance.criteria_scores.create(
-                criteria=criteria_score.get("criteria"),
-                score=criteria_score.get("score"),
-                weight=criteria_score.get("weight")
-            )
+            instance.criteria_scores.create(**criteria_score)
 
         return instance
