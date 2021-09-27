@@ -126,10 +126,18 @@ const ComparisonPage = () => {
     <div className={`${classes.root} ${classes.centering}`}>
       <Grid container className={classes.content}>
         <Grid item xs={6}>
-          <VideoSelector videoId={videoA} setId={setVideoA} />
+          <VideoSelector
+            videoId={videoA}
+            setId={setVideoA}
+            otherVideo={videoB}
+          />
         </Grid>
         <Grid item xs={6}>
-          {<VideoSelector videoId={videoB} setId={setVideoB} />}
+          <VideoSelector
+            videoId={videoB}
+            setId={setVideoB}
+            otherVideo={videoA}
+          />
         </Grid>
         <Grid item xs={12} className={classes.centering}>
           {videoA && videoB ? (

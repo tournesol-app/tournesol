@@ -2,15 +2,15 @@ import React from 'react';
 import ReactPlayer from 'react-player/youtube';
 
 import { makeStyles } from '@material-ui/core/styles';
-// import ReplayIcon from '@material-ui/icons/Replay';
-// import IconButton from '@material-ui/core/IconButton';
+import ReplayIcon from '@material-ui/icons/Replay';
+import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-// import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { extractVideoId } from 'src/utils/video';
-// import { useAppSelector } from 'src/app/hooks';
-// import { selectLogin } from 'src/features/login/loginSlice';
-// import { getVideoForComparison } from 'src/utils/video';
+import { useAppSelector } from 'src/app/hooks';
+import { selectLogin } from 'src/features/login/loginSlice';
+import { getVideoForComparison } from 'src/utils/video';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -35,12 +35,14 @@ const useStyles = makeStyles(() => ({
 const VideoSelector = ({
   videoId,
   setId,
+  otherVideo,
 }: {
   videoId: string | null;
   setId: (pk: string) => void;
+  otherVideo: string | null;
 }) => {
   const classes = useStyles();
-  // const loginState = useAppSelector(selectLogin);
+  const loginState = useAppSelector(selectLogin);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const videoId = extractVideoId(e.target.value);
@@ -50,13 +52,15 @@ const VideoSelector = ({
     setId(_videoId);
   };
 
-  // const loadNewVideo = async () => {
-  //   const videoId: string | undefined = await getVideoForComparison(
-  //     loginState.access_token,
-  //     loginState.username
-  //   );
-  //   if (videoId) setId(videoId);
-  // };
+  const loadNewVideo = async () => {
+    const newVideoId: string | null = await getVideoForComparison(
+      loginState.access_token,
+      loginState.username,
+      otherVideo,
+      videoId
+    );
+    if (newVideoId) setId(newVideoId);
+  };
 
   return (
     <div className={classes.root}>
@@ -80,12 +84,11 @@ const VideoSelector = ({
           value={videoId}
           onChange={handleChange}
         />
-        {/* TODO re-enable loading videos
         <Tooltip title="New Video" aria-label="new_video">
           <IconButton aria-label="new_video" onClick={loadNewVideo}>
             <ReplayIcon />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
         {/* TODO: re-enable privacy options <PrivacyStatusSelector id={id} /> */}
       </div>
     </div>

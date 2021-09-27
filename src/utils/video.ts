@@ -1,5 +1,4 @@
-import { VideoService } from 'src/services/openapi';
-// import { OpenAPI, VideoService, UsersService } from 'src/services/openapi';
+import { OpenAPI, VideoService, UsersService } from 'src/services/openapi';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -32,61 +31,115 @@ export async function ensureVideoExistOrCreate(video_id: string) {
   }
 }
 
-// // TODO: improve this method to not return a video if it has already been compared with the target other video
-// export async function getVideoForComparison(
-//   token: string | undefined,
-//   username: string | undefined
-// ) {
-//   // This helper method returns a videoId following the strategy:
-//   // 1. Uniformily random from rate_later list (75% chance)
-//   // 2. Uniformily random from already rated videos (20% chance)
-//   // 3. Uniformily random from Tournesol's top 100 videos (5% chance)
-//   // If option 1 is selected and fails, option 2 will be tried
-//   // If option 2 is selected and fails, option 3 will be tried
-//   if (!token || !username) return;
-//   OpenAPI.TOKEN = token;
+function pick(arr: string[]): string | null {
+  // Returns a random element of an array
+  return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
+}
 
-//   const x = Math.random();
-//   if (x < 0.75) {
-//     const rate_later_empty_result = await UsersService.usersVideoRateLaterList(
-//       username,
-//       0,
-//       0
-//     );
-//     if (rate_later_empty_result && rate_later_empty_result.count) {
-//       const rate_later_offset = Math.floor(
-//         rate_later_empty_result.count * Math.random()
-//       );
-//       const rate_later_result = await UsersService.usersVideoRateLaterList(
-//         username,
-//         1,
-//         rate_later_offset
-//       );
-//       if (rate_later_result && rate_later_result.results)
-//         return rate_later_result.results[0].video.video_id;
-//     }
-//   }
-//   if (x < 0.95) {
-//     const comparison_empty_result = await UsersService.usersVideoRateLaterList(
-//       username,
-//       0,
-//       0
-//     );
-//     if (comparison_empty_result && comparison_empty_result.count) {
-//       const comparison_offset = Math.floor(
-//         comparison_empty_result.count * Math.random()
-//       );
-//       const comparison_result = await UsersService.usersMeComparisonsList(
-//         1,
-//         comparison_offset
-//       );
-//       if (comparison_result?.results) {
-//         const aOrB = Math.random() > 0.5 ? 'video_a' : 'video_b';
-//         return comparison_result.results[0][aOrB].video_id;
-//       }
-//     }
-//   }
-//   const video_offset = Math.floor(100 * Math.random());
-//   const video_result = await VideoService.videoList(1, video_offset);
-//   if (video_result?.results) return video_result.results[0].video_id;
-// }
+async function areAlreadyCompared(videoA: string, videoB: string) {
+  // TODO implement this method to avoid giving a video that has already been compared
+  return videoA === videoB;
+}
+
+async function retryRandomPick(
+  numberRetries: number,
+  otherVideo: string | null,
+  currentVideo: string | null,
+  videoList: string[]
+): Promise<string | null> {
+  if (numberRetries <= 0 || videoList.length == 0) return null;
+  if (otherVideo === null) return pick(videoList);
+  const newVideoId = pick(videoList);
+  const alreadyCompared =
+    newVideoId && (await areAlreadyCompared(otherVideo, newVideoId));
+  if (!alreadyCompared && newVideoId !== currentVideo) return newVideoId;
+  return await retryRandomPick(
+    numberRetries - 1,
+    otherVideo,
+    currentVideo,
+    videoList.filter((v) => v !== newVideoId)
+  );
+}
+
+export async function getVideoFromRateLaterListForComparison(
+  username: string,
+  otherVideo: string | null,
+  currentVideo: string | null
+): Promise<string | null> {
+  const rateLaterResult = await UsersService.usersVideoRateLaterList(
+    username,
+    99,
+    0
+  );
+  const rateLaterList =
+    rateLaterResult?.results?.map((v) => v.video.video_id) || [];
+  const rateLaterVideoId = await retryRandomPick(
+    5,
+    otherVideo,
+    currentVideo,
+    rateLaterList
+  );
+  return rateLaterVideoId;
+}
+
+export async function getVideoFromPreviousComparisons(
+  otherVideo: string | null,
+  currentVideo: string | null
+): Promise<string | null> {
+  const comparisonCount: number =
+    (await UsersService.usersMeComparisonsList(0, 0))?.count || 0;
+  const comparisonVideoResult = await UsersService.usersMeComparisonsList(
+    99,
+    Math.floor(Math.random() * comparisonCount)
+  );
+  const cl = comparisonVideoResult?.results || [];
+  const comparisonVideoList = [
+    ...cl.map((v) => v.video_a.video_id),
+    ...cl.map((v) => v.video_b.video_id),
+  ];
+  const comparisonVideoId = retryRandomPick(
+    5,
+    otherVideo,
+    currentVideo,
+    comparisonVideoList
+  );
+  return comparisonVideoId;
+}
+
+export async function getVideoForComparison(
+  token: string | undefined,
+  username: string | undefined,
+  otherVideo: string | null,
+  currentVideo: string | null
+): Promise<string | null> {
+  // This helper method returns a videoId following the strategy:
+  // 1. Uniformily random from rate_later list (75% chance)
+  // 2. Uniformily random from already rated videos (20% chance)
+  // 3. Uniformily random from Tournesol's top 100 videos (5% chance)
+  // If option 1 is selected and fails, option 2 will be tried
+  // If option 2 is selected and fails, option 3 will be tried
+  if (!token || !username) return null;
+  OpenAPI.TOKEN = token;
+
+  const x = Math.random();
+  if (x < 0.75) {
+    const videoFromRateLaterList = await getVideoFromRateLaterListForComparison(
+      username,
+      otherVideo,
+      currentVideo
+    );
+    if (videoFromRateLaterList) return videoFromRateLaterList;
+  }
+  if (x < 0.95) {
+    const videoFromComparisons = await getVideoFromPreviousComparisons(
+      otherVideo,
+      currentVideo
+    );
+    if (videoFromComparisons) return videoFromComparisons;
+  }
+  const videoResult = await VideoService.videoList(100, 0);
+  const videoList = (videoResult?.results || []).map((v) => v.video_id);
+  const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
+  if (videoId) return videoId;
+  return videoList ? pick(videoList) : null;
+}
