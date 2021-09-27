@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
+import { handleWikiUrl } from 'src/utils/url';
 import { allCriteriaNames } from 'src/utils/constants';
 
 const useStyles = makeStyles(() => ({
@@ -136,7 +137,9 @@ const ComparisonComponent = ({
               >
                 <Typography>
                   <a
-                    href={`${window.location.protocol}//wiki.${window.location.host}/wiki/Quality_criteria`}
+                    href={`${handleWikiUrl(
+                      window.location.host
+                    )}/wiki/Quality_criteria`}
                     id={`id_explanation_${criteria}`}
                     target="_blank"
                     rel="noreferrer"

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Typography } from '@material-ui/core';
+import { handleWikiUrl } from 'src/utils/url';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,7 +116,7 @@ const Navigation = () => {
       </Link>
       <a
         className={classes.menuLink}
-        href="https://wiki.staging.tournesol.app"
+        href={`${handleWikiUrl(window.location.host)}`}
         target="_blank"
         rel="noreferrer"
       >
