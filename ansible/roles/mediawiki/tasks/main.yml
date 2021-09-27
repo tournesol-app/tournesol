@@ -125,9 +125,9 @@
     dest: "/tmp/{{item.name}}"
     checksum: "{{item.checksum}}"
   with_items:
-    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
-      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2.sha256sum
-      name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
+      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2.sha256sum
+      name: MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
 
 - name: Download Mediawiki extensions
   get_url:
@@ -147,9 +147,9 @@
     remote_src: yes
     dest: "/var/lib/mediawiki"
   with_items:
-    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
-      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.06.tar.bz2.sha256sum
-      name: MediaWikiLanguageExtensionBundle-2021.06.tar.bz2
+    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
+      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2.sha256sum
+      name: MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
   notify:
     - Update Mediawiki database
     - Reload Nginx
