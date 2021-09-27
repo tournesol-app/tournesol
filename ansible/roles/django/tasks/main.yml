@@ -81,6 +81,7 @@
     - Migrate Django database
     - Collect Django static assets
     - Restart Gunicorn
+    - Notify backend upgrade
 
 - name: Create Virtualenv for Django project
   pip:
