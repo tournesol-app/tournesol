@@ -107,7 +107,7 @@ all:
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: false # to be set to true after upgrade tests in staging in order to upgrade prod
 
-          django_debug: "True"
+          django_debug: "False"
           django_main_url: https://{{api_domain_name}}
           django_database_name: tournesol
           django_database_user: tournesol
