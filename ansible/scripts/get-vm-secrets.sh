@@ -24,6 +24,9 @@ export DJANGO_EMAIL_PASSWORD
 DJANGO_OIDC_RSA_PRIVATE_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/django_oidc_rsa_private_key)"
 export DJANGO_OIDC_RSA_PRIVATE_KEY
 
+YOUTUBE_API_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/systemd/system/gunicorn.service | sed -n 's/^Environment="YOUTUBE_API_KEY=\(.*\)"/\1/p')"
+export YOUTUBE_API_KEY
+
 FRONTEND_OAUTH_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/frontend_oauth_client_id)"
 export FRONTEND_OAUTH_CLIENT_ID
 

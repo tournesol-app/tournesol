@@ -43,6 +43,7 @@
     dest: /root/django_oidc_rsa_private_key
     mode: u=rw,g=,o=
   notify:
+    - Populate Django DB from Public Dataset
     - Create Swagger UI OAuth application in Django database
 
 - name: Copy Swagger UI OAuth client ID and secret
@@ -102,8 +103,8 @@
   notify: Restart Gunicorn
 
 - name: Copy Gunicorn service file
-  copy:
-    src: gunicorn.service
+  template:
+    src: gunicorn.service.j2
     dest: /etc/systemd/system/gunicorn.service
   notify: Restart Gunicorn
 
@@ -144,6 +145,12 @@
   notify: Reload Nginx
 
 - meta: flush_handlers
+
+- name: Copy Discord ML training failure alert
+  template:
+    dest: /usr/local/bin/discord-ml-fail-alert.sh
+    src: discord-ml-fail-alert.sh.j2
+    mode: a=rx
 
 - name: Copy ML training service
   template:

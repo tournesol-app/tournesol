@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+now="$(date +"%Y_%m_%W_%d_%H_%M")"
+mkdir -p "/backups/mediawiki/$now"
+
+php dumpBackup.php --full --quiet | gzip > "/backups/mediawiki/$now/dump.xml.gz"
+
+tar hcvzf "/backups/mediawiki/$now/fs.tgz" /var/lib/mediawiki
+
+mysqldump \
+    -u "{{mediawiki_database_user}}" \
+    --password="{{mediawiki_database_password}}" \
+    "{{mediawiki_database_name}}" \
+    | gzip > "/backups/mediawiki/$now/db.sql.gz"
+
+mkdir -p /backups/mediawiki/{yearly,monthly,weekly,daily,last}
+
+today="$(date +"%Y_%m_%W_%d")"
+thisweek="$(date +"%Y_%m_%W")"
+thismonth="$(date +"%Y_%m")"
+thisyear="$(date +"%Y")"
+
+if ! ls /backups/mediawiki/last | grep "^$today"
+then
+    lastfromyesterday="$(ls /backups/mediawiki/last | sort -n | tail -n1 || true)"
+    if [[ "$lastfromyesterday" != "" ]]
+    then
+        cp -r "/backups/mediawiki/last/$lastfromyesterday" /backups/mediawiki/daily
+    fi
+    if ! ls /backups/mediawiki/daily | grep "^$thisweek"
+    then
+        lastfromlastweek="$(ls /backups/mediawiki/daily | sort -n | tail -n1 || true)"
+        if [[ "$lastfromlastweek" != "" ]]
+        then
+            cp -r "/backups/mediawiki/daily/$lastfromlastweek" /backups/mediawiki/weekly
+        fi
+        if ! ls /backups/mediawiki/weekly | grep "^$thismonth"
+        then
+            lastfromlastmonth="$(ls /backups/mediawiki/weekly | sort -n | tail -n1 || true)"
+            if [[ "$lastfromlastmonth" != "" ]]
+            then
+                cp -r "/backups/mediawiki/weekly/$lastfromlastmonth" /backups/mediawiki/monthly
+            fi
+            if ! ls /backups/mediawiki/monthly | grep "^$thisyear"
+            then
+                lastfromlastyear="$(ls /backups/mediawiki/monthly | sort -n | tail -n1 || true)"
+                if [[ "$lastfromlastyear" != "" ]]
+                then
+                    cp -r "/backups/mediawiki/monthly/$lastfromlastyear" /backups/mediawiki/yearly
+                fi
+            fi
+        fi
+    fi
+fi
+
+mv "/backups/mediawiki/$now" /backups/mediawiki/last
+
+if [[ "$(ls /backups/mediawiki/last | wc -l)" == "5" ]]
+then
+    oldestinlast="$(ls /backups/mediawiki/last | sort -n | head -n1 || true)"
+    rm -rf "/backups/mediawiki/last/$oldestinlast"
+fi
+if [[ "$(ls /backups/mediawiki/daily | wc -l)" == "5" ]]
+then
+    oldestindaily="$(ls /backups/mediawiki/daily | sort -n | head -n1 || true)"
+    rm -rf "/backups/mediawiki/daily/$oldestindaily"
+fi
+if [[ "$(ls /backups/mediawiki/weekly | wc -l)" == "5" ]]
+then
+    oldestinweekly="$(ls /backups/mediawiki/weekly | sort -n | head -n1 || true)"
+    rm -rf "/backups/mediawiki/weekly/$oldestinweekly"
+fi
+if [[ "$(ls /backups/mediawiki/monthly | wc -l)" == "5" ]]
+then
+    oldestinmonthly="$(ls /backups/mediawiki/monthly | sort -n | head -n1 || true)"
+    rm -rf "/backups/mediawiki/monthly/$oldestinmonthly"
+fi
+if [[ "$(ls /backups/mediawiki/yearly | wc -l)" == "5" ]]
+then
+    oldestinyearly="$(ls /backups/mediawiki/yearly | sort -n | head -n1 || true)"
+    rm -rf "/backups/mediawiki/yearly/$oldestinyearly"
+fi

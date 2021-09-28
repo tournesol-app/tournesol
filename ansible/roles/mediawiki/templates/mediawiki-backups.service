@@ -1,0 +1,9 @@
+[Unit]
+Description=Mediawiki XML Backup
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/lib/mediawiki/maintenance
+ExecStart=/usr/local/bin/backup-mediawiki.sh
