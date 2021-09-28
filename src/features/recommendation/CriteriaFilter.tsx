@@ -110,10 +110,10 @@ function CriteriaFilter({
         Criteria
       </Typography>
       <Grid container>
-        {Object.entries(mainCriteriaNames).map(([feature, feature_name]) => (
-          <Grid item xs={12} sm={6} key={feature}>
+        {mainCriteriaNames.map(([criteria, criteria_name]) => (
+          <Grid item xs={12} sm={6} key={criteria}>
             <div
-              id={`id_container_feature_${feature}`}
+              id={`id_container_feature_${criteria}`}
               className={classes.featuresContainer}
             >
               <div className={classes.featureNameDisplay}>
@@ -127,10 +127,10 @@ function CriteriaFilter({
                 >
                   <img
                     className={classes.criteria_img}
-                    src={`/svg/${feature}.svg`}
+                    src={`/svg/${criteria}.svg`}
                   />
                   <Typography>
-                    <span>{feature_name}</span>
+                    <span>{criteria_name}</span>
                   </Typography>
                 </Grid>
               </div>
@@ -144,7 +144,7 @@ function CriteriaFilter({
                   container
                 >
                   <span className={classes.valueText}>
-                    {valuetoText(parseInt(searchParams.get(feature) || '50'))}
+                    {valuetoText(parseInt(searchParams.get(criteria) || '50'))}
                   </span>
                 </Grid>
                 <Grid
@@ -156,15 +156,15 @@ function CriteriaFilter({
                   container
                 >
                   <CustomSlider
-                    name={feature}
-                    defaultValue={parseInt(searchParams.get(feature) || '50')}
+                    name={criteria}
+                    defaultValue={parseInt(searchParams.get(criteria) || '50')}
                     step={25}
                     min={0}
                     max={100}
                     valueLabelDisplay="auto"
                     valueLabelFormat={valuetoText}
                     onChangeCommitted={(e, value) =>
-                      setFilter(feature, value.toString())
+                      setFilter(criteria, value.toString())
                     }
                     ValueLabelComponent={ValueLabelComponent}
                     marks={marks}

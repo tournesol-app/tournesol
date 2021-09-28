@@ -4,7 +4,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
 
-import { mainCriteriaNames } from 'src/utils/constants';
+import { mainCriteriaNamesObj } from 'src/utils/constants';
 import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
 
 const useStyles = makeStyles(() => ({
@@ -217,7 +217,7 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
                   className={classes.logo}
                   src={`/svg/${max_criteria}.svg`}
                   alt={max_criteria}
-                  title={mainCriteriaNames[max_criteria]}
+                  title={mainCriteriaNamesObj[max_criteria]}
                 />
               </div>
               <div className={classes.rated}>
@@ -226,7 +226,7 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
                   className={classes.logo}
                   src={`/svg/${min_criteria}.svg`}
                   alt={min_criteria}
-                  title={mainCriteriaNames[min_criteria]}
+                  title={mainCriteriaNamesObj[min_criteria]}
                 />
               </div>
             </>

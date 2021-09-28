@@ -120,7 +120,7 @@ const ComparisonComponent = ({
   return (
     <div className={classes.root}>
       <div className={classes.centered}>
-        {Object.entries(allCriteriaNames).map(([criteria, criteria_name]) => (
+        {allCriteriaNames.map(([criteria, criteria_name]) => (
           <div
             key={criteria}
             id={`id_container_criteria_${criteria}`}
