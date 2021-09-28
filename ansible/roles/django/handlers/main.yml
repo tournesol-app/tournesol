@@ -17,6 +17,11 @@
   become: true
   become_user: gunicorn
 
+- name: Notify backend upgrade
+  shell:
+    cmd: "wget -qO /dev/null --post-data='{\"content\": \"{{domain_name}}: new backend deployed at {{backend_target_branch}}\"}' --header='Content-Type:application/json' '{{discord_alerting_webhook}}?wait=true'"
+    executable: /usr/bin/bash
+
 - name: Collect Django static assets
   shell:
     cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py collectstatic --noinput"
@@ -30,6 +35,7 @@
     executable: /usr/bin/bash
   become: yes
   become_user: postgres
+  when: populate_django_db_from_public_dataset == True
 
 - name: Create Swagger UI OAuth application in Django database
   shell:
