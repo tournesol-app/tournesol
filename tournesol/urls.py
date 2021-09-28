@@ -10,6 +10,7 @@ from rest_framework import routers
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListOnlyApi
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
+from .views.user import CurrentUserView
 
 
 router = routers.DefaultRouter()
@@ -18,6 +19,12 @@ router.register(r'video', VideoViewSet)
 app_name = "tournesol"
 urlpatterns = [
     path("", include(router.urls)),
+    # User API
+    path(
+        "users/me/",
+        CurrentUserView.as_view(),
+        name="users_me"
+    ),
     # Comparison API
     path(
         "users/me/comparisons/", ComparisonListApi.as_view(),
