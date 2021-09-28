@@ -59,7 +59,7 @@ all:
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: true
 
-          django_debug: "True"
+          django_debug: "False"
           django_main_url: https://{{api_domain_name}}
           django_database_name: tournesol
           django_database_user: tournesol
