@@ -27,4 +27,3 @@ class ContributorRatingViewSet(viewsets.ModelViewSet):
         ratings = get_object_or_404(ContributorRating, video=video, user=request.user)
         ratings_serialized = ContributorRatingSerializer(ratings)
         return Response(ratings_serialized.data, status=status.HTTP_200_OK)
-
