@@ -8,7 +8,7 @@ import {
   Grid,
   IconButtonProps,
   TooltipProps,
-  Button
+  Button,
 } from '@material-ui/core';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
