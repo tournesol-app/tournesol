@@ -5,9 +5,13 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
+<<<<<<< HEAD:backend/tournesol/tests/test_api_video.py
 from tournesol.utils.video_language import compute_video_language
 
 from ..models import Video
+=======
+from ..models import Video, VideoCriteriaScore
+>>>>>>> caf35d1 (Correct test according to total_score constraint):tournesol/tests/test_api_video.py
 
 
 class VideoApi(TestCase):
@@ -22,12 +26,16 @@ class VideoApi(TestCase):
     _list_of_videos = []
 
     def setUp(self):
-        self._list_of_videos = Video.objects.bulk_create([
-            Video(video_id=self._video_id_01, name=self._video_id_01),
-            Video(video_id=self._video_id_02, name=self._video_id_02),
-            Video(video_id=self._video_id_03, name=self._video_id_03),
-            Video(video_id=self._video_id_04, name=self._video_id_04)
-        ])
+        
+        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01)
+        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02)
+        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03)
+        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04)
+        self._list_of_videos = [video_1, video_2, video_3, video_4]
+        VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_3, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_4, criteria="reliability", score=1)
 
     def test_anonymous_can_list(self):
         """
