@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Link } from 'react-router-dom';
 import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
+import ListIcon from '@material-ui/icons/FormatListBulleted';
 import type { PaginatedVideoList, Video } from 'src/services/openapi';
 import VideoCard from '../videos/VideoCard';
 
@@ -23,7 +24,12 @@ function VideoList({ videos }: { videos: PaginatedVideoList }) {
               <VideoCard video={video} />
             </Grid>
             <Grid item xs={12} sm={2}>
-              <Button size="small" variant="contained" color="primary">
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                startIcon={<ListIcon />}
+              >
                 <Link to={`/comparison/?videoA=${video.video_id}`}>
                   Compare this video
                 </Link>
