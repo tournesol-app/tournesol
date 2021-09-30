@@ -21,7 +21,7 @@ function VideoList({ videos }: { videos: PaginatedVideoList }) {
         videos.results.map((video: Video) => (
           <Grid container className={classes.card} key={video.video_id}>
             <Grid item xs={12} sm={10}>
-              <VideoCard video={video} />
+              <VideoCard video={video} actions={[]} />
             </Grid>
             <Grid item xs={12} sm={2}>
               <Button

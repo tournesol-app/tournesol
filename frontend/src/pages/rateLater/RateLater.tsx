@@ -162,7 +162,7 @@ const RateLaterPage = () => {
           {rateLaterList.map(({ video }) => (
             <Grid container className={classes.video} key={video.video_id}>
               <Grid item xs={12} sm={10}>
-                <VideoCard video={video} />
+                <VideoCard video={video} actions={[]} />
               </Grid>
               <Grid item xs={12} sm={2}>
                 <Button size="small" variant="contained" color="primary">

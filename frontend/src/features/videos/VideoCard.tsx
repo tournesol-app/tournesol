@@ -3,7 +3,13 @@ import React from 'react';
 import ReactPlayer from 'react-player/youtube';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid } from '@material-ui/core';
+import {
+  Typography,
+  Grid,
+  IconButtonProps,
+  TooltipProps,
+  Button
+} from '@material-ui/core';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
 import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
@@ -123,7 +129,21 @@ type VideoWithCriteriaScore = Video & {
   criteria_scores?: Array<ComparisonCriteriaScore>;
 };
 
-function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
+type ActionList = Array<Action>;
+
+type Action = {
+  sideEffectFunction: () => void;
+  icon: IconButtonProps;
+  tooltip: TooltipProps;
+};
+
+function VideoCard({
+  video,
+  actions,
+}: {
+  video: VideoWithCriteriaScore;
+  actions: ActionList;
+}) {
   const classes = useStyles();
   const videoId = video.video_id;
   let total_score = 0;
@@ -229,6 +249,11 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
             </>
           )}
         </div>
+      </Grid>
+      <Grid item xs={12}>
+        {actions.map((action, index) => (
+          <Button key={index} startIcon={action.icon}></Button>
+        ))}
       </Grid>
     </Grid>
   );

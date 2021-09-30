@@ -16,7 +16,7 @@ function VideoCardFromId({ videoId }: { videoId: string }) {
       });
     }
   }, [video, video.video_id, videoId]); // Only re-runs if `videoId` changes
-  return <VideoCard video={video} />;
+  return <VideoCard video={video} actions={[]} />;
 }
 
 export default VideoCardFromId;
