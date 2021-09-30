@@ -15,6 +15,10 @@ class ContributorRatingViewSet(viewsets.ModelViewSet):
     queryset = ContributorRating.objects.all()
     serializer_class = ContributorRatingSerializer
 
+    def get_queryset(self):
+        queryset = ContributorRating.objects.filter(user=self.request.user)
+        return queryset
+
     def retrieve(self, request, pk):
         """
         Get video details and criteria that are related to it
@@ -24,17 +28,3 @@ class ContributorRatingViewSet(viewsets.ModelViewSet):
         ratings_serialized = ContributorRatingSerializer(ratings)
         return Response(ratings_serialized.data, status=status.HTTP_200_OK)
 
-    def list(self, request, *args, **kwargs):
-
-        self.queryset.filter(user=request.user)
-        ratings_serialized = ContributorRatingSerializer(self.queryset, many=True)
-        return Response(ratings_serialized.data, status=status.HTTP_200_OK)
-
-    def update(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def destroy(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def create(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
