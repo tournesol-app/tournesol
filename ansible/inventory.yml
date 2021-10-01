@@ -116,7 +116,7 @@ all:
 
           backend_target_branch: prod-2021-10-01
           loki_version: "v2.2.1"
-          frontend_target_branch: prod-2021-10-01
+          frontend_target_branch: prod-2021-10-01-20h29
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
