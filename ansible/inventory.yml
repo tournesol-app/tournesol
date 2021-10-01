@@ -114,9 +114,9 @@ all:
           django_email_backend: smtp
           populate_django_db_from_public_dataset: false
 
-          backend_target_branch: prod
+          backend_target_branch: prod-2021-10-01
           loki_version: "v2.2.1"
-          frontend_target_branch: prod
+          frontend_target_branch: prod-2021-10-01
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
