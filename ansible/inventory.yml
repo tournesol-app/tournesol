@@ -15,6 +15,7 @@ all:
           upgrade_packages: true
 
           django_debug: "True"
+          django_log_level: "DEBUG"
           django_main_url: "http://{{api_domain_name}}"
           django_database_name: tournesol
           django_database_user: tournesol
@@ -60,13 +61,14 @@ all:
           upgrade_packages: true
 
           django_debug: "False"
+          django_log_level: "INFO"
           django_main_url: https://{{api_domain_name}}
           django_database_name: tournesol
           django_database_user: tournesol
           django_email_backend: smtp
           populate_django_db_from_public_dataset: false
 
-          backend_target_branch: main
+          backend_target_branch: log-level
           loki_version: "v2.2.1"
           frontend_target_branch: main
           nvm_version: "v0.38.0"
@@ -108,6 +110,7 @@ all:
           upgrade_packages: false # to be set to true after upgrade tests in staging in order to upgrade prod
 
           django_debug: "False"
+          django_log_level: "INFO"
           django_main_url: https://{{api_domain_name}}
           django_database_name: tournesol
           django_database_user: tournesol
