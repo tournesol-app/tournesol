@@ -15,6 +15,7 @@ RuntimeDirectory=gunicorn
 WorkingDirectory=/srv/tournesol-backend
 Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
 Environment="YOUTUBE_API_KEY={{youtube_api_key}}"
+Environment="prometheus_multiproc_dir=/var/run/gunicorn"
 ExecStart=/srv/tournesol-backend/venv/bin/gunicorn settings.asgi:application --preload -w 4 -k uvicorn.workers.UvicornWorker
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
