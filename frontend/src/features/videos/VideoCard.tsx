@@ -128,7 +128,7 @@ type VideoWithCriteriaScore = Video & {
   criteria_scores?: Array<ComparisonCriteriaScore>;
 };
 
-type ActionList = Array<any>;
+type ActionList = Array<({ videoId }: { videoId: string }) => JSX.Element>;
 
 function VideoCard({
   video,
@@ -245,7 +245,7 @@ function VideoCard({
       </Grid>
       <Grid className={classes.actions} item xs={12} sm={1}>
         {actions.map((Action, index) => (
-          <Action key={index} videoId={video_id} />
+          <Action key={index} videoId={videoId} />
         ))}
       </Grid>
     </Grid>
