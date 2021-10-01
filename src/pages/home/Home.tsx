@@ -129,7 +129,7 @@ const Navigation = () => {
   );
 };
 
-const Home = () => {
+const HomePage = () => {
   const classes = useStyles();
 
   return (
@@ -159,16 +159,17 @@ const Home = () => {
           </Typography>
         </Grid>
       </Grid>
+      <Grid container className={classes.content}>
+        <Grid item xs={12} className={classes.introContainer}>
+          <Typography paragraph className={classes.intro}>
+            <a href="/pdf/privacy_policy_tournesol.pdf" download>
+              privacy policy
+            </a>
+          </Typography>
+        </Grid>
+      </Grid>
     </div>
   );
 };
-
-function HomePage() {
-  return (
-    <div>
-      <Home />
-    </div>
-  );
-}
 
 export default HomePage;
