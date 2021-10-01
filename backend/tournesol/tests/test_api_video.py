@@ -5,13 +5,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-<<<<<<< HEAD:backend/tournesol/tests/test_api_video.py
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Video
-=======
 from ..models import Video, VideoCriteriaScore
->>>>>>> caf35d1 (Correct test according to total_score constraint):tournesol/tests/test_api_video.py
 
 
 class VideoApi(TestCase):
@@ -297,5 +293,12 @@ class VideoApi(TestCase):
             (["Sunflower4All", "Ich spreche Deutsch", "Hallo, Danke schön"], "de"),
         ]
         for input, output in test_details:
-            print(input, output)
             self.assertEqual(compute_video_language(*input), output)
+
+    def test_cannot_get_existing_video_without_positive_score(self):
+        factory = APIClient()
+        video_null_score = 'video_null_score'
+        Video.objects.create(video_id=video_null_score)
+        response = factory.get("/video/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
