@@ -16,6 +16,7 @@ import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
+import { CompareNowAction } from 'src/utils/action';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -161,15 +162,8 @@ const RateLaterPage = () => {
         >
           {rateLaterList.map(({ video }) => (
             <Grid container className={classes.video} key={video.video_id}>
-              <Grid item xs={12} sm={10}>
-                <VideoCard video={video} actions={[]} />
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button size="small" variant="contained" color="primary">
-                  <Link to={`/comparison/?videoA=${video.video_id}`}>
-                    Compare this video
-                  </Link>
-                </Button>
+              <Grid item xs={12}>
+                <VideoCard video={video} actions={[CompareNowAction]} />
               </Grid>
             </Grid>
           ))}

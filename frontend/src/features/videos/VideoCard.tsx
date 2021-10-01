@@ -117,6 +117,11 @@ const useStyles = makeStyles(() => ({
     marginLeft: '116px',
     paddingBottom: 0,
   },
+  actions: {
+    display: 'flex',
+    justifyContent: 'center',
+    verticalAlign: 'center',
+  },
 }));
 
 type VideoWithCriteriaScore = Video & {
@@ -238,7 +243,7 @@ function VideoCard({
           )}
         </div>
       </Grid>
-      <Grid item xs={12} sm={1}>
+      <Grid className={classes.actions} item xs={12} sm={1}>
         {actions.map((Action, index) => (
           <Action key={index} videoId={video_id} />
         ))}

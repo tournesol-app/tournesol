@@ -6,6 +6,7 @@ import ListIcon from '@material-ui/icons/FormatListBulleted';
 const useStyles = makeStyles(() => ({
   card: {
     alignItems: 'center',
+    verticalAlign: 'middle',
   },
 }));
 
