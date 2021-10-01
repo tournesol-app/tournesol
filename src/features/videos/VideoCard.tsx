@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
+import ReactPlayer from 'react-player/youtube';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
@@ -124,8 +125,7 @@ type VideoWithCriteriaScore = Video & {
 
 function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
   const classes = useStyles();
-  const video_id = video.video_id;
-  const video_url = 'https://www.youtube.com/embed/'.concat(video_id);
+  const videoId = video.video_id;
   let total_score = 0;
   let max_score = -Infinity;
   let min_score = Infinity;
@@ -158,7 +158,12 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
   return (
     <Grid container spacing={1} className={classes.main}>
       <Grid item xs={12} sm={4} style={{ aspectRatio: '16 / 9', padding: 0 }}>
-        <iframe width="100%" height="100%" src={video_url}></iframe>
+        <ReactPlayer
+          url={`https://youtube.com/watch?v=${videoId}`}
+          light
+          width="100%"
+          height="100%"
+        />
       </Grid>
       <Grid item xs={12} sm={8}>
         <div className={classes.top}>
@@ -186,14 +191,6 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
           {video.uploader && (
             <span className={classes.channel}>{video.uploader}</span>
           )}
-        </div>
-        <div className={classes.summary}>
-          <span>{video.description}</span>
-          {/* <img
-              className={classes.detailsImage}
-              src={'/svg/details.svg'}
-              alt="logo"
-            /> */}
         </div>
         <div className={classes.application_details}>
           {max_criteria.length > 0 && (
