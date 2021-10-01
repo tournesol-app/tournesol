@@ -116,7 +116,6 @@ const ComparisonPage = () => {
         { criteria_scores, duration_ms }
       );
     } else {
-      console.log(c);
       UsersService.usersMeComparisonsCreate(c);
       setInitialComparison(c);
     }
