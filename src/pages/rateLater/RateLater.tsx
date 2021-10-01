@@ -9,7 +9,7 @@ import {
   fetchRateLaterList,
   addToRateLaterList,
 } from 'src/features/rateLater/rateLaterAPI';
-import RateLaterPagination from 'src/features/rateLater/RateLaterPagination';
+import Pagination from 'src/components/Pagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
@@ -140,7 +140,7 @@ const RateLaterPage = () => {
 
         {videoCount && (
           <div className={classes.stickyPagination}>
-            <RateLaterPagination
+            <Pagination
               offset={offset}
               count={videoCount}
               onOffsetChange={onOffsetChange}

@@ -21,7 +21,7 @@ const useStyles = makeStyles({
   },
 });
 
-const RateLaterPagination = ({
+const Pagination = ({
   offset,
   limit,
   onOffsetChange,
@@ -44,6 +44,7 @@ const RateLaterPagination = ({
       </Button>
       <span className={classes.paginationStatusText}>
         Showing videos {offset + 1} to {Math.min(count, offset + limit)}
+        {count && ` of ${count}`}
       </span>
       <Button
         disabled={offset + limit >= count}
@@ -60,4 +61,4 @@ const RateLaterPagination = ({
   );
 };
 
-export default RateLaterPagination;
+export default Pagination;
