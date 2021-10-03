@@ -62,7 +62,7 @@ class ComparisonListBaseApi(ComparisonApiMixin,
         Keyword arguments:
         video_id -- the video_id used to filter the results (default None)
         """
-        queryset = Comparison.objects.filter(user=self.request.user)
+        queryset = Comparison.objects.filter(user=self.request.user).order_by('-datetime_lastedit')
 
         if self.kwargs.get("video_id"):
             video_id = self.kwargs.get("video_id")
@@ -73,8 +73,10 @@ class ComparisonListBaseApi(ComparisonApiMixin,
         return queryset
 
 
-class ComparisonListApi(mixins.CreateModelMixin,
-                        ComparisonListBaseApi):
+class ComparisonListApi(
+    mixins.CreateModelMixin,
+    ComparisonListBaseApi
+):
     """
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.

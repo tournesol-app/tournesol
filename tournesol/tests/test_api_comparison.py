@@ -1,4 +1,5 @@
 from copy import deepcopy
+import datetime
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase
@@ -8,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from ..models import Video, Comparison, ComparisonCriteriaScore
+from ..models import Video, Comparison
 
 
 class ComparisonApiTestCase(TestCase):
@@ -54,32 +55,37 @@ class ComparisonApiTestCase(TestCase):
         """
         user = User.objects.create(username=self._user)
         other = User.objects.create(username=self._other)
+        now = datetime.datetime.now()
 
-        videos = Video.objects.bulk_create([
+        self.videos = Video.objects.bulk_create([
             Video(video_id=self._video_id_01, name=self._video_id_01),
             Video(video_id=self._video_id_02, name=self._video_id_02),
             Video(video_id=self._video_id_03, name=self._video_id_03),
             Video(video_id=self._video_id_04, name=self._video_id_04)
         ])
 
-        Comparison.objects.bulk_create([
+        self.comparisons = Comparison.objects.bulk_create([
             # "user" will have the comparisons: 01 / 02 and 01 / 04
             Comparison(
-                user=user, video_1=videos[0], video_2=videos[1],
-                duration_ms=102
+                user=user, video_1=self.videos[0], video_2=self.videos[1],
+                duration_ms=102,
+                datetime_lastedit=now,
             ),
             Comparison(
-                user=user, video_1=videos[0], video_2=videos[3],
-                duration_ms=104
+                user=user, video_1=self.videos[0], video_2=self.videos[3],
+                duration_ms=104,
+                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             # "other" will have the comparisons: 03 / 02 and 03 / 04
             Comparison(
-                user=other, video_1=videos[2], video_2=videos[1],
-                duration_ms=302
+                user=other, video_1=self.videos[2], video_2=self.videos[1],
+                duration_ms=302,
+                datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
             Comparison(
-                user=other, video_1=videos[2], video_2=videos[3],
-                duration_ms=304
+                user=other, video_1=self.videos[2], video_2=self.videos[3],
+                duration_ms=304,
+                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
         ])
 
@@ -351,14 +357,23 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.data["count"], comparisons_made.count())
         self.assertEqual(len(response.data["results"]), comparisons_made.count())
 
-        # currently the GET API returns an unordered list, so the assertions
-        # are made unordered too
-        for comparison in response.data["results"]:
-            self.assertEqual(comparison["video_a"]["video_id"],
-                             self._video_id_01)
-            self.assertIn(comparison["video_b"]["video_id"],
-                          [self._video_id_02, self._video_id_04])
-            self.assertIn(comparison["duration_ms"], [102, 104])
+        # the comparisons must be ordered by datetime_lastedit
+        comparison1 = response.data["results"][0]
+        comparison2 = response.data["results"][1]
+
+        self.assertEqual(comparison1["video_a"]["video_id"],
+                         self.comparisons[1].video_1.video_id)
+        self.assertEqual(comparison1["video_b"]["video_id"],
+                         self.comparisons[1].video_2.video_id)
+        self.assertEqual(comparison1["duration_ms"],
+                         self.comparisons[1].duration_ms)
+
+        self.assertEqual(comparison2["video_a"]["video_id"],
+                         self.comparisons[0].video_1.video_id)
+        self.assertEqual(comparison2["video_b"]["video_id"],
+                         self.comparisons[0].video_2.video_id)
+        self.assertEqual(comparison2["duration_ms"],
+                         self.comparisons[0].duration_ms)
 
     def test_authenticated_can_list_filtered(self):
         """
@@ -389,8 +404,7 @@ class ComparisonApiTestCase(TestCase):
         # are made unordered too
         for comparison in response.data["results"]:
             if comparison["video_a"]["video_id"] != self._video_id_02:
-                self.assertEqual(comparison["video_b"]["video_id"],
-                                  self._video_id_02)
+                self.assertEqual(comparison["video_b"]["video_id"], self._video_id_02)
 
             self.assertEqual(comparison["duration_ms"], 102)
 
@@ -467,3 +481,46 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.data["video_b"]["video_id"],
                          self._video_id_01)
         self.assertEqual(response.data["duration_ms"], 102)
+
+    def test_authenticated_integrated_comparison_list(self):
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        client.force_authenticate(user=user)
+        comparison1 = Comparison.objects.create(
+            user=user,
+            video_1=self.videos[2],
+            video_2=self.videos[3],
+        )
+        comparison2 = Comparison.objects.create(
+            user=user,
+            video_1=self.videos[1],
+            video_2=self.videos[2],
+        )
+        client.put(
+            reverse(
+                "tournesol:comparisons_me_detail",
+                args=[self._video_id_03, self._video_id_04]
+            ),
+            {
+                'criteria_scores': [
+                    {
+                        "criteria": "over_the_top",
+                        "score": 10,
+                        "weight": 10
+                    }
+                ]
+            },
+            format="json",
+        )
+        response = client.get(
+            reverse("tournesol:comparisons_me_list"), format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        result_comparison1 = response.data["results"][0]
+        result_comparison2 = response.data["results"][1]
+        self.assertEqual(result_comparison1["video_a"]["video_id"], comparison1.video_1.video_id)
+        self.assertEqual(result_comparison1["video_b"]["video_id"], comparison1.video_2.video_id)
+        self.assertEqual(result_comparison2["video_a"]["video_id"], comparison2.video_1.video_id)
+        self.assertEqual(result_comparison2["video_b"]["video_id"], comparison2.video_2.video_id)

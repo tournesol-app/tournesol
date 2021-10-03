@@ -690,6 +690,7 @@ class Comparison(models.Model, WithFeatures):
         help_text="Time the comparison was edited the last time",
         null=True,
         blank=True,
+        auto_now=True,
     )
     datetime_add = models.DateTimeField(
         auto_now_add=True,
