@@ -245,7 +245,7 @@ tensorboard==2.5.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.6.0.post3
 tensorboardX==2.1
-tensorflow==2.5.0
+tensorflow==2.5.1
 tensorflow-estimator==2.5.0
 tensorflow-probability==0.12.1
 termcolor==1.1.0
