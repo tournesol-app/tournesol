@@ -174,7 +174,7 @@ pathlib==1.0.1
 patsy==0.5.1
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.1.1
+Pillow==8.3.2
 pip-chill==1.0.0
 pluggy==0.13.1
 prometheus-client==0.7.1
