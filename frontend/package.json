@@ -1,0 +1,72 @@
+{
+  "name": "tournesol",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.11.2",
+    "@reduxjs/toolkit": "^1.5.1",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-redux": "^7.1.7",
+    "@types/react-router-dom": "^5.1.8",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-player": "^2.9.0",
+    "react-redux": "^7.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "redux": "^4.1.0",
+    "redux-persist": "^6.0.0",
+    "typescript": "~4.1.5",
+    "web-vitals": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --testURL=http://localhost:3000",
+    "eject": "react-scripts eject",
+    "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
+    "lint": "eslint src --ext '.js,.jsx,.ts,.tsx'",
+    "lint:fix": "eslint --fix src --ext '.js,.jsx,.ts,.tsx'",
+    "prepare": "husky install"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@react-mock/fetch": "^0.3.0",
+    "@testing-library/dom": ">=5",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^26.0.24",
+    "@types/redux-mock-store": "^1.0.3",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "fetch-mock-jest": "^1.5.1",
+    "husky": "^7.0.1",
+    "openapi-typescript": "^4.0.2",
+    "openapi-typescript-codegen": "^0.9.3",
+    "prettier": "^2.3.2",
+    "react-test-renderer": "^17.0.2",
+    "redux-mock-store": "^1.5.4"
+  }
+}
