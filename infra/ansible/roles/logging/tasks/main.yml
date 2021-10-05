@@ -1,0 +1,133 @@
+- name: Download Loki, Promtail and LogCli
+  get_url:
+    url: "https://github.com/grafana/loki/releases/download/{{loki_version}}/{{item}}-linux-amd64.zip"
+    dest: /tmp/
+    checksum: "sha256:https://github.com/grafana/loki/releases/download/{{loki_version}}/SHA256SUMS"
+  with_items:
+    - "loki"
+    - "promtail"
+    - "logcli"
+
+- name: Create directory for Loki binaries
+  file:
+    path: /usr/local/share/loki
+    state: directory
+
+- name: Extract Loki, Promtail and LogCli
+  unarchive:
+    src: "/tmp/{{item}}-linux-amd64.zip"
+    remote_src: yes
+    dest: /usr/local/share/loki
+  with_items:
+    - "loki"
+    - "promtail"
+    - "logcli"
+
+- name: Create links to Loki, Promtail and LogCli
+  file:
+    src: "/usr/local/share/loki/{{item}}-linux-amd64"
+    path: "/usr/local/bin/{{item}}"
+    state: link
+  with_items:
+    - "loki"
+    - "promtail"
+    - "logcli"
+
+- name: Create Loki user
+  user:
+    name: loki
+    system: yes
+    create_home: no
+
+- name: Create Promtail user
+  user:
+    name: promtail
+    system: yes
+    create_home: no
+    groups:
+      - systemd-journal
+      - adm
+
+- name: Create directory for Loki configuration files
+  file:
+    path: /etc/loki
+    state: directory
+
+- name: Copy Loki configuration file
+  copy:
+    src: loki.yml
+    dest: /etc/loki/loki.yml
+  notify: Restart Loki
+
+- name: Copy Loki service file
+  copy:
+    src: loki.service
+    dest: /etc/systemd/system/loki.service
+  notify:
+    - Restart Loki
+    - Create Grafana Loki datasource
+
+- name: Enable and start Loki
+  systemd:
+    name: loki
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Copy Promtail configuration file
+  copy:
+    src: promtail.yml
+    dest: /etc/loki/promtail.yml
+  notify: Restart Promtail
+
+- name: Copy Promtail service file
+  copy:
+    src: promtail.service
+    dest: /etc/systemd/system/promtail.service
+  notify: Restart Promtail
+
+- name: Enable and start Promtail
+  systemd:
+    name: promtail
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Install Grafana worldmap panel plugin
+  community.grafana.grafana_plugin:
+    name: grafana-worldmap-panel
+    version: latest
+    state: present
+  become: yes
+  become_user: grafana
+  notify: Restart Grafana
+
+- meta: flush_handlers
+
+- name: Copy Grafana dashboard based on Nginx logs
+  copy:
+    src: nginx-loki-dashboard.json
+    dest: /tmp/nginx-loki-dashboard.json
+
+- name: Create Grafana dashboard based on Nginx logs
+  community.grafana.grafana_dashboard:
+    grafana_url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    path: /tmp/nginx-loki-dashboard.json
+    overwrite: yes
+
+- name: Copy Grafana alerting dashboard
+  template:
+    dest: /tmp/grafana-alerting-dashboard.json
+    src: alerting-dashboard.json.j2
+
+- name: Create Grafana alerting dashboard
+  community.grafana.grafana_dashboard:
+    grafana_url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    path: /tmp/grafana-alerting-dashboard.json
+    overwrite: yes

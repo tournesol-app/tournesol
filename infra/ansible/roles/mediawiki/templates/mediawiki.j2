@@ -1,0 +1,105 @@
+server {
+    client_max_body_size 100M;
+
+    server_name {{mediawiki_domain_name}};
+
+    keepalive_timeout 5;
+
+    root /var/lib/mediawiki-w;
+    index index.php;
+    charset utf-8;
+    client_body_timeout     60;
+
+	# Location for wiki's entry points
+	location ~ ^/w/(index|load|api|thumb|opensearch_desc|rest|img_auth)\.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+	}
+	
+	# Images
+	location /w/images {
+		# Separate location for images/ so .php execution won't apply
+	}
+	location /w/images/deleted {
+		# Deny access to deleted images folder
+		deny all;
+	}
+	# MediaWiki assets (usually images)
+	location ~ ^/w/resources/(assets|lib|src) {
+		try_files $uri 404;
+		add_header Cache-Control "public";
+		expires 7d;
+	}
+	# Assets, scripts and styles from skins and extensions
+	location ~ ^/w/(skins|extensions)/.+\.(css|js|gif|jpg|jpeg|png|svg|wasm)$ {
+		try_files $uri 404;
+		add_header Cache-Control "public";
+		expires 7d;
+	}
+	# Favicon
+	location = /favicon.ico {
+		alias /w/images/6/64/Favicon.ico;
+		add_header Cache-Control "public";
+		expires 7d;
+	}
+
+	# License and credits files
+	location ~ ^/w/(COPYING|CREDITS) {
+		default_type text/plain;
+	}
+	
+	## Uncomment the following code if you wish to use the installer/updater
+	## installer/updater
+	#location /w/mw-config/ {
+	#	# Do this inside of a location so it can be negated
+	#	location ~ \.php$ {
+	#		include /etc/nginx/fastcgi_params;
+	#		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	#		fastcgi_pass 127.0.0.1:9000; # or whatever port your PHP-FPM listens on
+	#	}
+	#}
+	
+	# Handling for Mediawiki REST API, see [[mw:API:REST_API]]
+	location /w/rest.php/ {
+		try_files $uri $uri/ /w/rest.php?$query_string;
+	}
+
+	## Uncomment the following code for handling image authentication
+	## Also add "deny all;" in the location for /w/images above
+	#location /w/img_auth.php/ {
+	#	try_files $uri $uri/ /w/img_auth.php?$query_string;
+	#}
+
+	# Handling for the article path (pretty URLs)
+	location /wiki/ {
+		rewrite ^/wiki/(?<pagename>.*)$ /w/index.php;
+	}
+
+	# Allow robots.txt in case you have one
+	# location = /robots.txt {
+	# }
+	# Explicit access to the root website, redirect to main page (adapt as needed)
+	location = / {
+		return 301 /wiki/Main_Page;
+	}
+
+	# Every other entry point will be disallowed.
+	# Add specific rules for other entry points/images as needed above this
+	location / {
+		return 404;
+	}
+
+{% if letsencrypt_email is defined %}
+    listen 443 ssl http2;
+    ssl_certificate /etc/letsencrypt/live/{{mediawiki_domain_name}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{mediawiki_domain_name}}/privkey.pem;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options nosniff;
+    add_header Strict-Transport-Security "max-age=300; includeSubDomains; preload; always;";
+{% else %}
+    listen 80;
+{% endif %}
+}

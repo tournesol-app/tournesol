@@ -1,0 +1,89 @@
+- name: Create React user
+  user:
+    name: react
+    system: yes
+    create_home: yes
+
+- name: Create remote_tmp directory for React user
+  file:
+    path: /home/react/.ansible/tmp
+    state: directory
+    owner: react
+    group: react
+
+- name: Add Yarn Repository Key
+  apt_key:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    state: present
+
+- name: Add Yarn Repository
+  apt_repository:
+    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+    state: present
+
+- name: Install Yarn
+  apt:
+    name:
+      - yarn
+    install_recommends: no
+    update_cache: yes
+
+- name: Install NVM
+  shell:
+    cmd: curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/{{nvm_version}}/install.sh | NVM_DIR=/home/react/.nvm bash
+    creates: /home/react/.nvm/nvm.sh
+  become: yes
+  become_user: react
+
+- name: Check if Node version is installed
+  shell:
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} || true
+  register: nvm_use
+  become: yes
+  become_user: react
+  changed_when: '''You need to run "nvm install lts/'' in nvm_use.stderr'
+  notify:
+    - Install Node
+    - Yarn install
+    - Yarn build
+    - Copy frontend files
+    - Create Frontend OAuth application in Django database
+
+- name: Copy Frontend OAuth client ID and secret
+  template:
+    src: "{{item}}.j2"
+    dest: "/root/{{item}}"
+    mode: u=rw,g=,o=
+  with_items:
+    - frontend_oauth_client_id
+    - frontend_oauth_client_secret
+
+- name: Create React application directory
+  file:
+    path: /srv/tournesol-frontend
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Clone React application repository
+  git:
+    repo: https://github.com/tournesol-app/tournesol-frontend.git
+    dest: /home/react/tournesol-frontend
+    version: "{{frontend_target_branch}}"
+    force: yes
+  become: yes
+  become_user: react
+  notify:
+    - Yarn install
+    - Yarn build
+    - Generate Client from OpenAPI Specification
+    - Copy frontend files
+
+- name: Copy Frontend Configuration
+  template:
+    src: .env.j2
+    dest: /home/react/tournesol-frontend/.env
+    owner: react
+    group: react
+
+- meta: flush_handlers

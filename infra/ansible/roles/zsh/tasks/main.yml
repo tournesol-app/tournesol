@@ -1,0 +1,44 @@
+- name: Install ZSH, Git and Fontconfig
+  apt:
+    name:
+      - zsh
+      - git
+      - fontconfig
+    install_recommends: no
+    update_cache: yes
+
+- name: Create fonts directory
+  file:
+    path: /usr/local/share/fonts
+    state: directory
+
+- name: Install Meslo Nerd Fonts patched for Powerlevel10k
+  uri:
+    url: https://github.com/romkatv/powerlevel10k-media/raw/master/{{item.escaped_name}}
+    dest: /usr/local/share/fonts/{{item.target_name}}
+    creates: /usr/local/share/fonts/{{item.target_name}}
+  with_items:
+    - escaped_name: MesloLGS%20NF%20Regular.ttf
+      target_name: MesloLGS-NF-Regular.ttf
+    - escaped_name: MesloLGS%20NF%20Bold.ttf
+      target_name: MesloLGS-NF-Bold.ttf
+    - escaped_name: MesloLGS%20NF%20Italic.ttf
+      target_name: MesloLGS-NF-Italic.ttf
+    - escaped_name: MesloLGS%20NF%20Bold%20Italic.ttf
+      target_name: MesloLGS-NF-Bold-Italic.ttf
+  notify: Refresh fonts cache
+
+- meta: flush_handlers
+
+- name: Create Antigen directory
+  file:
+    path: /usr/local/bin/zsh-antigen
+    state: directory
+
+- name: Install Antigen
+  uri:
+    url: https://git.io/antigen
+    dest: /usr/local/bin/zsh-antigen/antigen.zsh
+    creates: /usr/local/bin/zsh-antigen/antigen.zsh
+
+- meta: flush_handlers

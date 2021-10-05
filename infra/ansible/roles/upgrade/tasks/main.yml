@@ -1,0 +1,26 @@
+- name: Update all packages to their latest version
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+  when: upgrade_packages == True
+
+- name: Upgrade the OS (apt-get dist-upgrade)
+  apt:
+    upgrade: dist
+    update_cache: yes
+  when: upgrade_packages == True
+
+- name: Check if a reboot is needed
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required
+
+- name: Reboot if needed
+  reboot:
+  when: reboot_required.stat.exists == True
+
+- name: Autoremove/autoclean unneeded packages
+  apt:
+    autoremove: yes
+    autoclean: yes

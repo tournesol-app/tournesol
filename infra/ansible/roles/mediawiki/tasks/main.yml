@@ -1,0 +1,243 @@
+- name: Check if Mediawiki certificates are already present
+  stat:
+    path: /etc/letsencrypt/live/{{mediawiki_domain_name}}/fullchain.pem
+  register: mediawiki_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if Mediawiki certificates are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and mediawiki_cert_file.stat.exists == False
+
+- name: Run Certbot for Mediawiki domain
+  shell:
+    cmd: "certbot certonly --standalone -d {{mediawiki_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{mediawiki_domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+- name: Install Mediawiki Packages
+  apt:
+    name:
+      - mediawiki
+      - php-mysql
+      # - php-pgsql
+      # - postgresql-contrib
+      - python3-pymysql
+      - php-gd
+      - imagemagick
+      - php7.4-fpm
+      - mariadb-server
+      - composer
+    update_cache: yes
+    install_recommends: yes
+  notify:
+    - Create Mediawiki alternative root
+    - Link Mediawiki alternative root
+    - Create OIDC application in Django database
+
+- meta: flush_handlers
+
+- name: Install DB Credentials
+  copy:
+    src: /etc/mysql/debian.cnf
+    remote_src: yes
+    dest: /root/.my.cnf
+    mode: 0600
+
+- name: Create Mediawiki database
+  mysql_db:
+    name: "{{mediawiki_database_name}}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  notify:
+    - Install Mediawiki
+
+- name: Create Mediawiki database user
+  mysql_user:
+    name: "{{mediawiki_database_user}}"
+    password: "{{mediawiki_database_password}}"
+    priv: "mediawiki.*:ALL"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  notify:
+    - Install Mediawiki
+
+- meta: flush_handlers
+
+# - name: Create Mediawiki database
+#   postgresql_db:
+#     name: "{{mediawiki_database_name}}"
+#   become: yes
+#   become_user: postgres
+
+# - name: Create Mediawiki database user
+#   postgresql_user:
+#     name: "{{mediawiki_database_user}}"
+#     password: "{{mediawiki_database_password}}"
+#     db: "{{mediawiki_database_name}}"
+#   become: yes
+#   become_user: postgres
+
+# - name: Create Mediawiki database schema
+#   postgresql_schema:
+#     database: "{{mediawiki_database_name}}"
+#     name: mediawiki
+#     owner: "{{mediawiki_database_user}}"
+#   become: yes
+#   become_user: postgres
+
+- name: Copy Nginx Mediawiki configuration
+  template:
+    src: mediawiki.j2
+    dest: /etc/nginx/sites-available/mediawiki
+  notify:
+    - Reload Nginx
+
+- name: Enable Nginx Mediawiki configuration
+  file:
+    src: /etc/nginx/sites-available/mediawiki
+    dest: /etc/nginx/sites-enabled/mediawiki
+    state: link
+  notify:
+    - Reload Nginx
+
+- name: Copy Mediawiki secrets
+  template:
+    src: "{{item}}.j2"
+    dest: "/root/{{item}}"
+    mode: u=rw,g=,o=
+  with_items:
+    - mediawiki_admin_password
+    - mediawiki_database_password
+    - mediawiki_secret_key
+    - mediawiki_oidc_client_id
+    - mediawiki_oidc_client_secret
+
+- name: Copy Mediawiki configuration
+  template:
+    src: LocalSettings.php.j2
+    dest: /etc/mediawiki/LocalSettings.php
+  notify:
+    - Reload Nginx
+
+- name: Download Mediawiki language extensions
+  get_url:
+    url: "{{item.url}}"
+    dest: "/tmp/{{item.name}}"
+    checksum: "{{item.checksum}}"
+  with_items:
+    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
+      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2.sha256sum
+      name: MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
+
+- name: Download Mediawiki extensions
+  get_url:
+    url: "{{item.url}}"
+    dest: "/tmp/{{item.name}}"
+  with_items:
+    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-cbe6759.tar.gz
+      name: Math-REL1_36-cbe6759.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-027be98.tar.gz
+      name: PluggableAuth-REL1_36-027be98.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-37a0df5.tar.gz
+      name: OpenIDConnect-REL1_36-37a0df5.tar.gz
+
+- name: Extract Mediawiki language extensions
+  unarchive:
+    src: "/tmp/{{item.name}}"
+    remote_src: yes
+    dest: "/var/lib/mediawiki"
+  with_items:
+    - url: https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
+      checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2.sha256sum
+      name: MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
+  notify:
+    - Update Mediawiki database
+    - Reload Nginx
+
+- name: Extract Mediawiki extensions
+  unarchive:
+    src: "/tmp/{{item.name}}"
+    remote_src: yes
+    dest: "/var/lib/mediawiki/extensions"
+  with_items:
+    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-cbe6759.tar.gz
+      name: Math-REL1_36-cbe6759.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-027be98.tar.gz
+      name: PluggableAuth-REL1_36-027be98.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-37a0df5.tar.gz
+      name: OpenIDConnect-REL1_36-37a0df5.tar.gz
+  notify:
+    - Run Composer
+    - Update Mediawiki database
+    - Reload Nginx
+
+- name: Copy Composer configuration for OIDC extension dependencies
+  template:
+    src: composer.local.json.j2
+    dest: /var/lib/mediawiki/composer.local.json
+  notify:
+    - Run Composer
+    - Update Mediawiki database
+    - Reload Nginx
+
+- name: Ensure Nginx is enabled and running
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- meta: flush_handlers
+
+- name: Install automysqlbackup
+  apt:
+    name: automysqlbackup
+    update_cache: yes
+    install_recommends: no
+
+- name: Create backups directory
+  file:
+    state: directory
+    path: /backups
+    mode: a=rwx
+
+- name: Create Mediawiki backups directory
+  file:
+    state: directory
+    path: /backups/mediawiki
+    owner: www-data
+    group: www-data
+
+- name: Create Mediawiki automysqlbackup directory
+  file:
+    state: directory
+    path: /backups/mediawiki/automysqlbackup
+
+- name: Set Mediawiki automysqlbackup directory
+  lineinfile:
+    path: /etc/default/automysqlbackup
+    regexp: "^BACKUPDIR="
+    line: BACKUPDIR=/backups/mediawiki/automysqlbackup
+
+- name: Copy Mediawiki XML backups script
+  template:
+    src: backup-mediawiki.sh.j2
+    dest: /usr/local/bin/backup-mediawiki.sh
+    mode: a=rx
+
+- name: Install Mediawiki XML backups service
+  template:
+    src: mediawiki-backups.service
+    dest: /etc/systemd/system/mediawiki-backups.service
+
+- name: Install Mediawiki XML backups timer
+  template:
+    src: mediawiki-backups.timer
+    dest: /etc/systemd/system/mediawiki-backups.timer
+
+- name: Enable Mediawiki XML backups timer
+  systemd:
+    name: mediawiki-backups.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

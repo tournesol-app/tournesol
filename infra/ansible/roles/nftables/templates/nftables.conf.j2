@@ -1,0 +1,54 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+  chain input {
+    type filter hook input priority 0; policy drop;
+
+    # accept any traffic from localhost
+    iif lo accept
+
+    # accept traffic originated from us
+    ct state established,related accept
+
+    # accept ICMP and IGMP
+    ip6 nexthdr icmpv6 \
+    icmpv6 type { \
+      destination-unreachable, \
+      packet-too-big, \
+      time-exceeded, \
+      parameter-problem, \
+      mld-listener-query, \
+      mld-listener-report, \
+      mld-listener-reduction, \
+      nd-router-solicit, \
+      nd-router-advert, \
+      nd-neighbor-solicit, \
+      nd-neighbor-advert, \
+      ind-neighbor-solicit, \
+      ind-neighbor-advert, \
+      mld2-listener-report \
+    } accept
+
+    ip protocol icmp \
+    icmp type { \
+      destination-unreachable, \
+      router-solicitation, \
+      router-advertisement, \
+      time-exceeded, \
+      parameter-problem \
+    } accept
+
+    ip protocol igmp accept
+
+    # accept SSH, HTTP, HTTPS
+    tcp dport { 22, 80, 443 } accept
+  }
+  chain forward {
+    type filter hook forward priority 0;
+  }
+  chain output {
+    type filter hook output priority 0;
+  }
+}

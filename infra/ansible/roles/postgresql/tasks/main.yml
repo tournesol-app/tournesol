@@ -1,0 +1,59 @@
+- name: Install Postgresql
+  apt:
+    name: postgresql
+    install_recommends: no
+    update_cache: yes
+
+- name: Install Ansible DB client helper
+  apt:
+    name: python3-psycopg2
+    install_recommends: no
+    update_cache: yes
+
+- name: Copy Discord Postgres backup failure alert
+  template:
+    dest: /usr/local/bin/postgres-backup-fail-alert.sh
+    src: discord-postgres-backup-fail-alert.sh.j2
+    mode: a=rx
+
+- name: Create Postgresql backups directory
+  file:
+    state: directory
+    path: /backups/tournesol
+    owner: postgres
+    group: postgres
+
+- name: Create Postgresql DB backups directory
+  file:
+    state: directory
+    path: /backups/tournesol/db
+    owner: postgres
+    group: postgres
+
+- name: Install pg_backup configuration
+  template:
+    dest: /etc/postgresql/pg_backup.config
+    src: pg_backup.config.j2
+
+- name: Install pg_backup script
+  template:
+    dest: /usr/local/bin/pg_backup_rotated.sh
+    src: pg_backup_rotated.sh.j2
+    mode: a+rx
+
+- name: Install Postgresql backups service
+  template:
+    src: pg-backups.service
+    dest: /etc/systemd/system/pg-backups.service
+
+- name: Install Postgresql backups timer
+  template:
+    src: pg-backups.timer
+    dest: /etc/systemd/system/pg-backups.timer
+
+- name: Enable Postgresql backups timer
+  systemd:
+    name: pg-backups.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

@@ -1,0 +1,10 @@
+[Unit]
+Description=Postgresql Backup
+
+[Service]
+Type=oneshot
+User=postgres
+Group=postgres
+Environment="PGPASSWORD={{django_database_password}}"
+ExecStart=/usr/local/bin/pg_backup_rotated.sh -c /etc/postgresql/pg_backup.config
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-postgres-backup-fail-alert.sh; fi"

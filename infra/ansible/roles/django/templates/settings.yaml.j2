@@ -1,0 +1,50 @@
+DEBUG: {{django_debug}}
+SECRET_KEY: {{django_secret_key}}
+ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+    - 0.0.0.0
+    - {{api_domain_name}}
+
+CORS_ALLOWED_ORIGINS:
+    - "{{frontend_scheme}}://{{domain_name}}"
+CORS_ALLOW_CREDENTIALS: true
+
+MAIN_URL: {{django_main_url}}/
+
+DATABASE_NAME: {{django_database_name}}
+DATABASE_USER: {{django_database_user}}
+DATABASE_PASSWORD: {{django_database_password}}
+
+STATIC_ROOT: /var/www/html/static
+MEDIA_ROOT: /var/www/html/media
+
+EMAIL_BACKEND: console
+
+LOGIN_URL: "/admin/login/"
+
+ACCESS_TOKEN_EXPIRE_SECONDS: 36000 # 10h
+REFRESH_TOKEN_EXPIRE_SECONDS: 604800 # 1w
+OIDC_ENABLED: true
+OIDC_ISS_ENDPOINT: {{django_main_url}}
+OIDC_RSA_PRIVATE_KEY: |
+  {{django_oidc_rsa_private_key | b64decode | indent(2)}}
+
+{% if django_email_backend == "smtp" %}
+REST_REGISTRATION_MAIN_URL: "{{frontend_scheme}}://{{domain_name}}/"
+
+EMAIL_BACKEND: 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST: {{django_email_host}}
+EMAIL_PORT: {{django_email_port}}
+EMAIL_HOST_USER: {{django_email_user}}
+EMAIL_HOST_PASSWORD: {{django_email_password}}
+EMAIL_USE_TLS: true
+EMAIL_USE_SSL: false
+{% else %}
+EMAIL_BACKEND: 'django.core.mail.backends.console.EmailBackend'
+{% endif %}
+
+SWAGGER_UI_OAUTH2_CLIENT_ID: {{swagger_ui_oauth2_client_id}}
+SWAGGER_UI_OAUTH2_CLIENT_SECRET: {{swagger_ui_oauth2_client_secret}}
+
+DJANGO_LOG_LEVEL: {{django_log_level}}

@@ -1,0 +1,151 @@
+all:
+  children:
+    tournesol:
+      hosts:
+        # VM for local development
+        tournesol-vm:
+          ansible_host: tournesol-vm
+          machine_name: tournesol
+          # ansible_user: jst
+          domain_name: tournesol-vm
+          api_domain_name: tournesol-api
+          api_scheme: http
+
+          buster_mirror: http://debian.ethz.ch/debian/
+          upgrade_packages: true
+
+          django_debug: "True"
+          django_log_level: "DEBUG"
+          django_main_url: "http://{{api_domain_name}}"
+          django_database_name: tournesol
+          django_database_user: tournesol
+          django_email_backend: console
+          populate_django_db_from_public_dataset: true
+
+          backend_target_branch: main
+          loki_version: "v2.2.1"
+          frontend_target_branch: main
+          nvm_version: "v0.38.0"
+          npm_lts_version: fermium
+          frontend_scheme: http
+
+          mediawiki_domain_name: tournesol-wiki
+          mediawiki_scheme: http
+          mediawiki_database_name: mediawiki
+          mediawiki_database_user: mediawiki
+
+          monitored_urls:
+            - https://staging.tournesol.app/
+            - https://api.staging.tournesol.app/admin
+            - https://wiki.staging.tournesol.app/
+
+          grafana_domain_name: tournesol-grafana
+          grafana_scheme: http
+
+          ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
+
+          mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
+
+          postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
+        # Staging Vultr VM
+        tournesol-staging:
+          ansible_host: staging.tournesol.app
+          machine_name: tournesol
+          # ansible_user: jst
+          domain_name: staging.tournesol.app
+          api_domain_name: "api.{{domain_name}}"
+          api_scheme: https
+
+          buster_mirror: http://debian.ethz.ch/debian/
+          upgrade_packages: true
+
+          django_debug: "False"
+          django_log_level: "INFO"
+          django_main_url: https://{{api_domain_name}}
+          django_database_name: tournesol
+          django_database_user: tournesol
+          django_email_backend: smtp
+          populate_django_db_from_public_dataset: false
+
+          backend_target_branch: log-level
+          loki_version: "v2.2.1"
+          frontend_target_branch: main
+          nvm_version: "v0.38.0"
+          npm_lts_version: fermium
+          frontend_scheme: https
+
+          # Setting this triggers TLS configuration
+          letsencrypt_email: tournesol.application@gmail.com
+
+          mediawiki_domain_name: "wiki.{{domain_name}}"
+          mediawiki_scheme: https
+          mediawiki_database_name: mediawiki
+          mediawiki_database_user: mediawiki
+
+          monitored_urls:
+            - https://tournesol.app/
+            - https://api.tournesol.app/admin
+            - https://wiki.tournesol.app/
+
+          grafana_domain_name: "grafana.{{domain_name}}"
+          grafana_scheme: https
+
+          ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
+
+          mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
+
+          postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
+        # Production Vultr VM
+        tournesol-prod:
+          ansible_host: tournesol.app
+          machine_name: tournesol
+          # ansible_user: jst
+          domain_name: tournesol.app
+          api_domain_name: "api.{{domain_name}}"
+          api_scheme: https
+
+          buster_mirror: http://debian.ethz.ch/debian/
+          upgrade_packages: false # to be set to true after upgrade tests in staging in order to upgrade prod
+
+          django_debug: "False"
+          django_log_level: "INFO"
+          django_main_url: https://{{api_domain_name}}
+          django_database_name: tournesol
+          django_database_user: tournesol
+          django_email_backend: smtp
+          populate_django_db_from_public_dataset: false
+
+          backend_target_branch: prod-2021-10-01
+          loki_version: "v2.2.1"
+          frontend_target_branch: prod-2021-10-01-20h29
+          nvm_version: "v0.38.0"
+          npm_lts_version: fermium
+          frontend_scheme: https
+
+          # Setting this triggers TLS configuration
+          letsencrypt_email: tournesol.application@gmail.com
+
+          mediawiki_domain_name: "wiki.{{domain_name}}"
+          mediawiki_scheme: https
+          mediawiki_database_name: mediawiki
+          mediawiki_database_user: mediawiki
+
+          monitored_urls:
+            - https://staging.tournesol.app/
+            - https://api.staging.tournesol.app/admin
+            - https://wiki.staging.tournesol.app/
+
+          grafana_domain_name: "grafana.{{domain_name}}"
+          grafana_scheme: https
+
+          ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
+
+          mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
+
+          postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+        ansible_ssh_pipelining: true

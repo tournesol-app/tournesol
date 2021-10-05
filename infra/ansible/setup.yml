@@ -1,0 +1,15 @@
+- hosts: tournesol
+  roles:
+    - upgrade
+    - base
+    - nftables
+    - zsh
+    - users
+    - postgresql
+    - nginx
+    - django
+    - monitoring
+    - logging
+    - frontend
+    - mediawiki
+  become: true

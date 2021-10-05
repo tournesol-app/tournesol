@@ -1,0 +1,84 @@
+- name: Install Certbot
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    install_recommends: no
+    update_cache: yes
+
+- name: Check if certificates for frontend are already present
+  stat:
+    path: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
+  register: cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if certificates for frontend are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and cert_file.stat.exists == False
+
+- name: Run Certbot for frontend
+  shell:
+    cmd: "certbot certonly --standalone -d {{domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+- name: Check if certificates for backend are already present
+  stat:
+    path: /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem
+  register: api_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if certificates for backend are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and api_cert_file.stat.exists == False
+
+- name: Run Certbot for backend
+  shell:
+    cmd: "certbot certonly --standalone -d {{api_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+- name: Generate DH parameters
+  shell:
+    cmd: "openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048"
+    creates: /etc/letsencrypt/ssl-dhparams.pem
+  when: letsencrypt_email is defined
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    install_recommends: no
+    update_cache: yes
+
+- name: Restrict TLS ssl_protocols
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*ssl_protocols'
+    line: "\t\tssl_protocols TLSv1.2;"
+  notify:
+    - Reload Nginx
+
+- name: Add TLS parameters
+  blockinfile:
+    path: /etc/nginx/nginx.conf
+    insertafter: '^\s*ssl_prefer_server_ciphers'
+    block: |
+      ssl_ecdh_curve secp384r1;
+      ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256';
+      ssl_session_cache shared:SSL:10m;
+      ssl_session_tickets off;
+  notify:
+    - Reload Nginx
+
+- name: Disable Nginx default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify:
+    - Reload Nginx
+
+- meta: flush_handlers

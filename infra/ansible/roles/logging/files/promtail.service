@@ -1,0 +1,12 @@
+[Unit]
+Description=Promtail service
+After=network.target
+
+[Service]
+Type=simple
+User=promtail
+ExecStart=/usr/local/bin/promtail -config.file /etc/loki/promtail.yml
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

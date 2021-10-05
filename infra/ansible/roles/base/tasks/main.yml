@@ -1,0 +1,33 @@
+- name: Set hostname
+  hostname:
+    name: "{{machine_name}}"
+
+- name: Copy hosts file
+  template:
+    src: hosts
+    dest: /etc/hosts
+
+- name: Install minimal set of packages
+  apt:
+    name:
+      - unattended-upgrades
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - wget
+      - man-db
+      - htop
+      - net-tools
+      - dnsutils
+      - netcat
+      - python3
+      - git
+      - build-essential
+      - vim
+      - kitty-terminfo
+      - unzip
+      - gpg
+      - gpg-agent
+    install_recommends: no
+    update_cache: yes

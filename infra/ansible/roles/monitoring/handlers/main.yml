@@ -1,0 +1,67 @@
+- name: Reload Nginx
+  systemd:
+    name: nginx
+    state: reloaded
+    daemon_reload: true
+
+- name: Reload Prometheus
+  systemd:
+    name: prometheus
+    state: reloaded
+    daemon_reload: true
+
+- name: Copy Postgresql exporter database user creation script
+  copy:
+    src: postgres-exporter.sql
+    dest: /tmp/postgres-exporter.sql
+    owner: postgres
+
+- name: Create Postgresql exporter database user
+  postgresql_db:
+    name: postgres
+    state: restore
+    target: /tmp/postgres-exporter.sql
+  become: yes
+  become_user: postgres
+
+- name: Restart Prometheus Postgresql exporter
+  systemd:
+    name: prometheus-postgres-exporter
+    state: restarted
+    daemon_reload: true
+
+- name: Reset Grafana admin password
+  shell: grafana-cli admin reset-admin-password {{grafana_admin_password}}
+  become: yes
+  become_user: grafana
+
+# - name: Set Grafana default organization role
+#   lineinfile:
+#     path: /etc/grafana/grafana.ini
+#     regexp: '^;auto_assign_org_role = '
+#     line: auto_assign_org_role = Admin
+
+- name: Create Grafana OIDC application in Django database
+  shell:
+    cmd: now=$(date -I) && psql -d tournesol <<< "insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('{{grafana_oidc_client_id}}', '{{grafana_scheme}}://{{grafana_domain_name}}/login/generic_oauth', 'confidential', 'authorization-code', '{{grafana_oidc_client_secret}}','Grafana', true, 'RS256', '$now', '$now');"
+    executable: /usr/bin/bash
+  become: yes
+  become_user: postgres
+
+- name: Enable and restart Grafana
+  systemd:
+    name: grafana-server
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: Create Grafana Prometheus datasource
+  community.grafana.grafana_datasource:
+    url: "http://127.0.0.1:3000"
+    url_username: admin
+    url_password: "{{grafana_admin_password}}"
+    validate_certs: no
+    name: Prometheus
+    ds_type: "prometheus"
+    ds_url: "http://127.0.0.1:9090"
+    is_default: yes

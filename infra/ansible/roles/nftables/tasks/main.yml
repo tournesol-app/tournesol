@@ -1,0 +1,31 @@
+- name: "Check if UFW is installed"
+  package_facts:
+    manager: "auto"
+
+- name: Stop and disable UFW
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: false
+  when: "'ufw' in ansible_facts.packages"
+
+- name: Install Nftables
+  apt:
+    name: nftables
+    install_recommends: no
+    update_cache: true
+
+- name: Copy Nftables configuration file
+  template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+  notify: Reload Nftables
+
+- name: Ensure Nftables is enabled and running
+  systemd:
+    name: nftables
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- meta: flush_handlers
