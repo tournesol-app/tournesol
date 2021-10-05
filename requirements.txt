@@ -16,6 +16,7 @@ psycopg2-binary==2.8.6
 pytest==6.2.4
 PyYAML==5.4.1
 tqdm==4.62.1
+langdetect==1.0.8
 
 #API Youtube data
 google-api-python-client==2.15.0

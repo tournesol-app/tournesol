@@ -5,6 +5,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from tournesol.utils.video_language import compute_video_language
+
 from ..models import Video
 
 
@@ -270,3 +272,22 @@ class VideoApi(TestCase):
         factory = APIClient()
         response = factory.get("/video/video_id_00/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_language_detection(self):
+        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1233")
+        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1234")
+        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1235")
+        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1236")
+        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1237")
+        # Not enough videos to qualify for skipping language detection
+        Video.objects.create(uploader="Sunflower4All", language="en", video_id="youtube1238")
+        Video.objects.create(uploader="Sunflower4All", language="en", video_id="youtube1239")
+        test_details = [
+            (["Tournesol4All", "I speak english", "I have not description"], "fr"), # fr because of existing known channel
+            (["Sunflower4All", "I speak english", "I have not description"], "en"),
+            (["Sunflower4All", "Je parle Français", "Bonjour, Merci beaucoup"], "fr"),
+            (["Sunflower4All", "Ich spreche Deutsch", "Hallo, Danke schön"], "de"),
+        ]
+        for input, output in test_details:
+            print(input, output)
+            self.assertEqual(compute_video_language(*input), output)

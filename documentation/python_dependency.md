@@ -67,3 +67,8 @@ Used to provide django metrics for monitoring
 https://github.com/tfranzel/drf-spectacular
 
 Used to generate OpenAPI documentation exposed by Swagger UI
+
+### langdetect
+https://github.com/Mimino666/langdetect
+
+Use to detect language from video titles and descptions

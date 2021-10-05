@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
 from ..models import Video
 from tournesol.utils.api_youtube import youtube_video_details
+from tournesol.utils.video_language import compute_video_language
 
 
 class VideoViewSet(viewsets.ModelViewSet):
@@ -117,14 +118,16 @@ class VideoViewSet(viewsets.ModelViewSet):
             published_date = published_date.split("T")[0]
             # we could truncate description to spare some space
             description = str(yt_info["snippet"]["description"])
-            channel = yt_info["snippet"]["channelTitle"]
+            uploader = yt_info["snippet"]["channelTitle"]
+            language = compute_video_language(uploader, title, description)
             data = {
                 "video_id": request.data["video_id"],
                 "name": title,
                 "description": description,
                 "publication_date": published_date,
                 "views": nb_views,
-                "uploader": channel
+                "uploader": uploader,
+                "language": language
             }
             serializer = VideoSerializer(data=data)
         except AssertionError:
