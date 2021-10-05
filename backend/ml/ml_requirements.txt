@@ -1,0 +1,7 @@
+# production
+torch==1.9.0
+gin-config==0.4.0 
+
+# dev
+matplotlib==3.4.2 
+scipy==1.7.0

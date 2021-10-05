@@ -1,0 +1,30 @@
+version: "3.3"
+   
+services:
+  db:
+    image: postgres:buster
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=tournesol
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    expose:
+      - "5432"
+    ports:
+      - "127.0.0.1:5432:5432"
+  web:
+    build: .
+    command: 
+        - wait-for-it
+        - db:5432
+        - --
+        - bash
+        - -c
+        - "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./code:/code
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - db
