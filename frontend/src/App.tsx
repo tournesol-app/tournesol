@@ -6,6 +6,8 @@ import { isLoggedIn } from 'src/features/login/loginUtils';
 import { selectLogin } from 'src/features/login/loginSlice';
 import HomePage from './pages/home/Home';
 import LoginPage from './pages/login/Login';
+import SettingsAccountPage from './pages/settings/account/Account';
+import SettingsProfilePage from './pages/settings/profile/Profile';
 import SignupPage from './pages/signup/Signup';
 import VerifyUser from './pages/signup/VerifyUser';
 import ComparisonListPage from './pages/comparisons/ComparisonList';
@@ -31,6 +33,12 @@ function App() {
         </Route>
         <Route path="/login">
           <LoginPage />
+        </Route>
+        <Route path="/settings/profile">
+          <SettingsProfilePage />
+        </Route>
+        <Route path="/settings/account">
+          <SettingsAccountPage />
         </Route>
         <PrivateRoute path="/comparisons">
           <ComparisonListPage />
