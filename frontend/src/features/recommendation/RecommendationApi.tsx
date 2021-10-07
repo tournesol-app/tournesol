@@ -24,11 +24,11 @@ export const getRecommendedVideos = (
     if (date != 'Any') {
       // TODO figure out why the 1 month adding is needed here
       const limitPublicationDateMilliseconds =
-        dateNow - conversionTime.get(date) + dayInMillisecondes * 31;
+        dateNow - conversionTime.get(date);
       const param_date = new Date(limitPublicationDateMilliseconds);
       const [d, m, y, H, M, S] = [
         param_date.getDate().toString(),
-        param_date.getMonth().toString(),
+        (param_date.getMonth() + 1).toString(),
         param_date.getFullYear().toString(),
         param_date.getHours().toString(),
         param_date.getMinutes().toString(),
