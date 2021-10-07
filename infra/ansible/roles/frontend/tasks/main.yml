@@ -65,14 +65,16 @@
     owner: www-data
     group: www-data
 
-- name: Clone React application repository
-  git:
-    repo: https://github.com/tournesol-app/tournesol-frontend.git
+- name: Copy React application repository
+  copy:
+    src: "{{playbook_dir}}/../../frontend/"
     dest: /home/react/tournesol-frontend
-    version: "{{frontend_target_branch}}"
     force: yes
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rw,g=r,o=r
+    directory_mode: u=rwx,g=rx,o=rx
   become: yes
-  become_user: react
   notify:
     - Yarn install
     - Yarn build
