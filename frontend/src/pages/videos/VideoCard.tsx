@@ -22,7 +22,7 @@ function VideoCardPage() {
   return (
     <div>
       <div className={classes.root}>
-        <VideoCardFromId videoId={video_id} />
+        <VideoCardFromId videoId={video_id} actions={[]} />
       </div>
     </div>
   );

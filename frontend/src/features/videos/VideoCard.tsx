@@ -7,6 +7,7 @@ import { Typography, Grid } from '@material-ui/core';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
 import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
+import { ActionList } from 'src/utils/types';
 
 const useStyles = makeStyles(() => ({
   main: {
@@ -127,8 +128,6 @@ const useStyles = makeStyles(() => ({
 type VideoWithCriteriaScore = Video & {
   criteria_scores?: Array<ComparisonCriteriaScore>;
 };
-
-type ActionList = Array<({ videoId }: { videoId: string }) => JSX.Element>;
 
 function VideoCard({
   video,
