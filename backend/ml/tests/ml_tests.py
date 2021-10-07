@@ -34,14 +34,14 @@ Main file is "ml_train.py"
 
 
 TEST_DATA = [
-    [1, 100, 101, "test", 100, 0],
-    [1, 101, 102, "test", 100, 0],
-    [1, 104, 105, "test", 100, 0],
-    [0, 100, 101, "test", 0, 0],
-    [1, 104, 105, "test", 37, 0],
-    [2, 104, 105, "test", 100, 0],
-    [7, 966, 965, "test", 4, 0],
-    [0, 100, 101, "largely_recommended", 100, 0],
+    [1, 100, 101, "test", 10, 0],
+    [1, 101, 102, "test", 10, 0],
+    [1, 104, 105, "test", 10, 0],
+    [0, 100, 101, "test", -10, 0],
+    [1, 104, 105, "test", 37/5 - 10, 0],
+    [2, 104, 105, "test", 10, 0],
+    [7, 966, 965, "test", 4 / 5 - 10, 0],
+    [0, 100, 101, "largely_recommended", 10, 0],
 ]
 CRITERIAS = ["test"]
 
@@ -61,8 +61,8 @@ def _dic_inclusion(a, b):
 # ========== unit tests ===============
 # ---------- data_utility.py ----------------
 def test_rescale_rating():
-    assert rescale_rating(100) == 1
-    assert rescale_rating(0) == -1
+    assert rescale_rating(10) == 1
+    assert rescale_rating(-10) == -1
 
 
 def test_get_all_vids():
@@ -130,9 +130,9 @@ def test_select_criteria():
 
 def test_shape_data():
     l_ratings = [
-        [0, 100, 101, "test", 100, 0],
-        [0, 100, 101, "test", 50, 0],
+        [0, 100, 101, "test", 10, 0],
         [0, 100, 101, "test", 0, 0],
+        [0, 100, 101, "test", -10, 0],
     ]
     output = shape_data(l_ratings)
     assert isinstance(output, np.ndarray)
@@ -317,17 +317,17 @@ def _id_score_assert(id, score, glob):
 def test_simple_train():
     """test coherency of results for few epochs and very light data"""
     comparison_data = [
-                        [1, 101, 102, "test", 100, 0],
-                        [2, 100, 101, "largely_recommended", 100, 0],
-                        [1, 104, 105, "test", 30, 0],
-                        [99, 100, 101, "largely_recommended", 100, 0],
-                        [2, 108, 107, "test", 10, 0],
-                        [0, 100, 102, "test", 70, 0],
-                        [0, 104, 105, "test", 70, 0],
-                        [0, 109, 110, "test", 50, 0],
-                        [2, 107, 108, "test", 10, 0],
-                        [1, 100, 101, "test", 100, 0],
-                        [3, 200, 201, "test", 85, 0],
+                        [1, 101, 102, "test", 10, 0],
+                        [2, 100, 101, "largely_recommended", 10, 0],
+                        [1, 104, 105, "test", 30 /5 -10, 0],
+                        [99, 100, 101, "largely_recommended", 10, 0],
+                        [2, 108, 107, "test", 10 / 5 - 10, 0],
+                        [0, 100, 102, "test", 70 / 5 - 10, 0],
+                        [0, 104, 105, "test", 70 / 5 - 10, 0],
+                        [0, 109, 110, "test", 0, 0],
+                        [2, 107, 108, "test", 10 / 5 - 10, 0],
+                        [1, 100, 101, "test", 10, 0],
+                        [3, 200, 201, "test", 85 / 5 - 10, 0],
                         ]
     glob_scores, loc_scores = ml_run(
         comparison_data,

@@ -73,8 +73,8 @@ The gradient descent is done wrt the comparison-Licchavi loss (see paper).
 # Notations:
 - node = user : contributor
 - vid = vID : video, video ID
-- rating : rating provided by a contributor between 2 videos, in [0,100] or [-1,1]
-- score : score of a video outputted by the algorithm, around [-2, 2]
+- rating : rating provided by a contributor between 2 videos, in [-10,10] or [-1,1]
+- score : score of a video outputted by the algorithm
 - glob, loc : global, local
 - idx, vidx : index, video index
 - l_someting : list of someting

@@ -13,8 +13,8 @@ Main file is "ml_train.py"
 
 
 def rescale_rating(rating):
-    """rescales from [0,100] to [-1,1] float"""
-    return rating / 50 - 1
+    """rescales from [-10,10] to [-1,1] float"""
+    return rating / 10
 
 
 def get_all_vids(arr):
