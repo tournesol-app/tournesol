@@ -7,6 +7,7 @@ import { Typography, Grid } from '@material-ui/core';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
 import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
+import { ActionList } from 'src/utils/types';
 
 const useStyles = makeStyles(() => ({
   main: {
@@ -123,7 +124,13 @@ type VideoWithCriteriaScore = Video & {
   criteria_scores?: Array<ComparisonCriteriaScore>;
 };
 
-function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
+function VideoCard({
+  video,
+  actions,
+}: {
+  video: VideoWithCriteriaScore;
+  actions: ActionList;
+}) {
   const classes = useStyles();
   const videoId = video.video_id;
   let total_score = 0;
@@ -165,7 +172,7 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
           height="100%"
         />
       </Grid>
-      <Grid item xs={12} sm={8}>
+      <Grid item xs={12} sm={7}>
         <div className={classes.top}>
           <Typography className={classes.title} variant="h5">
             {video.name}
@@ -229,6 +236,11 @@ function VideoCard({ video }: { video: VideoWithCriteriaScore }) {
             </>
           )}
         </div>
+      </Grid>
+      <Grid item xs={12} sm={1}>
+        {actions.map((Action, index) => (
+          <Action key={index} videoId={videoId} />
+        ))}
       </Grid>
     </Grid>
   );

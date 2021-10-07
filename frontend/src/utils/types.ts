@@ -9,3 +9,7 @@ export type JSONValue =
 export interface JSONObject {
   [k: string]: JSONValue;
 }
+
+export type ActionList = Array<
+  ({ videoId }: { videoId: string }) => JSX.Element
+>;

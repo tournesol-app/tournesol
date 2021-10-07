@@ -4,8 +4,15 @@ import type { Video } from 'src/services/openapi';
 
 import VideoCard from './VideoCard';
 import { getVideoInformation } from './VideoApi';
+import { ActionList } from 'src/utils/types';
 
-function VideoCardFromId({ videoId }: { videoId: string }) {
+function VideoCardFromId({
+  videoId,
+  actions,
+}: {
+  videoId: string;
+  actions: ActionList;
+}) {
   const [video, setVideo] = useState({ video_id: '' });
 
   useEffect(() => {
@@ -16,7 +23,7 @@ function VideoCardFromId({ videoId }: { videoId: string }) {
       });
     }
   }, [video, video.video_id, videoId]); // Only re-runs if `videoId` changes
-  return <VideoCard video={video} />;
+  return <VideoCard video={video} actions={actions} />;
 }
 
 export default VideoCardFromId;

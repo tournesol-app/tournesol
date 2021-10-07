@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -14,6 +15,7 @@ import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
+import { CompareNowAction } from 'src/utils/action';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'sticky',
     top: `${topBarHeight}px`,
     padding: '6px',
+  },
+  video: {
+    alignItems: 'center',
   },
 }));
 
@@ -155,7 +160,11 @@ const RateLaterPage = () => {
           }}
         >
           {rateLaterList.map(({ video }) => (
-            <VideoCard key={video.video_id} video={video} />
+            <Grid container className={classes.video} key={video.video_id}>
+              <Grid item xs={12}>
+                <VideoCard video={video} actions={[CompareNowAction]} />
+              </Grid>
+            </Grid>
           ))}
         </div>
       </div>
