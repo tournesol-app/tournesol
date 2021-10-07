@@ -70,8 +70,8 @@
     src: "{{playbook_dir}}/../../frontend/"
     dest: /home/react/tournesol-frontend
     force: yes
-    owner: gunicorn
-    group: gunicorn
+    owner: react
+    group: react
     mode: preserve
     directory_mode: u=rwx,g=rx,o=rx
   become: yes
