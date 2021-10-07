@@ -1,24 +1,23 @@
-import torch
-import numpy as np
+"""
+Utility functions used in "handle_data.py"
+"""
+
 import json
 import pickle
 import os
 import shutil
 
-"""
-Utility functions used in "handle_data.py"
-
-Main file is "ml_train.py"
-"""
+import torch
+import numpy as np
 
 
 def rescale_rating(rating):
-    """rescales from [0,100] to [-1,1] float"""
+    """ rescales from [0,100] to [-1,1] float """
     return rating / 50 - 1
 
 
 def get_all_vids(arr):
-    """get all unique vIDs for one criteria (all users)
+    """ get all unique vIDs for one criteria (all users)
 
     arr (2D float array): 1 line is [userID, vID1, vID2, r]
 
@@ -29,7 +28,7 @@ def get_all_vids(arr):
 
 
 def get_mask(batch1, batch2):
-    """returns boolean tensor indicating which videos the user rated
+    """ returns boolean tensor indicating which videos the user rated
 
     batch1 (2D bool tensor): 1 line is a one-hot encoded video index
     batch2 (2D bool tensor): 1 line is a one-hot encoded video index
@@ -41,13 +40,13 @@ def get_mask(batch1, batch2):
 
 
 def sort_by_first(arr):
-    """sorts 2D array lines by first element of lines"""
+    """ sorts 2D array lines by first element of lines """
     order = np.argsort(arr, axis=0)[:, 0]
     return arr[order, :]
 
 
 def one_hot_vid(vid_vidx, vid):
-    """One-hot inputs for neural network
+    """ One-hot inputs for neural network
 
     vid_vidx (dictionnary): dictionnary of {vID: idx}
     vid (int): video ID
@@ -60,8 +59,8 @@ def one_hot_vid(vid_vidx, vid):
     return tens
 
 
-def one_hot_vids(vid_vidx, l_vid, device="cpu"):
-    """One-hot inputs for neural network, list to batch
+def one_hot_vids(vid_vidx, l_vid, device='cpu'):
+    """ One-hot inputs for neural network, list to batch
 
     vid_vidx (int dictionnary): dictionnary of {vID: vidx}
     vid (int list): list of vID
@@ -76,8 +75,8 @@ def one_hot_vids(vid_vidx, l_vid, device="cpu"):
     return batch
 
 
-def get_batch_r(node_arr, device="cpu"):
-    """Returns batch of one user's ratings
+def get_batch_r(node_arr, device='cpu'):
+    """ Returns batch of one user's ratings
 
     node_arr (2D float array): one line is [userID, vID1, vID2, rating]
     device (str): device used (cpu/gpu)
@@ -89,7 +88,7 @@ def get_batch_r(node_arr, device="cpu"):
 
 
 def reverse_idxs(vids):
-    """Returns dictionnary of {vid: vidx}
+    """ Returns dictionnary of {vid: vidx}
 
     vids (int iterable): unique video IDs
 
@@ -100,8 +99,8 @@ def reverse_idxs(vids):
 
 
 # used for updating models after loading
-def expand_tens(tens, nb_new, device="cpu"):
-    """Expands a tensor to include scores for new videos
+def expand_tens(tens, nb_new, device='cpu'):
+    """ Expands a tensor to include scores for new videos
 
     tens (tensor): a detached tensor
     nb_new (int): number of parameters to add
@@ -116,7 +115,7 @@ def expand_tens(tens, nb_new, device="cpu"):
 
 
 def expand_dic(vid_vidx, l_vid_new):
-    """Expands a dictionnary to include new videos IDs
+    """ Expands a dictionnary to include new videos IDs
 
     vid_vidx: dictionnary of {video ID: video idx}
     l_vid_new: int list of video ID
@@ -134,7 +133,7 @@ def expand_dic(vid_vidx, l_vid_new):
 
 # folder manipulation
 def replace_dir(path):
-    ''' create or replace directory '''
+    """ create or replace directory """
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
@@ -142,32 +141,32 @@ def replace_dir(path):
 
 # save and load data
 def save_to_json(global_scores, local_scores, suff=""):
-    """saves scores in json files"""
-    with open("global_scores{}.json".format(suff), "w") as f:
-        json.dump(global_scores, f, indent=1)
-    with open("local_scores{}.json".format(suff), "w") as f:
-        json.dump(local_scores, f, indent=1)
+    """ saves scores in json files """
+    with open("global_scores{}.json".format(suff), 'w') as file:
+        json.dump(global_scores, file, indent=1)
+    with open("local_scores{}.json".format(suff), 'w') as file:
+        json.dump(local_scores, file, indent=1)
 
 
 def load_from_json(suff=""):
-    """loads previously saved data"""
-    with open("global_scores{}.json".format(suff), "r") as f:
-        global_scores = json.load(f)
-    with open("local_scores{}.json".format(suff), "r") as f:
-        local_scores = json.load(f)
+    """ loads previously saved data """
+    with open("global_scores{}.json".format(suff), 'r') as file:
+        global_scores = json.load(file)
+    with open("local_scores{}.json".format(suff), 'r') as file:
+        local_scores = json.load(file)
     return global_scores, local_scores
 
 
 def save_to_pickle(obj, name="pickle"):
-    """save python object to pickle file"""
-    filename = "{}.p".format(name)
-    with open(filename, "wb") as filehandler:
+    """ save python object to pickle file """
+    filename = '{}.p'.format(name)
+    with open(filename, 'wb') as filehandler:
         pickle.dump(obj, filehandler)
 
 
 def load_from_pickle(name="pickle"):
-    """load python object from pickle file"""
-    filename = "{}.p".format(name)
-    with open(filename, "rb") as filehandler:
+    """ load python object from pickle file """
+    filename = '{}.p'.format(name)
+    with open(filename, 'rb') as filehandler:
         obj = pickle.load(filehandler)
     return obj

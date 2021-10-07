@@ -1,13 +1,18 @@
-from .licchavi_dev import LicchaviDev
-from .visualisation import seedall, disp_one_by_line, output_infos
-from .fake_data import generate_data
-
 """
 Not used in production, for testing only
 Module called from "ml_train_dev.py" only if env var TOURNESOL_DEV is True
 
 Used to perform some tests on ml algorithm (custom data, plots, ...)
 """
+
+from ml.core import TOURNESOL_DEV
+from .licchavi_dev import LicchaviDev
+from .visualisation import seedall, disp_one_by_line, output_infos
+from ..core import ml_run
+
+
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 
 
 TEST_DATA = [
@@ -22,35 +27,31 @@ TEST_DATA = [
 ]
 
 NAME = ""
-EPOCHS = 60
 
 
 def run_experiment(comparison_data):
-    """trains and outputs some stats"""
-    from ..core import ml_run
-    seedall(9996465)
-    glob_gt, loc_gt, s_gt, comps_fake = generate_data(
-        5, 3, 5,  # 40, 27, 30,
-        dens=0.8,
-        noise=0.02)
+    """ trains and outputs some stats """
+    seedall(654)
+    # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
+    #     40, 27, 30,
+    #     dens=0.8,
+    #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        comps_fake,
-        EPOCHS,
-        ["test"],
+        TEST_DATA,
+        epochs=100,
+        criterias=["reliability"],
         licchavi_class=LicchaviDev,
         resume=False,
         save=False,
         verb=1,
         compute_uncertainty=False,
-        ground_truths=(glob_gt, loc_gt, s_gt)
+        # ground_truths=(glob_gt, loc_gt, s_gt)
         )
-    # check_one(200, glob_scores, loc_scores)
-    # # for c in comparison_data:
-    # #     if c[3]=="largely_recommended":
-    # #         print(c)
-    # # print(s_fake)
-    # #disp_fake_pred(glob_gt, glob_scores)
+
+    # some prints and plots
+    output_infos(*infos)
+
     disp_one_by_line(glob_scores[:20])
     disp_one_by_line(loc_scores[:20])
-    print("glob:", len(glob_scores), "local:", len(loc_scores))
+    print("glob:", len(glob_scores), "local:",  len(loc_scores))

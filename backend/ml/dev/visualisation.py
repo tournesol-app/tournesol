@@ -1,16 +1,20 @@
-import numpy as np
-import torch
-import random
-
-from ml.data_utility import replace_dir
-from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
-                    plot_loc_uncerts)
-
 """
 Visualisation methods, mainly for testing and debugging
-
-Main file is "ml_train.py"
 """
+import random
+
+import numpy as np
+import torch
+
+from ml.core import TOURNESOL_DEV
+from ml.data_utility import replace_dir
+from ml.losses import round_loss
+from .plots import (
+    plot_metrics, plot_density, plot_s_predict_gt, plot_loc_uncerts)
+
+if not TOURNESOL_DEV:
+    raise Exception('Dev module called whereas TOURNESOL_DEV=0')
+
 
 PATH_PLOTS = "ml/plots/"
 replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
@@ -18,7 +22,7 @@ replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
 
 # debug helpers
 def check_one(vid, comp_glob, comp_loc):
-    """prints global and local scores for one video"""
+    """ prints global and local scores for one video """
     print("all we have on video: ", vid)
     for score in comp_glob:
         if score[0] == vid:
@@ -28,35 +32,36 @@ def check_one(vid, comp_glob, comp_loc):
             print(score)
 
 
-def seedall(s):
-    """seeds all sources of randomness"""
-    reproducible = s >= 0
-    torch.manual_seed(s)
-    random.seed(s)
-    np.random.seed(s)
+def seedall(seed):
+    """ seeds all sources of randomness """
+    reproducible = (seed >= 0)
+    torch.manual_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
     torch.backends.cudnn.deterministic = reproducible
     torch.backends.cudnn.benchmark = not reproducible
-    print("\nSeeded all to", s)
+    print("\nSeeded all to", seed)
 
 
-def disp_one_by_line(it):
-    """prints one iteration by line"""
-    for obj in it:
+def disp_one_by_line(iterat):
+    """ prints one iteration by line """
+    for obj in iterat:
         print(obj)
 
 
 def disp_fake_pred(fakes, preds):
+    """ Prints gt and predictions side by side """
     print("FAKE PREDICTED")
     diff = 0
     for fake, pred in zip(fakes, preds):
-        f, p = round(fake, 2), pred[2]
-        print(f, p)
-        diff += 100 * abs(f - p) ** 2
-    print("mean dist**2 =", diff / len(preds))
+        fake, pred = round(fake, 2), pred[2]
+        print(fake, pred)
+        diff += 100 * abs(fake - pred)**2
+    print('mean dist**2 =', diff/len(preds))
 
 
 def measure_diff(fakes, preds):
-    """Measures difference between ground truth and prediction
+    """ Measures difference between ground truth and prediction
 
     fakes (float array): generated "true" global scores
     preds (list list): list of [video_id: int, criteria_name: str,
@@ -69,33 +74,57 @@ def measure_diff(fakes, preds):
     """
     diff = 0
     for fake, pred in zip(fakes, preds):
-        f, p = round(fake, 2), pred[2]
-        diff += 100 * abs(f - p) ** 2
-    return diff / len(preds)
+        fake, pred = round(fake, 2), pred[2]
+        diff += 100 * abs(fake - pred)**2
+    return diff/len(preds)
+
+
+def print_s(licch):
+    """ Prints s stats """
+    l_s = [(round_loss(s_par, 2), uid) for s_par, uid in zip(
+        licch.all_nodes("s_param"),
+        licch.nodes.keys()
+    )]
+    tens = torch.tensor(l_s)
+    disp_one_by_line(l_s)
+    tens = tens[:, 0]
+    print("mean of s: ", round_loss(torch.mean(tens), 2))
+    print(
+        "min and max of s: ",
+        round_loss(torch.min(tens), 2),
+        round_loss(torch.max(tens), 2)
+    )
+    print("var of s: ", round_loss(torch.var(tens), 2))
 
 
 def licch_stats(licch):
-    """gives some statistics about Licchavi object"""
-    print("LICCH_SATS")
+    """ gives some statistics about Licchavi object """
+    print('LICCH_SATS')
     licch.check()  # some tests
-    h = licch.history
+    hist = licch.history
     print("nb_nodes", licch.nb_nodes)
-    licch.stat_s()  # print stats on s parameters
+    print_s(licch)  # print stats on s parameters
     with torch.no_grad():
-        gen_s = licch.all_nodes("s")
-        l_s = [s.item() for s in gen_s]
-        plot_density(l_s, "s parameters", PATH_PLOTS, "s_params.png")
-    plot_metrics([h], path=PATH_PLOTS)
+        gen_s = licch.all_nodes("s_param")
+        l_s = [s_par.item() for s_par in gen_s]
+        plot_density(
+            l_s,
+            "s parameters",
+            PATH_PLOTS,
+            "s_params.png"
+        )
+    plot_metrics([hist], path=PATH_PLOTS)
 
 
 def scores_stats(glob_scores):
-    """gives statistics on global scores
+    """ gives statistics on global scores
 
     glob_scores: torch tensor of global scores
     """
-    print("SCORES_STATS")
+    print('SCORES_STATS')
     var = torch.var(glob_scores)
-    mini, maxi = (torch.min(glob_scores).item(), torch.max(glob_scores).item())
+    mini, maxi = (torch.min(glob_scores).item(),
+                  torch.max(glob_scores).item())
     print("minimax:", mini, maxi)
     print("variance of global scores :", var.item())
     with torch.no_grad():
@@ -110,7 +139,7 @@ def scores_stats(glob_scores):
 def s_stats(licch):
     """ Prints and plots about s parameters """
     if licch.test_mode:
-        s_predicted = [s.detach().item() for s in licch.all_nodes('s')]
+        s_predicted = [s.detach().item() for s in licch.all_nodes('s_param')]
         plot_s_predict_gt(s_predicted, licch.s_gt, PATH_PLOTS)
 
 
@@ -122,7 +151,7 @@ def uncert_stats(licch, loc_uncerts):
         nb_comps = torch.sum(node.vid1, axis=0) + torch.sum(node.vid2, axis=0)
         for uncert, vid in zip(uncerts, node.vids):
             l_nb_comps.append(nb_comps[vid_vidx[int(vid)]].item())
-            l_uncerts.append(uncert)
+            l_uncerts.append(uncert.item())
     plot_loc_uncerts(l_nb_comps, l_uncerts, PATH_PLOTS)
 
 

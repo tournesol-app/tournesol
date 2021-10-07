@@ -1,28 +1,20 @@
-from ml.losses import round_loss
-import numpy as np
-import torch
-import logging
-
-from .data_utility import (
-    get_batch_r,
-    rescale_rating,
-    sort_by_first,
-    reverse_idxs,
-    get_mask,
-    get_all_vids,
-    expand_dic,
-    one_hot_vids,
-)
-
 """
 To prepare data from training and reshape it after training
-
-Main file is "ml_train.py"
 """
+
+import logging
+
+import numpy as np
+import torch
+
+from ml.losses import round_loss
+from .data_utility import (
+    get_batch_r, rescale_rating, sort_by_first,
+    reverse_idxs, get_mask, get_all_vids, expand_dic, one_hot_vids)
 
 
 def select_criteria(comparison_data, crit):
-    """Extracts not None comparisons of one criteria
+    """ Extracts not None comparisons of one criteria
 
     comparison_data: output of fetch_data()
     crit: str, name of criteria
@@ -33,24 +25,29 @@ def select_criteria(comparison_data, crit):
                     criteria: str (crit), score: float, weight: float]
     """
     l_ratings = [
-        comp for comp in comparison_data if (comp[3] == crit and comp[4] is not None)
+        comp for comp in comparison_data
+        if (comp[3] == crit and comp[4] is not None)
     ]
     return l_ratings
 
 
 def shape_data(l_ratings):
-    """Shapes data for distribute_data()/distribute_data_from_save()
+    """ Shapes data for distribute_data()/distribute_data_from_save()
 
     l_ratings : list of not None ratings ([0,100]) for one criteria, all users
 
     Returns : one array with 4 columns : userID, vID1, vID2, rating ([-1,1])
     """
-    l_clear = [rating[:3] + [rescale_rating(rating[4])] for rating in l_ratings]
+    l_clear = [
+        rating[:3] + [rescale_rating(rating[4])] for rating in l_ratings
+        ]
     return np.asarray(l_clear)
 
 
-def _distribute_data_handler(arr, user_ids, vid_vidx, first_of_each, device="cpu"):
-    """Utility for data distribution accross nodes
+def _distribute_data_handler(
+        arr, user_ids, vid_vidx,
+        first_of_each, device='cpu'):
+    """ Utility for data distribution accross nodes
 
     arr (2D array): all ratings for all users for one criteria
                     (one line is [userID, vID1, vID2, rating])
@@ -64,15 +61,14 @@ def _distribute_data_handler(arr, user_ids, vid_vidx, first_of_each, device="cpu
     """
     nodes_dic = {}
 
-    for i, id in enumerate(user_ids):
-        node_arr = arr[first_of_each[i] : first_of_each[i + 1], :]
+    for i, uid in enumerate(user_ids):
+        node_arr = arr[first_of_each[i]: first_of_each[i + 1], :]
 
         batch1 = one_hot_vids(vid_vidx, node_arr[:, 1], device)
         batch2 = one_hot_vids(vid_vidx, node_arr[:, 2], device)
 
-        nodes_dic[id] = (
-            batch1,
-            batch2,
+        nodes_dic[uid] = (
+            batch1, batch2,
             get_batch_r(node_arr, device),
             get_all_vids(node_arr),
             get_mask(batch1, batch2),
@@ -81,8 +77,8 @@ def _distribute_data_handler(arr, user_ids, vid_vidx, first_of_each, device="cpu
     return nodes_dic
 
 
-def distribute_data(arr, device="cpu"):
-    """Distributes data on nodes according to user IDs for one criteria
+def distribute_data(arr, device='cpu'):
+    """ Distributes data on nodes according to user IDs for one criteria
         Output is not compatible with previously stored models,
            ie starts from scratch
 
@@ -97,7 +93,7 @@ def distribute_data(arr, device="cpu"):
     - array of user IDs
     - dictionnary of {vID: video idx}
     """
-    logging.info("Preparing data from scratch")
+    logging.info('Preparing data from scratch')
     arr = sort_by_first(arr)  # sorting by user IDs
     user_ids, first_of_each = np.unique(arr[:, 0], return_index=True)
     first_of_each = list(first_of_each)  # to be able to append
@@ -105,14 +101,18 @@ def distribute_data(arr, device="cpu"):
     vid_vidx = reverse_idxs(get_all_vids(arr))
 
     nodes_dic = _distribute_data_handler(
-        arr, user_ids, vid_vidx, first_of_each, device=device
+        arr,
+        user_ids,
+        vid_vidx,
+        first_of_each,
+        device=device
     )
 
     return nodes_dic, user_ids, vid_vidx
 
 
 def distribute_data_from_save(arr, fullpath, device):
-    """Distributes data on nodes according to user IDs for one criteria
+    """ Distributes data on nodes according to user IDs for one criteria
         Output is compatible with previously stored models
 
     arr: np 2D array of all ratings for all users for one criteria
@@ -126,7 +126,7 @@ def distribute_data_from_save(arr, fullpath, device):
     - array of user IDs
     - dictionnary of {vID: video idx}
     """
-    logging.info("Preparing data from save")
+    logging.info('Preparing data from save')
     _, dic_old, _, _ = torch.load(fullpath)  # loading previous data
 
     arr = sort_by_first(arr)  # sorting by user IDs
@@ -137,14 +137,18 @@ def distribute_data_from_save(arr, fullpath, device):
     vid_vidx = expand_dic(dic_old, vids)  # update dictionnary
 
     nodes_dic = _distribute_data_handler(
-        arr, user_ids, vid_vidx, first_of_each, device=device
+        arr,
+        user_ids,
+        vid_vidx,
+        first_of_each,
+        device=device
     )
 
     return nodes_dic, user_ids, vid_vidx
 
 
 def format_out_glob(glob, crit, uncerts):
-    """Puts data in list of global scores (one criteria)
+    """ Puts data in list of global scores (one criteria)
 
     glob: (tensor of all vIDS , tensor of global video scores)
     crit (str): criteria
@@ -160,14 +164,13 @@ def format_out_glob(glob, crit, uncerts):
             int(vid),
             crit,
             round_loss(score, 2),
-            0 if uncerts is None else round_loss(uncerts[vidx], 2),
-        ]
-        for vid, score, vidx in zip(*glob, range(len(glob[0])))
+            0 if uncerts is None else round_loss(uncerts[vidx], 2)
+        ] for vid, score, vidx in zip(*glob, range(len(glob[0])))
     ]
 
 
 def format_out_loc(loc, users_ids, crit, uncerts):
-    """Puts data in list of local scores (one criteria)
+    """ Puts data in list of local scores (one criteria)
 
     loc: (list of tensor of local vIDs , list of tensors of local video scores)
     users_ids: list/array of user IDs in same order
@@ -181,15 +184,14 @@ def format_out_loc(loc, users_ids, crit, uncerts):
     l_out = []
     vids, scores = loc
     for user_id, user_vids, user_scores, uidx in zip(
-        users_ids, vids, scores, range(len(loc[0]))
-    ):
-        for i in range(len(user_vids)):
+            users_ids, vids, scores, range(len(loc[0]))):
+        for i, vids in enumerate(user_vids):
             out = [
                 int(user_id),
-                int(user_vids[i].item()),
+                int(vids.item()),
                 crit,
                 round_loss(user_scores[i], 2),
-                0 if uncerts is None else round_loss(uncerts[uidx][i], 2),
+                0 if uncerts is None else round_loss(uncerts[uidx][i], 2)
             ]
             l_out.append(out)
 
