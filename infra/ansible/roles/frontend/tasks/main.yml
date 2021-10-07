@@ -72,7 +72,7 @@
     force: yes
     owner: gunicorn
     group: gunicorn
-    mode: u=rw,g=r,o=r
+    mode: preserve
     directory_mode: u=rwx,g=rx,o=rx
   become: yes
   notify:
