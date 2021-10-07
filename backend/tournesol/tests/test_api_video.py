@@ -302,3 +302,16 @@ class VideoApi(TestCase):
         response = factory.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+
+    def test_cannot_get_video_with_particular_request(self):
+        factory = APIClient()
+        _video_id_05 = "video_id_05"
+        video = Video.objects.create(video_id=_video_id_05)
+        VideoCriteriaScore.objects.create(video=video, criteria="engaging", score=-1)
+        VideoCriteriaScore.objects.create(video=video, criteria="importance", score=1)
+        good_response = factory.get("/video/?importance=50&engaging=0")
+        self.assertEqual(good_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(good_response.data["count"], str(len(self._list_of_videos) + 1))
+        bad_response = factory.get("/video/?importance=50&engaging=100")
+        self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bad_response.data["count"], str(len(self._list_of_videos)))
