@@ -1,0 +1,52 @@
+name: Backend lint and tests
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12.2
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: tournesol
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependancies
+        run: |
+          pip install -r requirements.txt
+          pip install -r tests/requirements.txt
+          pip install -r ml/ml_requirements.txt
+
+      - name: Run flake8
+        run: flake8 tournesol core --exclude=migrations,tests,dev,__init__.py --max-line-length 99
+
+      - name: Run pylint
+        run: pylint --ignore=migrations core tournesol
+
+      - name: Run pytest
+        run: pytest
+
+      - name: Run bandit
+        run: bandit -r . -c bandit.yaml
