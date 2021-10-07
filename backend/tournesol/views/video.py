@@ -76,7 +76,8 @@ class VideoViewSet(viewsets.ModelViewSet):
                     and request.query_params.get(score.criteria).isdigit() else 50
                 total += score.score * score_query_weight
             video.total = total
-            data.append(video)
+            if total > 0:
+                data.append(video)
         data.sort(key=lambda x: x.total, reverse=True)
         count = len(data)
         data = data[offset:offset+limit]

@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Video
+from ..models import Video, VideoCriteriaScore
 
 
 class VideoApi(TestCase):
@@ -22,12 +22,16 @@ class VideoApi(TestCase):
     _list_of_videos = []
 
     def setUp(self):
-        self._list_of_videos = Video.objects.bulk_create([
-            Video(video_id=self._video_id_01, name=self._video_id_01),
-            Video(video_id=self._video_id_02, name=self._video_id_02),
-            Video(video_id=self._video_id_03, name=self._video_id_03),
-            Video(video_id=self._video_id_04, name=self._video_id_04)
-        ])
+        
+        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01)
+        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02)
+        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03)
+        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04)
+        self._list_of_videos = [video_1, video_2, video_3, video_4]
+        VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_3, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_4, criteria="reliability", score=1)
 
     def test_anonymous_can_list(self):
         """
@@ -289,5 +293,25 @@ class VideoApi(TestCase):
             (["Sunflower4All", "Ich spreche Deutsch", "Hallo, Danke schön"], "de"),
         ]
         for input, output in test_details:
-            print(input, output)
             self.assertEqual(compute_video_language(*input), output)
+
+    def test_cannot_get_existing_video_without_positive_score(self):
+        factory = APIClient()
+        video_null_score = 'video_null_score'
+        Video.objects.create(video_id=video_null_score)
+        response = factory.get("/video/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+
+    def test_cannot_get_video_with_particular_request(self):
+        factory = APIClient()
+        _video_id_05 = "video_id_05"
+        video = Video.objects.create(video_id=_video_id_05)
+        VideoCriteriaScore.objects.create(video=video, criteria="engaging", score=-1)
+        VideoCriteriaScore.objects.create(video=video, criteria="importance", score=1)
+        good_response = factory.get("/video/?importance=50&engaging=0")
+        self.assertEqual(good_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(good_response.data["count"], str(len(self._list_of_videos) + 1))
+        bad_response = factory.get("/video/?importance=50&engaging=100")
+        self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(bad_response.data["count"], str(len(self._list_of_videos)))
