@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependancies
+      - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install -r tests/requirements.txt
@@ -43,7 +43,7 @@ jobs:
         run: flake8 tournesol core --exclude=migrations,tests,dev,__init__.py --max-line-length 99
 
       - name: Run pylint
-        run: pylint --ignore=migrations core tournesol
+        run: pylint --ignore=migrations core tournesol ml
 
       - name: Run pytest
         run: pytest
