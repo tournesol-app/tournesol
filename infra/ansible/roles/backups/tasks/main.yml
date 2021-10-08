@@ -21,7 +21,6 @@
   template:
     dest: /etc/systemd/system/export-backups.service
     src: export-backups.service.j2
-  when: export_backups_bucket_name is defined and export_backups_bucket_name != ""
 
 - name: Copy backups export timer
   template:
@@ -33,7 +32,6 @@
   pip:
     name: awscli
   become: yes
-  when: export_backups_bucket_name is defined and export_backups_bucket_name != ""
 
 - name: Enable and start backups export timer
   systemd:
