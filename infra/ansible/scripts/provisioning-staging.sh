@@ -36,3 +36,5 @@ ansible-playbook -i inventory.yml -l tournesol-staging setup.yml \
   -e "grafana_oidc_client_id=$GRAFANA_OIDC_CLIENT_ID" \
   -e "grafana_oidc_client_secret=$GRAFANA_OIDC_CLIENT_SECRET" \
   -e "discord_alerting_webhook=${DISCORD_ALERTING_WEBHOOK:-""}" \
+  -e "aws_access_key_id=${AWS_ACCESS_KEY_ID:-""}" \
+  -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY:-""}" \

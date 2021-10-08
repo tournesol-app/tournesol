@@ -1,0 +1,37 @@
+- name: Copy AWS access key ID
+  template:
+    dest: /root/aws_access_key_id
+    src: aws_access_key_id.j2
+
+- name: Copy AWS secret access key
+  template:
+    dest: /root/aws_secret_access_key
+    src: aws_secret_access_key.j2
+
+- name: Copy Discord backups export failure alert
+  template:
+    dest: /usr/local/bin/discord-export-backups-fail-alert.sh
+    src: discord-export-backups-fail-alert.sh.j2
+    mode: a=rx
+
+- name: Copy backups export service
+  template:
+    dest: /etc/systemd/system/export-backups.service
+    src: export-backups.service.j2
+
+- name: Copy backups export timer
+  template:
+    dest: /etc/systemd/system/export-backups.timer
+    src: export-backups.timer.j2
+
+- name: Install awscli
+  pip:
+    name: awscli
+  become: yes
+
+- name: Enable and start backups export timer
+  systemd:
+    name: export-backups.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

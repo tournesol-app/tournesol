@@ -66,3 +66,9 @@ export GRAFANA_OIDC_CLIENT_SECRET
 DISCORD_ALERTING_WEBHOOK="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/discord_alerting_webhook)" && \
 export DISCORD_ALERTING_WEBHOOK || \
 echo "no Discord alerting webhook set"
+
+AWS_ACCESS_KEY_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/systemd/system/export-backups.service | sed -n 's/^Environment="AWS_ACCESS_KEY_ID=\(.*\)"/\1/p')"
+export AWS_ACCESS_KEY_ID
+
+AWS_SECRET_ACCESS_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/systemd/system/export-backups.service | sed -n 's/^Environment="AWS_SECRET_ACCESS_KEY=\(.*\)"/\1/p')"
+export AWS_SECRET_ACCESS_KEY

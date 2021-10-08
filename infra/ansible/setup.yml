@@ -12,4 +12,5 @@
     - logging
     - frontend
     - mediawiki
+    - backups
   become: true
