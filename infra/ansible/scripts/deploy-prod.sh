@@ -2,8 +2,8 @@
 
 set -Eeuo pipefail
 
-export ANSIBLE_HOST="tournesol-staging"
-export DOMAIN_NAME="staging.tournesol.app"
+export ANSIBLE_HOST="tournesol-prod"
+export DOMAIN_NAME="tournesol.app"
 
 CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 
@@ -16,4 +16,4 @@ else
   CHECK=""
 fi
 
-./scripts/deploy-without-secrets.sh "$CHECK"
+./scripts/deploy-with-secrets.sh "$CHECK"
