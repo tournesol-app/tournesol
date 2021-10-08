@@ -21,6 +21,7 @@
   shell:
     cmd: "wget -qO /dev/null --post-data='{\"content\": \"{{domain_name}}: new backend deployed\"}' --header='Content-Type:application/json' '{{discord_alerting_webhook}}?wait=true'"
     executable: /usr/bin/bash
+  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
 
 - name: Collect Django static assets
   shell:
