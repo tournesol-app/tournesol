@@ -1,9 +1,13 @@
 import React from 'react';
 
-import { Typography, makeStyles, Grid } from '@material-ui/core';
+import { Typography, makeStyles, Grid, IconButton } from '@material-ui/core';
+import { Add as AddIcon } from '@material-ui/icons';
 import type { PaginatedVideoList, Video } from 'src/services/openapi';
 import VideoCard from '../videos/VideoCard';
 import { CompareNowAction } from 'src/utils/action';
+import { addToRateLaterList } from '../rateLater/rateLaterAPI';
+import { useAppSelector } from 'src/app/hooks';
+import { selectLogin } from 'src/features/login/loginSlice';
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -14,13 +18,38 @@ const useStyles = makeStyles(() => ({
 function VideoList({ videos }: { videos: PaginatedVideoList }) {
   const classes = useStyles();
 
+  const loginState = useAppSelector(selectLogin);
+  console.log(loginState.access_token);
+
+  const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
+    const video_id = videoId;
+    return (
+      <div>
+        {loginState.access_token && (
+          <IconButton
+            size="medium"
+            color="secondary"
+            onClick={async () => {
+              await addToRateLaterList(loginState, { video_id });
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       {videos.results?.length ? (
         videos.results.map((video: Video) => (
           <Grid container className={classes.card} key={video.video_id}>
             <Grid item xs={12}>
-              <VideoCard video={video} actions={[CompareNowAction]} />
+              <VideoCard
+                video={video}
+                actions={[CompareNowAction, AddToRateLaterList]}
+              />
             </Grid>
           </Grid>
         ))
