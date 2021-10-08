@@ -2,32 +2,38 @@
   template:
     dest: /root/aws_access_key_id
     src: aws_access_key_id.j2
+  when: export_backups_bucket_name is defined
 
 - name: Copy AWS secret access key
   template:
     dest: /root/aws_secret_access_key
     src: aws_secret_access_key.j2
+  when: export_backups_bucket_name is defined
 
 - name: Copy Discord backups export failure alert
   template:
     dest: /usr/local/bin/discord-export-backups-fail-alert.sh
     src: discord-export-backups-fail-alert.sh.j2
     mode: a=rx
+  when: export_backups_bucket_name is defined
 
 - name: Copy backups export service
   template:
     dest: /etc/systemd/system/export-backups.service
     src: export-backups.service.j2
+  when: export_backups_bucket_name is defined
 
 - name: Copy backups export timer
   template:
     dest: /etc/systemd/system/export-backups.timer
     src: export-backups.timer.j2
+  when: export_backups_bucket_name is defined
 
 - name: Install awscli
   pip:
     name: awscli
   become: yes
+  when: export_backups_bucket_name is defined
 
 - name: Enable and start backups export timer
   systemd:
@@ -35,3 +41,4 @@
     state: started
     enabled: yes
     daemon_reload: yes
+  when: export_backups_bucket_name is defined
