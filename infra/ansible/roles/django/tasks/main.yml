@@ -69,14 +69,16 @@
     owner: gunicorn
     group: gunicorn
 
-- name: Clone Django application repository
-  git:
-    repo: https://github.com/tournesol-app/tournesol-backend.git
+- name: Copy Django application repository
+  copy:
+    src: "{{playbook_dir}}/../../backend/"
     dest: /srv/tournesol-backend
-    version: "{{backend_target_branch}}"
     force: yes
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rw,g=r,o=r
+    directory_mode: u=rwx,g=rx,o=rx
   become: yes
-  become_user: gunicorn
   notify:
     - Migrate Django database
     - Collect Django static assets
@@ -166,6 +168,7 @@
 - name: Install requirements for ML training
   pip:
     requirements: /srv/tournesol-backend/ml/ml_requirements.txt
+    extra_args: "--no-cache-dir"
     virtualenv: /srv/tournesol-backend/venv
     virtualenv_python: python3.9
   become: yes

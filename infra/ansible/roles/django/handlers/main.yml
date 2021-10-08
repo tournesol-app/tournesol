@@ -19,7 +19,7 @@
 
 - name: Notify backend upgrade
   shell:
-    cmd: "wget -qO /dev/null --post-data='{\"content\": \"{{domain_name}}: new backend deployed at {{backend_target_branch}}\"}' --header='Content-Type:application/json' '{{discord_alerting_webhook}}?wait=true'"
+    cmd: "wget -qO /dev/null --post-data='{\"content\": \"{{domain_name}}: new backend deployed\"}' --header='Content-Type:application/json' '{{discord_alerting_webhook}}?wait=true'"
     executable: /usr/bin/bash
 
 - name: Collect Django static assets
