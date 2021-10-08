@@ -1,8 +1,9 @@
 import React, { useEffect, useCallback } from 'react';
 
-import { Grid } from '@material-ui/core';
+import { Grid, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import { Delete as DeleteIcon } from '@material-ui/icons';
 
 import { useAppSelector } from 'src/app/hooks';
 import { selectLogin } from 'src/features/login/loginSlice';
@@ -16,6 +17,7 @@ import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
 import { CompareNowAction } from 'src/utils/action';
+import { deleteFromRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -99,6 +101,22 @@ const RateLaterPage = () => {
     videoListTopRef.current?.scrollIntoView();
   };
 
+  const RemoveVideoFromListAction = ({ videoId }: { videoId: string }) => {
+    const video_id = videoId;
+    return (
+      <IconButton
+        size="medium"
+        color="secondary"
+        onClick={async () => {
+          await deleteFromRateLaterList(loginState, { video_id });
+          await loadList();
+        }}
+      >
+        <DeleteIcon />
+      </IconButton>
+    );
+  };
+
   useEffect(() => {
     loadList();
   }, [loadList]);
@@ -162,7 +180,10 @@ const RateLaterPage = () => {
           {rateLaterList.map(({ video }) => (
             <Grid container className={classes.video} key={video.video_id}>
               <Grid item xs={12}>
-                <VideoCard video={video} actions={[CompareNowAction]} />
+                <VideoCard
+                  video={video}
+                  actions={[CompareNowAction, RemoveVideoFromListAction]}
+                />
               </Grid>
             </Grid>
           ))}
