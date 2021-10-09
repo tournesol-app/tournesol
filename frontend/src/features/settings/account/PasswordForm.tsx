@@ -12,8 +12,6 @@ import { selectLogin } from '../../login/loginSlice';
 import { contactAdministrator } from '../../../utils/notifications';
 
 const PasswordForm = () => {
-  // TODO (1) use await instead of .then followed by .catch
-  // TODO (2) make the form unfocused after a success
   const token = useAppSelector(selectLogin);
   const access_token = token.access_token ? token.access_token : '';
 
@@ -25,26 +23,46 @@ const PasswordForm = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    changePassword(access_token, oldPassword, password, passwordConfirm)
-      .then((value: Record<string, string>) => {
-        enqueueSnackbar(value['detail'], { variant: 'success' });
-        setOldPassword('');
-        setPassword('');
-        setPasswordConfirm('');
-      })
-      .catch((reason: { body: { [k: string]: string[] } }) => {
-        if (reason && 'body' in reason) {
-          const newErrorMessages = Object.values(reason['body']).flat();
-          newErrorMessages.map((msg) =>
-            enqueueSnackbar(msg, { variant: 'error' })
-          );
-        } else {
-          contactAdministrator(
-            enqueueSnackbar,
-            'Sorry, an error has occurred, cannot update password.'
-          );
-        }
-      });
+
+    const response: void | Record<string, string> = await changePassword(
+      access_token,
+      oldPassword,
+      password,
+      passwordConfirm
+
+      // handle errors and unknown errors
+    ).catch((reason: { body: { [k: string]: string[] } }) => {
+      if (reason && 'body' in reason) {
+        const newErrorMessages = Object.values(reason['body']).flat();
+        newErrorMessages.map((msg) =>
+          enqueueSnackbar(msg, { variant: 'error' })
+        );
+      } else {
+        contactAdministrator(
+          enqueueSnackbar,
+          'error',
+          'Sorry, an error has occurred, cannot update password.'
+        );
+      }
+    });
+
+    // handle success and malformed success
+    if (response) {
+      if ('detail' in response) {
+        enqueueSnackbar(response['detail'], { variant: 'success' });
+      } else {
+        contactAdministrator(
+          enqueueSnackbar,
+          'success',
+          'Password change successfully'
+        );
+      }
+
+      setOldPassword('');
+      setPassword('');
+      setPasswordConfirm('');
+      (document.activeElement as HTMLElement).blur();
+    }
   };
 
   return (

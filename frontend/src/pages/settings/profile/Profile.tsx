@@ -5,6 +5,9 @@ import Grid from '@material-ui/core/Grid';
 
 import ContentHeader from '../../../components/ContentHeader';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import BuildIcon from '@material-ui/icons/Build';
 
 function ProfilePage() {
   return (
@@ -14,6 +17,31 @@ function ProfilePage() {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={2}>
             <SettingsMenu />
+          </Grid>
+          <Grid
+            container
+            item
+            direction="column"
+            alignItems="stretch"
+            xs={12}
+            sm={12}
+            md={10}
+          >
+            <Grid item>
+              <Box marginBottom={2}>
+                <Typography variant="h4" color="secondary">
+                  Profile
+                </Typography>
+                <Divider />
+              </Box>
+            </Grid>
+            <Grid item md={4}>
+              <Typography paragraph>
+                <BuildIcon color="primary" />
+                &nbsp;&nbsp;Page under construction...&nbsp;&nbsp;
+                <BuildIcon color="primary" />
+              </Typography>
+            </Grid>
           </Grid>
         </Grid>
       </Box>

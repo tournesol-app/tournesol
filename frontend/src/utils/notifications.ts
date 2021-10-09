@@ -1,7 +1,8 @@
-import { ProviderContext } from 'notistack';
+import { ProviderContext, VariantType } from 'notistack';
 
 const contactAdministrator = (
   display: ProviderContext['enqueueSnackbar'],
+  variant: VariantType,
   message?: string
 ) => {
   if (!message) {
@@ -10,7 +11,7 @@ const contactAdministrator = (
   display('Please, contact an administrator to report the issue.', {
     variant: 'warning',
   });
-  display(message, { variant: 'error' });
+  display(message, { variant: variant });
 };
 
 export { contactAdministrator };
