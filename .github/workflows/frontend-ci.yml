@@ -18,3 +18,4 @@ jobs:
       - run: yarn
       - run: ./scripts/generate-services-from-openapi.sh
       - run: yarn test
+      - run: yarn lint
