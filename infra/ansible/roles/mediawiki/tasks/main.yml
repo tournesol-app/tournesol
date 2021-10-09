@@ -136,10 +136,10 @@
   with_items:
     - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-cbe6759.tar.gz
       name: Math-REL1_36-cbe6759.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-027be98.tar.gz
-      name: PluggableAuth-REL1_36-027be98.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-37a0df5.tar.gz
-      name: OpenIDConnect-REL1_36-37a0df5.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-087cb4c.tar.gz
+      name: PluggableAuth-REL1_36-087cb4c.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-da79147.tar.gz
+      name: OpenIDConnect-REL1_36-da79147.tar.gz
 
 - name: Extract Mediawiki language extensions
   unarchive:
@@ -162,10 +162,10 @@
   with_items:
     - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-cbe6759.tar.gz
       name: Math-REL1_36-cbe6759.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-027be98.tar.gz
-      name: PluggableAuth-REL1_36-027be98.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-37a0df5.tar.gz
-      name: OpenIDConnect-REL1_36-37a0df5.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-087cb4c.tar.gz
+      name: PluggableAuth-REL1_36-087cb4c.tar.gz
+    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-da79147.tar.gz
+      name: OpenIDConnect-REL1_36-da79147.tar.gz
   notify:
     - Run Composer
     - Update Mediawiki database
