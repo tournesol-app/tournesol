@@ -46,7 +46,7 @@ set PASSWORD [lindex $argv 1]
 set EMAIL [lindex $argv 2]
 
 set timeout -1
-spawn docker exec -ti dev-env_web_1 python manage.py createsuperuser
+spawn docker exec -ti tournesol-dev-api python manage.py createsuperuser
 match_max 100000
 expect -exact "Username: "
 send -- "$USERNAME\r"

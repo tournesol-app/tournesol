@@ -2,6 +2,7 @@ version: "3.3"
    
 services:
   db:
+    container_name: tournesol-dev-db
     image: postgres:buster
     volumes:
       - ./data/db:/var/lib/postgresql/data
@@ -13,8 +14,12 @@ services:
       - "5432"
     ports:
       - "127.0.0.1:5432:5432"
-  web:
+    networks:
+      tournesol-dev: {}
+
+  api:
     build: .
+    container_name: tournesol-dev-api
     command: 
         - wait-for-it
         - db:5432
@@ -26,5 +31,11 @@ services:
       - ./code:/code
     ports:
       - "127.0.0.1:8000:8000"
+    networks:
+      tournesol-dev: {}
     depends_on:
       - db
+
+networks:
+  tournesol-dev:
+    # name: tournesol-dev # requires specification version >= 3.5
