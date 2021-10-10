@@ -5,46 +5,32 @@ set -Eeuxo pipefail
 CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 cd "$CURRENT_DIR"
 
-sudo rm -rf data static media
+rm -rf db-data
 
-mkdir data
-sudo chown -R 999:999 data
+cp ../backend/requirements.txt ../backend/ml/ml_requirements.txt ../backend/dev-env/
+cp ../frontend/package.json ../frontend/dev-env/
 
-docker-compose up --force-recreate -d db
+mkdir -p db-data
 
+DB_UID=$(id -u) \
+DB_GID=$(id -g) \
+docker-compose up --build --force-recreate -d
+
+echo 'Waiting a Bit for Backend to be Ready...'
 sleep 30
 
-cd ..
-
-python3.9 -m venv venv
-source venv/bin/activate
-pip install -U pip
-pip install -r requirements.txt
-
-sed \
--e 's/DATABASE_HOST: db/DATABASE_HOST: 127.0.0.1/' \
--e 's|STATIC_ROOT: /tournesol/static|STATIC_ROOT: '"$CURRENT_DIR/static/"'|' \
--e 's|MEDIA_ROOT: /tournesol/media/|MEDIA_ROOT: '"$CURRENT_DIR/media/"'|' \
-"$CURRENT_DIR/settings-tournesol.yaml" > "$CURRENT_DIR/settings-tournesol-local.yaml"
-export SETTINGS_FILE="$CURRENT_DIR/settings-tournesol-local.yaml"
-
-python manage.py makemigrations
-python manage.py migrate
-python manage.py collectstatic --noinput
-
 echo 'Importing public dataset'
-tar xvf "$CURRENT_DIR"/../scripts/dataset-import/dump-for-migrations-core-0004-tournesol-0007.sql.tgz
-sudo mv dump.sql "$CURRENT_DIR"/data/db/
-sudo chown 999:999 "$CURRENT_DIR"/data/db/dump.sql
+tar xvf "$CURRENT_DIR"/../backend/scripts/dataset-import/dump-for-migrations-core-0004-tournesol-0007.sql.tgz
+mv dump.sql "$CURRENT_DIR"/db-data/
 docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U user < /var/lib/postgresql/data/dump.sql"
-sudo rm "$CURRENT_DIR"/data/db/dump.sql
+rm "$CURRENT_DIR"/db-data/dump.sql
 
 echo 'Creating Superuser:'
-# docker exec -ti dev-env_web_1 python manage.py createsuperuser
+# docker exec -ti tournesol-dev-api python manage.py createsuperuser
 USERNAME="${1:-"$USER"}"
 PASSWORD="${2:-"yop"}"
 EMAIL="${3:-"$USER@kleis.ch"}"
-"$CURRENT_DIR/create-superuser-local.exp" "$USERNAME" "$PASSWORD" "$EMAIL"
+"$CURRENT_DIR/../backend/dev-env/create-superuser.exp" "$USERNAME" "$PASSWORD" "$EMAIL"
 
 echo 'Creating OAuth Application:'
 # OAUTH_CLIENT_ID="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)" || true
@@ -61,8 +47,3 @@ OAUTH_CLIENT_ID="vY17xBi0MZKZCotrfma5ympAd0hq30OudU78HZAY"
 OAUTH_CLIENT_SECRET="ZJ5FZeHomIgq6uNpVgNKwJiXDfFZz1HijDhsQJlXXnFKF6R7bUqc49Dv5MNL3cYTUrE1axrTtJTSr6IkHCc417ye8bLR8facpmhD4TwQqg7ktIQ047Y2Xp0rRcKLlIvq"
 now="$(date +%Y-%m-%d)"
 docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -d tournesol -U user <<< \"insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('$OAUTH_CLIENT_ID', 'http://localhost:8000/docs/', 'confidential', 'password', '$OAUTH_CLIENT_SECRET','Swagger UI', true, 'RS256', '$now', '$now');\""
-
-echo 'Launching Django:'
-python manage.py runserver 127.0.0.1:8000
-
-# rm "$CURRENT_DIR/settings-tournesol-local.yaml"

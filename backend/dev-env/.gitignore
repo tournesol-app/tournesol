@@ -2,4 +2,5 @@
 /data
 /settings-tournesol-local.yaml
 /static
-
+/requirements.txt
+/ml_requirements.txt

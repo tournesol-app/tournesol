@@ -4,8 +4,9 @@ services:
   db:
     container_name: tournesol-dev-db
     image: postgres:buster
+    user: ${DB_UID}:${DB_GID}
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=tournesol
       - POSTGRES_USER=user
@@ -18,8 +19,10 @@ services:
       tournesol-dev: {}
 
   api:
-    build: .
+    build: ../backend/dev-env
     container_name: tournesol-dev-api
+    environment:
+      - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml
     command: 
         - wait-for-it
         - db:5432
@@ -28,13 +31,29 @@ services:
         - -c
         - "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./code:/code
+      - ../backend:/backend
+    expose:
+      - "8000"
     ports:
       - "127.0.0.1:8000:8000"
     networks:
       tournesol-dev: {}
     depends_on:
       - db
+
+  front:
+    build: ../frontend/dev-env
+    container_name: tournesol-dev-front
+    command:
+      - bash
+      - -c
+      - "cd /frontend && ./scripts/generate-services-from-openapi.sh && yarn start"
+    volumes:
+      - ../frontend:/frontend
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      tournesol-dev: {}
 
 networks:
   tournesol-dev:
