@@ -80,8 +80,7 @@ const VideoSelector = ({
         <TextField
           placeholder="Paste URL or Video ID"
           style={{ flex: 1, minWidth: '10em' }}
-          defaultValue={videoId}
-          value={videoId}
+          value={videoId || ''}
           onChange={handleChange}
         />
         <Tooltip title="New Video" aria-label="new_video">
