@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { Link } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import {
   ListItem,
   ListItemText,
@@ -63,6 +63,28 @@ const SideBar = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const history = useHistory();
+  const location = useLocation();
+
+  const menuItems = [
+    { targetUrl: '/', IconComponent: HomeIcon, displayText: 'Home' },
+    //  { targetUrl: "/comparisons", IconComponent: ListIcon, displayText: "My Comparisons"},
+    {
+      targetUrl: '/comparison',
+      IconComponent: CompareIcon,
+      displayText: 'Contribute',
+    },
+    {
+      targetUrl: '/rate_later',
+      IconComponent: WatchLaterIcon,
+      displayText: 'Rate later',
+    },
+    {
+      targetUrl: '/recommendations',
+      IconComponent: VideoLibrary,
+      displayText: 'Recommendations',
+    },
+  ];
 
   return (
     <Drawer
@@ -82,46 +104,19 @@ const SideBar = () => {
       }}
     >
       <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
-        <Link to="/">
-          <ListItem button>
+        {menuItems.map(({ targetUrl, IconComponent, displayText }) => (
+          <ListItem
+            key={displayText}
+            button
+            selected={targetUrl == location.pathname}
+            onClick={() => history.push(targetUrl)}
+          >
             <ListItemIcon>
-              <HomeIcon color="action" />
+              <IconComponent color="action" />
             </ListItemIcon>
-            <ListItemText primary="Home" />
+            <ListItemText primary={displayText} />
           </ListItem>
-        </Link>
-        {/* <Link to="/comparisons">
-          <ListItem button>
-            <ListItemIcon>
-              <ListIcon color="action" />
-            </ListItemIcon>
-            <ListItemText primary="My Comparisons" />
-          </ListItem>
-        </Link> */}
-        <Link to="/comparison">
-          <ListItem button>
-            <ListItemIcon>
-              <CompareIcon color="action" />
-            </ListItemIcon>
-            <ListItemText primary="Contribute" />
-          </ListItem>
-        </Link>
-        <Link to="/rate_later">
-          <ListItem button>
-            <ListItemIcon>
-              <WatchLaterIcon color="action" />
-            </ListItemIcon>
-            <ListItemText primary="Rate later" />
-          </ListItem>
-        </Link>
-        <Link to="/recommendations">
-          <ListItem button>
-            <ListItemIcon>
-              <VideoLibrary color="action" />
-            </ListItemIcon>
-            <ListItemText primary="Recommendations" />
-          </ListItem>
-        </Link>
+        ))}
       </List>
     </Drawer>
   );
