@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import Paper from '@material-ui/core/Paper';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -11,14 +12,14 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Settings from '@material-ui/icons/Settings';
 
 export default function SettingsMenu() {
-  const pathname = window.location.pathname;
+  const location = useLocation();
   return (
     <Paper>
       <MenuList>
         <MenuItem
           component={Link}
           to="/settings/profile"
-          selected={'/settings/profile' === pathname}
+          selected={'/settings/profile' === location.pathname}
         >
           <ListItemIcon>
             <AccountCircle />
@@ -28,7 +29,7 @@ export default function SettingsMenu() {
         <MenuItem
           component={Link}
           to="/settings/account"
-          selected={'/settings/account' === pathname}
+          selected={'/settings/account' === location.pathname}
         >
           <ListItemIcon>
             <Settings />
