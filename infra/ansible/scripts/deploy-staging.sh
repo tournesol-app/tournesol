@@ -16,4 +16,4 @@ else
   CHECK=""
 fi
 
-./scripts/deploy-without-secrets.sh "$CHECK"
+./scripts/deploy-with-secrets.sh "$CHECK"

@@ -93,6 +93,10 @@ all:
 
           postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
 
+          export_backups_schedule: "*-*-* 0,6,12,18:30:00" # every 6 hours
+          export_backups_bucket_name: tournesol-app-backups
+          export_backups_path: staging
+
         # Production Vultr VM
         tournesol-prod:
           ansible_host: tournesol.app
@@ -139,6 +143,10 @@ all:
           mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
 
           postgresql_backup_schedule: "*-*-* 0,6,12,18:00:00" # every 6 hours
+
+          export_backups_schedule: "*-*-* 0,6,12,18:30:00" # every 6 hours
+          export_backups_bucket_name: tournesol-app-backups
+          export_backups_path: prod
 
       vars:
         ansible_python_interpreter: /usr/bin/python3

@@ -1,0 +1,13 @@
+[Unit]
+Description=Export Backups to S3
+
+[Service]
+Type=oneshot
+Environment="AWS_ACCESS_KEY_ID={{aws_access_key_id}}"
+Environment="AWS_SECRET_ACCESS_KEY={{aws_secret_access_key}}"
+{% if export_backups_bucket_name is defined %}
+ExecStart=aws s3 sync /backups s3://{{export_backups_bucket_name}}/{{export_backups_path}} --delete --storage-class INTELLIGENT_TIERING
+{% else %}
+ExecStart=echo "would export backups but no bucket provided"
+{% endif %}
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-export-backups-fail-alert.sh; fi"

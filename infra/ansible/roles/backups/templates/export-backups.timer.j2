@@ -1,0 +1,8 @@
+[Unit]
+Description=Export Backups to S3
+
+[Timer]
+OnCalendar={{export_backups_schedule}}
+
+[Install]
+WantedBy=timers.target

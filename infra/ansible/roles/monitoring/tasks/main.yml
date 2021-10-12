@@ -364,7 +364,6 @@
     dest: /root/discord_alerting_webhook
     src: discord_alerting_webhook.j2
     mode: u=rw,go=
-  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
 
 - name: Copy external URLs monitoring script
   template:
