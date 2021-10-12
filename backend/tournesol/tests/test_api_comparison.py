@@ -524,3 +524,9 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(result_comparison1["video_b"]["video_id"], comparison1.video_2.video_id)
         self.assertEqual(result_comparison2["video_a"]["video_id"], comparison2.video_1.video_id)
         self.assertEqual(result_comparison2["video_b"]["video_id"], comparison2.video_2.video_id)
+
+    def test_get_n_contributors_from_video(self):
+        self.assertEqual(self.videos[0].rating_n["contributors"], 1)
+        self.assertEqual(self.videos[1].rating_n["contributors"], 2)
+        self.assertEqual(self.videos[2].rating_n["contributors"], 1)
+        self.assertEqual(self.videos[3].rating_n["contributors"], 2)

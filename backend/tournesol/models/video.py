@@ -131,21 +131,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     ]
 
     # computed via signals AND via recompute_properties command
-    rating_n_contributors = computed_property.ComputedIntegerField(
-        compute_from="get_rating_n_contributors",
-        null=False,
-        default=0,
-        help_text="Total number of certified contributors who rated the video",
-    )
-
-    rating_n_ratings = computed_property.ComputedIntegerField(
-        compute_from="get_rating_n_ratings",
-        null=False,
-        default=0,
-        help_text="Total number of pairwise comparisons for this video"
-                  "from certified contributors",
-    )
-
     n_public_contributors = computed_property.ComputedIntegerField(
         compute_from="get_n_public_contributors",
         null=False,
@@ -277,24 +262,13 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         # )
         return 1
 
-    def get_rating_n_ratings(self, user=None):
-        """Number of associated ratings."""
-        if user:
-            return (
-                Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
-                .filter(user=user)
-                .count()
-            )
-        return Comparison.objects.filter(Q(video_1=self) | Q(video_2=self)).count()
-
-    def get_rating_n_contributors(self):
+    @property
+    def rating_n(self):
         """Number of contributors in ratings."""
-        return (
-            Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
-            .order_by("user")
-            .distinct("user")
-            .count()
-        )
+        queryset = Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
+        ratings = queryset.count()
+        contributors = queryset.distinct("user").count()
+        return {"ratings": ratings, "contributors": contributors}
 
     # /COMPUTED properties implementation
 
