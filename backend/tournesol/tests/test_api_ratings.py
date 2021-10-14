@@ -39,7 +39,7 @@ class RatingApi(TestCase):
             args=[user.username],
             format="json"
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_video_not_exists(self):
         factory = APIClient()
@@ -57,8 +57,7 @@ class RatingApi(TestCase):
         user = User.objects.get(username=self._user)
         factory.force_authenticate(user=user)
         video = Video.objects.create(video_id='6QDWbKnwRcc')
-        rating = ContributorRating.objects.create(video=video, user=user)
-        rating.save()
+        ContributorRating.objects.create(video=video, user=user)
         response = factory.get(
             "/users/me/contributor_ratings/6QDWbKnwRcc/",
             args=[user.username],
@@ -76,7 +75,5 @@ class RatingApi(TestCase):
             args=[user.username],
             format="json"
         )
-        self.assertEqual(response.data["count"], 1)
-        for rating in response.data['results']:
-            self.assertEqual(rating["user"], user.id)
+        self.assertEqual(len(response.data), 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

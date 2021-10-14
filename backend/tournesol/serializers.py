@@ -226,4 +226,4 @@ class ContributorRatingSerializer(ModelSerializer):
 
     class Meta:
         model = ContributorRating
-        exclude = ["id"]
+        exclude = ["id", "user"]
