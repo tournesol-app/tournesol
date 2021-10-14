@@ -3,6 +3,8 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
+console.log("Add Tournesol recommendations")
+
 document.addEventListener('yt-navigate-finish', process);
 
 if (document.body) process();
@@ -28,37 +30,24 @@ function process() {
   });
 }
 
-// This part creates video boxes from API's response JSON
-chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
-  // Timer will run until needed elements are generated
-  var timer = window.setInterval(function () {
-    /*
-     ** Wait for needed elements to be generated
-     ** It seems those elements are generated via javascript, so run-at document_idle in manifest is not enough to prevent errors
-     **
-     ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the recommendations
-     ** Note: using .children[index] when child has no id
-     */
-    var contents;
-    try {
-      // Get parent element for the boxes in youtube page
-      contents = document
-        .getElementById('visibility-monitor')
-        .parentElement.children[11].getElementsByTagName('ytd-page-manager')[0]
-        .getElementsByTagName('ytd-browse')[0]
-        .getElementsByTagName('ytd-two-column-browse-results-renderer')[0]
-        .children[0].getElementsByTagName('ytd-rich-grid-renderer')[0];
-      if (!contents || !contents.children[1]) return;
-    } catch (error) {
-      return;
-    }
+const getParentComponent = () => {
+  try {
+    // Get parent element for the boxes in youtube page
+    contents = document
+      .getElementById('visibility-monitor')
+      .parentElement.children['content'].getElementsByTagName('ytd-page-manager')[0]
+      .getElementsByTagName('ytd-browse')[0]
+      .getElementsByTagName('ytd-two-column-browse-results-renderer')[0]
+      .children['primary'].getElementsByTagName('ytd-rich-grid-renderer')[0];
+    if (!contents || !contents.children[1]) return;
+    return contents
+  } catch (error) {
+    return;
+  }
+}
 
-    window.clearInterval(timer);
-
-    // Verify that Tournesol's container has not yet been rendered
-    old_container = document.getElementById('tournesol_container');
-    if (old_container) old_container.remove();
-
+const getTournesolComponent = (data) => {
+  console.log('getTournesolComponent')
     // Create new container
     tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -72,7 +61,8 @@ chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
     tournesol_icon.setAttribute('id', 'tournesol_icon');
     tournesol_icon.setAttribute(
       'src',
-      chrome.extension.getURL('rate_now_icon.png'),
+      //chrome.extension.getURL('rate_now_icon.png'),
+      'https://tournesol.app/svg/tournesol.svg'
     );
     tournesol_icon.setAttribute('width', '24');
     inline_div.append(tournesol_icon);
@@ -125,19 +115,20 @@ chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
       video_thumb.src = `https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`;
       thumb_div.append(video_thumb);
 
-      const video_duration = document.createElement('p');
-      video_duration.setAttribute('class', 'time_span');
+      // TODO: This is commented out until our backend serves again the video duration in the metadata
+      // const video_duration = document.createElement('p');
+      // video_duration.setAttribute('class', 'time_span');
 
       // Remove useless '00:' as hour value (we keep it if it is as minute value)
-      var formatted_video_duration = video.duration;
-      if (formatted_video_duration.startsWith('00:'))
-        formatted_video_duration = formatted_video_duration.substring(
-          3,
-          formatted_video_duration.length,
-        );
+      // var formatted_video_duration = video.duration;
+      // if (formatted_video_duration.startsWith('00:'))
+      //   formatted_video_duration = formatted_video_duration.substring(
+      //     3,
+      //     formatted_video_duration.length,
+      //   );
 
-      video_duration.append(document.createTextNode(formatted_video_duration));
-      thumb_div.append(video_duration);
+      // video_duration.append(document.createTextNode(formatted_video_duration));
+      // thumb_div.append(video_duration);
 
       video_box.append(thumb_div);
 
@@ -156,16 +147,16 @@ chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
       details_div.append(video_uploader);
 
       // Tournesol score
-      const video_score = document.createElement('p');
-      video_score.className = 'video_text';
-      video_score.append(
-        'Rated ' +
-          Number(video.tournesol_score).toFixed(0) +
-          ' points by ' +
-          video.rating_n_experts +
-          ' users',
-      );
-      details_div.append(video_score);
+      // const video_score = document.createElement('p');
+      // video_score.className = 'video_text';
+      // video_score.append(
+      //   'Rated ' +
+      //     Number(video.tournesol_score).toFixed(0) +
+      //     ' points by ' +
+      //     video.rating_n_experts +
+      //     ' users',
+      // );
+      // details_div.append(video_score);
 
       const video_link = document.createElement('a');
       video_link.className = 'video_link';
@@ -178,6 +169,36 @@ chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
     }
 
     data.forEach((video) => tournesol_container.append(make_video_box(video)));
-    contents.insertBefore(tournesol_container, contents.children[1]);
+    return tournesol_container
+}
+
+// This part creates video boxes from API's response JSON
+chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
+  console.log("received Data:", data)
+  // Timer will run until needed elements are generated
+  var timer = window.setInterval(function () {
+    /*
+     ** Wait for needed elements to be generated
+     ** It seems those elements are generated via javascript, so run-at document_idle in manifest is not enough to prevent errors
+     **
+     ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the recommendations
+     ** Note: using .children[index] when child has no id
+     */
+
+    // Get the container on Youtube home page in which we will insert Tournesol's component
+    const container = getParentComponent();
+    if (!container) return;
+    console.log('got container')
+    window.clearInterval(timer);
+
+    // Verify that Tournesol's container has not yet been rendered
+    old_container = document.getElementById('tournesol_container');
+    if (old_container) old_container.remove();
+
+    // Generate component to display on Youtube home page
+    tournesol_component = getTournesolComponent(data)
+    
+    container.insertBefore(tournesol_component, container.children[1]);
+    console.log("Rendered!")
   }, 300);
 });

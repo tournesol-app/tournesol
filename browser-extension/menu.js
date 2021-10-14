@@ -18,7 +18,7 @@ function get_current_tab_video_id() {
 
 function rate_now() {
   get_current_tab_video_id().then(videoId => {
-     chrome.tabs.create({url: `https://tournesol.app/rate/${videoId}/...`})
+     chrome.tabs.create({url: `https://tournesol.app/comparison/?videoA=${videoId}`})
   },
     err => {
       alert('This must be used on the page of a youtube video', 'ok');
@@ -43,7 +43,7 @@ function rate_later() {
 
 function details() {
   get_current_tab_video_id().then(videoId => {
-     chrome.tabs.create({url: `https://tournesol.app/details/${videoId}`})
+     chrome.tabs.create({url: `https://tournesol.app/video/${videoId}`})
   },
     err => {
       alert('This must be used on the page of a youtube video', 'ok');

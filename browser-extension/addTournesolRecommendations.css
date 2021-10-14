@@ -23,7 +23,6 @@
   font-size: 22px;
   position: absolute;
   left: 32px;
-  top: 5px;
   font-weight: normal;
 }
 
@@ -31,7 +30,7 @@
   color: var(--yt-spec-text-primary);
   font-family: 'Roboto', 'Arial', sans-serif;
   float: right;
-  margin-top: 8px;
+  margin-top: 3px;
   margin-left: 4px;
 }
 
@@ -40,7 +39,7 @@
   font-family: 'Roboto', 'Arial', sans-serif;
   position: absolute;
   right: 0px;
-  top: 20px;
+  top: 15px;
 }
 
 #tournesol_icon {
