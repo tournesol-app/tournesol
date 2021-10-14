@@ -31,32 +31,57 @@ const DonatePage = () => {
           , or join our <a href="https://discord.gg/TvsFB8RNBV">Discord</a>.{' '}
         </Typography>
 
-        <form
-          action="https://www.paypal.com/donate"
-          method="post"
-          target="_top"
+        <Typography variant="h5">Make a donation</Typography>
+
+        <div
           style={{
-            marginTop: 24,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            padding: 8,
+            backgroundColor: 'rgba(0, 0, 0, 0.08)',
+            borderRadius: 8,
+            marginTop: 8,
           }}
         >
-          <input type="hidden" name="hosted_button_id" value="22T84YR7TZ762" />
-          <input
-            type="image"
-            src="https://www.paypalobjects.com/en_US/CH/i/btn/btn_donateCC_LG.gif"
-            name="submit"
-            title="PayPal - The safer, easier way to pay online!"
-            alt="Donate with PayPal button"
-          />
-          <img
-            alt=""
-            src="https://www.paypal.com/en_CH/i/scr/pixel.gif"
-            width="1"
-            height="1"
-          />
-        </form>
+          <Typography variant="h6">By direct transfer:</Typography>
+          <pre>IBAN: CH42 0900 0000 1569 4102 5</pre>
+          <pre>BIC: POFICHBEXXX</pre>
+        </div>
+
+        <div
+          style={{
+            padding: 8,
+            backgroundColor: 'rgba(0, 0, 0, 0.08)',
+            borderRadius: 8,
+            marginTop: 8,
+          }}
+        >
+          <Typography variant="h6">By Paypal:</Typography>
+
+          <form
+            action="https://www.paypal.com/donate"
+            method="post"
+            target="_top"
+            style={{ marginTop: 8 }}
+          >
+            <input
+              type="hidden"
+              name="hosted_button_id"
+              value="22T84YR7TZ762"
+            />
+            <input
+              type="image"
+              src="https://www.paypalobjects.com/en_US/CH/i/btn/btn_donateCC_LG.gif"
+              name="submit"
+              title="PayPal - The safer, easier way to pay online!"
+              alt="Donate with PayPal button"
+            />
+            <img
+              alt=""
+              src="https://www.paypal.com/en_CH/i/scr/pixel.gif"
+              width="1"
+              height="1"
+            />
+          </form>
+        </div>
       </div>
     </div>
   );
