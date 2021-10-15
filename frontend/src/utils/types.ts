@@ -13,3 +13,8 @@ export interface JSONObject {
 export type ActionList = Array<
   ({ videoId }: { videoId: string }) => JSX.Element
 >;
+
+export interface Rating_n {
+  contributors: number;
+  ratings: number;
+}

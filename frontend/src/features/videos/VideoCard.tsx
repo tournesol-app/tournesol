@@ -149,7 +149,8 @@ function VideoCard({
     ) {
       max_score = criteria.score;
       max_criteria = criteria.criteria;
-    } else if (
+    }
+    if (
       criteria.score != undefined &&
       criteria.score < min_score &&
       criteria.criteria != 'largely_recommended'
@@ -213,8 +214,16 @@ function VideoCard({
               <span className={classes.nb_tournesol}>
                 {total_score.toFixed(0)}
               </span>
-              {/*<p className={classes.ratings}>{nb_ratings} Ratings by</p>
-          <p className={classes.contributors}>{nb_contributors} contributors</p> */}
+              {video.rating_n && (
+                <>
+                  <p className={classes.ratings}>
+                    {video.rating_n.ratings} Ratings by
+                  </p>
+                  <p className={classes.contributors}>
+                    {video.rating_n.contributors} contributors
+                  </p>
+                </>
+              )}
               <div className={classes.rated}>
                 <span>Rated high:</span>
                 <img

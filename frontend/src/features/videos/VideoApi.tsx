@@ -22,7 +22,8 @@ export const getVideoInformation = (
       return response.json();
     })
     .then((data) => {
-      const { name, publication_date, uploader, views, description } = data;
+      const { name, publication_date, uploader, views, description, rating_n } =
+        data;
       callback({
         name,
         publication_date,
@@ -30,6 +31,7 @@ export const getVideoInformation = (
         views,
         video_id: videoId,
         description,
+        rating_n,
       });
     })
     .catch((err) => {
@@ -41,6 +43,7 @@ export const getVideoInformation = (
         views: 0,
         video_id: videoId,
         description: '',
+        rating_n: { contributors: 0, ratings: 0 },
       });
     });
 };
