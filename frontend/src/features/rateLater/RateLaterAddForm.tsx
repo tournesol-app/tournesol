@@ -19,18 +19,13 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
     setHasSucceeded(false);
     try {
       await addVideo(extractVideoId(formVideo));
-      await resetForm();
+      await setFormVideo('');
     } catch (err) {
       console.error('Add to rate later list failed.', `${err}\n`, err.body);
       setApiError(err);
       return;
     }
     setHasSucceeded(true);
-  };
-
-  const resetForm = async () => {
-    const input = document.getElementById('form_video_id');
-    if (input) (input as HTMLFormElement).reset();
   };
 
   return (
