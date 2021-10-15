@@ -19,7 +19,6 @@ function VideoList({ videos }: { videos: PaginatedVideoList }) {
   const classes = useStyles();
 
   const loginState = useAppSelector(selectLogin);
-  console.log(loginState.access_token);
 
   const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
     const video_id = videoId;

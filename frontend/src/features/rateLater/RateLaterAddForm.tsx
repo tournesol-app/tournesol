@@ -29,7 +29,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
   };
 
   return (
-    <form id="form_video_id" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <Grid
         container
         direction="row"
