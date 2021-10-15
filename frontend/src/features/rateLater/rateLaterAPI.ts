@@ -36,3 +36,18 @@ export const addToRateLaterList = async (
     video: { video_id },
   });
 };
+
+export const deleteFromRateLaterList = async (
+  login_state: LoginState,
+  { video_id }: { video_id: string }
+) => {
+  if (!login_state.username) {
+    throw Error('username is missing');
+  }
+  OpenAPI.TOKEN = login_state.access_token;
+
+  return UsersService.usersVideoRateLaterDestroy(
+    login_state.username,
+    video_id
+  );
+};
