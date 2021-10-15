@@ -8,7 +8,7 @@ OpenAPI.BASE = api_url ?? '';
 
 export const fetchRateLaterList = async (
   login_state: LoginState,
-  { limit = 10, offset = 0 }
+  { limit = 20, offset = 0 }
 ) => {
   if (!login_state.username) {
     throw Error('username is missing');

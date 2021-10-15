@@ -65,7 +65,7 @@ const RateLaterPage = () => {
   const [rateLaterList, setRateLaterList] = React.useState<VideoRateLater[]>(
     []
   );
-  const limit = 5;
+  const limit = 20;
 
   const loadList = useCallback(async () => {
     setIsLoading(true);
