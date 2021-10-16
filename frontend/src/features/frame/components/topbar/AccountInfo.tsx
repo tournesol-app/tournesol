@@ -47,6 +47,8 @@ const LoggedInActions = ({ loginState }: { loginState: LoginState }) => {
         Logout
       </Button>
       <Button
+        component={Link}
+        to="/settings/profile"
         className={classes.HeaderButton}
         endIcon={<AccountCircle style={{ fontSize: '36px' }} color="action" />}
       >
