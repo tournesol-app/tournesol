@@ -20,7 +20,7 @@ function ComparisonsPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
-  const limit = 30;
+  const limit = 20;
 
   function handleOffsetChange(newOffset: number) {
     history.push(`/comparisons/?offset=${newOffset}`);

@@ -37,6 +37,10 @@ function SearchFilter() {
       searchParams.delete(key);
       searchParams.append(key, value);
     }
+    // Reset pagination if filters change
+    if (key != 'offset') {
+      searchParams.delete('offset');
+    }
     history.push('/recommendations/?' + searchParams.toString());
   }
 
