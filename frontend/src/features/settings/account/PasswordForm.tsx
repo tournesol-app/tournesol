@@ -51,11 +51,9 @@ const PasswordForm = () => {
       if ('detail' in response) {
         enqueueSnackbar(response['detail'], { variant: 'success' });
       } else {
-        contactAdministrator(
-          enqueueSnackbar,
-          'success',
-          'Password change successfully'
-        );
+        enqueueSnackbar('Password changed successfully', {
+          variant: 'success',
+        });
       }
 
       setOldPassword('');
@@ -80,6 +78,7 @@ const PasswordForm = () => {
             variant="outlined"
             value={oldPassword}
             onChange={(event) => setOldPassword(event.target.value)}
+            inputProps={{ 'data-testid': 'old_password' }}
           />
         </Grid>
         <Grid item>
@@ -94,6 +93,7 @@ const PasswordForm = () => {
             variant="outlined"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            inputProps={{ 'data-testid': 'password' }}
           />
         </Grid>
         <Grid item>
@@ -108,6 +108,7 @@ const PasswordForm = () => {
             variant="outlined"
             value={passwordConfirm}
             onChange={(event) => setPasswordConfirm(event.target.value)}
+            inputProps={{ 'data-testid': 'password_confirm' }}
           />
         </Grid>
         <Grid item>
