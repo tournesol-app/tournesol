@@ -11,9 +11,7 @@ async function getCurrentTab() {
 }
 
 export const alertOnCurrentTab = async (msg) => {
-  console.log('alertOnCurrentTab', msg)
   const tab = await getCurrentTab();
-  console.log(tab)
   function sendAlert(m) { alert(m, 'ok') }
   chrome.scripting.executeScript({
     target: {tabId: tab.id},
@@ -31,8 +29,6 @@ export const alertNotLoggedInOrError = () => {
 }
 
 export const fetchTournesolApi = (url, method, data, callback) => {
-  console.log('fetchTournesolApi')
-  console.log(access_token)
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -49,12 +45,10 @@ export const fetchTournesolApi = (url, method, data, callback) => {
   if (data) {
     body["body"]= JSON.stringify(data)
   }
-  console.log(body)
   return fetch(`https://api.staging.tournesol.app/${url}`, body).then(r => {
-    console.log(r)
     if (r.status == 403 || r.status == 401) alertNotLoggedInOrError()
     return r.json()
-  }).then(callback).catch(console.log)
+  }).then(callback).catch(console.error)
 }
 
 export const addRateLater = (video_id) => {

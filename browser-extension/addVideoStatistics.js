@@ -50,7 +50,6 @@ function process() {
       video_id: videoId
     }, function(resp) {
       if (document.getElementById('tournesol-details-button')) {
-        console.log("not rendering")
         return;
       }
 

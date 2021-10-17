@@ -3,8 +3,6 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
-console.log("Add Tournesol recommendations")
-
 document.addEventListener('yt-navigate-finish', process);
 
 if (document.body) process();
@@ -29,7 +27,6 @@ const getParentComponent = () => {
 }
 
 const getTournesolComponent = (data) => {
-  console.log('getTournesolComponent')
     // Create new container
     tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -156,7 +153,6 @@ const getTournesolComponent = (data) => {
 
 // This part creates video boxes from API's response JSON
 function handleResponse({ data }, sender, sendResponse) {
-  console.log("received Data:", data)
   // Timer will run until needed elements are generated
   var timer = window.setInterval(function () {
     /*
@@ -170,7 +166,6 @@ function handleResponse({ data }, sender, sendResponse) {
     // Get the container on Youtube home page in which we will insert Tournesol's component
     const container = getParentComponent();
     if (!container) return;
-    console.log('got container')
     window.clearInterval(timer);
 
     // Verify that Tournesol's container has not yet been rendered
@@ -181,7 +176,6 @@ function handleResponse({ data }, sender, sendResponse) {
     tournesol_component = getTournesolComponent(data)
     
     container.insertBefore(tournesol_component, container.children[1]);
-    console.log("Rendered!")
   }, 300);
 }
 
