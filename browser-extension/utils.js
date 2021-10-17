@@ -45,7 +45,7 @@ export const fetchTournesolApi = (url, method, data, callback) => {
   if (data) {
     body["body"]= JSON.stringify(data)
   }
-  return fetch(`https://api.staging.tournesol.app/${url}`, body).then(r => {
+  return fetch(`https://api.tournesol.app/${url}`, body).then(r => {
     if (r.status == 403 || r.status == 401) alertNotLoggedInOrError()
     return r.json()
   }).then(callback).catch(console.error)
