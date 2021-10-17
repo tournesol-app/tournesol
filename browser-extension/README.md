@@ -6,7 +6,7 @@ See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php
 
 ## Chrome Docs
 
-All the documentation for developing and distributing chrome extensions is here https://developer.chrome.com/docs/extensions/mv2/getstarted/
+All the documentation for developing and distributing chrome extensions is here https://developer.chrome.com/docs/extensions/
 
 ## Deploy a new version of the extension
 
