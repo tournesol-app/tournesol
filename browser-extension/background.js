@@ -1,4 +1,4 @@
-import {fetchTournesolApi, getRandomSubarray, addRateLater} from  './utils.js'
+import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
 
 chrome.contextMenus.removeAll(function (e, tab) {
   chrome.contextMenus.create({
@@ -11,7 +11,8 @@ chrome.contextMenus.removeAll(function (e, tab) {
 chrome.contextMenus.onClicked.addListener(function (e, tab) {
   var videoId = new URL(e.linkUrl).searchParams.get('v');
   if (!videoId) {
-    console.log('This must be used on a link to a youtube video', 'ok');
+    console.log("hello")
+    alertUseOnLinkToYoutube()
   } else {
     addRateLater(videoId)
   }

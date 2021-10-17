@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Open Tournesol directly from Youtube",
   "permissions": [
-    "storage", "webRequest", "cookies", "contextMenus", "activeTab"
+    "storage", "contextMenus", "activeTab", "scripting"
   ],
   "host_permissions": [
     "https://staging.tournesol.app/", "https://tournesol.app/", "https://www.youtube.com/"

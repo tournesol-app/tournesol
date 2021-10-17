@@ -73,7 +73,7 @@ function process() {
 
         // On click
         statisticsButton.onclick = () => {
-          open(`https://tournesol.app/details/${videoId}`)
+          open(`https://tournesol.app/video/${videoId}`)
         }
 
         var div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];

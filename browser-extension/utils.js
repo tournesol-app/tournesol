@@ -4,9 +4,30 @@ chrome.storage.local.get(['access_token'], (storage) => {
   addRateLater('z9OpWQnohZk')
 })
 
+async function getCurrentTab() {
+  let queryOptions = { active: true, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
+
+export const alertOnCurrentTab = async (msg) => {
+  console.log('alertOnCurrentTab', msg)
+  const tab = await getCurrentTab();
+  console.log(tab)
+  function sendAlert(m) { alert(m, 'ok') }
+  chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    func: sendAlert,
+    args: [msg]
+  })
+}
+
+export const alertUseOnLinkToYoutube = () => {
+  alertOnCurrentTab('This must be used on a link to a youtube video')
+}
+
 export const alertNotLoggedInOrError = () => {
-  console.log("Make sure you are logged in to use this feature")
-  // chrome.tabs.executeScript(null, { code: "window.alert('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persist, please let us know by creating an issue on https://github.com/tournesol-app/tournesol-chrome-extension/', 'ok')"})
+  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persist, please let us know by creating an issue on https://github.com/tournesol-app/tournesol-chrome-extension/')
 }
 
 export const fetchTournesolApi = (url, method, data, callback) => {
