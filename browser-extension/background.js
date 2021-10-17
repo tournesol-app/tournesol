@@ -17,6 +17,21 @@ chrome.contextMenus.onClicked.addListener(function (e, tab) {
   }
 });
 
+function getDateThreeWeeksAgo() {
+  // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
+  const format = (str) => str.length == 1 ? `0${str}` : str.length == 4 ? str.slice(2) : str
+  const threeWeeksAgo = new Date(Date.now() - 3 * 7 * 24 * 3600)
+  const [d, m, y, H, M, S] = [
+    threeWeeksAgo.getDate(),
+    (threeWeeksAgo.getMonth() + 1), // adds 1 because January has index 0 in Javascript but Django expect "01"
+    threeWeeksAgo.getFullYear(),
+    threeWeeksAgo.getHours(),
+    threeWeeksAgo.getMinutes(),
+    threeWeeksAgo.getSeconds(),
+  ].map((t) => format(t.toString()));
+  return `${d}-${m}-${y}-${H}-${M}-${S}`;
+}
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log("onMessage")
   if (request.message == "addRateLater") {
@@ -25,29 +40,28 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   else if (request.message == "getVideoStatistics") {
     getVideoStatistics(request.video_id).then(sendResponse);
     return true;
-  }
-
-  if (request.message == "getTournesolRecommendations") {
+  } 
+  else if (request.message == "getTournesolRecommendations") {
     console.log("received message getTournesolReco")
-    const api_url = 'video/?search=tournesol';
+    const api_url = 'video/';
 
     const request_recommendations = async (options) => {
-      const json = await fetchTournesolApi(`${api_url}&${options}`, 'GET', null);
+      const json = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET', null);
       console.log(json)
       return json.results;
     };
 
     const process = async () => {
-      const videos = await request_recommendations('')
-      // const recent = await request_recommendations(`days_ago_lte=21&language=${request.language}&limit=10`);
-      // const old = await request_recommendations(`days_ago_gte=21&language=${request.language}&limit=30`);
-      // const recent_sub = getRandomSubarray(recent.results, Math.ceil(request.video_amount / 2));
-      // const old_sub = getRandomSubarray(old.results, Math.floor(request.video_amount / 2));
-      // const videos = getRandomSubarray([...old_sub, ...recent_sub], request.video_amount);
-      chrome.tabs.sendMessage(sender.tab.id, { data: getRandomSubarray(videos, 8) });
+      const threeWeeksAgo = getDateThreeWeeksAgo()
+      const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
+      const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
+      const recent_sub = getRandomSubarray(recent, 3);
+      const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
+      const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
+      sendResponse({ data: videos });
     };
 
     process();
-    return;
+    return true;
   }
 });

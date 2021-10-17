@@ -12,24 +12,6 @@ else document.addEventListener('DOMContentLoaded', process);
 
 /* ********************************************************************* */
 
-function process() {
-  // Only enable on youtube.com/
-  if (location.pathname != '/') return;
-
-  /*
-   ** Send message to background.js to get recommendations from the API of Tournesol.
-   ** I put video amount here because we can get the value of --ytd-rich-grid-posts-per-row (css) to know how many videos we should retreive from api
-   */
-  const language =
-    localStorage.getItem('tournesol_extension_config_language') || 'en';
-
-  chrome.runtime.sendMessage({
-    message: 'getTournesolRecommendations',
-    video_amount: 4,
-    language,
-  });
-}
-
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
@@ -173,7 +155,7 @@ const getTournesolComponent = (data) => {
 }
 
 // This part creates video boxes from API's response JSON
-chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
+function handleResponse({ data }, sender, sendResponse) {
   console.log("received Data:", data)
   // Timer will run until needed elements are generated
   var timer = window.setInterval(function () {
@@ -201,4 +183,22 @@ chrome.runtime.onMessage.addListener(function ({ data }, sender, sendResponse) {
     container.insertBefore(tournesol_component, container.children[1]);
     console.log("Rendered!")
   }, 300);
-});
+}
+
+function process() {
+  // Only enable on youtube.com/
+  if (location.pathname != '/') return;
+
+  /*
+   ** Send message to background.js to get recommendations from the API of Tournesol.
+   ** I put video amount here because we can get the value of --ytd-rich-grid-posts-per-row (css) to know how many videos we should retreive from api
+   */
+  const language =
+    localStorage.getItem('tournesol_extension_config_language') || 'en';
+
+  chrome.runtime.sendMessage({
+    message: 'getTournesolRecommendations',
+    video_amount: 4,
+    language,
+  }, handleResponse);
+}
