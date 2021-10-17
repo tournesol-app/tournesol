@@ -21,8 +21,7 @@ all:
           django_database_user: tournesol
           django_email_backend: console
           populate_django_db_from_public_dataset: true
-          chrome_extension_local_dev: iahbndmibajbfljmlaaaikgognekamno
-          chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
+          chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
           loki_version: "v2.2.1"
           nvm_version: "v0.38.0"
@@ -67,8 +66,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
           populate_django_db_from_public_dataset: false
-          chrome_extension_local_dev: iahbndmibajbfljmlaaaikgognekamno
-          chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
+          chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
           loki_version: "v2.2.1"
           nvm_version: "v0.38.0"
@@ -120,7 +118,6 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
           populate_django_db_from_public_dataset: false
-          chrome_extension_local_dev: iahbndmibajbfljmlaaaikgognekamno
           chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
 
           loki_version: "v2.2.1"
