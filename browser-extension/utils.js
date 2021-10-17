@@ -1,12 +1,11 @@
-console.log('123')
 let access_token;
 chrome.storage.local.get(['access_token'], (storage) => {
   access_token = storage.access_token
-  addRateLater('xaQJbozY_Is')
+  addRateLater('z9OpWQnohZk')
 })
 
 export const alertNotLoggedInOrError = () => {
-  alert("Make sure you are logged in to use this feature")
+  console.log("Make sure you are logged in to use this feature")
   // chrome.tabs.executeScript(null, { code: "window.alert('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persist, please let us know by creating an issue on https://github.com/tournesol-app/tournesol-chrome-extension/', 'ok')"})
 }
 
@@ -29,7 +28,8 @@ export const fetchTournesolApi = (url, method, data, callback) => {
   if (data) {
     body["body"]= JSON.stringify(data)
   }
-  return fetch(`https://api.staging.tournesol.app/${url}`, ).then(r => {
+  console.log(body)
+  return fetch(`https://api.staging.tournesol.app/${url}`, body).then(r => {
     console.log(r)
     if (r.status == 403 || r.status == 401) alertNotLoggedInOrError()
     return r.json()

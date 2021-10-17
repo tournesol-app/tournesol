@@ -198,7 +198,6 @@ function process() {
 
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
-    video_amount: 4,
     language,
   }, handleResponse);
 }
