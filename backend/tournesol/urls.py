@@ -41,13 +41,13 @@ urlpatterns = [
     ),
     # VideoRateLater API
     path(
-        "users/<str:username>/video_rate_later/",
+        "users/me/video_rate_later/",
         VideoRateLaterList.as_view(),
         name="video_rate_later_list",
     ),
     path(
-        "users/<str:username>/video_rate_later/<str:video_id>/",
+        "users/me/video_rate_later/<str:video_id>/",
         VideoRateLaterDetail.as_view(),
         name="video_rate_later_detail",
-    )
+    ),
 ]
