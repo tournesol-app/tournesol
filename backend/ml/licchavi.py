@@ -20,7 +20,7 @@ from time import time
 import torch
 import gin
 
-from .losses import (round_loss, predict, loss_fit_s_gen, loss_gen_reg)
+from .losses import (round_loss, predict, loss_fit, loss_s_gen_reg)
 from .metrics import (
     get_uncertainty_loc, get_uncertainty_glob, update_hist,
     check_equilibrium_glob, check_equilibrium_loc)
@@ -37,8 +37,13 @@ def get_model(nb_vids, device='cpu', bias_init=0):
     return torch.zeros(nb_vids, requires_grad=True, device=device)
 
 
+def get_t(device='cpu'):
+    """ Returns an initialized t (translation) parameter """
+    return torch.zeros(1, requires_grad=True, device=device)
+
+
 def get_s(device='cpu'):
-    """ Returns an initialized s parameter """
+    """ Returns an initialized s (scaling) parameter """
     return torch.ones(1, requires_grad=True, device=device)
 
 
@@ -55,12 +60,13 @@ class Licchavi():
             # configured with gin in "hyperparameters.gin"
             metrics=None,
             lr_loc=None,
+            lr_t=None,
             lr_s=None,
             lr_glob=None,
-            gen_freq=None,
             nu_par=None,
             w0_par=None,
-            w_loc=None
+            w_loc=None,
+            gamma=None,
             ):
         """
         nb_vids (int): number of different videos rated by
@@ -80,12 +86,13 @@ class Licchavi():
 
         # defined in "hyperparameters.gin"
         self.lr_loc = lr_loc    # local learning rate (local scores)
+        self.lr_t = lr_t  # local learning rate for t parameter
         self.lr_s = lr_s     # local learning rate for s parameter
         self.lr_glob = lr_glob  # global learning rate (global scores)
-        self.gen_freq = gen_freq  # generalisation frequency (>=1)
         self.nu_par = nu_par  # importance of s_loss term
         self.w0_par = w0_par     # regularisation strength
         self.w_loc = w_loc   # default weight for a node
+        self.gamma = gamma  # local regularisation term
 
         self.get_model = get_model  # neural network to use
         self.global_model = self.get_model(nb_vids, device)
@@ -96,7 +103,8 @@ class Licchavi():
         self.users = []  # users IDs
 
         # history stuff
-        self.history = {metric: [] for metric in metrics}
+        self.history_loc = {metric: [] for metric in metrics}
+        self.history_glob = {metric: [] for metric in metrics}
         comparative_metrics = ['diff_loc', 'diff_glob', 'diff_s', 'grad_sp']
         self.last_epoch = {
             metric: None for metric in comparative_metrics if metric in metrics
@@ -113,11 +121,11 @@ class Licchavi():
 
     # ------------ input and output --------------------
     def _get_default(self):
-        """ Returns: - (default s, default model, default age) """
+        """ Returns: - (default s, default model) """
         model_plus = (
-            get_s(self.device),  # s
+            get_t(self.device),  # translation parameter
+            get_s(self.device),  # scaling parameter
             self.get_model(self.nb_vids, self.device),  # model
-            0  # age
         )
         return model_plus
 
@@ -125,20 +133,20 @@ class Licchavi():
         """ Returns saved parameters updated or default
 
         loc_models_old (dictionnary): saved parameters in dictionnary of tuples
-                                        {user ID: (s, model, age)}
+                                        {user ID: (t, s, model)}
         uid (int): ID of node (user)
         nb_new (int): number of new videos (since save)
 
         Returns:
-            (s, model, age), updated or default
+            (t, s, model), updated or default
         """
         if uid in loc_models_old:
-            s_param, mod, age = loc_models_old[uid]
+            t_par, s_par, mod = loc_models_old[uid]
             mod = expand_tens(mod, nb_new, self.device)
-            triple = (s_param, mod, age)
+            infos = (t_par, s_par, mod)
         else:
-            triple = self._get_default()
-        return triple
+            infos = self._get_default()
+        return infos
 
     def set_allnodes(self, data_dic, users_ids):
         """ Puts data in Licchavi and create a model for each node
@@ -154,6 +162,7 @@ class Licchavi():
             *self._get_default(),
             self.w_loc,
             self.lr_loc,
+            self.lr_t,
             self.lr_s,
             self.opt
         ) for id, data in zip(users_ids, data_dic.values())}
@@ -182,6 +191,7 @@ class Licchavi():
                 *self._get_saved(loc_models_old, id, nb_new),
                 self.w_loc,
                 self.lr_loc,
+                self.lr_t,
                 self.lr_s,
                 self.opt
                ) for id, data in zip(user_ids, data_dic.values())
@@ -211,11 +221,11 @@ class Licchavi():
         return (vids_batch, glob_scores), (list_vids_batchs, loc_scores)
 
     def save_models(self, fullpath):
-        """ Saves age and global and local weights, detached (no gradients) """
+        """ Saves global and local parameters, detached (no gradients) """
         loginf('Saving models')
-        local_data = {id:  (node.s_param,            # s
-                            node.model.detach(),   # model
-                            node.age            # age
+        local_data = {id:  (node.t_param,  # FIXME detach?
+                            node.s_param,  # FIXME detach?
+                            node.model.detach(),
                             ) for id, node in self.nodes.items()}
         saved_data = (
             self.criteria,
@@ -281,11 +291,6 @@ class Licchavi():
             node.opt.zero_grad(set_to_none=True)  # node optimizer
         self.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
-    def _old(self, years):
-        """ Increments age of nodes (during training) """
-        for node in self.nodes.values():
-            node.age += years
-
     def _do_step(self, fit_step):
         """ Makes step for appropriate optimizer(s) """
         if fit_step:  # updating local or global alternatively
@@ -293,6 +298,15 @@ class Licchavi():
                 node.opt.step()  # node optimizer
         else:
             self.opt_gen.step()
+
+    # def _local_step(self):
+    #     """ local optimizers gradient step """
+    #     for node in self.nodes.values():
+    #         node.opt.step()
+
+    # def _global_step(self):
+    #     """ global optimizer gradient step """
+    #     self.opt_gen.step()
 
     def _regul_s(self):
         """ regulate s parameters """
@@ -313,11 +327,12 @@ class Licchavi():
         )
 
     # ====================  TRAINING ==================
-    def _do_epoch(self, epoch, nb_epochs, reg_loss):
+    def _do_epoch(self, epoch, nb_epochs, fit_step, reg_loss):
         """ Trains for one epoch
 
         epoch (int): current epoch
         nb_epochs (int): (maximum) number of epochs
+        fit_step (bool): True if local step, False if global step
         reg_loss (float tensor): regulation term of loss
 
         Returns:
@@ -326,35 +341,28 @@ class Licchavi():
         self._show("epoch {}/{}".format(epoch, nb_epochs), 1)
         time_ep = time()
 
-        nb_steps = self.gen_freq + 1  # one fitting step
-        for step in range(1, nb_steps + 1):
-            fit_step = (step == 1)  # fitting on first step only
+        fit_loss, s_loss, gen_loss = 0, 0, 0
+        self._zero_opt()  # resetting gradients
 
-            self._show(f'step : {step}/{nb_steps} '
-                       f'{"(fit)" if fit_step else "(gen)"}', 2)
-            self._zero_opt()  # resetting gradients
+        # ----------------    Licchavi loss  -------------------------
+        # only local loss computed
+        if fit_step:
+            fit_loss = loss_fit(self)
+            loss = fit_loss
 
-            # ----------------    Licchavi loss  -------------------------
-            # only first 3 terms of loss updated
-            if fit_step:
-                fit_loss, s_loss, gen_loss = loss_fit_s_gen(self)
-                loss = fit_loss + s_loss + gen_loss
-            # only last 2 terms of loss updated
-            else:
-                gen_loss, reg_loss = loss_gen_reg(self)
-                loss = gen_loss + reg_loss
+        # only global loss computed
+        else:
+            s_loss, gen_loss, reg_loss = loss_s_gen_reg(self)
+            loss = s_loss + gen_loss + reg_loss
 
-            if self.verb >= 2:
-                total_loss = round_loss(fit_loss + s_loss
-                                        + gen_loss + reg_loss)
-                self._print_losses(total_loss, fit_loss, s_loss,
-                                   gen_loss, reg_loss)
-            # Gradient descent
-            loss.backward()
-            self._do_step(fit_step)
+        # Gradient descent
+        loss.backward()
+        self._do_step(fit_step)
 
-        update_hist(self, (fit_loss, s_loss, gen_loss, reg_loss, epoch))
-        self._old(1)  # aging all nodes of 1 epoch
+        update_hist(
+            self, fit_step,
+            (fit_loss, s_loss, gen_loss, reg_loss, epoch)
+        )
         self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
         return reg_loss  # to have it next epoch
 
@@ -362,6 +370,7 @@ class Licchavi():
         """ training loop
 
         nb_epochs (int): (maximum) number of training epochs
+        FIXME separate local and global nb_epochs
         compute_uncertainty (bool): wether to compute uncertainty
             at the end or not (takes time)
 
@@ -369,21 +378,26 @@ class Licchavi():
             (float list list, float tensor): uncertainty of local scores
                                             (None, None) if not computed
         """
-        loginf('STARTING TRAINING')
-        time_train = time()
-
-        # training loop
         reg_loss = 0  # for epoch 0 if verb=2
-        for epoch in range(1, nb_epochs + 1):
-            early_stop = self._lr_schedule(epoch)
-            if early_stop:
-                break  # don't do this epoch nor any other
-            self._set_lr()
-            self._regul_s()
-            reg_loss = self._do_epoch(epoch, nb_epochs, reg_loss)
 
-        loginf('END OF TRAINING\n'
-               f'Training time: {round(time() - time_train, 2)}')
+        # local training loop
+        loginf('Starting local training')
+        time_train_loc = time()
+        for epoch in range(1, nb_epochs + 1):
+            # self._set_lr()  # FIXME design lr scheduling
+            reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
+        loginf('End of local training\n'
+               f'Training time: {round(time() - time_train_loc, 2)}')
+
+        # global training loop
+        loginf('Starting global training')
+        time_train_glob = time()
+        for epoch in range(1, nb_epochs + 1):
+            # self._set_lr()  # FIXME design lr scheduling
+            self._regul_s()
+            reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
+        loginf('End of global training\n'
+               f'Training time: {round(time() - time_train_glob, 2)}')
 
         if compute_uncertainty:  # FIXME make separate method ?
             time_uncert = time()
@@ -399,8 +413,10 @@ class Licchavi():
         # population check
         bool1 = (self.nb_nodes == len(self.nodes))
         # history check
-        reference = list(self.history.values())[0]
-        bool2 = all(len(v) == len(reference) for v in self.history.values())
+        reference = list(self.history_loc.values())[0]
+        bool2 = all(
+            len(v) == len(reference) for v in self.history_loc.values()
+        )
 
         if (bool1 and bool2):
             loginf("No Problem")

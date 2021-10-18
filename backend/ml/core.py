@@ -14,12 +14,12 @@ from ml.handle_data import (
 
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
-HP_PATH = 'ml/hyperparameters.gin'
-FOLDER_PATH = "ml/checkpoints/"
+HP_PATH = 'backend/ml/hyperparameters.gin'
+FOLDER_PATH = "backend/ml/checkpoints/"
 FILENAME = "models_weights"
 PATH = FOLDER_PATH + FILENAME
 os.makedirs(FOLDER_PATH, exist_ok=True)
-logging.basicConfig(filename='ml/ml_logs.log', level=logging.INFO)
+logging.basicConfig(filename='backend/ml/ml_logs.log', level=logging.INFO)  # FIXME
 
 
 def _get_licchavi(
@@ -186,3 +186,184 @@ def ml_run(
     if TOURNESOL_DEV:  # return more information in dev mode
         return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
     return glob_scores, loc_scores
+
+
+# def _ml_run_local(
+#         comparison_data, epochs, criterias,
+#         resume=False, save=True, verb=1, device='cpu', ground_truths=None,
+#         compute_uncertainty=False, licchavi_class=Licchavi):
+#     """ Runs the ml algorithm for all criterias
+
+#     comparison_data (list of lists): output of fetch_data()
+#     epochs (int): number of epochs of gradient descent for Licchavi
+#     criterias (str list): list of criterias to compute
+#     resume (bool): wether to resume from save or not
+#     save (bool): wether to save result of training or not
+#     verb (int): verbosity level
+#     device (str): device used (cpu/gpu)
+#     ground_truths (float array, couples list list, float array):
+#         global, local and s parmaeters ground truths (test mode only)
+#     compute_uncertainty (bool): wether to compute uncertainty or not (slow)
+#     licchavi_class (Licchavi()): training structure used
+#                                         (Licchavi or LicchaviDev)
+
+#     Returns:
+#         (list list): list of [video_id: int, criteria_name: str,
+#                                 score: float, uncertainty: float]
+#         (list list): list of
+#         [   contributor_id: int, video_id: int, criteria_name: str,
+#             score: float, uncertainty: float]
+#     """  # FIXME: not better to regroup contributors in same list or smthg ?
+#     ml_run_time = time()
+#     glob_scores, loc_scores = [], []
+
+#     for criteria in criterias:
+#         logging.info('PROCESSING %s', criteria)
+#         fullpath = PATH + '_' + criteria
+
+#         # preparing data
+#         licch, users_ids = _set_licchavi(
+#             comparison_data, criteria,
+#             fullpath, resume, verb, device,
+#             ground_truths, licchavi_class=licchavi_class
+#         )
+
+#         if licch is not None:  # if not 0 data for selected criteria
+
+#             # training and predicting
+#             glob, loc, uncertainties = _train_predict(
+#                 licch, epochs, fullpath, save,
+#                 compute_uncertainty=compute_uncertainty
+#             )
+#         # putting in required shape for output
+#         out_glob = format_out_glob(glob, criteria, uncertainties[0])
+#         out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
+#         glob_scores += out_glob
+#         loc_scores += out_loc
+
+#     logging.info('ml_run() total time : %s', round(time() - ml_run_time))
+#     if TOURNESOL_DEV:  # return more information in dev mode
+#         return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
+#     return glob_scores, loc_scores
+
+
+# def _ml_run_global(
+#         comparison_data, epochs, criterias,
+#         resume=False, save=True, verb=1, device='cpu', ground_truths=None,
+#         compute_uncertainty=False, licchavi_class=Licchavi):
+#     """ Runs the ml algorithm for all criterias
+
+#     comparison_data (list of lists): output of fetch_data()
+#     epochs (int): number of epochs of gradient descent for Licchavi
+#     criterias (str list): list of criterias to compute
+#     resume (bool): wether to resume from save or not
+#     save (bool): wether to save result of training or not
+#     verb (int): verbosity level
+#     device (str): device used (cpu/gpu)
+#     ground_truths (float array, couples list list, float array):
+#         global, local and s parmaeters ground truths (test mode only)
+#     compute_uncertainty (bool): wether to compute uncertainty or not (slow)
+#     licchavi_class (Licchavi()): training structure used
+#                                         (Licchavi or LicchaviDev)
+
+#     Returns:
+#         (list list): list of [video_id: int, criteria_name: str,
+#                                 score: float, uncertainty: float]
+#         (list list): list of
+#         [   contributor_id: int, video_id: int, criteria_name: str,
+#             score: float, uncertainty: float]
+#     """  # FIXME: not better to regroup contributors in same list or smthg ?
+#     ml_run_time = time()
+#     glob_scores, loc_scores = [], []
+
+#     for criteria in criterias:
+#         logging.info('PROCESSING %s', criteria)
+#         fullpath = PATH + '_' + criteria
+
+#         # preparing data
+#         licch, users_ids = _set_licchavi(
+#             comparison_data, criteria,
+#             fullpath, resume, verb, device,
+#             ground_truths, licchavi_class=licchavi_class
+#         )
+
+#         if licch is not None:  # if not 0 data for selected criteria
+
+#             # training and predicting
+#             glob, loc, uncertainties = _train_predict(
+#                 licch, epochs, fullpath, save,
+#                 compute_uncertainty=compute_uncertainty
+#             )
+#         # putting in required shape for output
+#         out_glob = format_out_glob(glob, criteria, uncertainties[0])
+#         out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
+#         glob_scores += out_glob
+#         loc_scores += out_loc
+
+#     logging.info('ml_run() total time : %s', round(time() - ml_run_time))
+#     if TOURNESOL_DEV:  # return more information in dev mode
+#         return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
+#     return glob_scores, loc_scores
+
+
+# def ml_run(
+#         comparison_data, epochs, criterias,
+#         resume=False, save=True, verb=1, device='cpu', ground_truths=None,
+#         compute_uncertainty=False, licchavi_class=Licchavi):
+#     """ Runs the ml algorithm for all criterias
+
+#     comparison_data (list of lists): output of fetch_data()
+#     epochs (int): number of epochs of gradient descent for Licchavi
+#     criterias (str list): list of criterias to compute
+#     resume (bool): wether to resume from save or not
+#     save (bool): wether to save result of training or not
+#     verb (int): verbosity level
+#     device (str): device used (cpu/gpu)
+#     ground_truths (float array, couples list list, float array):
+#         global, local and s parmaeters ground truths (test mode only)
+#     compute_uncertainty (bool): wether to compute uncertainty or not (slow)
+#     licchavi_class (Licchavi()): training structure used
+#                                         (Licchavi or LicchaviDev)
+
+#     Returns:
+#         (list list): list of [video_id: int, criteria_name: str,
+#                                 score: float, uncertainty: float]
+#         (list list): list of
+#         [   contributor_id: int, video_id: int, criteria_name: str,
+#             score: float, uncertainty: float]
+#     """  # FIXME: not better to regroup contributors in same list or smthg ?
+#     ml_run_time = time()
+#     glob_scores, loc_scores = [], []
+
+#     for criteria in criterias:
+#         logging.info('PROCESSING %s', criteria)
+#         fullpath = PATH + '_' + criteria
+
+#         # preparing data
+#         licch, users_ids = _set_licchavi(
+#             comparison_data, criteria,
+#             fullpath, resume, verb, device,
+#             ground_truths, licchavi_class=licchavi_class
+#         )
+
+#         if licch is not None:  # if not 0 data for selected criteria
+
+#             # training and predicting local scores
+#             loc, uncerts_loc = _train_predict_loc(
+#                 licch, epochs, fullpath, save,
+#                 compute_uncertainty=compute_uncertainty
+#             )
+
+#             glob, uncerts_glob = __train_predict_glob()
+
+
+#         # putting in required shape for output
+#         out_glob = format_out_glob(glob, criteria, uncertainties[0])
+#         out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
+#         glob_scores += out_glob
+#         loc_scores += out_loc
+
+#     logging.info('ml_run() total time : %s', round(time() - ml_run_time))
+#     if TOURNESOL_DEV:  # return more information in dev mode
+#         return glob_scores, loc_scores, (licch, glob, loc, uncertainties)
+#     return glob_scores, loc_scores

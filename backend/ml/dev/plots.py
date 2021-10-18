@@ -2,6 +2,7 @@
 Not used in production, for testing only
 Used in "experiments.py"
 """
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +11,7 @@ from ml.core import TOURNESOL_DEV
 
 if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
+logging.getLogger('matplotlib.font_manager').disabled = True
 
 
 INTENS = 0.4  # intensity of coloration
@@ -118,6 +120,7 @@ def plot_density(tens, title=None, path=None, name="hist.png"):
     tens (tensor): data of which we want repartition
     """
     arr = np.array(tens)
+    print(arr)
     _ = plt.hist(arr, density=False, label=title, bins=40)
     _legendize("Number", "Value")
     _title_save(title, path, name)

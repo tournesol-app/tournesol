@@ -9,7 +9,7 @@ import torch
 from torch.autograd.functional import hessian
 
 from .losses import (
-    round_loss, loss_fit_s_gen, loss_gen_reg, models_dist_huber,
+    loss_s_gen_reg, round_loss, loss_fit, models_dist_huber,
     model_norm, models_dist)
 
 
@@ -24,8 +24,9 @@ def scalar_product(l_grad1, l_grad2):
         (float): scalar product of the gradients
     """
     scalar_prod = 0
-    for grad1, grad2 in zip(l_grad1, l_grad2):
-        scalar_prod += (grad1 * grad2).sum()
+    if l_grad1 is not None:
+        for grad1, grad2 in zip(l_grad1, l_grad2):
+            scalar_prod += (grad1 * grad2).sum()
     return round_loss(scalar_prod, 4)
 
 
@@ -151,13 +152,22 @@ METRICS_FUNCS = {
 }
 
 
-def update_hist(licch, args):
+def update_hist(licch, fit_step, args):
     """ Updates Licchavi history for all metrics asked
 
+    fit_step (bool): True for local training, False for global
     args (tuple): losses and current epoch number
     """
-    for metric in licch.history:
-        licch.history[metric].append(METRICS_FUNCS[metric](licch, args))
+    if fit_step:  # FIXME smarter division
+        for metric in licch.history_loc:
+            licch.history_loc[metric].append(
+                METRICS_FUNCS[metric](licch, args)
+            )
+    else:
+        for metric in licch.history_glob:
+            licch.history_glob[metric].append(
+                METRICS_FUNCS[metric](licch, args)
+            )
 
 
 # ------ to compute uncertainty -------
@@ -219,7 +229,8 @@ def _get_hessian_fun_loc(licch, uid, vidx):
         """
         new_model = replace_coordinate(licch.nodes[uid].model, score, vidx)
         licch.nodes[uid].model = new_model
-        fit_loss, _, gen_loss = loss_fit_s_gen(licch, vidx, uid)
+        fit_loss = loss_fit(licch, vidx, uid)
+        _, gen_loss, _ = loss_s_gen_reg(licch, vidx)
         return fit_loss + gen_loss
     return get_loss
 
@@ -284,7 +295,7 @@ def check_equilibrium_glob(epsilon, licch):
         # adding epsilon to scores
         with torch.no_grad():
             licch.global_model += increment
-        gen_loss, reg_loss = loss_gen_reg(licch)
+        _, gen_loss, reg_loss = loss_s_gen_reg(licch)
         loss = gen_loss + reg_loss
         loss.backward()
         derivs = licch.global_model.grad
@@ -326,7 +337,8 @@ def check_equilibrium_loc(epsilon, licch):
             for node in licch.nodes.values():
                 node.model += increment
         # computing gradients
-        fit_loss, _, gen_loss = loss_fit_s_gen(licch)
+        fit_loss, = loss_fit(licch)
+        _, gen_loss, _ = loss_s_gen_reg(licch)
         loss = fit_loss + gen_loss
         loss.backward()
         # adding derivatives

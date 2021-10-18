@@ -16,7 +16,7 @@ if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 
 
-PATH_PLOTS = "ml/plots/"
+PATH_PLOTS = "backend/ml/plots/"
 replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
 
 
@@ -101,7 +101,7 @@ def licch_stats(licch):
     """ gives some statistics about Licchavi object """
     print('LICCH_SATS')
     licch.check()  # some tests
-    hist = licch.history
+    hist = licch.history_glob  # FIXME add local one
     print("nb_nodes", licch.nb_nodes)
     print_s(licch)  # print stats on s parameters
     with torch.no_grad():

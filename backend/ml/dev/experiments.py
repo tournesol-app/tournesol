@@ -38,8 +38,8 @@ def run_experiment(comparison_data):
     #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        TEST_DATA,
-        epochs=100,
+        comparison_data,
+        epochs=20,
         criterias=["reliability"],
         licchavi_class=LicchaviDev,
         resume=False,

@@ -2,8 +2,8 @@
 
 
 # Options for production mode
-ml_run.epochs = 60  # wether to resume training or not
-ml_run.resume = False  # (max) number of training epochs of the algorithm
+ml_run.epochs = 60  # (max) number of training epochs of the algorithm
+ml_run.resume = False  # wether to resume training or not
 ml_run.compute_uncertainty = False  # wether to compute local uncertainty or not
                                         # (takes time)
 ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
@@ -13,13 +13,14 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 Licchavi.nu_par = 5  # scaling parameter term ponderation
 Licchavi.w_loc = 1  # generalisation term ponderation
 Licchavi.w0_par = 1  # regularisation term ponderation
+Licchavi.gamma = 1  # local regularisation term ponderation
 
 
 # Training hyperparameters
 Licchavi.lr_loc = 1  # learning rate of local models
+Licchavi.lr_t = 0.005  # learning rate of t individual parameters
 Licchavi.lr_s = 0.005  # learning rate of s individual parameters
 Licchavi.lr_glob = 0.1  # learning rate of general model
-Licchavi.gen_freq = 1  # number of general model steps for one local step
 
 
 # learning rate scheduler

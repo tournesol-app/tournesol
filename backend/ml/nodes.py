@@ -6,19 +6,23 @@ import torch
 
 
 class Node:
-    def __init__(self, vid1, vid2, rating, vids,
-                 mask, s_param, model, age, weight, lr_loc, lr_s, opt):
+    def __init__(
+            self, vid1, vid2, rating, vids,
+            mask, t_param, s_param, model, weight,
+            lr_loc, lr_t, lr_s, opt):
         """
         vid1 (bool 2D tensor): one line is a one-hot-encoded video index
         vid2 (bool 2D tensor): one line is a one-hot-encoded video index
         rating (float tensor): comparisons corresponding to vid1 and vid2 lines
+        vids (FIXME): video IDs
         mask (bool tensor): True for all video indexes rated by user
-        s_param (float tensor): s scaling learnable parameter
+        t_param (float tensor): t (translation) learnable parameter
+        s_param (float tensor): s (scaling) learnable parameter
         model (float tensor): learnable tensor of all video scores
-        age (int): number of epochs this node has been trained
         weight (float): node ponderation for generalisation (its influence)
         lr_loc (float): learning rate of self.model
-        lr_s (float): learning rate of self.s
+        lr_t (float): learning rate of self.t_param
+        lr_s (float): learning rate of self.s_param
         opt (torch.optim.Optimizer): gradient descent optimizer
         """
         self.vid1 = vid1
@@ -26,14 +30,16 @@ class Node:
         self.rating = rating
         self.vids = vids
         self.mask = mask
+        self.t_param = t_param
         self.s_param = s_param
         self.model = model
-        self.age = age
         self.weight = weight
-        self.lr_s = lr_s / len(vid1)
+        self.lr_t = lr_t
+        self.lr_s = lr_s / len(vid1)  # FIXME adapt to new loss
         self.opt = opt(
             [
                 {'params': self.model},
+                {'params': self.t_param, 'lr': self.lr_t},
                 {'params': self.s_param, 'lr': self.lr_s},
             ],
             lr=lr_loc

@@ -35,8 +35,8 @@ class LicchaviDev(Licchavi):
             self.glob_gt = []  # global scores ground truths
             self.loc_gt = []  # local scores ground truths
             self.s_gt = []  # s parameters ground truths
-            self.history['error_loc'] = []
-            self.history['error_glob'] = []
+            self.history_loc['error_loc'] = []
+            self.history_glob['error_glob'] = []
 
     def set_ground_truths(self, glob_gt, loc_gt, s_gt):
         """ Puts ground truths in Licchavi (for experiments only)

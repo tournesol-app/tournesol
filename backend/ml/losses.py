@@ -84,8 +84,9 @@ def _approx_bbt_loss(diff, ratings):
     return loss
 
 
-def get_fit_loss(model, s_param, a_batch, b_batch, r_batch, vidx=-1):
-    """ Fitting loss for one node
+# FIXME remove s_param (unused)
+def get_fit_loss(model, s_param, a_batch, b_batch, r_batch, gamma=1, vidx=-1):
+    """ Fitting loss for one node, local regularization included
 
     Args:
         model (float tensor): node local model.
@@ -93,6 +94,8 @@ def get_fit_loss(model, s_param, a_batch, b_batch, r_batch, vidx=-1):
         a_batch (bool 2D tensor): first videos compared by user.
         b_batch (bool 2D tensor): second videos compared by user.
         r_batch (float tensor): rating provided by user.
+        gamma (float): strength of local regularization
+        vidx (int): video index if partial loss needed
 
     Returns:
         (float scalar tensor): fitting loss.
@@ -107,15 +110,12 @@ def get_fit_loss(model, s_param, a_batch, b_batch, r_batch, vidx=-1):
 
         if idxs.shape[0] == 0:  # if user didnt rate video
             return torch.scalar_tensor(0)
-
-        ya_batch = predict(a_batch[idxs], model)
-        yb_batch = predict(b_batch[idxs], model)
-        loss = _approx_bbt_loss(ya_batch - yb_batch, r_batch[idxs])
-    else:
-        ya_batch = predict(a_batch, model)
-        yb_batch = predict(b_batch, model)
-        loss = _approx_bbt_loss(ya_batch - yb_batch, r_batch)
-    return loss
+        diff = predict(a_batch[idxs], model) - predict(b_batch[idxs], model)
+        loss = _approx_bbt_loss(diff, r_batch[idxs])
+    else:  # loss for all comparisons
+        diff = predict(a_batch, model) - predict(b_batch, model)
+        loss = _approx_bbt_loss(diff, r_batch)
+    return loss + (gamma / 2) * torch.sum(diff**2)  # local regularization
 
 
 def get_s_loss(s_param):
@@ -163,18 +163,19 @@ def _huber(x, strength):
     Returns:
         (float): Huber loss
     """
-    return strength * (torch.sqrt(1 + (x/strength)**2) - 1)
+    return strength * (torch.sqrt(1 + (x / strength)**2) - 1)
 
 
 def models_dist_huber(
-        model1, model2, mask=None, s_param=1, vidx=-1, strength=1):
+        model1, model2, mask=None, t_param=0, s_param=1, vidx=-1, strength=1):
     """ Pseudo-Huber distance between 2 models
 
     Args:
         model1 (float tensor): scoring model
         model2 (float tensor): scoring model
         mask (bool tensor): subspace in which to compute distance
-        s_param (float tensor): s parameter.
+        t_param (float tensor): t (translation) parameter
+        s_param (float tensor): s (scaling) parameter
         vidx (int): video index if only one is computed (-1 for all)
         strength (float tensor): pseudo-Huber loss d parameters (see paper)
                                  (d → 0 for absolute value)
@@ -184,11 +185,11 @@ def models_dist_huber(
     """
     if vidx == -1:  # if we want several coordinates
         if mask is None:  # if we want all coordinates
-            dist = (_huber(s_param * (model1 - model2), strength)).sum()
+            dist = (_huber(s_param * model1 - model2 + t_param, strength)).sum()
         else:
-            dist = (_huber(s_param * (model1 - model2) * mask, strength)).sum()
+            dist = (_huber((s_param * model1 - model2) * mask + t_param, strength)).sum()
     else:  # if we want only one coordinate
-        dist = _huber(s_param * (model1[vidx] - model2[vidx]), strength[vidx])
+        dist = _huber(s_param * model1[vidx] - model2[vidx] + t_param, strength[vidx])
     return dist
 
 
@@ -210,7 +211,89 @@ def model_norm(model, powers=(2, 1), vidx=-1):
 
 
 # losses used in "licchavi.py"
-def loss_fit_s_gen(licch, vidx=-1, uid=-1):
+
+# def loss_fit_s_gen(licch, vidx=-1, uid=-1):
+#     """ Computes local and generalisation terms of loss
+
+#     Args:
+#         licch (Licchavi()): licchavi object
+#         vidx (int): video index if we are interested in partial loss
+#                                     (-1 for all indexes)
+#         uid (int): user ID if we are interested in partial loss
+#                                     (-1 for all users)
+
+#     Returns:
+#         (float tensor): sum of local terms of loss
+#         (float tensor): generalisation term of loss
+#     """
+
+#     fit_loss, s_loss, gen_loss = 0, 0, 0
+
+#     def _one_node_loss(fit_loss, s_loss, gen_loss, node, vidx=-1):
+#         fit_loss += get_fit_loss(
+#             node.model,
+#             node.s_param,
+#             node.vid1,  # idx1_batch
+#             node.vid2,  # idx2_batch
+#             node.rating,     # r_batch
+#             vidx=vidx   # video index if we want partial loss
+#         )
+#         if vidx == -1:  # only if all loss is computed
+#             s_loss += licch.nu_par * get_s_loss(node.s_param)
+
+#         huber_dist = models_dist_huber(
+#             node.model,
+#             licch.global_model,
+#             mask=node.mask,
+#             s_param=node.s_param,
+#             vidx=vidx,     # video index if we want partial loss
+#             strength=node.delta_na
+#         )
+#         gen_loss += node.weight * huber_dist
+
+#         return fit_loss, s_loss, gen_loss
+
+#     if uid != -1:  # if we want only one user
+#         node = licch.nodes[uid]
+#         fit_loss, s_loss, gen_loss = _one_node_loss(
+#             fit_loss, s_loss, gen_loss, node, vidx=vidx
+#         )
+#     else:  # if we want all users
+#         for node in licch.nodes.values():
+#             fit_loss, s_loss, gen_loss = _one_node_loss(
+#                 fit_loss, s_loss, gen_loss, node, vidx=vidx
+#             )
+#     return fit_loss, s_loss, gen_loss
+
+
+# def loss_gen_reg(licch, vidx=-1):
+#     """ Computes generalisation and regularisation terms of loss
+
+#     Args:
+#         licch (Licchavi()): licchavi object
+#         vidx (int): video index if we are interested in partial loss
+#                             (-1 for all indexes)
+
+#     Returns:
+#         (float tensor): generalisation term of loss
+#         (float tensor): regularisation loss (of general model)
+#     """
+#     gen_loss, reg_loss = 0, 0
+#     for node in licch.nodes.values():
+#         huber_dist = models_dist_huber(
+#             node.model,    # local model
+#             licch.global_model,  # general model
+#             mask=node.mask,     # mask
+#             s_param=node.s_param,
+#             vidx=vidx,
+#             strength=node.delta_na
+#         )
+#         gen_loss += node.weight * huber_dist
+#     reg_loss = licch.w0_par * model_norm(licch.global_model, vidx=vidx)
+#     return gen_loss, reg_loss
+
+
+def loss_fit(licch, vidx=-1, uid=-1):  # FIXME simplify
     """ Computes local and generalisation terms of loss
 
     Args:
@@ -221,50 +304,38 @@ def loss_fit_s_gen(licch, vidx=-1, uid=-1):
                                     (-1 for all users)
 
     Returns:
-        (float tensor): sum of local terms of loss
-        (float tensor): generalisation term of loss
+        (float tensor): fitting term of loss
     """
 
-    fit_loss, s_loss, gen_loss = 0, 0, 0
+    fit_loss = 0
 
-    def _one_node_loss(fit_loss, s_loss, gen_loss, node, vidx=-1):
+    def _one_node_loss(fit_loss, node, gamma, vidx=-1):
         fit_loss += get_fit_loss(
             node.model,
             node.s_param,
             node.vid1,  # idx1_batch
             node.vid2,  # idx2_batch
             node.rating,     # r_batch
+            gamma=gamma,
             vidx=vidx   # video index if we want partial loss
         )
-        if vidx == -1:  # only if all loss is computed
-            s_loss += licch.nu_par * get_s_loss(node.s_param)
 
-        huber_dist = models_dist_huber(
-            node.model,
-            licch.global_model,
-            mask=node.mask,
-            s_param=node.s_param,
-            vidx=vidx,     # video index if we want partial loss
-            strength=node.delta_na
-        )
-        gen_loss += node.weight * huber_dist
-
-        return fit_loss, s_loss, gen_loss
+        return fit_loss
 
     if uid != -1:  # if we want only one user
         node = licch.nodes[uid]
-        fit_loss, s_loss, gen_loss = _one_node_loss(
-            fit_loss, s_loss, gen_loss, node, vidx=vidx
+        fit_loss = _one_node_loss(
+            fit_loss, node, gamma=licch.gamma, vidx=vidx
         )
     else:  # if we want all users
         for node in licch.nodes.values():
-            fit_loss, s_loss, gen_loss = _one_node_loss(
-                fit_loss, s_loss, gen_loss, node, vidx=vidx
+            fit_loss = _one_node_loss(
+                fit_loss, node, gamma=licch.gamma, vidx=vidx
             )
-    return fit_loss, s_loss, gen_loss
+    return fit_loss
 
 
-def loss_gen_reg(licch, vidx=-1):
+def loss_s_gen_reg(licch, vidx=-1):
     """ Computes generalisation and regularisation terms of loss
 
     Args:
@@ -276,7 +347,7 @@ def loss_gen_reg(licch, vidx=-1):
         (float tensor): generalisation term of loss
         (float tensor): regularisation loss (of general model)
     """
-    gen_loss, reg_loss = 0, 0
+    s_loss, gen_loss, reg_loss = 0, 0, 0
     for node in licch.nodes.values():
         huber_dist = models_dist_huber(
             node.model,    # local model
@@ -286,9 +357,11 @@ def loss_gen_reg(licch, vidx=-1):
             vidx=vidx,
             strength=node.delta_na
         )
+        if vidx == -1:  # only if all loss is computed
+            s_loss += licch.nu_par * get_s_loss(node.s_param) 
         gen_loss += node.weight * huber_dist
-    reg_loss = licch.w0_par * model_norm(licch.global_model, vidx=vidx)
-    return gen_loss, reg_loss
+    reg_loss = licch.w0_par * (model_norm(licch.global_model, vidx=vidx) / 2)
+    return s_loss, gen_loss, reg_loss
 
 
 def round_loss(tens, dec=0):
