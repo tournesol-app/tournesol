@@ -26,3 +26,31 @@ class UserDeletionTestCase(TestCase):
         response = client.delete("/users/me/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(User.objects.filter(username=username).exists())
+
+
+class UserRegistrationTest(TestCase):
+    def test_register_user(self):
+        """
+        Register user with minimal payload
+        """
+        client = APIClient()
+        response = client.post("/accounts/register/", data={
+            "username": "test-user",
+            "password": "a_safe_password",
+            "password_confirm": "a_safe_password",
+            "email": "me@example.com",
+        }, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_register_username_me_is_reserved(self):
+        """
+        Register username 'me' should not be possible
+        """
+        client = APIClient()
+        response = client.post("/accounts/register/", data={
+            "username": "me",
+            "password": "a_safe_password",
+            "password_confirm": "a_safe_password",
+            "email": "me@example.com",
+        }, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
