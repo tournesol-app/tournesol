@@ -1,7 +1,12 @@
 from collections import Counter
-from langdetect import detect, lang_detect_exception
+from langdetect import detect, lang_detect_exception, DetectorFactory
 import re
 from ..models import Video
+
+# Enforce consistent results with a constant seed,
+# as the language detection algorithm is non-deterministic.
+# See https://github.com/Mimino666/langdetect#basic-usage
+DetectorFactory.seed = 0
 
 
 def languages_detection(title, description):
