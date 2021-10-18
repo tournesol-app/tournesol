@@ -4,7 +4,6 @@ import fetchMock from 'fetch-mock-jest';
 import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
-import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import configureStore, {
   MockStoreCreator,
   MockStoreEnhanced,
@@ -20,6 +19,17 @@ import { LoginState } from '../../login/LoginState.model';
 interface MockState {
   token: LoginState;
 }
+
+const mockEnqueueSnackbar = jest.fn();
+
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueueSnackbar,
+    };
+  },
+}));
 
 describe('change password feature', () => {
   const mockStore: MockStoreCreator<
@@ -38,7 +48,7 @@ describe('change password feature', () => {
         functionMatcher: (_, { body }) => {
           return (
             body ===
-            '{"old_password":"success","password":"new_password","password_confirm":"new_password"}'
+            '{"old_password":"success","password":"new_passwd","password_confirm":"new_passwd"}'
           );
         },
       },
@@ -58,7 +68,7 @@ describe('change password feature', () => {
         functionMatcher: (_, { body }) => {
           return (
             body ===
-            '{"old_password":"success_malformed","password":"new_password","password_confirm":"new_password"}'
+            '{"old_password":"success_malformed","password":"new_passwd","password_confirm":"new_passwd"}'
           );
         },
       },
@@ -98,13 +108,7 @@ describe('change password feature', () => {
     render(
       <Provider store={store}>
         <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-          <MemoryRouter initialEntries={['/settings/account']}>
-            <Switch>
-              <Route path="/settings/account">
-                <PasswordForm />
-              </Route>
-            </Switch>
-          </MemoryRouter>
+          <PasswordForm />
         </SnackbarProvider>
       </Provider>
     );
@@ -129,33 +133,45 @@ describe('change password feature', () => {
     const { oldPassword, password, passwordConfirm } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'success' } });
-    fireEvent.change(password, { target: { value: 'new_password' } });
-    fireEvent.change(passwordConfirm, { target: { value: 'new_password' } });
+    fireEvent.change(password, { target: { value: 'new_passwd' } });
+    fireEvent.change(passwordConfirm, { target: { value: 'new_passwd' } });
     await act(async () => {
       fireEvent.click(screen.getByText(/UPDATE PASSWORD/i));
     });
     expect(oldPassword).toHaveValue('');
     expect(password).toHaveValue('');
     expect(passwordConfirm).toHaveValue('');
-    expect(screen.getByText('Password changed successfully')).toBeVisible();
+    expect(mockEnqueueSnackbar).toBeCalledTimes(1);
+    expect(mockEnqueueSnackbar).toBeCalledWith(
+      'Password changed successfully',
+      {
+        variant: 'success',
+      }
+    );
   });
 
-  it('handles success body responses without detail', async () => {
+  it('handles success body responses containing no detail key', async () => {
     const { oldPassword, password, passwordConfirm } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'success_malformed' } });
-    fireEvent.change(password, { target: { value: 'new_password' } });
-    fireEvent.change(passwordConfirm, { target: { value: 'new_password' } });
+    fireEvent.change(password, { target: { value: 'new_passwd' } });
+    fireEvent.change(passwordConfirm, { target: { value: 'new_passwd' } });
     await act(async () => {
       fireEvent.click(screen.getByText(/UPDATE PASSWORD/i));
     });
     expect(oldPassword).toHaveValue('');
     expect(password).toHaveValue('');
     expect(passwordConfirm).toHaveValue('');
-    expect(screen.getByText('Password changed successfully')).toBeVisible();
+    expect(mockEnqueueSnackbar).toBeCalledTimes(1);
+    expect(mockEnqueueSnackbar).toBeCalledWith(
+      'Password changed successfully',
+      {
+        variant: 'success',
+      }
+    );
   });
 
-  it('handles and displays all error messages', async () => {
+  it('handles bad requests and displays all error messages', async () => {
     const { oldPassword, password, passwordConfirm } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'errors' } });
@@ -167,11 +183,15 @@ describe('change password feature', () => {
     expect(oldPassword).toHaveValue('errors');
     expect(password).toHaveValue('too_short');
     expect(passwordConfirm).toHaveValue('too_short');
-    expect(screen.getByText('Old password is not correct')).toBeVisible();
-    expect(
-      screen.getByText(
-        'This password is too short. It must contain at least 8 characters.'
-      )
-    ).toBeVisible();
+    expect(mockEnqueueSnackbar).toBeCalledTimes(2);
+    expect(mockEnqueueSnackbar).toBeCalledWith('Old password is not correct', {
+      variant: 'error',
+    });
+    expect(mockEnqueueSnackbar).toBeCalledWith(
+      'This password is too short. It must contain at least 8 characters.',
+      {
+        variant: 'error',
+      }
+    );
   });
 });
