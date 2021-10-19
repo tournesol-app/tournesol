@@ -1,7 +1,6 @@
 let access_token;
 chrome.storage.local.get(['access_token'], (storage) => {
   access_token = storage.access_token
-  addRateLater('z9OpWQnohZk')
 })
 
 async function getCurrentTab() {
