@@ -100,6 +100,7 @@ def _plot_var(l_hist, plot_name, focus=False):
 def _plotfull_var(l_hist, plot_name, path=None):
     """ plot metrics asked in -l_metrics and save if -path provided """
     l_metrics = PLOTS[plot_name]
+    # only if all metrics available
     if all(metric in l_hist[0] for metric in l_metrics):
         _plot_var(l_hist, plot_name)
         _legendize(plot_name)

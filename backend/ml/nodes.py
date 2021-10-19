@@ -34,15 +34,19 @@ class Node:
         self.s_param = s_param
         self.model = model
         self.weight = weight
-        self.lr_t = lr_t
-        self.lr_s = lr_s / len(vid1)  # FIXME adapt to new loss
+        self.lr_t = lr_t / len(vids)  # adaptative lr
+        self.lr_s = lr_s / len(vids)  # adaptative lr
         self.opt = opt(
             [
                 {'params': self.model},
-                {'params': self.t_param, 'lr': self.lr_t},
-                {'params': self.s_param, 'lr': self.lr_s},
             ],
             lr=lr_loc
+        )
+        self.opt_t_s = opt(
+            [
+                {'params': self.t_param, 'lr': self.lr_t},
+                {'params': self.s_param, 'lr': self.lr_s},
+            ]
         )
 
         self.nb_comps = self._count_comps()  # number of comparisons
@@ -53,6 +57,6 @@ class Node:
         """ Counts number of comparisons for each video
 
         Returns:
-            (int tensor): number of comparison for each video index
+            (int tensor): number of comparisons for each video index
         """
         return torch.sum(self.vid1, axis=0) + torch.sum(self.vid2, axis=0)

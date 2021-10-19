@@ -51,10 +51,10 @@ def _metric_grad(licch, args):
     """ Returns scalar product of gradients between last and current epoch """
     grad_gen = licch.global_model.grad
     if args[4] > 1:  # no previous model for first epoch
-        scal_grad = scalar_product(licch.last_epoch['grad_sp'], grad_gen)
+        scal_grad = scalar_product(licch.last_epoch_glob['grad_sp'], grad_gen)
     else:
         scal_grad = 0  # default value for first epoch
-    licch.last_epoch['grad_sp'] = deepcopy(licch.global_model.grad)
+    licch.last_epoch_glob['grad_sp'] = deepcopy(licch.global_model.grad)
     return scal_grad
 
 
@@ -72,13 +72,13 @@ def _metric_diff_glob(licch, args):
     with torch.no_grad():
         if args[4] > 1:
             diff_glob = models_dist(
-                licch.last_epoch['diff_glob'],
+                licch.last_epoch_glob['diff_glob'],
                 licch.global_model,
                 powers=(2, 0.5)
             )
         else:
             diff_glob = 0
-        licch.last_epoch['diff_glob'] = deepcopy(licch.global_model)
+        licch.last_epoch_glob['diff_glob'] = deepcopy(licch.global_model)
     return diff_glob
 
 
@@ -89,12 +89,14 @@ def _metric_diff_loc(licch, args):
         if args[4] > 1:
             for uidx, node in enumerate(licch.nodes.values()):
                 diff_loc += models_dist(
-                    licch.last_epoch['diff_loc'][uidx],
+                    licch.last_epoch_loc['diff_loc'][uidx],
                     node.model,
                     powers=(2, 0.5),
                     mask=node.mask
                 )
-        licch.last_epoch['diff_loc'] = deepcopy(list(licch.all_nodes('model')))
+        licch.last_epoch_loc['diff_loc'] = deepcopy(
+            list(licch.all_nodes('model'))
+        )
     return diff_loc
 
 
@@ -104,8 +106,12 @@ def _metric_diff_s(licch, args):
         diff_s = torch.zeros(1)
         if args[4] > 1:
             for uidx, node in enumerate(licch.nodes.values()):
-                diff_s += (licch.last_epoch['diff_s'][uidx] - node.s_param)**2
-        licch.last_epoch['diff_s'] = deepcopy(list(licch.all_nodes('s_param')))
+                diff_s += (
+                    licch.last_epoch_glob['diff_s'][uidx] - node.s_param
+                )**2
+        licch.last_epoch_glob['diff_s'] = deepcopy(
+            list(licch.all_nodes('s_param'))
+        )
     return torch.sqrt(diff_s).item()
 
 

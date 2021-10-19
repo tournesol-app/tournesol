@@ -79,6 +79,24 @@ def measure_diff(fakes, preds):
     return diff/len(preds)
 
 
+def print_t(licch):
+    """ Prints t stats """
+    l_t = [(round_loss(t_par, 2), uid) for t_par, uid in zip(
+        licch.all_nodes("t_param"),
+        licch.nodes.keys()
+    )]
+    tens = torch.tensor(l_t)
+    disp_one_by_line(l_t)
+    tens = tens[:, 0]
+    print("mean of t: ", round_loss(torch.mean(tens), 2))
+    print(
+        "min and max of t: ",
+        round_loss(torch.min(tens), 2),
+        round_loss(torch.max(tens), 2)
+    )
+    print("var of t: ", round_loss(torch.var(tens), 2))
+
+
 def print_s(licch):
     """ Prints s stats """
     l_s = [(round_loss(s_par, 2), uid) for s_par, uid in zip(
@@ -101,8 +119,8 @@ def licch_stats(licch):
     """ gives some statistics about Licchavi object """
     print('LICCH_SATS')
     licch.check()  # some tests
-    hist = licch.history_glob  # FIXME add local one
     print("nb_nodes", licch.nb_nodes)
+    print_t(licch)  # print stats on t parameters
     print_s(licch)  # print stats on s parameters
     with torch.no_grad():
         gen_s = licch.all_nodes("s_param")
@@ -113,7 +131,16 @@ def licch_stats(licch):
             PATH_PLOTS,
             "s_params.png"
         )
-    plot_metrics([hist], path=PATH_PLOTS)
+        gen_t = licch.all_nodes("t_param")
+        l_t = [t_par.item() for t_par in gen_t]
+        plot_density(
+            l_t,
+            "t parameters",
+            PATH_PLOTS,
+            "t_params.png"
+        )
+    plot_metrics([licch.history_loc], path=PATH_PLOTS)
+    plot_metrics([licch.history_glob], path=PATH_PLOTS)
 
 
 def scores_stats(glob_scores):

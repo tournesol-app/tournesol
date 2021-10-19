@@ -16,14 +16,14 @@ if not TOURNESOL_DEV:
 
 
 TEST_DATA = [
-    [1, 101, 102, "reliability", 70, 0],
-    [2, 101, 102, "reliability", 30, 0],
-    [0, 103, 104, "reliability", 50, 0],
-    [0, 105, 106, "reliability", 70, 0],
-    [3, 108, 109, "reliability", 100, 0],
-    [3, 109, 110, "reliability", 100, 0],
-    [3, 110, 111, "reliability", 100, 0],
-    [3, 111, 112, "reliability", 100, 0],
+    [1, 100, 101, "reliability", 100, 0],
+    [2, 101, 102, "reliability", 100, 0],
+    # [0, 103, 104, "reliability", 50, 0],
+    # [0, 105, 106, "reliability", 70, 0],
+    # [3, 108, 109, "reliability", 100, 0],
+    # [3, 109, 110, "reliability", 100, 0],
+    # [3, 110, 111, "reliability", 100, 0],
+    # [3, 111, 112, "reliability", 100, 0],
 ]
 
 NAME = ""

@@ -58,7 +58,8 @@ class Licchavi():
             device='cpu',
             verb=1,
             # configured with gin in "hyperparameters.gin"
-            metrics=None,
+            metrics_loc=None,
+            metrics_glob=None,
             lr_loc=None,
             lr_t=None,
             lr_s=None,
@@ -103,11 +104,16 @@ class Licchavi():
         self.users = []  # users IDs
 
         # history stuff
-        self.history_loc = {metric: [] for metric in metrics}
-        self.history_glob = {metric: [] for metric in metrics}
+        self.history_loc = {metric: [] for metric in metrics_loc}
+        self.history_glob = {metric: [] for metric in metrics_glob}
         comparative_metrics = ['diff_loc', 'diff_glob', 'diff_s', 'grad_sp']
-        self.last_epoch = {
-            metric: None for metric in comparative_metrics if metric in metrics
+        self.last_epoch_loc = {
+            metric: None for metric in comparative_metrics
+            if metric in metrics_loc
+        }
+        self.last_epoch_glob = {
+            metric: None for metric in comparative_metrics
+            if metric in metrics_glob
         }
 
     def _show(self, msg, level):
@@ -288,15 +294,18 @@ class Licchavi():
     def _zero_opt(self):
         """ Sets gradients of all models """
         for node in self.nodes.values():
-            node.opt.zero_grad(set_to_none=True)  # node optimizer
+            node.opt.zero_grad(set_to_none=True)  # node model optimizer
+            node.opt_t_s.zero_grad(set_to_none=True)  # node params optimizer
         self.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
     def _do_step(self, fit_step):
         """ Makes step for appropriate optimizer(s) """
         if fit_step:  # updating local or global alternatively
             for node in self.nodes.values():
-                node.opt.step()  # node optimizer
+                node.opt.step()  # node model optimizer
         else:
+            for node in self.nodes.values():
+                node.opt_t_s.step()  # node parameters optimizer
             self.opt_gen.step()
 
     # def _local_step(self):
@@ -357,6 +366,8 @@ class Licchavi():
 
         # Gradient descent
         loss.backward()
+        # for t_par in self.all_nodes('t_param'): # FIXME remove
+        #     print('ttttttttttttttt', t_par.grad)
         self._do_step(fit_step)
 
         update_hist(
