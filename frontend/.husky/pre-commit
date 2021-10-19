@@ -1,4 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-cd frontend
-yarn lint
+if git diff --staged --quiet -- frontend/; then
+    echo "Skipping hook: frontend/ is unchanged"
+else
+    cd frontend
+    yarn lint
+fi
