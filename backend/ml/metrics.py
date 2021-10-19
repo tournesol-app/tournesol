@@ -158,13 +158,13 @@ METRICS_FUNCS = {
 }
 
 
-def update_hist(licch, fit_step, args):
+def update_hist(licch, local_epoch, args):
     """ Updates Licchavi history for all metrics asked
 
-    fit_step (bool): True for local training, False for global
+    local_epoch (bool): True for local training, False for global
     args (tuple): losses and current epoch number
     """
-    if fit_step:  # FIXME smarter division
+    if local_epoch:  # FIXME smarter division
         for metric in licch.history_loc:
             licch.history_loc[metric].append(
                 METRICS_FUNCS[metric](licch, args)

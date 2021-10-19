@@ -298,9 +298,9 @@ class Licchavi():
             node.opt_t_s.zero_grad(set_to_none=True)  # node params optimizer
         self.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
-    def _do_step(self, fit_step):
+    def _do_step(self, local_epoch):
         """ Makes step for appropriate optimizer(s) """
-        if fit_step:  # updating local or global alternatively
+        if local_epoch:  # updating local or global alternatively
             for node in self.nodes.values():
                 node.opt.step()  # node model optimizer
         else:
@@ -336,12 +336,12 @@ class Licchavi():
         )
 
     # ====================  TRAINING ==================
-    def _do_epoch(self, epoch, nb_epochs, fit_step, reg_loss):
+    def _do_epoch(self, epoch, nb_epochs, local_epoch, reg_loss):
         """ Trains for one epoch
 
         epoch (int): current epoch
         nb_epochs (int): (maximum) number of epochs
-        fit_step (bool): True if local step, False if global step
+        local_epoch (bool): True if local step, False if global step
         reg_loss (float tensor): regulation term of loss
 
         Returns:
@@ -355,7 +355,7 @@ class Licchavi():
 
         # ----------------    Licchavi loss  -------------------------
         # only local loss computed
-        if fit_step:
+        if local_epoch:
             fit_loss = loss_fit(self)
             loss = fit_loss
 
@@ -366,30 +366,26 @@ class Licchavi():
 
         # Gradient descent
         loss.backward()
-        # for t_par in self.all_nodes('t_param'): # FIXME remove
-        #     print('ttttttttttttttt', t_par.grad)
-        self._do_step(fit_step)
+        self._do_step(local_epoch)
 
         update_hist(
-            self, fit_step,
+            self, local_epoch,
             (fit_loss, s_loss, gen_loss, reg_loss, epoch)
         )
         self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
         return reg_loss  # to have it next epoch
 
-    def train(self, nb_epochs=1, compute_uncertainty=False):
-        """ training loop
+    def train_loc(self, nb_epochs=1, compute_uncertainty=False):
+        """ local training loop
 
         nb_epochs (int): (maximum) number of training epochs
-        FIXME separate local and global nb_epochs
         compute_uncertainty (bool): wether to compute uncertainty
             at the end or not (takes time)
 
         Returns:
-            (float list list, float tensor): uncertainty of local scores
-                                            (None, None) if not computed
+            (float list list): uncertainty of local scores,None if not computed
         """
-        reg_loss = 0  # for epoch 0 if verb=2
+        reg_loss = 0
 
         # local training loop
         loginf('Starting local training')
@@ -399,6 +395,26 @@ class Licchavi():
             reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
         loginf('End of local training\n'
                f'Training time: {round(time() - time_train_loc, 2)}')
+
+        if compute_uncertainty:  # FIXME make separate method ?
+            time_uncert = time()
+            uncert_loc = get_uncertainty_loc(self)
+            loginf(f'Local uncertainty time: {time() - time_uncert}')
+            return uncert_loc
+        return None  # if uncertainty not computed
+
+    def train_glob(self, nb_epochs=1, compute_uncertainty=False):
+        """ training loop
+
+        nb_epochs (int): (maximum) number of training epochs
+        compute_uncertainty (bool): wether to compute uncertainty
+            at the end or not (takes time)
+
+        Returns:
+            (float tensor) : uncertainty of global scores
+                                            None if not computed
+        """
+        reg_loss = 0
 
         # global training loop
         loginf('Starting global training')
@@ -412,11 +428,10 @@ class Licchavi():
 
         if compute_uncertainty:  # FIXME make separate method ?
             time_uncert = time()
-            uncert_loc = get_uncertainty_loc(self)
             uncert_glob = get_uncertainty_glob(self)
-            loginf(f'Uncertainty time: {time() - time_uncert}')
-            return uncert_glob, uncert_loc  # self.train() returns uncertainty
-        return None, None  # if uncertainty not computed
+            loginf(f'Global uncertainty time: {time() - time_uncert}')
+            return uncert_glob
+        return None  # if uncertainty not computed
 
     # ------------ to check for problems --------------------------
     def check(self):

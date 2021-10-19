@@ -248,7 +248,8 @@ def test_random_signs():
 def test_get_uncertainty_glob():
     """ unit test """
     licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    licch.train(3, -1)
+    licch.train_loc(nb_epochs=3, compute_uncertainty=False)
+    licch.train_glob(nb_epochs=3, compute_uncertainty=False)
     uncert_glob = get_uncertainty_glob(licch)
     assert isinstance(uncert_glob, torch.Tensor)
     assert len(uncert_glob) == licch.nb_vids
@@ -258,7 +259,7 @@ def test_get_uncertainty_glob():
 def test_get_uncertainty_loc():
     """ unit test """
     licch, _ = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    licch.train(3, -1)
+    licch.train_loc(nb_epochs=3, compute_uncertainty=False)
     uncert_loc = get_uncertainty_loc(licch)
     assert isinstance(uncert_loc, list)
     assert len(uncert_loc) == licch.nb_nodes
@@ -300,7 +301,7 @@ def test_set_licchavi():
 def test_train_predict():
     """ unit test """
     licch, users_ids = _set_licchavi(TEST_DATA, 'test', verb=-1)
-    glob, loc, _ = _train_predict(licch, 1)
+    glob, loc, _ = _train_predict(licch, 1, 1)
     assert len(glob) == len(loc) == 2  # good output shape
     assert len(users_ids) == len(loc[1])  # good nb of users
     for vids, scores in zip(*loc):
@@ -313,7 +314,8 @@ def test_ml_run():
     """ checks that outputs of training have normal length """
     glob_scores, contributor_scores = ml_run(
         TEST_DATA,
-        epochs=1,
+        epochs_loc=1,
+        epochs_glob=1,
         criterias=["test"],
         resume=False,
         save=False,
@@ -369,30 +371,37 @@ def test_simple_train():
                         [1, 100, 101, "test", 100, 0],
                         [3, 200, 201, "test", 85, 0],
                         ]
-    glob_scores, loc_scores = ml_run(comparison_data,
-                                     epochs=2,
-                                     criterias=["test"],
-                                     resume=False,
-                                     save=True,  # FIXME change path
-                                     verb=-1)[:2]
+    glob_scores, loc_scores = ml_run(
+        comparison_data,
+        epochs_loc=2,
+        epochs_glob=2,
+        criterias=["test"],
+        resume=False,
+        save=True,  # FIXME change path
+        verb=-1
+    )[:2]
     _some_score_tests(glob_scores, loc_scores)
 
     # testing resume mode
     glob_scores2, loc_scores2 = ml_run(
-                                comparison_data,
-                                epochs=0,
-                                criterias=["test"],
-                                resume=True,  # FIXME change path
-                                save=True,  # FIXME change path
-                                verb=-1)[:2]
+        comparison_data,
+        epochs_loc=0,
+        epochs_glob=0,                               
+        criterias=["test"],
+        resume=True,  # FIXME change path
+        save=True,  # FIXME change path
+        verb=-1
+    )[:2]
     assert glob_scores == glob_scores2
     assert loc_scores == loc_scores2
 
     glob_scores, loc_scores = ml_run(
-                                comparison_data,
-                                epochs=2,
-                                criterias=["test"],
-                                resume=True,
-                                save=False,  # FIXME change path
-                                verb=-1)[:2]
+        comparison_data,
+        epochs_loc=2,
+        epochs_glob=2,
+        criterias=["test"],
+        resume=True,
+        save=False,  # FIXME change path
+        verb=-1
+    )[:2]
     _some_score_tests(glob_scores, loc_scores)

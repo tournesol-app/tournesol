@@ -101,12 +101,13 @@ def _set_licchavi(
 
 
 def _train_predict(
-        licch, epochs,
+        licch, epochs_loc, epochs_glob,
         fullpath=None, save=False, compute_uncertainty=False):
     """ Trains models and returns video scores for one criteria
 
     licch (Licchavi()): licchavi object innitialized with data
-    epochs (int): maximum number of training epochs
+    epochs_loc (int): number of local epochs of gradient descent for Licchavi
+    epochs_glob (int): number of global epochs of gradient descent for Licchavi
     fullpath (str): path where to save trained models
     save (bool): wether to save the result of training or not
     verb (int): verbosity level
@@ -119,9 +120,13 @@ def _train_predict(
                                     uncertainty of global scores
                                     (None, None) if not computed
     """
-    uncertainties = licch.train(
-        epochs,
-        compute_uncertainty=compute_uncertainty)
+    uncert_loc = licch.train_loc(
+        epochs_loc, compute_uncertainty=compute_uncertainty
+    )
+    uncert_glob = licch.train_glob(
+        epochs_glob, compute_uncertainty=compute_uncertainty
+    )
+    uncertainties = (uncert_loc, uncert_glob)
     glob, loc = licch.output_scores()
     if save:
         licch.save_models(fullpath)
@@ -130,13 +135,14 @@ def _train_predict(
 
 @gin.configurable
 def ml_run(
-        comparison_data, epochs, criterias,
+        comparison_data, epochs_loc, epochs_glob, criterias,
         resume=False, save=True, verb=1, device='cpu', ground_truths=None,
         compute_uncertainty=False, licchavi_class=Licchavi):
     """ Runs the ml algorithm for all criterias
 
     comparison_data (list of lists): output of fetch_data()
-    epochs (int): number of epochs of gradient descent for Licchavi
+    epochs_loc (int): number of local epochs of gradient descent for Licchavi
+    epochs_glob (int): number of global epochs of gradient descent for Licchavi
     criterias (str list): list of criterias to compute
     resume (bool): wether to resume from save or not
     save (bool): wether to save result of training or not
@@ -173,7 +179,7 @@ def ml_run(
 
             # training and predicting
             glob, loc, uncertainties = _train_predict(
-                licch, epochs, fullpath, save,
+                licch, epochs_loc, epochs_glob, fullpath, save,
                 compute_uncertainty=compute_uncertainty
             )
         # putting in required shape for output
