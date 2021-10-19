@@ -15,8 +15,10 @@ fi
 
 if [[ "${2:-""}" == "fast" ]]
 then
+  echo "Using setup-fast.yaml"
   SETUP_FILE="setup-fast.yml"
 else
+  echo "Using setup.yaml"
   SETUP_FILE="setup.yml"
 fi
 

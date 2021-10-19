@@ -6,14 +6,10 @@ CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 
 cd "$CURRENT_DIR/.."
 
+echo "Forgetting secrets"
 source "./scripts/forget-secrets.sh"
+echo "Fetching secrets"
 source "./scripts/get-vm-secrets.sh" "$DOMAIN_NAME"
 
-if [[ "${1:-""}" == "apply" ]]
-then
-  CHECK="apply"
-else
-  CHECK=""
-fi
-
-./scripts/deploy-without-secrets.sh "$CHECK"
+echo "Deploying"
+./scripts/deploy-without-secrets.sh "${1:-"notapply"}" "${2:-"notfast"}"
