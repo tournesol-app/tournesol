@@ -1,13 +1,14 @@
 **__pycache__/
 .DS_Store
 venv/
-backend/ml/checkpoints
+ml/checkpoints
 .flake8/
 .pylint/
 .pytest/
 .pytest_cache/
 .python-version
 .vscode
-/backend/ml/plots
+ml/plots
 settings-tournesol.yaml
-backend/ml/ml_logs.log
+ml/ml_logs.log
+aaa.txt
