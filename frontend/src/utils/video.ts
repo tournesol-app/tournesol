@@ -66,11 +66,7 @@ export async function getVideoFromRateLaterListForComparison(
   otherVideo: string | null,
   currentVideo: string | null
 ): Promise<string | null> {
-  const rateLaterResult = await UsersService.usersVideoRateLaterList(
-    username,
-    99,
-    0
-  );
+  const rateLaterResult = await UsersService.usersMeVideoRateLaterList(99, 0);
   const rateLaterList =
     rateLaterResult?.results?.map((v) => v.video.video_id) || [];
   const rateLaterVideoId = await retryRandomPick(
