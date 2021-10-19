@@ -1,0 +1,5 @@
+- hosts: tournesol
+  roles:
+    - django
+    - frontend
+  become: true
