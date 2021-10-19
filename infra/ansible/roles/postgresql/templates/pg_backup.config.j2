@@ -7,10 +7,10 @@
 BACKUP_USER=
 
 # Optional hostname to adhere to pg_hba policies.  Will default to "localhost" if none specified.
-HOSTNAME=
+HOSTNAME=/var/run/postgres
 
 # Optional username to connect to database as.  Will default to "postgres" if none specified.
-USERNAME={{django_database_user}}
+USERNAME=
 
 # This dir will be created if it doesn't exist.  This must be writable by the user the script is
 # running as.
