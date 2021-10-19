@@ -137,13 +137,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefaultRegisterUser'
+              $ref: '#/components/schemas/RegisterUser'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DefaultRegisterUser'
+              $ref: '#/components/schemas/RegisterUser'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/DefaultRegisterUser'
+              $ref: '#/components/schemas/RegisterUser'
         required: true
       security:
       - oauth2:
@@ -154,7 +154,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefaultRegisterUser'
+                $ref: '#/components/schemas/RegisterUser'
           description: ''
   /accounts/register-email/:
     post:
@@ -443,135 +443,6 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
-  /users/{username}/video_rate_later/:
-    get:
-      operationId: users_video_rate_later_list
-      description: API call to return list of rate_later videos
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      - in: path
-        name: username
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedVideoRateLaterList'
-          description: ''
-    post:
-      operationId: users_video_rate_later_create
-      description: |-
-        Add an existing video to a user's rate later list.
-
-        Status code:
-
-            403 Forbidden
-                the logged user is not the target user
-
-            404 Not Found
-                the video doesn't exist in the database
-
-            409 Conflict
-                 the video is already in the rate later list
-                 or there is an other error with the database request
-      parameters:
-      - in: path
-        name: username
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VideoRateLater'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/VideoRateLater'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/VideoRateLater'
-        required: true
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VideoRateLater'
-          description: ''
-  /users/{username}/video_rate_later/{video_id}/:
-    get:
-      operationId: users_video_rate_later_retrieve
-      description: Fetch a video from user's rate later list
-      parameters:
-      - in: path
-        name: username
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VideoRateLater'
-          description: ''
-    delete:
-      operationId: users_video_rate_later_destroy
-      description: Deletes a video from user's rate later list
-      parameters:
-      - in: path
-        name: username
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '204':
-          description: No response body
   /users/me/:
     delete:
       operationId: users_me_destroy
@@ -763,6 +634,114 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedComparisonList'
           description: ''
+  /users/me/video_rate_later/:
+    get:
+      operationId: users_me_video_rate_later_list
+      description: API call to return list of rate_later videos
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVideoRateLaterList'
+          description: ''
+    post:
+      operationId: users_me_video_rate_later_create
+      description: |-
+        Add an existing video to a user's rate later list.
+
+        Status code:
+
+            403 Forbidden
+                the logged user is not the target user
+
+            404 Not Found
+                the video doesn't exist in the database
+
+            409 Conflict
+                 the video is already in the rate later list
+                 or there is an other error with the database request
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoRateLater'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoRateLater'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VideoRateLater'
+        required: true
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoRateLater'
+          description: ''
+  /users/me/video_rate_later/{video_id}/:
+    get:
+      operationId: users_me_video_rate_later_retrieve
+      description: Fetch a video from user's rate later list
+      parameters:
+      - in: path
+        name: video_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoRateLater'
+          description: ''
+    delete:
+      operationId: users_me_video_rate_later_destroy
+      description: Delete a video from user's rate later list
+      parameters:
+      - in: path
+        name: video_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '204':
+          description: No response body
   /video/:
     get:
       operationId: video_list
@@ -1021,157 +1000,6 @@ components:
           format: email
       required:
       - email
-    DefaultRegisterUser:
-      type: object
-      description: |-
-        Default serializer used for user registration. It will use these:
-
-        * User fields
-        * :ref:`user-hidden-fields-setting` setting
-        * :ref:`user-public-fields-setting` setting
-
-        to automagically generate the required serializer fields.
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        password:
-          type: string
-          maxLength: 128
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        email:
-          type: string
-          format: email
-          title: Email address
-          maxLength: 254
-        is_demo:
-          type: boolean
-          description: Is a demo account?
-        first_name:
-          type: string
-          nullable: true
-          description: First name
-          maxLength: 100
-        last_name:
-          type: string
-          nullable: true
-          description: Last name
-          maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (degree, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your profile picture.
-        password_confirm:
-          type: string
-          writeOnly: true
-      required:
-      - id
-      - password
-      - password_confirm
-      - username
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -9997,6 +9825,157 @@ components:
       - Unknown
       - Other
       type: string
+    RegisterUser:
+      type: object
+      description: |-
+        Default serializer used for user registration. It will use these:
+
+        * User fields
+        * :ref:`user-hidden-fields-setting` setting
+        * :ref:`user-public-fields-setting` setting
+
+        to automagically generate the required serializer fields.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        password:
+          type: string
+          maxLength: 128
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        is_demo:
+          type: boolean
+          description: Is a demo account?
+        first_name:
+          type: string
+          nullable: true
+          description: First name
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          description: Last name
+          maxLength: 100
+        title:
+          type: string
+          nullable: true
+          description: Your position
+        bio:
+          type: string
+          nullable: true
+          description: Self-description (degree, biography, ...)
+        comment_anonymously:
+          type: boolean
+          description: Comment anonymously by-default
+        show_online_presence:
+          type: boolean
+          description: Show my online presence on Tournesol
+        show_my_profile:
+          type: boolean
+          description: Show my profile on Tournesol
+        birth_year:
+          type: integer
+          maximum: 2100
+          minimum: 1900
+          nullable: true
+          description: Year of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: Your gender
+        nationality:
+          allOf:
+          - $ref: '#/components/schemas/NationalityEnum'
+          description: Your country of nationality
+        residence:
+          allOf:
+          - $ref: '#/components/schemas/ResidenceEnum'
+          description: Your country of residence
+        race:
+          allOf:
+          - $ref: '#/components/schemas/RaceEnum'
+          description: Your ethnicity
+        political_affiliation:
+          allOf:
+          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
+          description: Your political preference
+        religion:
+          allOf:
+          - $ref: '#/components/schemas/ReligionEnum'
+          description: Your religion
+        degree_of_political_engagement:
+          allOf:
+          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
+          description: Your degree of political engagement
+        moral_philosophy:
+          allOf:
+          - $ref: '#/components/schemas/MoralPhilosophyEnum'
+          description: Your preferred moral philosophy
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: Your website URL
+          maxLength: 500
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          description: Your LinkedIn URL
+          maxLength: 500
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Youtube channel URL
+          maxLength: 500
+        google_scholar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Google Scholar URL
+          maxLength: 500
+        orcid:
+          type: string
+          format: uri
+          nullable: true
+          description: Your ORCID URL
+          maxLength: 500
+        researchgate:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Researchgate profile URL
+          maxLength: 500
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Twitter URL
+          maxLength: 500
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your profile picture.
+        password_confirm:
+          type: string
+          writeOnly: true
+      required:
+      - id
+      - password
+      - password_confirm
+      - username
     ReligionEnum:
       enum:
       - Not Specified
@@ -10377,8 +10356,8 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: http://127.0.0.1:8000/o/token/
-          refreshUrl: http://127.0.0.1:8000/o/token/
+          tokenUrl: http://localhost:8000/o/token/
+          refreshUrl: http://localhost:8000/o/token/
           scopes:
             openid: OpenID Connect scope
             read: Read scope

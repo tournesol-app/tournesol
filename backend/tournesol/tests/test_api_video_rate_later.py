@@ -53,9 +53,8 @@ class VideoRateLaterApi(TestCase):
         An anonymous user can't display someone else's rate later list.
         """
         client = APIClient()
-        user = User.objects.get(username=self._user)
         response = client.get(
-            reverse("tournesol:video_rate_later_list", args=[user.username])
+            "/users/me/video_rate_later/"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -73,7 +72,7 @@ class VideoRateLaterApi(TestCase):
 
         # authorization check
         response = client.get(
-            reverse("tournesol:video_rate_later_list", args=[user.username])
+            "/users/me/video_rate_later/"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -96,21 +95,19 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse("tournesol:video_rate_later_list", args=[other.username])
+            f"/users/{other.username}/video_rate_later/"
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_anonymous_cant_create(self):
         """
         An anonymous user can't add a video.
         """
         client = APIClient()
-
-        user = User.objects.get(username=self._user)
         data = {"video.video_id": "random_video_id"}
 
         response = client.post(
-            reverse("tournesol:video_rate_later_list", args=[user.username]),
+            "/users/me/video_rate_later/",
             data,
             format="json",
         )
@@ -129,7 +126,7 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            reverse("tournesol:video_rate_later_list", args=[user.username]),
+            "/users/me/video_rate_later/",
             data,
             format="json",
         )
@@ -148,7 +145,7 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            reverse("tournesol:video_rate_later_list", args=[user.username]),
+            "/users/me/video_rate_later/",
             data,
             format="json",
         )
@@ -168,11 +165,11 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            reverse("tournesol:video_rate_later_list", args=[other.username]),
+            f"/users/{other.username}/video_rate_later/",
             data,
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_anonymous_cant_fetch(self):
         """
@@ -182,10 +179,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
         user = User.objects.get(username=self._user)
         response = client.get(
-            reverse(
-                "tournesol:video_rate_later_detail",
-                args=[user.username, "non_existing_video_id"],
-            )
+            "/users/me/video_rate_later/non-existing-video-id/"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -201,29 +195,9 @@ class VideoRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse("tournesol:video_rate_later_detail", args=[user.username, video.video_id])
+            f"/users/me/video_rate_later/{video.video_id}/",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_authenticated_cant_fetch_others(self):
-        """
-        An authenticated user can't fetch a video from someone else's rate
-        later list.
-        """
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        other = User.objects.get(username=self._other)
-        video = Video.objects.get(name=self._others_video)
-
-        client.force_authenticate(user=user)
-
-        response = client.get(
-            reverse(
-                "tournesol:video_rate_later_detail", args=[other.username, video.video_id]
-            )
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_anonymous_cant_delete(self):
         """
@@ -231,12 +205,8 @@ class VideoRateLaterApi(TestCase):
         list.
         """
         client = APIClient()
-        user = User.objects.get(username=self._user)
         response = client.delete(
-            reverse(
-                "tournesol:video_rate_later_detail",
-                args=[user.username, "non_existing_video_id"],
-            )
+            f"/users/me/video_rate_later/a-video-id/"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -251,27 +221,10 @@ class VideoRateLaterApi(TestCase):
 
         client.force_authenticate(user=user)
 
+        self.assertEqual(user.videoratelaters.count(), 1)
         response = client.delete(
-            reverse("tournesol:video_rate_later_detail", args=[user.username, video.video_id])
+            f"/users/me/video_rate_later/{video.video_id}/"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(user.videoratelaters.count(), 0)
 
-    def test_authenticated_cant_delete_others(self):
-        """
-        An authenticated user can't delete a video from someone else's rate
-        later list.
-        """
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        other = User.objects.get(username=self._other)
-        video = Video.objects.get(name=self._others_video)
-
-        client.force_authenticate(user=user)
-
-        response = client.delete(
-            reverse(
-                "tournesol:video_rate_later_detail", args=[other.username, video.video_id]
-            )
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

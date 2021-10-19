@@ -14,11 +14,7 @@ export const fetchRateLaterList = async (
     throw Error('username is missing');
   }
   OpenAPI.TOKEN = login_state.access_token;
-  return UsersService.usersVideoRateLaterList(
-    login_state.username,
-    limit,
-    offset
-  );
+  return UsersService.usersMeVideoRateLaterList(limit, offset);
 };
 
 export const addToRateLaterList = async (
@@ -32,7 +28,7 @@ export const addToRateLaterList = async (
 
   await ensureVideoExistOrCreate(video_id);
 
-  return UsersService.usersVideoRateLaterCreate(login_state.username, {
+  return UsersService.usersMeVideoRateLaterCreate({
     video: { video_id },
   });
 };
@@ -46,8 +42,5 @@ export const deleteFromRateLaterList = async (
   }
   OpenAPI.TOKEN = login_state.access_token;
 
-  return UsersService.usersVideoRateLaterDestroy(
-    login_state.username,
-    video_id
-  );
+  return UsersService.usersMeVideoRateLaterDestroy(video_id);
 };

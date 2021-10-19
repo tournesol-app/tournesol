@@ -7,11 +7,7 @@ import {
   Lines,
   FormTextField,
 } from 'src/components';
-import {
-  AccountsService,
-  DefaultRegisterUser,
-  ApiError,
-} from 'src/services/openapi';
+import { AccountsService, RegisterUser, ApiError } from 'src/services/openapi';
 
 const SignupSuccess = ({ email }: { email: string }) => (
   <Typography>
@@ -35,7 +31,7 @@ const Signup = () => {
     const formObject: unknown = Object.fromEntries(formData);
     try {
       const createdUser = await AccountsService.accountsRegisterCreate(
-        formObject as DefaultRegisterUser
+        formObject as RegisterUser
       );
       setSuccessEmailAddress(createdUser.email || '');
     } catch (err) {

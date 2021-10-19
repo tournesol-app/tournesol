@@ -6,17 +6,12 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, mixins, status
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema_view, extend_schema
 
 from ..models import Video, VideoRateLater
 from ..serializers import VideoRateLaterSerializer
-
-
-def verify_username(request, username):
-    """ Fails if username is different from request.user """
-    if request.user.username != username:
-        raise PermissionDenied("403 Forbidden")
 
 
 class VideoRateLaterList(
@@ -27,13 +22,13 @@ class VideoRateLaterList(
     """
 
     serializer_class = VideoRateLaterSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return VideoRateLater.objects.filter(user__username=self.kwargs["username"])
+        return VideoRateLater.objects.filter(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
         """API call to return list of rate_later videos"""
-        verify_username(request, kwargs["username"])
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -52,8 +47,6 @@ class VideoRateLaterList(
                  the video is already in the rate later list
                  or there is an other error with the database request
         """
-        verify_username(request, kwargs["username"])
-
         try:
             video = get_object_or_404(Video, video_id=request.data["video"]["video_id"])
         except KeyError:
@@ -74,14 +67,16 @@ class VideoRateLaterList(
         return Response(VideoRateLaterSerializer(video_rate_later).data)
 
 
-class VideoRateLaterDetail(
-    mixins.RetrieveModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
-):
+@extend_schema_view(
+    get=extend_schema(description="Fetch a video from user's rate later list"),
+    delete=extend_schema(description="Delete a video from user's rate later list"),
+)
+class VideoRateLaterDetail(generics.RetrieveDestroyAPIView):
     """
     Retrieve, or delete a video from a user's rate later list.
     """
-
     serializer_class = VideoRateLaterSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         """Fetch a given video or returns 404"""
@@ -91,13 +86,3 @@ class VideoRateLaterDetail(
             video__video_id=self.kwargs["video_id"],
         )
         return video_rate_later
-
-    def get(self, request, *args, **kwargs):
-        """Fetch a video from user's rate later list"""
-        verify_username(request, kwargs["username"])
-        return self.retrieve(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        """Deletes a video from user's rate later list"""
-        verify_username(request, kwargs["username"])
-        return self.destroy(request, *args, **kwargs)
