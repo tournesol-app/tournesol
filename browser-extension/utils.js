@@ -53,7 +53,7 @@ export const fetchTournesolApi = (url, method, data, callback) => {
 
 export const addRateLater = (video_id) => {
   fetchTournesolApi('video/', 'POST', {video_id: video_id}, () => {}).then( () => {
-    fetchTournesolApi('users/lpfaucon/video_rate_later/', 'POST', {video: {video_id: video_id}}, () => {})
+    fetchTournesolApi('users/me/video_rate_later/', 'POST', {video: {video_id: video_id}}, () => {})
   })
 };
 
