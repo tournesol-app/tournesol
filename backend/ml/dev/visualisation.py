@@ -187,5 +187,5 @@ def output_infos(licch, glob, loc, uncertainties):
     licch_stats(licch)
     scores_stats(glob[1])
     s_stats(licch)
-    if uncertainties[1] is not None:
-        uncert_stats(licch, uncertainties[1])
+    if uncertainties[0] is not None:
+        uncert_stats(licch, uncertainties[0])

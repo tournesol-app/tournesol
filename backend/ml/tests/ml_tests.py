@@ -386,7 +386,7 @@ def test_simple_train():
     glob_scores2, loc_scores2 = ml_run(
         comparison_data,
         epochs_loc=0,
-        epochs_glob=0,                               
+        epochs_glob=0,
         criterias=["test"],
         resume=True,  # FIXME change path
         save=True,  # FIXME change path

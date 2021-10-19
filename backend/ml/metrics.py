@@ -241,6 +241,7 @@ def _get_hessian_fun_loc(licch, uid, vidx):
     return get_loss
 
 
+# FIXME take translation into account
 def get_uncertainty_loc(licch):
     """ Returns uncertainty for all local scores
 

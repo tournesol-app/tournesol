@@ -39,7 +39,7 @@ def run_experiment(comparison_data):
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
         TEST_DATA,
-        epochs_loc=5,
+        epochs_loc=10,
         epochs_glob=10,
         criterias=["reliability"],
         licchavi_class=LicchaviDev,

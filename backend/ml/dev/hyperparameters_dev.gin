@@ -23,8 +23,8 @@ Licchavi.w0_par = 1  # regularisation term ponderation
 # local
 Licchavi.lr_loc = 0.1  # learning rate of local models
 # global
-Licchavi.lr_t = 0.0005  # learning rate of t individual parameters
-Licchavi.lr_s = 0.0005  # learning rate of s individual parameters
+Licchavi.lr_t = 0.005  # learning rate of t individual parameters
+Licchavi.lr_s = 0.005  # learning rate of s individual parameters
 Licchavi.lr_glob = 0.01  # learning rate of general model
 
 
