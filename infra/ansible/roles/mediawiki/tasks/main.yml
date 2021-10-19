@@ -130,16 +130,15 @@
       name: MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
 
 - name: Download Mediawiki extensions
-  get_url:
-    url: "{{item.url}}"
-    dest: "/tmp/{{item.name}}"
-  with_items:
-    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-cbe6759.tar.gz
-      name: Math-REL1_36-cbe6759.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-087cb4c.tar.gz
-      name: PluggableAuth-REL1_36-087cb4c.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-da79147.tar.gz
-      name: OpenIDConnect-REL1_36-da79147.tar.gz
+  unarchive:
+    remote_src: yes
+    src: "{{item.url}}"
+    dest: "/var/lib/mediawiki/extensions"
+  with_items: "{{mediawiki_extensions}}"
+  notify:
+    - Run Composer
+    - Update Mediawiki database
+    - Reload Nginx
 
 - name: Extract Mediawiki language extensions
   unarchive:
@@ -154,18 +153,25 @@
     - Update Mediawiki database
     - Reload Nginx
 
-- name: Extract Mediawiki extensions
-  unarchive:
-    src: "/tmp/{{item.name}}"
-    remote_src: yes
-    dest: "/var/lib/mediawiki/extensions"
-  with_items:
-    - url: https://extdist.wmflabs.org/dist/extensions/Math-REL1_36-cbe6759.tar.gz
-      name: Math-REL1_36-cbe6759.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_36-087cb4c.tar.gz
-      name: PluggableAuth-REL1_36-087cb4c.tar.gz
-    - url: https://extdist.wmflabs.org/dist/extensions/OpenIDConnect-REL1_36-da79147.tar.gz
-      name: OpenIDConnect-REL1_36-da79147.tar.gz
+- name: Check extensions folders
+  stat:
+    path: "/var/lib/mediawiki/extensions/{{item.name}}"
+  register: extensions_state
+  with_items: "{{mediawiki_extensions}}"
+
+- name: Clean up old (not linked) extensions installs
+  file:
+    path: "/var/lib/mediawiki/extensions/{{item.item.name}}"
+    state: absent
+  when: "not item.stat.islnk"
+  with_items: "{{extensions_state.results}}"
+
+- name: Link Mediawiki extensions
+  file:
+    src: "/var/lib/mediawiki/extensions/{{item.output_dir}}"
+    dest: "/var/lib/mediawiki/extensions/{{item.name}}"
+    state: link
+  with_items: "{{mediawiki_extensions}}"
   notify:
     - Run Composer
     - Update Mediawiki database
