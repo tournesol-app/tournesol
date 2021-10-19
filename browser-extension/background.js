@@ -11,7 +11,6 @@ chrome.contextMenus.removeAll(function (e, tab) {
 chrome.contextMenus.onClicked.addListener(function (e, tab) {
   var videoId = new URL(e.linkUrl).searchParams.get('v');
   if (!videoId) {
-    console.log("hello")
     alertUseOnLinkToYoutube()
   } else {
     addRateLater(videoId)
@@ -34,7 +33,6 @@ function getDateThreeWeeksAgo() {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log("onMessage")
   if (request.message == "addRateLater") {
     addRateLater(request.video_id)
   }
@@ -43,12 +41,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
   } 
   else if (request.message == "getTournesolRecommendations") {
-    console.log("received message getTournesolReco")
     const api_url = 'video/';
 
     const request_recommendations = async (options) => {
       const json = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET', null);
-      console.log(json)
       return json.results;
     };
 
