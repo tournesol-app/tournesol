@@ -6,7 +6,9 @@
     "storage", "contextMenus", "activeTab", "scripting"
   ],
   "host_permissions": [
-    "https://tournesol.app/", "https://www.youtube.com/"
+    "https://api.tournesol.app/",
+    "https://tournesol.app/",
+    "https://www.youtube.com/"
   ],
   "manifest_version": 3,
   "icons": {
