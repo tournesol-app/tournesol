@@ -373,7 +373,7 @@ class Licchavi():
             (fit_loss, s_loss, gen_loss, reg_loss, epoch)
         )
         self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
-        return reg_loss  # to have it next epoch
+        return reg_loss  # FIXME remove
 
     def train_loc(self, nb_epochs=1, compute_uncertainty=False):
         """ local training loop
@@ -423,6 +423,7 @@ class Licchavi():
             # self._set_lr()  # FIXME design lr scheduling
             self._regul_s()
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
+
         loginf('End of global training\n'
                f'Training time: {round(time() - time_train_glob, 2)}')
 

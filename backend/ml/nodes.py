@@ -14,7 +14,7 @@ class Node:
         vid1 (bool 2D tensor): one line is a one-hot-encoded video index
         vid2 (bool 2D tensor): one line is a one-hot-encoded video index
         rating (float tensor): comparisons corresponding to vid1 and vid2 lines
-        vids (FIXME): video IDs
+        vids (int array): IDs of all videos rated at least once by user
         mask (bool tensor): True for all video indexes rated by user
         t_param (float tensor): t (translation) learnable parameter
         s_param (float tensor): s (scaling) learnable parameter
@@ -49,7 +49,7 @@ class Node:
             ]
         )
 
-        self.nb_comps = self._count_comps()  # number of comparisons
+        self.nb_comps = self._count_comps()  # number of comps of each video
         self.delta_na = 1 / torch.sqrt(self.nb_comps)  # needed for loss later
         _ = torch.nan_to_num_(self.delta_na, posinf=1)  # avoiding NaNs
 

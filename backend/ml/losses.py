@@ -188,7 +188,7 @@ def models_dist_huber(
             dist = _huber(s_param * model1 - model2 + t_param, strength).sum()
         else:
             dist = _huber(
-                (s_param * model1 - model2) * mask + t_param, strength
+                (s_param * model1 - model2 + t_param) * mask, strength
             ).sum()
     else:  # if we want only one coordinate
         stren = strength[vidx]
