@@ -20,7 +20,7 @@ chrome.contextMenus.onClicked.addListener(function (e, tab) {
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
   const format = (str) => str.length == 1 ? `0${str}` : str.length == 4 ? str.slice(2) : str
-  const threeWeeksAgo = new Date(Date.now() - 3 * 7 * 24 * 3600)
+  const threeWeeksAgo = new Date(Date.now() - 3 * 7 * 24 * 3600000)
   const [d, m, y, H, M, S] = [
     threeWeeksAgo.getDate(),
     (threeWeeksAgo.getMonth() + 1), // adds 1 because January has index 0 in Javascript but Django expect "01"
@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     addRateLater(request.video_id)
   }
   else if (request.message == "getVideoStatistics") {
-    getVideoStatistics(request.video_id).then(sendResponse);
+    // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
   } 
   else if (request.message == "getTournesolRecommendations") {
