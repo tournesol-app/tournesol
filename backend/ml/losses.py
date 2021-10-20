@@ -287,7 +287,7 @@ def loss_s_gen_reg(licch, vidx=-1):
     return s_loss, gen_loss, reg_loss
 
 
-def round_loss(tens, dec=0):
+def round_loss(tens, dec=5):
     """ from an input scalar tensor or int/float returns rounded int/float """
     if isinstance(tens, (int, float)):
         return round(tens, dec)

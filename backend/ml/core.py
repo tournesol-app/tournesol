@@ -1,5 +1,5 @@
 """
-Module containting the ml_run() function used in ml_train()
+Module containting the ml_run() function used in ml_train.py
 between fetch_data() and save_data()
 """
 import os
@@ -19,7 +19,7 @@ FOLDER_PATH = "backend/ml/checkpoints/"
 FILENAME = "models_weights"
 PATH = FOLDER_PATH + FILENAME
 os.makedirs(FOLDER_PATH, exist_ok=True)
-logging.basicConfig(filename='backend/ml/ml_logs.log', level=logging.INFO)  # FIXME
+logging.basicConfig(filename='backend/ml/ml_logs.log', level=logging.INFO)
 
 
 def _get_licchavi(
@@ -187,7 +187,6 @@ def ml_run(
         out_glob = format_out_glob(glob, criteria, uncertainties[1])
         loc_scores += out_loc
         glob_scores += out_glob
-        
 
     logging.info('ml_run() total time : %s', round(time() - ml_run_time))
     if TOURNESOL_DEV:  # return more information in dev mode

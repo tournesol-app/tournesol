@@ -30,7 +30,7 @@ class Node:
         self.rating = rating
         self.vids = vids
         self.mask = mask
-        self.t_param = t_param
+        self.t_param = t_param  # FIXME harmonize "par" or "param" notation
         self.s_param = s_param
         self.model = model
         self.weight = weight

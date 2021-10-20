@@ -17,15 +17,22 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 INTENS = 0.4  # intensity of coloration
 
 PLOTS = {
-    'loss': ['loss_fit', 'loss_s', 'loss_gen', 'loss_reg'],
-    'grad': ['grad_sp', 'grad_norm'],
+    # loss
+    'loss_loc': ['loss_fit'],
+    'loss_glob': ['loss_s', 'loss_gen', 'loss_reg'],
+    # norms
     'norm_glob': ['norm_glob'],
     'norm_loc': ['norm_loc'],
+    # difference between 2 epochs
     'diff_glob': ['diff_glob'],
     'diff_loc': ['diff_loc'],
     'diff_s': ['diff_s'],
-
-    # in test mode only (generated data)
+    # gradients
+    'grad_glob': ['grad_sp_glob', 'grad_glob'],
+    'grad_s': ['grad_s'],
+    'grad_t': ['grad_t'],
+    'grad_loc': ['grad_loc'],
+    # in test mode only (using generated data)
     'error_glob': ['error_glob'],
     'error_loc': ['error_loc'],
 }
@@ -45,8 +52,12 @@ def get_color():
         yield colors[i % 4]
 
 
-STYLES = get_style()  # generator for looping styles
-COLORS = get_color()
+def set_styles():
+    """ sets the global generators variables """
+    global STYLES
+    global COLORS
+    STYLES = get_style()
+    COLORS = get_color()
 
 
 def _title_save(title=None, path=None, suff=".png"):
@@ -99,6 +110,7 @@ def _plot_var(l_hist, plot_name, focus=False):
 
 def _plotfull_var(l_hist, plot_name, path=None):
     """ plot metrics asked in -l_metrics and save if -path provided """
+    set_styles()
     l_metrics = PLOTS[plot_name]
     # only if all metrics available
     if all(metric in l_hist[0] for metric in l_metrics):

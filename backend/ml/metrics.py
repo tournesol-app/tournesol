@@ -47,7 +47,43 @@ def replace_coordinate(tens, score, idx):
 
 
 # ------ Licchavi history computation -----------
-def _metric_grad(licch, args):
+
+# norms
+def _metric_norm_loc(licch, args):
+    """ Returns l2 norm of local scores """
+    norm = 0
+    with torch.no_grad():
+        for node in licch.nodes.values():
+            norm += model_norm(node.model, powers=(2, 0.5))
+    return norm
+
+
+# gradients
+def _metric_grad_loc(licch, args):
+    """ Norm of local model gradients """
+    norm = 0
+    for node in licch.nodes.values():
+        norm += torch.sum(node.model.grad**2)
+    return torch.sqrt(norm).item()
+
+
+def _metric_grad_t(licch, args):
+    """ Norm of t parameters gradients """
+    norm = 0
+    for node in licch.nodes.values():
+        norm += node.t_param.grad**2
+    return torch.sqrt(norm).item()
+
+
+def _metric_grad_s(licch, args):
+    """ Norm of s parameters gradients """
+    norm = 0
+    for node in licch.nodes.values():
+        norm += node.s_param.grad**2
+    return torch.sqrt(norm).item()
+
+
+def _metric_grad_sp_glob(licch, args):
     """ Returns scalar product of gradients between last and current epoch """
     grad_gen = licch.global_model.grad
     if args[4] > 1:  # no previous model for first epoch
@@ -58,15 +94,7 @@ def _metric_grad(licch, args):
     return scal_grad
 
 
-def _metric_norm_loc(licch, args):
-    """ Returns l2 norm of local scores """
-    norm = 0
-    with torch.no_grad():
-        for node in licch.nodes.values():
-            norm += model_norm(node.model, powers=(2, 0.5))
-    return norm
-
-
+# differences
 def _metric_diff_glob(licch, args):
     """ Global scores variation between 2 epochs """
     with torch.no_grad():
@@ -115,6 +143,7 @@ def _metric_diff_s(licch, args):
     return torch.sqrt(diff_s).item()
 
 
+# test mode
 def _metric_error_glob(licch, args):
     """ Error between predicted and ground truths (dev mode only) """
     with torch.no_grad():
@@ -140,19 +169,27 @@ def _metric_error_loc(licch, args):
 
 
 METRICS_FUNCS = {
+    # losse terms
     'loss_fit': lambda licch, args: round_loss(args[0]),
     'loss_s': lambda licch, args: round_loss(args[1]),
     'loss_gen': lambda licch, args: round_loss(args[2]),
     'loss_reg': lambda licch, args: round_loss(args[3]),
+    # norms
     'norm_glob': lambda licch, args:
         round_loss(model_norm(licch.global_model, powers=(2, 0.5)), 3),
-    'grad_sp': _metric_grad,
-    'grad_norm': lambda licch, args:
-        scalar_product(licch.global_model.grad, licch.global_model.grad),
     'norm_loc': _metric_norm_loc,
+    # gradients
+    'grad_glob': lambda licch, args:
+        scalar_product(licch.global_model.grad, licch.global_model.grad),
+    'grad_loc': _metric_grad_loc,
+    'grad_t': _metric_grad_t,
+    'grad_s': _metric_grad_s,
+    'grad_sp_glob': _metric_grad_sp_glob,
+    # differences
     'diff_loc': _metric_diff_loc,
     'diff_glob': _metric_diff_glob,
     'diff_s': _metric_diff_s,
+    # test mode only, distance to ground truths
     'error_glob': _metric_error_glob,
     'error_loc': _metric_error_loc
 }

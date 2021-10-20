@@ -14,7 +14,7 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 # local
 Licchavi.gamma = 0.1  # local regularisation term ponderation
 # global
-Licchavi.nu_par = 5  # scaling parameter term ponderation
+Licchavi.nu_par = 0.5  # scaling parameter term ponderation
 Licchavi.w_loc = 1  # generalisation term ponderation
 Licchavi.w0_par = 1  # regularisation term ponderation
 
@@ -23,7 +23,7 @@ Licchavi.w0_par = 1  # regularisation term ponderation
 # local
 Licchavi.lr_loc = 0.1  # learning rate of local models
 # global
-Licchavi.lr_t = 0.005  # learning rate of t individual parameters
+Licchavi.lr_t = 0.03  # learning rate of t individual parameters
 Licchavi.lr_s = 0.005  # learning rate of s individual parameters
 Licchavi.lr_glob = 0.01  # learning rate of general model
 
@@ -40,9 +40,12 @@ Licchavi.lr_glob = 0.01  # learning rate of general model
 
 # metrics to compute during training
 Licchavi.metrics_loc = [
-    'loss_fit', 'norm_loc', 'diff_loc',
+    'loss_fit', 'norm_loc', 
+    # 'diff_loc',
 ] 
 Licchavi.metrics_glob = [
-    'loss_s', 'loss_gen', 'loss_reg', 'norm_glob', 'grad_sp', 
-    'grad_norm', 'diff_glob', 'diff_s'
+    'loss_s', 'loss_gen', 'loss_reg', 
+    'norm_glob', 'grad_sp_glob', 
+    'grad_glob', 'grad_s', 'grad_t', 'grad_loc',
+    # 'diff_glob', 'diff_s', 
 ] 
