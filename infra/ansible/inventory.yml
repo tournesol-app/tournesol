@@ -6,7 +6,6 @@ all:
         tournesol-vm:
           ansible_host: tournesol-vm
           machine_name: tournesol
-          # ansible_user: jst
           domain_name: tournesol-vm
           api_domain_name: tournesol-api
           api_scheme: http
@@ -51,7 +50,6 @@ all:
         tournesol-staging:
           ansible_host: staging.tournesol.app
           machine_name: tournesol
-          # ansible_user: jst
           domain_name: staging.tournesol.app
           api_domain_name: "api.{{domain_name}}"
           api_scheme: https
@@ -103,7 +101,6 @@ all:
         tournesol-prod:
           ansible_host: tournesol.app
           machine_name: tournesol
-          # ansible_user: jst
           domain_name: tournesol.app
           api_domain_name: "api.{{domain_name}}"
           api_scheme: https

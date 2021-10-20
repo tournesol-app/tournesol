@@ -13,7 +13,16 @@ else
   CHECK="--check"
 fi
 
-ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" setup.yml \
+if [[ "${2:-""}" == "fast" ]]
+then
+  echo "Using setup-fast.yaml"
+  SETUP_FILE="setup-fast.yml"
+else
+  echo "Using setup.yaml"
+  SETUP_FILE="setup.yml"
+fi
+
+ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   $CHECK \
   -e "django_database_password=$DJANGO_DATABASE_PASSWORD" \
   -e "django_secret_key=$DJANGO_SECRET_KEY" \
