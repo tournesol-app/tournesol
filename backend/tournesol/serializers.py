@@ -17,6 +17,9 @@ class VideoSerializer(ModelSerializer):
         fields = [
             "video_id", "name", "description", "publication_date", "views", "uploader", "language"
             ]
+        read_only_fields = [
+            "name", "description", "publication_date", "views", "uploader", "language"
+        ]
 
 
 class VideoReadOnlySerializer(Serializer):

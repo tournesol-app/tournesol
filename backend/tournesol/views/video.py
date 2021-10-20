@@ -17,7 +17,13 @@ from tournesol.utils.video_language import compute_video_language
 
 
 class VideoViewSet(viewsets.ModelViewSet):
+    # FIXME: this `queryset` is not used by the implementation
+    # Define `filterset_fields` for filtering?
     queryset = Video.objects.all()
+
+    # FIXME: `VideoSerializer` is not the only serializer used by these views.
+    # And the docs do not reflect the actual schema used in the response.
+    # Override `get_serializer_class` and use default pagination?
     serializer_class = VideoSerializer
     permission_classes = []  # To unlock authentication required
 
@@ -94,11 +100,12 @@ class VideoViewSet(viewsets.ModelViewSet):
         """
         Add a video to the db if it does not already exist
         """
-        if not request.data.get("video_id"):
+        video_id = request.data.get("video_id")
+        if not video_id:
             return Response('No video_id given', status=status.HTTP_400_BAD_REQUEST)
-        if len(request.data.get("video_id")) != 11:
-            return Response("video_id given isn't", status=status.HTTP_400_BAD_REQUEST)
-        if Video.objects.filter(video_id=request.data["video_id"]):
+        if len(video_id) != 11:
+            return Response("video_id is not valid", status=status.HTTP_400_BAD_REQUEST)
+        if Video.objects.filter(video_id=video_id):
             Response(
                 "The video with the id : {id} is already registered".format(
                     id=request.data["video_id"]),
@@ -121,8 +128,7 @@ class VideoViewSet(viewsets.ModelViewSet):
             description = str(yt_info["snippet"]["description"])
             uploader = yt_info["snippet"]["channelTitle"]
             language = compute_video_language(uploader, title, description)
-            data = {
-                "video_id": request.data["video_id"],
+            extra_data = {
                 "name": title,
                 "description": description,
                 "publication_date": published_date,
@@ -130,10 +136,10 @@ class VideoViewSet(viewsets.ModelViewSet):
                 "uploader": uploader,
                 "language": language
             }
-            serializer = VideoSerializer(data=data)
         except AssertionError:
-            serializer = VideoSerializer(data=request.data)
+            extra_data = {}
+        serializer = VideoSerializer(data={"video_id": video_id})
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(**extra_data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
