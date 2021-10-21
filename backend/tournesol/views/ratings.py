@@ -22,9 +22,14 @@ class ContributorRatingDetail(generics.GenericAPIView):
         return Response(ratings_serialized.data, status=status.HTTP_200_OK)
 
 
-class ContributorRatingList(generics.GenericAPIView):
+class ContributorRatingList(generics.ListAPIView):
 
-    def get(self, request):
-        ratings = ContributorRating.objects.filter(user=request.user)
-        ratings_serialized = ContributorRatingSerializer(ratings, many=True)
-        return Response(ratings_serialized.data, status=status.HTTP_200_OK)
+    queryset = ContributorRating.objects.all()
+    serializer_class = ContributorRatingSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
