@@ -248,12 +248,17 @@ class Licchavi():
         for node in self.nodes.values():
             yield getattr(node, key)
 
+    def _detach_loc(self):
+        """ detach local models tensors (removes gradients) """
+        for node in self.nodes.values():
+            _ = node.model.detach_()
+
     # ---------- methods for training ------------
     def _set_lr(self):
         """ Sets learning rates of optimizers """
         for node in self.nodes.values():
             node.opt.param_groups[0]['lr'] = self.lr_loc  # node optimizer
-            # FIXME update lr_s (not useful currently)
+            # FIXME update lr_s, lr_t (not useful currently)
         self.opt_gen.param_groups[0]['lr'] = self.lr_glob
 
     @gin.configurable
@@ -307,15 +312,6 @@ class Licchavi():
             for node in self.nodes.values():
                 node.opt_t_s.step()  # node parameters optimizer
             self.opt_gen.step()
-
-    # def _local_step(self):
-    #     """ local optimizers gradient step """
-    #     for node in self.nodes.values():
-    #         node.opt.step()
-
-    # def _global_step(self):
-    #     """ global optimizer gradient step """
-    #     self.opt_gen.step()
 
     def _regul_s(self):
         """ regulate s parameters """
@@ -414,6 +410,7 @@ class Licchavi():
             (float tensor) : uncertainty of global scores
                                             None if not computed
         """
+        self._detach_loc()  # removing local models gradients (not needed here)
         reg_loss = 0
 
         # global training loop
