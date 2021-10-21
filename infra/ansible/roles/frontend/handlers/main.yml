@@ -6,7 +6,7 @@
 
 - name: Yarn install
   shell:
-    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && yarn
+    cmd: . ~/.nvm/nvm.sh && NVM_DIR=/home/react/.nvm nvm use lts/{{npm_lts_version}} && yarn install --frozen-lockfile
     chdir: /home/react/tournesol-frontend
   become: yes
   become_user: react

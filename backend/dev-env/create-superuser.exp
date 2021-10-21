@@ -59,8 +59,11 @@ send -- "$PASSWORD\r"
 expect -exact "\r
 Password (again): "
 send -- "$PASSWORD\r"
-expect -exact "\r
+expect {
+	-exact "\r
 \[31;1mThis password is too short. It must contain at least 8 characters.\r
-\[0mBypass password validation and create user anyway? \[y/N\]: "
-send -- "y\r"
-expect eof
+\[0mBypass password validation and create user anyway? \[y/N\]: " {
+	send -- "y\r"
+	}
+	eof {}
+}

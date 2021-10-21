@@ -3,18 +3,21 @@ version: "3.3"
 services:
   db:
     container_name: tournesol-dev-db
-    image: postgres:buster
+    image: postgres:13-bullseye
     user: ${DB_UID}:${DB_GID}
     volumes:
       - ./db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=tournesol
-      - POSTGRES_USER=user
+      - POSTGRES_USER=tournesol
       - POSTGRES_PASSWORD=password
-    expose:
-      - "5432"
     ports:
       - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: pg_isready -U tournesol
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       tournesol-dev: {}
 
@@ -24,30 +27,26 @@ services:
     environment:
       - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml
     command: 
-        - wait-for-it
-        - db:5432
-        - --
         - bash
         - -c
         - "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ../backend:/backend
-    expose:
-      - "8000"
     ports:
       - "127.0.0.1:8000:8000"
     networks:
       tournesol-dev: {}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   front:
-    build: ../frontend/dev-env
+    image: node:14-bullseye-slim
     container_name: tournesol-dev-front
+    working_dir: /frontend
+    entrypoint: bash -c
     command:
-      - bash
-      - -c
-      - "cd /frontend && ./scripts/generate-services-from-openapi.sh && yarn start"
+      - yarn install --frozen-lockfile && ./scripts/generate-services-from-openapi.sh && yarn start
     volumes:
       - ../frontend:/frontend
     ports:
@@ -57,4 +56,3 @@ services:
 
 networks:
   tournesol-dev:
-    # name: tournesol-dev # requires specification version >= 3.5
