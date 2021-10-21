@@ -1,0 +1,13 @@
+button#tournesol-details-button {
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  color: #f3bd00;
+  margin-left: 8px;
+  display: inline-block;
+  vertical-align: middle;
+  text-transform: uppercase;
+  font-weight: 500;
+}
