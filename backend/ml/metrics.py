@@ -71,7 +71,7 @@ def _metric_grad_t(licch, args):
     """ Norm of t parameters gradients """
     norm = 0
     for node in licch.nodes.values():
-        norm += node.t_param.grad**2
+        norm += node.t_par.grad**2
     return torch.sqrt(norm).item()
 
 
@@ -79,7 +79,7 @@ def _metric_grad_s(licch, args):
     """ Norm of s parameters gradients """
     norm = 0
     for node in licch.nodes.values():
-        norm += node.s_param.grad**2
+        norm += node.s_par.grad**2
     return torch.sqrt(norm).item()
 
 
@@ -135,10 +135,10 @@ def _metric_diff_s(licch, args):
         if args[4] > 1:
             for uidx, node in enumerate(licch.nodes.values()):
                 diff_s += (
-                    licch.last_epoch_glob['diff_s'][uidx] - node.s_param
+                    licch.last_epoch_glob['diff_s'][uidx] - node.s_par
                 )**2
         licch.last_epoch_glob['diff_s'] = deepcopy(
-            list(licch.all_nodes('s_param'))
+            list(licch.all_nodes('s_par'))
         )
     return torch.sqrt(diff_s).item()
 

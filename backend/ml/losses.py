@@ -84,13 +84,13 @@ def _approx_bbt_loss(diff, ratings):
     return loss
 
 
-# FIXME remove s_param (unused)
-def get_fit_loss(model, s_param, a_batch, b_batch, r_batch, gamma=1, vidx=-1):
+# FIXME remove s_par (unused)
+def get_fit_loss(model, s_par, a_batch, b_batch, r_batch, gamma=1, vidx=-1):
     """ Fitting loss for one node, local regularization included
 
     Args:
         model (float tensor): node local model.
-        s_param (float tensor): s parameter.
+        s_par (float tensor): s parameter.
         a_batch (bool 2D tensor): first videos compared by user.
         b_batch (bool 2D tensor): second videos compared by user.
         r_batch (float tensor): rating provided by user.
@@ -118,16 +118,16 @@ def get_fit_loss(model, s_param, a_batch, b_batch, r_batch, gamma=1, vidx=-1):
     return loss + (gamma / 2) * torch.sum(diff**2)  # local regularization
 
 
-def get_s_loss(s_param):
+def get_s_loss(s_par):
     """ Scaling loss for one node
 
     Args:
-        s_param (float tensor): s parameter.
+        s_par (float tensor): s parameter.
 
     Returns:
         float tensor: second half of local loss
     """
-    return 0.5 * s_param**2 - torch.log(s_param)
+    return 0.5 * s_par**2 - torch.log(s_par)
 
 
 def models_dist(model1, model2, powers=(1, 1), mask=None, vidx=-1):
@@ -167,15 +167,15 @@ def _huber(x, strength):
 
 
 def models_dist_huber(
-        model1, model2, mask=None, t_param=0, s_param=1, vidx=-1, strength=1):
+        model1, model2, mask=None, t_par=0, s_par=1, vidx=-1, strength=1):
     """ Pseudo-Huber distance between 2 models
 
     Args:
         model1 (float tensor): scoring model
         model2 (float tensor): scoring model
         mask (bool tensor): subspace in which to compute distance
-        t_param (float tensor): t (translation) parameter
-        s_param (float tensor): s (scaling) parameter
+        t_par (float tensor): t (translation) parameter
+        s_par (float tensor): s (scaling) parameter
         vidx (int): video index if only one is computed (-1 for all)
         strength (float tensor): pseudo-Huber loss d parameters (see paper)
                                  (d → 0 for absolute value)
@@ -185,14 +185,14 @@ def models_dist_huber(
     """
     if vidx == -1:  # if we want several coordinates
         if mask is None:  # if we want all coordinates
-            dist = _huber(s_param * model1 - model2 + t_param, strength).sum()
+            dist = _huber(s_par * model1 - model2 + t_par, strength).sum()
         else:
             dist = _huber(
-                (s_param * model1 - model2 + t_param) * mask, strength
+                (s_par * model1 - model2 + t_par) * mask, strength
             ).sum()
     else:  # if we want only one coordinate
         stren = strength[vidx]
-        dist = _huber(s_param * model1[vidx] - model2[vidx] + t_param, stren)
+        dist = _huber(s_par * model1[vidx] - model2[vidx] + t_par, stren)
     return dist
 
 
@@ -234,7 +234,7 @@ def loss_fit(licch, vidx=-1, uid=-1):  # FIXME simplify
     def _one_node_loss(fit_loss, node, gamma, vidx=-1):
         fit_loss += get_fit_loss(
             node.model,
-            node.s_param,
+            node.s_par,
             node.vid1,  # idx1_batch
             node.vid2,  # idx2_batch
             node.rating,     # r_batch
@@ -275,13 +275,13 @@ def loss_s_gen_reg(licch, vidx=-1):
             node.model,    # local model
             licch.global_model,  # general model
             mask=node.mask,     # mask
-            t_param=node.t_param,
-            s_param=node.s_param,
+            t_par=node.t_par,
+            s_par=node.s_par,
             vidx=vidx,
             strength=node.delta_na
         )
         if vidx == -1:  # only if all loss is computed
-            s_loss += licch.nu_par * get_s_loss(node.s_param)
+            s_loss += licch.nu_par * get_s_loss(node.s_par)
         gen_loss += node.weight * huber_dist
     reg_loss = licch.w0_par * (model_norm(licch.global_model, vidx=vidx) / 2)
     return s_loss, gen_loss, reg_loss

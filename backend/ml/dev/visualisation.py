@@ -82,7 +82,7 @@ def measure_diff(fakes, preds):
 def print_t(licch):
     """ Prints t stats """
     l_t = [(round_loss(t_par, 2), uid) for t_par, uid in zip(
-        licch.all_nodes("t_param"),
+        licch.all_nodes("t_par"),
         licch.nodes.keys()
     )]
     tens = torch.tensor(l_t)
@@ -100,7 +100,7 @@ def print_t(licch):
 def print_s(licch):
     """ Prints s stats """
     l_s = [(round_loss(s_par, 2), uid) for s_par, uid in zip(
-        licch.all_nodes("s_param"),
+        licch.all_nodes("s_par"),
         licch.nodes.keys()
     )]
     tens = torch.tensor(l_s)
@@ -123,21 +123,21 @@ def licch_stats(licch):
     print_t(licch)  # print stats on t parameters
     print_s(licch)  # print stats on s parameters
     with torch.no_grad():
-        gen_s = licch.all_nodes("s_param")
+        gen_s = licch.all_nodes("s_par")
         l_s = [s_par.item() for s_par in gen_s]
         plot_density(
             l_s,
             "s parameters",
             PATH_PLOTS,
-            "s_params.png"
+            "s_pars.png"
         )
-        gen_t = licch.all_nodes("t_param")
+        gen_t = licch.all_nodes("t_par")
         l_t = [t_par.item() for t_par in gen_t]
         plot_density(
             l_t,
             "t parameters",
             PATH_PLOTS,
-            "t_params.png"
+            "t_pars.png"
         )
     plot_metrics([licch.history_loc], path=PATH_PLOTS)
     plot_metrics([licch.history_glob], path=PATH_PLOTS)
@@ -166,7 +166,7 @@ def scores_stats(glob_scores):
 def s_stats(licch):
     """ Prints and plots about s parameters """
     if licch.test_mode:
-        s_predicted = [s.detach().item() for s in licch.all_nodes('s_param')]
+        s_predicted = [s.detach().item() for s in licch.all_nodes('s_par')]
         plot_s_predict_gt(s_predicted, licch.s_gt, PATH_PLOTS)
 
 

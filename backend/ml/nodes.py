@@ -8,7 +8,7 @@ import torch
 class Node:
     def __init__(
             self, vid1, vid2, rating, vids,
-            mask, t_param, s_param, model, weight,
+            mask, t_par, s_par, model, weight,
             lr_loc, lr_t, lr_s, opt):
         """
         vid1 (bool 2D tensor): one line is a one-hot-encoded video index
@@ -16,13 +16,13 @@ class Node:
         rating (float tensor): comparisons corresponding to vid1 and vid2 lines
         vids (int array): IDs of all videos rated at least once by user
         mask (bool tensor): True for all video indexes rated by user
-        t_param (float tensor): t (translation) learnable parameter
-        s_param (float tensor): s (scaling) learnable parameter
+        t_par (float tensor): t (translation) learnable parameter
+        s_par (float tensor): s (scaling) learnable parameter
         model (float tensor): learnable tensor of all video scores
         weight (float): node ponderation for generalisation (its influence)
         lr_loc (float): learning rate of self.model
-        lr_t (float): learning rate of self.t_param
-        lr_s (float): learning rate of self.s_param
+        lr_t (float): learning rate of self.t_par
+        lr_s (float): learning rate of self.s_par
         opt (torch.optim.Optimizer): gradient descent optimizer
         """
         self.vid1 = vid1
@@ -30,8 +30,8 @@ class Node:
         self.rating = rating
         self.vids = vids
         self.mask = mask
-        self.t_param = t_param  # FIXME harmonize "par" or "param" notation
-        self.s_param = s_param
+        self.t_par = t_par
+        self.s_par = s_par
         self.model = model
         self.weight = weight
         self.lr_t = lr_t / len(vids)  # adaptative lr
@@ -44,8 +44,8 @@ class Node:
         )
         self.opt_t_s = opt(
             [
-                {'params': self.t_param, 'lr': self.lr_t},
-                {'params': self.s_param, 'lr': self.lr_s},
+                {'params': self.t_par, 'lr': self.lr_t},
+                {'params': self.s_par, 'lr': self.lr_s},
             ]
         )
 

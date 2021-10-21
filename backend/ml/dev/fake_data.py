@@ -73,28 +73,28 @@ def _fake_s(nb_s, multiple_scales=True):
     return np.ones(nb_s)
 
 
-def _rate_density(rating, score1, score2, s_param):
+def _rate_density(rating, score1, score2, s_par):
     """ Returns density of r knowing a and b
 
     rating (float in [-1, 1]): comparison rate
     score1 (float): local score of video 1
     score2 (float): local score of video 2
-    s_param (float): scaling parameter of user
+    s_par (float): scaling parameter of user
 
     Returns:
         (float): density of r knowing a and b
     """
-    ttt = s_param * (score1 - score2)
+    ttt = s_par * (score1 - score2)
     dens = ttt * exp(- rating * ttt) / (2 * sinh(ttt))
     return dens
 
 
-def _get_rd_rate(score1, score2, s_param):
+def _get_rd_rate(score1, score2, s_par):
     """ Gives a random comparison score
 
     score1 (float): local score of video 1
     score2 (float): local score of video 2
-    s_param (float): scaling parameter of user
+    s_par (float): scaling parameter of user
 
     Returns:
         (float): random comparison score
@@ -102,7 +102,7 @@ def _get_rd_rate(score1, score2, s_param):
     class MyPDF(st.rv_continuous):
         """ custom random variable """
         def _pdf(self, x, *args):
-            return _rate_density(x, score1, score2, s_param)
+            return _rate_density(x, score1, score2, s_par)
     my_cv = MyPDF(a=-1, b=1, name='my_pdf')
     return my_cv.rvs()
 
@@ -112,12 +112,12 @@ def _unscale_rating(rating):
     return (rating + 1) * 50
 
 
-def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
+def _fake_comparisons(l_nodes, s_pars, dens=0.5, crit="test"):
     """
 
     l_nodes (list of list of couples): (vid, local score) for each video
                                                             of each node
-    s_params (float array): s parameter for each node
+    s_pars (float array): s parameter for each node
     crit (str): criteria of comparisons
     dens (float [0,1[): density of comparisons
 
@@ -130,12 +130,12 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
     for uid, node in enumerate(l_nodes):  # for each node
         if uid % 50 == 0:
             logging.info('Node number %s', uid)
-        s_param = s_params[uid]
+        s_par = s_pars[uid]
         for vidx1, video in enumerate(node):  # for each video
             nb_comp = int(dens * (len(node) - vidx1))  # number of comparisons
             pick_idxs = random.sample(range(vidx1 + 1, len(node)), nb_comp)
             for vidx2 in pick_idxs:  # for each second video drawn
-                rating = _get_rd_rate(video[1], node[vidx2][1], s_param)
+                rating = _get_rd_rate(video[1], node[vidx2][1], s_par)
                 comp = [
                     uid,
                     video[0],
@@ -170,12 +170,12 @@ def generate_data(
             [   contributor_id: int, video_id_1: int, video_id_2: int,
                 criteria: "test", score: float, weight: float  ]
     """
-    s_params = _fake_s(nb_users)
+    s_pars = _fake_s(nb_users)
     distr = [vids_per_user] * nb_users
     glob = _fake_glob_scores(nb_vids, scale=scale)
     logging.info('%s global scores generated', nb_vids)
     loc = _fake_loc_scores(distr, glob, noise)
     logging .info('%s local scores generated per user', vids_per_user)
-    comp = _fake_comparisons(loc, s_params, dens)
+    comp = _fake_comparisons(loc, s_pars, dens)
     logging.info('%s comparisons generated', len(comp))
-    return glob, loc, s_params, comp
+    return glob, loc, s_pars, comp

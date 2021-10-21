@@ -229,8 +229,8 @@ class Licchavi():
     def save_models(self, fullpath):
         """ Saves global and local parameters, detached (no gradients) """
         loginf('Saving models')
-        local_data = {id:  (node.t_param,  # FIXME detach?
-                            node.s_param,  # FIXME detach?
+        local_data = {id:  (node.t_par,  # FIXME detach?
+                            node.s_par,  # FIXME detach?
                             node.model.detach(),
                             ) for id, node in self.nodes.items()}
         saved_data = (
@@ -316,19 +316,19 @@ class Licchavi():
     def _regul_s(self):
         """ regulate s parameters """
         for node in self.nodes.values():
-            if node.s_param <= 0:
+            if node.s_par <= 0:
                 with torch.no_grad():
-                    node.s_param[0] = 0.0001
+                    node.s_par[0] = 0.0001
                     logging.warning('Regulating negative s')
 
-    def _print_losses(self, tot, fit, s_param, gen, reg):
+    def _print_losses(self, tot, fit, s_par, gen, reg):
         """ Prints losses into log info """
-        fit, s_param = round_loss(fit, 2), round_loss(s_param, 2)
+        fit, s_par = round_loss(fit, 2), round_loss(s_par, 2)
         gen, reg = round_loss(gen, 2), round_loss(reg, 2)
 
         loginf(
             f'total loss : {tot}\nfitting : {fit}, '
-            f's : {s_param}, generalisation : {gen}, regularisation : {reg}'
+            f's : {s_par}, generalisation : {gen}, regularisation : {reg}'
         )
 
     # ====================  TRAINING ==================

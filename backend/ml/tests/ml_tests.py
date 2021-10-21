@@ -221,9 +221,9 @@ def test_get_model():
 
 def test_get_s():
     """ unit test """
-    s_param = get_s()
-    assert s_param.requires_grad is True
-    assert s_param.shape == torch.Size([1])
+    s_par = get_s()
+    assert s_par.requires_grad is True
+    assert s_par.shape == torch.Size([1])
 
 
 # -------- metrics.py --------------
