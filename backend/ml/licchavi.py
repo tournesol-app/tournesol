@@ -389,6 +389,7 @@ class Licchavi():
         for epoch in range(1, nb_epochs + 1):
             # self._set_lr()  # FIXME design lr scheduling
             reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
+        # equi = check_equilibrium_loc(0.1, self)  # FIXME use
         loginf('End of local training\n'
                f'Training time: {round(time() - time_train_loc, 2)}')
 
@@ -420,7 +421,7 @@ class Licchavi():
             # self._set_lr()  # FIXME design lr scheduling
             self._regul_s()
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
-
+        # equi = check_equilibrium_glob(0.1, self) FIXME use
         loginf('End of global training\n'
                f'Training time: {round(time() - time_train_glob, 2)}')
 

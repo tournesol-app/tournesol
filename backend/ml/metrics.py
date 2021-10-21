@@ -318,6 +318,45 @@ def _random_signs(epsilon, nb_vids):
     return rand * 2 * epsilon
 
 
+def check_equilibrium_loc(epsilon, licch):
+    """ Returns proportion of local scores which have converged
+
+    Args:
+        epsilon (float): precision of convergence required
+        licch (Licchavi()): licchavi object
+
+    Returns:
+        ({int: float}): fraction of scores at equilibrium for each user ID
+    """
+    nbvid = len(licch.vid_vidx)
+    incr = _random_signs(epsilon, nbvid)
+    eq_fracs = {}
+
+    def _one_node_eq(node, uid, increment):
+        """ testing eq for one node """
+        # resetting gradients
+        node.opt.zero_grad(set_to_none=True)  # node optimizer
+        # adding epsilon to scores
+        with torch.no_grad():
+            node.model += increment
+        # computing gradients
+        loss = loss_fit(licch, uid=uid)
+        loss.backward()
+        # restoring scores
+        with torch.no_grad():
+            node.model -= increment
+        return node.model.grad * increment
+
+    for uid, node in licch.nodes.items():
+        derivs1 = _one_node_eq(node, uid, incr)
+        derivs2 = _one_node_eq(node, uid, - incr)
+        equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
+        used = torch.logical_or(derivs1 != 0, derivs2 != 0)
+        frac = torch.count_nonzero(equilibrated) / torch.count_nonzero(used)
+        eq_fracs[uid] = frac.item()
+    return eq_fracs
+
+
 def check_equilibrium_glob(epsilon, licch):
     """ Returns proportion of global scores which have converged
 
@@ -332,8 +371,6 @@ def check_equilibrium_glob(epsilon, licch):
 
     def _one_side_glob(increment):
         """ increment (float tensor): coordinates are +/- epsilon """
-        for node in licch.nodes.values():
-            node.opt.zero_grad(set_to_none=True)  # node optimizer
         licch.opt_gen.zero_grad(set_to_none=True)  # general optimizer
 
         # adding epsilon to scores
@@ -354,49 +391,3 @@ def check_equilibrium_glob(epsilon, licch):
     equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
     frac_glob = torch.count_nonzero(equilibrated) / nbvid
     return frac_glob.item()
-
-
-def check_equilibrium_loc(epsilon, licch):
-    """ Returns proportion of local scores which have converged
-
-    Args:
-        licch (Licchavi()): licchavi object
-
-    Returns:
-        (float): fraction of scores at equilibrium
-    """
-    nbvid = len(licch.vid_vidx)
-    nbn = len(licch.nodes)
-    incr = _random_signs(epsilon, nbvid)
-
-    def _one_side_loc(increment):
-        """ increment (float tensor): coordinates are +/- epsilon """
-        l_derivs = torch.empty(nbn, nbvid)
-        # resetting gradients
-        for node in licch.nodes.values():
-            node.opt.zero_grad(set_to_none=True)  # node optimizer
-        licch.opt_gen.zero_grad(set_to_none=True)  # general optimizer
-        # adding epsilon to scores
-        with torch.no_grad():
-            for node in licch.nodes.values():
-                node.model += increment
-        # computing gradients
-        fit_loss, = loss_fit(licch)
-        _, gen_loss, _ = loss_s_gen_reg(licch)
-        loss = fit_loss + gen_loss
-        loss.backward()
-        # adding derivatives
-        for uidx, node in enumerate(licch.nodes.values()):
-            l_derivs[uidx] = node.model.grad * increment
-        # removing epsilon from score
-        with torch.no_grad():
-            for node in licch.nodes.values():
-                node.model -= increment
-        return l_derivs
-
-    derivs1 = _one_side_loc(incr)
-    derivs2 = _one_side_loc(-incr)
-    equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
-    used = torch.logical_or(derivs1 != 0, derivs2 != 0)
-    frac_loc = torch.count_nonzero(equilibrated) / torch.count_nonzero(used)
-    return frac_loc.item()
