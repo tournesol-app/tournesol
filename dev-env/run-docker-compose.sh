@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-set -Eeuxo pipefail
+set -Eeuo pipefail
 
 function wait_for_backend() {
-  set +ex
+  set +e
   for i in `seq 1 50`; do
     curl localhost:8000
     if [[ "$?" == "0" ]]; then
@@ -13,19 +13,31 @@ function wait_for_backend() {
     echo "Waiting for backend to be ready..."
     sleep 1
   done
-  echo "Backend is unreachable"
+  echo "Backend is unreachable."
   exit 1
 }
 
 CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 cd "$CURRENT_DIR"
 
-rm -rf db-data
+DB_DIR="db-data"
+
+if [ -d $DB_DIR ]; then
+  echo "The existing database at `realpath $DB_DIR` will be deleted."
+  read -p "Are you sure? (y/n) " -n 1 -r
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+      echo "Canceled."
+      exit 1
+  fi
+fi
+
+rm -rf $DB_DIR
 
 cp ../backend/requirements.txt ../backend/ml/ml_requirements.txt ../backend/dev-env/
-cp ../frontend/package.json ../frontend/dev-env/
 
-mkdir -p db-data
+mkdir -p $DB_DIR
 
 DB_UID=$(id -u) \
 DB_GID=$(id -g) \
@@ -35,9 +47,9 @@ wait_for_backend
 
 echo 'Importing public dataset'
 tar xvf "$CURRENT_DIR"/../backend/scripts/dataset-import/dump-for-migrations-core-0004-tournesol-0007.sql.tgz
-mv dump.sql "$CURRENT_DIR"/db-data/
+mv dump.sql "$CURRENT_DIR"/$DB_DIR/
 docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
-rm "$CURRENT_DIR"/db-data/dump.sql
+rm "$CURRENT_DIR"/$DB_DIR/dump.sql
 
 echo 'Creating Superuser:'
 USERNAME="${1:-"$USER"}"
