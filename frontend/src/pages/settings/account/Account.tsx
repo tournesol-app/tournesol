@@ -2,13 +2,21 @@ import React from 'react';
 
 import { useHistory } from 'react-router-dom';
 import { Box, Divider, Grid, Typography, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import ContentHeader from '../../../components/ContentHeader';
 import PasswordForm from '../../../features/settings/account/PasswordForm';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
 import { deleteAccountAPI } from 'src/features/account/accountAPI';
 
+const useStyles = makeStyles(() => ({
+  warning: {
+    backgroundColor: 'red',
+  },
+}));
+
 function AccountPage() {
+  const classes = useStyles();
   const history = useHistory();
   const deleteAccount = async () => {
     await deleteAccountAPI();
@@ -50,16 +58,16 @@ function AccountPage() {
                 </Typography>
                 <Divider />
               </Box>
-            </Grid>
-            <Grid item md={4}>
-              <Button
-                onClick={deleteAccount}
-                color="secondary"
-                fullWidth
-                variant="contained"
-              >
-                Delete your account
-              </Button>
+              <Grid item md={4}>
+                <Button
+                  className={classes.warning}
+                  onClick={deleteAccount}
+                  fullWidth
+                  variant="contained"
+                >
+                  Delete your account
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
