@@ -1,15 +1,20 @@
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
+import { Box, Divider, Grid, Typography, Button } from '@material-ui/core';
 
 import ContentHeader from '../../../components/ContentHeader';
 import PasswordForm from '../../../features/settings/account/PasswordForm';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
+import { deleteAccountAPI } from 'src/features/account/accountAPI';
 
 function AccountPage() {
+  const history = useHistory();
+  const deleteAccount = async () => {
+    await deleteAccountAPI();
+    history.push('/');
+  };
+
   return (
     <>
       <ContentHeader title="Settings > Account" />
@@ -37,6 +42,24 @@ function AccountPage() {
             </Grid>
             <Grid item md={4}>
               <PasswordForm />
+            </Grid>
+            <Grid item>
+              <Box marginBottom={2} marginTop={2}>
+                <Typography variant="h4" color="secondary">
+                  Delete account
+                </Typography>
+                <Divider />
+              </Box>
+            </Grid>
+            <Grid item md={4}>
+              <Button
+                onClick={deleteAccount}
+                color="secondary"
+                fullWidth
+                variant="contained"
+              >
+                Delete your account
+              </Button>
             </Grid>
           </Grid>
         </Grid>

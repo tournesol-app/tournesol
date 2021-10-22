@@ -1,4 +1,5 @@
 import { AccountsService } from '../../services/openapi';
+import { UsersService } from '../../services/openapi';
 import { OpenAPI } from '../../services/openapi/core/OpenAPI';
 
 const api_url = process.env.REACT_APP_API_URL;
@@ -16,4 +17,8 @@ export const changePassword = (
     password,
     password_confirm,
   });
+};
+
+export const deleteAccountAPI = () => {
+  return UsersService.usersMeDestroy();
 };
