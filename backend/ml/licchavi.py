@@ -100,7 +100,9 @@ class Licchavi():
         self.epsilon_loc = 0.01
 
         # global training schedule
-        # TODO
+        self.precision_glob = 0.95  # FIXME move to .gin config
+        self.epsilon_glob = 0.1
+        self.equi_glob = 0  # , 0, 0
 
         # models initialization
         self.get_model = get_model  # fonction used to initialize models
@@ -316,6 +318,12 @@ class Licchavi():
             loginf('Early Stopping')
             return True
 
+    def _stop_glob(self):
+        """ global training scheduler """
+        if self.equi_glob >= self.precision_glob:
+            loginf('Early Stopping')
+            return True
+
     def _zero_opt(self):
         """ Sets gradients of all models """
         for node in self.nodes.values():
@@ -426,22 +434,21 @@ class Licchavi():
         # local training loop
         loginf('Starting local training')
         time_train_loc = time()
+
         for epoch in range(1, nb_epochs + 1):
             # self._set_lr()  # FIXME design lr scheduling
             reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
             if smart_stop:
-                t = time()
-                self.equi_loc = check_equilibrium_loc(self.precision_loc, self)
-                print(time()-t)
-            if self._stop_loc():
-                break
+                self.equi_loc = check_equilibrium_loc(self.epsilon_loc, self)
+                if self._stop_loc():
+                    break
 
         loginf('End of local training\n'
                f'Training time: {round(time() - time_train_loc, 2)}')
-
         return self._uncert_loc(compute_uncertainty)  # uncertainty if asked
 
-    def train_glob(self, nb_epochs=1, compute_uncertainty=False):
+    def train_glob(
+            self, nb_epochs=1, compute_uncertainty=False, smart_stop=False):
         """ training loop
 
         nb_epochs (int): (maximum) number of training epochs
@@ -458,14 +465,23 @@ class Licchavi():
         # global training loop
         loginf('Starting global training')
         time_train_glob = time()
+        print(check_equilibrium_glob(
+                    self.epsilon_glob, self
+                ))
         for epoch in range(1, nb_epochs + 1):
             # self._set_lr()  # FIXME design lr scheduling
             self._regul_s()
+
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
-        # equi = check_equilibrium_glob(self.precision_glob, self) FIXME use
+            if smart_stop:
+                self.equi_glob = check_equilibrium_glob(
+                    self.epsilon_glob, self
+                )
+                print(self.equi_glob)
+                if self._stop_glob():
+                    break
         loginf('End of global training\n'
                f'Training time: {round(time() - time_train_glob, 2)}')
-
         return self._uncert_glob(compute_uncertainty)  # uncertainty if asked
 
     # ------------ to check for problems --------------------------

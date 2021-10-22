@@ -372,33 +372,80 @@ def check_equilibrium_glob(epsilon, licch):
     """ Returns proportion of global scores which have converged
 
     Args:
+        epsilon (float): distance at equilibrium required
         licch (Licchavi()): licchavi object
 
     Returns:
-        (float): fraction of scores at equilibrium
+        (float): fraction of gloabl scores at equilibrium
+        (float): fraction of t parameters at equilibrium
+        (float): fraction of s parameters at equilibrium
     """
     nbvid = len(licch.vid_vidx)
+    # nbn = len(licch.nodes)
     incr = _random_signs(epsilon, nbvid)
 
     def _one_side_glob(increment):
         """ increment (float tensor): coordinates are +/- epsilon """
-        licch.opt_gen.zero_grad(set_to_none=True)  # general optimizer
+        # resetting gradients
+        licch.opt_gen.zero_grad(set_to_none=True)
+        for node in licch.nodes.values():
+            node.opt_t_s.zero_grad(set_to_none=True)
 
         # adding epsilon to scores
         with torch.no_grad():
             licch.global_model += increment
+
+        # computing gradients
         _, gen_loss, reg_loss = loss_s_gen_reg(licch)
         loss = gen_loss + reg_loss
         loss.backward()
-        derivs = licch.global_model.grad
 
         # removing epsilon from scores
         with torch.no_grad():
             licch.global_model -= increment
-        return derivs * increment
+        return licch.global_model.grad * increment
 
+    # def _one_side_t_s(eps):
+    #     """ check t and s equilibrium """
+    #     # resetting gradients
+    #     licch.opt_gen.zero_grad(set_to_none=True)
+    #     for node in licch.nodes.values():
+    #         node.opt_t_s.zero_grad(set_to_none=True)
+    #     # adding epsilon to parameters
+    #     with torch.no_grad():
+    #         for node in licch.nodes.values():
+    #             node.t_par += eps
+    #             # node.s_par += eps
+    #     # computing gradients
+    #     s_loss, gen_loss, _ = loss_s_gen_reg(licch)
+    #     loss = s_loss + gen_loss
+    #     loss.backward()
+    #     t_derivs = eps * torch.tensor(
+    #         [t_par.grad for t_par in licch.all_nodes('t_par')]
+    #     )
+    #     # s_derivs = eps * torch.tensor(
+    #     #     [s_par.grad for s_par in licch.all_nodes('s_par')]
+    #     # )
+    #     # removing epsilon to parameters
+    #     with torch.no_grad():
+    #         for node in licch.nodes.values():
+    #             node.t_par -= eps
+    #             # node.s_par -= eps
+    #     return t_derivs, None  # , s_derivs
+
+    # global scores
     derivs1 = _one_side_glob(incr)
     derivs2 = _one_side_glob(-incr)
     equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
     frac_glob = torch.count_nonzero(equilibrated) / nbvid
-    return frac_glob.item()
+
+    # # parameters
+    # derivs1_t, derivs1_s = _one_side_t_s(epsilon)
+    # derivs2_t, derivs2_s = _one_side_t_s(-epsilon)
+    # equilibrated_t = torch.logical_and(derivs1_t > 0, derivs2_t > 0)
+    # equilibrated_s = torch.logical_and(derivs1_s > 0, derivs2_s > 0)
+
+    # frac_t = torch.count_nonzero(equilibrated_t) / nbn
+    # frac_s = torch.count_nonzero(equilibrated_s) / nbn
+
+    return frac_glob.item()  # , frac_t.item(), frac_s.item()
