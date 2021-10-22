@@ -68,7 +68,6 @@ class VideoCriteriaScoreSerializer(ModelSerializer):
 
 class VideoSerializerWithCriteria(ModelSerializer):
     criteria_scores = VideoCriteriaScoreSerializer(many=True)
-    rating_n = serializers.DictField()
 
     class Meta:
         model = Video
@@ -80,7 +79,8 @@ class VideoSerializerWithCriteria(ModelSerializer):
             "views",
             "uploader",
             "criteria_scores",
-            "rating_n",
+            "rating_n_ratings",
+            "rating_n_contributors",
         ]
 
 

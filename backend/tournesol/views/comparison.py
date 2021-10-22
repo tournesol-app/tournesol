@@ -8,7 +8,7 @@ from django.http import Http404
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 
-from ..models import Comparison
+from ..models import Comparison, Video
 from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
@@ -91,7 +91,14 @@ class ComparisonListApi(
         if self.comparison_already_exists(request):
             return self.response_400_video_already_exists(request)
 
-        return self.create(request, *args, **kwargs)
+        response = self.create(request, *args, **kwargs)
+        if response.status_code == status.HTTP_201_CREATED:
+            # Update video_a and video_b ratings
+            video_id_a = request.data['video_a']['video_id']
+            video_id_b = request.data['video_b']['video_id']
+            set_origin_video_n_ratings(video_id_a, request.user)
+            set_origin_video_n_ratings(video_id_b, request.user)
+        return response
 
 
 class ComparisonListOnlyApi(ComparisonListBaseApi):
@@ -181,3 +188,14 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     def delete(self, request, *args, **kwargs):
         """Delete a comparison made by the logged user."""
         return self.destroy(request, *args, **kwargs)
+
+def set_origin_video_n_ratings(video_request, user):
+    video = Video.objects.get(video_id=video_request)
+    if video.rating_n_ratings == 0:
+        video.rating_n_ratings = Comparison.objects.filter(Q(video_1=video) | Q(video_2=video)).count()
+        video.rating_n_contributors = Comparison.objects.filter(Q(video_1=video) | Q(video_2=video)).distinct("user").count()
+    else:
+        video.rating_n_ratings +=1
+        if Comparison.objects.filter(Q(video_1=video) | Q(video_2=video), user=user).count() == 1:
+            video.rating_n_contributors += 1
+    video.save()

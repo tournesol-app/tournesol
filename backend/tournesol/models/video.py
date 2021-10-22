@@ -122,9 +122,20 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     # computed properties, updated via save signals,
     #  or via manage.py recompute_properties manage.py
 
+    rating_n_ratings = models.IntegerField(
+        null=False,
+        default=0,
+        help_text="Total number of pairwise comparisons for this video"
+                  "from certified contributors",
+    )
+
+    rating_n_contributors = models.IntegerField(
+        null=False,
+        default=0,
+        help_text="Total number of certified contributors who rated the video",
+    )
+
     COMPUTED_PROPERTIES = [
-        "rating_n_contributors",
-        "rating_n_ratings",
         "n_public_contributors",
         "n_private_contributors",
         "public_contributors",
@@ -261,14 +272,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         #     .count()
         # )
         return 1
-
-    @property
-    def rating_n(self):
-        """Number of contributors in ratings."""
-        queryset = Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
-        ratings = queryset.count()
-        contributors = queryset.distinct("user").count()
-        return {"ratings": ratings, "contributors": contributors}
 
     # /COMPUTED properties implementation
 
