@@ -288,7 +288,6 @@ def get_uncertainty_loc(licch):
     Returns:
         (float tensor list): uncertainty for all local scores
     """
-    logging.info('Computing uncertainty')
     local_uncert = []
     for uid, node in licch.nodes.items():  # for all nodes
         local_uncerts = []
@@ -331,27 +330,39 @@ def check_equilibrium_loc(epsilon, licch):
     nbvid = len(licch.vid_vidx)
     incr = _random_signs(epsilon, nbvid)
     eq_fracs = {}
+    l_uid = [
+        uid for uid in licch.equi_loc
+        if licch.equi_loc[uid] < licch.precision_loc
+    ]
 
-    def _one_node_eq(node, uid, increment):
+    def _get_eqs(nodes, l_uid, increment):
         """ testing eq for one node """
+        derivs = torch.empty((len(l_uid), licch.nb_vids))
         # resetting gradients
-        node.opt.zero_grad(set_to_none=True)  # node optimizer
+        for uid in l_uid:
+            nodes[uid].opt.zero_grad(set_to_none=True)  # node optimizer
         # adding epsilon to scores
         with torch.no_grad():
-            node.model += increment
+            for uid in l_uid:
+                nodes[uid].model += increment
         # computing gradients
-        loss = loss_fit(licch, uid=uid)
+        loss = 0
+        for uid in l_uid:
+            loss = loss_fit(licch, uid=uid)
         loss.backward()
         # restoring scores
         with torch.no_grad():
-            node.model -= increment
-        return node.model.grad * increment
+            for uid in l_uid:
+                nodes[uid].model -= increment
+        for i, uid in enumerate(l_uid):
+            derivs[i] = nodes[uid].model.grad * increment
+        return derivs
 
-    for uid, node in licch.nodes.items():
-        derivs1 = _one_node_eq(node, uid, incr)
-        derivs2 = _one_node_eq(node, uid, - incr)
-        equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
-        used = torch.logical_or(derivs1 != 0, derivs2 != 0)
+    derivs1 = _get_eqs(licch.nodes, l_uid, incr)
+    derivs2 = _get_eqs(licch.nodes, l_uid, - incr)
+    for i, uid in enumerate(l_uid):
+        equilibrated = torch.logical_and(derivs1[i] > 0, derivs2[i] > 0)
+        used = torch.logical_or(derivs1[i] != 0, derivs2[i] != 0)
         frac = torch.count_nonzero(equilibrated) / torch.count_nonzero(used)
         eq_fracs[uid] = frac.item()
     return eq_fracs

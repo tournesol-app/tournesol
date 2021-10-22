@@ -95,13 +95,23 @@ class Licchavi():
         self.w_loc = w_loc   # default weight for a node
         self.gamma = gamma  # local regularisation term
 
-        self.get_model = get_model  # neural network to use
+        # local training schedule
+        self.precision_loc = 0.95  # FIXME move to .gin config
+        self.epsilon_loc = 0.01
+
+        # global training schedule
+        # TODO
+
+        # models initialization
+        self.get_model = get_model  # fonction used to initialize models
         self.global_model = self.get_model(nb_vids, device)
         self.opt_gen = self.opt([self.global_model], lr=self.lr_glob)
 
-        self.nb_nodes = 0
+        # nodes initialization
+        self.nb_nodes = 0  # FIXME (not needed?)
         self.nodes = {}
-        self.users = []  # users IDs
+        self.users = []  # users IDs FIXME (not needed?)
+        self.equi_loc = {}  # local scores equilibrium
 
         # history stuff
         self.history_loc = {metric: [] for metric in metrics_loc}
@@ -163,7 +173,7 @@ class Licchavi():
         """
         self.nb_nodes = len(data_dic)
         self.users = users_ids
-        self.nodes = {id: Node(
+        self.nodes = {uid: Node(
             *data,
             *self._get_default(),
             self.w_loc,
@@ -171,7 +181,9 @@ class Licchavi():
             self.lr_t,
             self.lr_s,
             self.opt
-        ) for id, data in zip(users_ids, data_dic.values())}
+        ) for uid, data in zip(users_ids, data_dic.values())}
+        # local scores equilibrium
+        self.equi_loc = {uid: 0 for uid in self.nodes}
         self._show("Total number of nodes : {}".format(self.nb_nodes), 1)
 
     def load_and_update(self, data_dic, user_ids, fullpath):
@@ -202,6 +214,8 @@ class Licchavi():
                 self.opt
                ) for id, data in zip(user_ids, data_dic.values())
         }
+        # local scores equilibrium
+        self.equi_loc = {uid: 0 for uid in self.nodes}
         self._show(f"Total number of nodes : {self.nb_nodes}", 1)
         loginf('Models updated')
 
@@ -261,40 +275,46 @@ class Licchavi():
             # FIXME update lr_s, lr_t (not useful currently)
         self.opt_gen.param_groups[0]['lr'] = self.lr_glob
 
-    @gin.configurable
-    def _lr_schedule(
-            self, epoch,
-            # configured with gin in "hyperparameters.gin"
-            decay_rush=None, decay_fine=None,
-            precision=None, epsilon=None,
-            min_lr_fine=None, lr_rush_duration=None):
-        """ Changes learning rates in a (hopefully) smart way
+    # @gin.configurable
+    # def _lr_schedule(
+    #         self, epoch,
+    #         # configured with gin in "hyperparameters.gin"
+    #         decay_rush=None, decay_fine=None,
+    #         precision=None, epsilon=None,
+    #         min_lr_fine=None, lr_rush_duration=None):
+    #     """ Changes learning rates in a (hopefully) smart way
 
-        epoch (int): current epoch
-        verb (int): verbosity level
+    #     epoch (int): current epoch
+    #     verb (int): verbosity level
 
-        Returns:
-            (bool): True for an early stopping
-        """
+    #     Returns:
+    #         (bool): True for an early stopping
+    #     """
 
-        # phase 1  : rush (high lr to increase l2 norm fast)
-        if epoch <= lr_rush_duration:
-            self.lr_glob *= decay_rush
-            self.lr_loc *= decay_rush
-        # phase 2 : fine tuning (low lr), we monitor equilibrium for early stop
-        elif epoch % 2 == 0:
-            if self.lr_loc >= min_lr_fine / decay_fine:
-                self.lr_glob *= decay_fine
-                self.lr_loc *= decay_fine
-            frac_glob = check_equilibrium_glob(epsilon, self)
-            self._show(f'Global eq({epsilon}): {round(frac_glob, 3)}', 1)
-            if frac_glob > precision:
-                frac_loc = check_equilibrium_loc(epsilon, self)
-                self._show(f'Local eq({epsilon}): {round(frac_loc, 3)}', 1)
-                if frac_loc > precision:
-                    loginf('Early Stopping')
-                    return True
-        return False
+    #     # phase 1  : rush (high lr to increase l2 norm fast)
+    #     if epoch <= lr_rush_duration:
+    #         self.lr_glob *= decay_rush
+    #         self.lr_loc *= decay_rush
+    #     # phase 2 : fine tuning (low lr), we monitor equilibrium
+    #     elif epoch % 2 == 0:
+    #         if self.lr_loc >= min_lr_fine / decay_fine:
+    #             self.lr_glob *= decay_fine
+    #             self.lr_loc *= decay_fine
+    #         frac_glob = check_equilibrium_glob(epsilon, self)
+    #         self._show(f'Global eq({epsilon}): {round(frac_glob, 3)}', 1)
+    #         if frac_glob > precision:
+    #             frac_loc = check_equilibrium_loc(epsilon, self)
+    #             self._show(f'Local eq({epsilon}): {round(frac_loc, 3)}', 1)
+    #             if frac_loc > precision:
+    #                 loginf('Early Stopping')
+    #                 return True
+    #     return False
+
+    def _stop_loc(self):
+        """ local training scheduler """
+        if all(equi >= self.precision_loc for equi in self.equi_loc.values()):
+            loginf('Early Stopping')
+            return True
 
     def _zero_opt(self):
         """ Sets gradients of all models """
@@ -330,6 +350,24 @@ class Licchavi():
             f'total loss : {tot}\nfitting : {fit}, '
             f's : {s_par}, generalisation : {gen}, regularisation : {reg}'
         )
+
+    def _uncert_loc(self, compute_uncertainty):
+        if compute_uncertainty:
+            loginf('Computing local uncertainty')
+            time_uncert = time()
+            uncert_loc = get_uncertainty_loc(self)
+            loginf(f'Local uncertainty time: {time() - time_uncert}')
+            return uncert_loc
+        return None  # if uncertainty not computed
+
+    def _uncert_glob(self, compute_uncertainty):
+        if compute_uncertainty:
+            loginf('Computing global uncertainty')
+            time_uncert = time()
+            uncert_loc = get_uncertainty_glob(self)
+            loginf(f'Global uncertainty time: {time() - time_uncert}')
+            return uncert_loc
+        return None  # if uncertainty not computed
 
     # ====================  TRAINING ==================
     def _do_epoch(self, epoch, nb_epochs, local_epoch, reg_loss):
@@ -371,12 +409,14 @@ class Licchavi():
         self._show(f'epoch time :{round(time() - time_ep, 2)}', 1.5)
         return reg_loss  # FIXME remove
 
-    def train_loc(self, nb_epochs=1, compute_uncertainty=False):
+    def train_loc(
+            self, nb_epochs=1, compute_uncertainty=False, smart_stop=False):
         """ local training loop
 
         nb_epochs (int): (maximum) number of training epochs
         compute_uncertainty (bool): wether to compute uncertainty
             at the end or not (takes time)
+        smart_stop (bool): wether to use equilibrium metric for early stopping
 
         Returns:
             (float list list): uncertainty of local scores,None if not computed
@@ -389,16 +429,17 @@ class Licchavi():
         for epoch in range(1, nb_epochs + 1):
             # self._set_lr()  # FIXME design lr scheduling
             reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
-        # equi = check_equilibrium_loc(0.1, self)  # FIXME use
+            if smart_stop:
+                t = time()
+                self.equi_loc = check_equilibrium_loc(self.precision_loc, self)
+                print(time()-t)
+            if self._stop_loc():
+                break
+
         loginf('End of local training\n'
                f'Training time: {round(time() - time_train_loc, 2)}')
 
-        if compute_uncertainty:  # FIXME make separate method ?
-            time_uncert = time()
-            uncert_loc = get_uncertainty_loc(self)
-            loginf(f'Local uncertainty time: {time() - time_uncert}')
-            return uncert_loc
-        return None  # if uncertainty not computed
+        return self._uncert_loc(compute_uncertainty)  # uncertainty if asked
 
     def train_glob(self, nb_epochs=1, compute_uncertainty=False):
         """ training loop
@@ -421,16 +462,11 @@ class Licchavi():
             # self._set_lr()  # FIXME design lr scheduling
             self._regul_s()
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
-        # equi = check_equilibrium_glob(0.1, self) FIXME use
+        # equi = check_equilibrium_glob(self.precision_glob, self) FIXME use
         loginf('End of global training\n'
                f'Training time: {round(time() - time_train_glob, 2)}')
 
-        if compute_uncertainty:  # FIXME make separate method ?
-            time_uncert = time()
-            uncert_glob = get_uncertainty_glob(self)
-            loginf(f'Global uncertainty time: {time() - time_uncert}')
-            return uncert_glob
-        return None  # if uncertainty not computed
+        return self._uncert_glob(compute_uncertainty)  # uncertainty if asked
 
     # ------------ to check for problems --------------------------
     def check(self):

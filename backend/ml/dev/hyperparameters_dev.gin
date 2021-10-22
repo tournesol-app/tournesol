@@ -40,7 +40,8 @@ Licchavi.lr_glob = 0.01  # learning rate of general model
 
 # metrics to compute during training
 Licchavi.metrics_loc = [
-    'loss_fit', 'norm_loc', 'grad_loc',
+    'loss_fit', 'norm_loc', 
+    # 'grad_loc',
     # 'diff_loc',
 ] 
 Licchavi.metrics_glob = [

@@ -228,11 +228,10 @@ def loss_fit(licch, vidx=-1, uid=-1):  # FIXME simplify
     Returns:
         (float tensor): fitting term of loss
     """
-
     fit_loss = 0
 
-    def _one_node_loss(fit_loss, node, gamma, vidx=-1):
-        fit_loss += get_fit_loss(
+    def _one_node_loss(node, gamma, vidx=-1):
+        loss = get_fit_loss(
             node.model,
             node.s_par,
             node.vid1,  # idx1_batch
@@ -242,18 +241,19 @@ def loss_fit(licch, vidx=-1, uid=-1):  # FIXME simplify
             vidx=vidx   # video index if we want partial loss
         )
 
-        return fit_loss
+        return loss
 
     if uid != -1:  # if we want only one user
         node = licch.nodes[uid]
-        fit_loss = _one_node_loss(
-            fit_loss, node, gamma=licch.gamma, vidx=vidx
+        fit_loss += _one_node_loss(
+            node, gamma=licch.gamma, vidx=vidx
         )
     else:  # if we want all users
-        for node in licch.nodes.values():
-            fit_loss = _one_node_loss(
-                fit_loss, node, gamma=licch.gamma, vidx=vidx
-            )
+        for node, equi in zip(licch.nodes.values(), licch.equi_loc.values()):
+            if equi < licch.precision_loc:  # if local model hasn't converged
+                fit_loss += _one_node_loss(
+                    node, gamma=licch.gamma, vidx=vidx
+                )
     return fit_loss
 
 
