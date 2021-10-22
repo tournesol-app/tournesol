@@ -2,6 +2,13 @@
 
 ## Quick start
 
+### Requirements:
+* docker-compose
+* curl
+* expect
+
+### Start the containers
+
 ```bash
 ./run-docker-compose.sh
 ```
