@@ -26,7 +26,7 @@ import {
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
 
-export const sideBarWidth = 240;
+export const sideBarWidth = 284;
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
@@ -51,9 +51,24 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   drawerPaper: {
     top: topBarHeight,
+    backgroundColor: '#FAF8F3',
     [theme.breakpoints.down('sm')]: {
       top: 0,
     },
+  },
+  listItem: {
+    height: '64px',
+  },
+  listItemIcon: {
+    color: '#CDCABC',
+  },
+  listItemIconSelected: {
+    color: '#806300',
+  },
+  listItemText: {
+    fontFamily: 'Poppins',
+    fontSize: '18px',
+    fontWeight: 500,
   },
 }));
 
@@ -110,11 +125,21 @@ const SideBar = () => {
             button
             selected={targetUrl == location.pathname}
             onClick={() => history.push(targetUrl)}
+            className={classes.listItem}
           >
             <ListItemIcon>
-              <IconComponent color="action" />
+              <IconComponent
+                className={clsx({
+                  [classes.listItemIcon]: targetUrl !== location.pathname,
+                  [classes.listItemIconSelected]:
+                    targetUrl === location.pathname,
+                })}
+              />
             </ListItemIcon>
-            <ListItemText primary={displayText} />
+            <ListItemText
+              primary={displayText}
+              primaryTypographyProps={{ className: classes.listItemText }}
+            />
           </ListItem>
         ))}
       </List>
