@@ -26,7 +26,7 @@ import {
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
 
-export const sideBarWidth = 284;
+export const sideBarWidth = 264;
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
@@ -67,8 +67,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listItemText: {
     fontFamily: 'Poppins',
-    fontSize: '18px',
-    fontWeight: 500,
+    fontWeight: 'bold',
   },
 }));
 
