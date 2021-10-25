@@ -55,7 +55,10 @@ def bm_ml_run():
     epochs = 10
     _, _, _ = ml_run(
         FAKE_COMPS,
-        epochs=epochs,
+        epochs_loc_full=epochs,
+        epochs_glob_full=epochs,
+        epochs_loc_res=epochs,
+        epochs_glob_res=epochs,
         criterias=["reliability"],
         resume=False,
         save=False,

@@ -314,8 +314,8 @@ def test_ml_run():
     """ checks that outputs of training have normal length """
     glob_scores, contributor_scores = ml_run(
         TEST_DATA,
-        epochs_loc=1,
-        epochs_glob=1,
+        epochs_loc_full=1,
+        epochs_glob_full=1,
         criterias=["test"],
         resume=False,
         save=False,
@@ -373,8 +373,8 @@ def test_simple_train():
                         ]
     glob_scores, loc_scores = ml_run(
         comparison_data,
-        epochs_loc=2,
-        epochs_glob=2,
+        epochs_loc_full=2,
+        epochs_glob_full=2,
         criterias=["test"],
         resume=False,
         save=True,  # FIXME change path
@@ -385,8 +385,8 @@ def test_simple_train():
     # testing resume mode
     glob_scores2, loc_scores2 = ml_run(
         comparison_data,
-        epochs_loc=0,
-        epochs_glob=0,
+        epochs_loc_res=0,
+        epochs_glob_res=0,
         criterias=["test"],
         resume=True,  # FIXME change path
         save=True,  # FIXME change path
@@ -397,8 +397,8 @@ def test_simple_train():
 
     glob_scores, loc_scores = ml_run(
         comparison_data,
-        epochs_loc=2,
-        epochs_glob=2,
+        epochs_loc_res=2,
+        epochs_glob_res=2,
         criterias=["test"],
         resume=True,
         save=False,  # FIXME change path

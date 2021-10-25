@@ -135,14 +135,22 @@ def _train_predict(
 
 @gin.configurable
 def ml_run(
-        comparison_data, epochs_loc, epochs_glob, criterias,
+        comparison_data,
+        epochs_loc_full, epochs_glob_full, epochs_loc_res, epochs_glob_res,
+        criterias,
         resume=False, save=True, verb=1, device='cpu', ground_truths=None,
         compute_uncertainty=False, licchavi_class=Licchavi):
     """ Runs the ml algorithm for all criterias
 
     comparison_data (list of lists): output of fetch_data()
-    epochs_loc (int): number of local epochs of gradient descent for Licchavi
-    epochs_glob (int): number of global epochs of gradient descent for Licchavi
+    epochs_loc_full (int): number of local epochs of
+        gradient descent for Licchavi (from scratch)
+    epochs_glob_full (int): number of global epochs of
+        gradient descent for Licchavi (from scratch)
+    epochs_loc_res (int): number of local epochs of
+        gradient descent for Licchavi (from save)
+    epochs_glob_res (int): number of global epochs of
+        gradient descent for Licchavi (from save)
     criterias (str list): list of criterias to compute
     resume (bool): wether to resume from save or not
     save (bool): wether to save result of training or not
@@ -162,6 +170,8 @@ def ml_run(
             score: float, uncertainty: float]
     """  # FIXME: not better to regroup contributors in same list or smthg ?
     ml_run_time = time()
+    epochs_loc = epochs_loc_res if resume else epochs_loc_full
+    epochs_glob = epochs_glob_res if resume else epochs_glob_full
     glob_scores, loc_scores = [], []
 
     for criteria in criterias:

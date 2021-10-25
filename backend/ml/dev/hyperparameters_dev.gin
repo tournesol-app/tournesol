@@ -1,9 +1,7 @@
-# Hyperparameters configuration file 
+# Development hyperparameters configuration file 
 
 
 # ml_run parameters
-ml_run.epochs_loc = 60  # (max) number of local training epochs of the algorithm
-ml_run.epochs_glob = 60  # (max) number of global training epochs of the algorithm
 ml_run.resume = False  # wether to resume training or not
 ml_run.compute_uncertainty = False  # wether to compute uncertainty or not
                                         # (takes time)
@@ -28,14 +26,13 @@ Licchavi.lr_s = 0.005  # learning rate of s individual parameters
 Licchavi.lr_glob = 0.01  # learning rate of general model
 
 
-# # learning rate scheduler  # FIXME adapt to new algorithm
-# _lr_schedule.lr_rush_duration = 50  # duration of "rush phase" (nb of epochs)
-# _lr_schedule.decay_rush = 0.97  # decay during "rush phase"
-# _lr_schedule.decay_fine = 1  # decay during fine tuning phase
-# _lr_schedule.min_lr_fine = 0.001  # minimum (local) learning rate
-
-# _lr_schedule.precision = 0.97 #proportion of parameters at eq for early stopping
-# _lr_schedule.epsilon = 0.1  # strength of equilibrium asked
+# Training schedule
+# if we resume training
+ml_run.epochs_loc_res = 10  # (max) number of local training epochs of the algorithm
+ml_run.epochs_glob_res = 10  # (max) number of global training epochs of the algorithm
+# if we train from scratch
+ml_run.epochs_loc_full = 60  # (max) number of local training epochs of the algorithm
+ml_run.epochs_glob_full = 60  # (max) number of global training epochs of the algorithm
 
 
 # metrics to compute during training

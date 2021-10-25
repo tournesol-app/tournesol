@@ -16,8 +16,10 @@ if not TOURNESOL_DEV:
 
 TEST_DATA = [
     [0, 100, 101, "reliability", 100, 0],
-    [1, 101, 102, "reliability", 100, 0],
-    [2, 103, 104, "reliability", 50, 0],
+    # [1, 100, 101, "reliability", 20, 0],
+    # [2, 100, 101, "reliability", 100, 0],
+    # [3, 100, 101, "reliability", 0, 0],
+    # [2, 103, 104, "reliability", 50, 0],
     # [3, 104, 105, "reliability", 70, 0],
     # [4, 108, 109, "reliability", 40, 0],
     # [5, 109, 110, "reliability", 40, 0],
@@ -30,16 +32,18 @@ NAME = ""
 
 def run_experiment(comparison_data):
     """ trains and outputs some stats """
-    seedall(654)
+    seedall(64)
     # glob_gt, loc_gt, s_gt, comps_fake = generate_data(
     #     40, 27, 30,
     #     dens=0.8,
     #     noise=0.02)
     print(len(comparison_data))
     glob_scores, loc_scores, infos = ml_run(
-        TEST_DATA,
-        epochs_loc=100,
-        epochs_glob=200,
+        comparison_data,
+        epochs_loc_full=10,
+        epochs_glob_full=100,
+        epochs_loc_res=10,
+        epochs_glob_res=10,
         criterias=["reliability"],
         licchavi_class=LicchaviDev,
         resume=False,
@@ -50,7 +54,7 @@ def run_experiment(comparison_data):
         )
 
     # some prints and plots
-    output_infos(*infos)
+    # output_infos(*infos)
 
     disp_one_by_line(glob_scores[:20])
     disp_one_by_line(loc_scores[:20])
