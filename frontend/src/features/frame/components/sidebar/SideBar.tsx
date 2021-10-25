@@ -80,6 +80,8 @@ const SideBar = () => {
   const history = useHistory();
   const location = useLocation();
 
+  const isItemSelected = (url: string) => url === location.pathname;
+
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: 'Home' },
     //  { targetUrl: "/comparisons", IconComponent: ListIcon, displayText: "My Comparisons"},
@@ -118,29 +120,31 @@ const SideBar = () => {
       }}
     >
       <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
-        {menuItems.map(({ targetUrl, IconComponent, displayText }) => (
-          <ListItem
-            key={displayText}
-            button
-            selected={targetUrl == location.pathname}
-            onClick={() => history.push(targetUrl)}
-            className={classes.listItem}
-          >
-            <ListItemIcon>
-              <IconComponent
-                className={clsx({
-                  [classes.listItemIcon]: targetUrl !== location.pathname,
-                  [classes.listItemIconSelected]:
-                    targetUrl === location.pathname,
-                })}
+        {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
+          const selected = isItemSelected(targetUrl);
+          return (
+            <ListItem
+              key={displayText}
+              button
+              selected={selected}
+              onClick={() => history.push(targetUrl)}
+              className={classes.listItem}
+            >
+              <ListItemIcon>
+                <IconComponent
+                  className={clsx({
+                    [classes.listItemIcon]: !selected,
+                    [classes.listItemIconSelected]: selected,
+                  })}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={displayText}
+                primaryTypographyProps={{ className: classes.listItemText }}
               />
-            </ListItemIcon>
-            <ListItemText
-              primary={displayText}
-              primaryTypographyProps={{ className: classes.listItemText }}
-            />
-          </ListItem>
-        ))}
+            </ListItem>
+          );
+        })}
       </List>
     </Drawer>
   );
