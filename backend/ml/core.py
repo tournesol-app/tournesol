@@ -14,12 +14,13 @@ from ml.handle_data import (
 
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
-HP_PATH = 'backend/ml/hyperparameters.gin'
-FOLDER_PATH = "backend/ml/checkpoints/"
+ML_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
+HP_PATH = ML_DIR + 'hyperparameters.gin'
+FOLDER_PATH = ML_DIR + 'checkpoints/'
 FILENAME = "models_weights"
 PATH = FOLDER_PATH + FILENAME
 os.makedirs(FOLDER_PATH, exist_ok=True)
-logging.basicConfig(filename='backend/ml/ml_logs.log', level=logging.INFO)
+logging.basicConfig(filename=ML_DIR + 'ml_logs.log', level=logging.INFO)
 
 
 def _get_licchavi(
