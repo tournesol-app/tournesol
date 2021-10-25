@@ -167,12 +167,15 @@ def _huber(x, strength):
 
 
 def models_dist_huber(
-        model1, model2, mask=None, t_par=0, s_par=1, vidx=-1, strength=1):
+        model1, model2, 
+        weights=None, mask=None, t_par=0, s_par=1, vidx=-1, strength=1
+    ):
     """ Pseudo-Huber distance between 2 models
 
     Args:
         model1 (float tensor): scoring model
         model2 (float tensor): scoring model
+        weights (float tensor): weight of each coordinate
         mask (bool tensor): subspace in which to compute distance
         t_par (float tensor): t (translation) parameter
         s_par (float tensor): s (scaling) parameter
@@ -183,16 +186,23 @@ def models_dist_huber(
     Returns:
         (scalar float tensor): distance between the 2 models
     """
+    # FIXME mask not needed anymore because of weights ?
+    if weights is None:
+        weights = torch.ones_like(model1)
     if vidx == -1:  # if we want several coordinates
         if mask is None:  # if we want all coordinates
-            dist = _huber(s_par * model1 - model2 + t_par, strength).sum()
+            dist = (_huber(
+                s_par * model1 - model2 + t_par, strength
+            ) * weights).sum()
         else:
-            dist = _huber(
+            dist = (_huber(
                 (s_par * model1 - model2 + t_par) * mask, strength
-            ).sum()
+            ) * weights).sum()
     else:  # if we want only one coordinate
-        stren = strength[vidx]
-        dist = _huber(s_par * model1[vidx] - model2[vidx] + t_par, stren)
+        dist = _huber(
+            s_par * model1[vidx] - model2[vidx] + t_par,
+            strength[vidx] 
+        ) * weights[vidx]
     return dist
 
 
@@ -274,6 +284,7 @@ def loss_s_gen_reg(licch, vidx=-1):
         huber_dist = models_dist_huber(
             node.model,    # local model
             licch.global_model,  # general model
+            weights=node.w_na,  # weight of each video
             mask=node.mask,     # mask
             t_par=node.t_par,
             s_par=node.s_par,
@@ -282,7 +293,7 @@ def loss_s_gen_reg(licch, vidx=-1):
         )
         if vidx == -1:  # only if all loss is computed
             s_loss += licch.nu_par * get_s_loss(node.s_par)
-        gen_loss += node.weight * huber_dist
+        gen_loss += huber_dist
     reg_loss = licch.w0_par * (model_norm(licch.global_model, vidx=vidx) / 2)
     return s_loss, gen_loss, reg_loss
 

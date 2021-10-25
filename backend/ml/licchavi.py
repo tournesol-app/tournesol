@@ -66,7 +66,6 @@ class Licchavi():
             lr_glob=None,
             nu_par=None,
             w0_par=None,
-            w_loc=None,
             gamma=None,
             ):
         """
@@ -92,7 +91,6 @@ class Licchavi():
         self.lr_glob = lr_glob  # global learning rate (global scores)
         self.nu_par = nu_par  # importance of s_loss term
         self.w0_par = w0_par     # regularisation strength
-        self.w_loc = w_loc   # default weight for a node
         self.gamma = gamma  # local regularisation term
 
         # local training schedule
@@ -178,7 +176,6 @@ class Licchavi():
         self.nodes = {uid: Node(
             *data,
             *self._get_default(),
-            self.w_loc,
             self.lr_loc,
             self.lr_t,
             self.lr_s,
@@ -209,7 +206,6 @@ class Licchavi():
             id: Node(
                 *data,
                 *self._get_saved(loc_models_old, id, nb_new),
-                self.w_loc,
                 self.lr_loc,
                 self.lr_t,
                 self.lr_s,

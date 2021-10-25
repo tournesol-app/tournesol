@@ -12,18 +12,17 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 # local
 Licchavi.gamma = 0.1  # local regularisation term ponderation
 # global
-Licchavi.nu_par = 5  # scaling parameter term ponderation
-Licchavi.w_loc = 1  # generalisation term ponderation
-Licchavi.w0_par = 1  # regularisation term ponderation
+Licchavi.nu_par = 0.0005  # scaling parameter term ponderation
+Licchavi.w0_par = 0.001  # global regularisation term ponderation
 
 
 # Training hyperparameters
 # local
 Licchavi.lr_loc = 0.1  # learning rate of local models
 # global
-Licchavi.lr_t = 0.0005  # learning rate of t individual parameters
-Licchavi.lr_s = 0.0005  # learning rate of s individual parameters
-Licchavi.lr_glob = 0.01  # learning rate of general model
+Licchavi.lr_t = 0.9  # learning rate of t individual parameters
+Licchavi.lr_s = 5  # learning rate of s individual parameters
+Licchavi.lr_glob = 10  # learning rate of general model
 
 
 # Training schedule

@@ -188,12 +188,13 @@ def test_models_dist_huber():
     d_param = 1
     model1 = torch.tensor([1, 2, 4, 7])
     model2 = torch.tensor([3, -2, -5, 9.2])
+    weights = torch.ones(4)
     mask = torch.tensor([True, False, False, True])
     assert round_loss(models_dist_huber(
-        model1, model2, strength=d_param), 2
+        model1, model2, weights=weights, strength=d_param), 2
     ) == 13.83
     mask_res = round_loss(models_dist_huber(
-        model1, model2, mask=mask, strength=d_param), 2
+        model1, model2, weights=weights, mask=mask, strength=d_param), 2
     )
     assert mask_res == 2.65
 
