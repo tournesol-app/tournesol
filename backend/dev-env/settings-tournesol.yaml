@@ -16,7 +16,7 @@ MAIN_URL: http://127.0.0.1:8000/
 
 DATABASE_HOST: db
 DATABASE_NAME: tournesol
-DATABASE_USER: user
+DATABASE_USER: tournesol
 DATABASE_PASSWORD: password
 
 STATIC_ROOT: /tournesol/static
