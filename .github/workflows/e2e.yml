@@ -1,0 +1,33 @@
+name: Run end-to-end tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq expect
+
+      - uses: actions/checkout@v2
+
+      - name: Start dev env
+        run: ./dev-env/run-docker-compose.sh
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - uses: cypress-io/github-action@v2
+        with:
+          working-directory: e2e
+          wait-on: 'http://localhost:3000'
+        
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: e2e/cypress/screenshots
