@@ -23,7 +23,7 @@ import gin
 from .losses import (round_loss, predict, loss_fit, loss_s_gen_reg)
 from .metrics import (
     get_uncertainty_loc, get_uncertainty_glob, update_hist,
-    check_equilibrium_glob, check_equilibrium_loc)
+    check_equilibrium_glob, has_converged)
 from .data_utility import expand_tens, one_hot_vids
 from .nodes import Node
 
@@ -59,7 +59,11 @@ class Licchavi():
             verb=1,
             # configured with gin in "hyperparameters.gin"
             metrics_loc=None,
+            precision_loc=None,
+            epsilon_loc=None,
             metrics_glob=None,
+            precision_glob=None,
+            epsilon_glob=None,
             lr_loc=None,
             lr_t=None,
             lr_s=None,
@@ -82,7 +86,7 @@ class Licchavi():
         self.criteria = crit  # criteria learnt by this Licchavi
         self.device = device  # device used (cpu/gpu)
 
-        self.opt = torch.optim.SGD   # optimizer
+        self.opt = torch.optim.SGD  # optimizer
 
         # defined in "hyperparameters.gin"
         self.lr_loc = lr_loc    # local learning rate (local scores)
@@ -94,13 +98,13 @@ class Licchavi():
         self.gamma = gamma  # local regularisation term
 
         # local training schedule
-        self.precision_loc = 0.95  # FIXME move to .gin config
-        self.epsilon_loc = 0.01
+        self.precision_loc = precision_loc
+        self.epsilon_loc = epsilon_loc
 
         # global training schedule
-        self.precision_glob = 0.95  # FIXME move to .gin config
-        self.epsilon_glob = 0.1
-        self.equi_glob = 0  # , 0, 0
+        self.precision_glob = precision_glob
+        self.epsilon_glob = epsilon_glob
+        self.equi_glob = 0  # FIXME
 
         # models initialization
         self.get_model = get_model  # fonction used to initialize models
@@ -111,7 +115,6 @@ class Licchavi():
         self.nb_nodes = 0  # FIXME (not needed?)
         self.nodes = {}
         self.users = []  # users IDs FIXME (not needed?)
-        self.equi_loc = {}  # local scores equilibrium
 
         # history stuff
         self.history_loc = {metric: [] for metric in metrics_loc}
@@ -137,11 +140,15 @@ class Licchavi():
 
     # ------------ input and output --------------------
     def _get_default(self):
-        """ Returns: - (default s, default model) """
+        """ Returns:
+            - (default t, default s, default model, default stability, 0)
+        """
         model_plus = (
             get_t(self.device),  # translation parameter
             get_s(self.device),  # scaling parameter
             self.get_model(self.nb_vids, self.device),  # model
+            False,  # the model needs to be trained by default
+            0,  # previous number of comparisons
         )
         return model_plus
 
@@ -149,20 +156,18 @@ class Licchavi():
         """ Returns saved parameters updated or default
 
         loc_models_old (dictionnary): saved parameters in dictionnary of tuples
-                                        {user ID: (t, s, model)}
+                                        {user ID: (t, s, model, stable)}
         uid (int): ID of node (user)
         nb_new (int): number of new videos (since save)
 
         Returns:
-            (t, s, model), updated or default
+            (t, s, model, stable, tot_comps), updated or default
         """
         if uid in loc_models_old:
-            t_par, s_par, mod = loc_models_old[uid]
+            t_par, s_par, mod, stable, tot_comps = loc_models_old[uid]
             mod = expand_tens(mod, nb_new, self.device)
-            infos = (t_par, s_par, mod)
-        else:
-            infos = self._get_default()
-        return infos
+            return (t_par, s_par, mod, stable, tot_comps)
+        return self._get_default()
 
     def set_allnodes(self, data_dic, users_ids):
         """ Puts data in Licchavi and create a model for each node
@@ -181,8 +186,6 @@ class Licchavi():
             self.lr_s,
             self.opt
         ) for uid, data in zip(users_ids, data_dic.values())}
-        # local scores equilibrium
-        self.equi_loc = {uid: 0 for uid in self.nodes}
         self._show("Total number of nodes : {}".format(self.nb_nodes), 1)
 
     def load_and_update(self, data_dic, user_ids, fullpath):
@@ -212,9 +215,12 @@ class Licchavi():
                 self.opt
                ) for id, data in zip(user_ids, data_dic.values())
         }
-        # local scores equilibrium
-        self.equi_loc = {uid: 0 for uid in self.nodes}
         self._show(f"Total number of nodes : {self.nb_nodes}", 1)
+
+        # TODO bool tensor with True for all updated scores
+        # (ie sum of node.mask for all updated nodes)
+        # (useful for smart global training)
+
         loginf('Models updated')
 
     def output_scores(self):
@@ -244,6 +250,8 @@ class Licchavi():
         local_data = {id:  (node.t_par,  # FIXME detach?
                             node.s_par,  # FIXME detach?
                             node.model.detach(),
+                            node.stable,
+                            len(node.vid1)
                             ) for id, node in self.nodes.items()}
         saved_data = (
             self.criteria,
@@ -307,12 +315,6 @@ class Licchavi():
     #                 loginf('Early Stopping')
     #                 return True
     #     return False
-
-    def _stop_loc(self):
-        """ local training scheduler """
-        if all(equi >= self.precision_loc for equi in self.equi_loc.values()):
-            loginf('Early Stopping')
-            return True
 
     def _stop_glob(self):
         """ global training scheduler """
@@ -414,42 +416,53 @@ class Licchavi():
         return reg_loss  # FIXME remove
 
     def train_loc(
-            self, nb_epochs=1, compute_uncertainty=False, smart_stop=False):
+            self, nb_epochs=1, compute_uncertainty=False):
         """ local training loop
 
         nb_epochs (int): (maximum) number of training epochs
         compute_uncertainty (bool): wether to compute uncertainty
             at the end or not (takes time)
-        smart_stop (bool): wether to use equilibrium metric for early stopping
 
         Returns:
             (float list list): uncertainty of local scores,None if not computed
         """
-        reg_loss = 0
+        if all(stable for stable in self.all_nodes('stable')):
+            loginf('All nodes have already converged, skipping local training')
+        else:
+            reg_loss = 0
 
-        # local training loop
-        loginf('Starting local training')
-        time_train_loc = time()
+            # local training loop
+            loginf('Starting local training')
+            time_train_loc = time()
 
-        for epoch in range(1, nb_epochs + 1):
-            # self._set_lr()  # FIXME design lr scheduling
-            reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
-            if smart_stop:
-                self.equi_loc = check_equilibrium_loc(self.epsilon_loc, self)
-                if self._stop_loc():
-                    break
+            for epoch in range(1, nb_epochs + 1):
+                # self._set_lr()  # FIXME design lr scheduling
+                reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
+            # checking & saving nodes convergence
+            for node in self.nodes.values():
+                if not node.stable:
+                    node.stable = has_converged(
+                        node, self.gamma, self.vid_vidx,
+                        epsilon=self.epsilon_loc, thresh=self.precision_loc
+                    )
 
-        loginf('End of local training\n'
-               f'Training time: {round(time() - time_train_loc, 2)}')
+            loginf('End of local training\n'
+                f'Training time: {round(time() - time_train_loc, 2)}')
+
+            # print(sum(int(stable) for stable in self.all_nodes('stable')))
+            # for stable in self.all_nodes('stable'):  # FIXME
+            #     print(stable)
         return self._uncert_loc(compute_uncertainty)  # uncertainty if asked
 
     def train_glob(
-            self, nb_epochs=1, compute_uncertainty=False, smart_stop=False):
+            self, nb_epochs=1, compute_uncertainty=False, check_freq=0):
         """ training loop
 
         nb_epochs (int): (maximum) number of training epochs
         compute_uncertainty (bool): wether to compute uncertainty
             at the end or not (takes time)
+        check_freq (int): equilibrium is checked every -check_freq epochs
+                            0 not to disable early stoppping
 
         Returns:
             (float tensor) : uncertainty of global scores
@@ -469,11 +482,11 @@ class Licchavi():
             self._regul_s()
 
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
-            if smart_stop:
+            if check_freq and epoch % check_freq == 0:
                 self.equi_glob = check_equilibrium_glob(
                     self.epsilon_glob, self
                 )
-                print(self.equi_glob)
+                # print(self.equi_glob)  # FIXME
                 if self._stop_glob():
                     break
         loginf('End of global training\n'

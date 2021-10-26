@@ -9,8 +9,8 @@ import torch
 from torch.autograd.functional import hessian
 
 from .losses import (
-    loss_s_gen_reg, round_loss, loss_fit, models_dist_huber,
-    model_norm, models_dist)
+    loss_s_gen_reg, round_loss, loss_fit, one_node_loss,
+    models_dist_huber, model_norm, models_dist)
 
 
 # metrics on models
@@ -362,10 +362,58 @@ def check_equilibrium_loc(epsilon, licch):
     derivs2 = _get_eqs(licch.nodes, l_uid, - incr)
     for i, uid in enumerate(l_uid):
         equilibrated = torch.logical_and(derivs1[i] > 0, derivs2[i] > 0)
-        used = torch.logical_or(derivs1[i] != 0, derivs2[i] != 0)
-        frac = torch.count_nonzero(equilibrated) / torch.count_nonzero(used)
+        frac = torch.count_nonzero(equilibrated) / licch.nodes[uid].nb_loc_vids
         eq_fracs[uid] = frac.item()
     return eq_fracs
+
+
+def has_converged(node, gamma, vid_vidx, epsilon=0.01, thresh=1):
+    """ Tests if the local model is at equilibrium
+
+    node (Node()): a Node object
+    gamma (float): ponderation of local regularisation
+    epsilon (float): precision required for scores
+    thresh (float): fraction of scores at equilibrium required
+
+    Returns:
+        (bool): True if scores are at equilibrium
+    """
+    # incr = _random_signs(epsilon, len(node.vid1[0]))
+
+    # def _one_side(increment):
+    #     node.opt.zero_grad(set_to_none=True)
+    #     with torch.no_grad():
+    #         node.model += increment
+    #     loss = one_node_loss(node, gamma)
+    #     loss.backward()
+    #     with torch.no_grad():
+    #         node.model -= increment
+    #     return node.model.grad * increment
+
+    def _one_side_one_v(eps, vidx):
+        node.opt.zero_grad(set_to_none=True)
+        with torch.no_grad():
+            node.model[vidx] += eps
+        loss = one_node_loss(node, gamma, vidx=vidx)
+        loss.backward()
+        with torch.no_grad():
+            node.model[vidx] -= eps
+            # print(node.model.grad[vidx] * eps)
+        return node.model.grad[vidx] * eps
+
+
+    # derivs1 = _one_side(incr)
+    # derivs2 = _one_side(-incr)
+
+    derivs1 = torch.zeros_like(node.vid1[0], dtype=float)
+    derivs2 = torch.zeros_like(node.vid1[0], dtype=float)
+    for vid in node.vids:  # for each video rated by user
+        vidx = vid_vidx[vid]
+        derivs1[vidx] = _one_side_one_v(epsilon, vidx)
+        derivs2[vidx] = _one_side_one_v(-epsilon, vidx)
+    equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
+    frac = torch.count_nonzero(equilibrated) / node.nb_loc_vids
+    return (frac >= thresh).item()
 
 
 def check_equilibrium_glob(epsilon, licch):

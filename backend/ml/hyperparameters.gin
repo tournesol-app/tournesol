@@ -22,6 +22,10 @@ ml_run.epochs_loc_res = 10  # (max) number of local training epochs of the algor
 # if we train from scratch
 ml_run.epochs_loc_full = 60  # (max) number of local training epochs of the algorithm
 
+# Early stoppping
+Licchavi.precision_loc = 0.95
+Licchavi.epsilon_loc = 0.1
+
 # metrics
 Licchavi.metrics_loc = [
     # 'loss_fit', 'norm_loc', 
@@ -46,6 +50,10 @@ Licchavi.lr_glob = 1  # learning rate of general model
 ml_run.epochs_glob_res = 10  # (max) number of global training epochs of the algorithm
 # if we train from scratch
 ml_run.epochs_glob_full = 60  # (max) number of global training epochs of the algorithm
+
+# Early stoppping
+Licchavi.precision_glob = 0.95
+Licchavi.epsilon_glob = 0.1
 
 # metrics
 Licchavi.metrics_glob = [

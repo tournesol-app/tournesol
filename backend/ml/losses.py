@@ -167,9 +167,9 @@ def _huber(x, strength):
 
 
 def models_dist_huber(
-        model1, model2, 
+        model1, model2,
         weights=None, mask=None, t_par=0, s_par=1, vidx=-1, strength=1
-    ):
+        ):
     """ Pseudo-Huber distance between 2 models
 
     Args:
@@ -201,7 +201,7 @@ def models_dist_huber(
     else:  # if we want only one coordinate
         dist = _huber(
             s_par * model1[vidx] - model2[vidx] + t_par,
-            strength[vidx] 
+            strength[vidx]
         ) * weights[vidx]
     return dist
 
@@ -223,6 +223,20 @@ def model_norm(model, powers=(2, 1), vidx=-1):
     return (model**q).abs().sum()**p
 
 
+def one_node_loss(node, gamma, vidx=-1):
+    loss = get_fit_loss(
+        node.model,
+        node.s_par,
+        node.vid1,  # idx1_batch
+        node.vid2,  # idx2_batch
+        node.rating,     # r_batch
+        gamma=gamma,
+        vidx=vidx   # video index if we want partial loss
+    )
+
+    return loss
+
+
 # losses used in "licchavi.py"
 
 def loss_fit(licch, vidx=-1, uid=-1):  # FIXME simplify
@@ -240,28 +254,15 @@ def loss_fit(licch, vidx=-1, uid=-1):  # FIXME simplify
     """
     fit_loss = 0
 
-    def _one_node_loss(node, gamma, vidx=-1):
-        loss = get_fit_loss(
-            node.model,
-            node.s_par,
-            node.vid1,  # idx1_batch
-            node.vid2,  # idx2_batch
-            node.rating,     # r_batch
-            gamma=gamma,
-            vidx=vidx   # video index if we want partial loss
-        )
-
-        return loss
-
     if uid != -1:  # if we want only one user
         node = licch.nodes[uid]
-        fit_loss += _one_node_loss(
+        fit_loss += one_node_loss(
             node, gamma=licch.gamma, vidx=vidx
         )
-    else:  # if we want all users
-        for node, equi in zip(licch.nodes.values(), licch.equi_loc.values()):
-            if equi < licch.precision_loc:  # if local model hasn't converged
-                fit_loss += _one_node_loss(
+    else:  # if we want all users (not stable ones)
+        for node in licch.nodes.values():
+            if not node.stable:  # if local model hasn't converged
+                fit_loss += one_node_loss(
                     node, gamma=licch.gamma, vidx=vidx
                 )
     return fit_loss
