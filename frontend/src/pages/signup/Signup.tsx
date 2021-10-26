@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Button, Typography } from '@material-ui/core';
+import { Grid, Button, Typography, Checkbox } from '@material-ui/core';
 import {
   Alert,
   ContentHeader,
@@ -21,6 +21,7 @@ const Signup = () => {
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(
     null
   );
+  const [acceptPolicy, setAcceptPolicy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -95,12 +96,22 @@ const Signup = () => {
                 />
               </Grid>
               <Grid item xs={12}>
+                <Checkbox
+                  checked={acceptPolicy}
+                  onClick={() => setAcceptPolicy(!acceptPolicy)}
+                />
+                <span>I have read and agree with the </span>
+                <a href="/pdf/privacy_policy_tournesol.pdf" download>
+                  privacy policy
+                </a>
+              </Grid>
+              <Grid item xs={12}>
                 <Button
                   type="submit"
                   color="secondary"
                   fullWidth
+                  disabled={!acceptPolicy || isLoading}
                   variant="contained"
-                  disabled={isLoading}
                 >
                   Sign up
                 </Button>
