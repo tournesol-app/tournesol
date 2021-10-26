@@ -348,7 +348,7 @@ def check_equilibrium_loc(epsilon, licch):
         # computing gradients
         loss = 0
         for uid in l_uid:
-            loss = loss_fit(licch, uid=uid)
+            loss += loss_fit(licch, uid=uid)
         loss.backward()
         # restoring scores
         with torch.no_grad():

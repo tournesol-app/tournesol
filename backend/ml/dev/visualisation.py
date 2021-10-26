@@ -6,7 +6,7 @@ import random
 import numpy as np
 import torch
 
-from ml.core import TOURNESOL_DEV
+from ml.core import TOURNESOL_DEV, ML_DIR
 from ml.data_utility import replace_dir
 from ml.losses import round_loss
 from .plots import (
@@ -16,8 +16,8 @@ if not TOURNESOL_DEV:
     raise Exception('Dev module called whereas TOURNESOL_DEV=0')
 
 
-PATH_PLOTS = "backend/ml/plots/"
-replace_dir(PATH_PLOTS)  # emply folder, create if doesn't exist
+PLOTS_DIR = ML_DIR + 'plots/'
+replace_dir(PLOTS_DIR)  # emply folder, create if doesn't exist
 
 
 # debug helpers
@@ -128,7 +128,7 @@ def licch_stats(licch):
         plot_density(
             l_s,
             "s parameters",
-            PATH_PLOTS,
+            PLOTS_DIR,
             "s_pars.png"
         )
         gen_t = licch.all_nodes("t_par")
@@ -136,11 +136,11 @@ def licch_stats(licch):
         plot_density(
             l_t,
             "t parameters",
-            PATH_PLOTS,
+            PLOTS_DIR,
             "t_pars.png"
         )
-    plot_metrics([licch.history_loc], path=PATH_PLOTS)
-    plot_metrics([licch.history_glob], path=PATH_PLOTS)
+    plot_metrics([licch.history_loc], path=PLOTS_DIR)
+    plot_metrics([licch.history_glob], path=PLOTS_DIR)
 
 
 def scores_stats(glob_scores):
@@ -158,7 +158,7 @@ def scores_stats(glob_scores):
         plot_density(
             glob_scores.cpu(),
             "Global scores",
-            PATH_PLOTS,
+            PLOTS_DIR,
             "scores.png"
         )
 
@@ -167,7 +167,7 @@ def s_stats(licch):
     """ Prints and plots about s parameters """
     if licch.test_mode:
         s_predicted = [s.detach().item() for s in licch.all_nodes('s_par')]
-        plot_s_predict_gt(s_predicted, licch.s_gt, PATH_PLOTS)
+        plot_s_predict_gt(s_predicted, licch.s_gt, PLOTS_DIR)
 
 
 def uncert_stats(licch, loc_uncerts):
@@ -179,7 +179,7 @@ def uncert_stats(licch, loc_uncerts):
         for uncert, vid in zip(uncerts, node.vids):
             l_nb_comps.append(nb_comps[vid_vidx[int(vid)]].item())
             l_uncerts.append(uncert.item())
-    plot_loc_uncerts(l_nb_comps, l_uncerts, PATH_PLOTS)
+    plot_loc_uncerts(l_nb_comps, l_uncerts, PLOTS_DIR)
 
 
 def output_infos(licch, glob, loc, uncertainties):
