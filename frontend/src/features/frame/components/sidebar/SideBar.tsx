@@ -26,7 +26,7 @@ import {
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
 
-export const sideBarWidth = 240;
+export const sideBarWidth = 264;
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
@@ -51,9 +51,23 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   drawerPaper: {
     top: topBarHeight,
+    backgroundColor: '#FAF8F3',
     [theme.breakpoints.down('sm')]: {
       top: 0,
     },
+  },
+  listItem: {
+    height: '64px',
+  },
+  listItemIcon: {
+    color: '#CDCABC',
+  },
+  listItemIconSelected: {
+    color: '#806300',
+  },
+  listItemText: {
+    fontFamily: 'Poppins',
+    fontWeight: 'bold',
   },
 }));
 
@@ -65,6 +79,8 @@ const SideBar = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const history = useHistory();
   const location = useLocation();
+
+  const isItemSelected = (url: string) => url === location.pathname;
 
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: 'Home' },
@@ -104,19 +120,31 @@ const SideBar = () => {
       }}
     >
       <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
-        {menuItems.map(({ targetUrl, IconComponent, displayText }) => (
-          <ListItem
-            key={displayText}
-            button
-            selected={targetUrl == location.pathname}
-            onClick={() => history.push(targetUrl)}
-          >
-            <ListItemIcon>
-              <IconComponent color="action" />
-            </ListItemIcon>
-            <ListItemText primary={displayText} />
-          </ListItem>
-        ))}
+        {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
+          const selected = isItemSelected(targetUrl);
+          return (
+            <ListItem
+              key={displayText}
+              button
+              selected={selected}
+              onClick={() => history.push(targetUrl)}
+              className={classes.listItem}
+            >
+              <ListItemIcon>
+                <IconComponent
+                  className={clsx({
+                    [classes.listItemIcon]: !selected,
+                    [classes.listItemIconSelected]: selected,
+                  })}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={displayText}
+                primaryTypographyProps={{ className: classes.listItemText }}
+              />
+            </ListItem>
+          );
+        })}
       </List>
     </Drawer>
   );
