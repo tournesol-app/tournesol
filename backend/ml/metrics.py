@@ -378,18 +378,6 @@ def has_converged(node, gamma, vid_vidx, epsilon=0.01, thresh=1):
     Returns:
         (bool): True if scores are at equilibrium
     """
-    # incr = _random_signs(epsilon, len(node.vid1[0]))
-
-    # def _one_side(increment):
-    #     node.opt.zero_grad(set_to_none=True)
-    #     with torch.no_grad():
-    #         node.model += increment
-    #     loss = one_node_loss(node, gamma)
-    #     loss.backward()
-    #     with torch.no_grad():
-    #         node.model -= increment
-    #     return node.model.grad * increment
-
     def _one_side_one_v(eps, vidx):
         node.opt.zero_grad(set_to_none=True)
         with torch.no_grad():
@@ -398,12 +386,7 @@ def has_converged(node, gamma, vid_vidx, epsilon=0.01, thresh=1):
         loss.backward()
         with torch.no_grad():
             node.model[vidx] -= eps
-            # print(node.model.grad[vidx] * eps)
         return node.model.grad[vidx] * eps
-
-
-    # derivs1 = _one_side(incr)
-    # derivs2 = _one_side(-incr)
 
     derivs1 = torch.zeros_like(node.vid1[0], dtype=float)
     derivs2 = torch.zeros_like(node.vid1[0], dtype=float)
@@ -426,13 +409,10 @@ def check_equilibrium_glob(epsilon, licch):
     Returns:
         (bool tensor): True for all global scores that converged
     """
-
     def _one_side_glob(eps):
         """ increment (float tensor): coordinates are +/- epsilon """
         # resetting gradients
         licch.opt_gen.zero_grad(set_to_none=True)
-        # for node in licch.nodes.values():  FIXME needed ?
-        #     node.opt_t_s.zero_grad(set_to_none=True)
 
         # adding epsilon to scores
         with torch.no_grad():
@@ -448,47 +428,9 @@ def check_equilibrium_glob(epsilon, licch):
             licch.global_model -= eps
         return licch.global_model.grad * eps
 
-    # def _one_side_t_s(eps):
-    #     """ check t and s equilibrium """
-    #     # resetting gradients
-    #     licch.opt_gen.zero_grad(set_to_none=True)
-    #     for node in licch.nodes.values():
-    #         node.opt_t_s.zero_grad(set_to_none=True)
-    #     # adding epsilon to parameters
-    #     with torch.no_grad():
-    #         for node in licch.nodes.values():
-    #             node.t_par += eps
-    #             # node.s_par += eps
-    #     # computing gradients
-    #     s_loss, gen_loss, _ = loss_s_gen_reg(licch)
-    #     loss = s_loss + gen_loss
-    #     loss.backward()
-    #     t_derivs = eps * torch.tensor(
-    #         [t_par.grad for t_par in licch.all_nodes('t_par')]
-    #     )
-    #     # s_derivs = eps * torch.tensor(
-    #     #     [s_par.grad for s_par in licch.all_nodes('s_par')]
-    #     # )
-    #     # removing epsilon to parameters
-    #     with torch.no_grad():
-    #         for node in licch.nodes.values():
-    #             node.t_par -= eps
-    #             # node.s_par -= eps
-    #     return t_derivs, None  # , s_derivs
-
     # global scores
     derivs1 = _one_side_glob(epsilon)
     derivs2 = _one_side_glob(-epsilon)
     equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
-    # frac_glob = torch.count_nonzero(equilibrated) / nbvid
-
-    # # parameters
-    # derivs1_t, derivs1_s = _one_side_t_s(epsilon)
-    # derivs2_t, derivs2_s = _one_side_t_s(-epsilon)
-    # equilibrated_t = torch.logical_and(derivs1_t > 0, derivs2_t > 0)
-    # equilibrated_s = torch.logical_and(derivs1_s > 0, derivs2_s > 0)
-
-    # frac_t = torch.count_nonzero(equilibrated_t) / nbn
-    # frac_s = torch.count_nonzero(equilibrated_s) / nbn
 
     return equilibrated
