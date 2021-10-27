@@ -86,7 +86,7 @@ class Licchavi():
         self.criteria = crit  # criteria learnt by this Licchavi
         self.device = device  # device used (cpu/gpu)
 
-        self.opt = torch.optim.SGD  # optimizer
+        self.opt = torch.optim.Adam  # optimizer
 
         # defined in "hyperparameters.gin"
         self.lr_loc = lr_loc    # local learning rate (local scores)
@@ -102,7 +102,6 @@ class Licchavi():
         self.epsilon_loc = epsilon_loc
 
         # global training schedule
-        self.precision_glob = precision_glob
         self.epsilon_glob = epsilon_glob
 
         # global model initialization
@@ -197,7 +196,9 @@ class Licchavi():
         """
         loginf('Loading models')
         saved_data = torch.load(fullpath)
-        self.criteria, dic_old, gen_model_old, loc_models_old, stable_glob_old = saved_data
+        self.criteria, dic_old = saved_data[0], saved_data[1]
+        gen_model_old, loc_models_old = saved_data[2], saved_data[3]
+        stable_glob_old = saved_data[4]
         nb_new = self.nb_vids - len(dic_old)  # number of new videos
         # initialize scores for new videos
         self.global_model = expand_tens(gen_model_old, nb_new, self.device)
@@ -288,41 +289,6 @@ class Licchavi():
             node.opt.param_groups[0]['lr'] = self.lr_loc  # node optimizer
             # FIXME update lr_s, lr_t (not useful currently)
         self.opt_gen.param_groups[0]['lr'] = self.lr_glob
-
-    # @gin.configurable
-    # def _lr_schedule(
-    #         self, epoch,
-    #         # configured with gin in "hyperparameters.gin"
-    #         decay_rush=None, decay_fine=None,
-    #         precision=None, epsilon=None,
-    #         min_lr_fine=None, lr_rush_duration=None):
-    #     """ Changes learning rates in a (hopefully) smart way
-
-    #     epoch (int): current epoch
-    #     verb (int): verbosity level
-
-    #     Returns:
-    #         (bool): True for an early stopping
-    #     """
-
-    #     # phase 1  : rush (high lr to increase l2 norm fast)
-    #     if epoch <= lr_rush_duration:
-    #         self.lr_glob *= decay_rush
-    #         self.lr_loc *= decay_rush
-    #     # phase 2 : fine tuning (low lr), we monitor equilibrium
-    #     elif epoch % 2 == 0:
-    #         if self.lr_loc >= min_lr_fine / decay_fine:
-    #             self.lr_glob *= decay_fine
-    #             self.lr_loc *= decay_fine
-    #         frac_glob = check_equilibrium_glob(epsilon, self)
-    #         self._show(f'Global eq({epsilon}): {round(frac_glob, 3)}', 1)
-    #         if frac_glob > precision:
-    #             frac_loc = check_equilibrium_loc(epsilon, self)
-    #             self._show(f'Local eq({epsilon}): {round(frac_loc, 3)}', 1)
-    #             if frac_loc > precision:
-    #                 loginf('Early Stopping')
-    #                 return True
-    #     return False
 
     def _zero_opt(self):
         """ Sets gradients of all models """
@@ -438,7 +404,6 @@ class Licchavi():
             time_train_loc = time()
 
             for epoch in range(1, nb_epochs + 1):
-                # self._set_lr()  # FIXME design lr scheduling
                 reg_loss = self._do_epoch(epoch, nb_epochs, True, reg_loss)
             # checking & saving nodes convergence
             for node in self.nodes.values():
@@ -452,6 +417,8 @@ class Licchavi():
                 'End of local training\n'
                 f'Training time: {round(time() - time_train_loc, 2)}'
             )
+            nb_conv = sum(int(stable) for stable in self.all_nodes('stable'))
+            loginf(f'Convergence reached for {nb_conv}/{self.nb_nodes} nodes')
         return self._uncert_loc(compute_uncertainty)  # uncertainty if asked
 
     def train_glob(
@@ -480,8 +447,11 @@ class Licchavi():
 
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
         self.stable_glob = check_equilibrium_glob(self.epsilon_glob, self)
+
         loginf('End of global training\n'
                f'Training time: {round(time() - time_train_glob, 2)}')
+        nb_conv = torch.count_nonzero(self.stable_glob)
+        loginf(f'Convergence reached for {nb_conv}/{self.nb_vids} scores')
         return self._uncert_glob(compute_uncertainty)  # uncertainty if asked
 
     # ------------ to check for problems --------------------------

@@ -328,7 +328,7 @@ def test_ml_run():
 
 # ======= scores quality tests =============
 def _id_score_assert(vid, score, glob):
-    """ assert that the video with this -id has this -score """
+    """ assert that the video with this -vid has this -score """
     if glob[0] == vid:
         assert glob[2] == score
 
@@ -339,13 +339,13 @@ def _some_score_tests(glob_scores, loc_scores):
     for loc in loc_scores:
         assert loc[0] in [0, 1, 2, 3]
         nb_scores[loc[0]] += 1  # counting local scores
-    assert nb_scores == [6, 5, 2, 2]
+    assert nb_scores == [2, 5, 2, 2]
     for glob in glob_scores:
         _id_score_assert(107, 0, glob)
         _id_score_assert(108, 0, glob)
         _id_score_assert(109, 0, glob)
         _id_score_assert(110, 0, glob)
-        if glob[0] == 102:  # best rated video
+        if glob[0] == 104:  # best rated video
             best = glob[2]
         if glob[0] == 100:  # worst rated video
             worst = glob[2]
@@ -360,17 +360,16 @@ def _some_score_tests(glob_scores, loc_scores):
 def test_simple_train():
     """ test coherency of results for few epochs and very light data """
     comparison_data = [
-                        [1, 101, 102, "test", 100, 0],
-                        [2, 100, 101, "largely_recommended", 100, 0],
-                        [1, 104, 105, "test", 30, 0],
-                        [99, 100, 101, "largely_recommended", 100, 0],
-                        [2, 108, 107, "test", 10, 0],
-                        [0, 100, 102, "test", 70, 0],
-                        [0, 104, 105, "test", 70, 0],
-                        [0, 109, 110, "test", 50, 0],
-                        [2, 107, 108, "test", 10, 0],
                         [1, 100, 101, "test", 100, 0],
-                        [3, 200, 201, "test", 85, 0],
+                        [1, 101, 102, "test", 100, 0],
+                        [1, 102, 103, "test", 100, 0],
+                        [1, 103, 104, "test", 100, 0],
+
+                        [2, 200, 201, "test", 60, 0],
+
+                        [3, 300, 301, "test", 0, 0],
+
+                        [0, 400, 401, "test", 0, 0],
                         ]
     glob_scores, loc_scores = ml_run(
         comparison_data,
@@ -379,7 +378,7 @@ def test_simple_train():
         criterias=["test"],
         resume=False,
         save=True,  # FIXME change path
-        verb=-1
+        verb=1
     )[:2]
     _some_score_tests(glob_scores, loc_scores)
 
@@ -398,11 +397,13 @@ def test_simple_train():
 
     glob_scores, loc_scores = ml_run(
         comparison_data,
-        epochs_loc_res=2,
-        epochs_glob_res=2,
+        epochs_loc_res=50,
+        epochs_glob_res=50,
         criterias=["test"],
         resume=True,
         save=False,  # FIXME change path
         verb=-1
     )[:2]
     _some_score_tests(glob_scores, loc_scores)
+
+# TODO test adding some data in between

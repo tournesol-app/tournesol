@@ -2,7 +2,7 @@
 
 
 # ml_run parameters
-ml_run.resume = False  # wether to resume training or not
+ml_run.resume = True  # wether to resume training or not
 ml_run.compute_uncertainty = False  # wether to compute uncertainty or not
                                         # (takes time)
 ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
@@ -10,20 +10,20 @@ ml_run.device = 'cpu'  # device used for computations ("cpu" or "cuda")
 # LOCAL
 
 # Loss hyperparameters
-Licchavi.gamma = 0.1  # local regularisation term ponderation
+Licchavi.gamma = 1  # local regularisation term ponderation
 
 # Training hyperparameters
 Licchavi.lr_loc = 0.1  # learning rate of local models
 
 # Training schedule
 # if we resume training
-ml_run.epochs_loc_res = 10  # (max) number of local training epochs of the algorithm
+ml_run.epochs_loc_res = 40  # (max) number of local training epochs of the algorithm
 # if we train from scratch
-ml_run.epochs_loc_full = 60  # (max) number of local training epochs of the algorithm
+ml_run.epochs_loc_full = 100  # (max) number of local training epochs of the algorithm
 
 # Early stoppping
 Licchavi.precision_loc = 0.95
-Licchavi.epsilon_loc = 0.1
+Licchavi.epsilon_loc = 0.01
 
 # metrics
 Licchavi.metrics_loc = [
@@ -37,21 +37,20 @@ Licchavi.metrics_loc = [
 
 # Loss hyperparameters
 Licchavi.nu_par = 0.0005  # scaling parameter term ponderation
-Licchavi.w0_par = 0.001  # global regularisation term ponderation
+Licchavi.w0_par = 0.003  # global regularisation term ponderation
 
 # Training hyperparameters
-Licchavi.lr_t = 0.9  # learning rate of t individual parameters
-Licchavi.lr_s = 0.1  # learning rate of s individual parameters
-Licchavi.lr_glob = 1  # learning rate of general model
+Licchavi.lr_t = 0.01  # learning rate of t individual parameters
+Licchavi.lr_s = 0.01  # learning rate of s individual parameters
+Licchavi.lr_glob = 0.01  # learning rate of general model
 
 # Training schedule
 # if we resume training
-ml_run.epochs_glob_res = 10  # (max) number of global training epochs of the algorithm
+ml_run.epochs_glob_res = 40  # (max) number of global training epochs of the algorithm
 # if we train from scratch
-ml_run.epochs_glob_full = 60  # (max) number of global training epochs of the algorithm
+ml_run.epochs_glob_full = 200  # (max) number of global training epochs of the algorithm
 
 # Early stoppping
-Licchavi.precision_glob = 0.95
 Licchavi.epsilon_glob = 0.01
 
 # metrics

@@ -185,7 +185,7 @@ def uncert_stats(licch, loc_uncerts):
 def output_infos(licch, glob, loc, uncertainties):
     """ Prints and plots for dev mode """
     licch_stats(licch)
-    # scores_stats(glob[1])
-    # s_stats(licch)
+    scores_stats(glob[1])
+    s_stats(licch)
     if uncertainties[0] is not None:
         uncert_stats(licch, uncertainties[0])
