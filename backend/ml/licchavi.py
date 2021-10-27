@@ -104,12 +104,12 @@ class Licchavi():
         # global training schedule
         self.precision_glob = precision_glob
         self.epsilon_glob = epsilon_glob
-        self.equi_glob = 0  # FIXME
 
-        # models initialization
+        # global model initialization
         self.get_model = get_model  # fonction used to initialize models
         self.global_model = self.get_model(nb_vids, device)
         self.opt_gen = self.opt([self.global_model], lr=self.lr_glob)
+        self.stable_glob = torch.zeros(nb_vids, dtype=bool)
 
         # nodes initialization
         self.nb_nodes = 0  # FIXME (not needed?)
@@ -197,7 +197,7 @@ class Licchavi():
         """
         loginf('Loading models')
         saved_data = torch.load(fullpath)
-        self.criteria, dic_old, gen_model_old, loc_models_old = saved_data
+        self.criteria, dic_old, gen_model_old, loc_models_old, stable_glob_old = saved_data
         nb_new = self.nb_vids - len(dic_old)  # number of new videos
         # initialize scores for new videos
         self.global_model = expand_tens(gen_model_old, nb_new, self.device)
@@ -217,10 +217,17 @@ class Licchavi():
         }
         self._show(f"Total number of nodes : {self.nb_nodes}", 1)
 
-        # TODO bool tensor with True for all updated scores
-        # (ie sum of node.mask for all updated nodes)
-        # (useful for smart global training)
-
+        # updating 'self.stable_glob'
+        nb_vids_old = len(stable_glob_old)  # previous length
+        loc_updates = sum(
+            node.mask[:nb_vids_old] for node in self.nodes.values()
+            if not node.stable
+        )
+        if type(loc_updates) is int:  # to handle empty sum
+            loc_updates = torch.zeros(nb_vids_old, dtype=bool)
+        self.stable_glob[:nb_vids_old] = torch.logical_and(
+            torch.logical_not(loc_updates), stable_glob_old
+        )
         loginf('Models updated')
 
     def output_scores(self):
@@ -257,7 +264,8 @@ class Licchavi():
             self.criteria,
             self.vid_vidx,
             self.global_model.detach(),
-            local_data
+            local_data,
+            self.stable_glob
         )
         torch.save(saved_data, fullpath)
         loginf('Models saved')
@@ -315,12 +323,6 @@ class Licchavi():
     #                 loginf('Early Stopping')
     #                 return True
     #     return False
-
-    def _stop_glob(self):
-        """ global training scheduler """
-        if self.equi_glob >= self.precision_glob:
-            loginf('Early Stopping')
-            return True
 
     def _zero_opt(self):
         """ Sets gradients of all models """
@@ -446,16 +448,14 @@ class Licchavi():
                         epsilon=self.epsilon_loc, thresh=self.precision_loc
                     )
 
-            loginf('End of local training\n'
-                f'Training time: {round(time() - time_train_loc, 2)}')
-
-            # print(sum(int(stable) for stable in self.all_nodes('stable')))
-            # for stable in self.all_nodes('stable'):  # FIXME
-            #     print(stable)
+            loginf(
+                'End of local training\n'
+                f'Training time: {round(time() - time_train_loc, 2)}'
+            )
         return self._uncert_loc(compute_uncertainty)  # uncertainty if asked
 
     def train_glob(
-            self, nb_epochs=1, compute_uncertainty=False, check_freq=0):
+            self, nb_epochs=1, compute_uncertainty=False):
         """ training loop
 
         nb_epochs (int): (maximum) number of training epochs
@@ -474,21 +474,12 @@ class Licchavi():
         # global training loop
         loginf('Starting global training')
         time_train_glob = time()
-        print(check_equilibrium_glob(
-                    self.epsilon_glob, self
-                ))
         for epoch in range(1, nb_epochs + 1):
             # self._set_lr()  # FIXME design lr scheduling
             self._regul_s()
 
             reg_loss = self._do_epoch(epoch, nb_epochs, False, reg_loss)
-            if check_freq and epoch % check_freq == 0:
-                self.equi_glob = check_equilibrium_glob(
-                    self.epsilon_glob, self
-                )
-                # print(self.equi_glob)  # FIXME
-                if self._stop_glob():
-                    break
+        self.stable_glob = check_equilibrium_glob(self.epsilon_glob, self)
         loginf('End of global training\n'
                f'Training time: {round(time() - time_train_glob, 2)}')
         return self._uncert_glob(compute_uncertainty)  # uncertainty if asked

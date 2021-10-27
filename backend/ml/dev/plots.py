@@ -133,7 +133,6 @@ def plot_density(tens, title=None, path=None, name="hist.png"):
     tens (tensor): data of which we want repartition
     """
     arr = np.array(tens)
-    print(arr)
     _ = plt.hist(arr, density=False, label=title, bins=40)
     _legendize("Number", "Value")
     _title_save(title, path, name)

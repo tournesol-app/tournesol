@@ -424,24 +424,19 @@ def check_equilibrium_glob(epsilon, licch):
         licch (Licchavi()): licchavi object
 
     Returns:
-        (float): fraction of gloabl scores at equilibrium
-        (float): fraction of t parameters at equilibrium
-        (float): fraction of s parameters at equilibrium
+        (bool tensor): True for all global scores that converged
     """
-    nbvid = len(licch.vid_vidx)
-    # nbn = len(licch.nodes)
-    incr = _random_signs(epsilon, nbvid)
 
-    def _one_side_glob(increment):
+    def _one_side_glob(eps):
         """ increment (float tensor): coordinates are +/- epsilon """
         # resetting gradients
         licch.opt_gen.zero_grad(set_to_none=True)
-        for node in licch.nodes.values():
-            node.opt_t_s.zero_grad(set_to_none=True)
+        # for node in licch.nodes.values():  FIXME needed ?
+        #     node.opt_t_s.zero_grad(set_to_none=True)
 
         # adding epsilon to scores
         with torch.no_grad():
-            licch.global_model += increment
+            licch.global_model += eps
 
         # computing gradients
         _, gen_loss, reg_loss = loss_s_gen_reg(licch)
@@ -450,8 +445,8 @@ def check_equilibrium_glob(epsilon, licch):
 
         # removing epsilon from scores
         with torch.no_grad():
-            licch.global_model -= increment
-        return licch.global_model.grad * increment
+            licch.global_model -= eps
+        return licch.global_model.grad * eps
 
     # def _one_side_t_s(eps):
     #     """ check t and s equilibrium """
@@ -482,10 +477,10 @@ def check_equilibrium_glob(epsilon, licch):
     #     return t_derivs, None  # , s_derivs
 
     # global scores
-    derivs1 = _one_side_glob(incr)
-    derivs2 = _one_side_glob(-incr)
+    derivs1 = _one_side_glob(epsilon)
+    derivs2 = _one_side_glob(-epsilon)
     equilibrated = torch.logical_and(derivs1 > 0, derivs2 > 0)
-    frac_glob = torch.count_nonzero(equilibrated) / nbvid
+    # frac_glob = torch.count_nonzero(equilibrated) / nbvid
 
     # # parameters
     # derivs1_t, derivs1_s = _one_side_t_s(epsilon)
@@ -496,4 +491,4 @@ def check_equilibrium_glob(epsilon, licch):
     # frac_t = torch.count_nonzero(equilibrated_t) / nbn
     # frac_s = torch.count_nonzero(equilibrated_s) / nbn
 
-    return frac_glob.item()  # , frac_t.item(), frac_s.item()
+    return equilibrated

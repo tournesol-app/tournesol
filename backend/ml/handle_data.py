@@ -127,7 +127,7 @@ def distribute_data_from_save(arr, fullpath, device):
     - dictionnary of {vID: video idx}
     """
     logging.info('Preparing data from save')
-    _, dic_old, _, _ = torch.load(fullpath)  # loading previous data
+    _, dic_old, _, _, _ = torch.load(fullpath)  # loading previous data
 
     arr = sort_by_first(arr)  # sorting by user IDs
     user_ids, first_of_each = np.unique(arr[:, 0], return_index=True)

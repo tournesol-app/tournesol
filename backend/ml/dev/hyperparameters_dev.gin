@@ -41,7 +41,7 @@ Licchavi.w0_par = 0.001  # global regularisation term ponderation
 
 # Training hyperparameters
 Licchavi.lr_t = 0.9  # learning rate of t individual parameters
-Licchavi.lr_s = 1  # learning rate of s individual parameters
+Licchavi.lr_s = 0.1  # learning rate of s individual parameters
 Licchavi.lr_glob = 1  # learning rate of general model
 
 # Training schedule
@@ -52,7 +52,7 @@ ml_run.epochs_glob_full = 60  # (max) number of global training epochs of the al
 
 # Early stoppping
 Licchavi.precision_glob = 0.95
-Licchavi.epsilon_glob = 0.1
+Licchavi.epsilon_glob = 0.01
 
 # metrics
 Licchavi.metrics_glob = [

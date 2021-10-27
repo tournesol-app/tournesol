@@ -86,7 +86,7 @@ def print_t(licch):
         licch.nodes.keys()
     )]
     tens = torch.tensor(l_t)
-    disp_one_by_line(l_t)
+    # disp_one_by_line(l_t)
     tens = tens[:, 0]
     print("mean of t: ", round_loss(torch.mean(tens), 2))
     print(
@@ -104,7 +104,7 @@ def print_s(licch):
         licch.nodes.keys()
     )]
     tens = torch.tensor(l_s)
-    disp_one_by_line(l_s)
+    # disp_one_by_line(l_s)
     tens = tens[:, 0]
     print("mean of s: ", round_loss(torch.mean(tens), 2))
     print(
@@ -185,7 +185,7 @@ def uncert_stats(licch, loc_uncerts):
 def output_infos(licch, glob, loc, uncertainties):
     """ Prints and plots for dev mode """
     licch_stats(licch)
-    scores_stats(glob[1])
-    s_stats(licch)
+    # scores_stats(glob[1])
+    # s_stats(licch)
     if uncertainties[0] is not None:
         uncert_stats(licch, uncertainties[0])
