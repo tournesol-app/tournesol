@@ -23,3 +23,16 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('sql', (query) =>
+  cy.exec(`docker exec tournesol-dev-db psql -U tournesol -c "${query}"`)
+)
+
+Cypress.Commands.add('getEmailLink', () =>
+  cy.exec('docker logs tournesol-dev-api --since=1m 2>&1 | grep "http://127.0.0.1:3000" | tail -1')
+    .then(result => {
+      const link = result.stdout;
+      // Cypress requires to visit a single origin, and the email contains 127.0.0.1 instead of localhost.
+      return link.replace('127.0.0.1', 'localhost');
+    })
+)
