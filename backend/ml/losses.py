@@ -115,7 +115,7 @@ def get_fit_loss(model, s_par, a_batch, b_batch, r_batch, gamma=1, vidx=-1):
     else:  # loss for all comparisons
         diff = predict(a_batch, model) - predict(b_batch, model)
         loss = _approx_bbt_loss(diff, r_batch)
-    return loss + (gamma / 2) * torch.sum(diff**2)  # local regularization
+    return loss + (gamma / 2) * torch.sum(model**2)  # local regularization
 
 
 def get_s_loss(s_par):
