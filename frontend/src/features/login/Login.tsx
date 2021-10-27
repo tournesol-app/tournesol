@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { TextField, Grid, Button } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
+import { TextField, Grid, Button, Link, Box } from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   getTokenAsync,
@@ -112,6 +113,11 @@ const Login = () => {
           </Grid>
           {loginError && <Alert>❌ {loginError.message}</Alert>}
         </form>
+        <Box my={2}>
+          <Link component={RouterLink} to="/forgot" color="secondary">
+            Forgot your password?
+          </Link>
+        </Box>
       </ContentBox>
     </>
   );

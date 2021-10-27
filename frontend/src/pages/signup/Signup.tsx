@@ -36,7 +36,7 @@ const Signup = () => {
       );
       setSuccessEmailAddress(createdUser.email || '');
     } catch (err) {
-      setApiError(err);
+      setApiError(err as ApiError);
     }
     setIsLoading(false);
   };

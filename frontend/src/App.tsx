@@ -1,9 +1,7 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
-import { useAppSelector } from './app/hooks';
-import { isLoggedIn } from 'src/features/login/loginUtils';
-import { selectLogin } from 'src/features/login/loginSlice';
+import { useLoginState } from './hooks';
 import HomePage from './pages/home/Home';
 import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
@@ -18,9 +16,11 @@ import ComparisonPage from './pages/comparisons/Comparison';
 import { PrivateRoute } from './features/login/PrivateRoute';
 import VideoCardPage from './pages/videos/VideoCard';
 import VideoRecommendationPage from './pages/videos/VideoRecommendation';
+import ForgotPassword from './pages/login/ForgotPassword';
+import ResetPassword from './pages/login/ResetPassword';
 
 function App() {
-  const loginState = useAppSelector(selectLogin);
+  const { isLoggedIn } = useLoginState();
 
   return (
     <Frame>
@@ -34,12 +34,12 @@ function App() {
         <Route path="/login">
           <LoginPage />
         </Route>
-        <Route path="/settings/profile">
+        <PrivateRoute path="/settings/profile">
           <SettingsProfilePage />
-        </Route>
-        <Route path="/settings/account">
+        </PrivateRoute>
+        <PrivateRoute path="/settings/account">
           <SettingsAccountPage />
-        </Route>
+        </PrivateRoute>
         <PrivateRoute path="/comparisons">
           <ComparisonListPage />
         </PrivateRoute>
@@ -53,10 +53,20 @@ function App() {
           <DonatePage />
         </Route>
         <Route path="/signup">
-          {isLoggedIn(loginState) ? <Redirect to="/" /> : <SignupPage />}
+          {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
         </Route>
         <Route path="/verify-user">
           <VerifyUser />
+        </Route>
+        <Route path="/forgot">
+          {isLoggedIn ? (
+            <Redirect to="/settings/account" />
+          ) : (
+            <ForgotPassword />
+          )}
+        </Route>
+        <Route path="/reset-password">
+          <ResetPassword />
         </Route>
         <Route path="/">
           <HomePage />

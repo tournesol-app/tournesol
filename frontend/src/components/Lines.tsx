@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Lines = ({ messages }: { messages: string[] }) => {
+const Lines = ({ messages }: { messages?: string[] }) => {
   if (!messages || messages.length === 0) {
     return null;
   }

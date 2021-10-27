@@ -1,6 +1,7 @@
+import React from 'react';
 import { ProviderContext, VariantType } from 'notistack';
 
-const contactAdministrator = (
+export const contactAdministrator = (
   display: ProviderContext['enqueueSnackbar'],
   variant: VariantType,
   message?: string
@@ -14,4 +15,16 @@ const contactAdministrator = (
   display(message, { variant: variant });
 };
 
-export { contactAdministrator };
+export const showErrorAlert = (
+  enqueueSnackbar: ProviderContext['enqueueSnackbar'],
+  message: React.ReactNode
+) => {
+  enqueueSnackbar(message, {
+    anchorOrigin: {
+      vertical: 'bottom',
+      horizontal: 'center',
+    },
+    autoHideDuration: 5000,
+    variant: 'error',
+  });
+};

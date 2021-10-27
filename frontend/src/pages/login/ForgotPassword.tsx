@@ -1,0 +1,99 @@
+import React, { useState } from 'react';
+import { Grid, Button, Typography } from '@material-ui/core';
+import {
+  ContentHeader,
+  ContentBox,
+  Lines,
+  FormTextField,
+} from 'src/components';
+import { showErrorAlert } from 'src/utils/notifications';
+import {
+  AccountsService,
+  ApiError,
+  DefaultSendResetPasswordLink,
+} from 'src/services/openapi';
+import { useSnackbar } from 'notistack';
+
+const ResetSuccess = () => (
+  <Typography>
+    Done!
+    <br />
+    If this user exists, an email will be sent with a reset link.
+  </Typography>
+);
+
+const ForgotPassword = () => {
+  const { enqueueSnackbar } = useSnackbar();
+  const [apiError, setApiError] = useState<ApiError | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    const formData = new FormData(event.currentTarget);
+    const formObject: unknown = Object.fromEntries(formData);
+    try {
+      await AccountsService.accountsSendResetPasswordLinkCreate(
+        formObject as DefaultSendResetPasswordLink
+      );
+      setSuccess(true);
+    } catch (err) {
+      setApiError(err as ApiError);
+      if (err?.status !== 400) {
+        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formError = apiError?.status === 400 ? apiError.body : null;
+
+  return (
+    <>
+      <ContentHeader title="Reset your password" />
+      <ContentBox maxWidth={success ? 'sm' : 'xs'}>
+        {success ? (
+          <ResetSuccess />
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3} direction="column" alignItems="stretch">
+              {formError && (
+                <Grid item xs={12}>
+                  <Typography color="error">
+                    Failed to send the reset link.
+                    <br />
+                    {formError?.non_field_errors && (
+                      <Lines messages={formError.non_field_errors} />
+                    )}
+                  </Typography>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <FormTextField
+                  name="login"
+                  label="Username"
+                  formError={formError}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  color="secondary"
+                  fullWidth
+                  variant="contained"
+                  disabled={isLoading}
+                >
+                  Send reset email
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        )}
+      </ContentBox>
+    </>
+  );
+};
+
+export default ForgotPassword;

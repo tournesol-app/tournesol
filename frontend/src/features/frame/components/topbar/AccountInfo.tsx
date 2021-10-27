@@ -5,10 +5,7 @@ import { Button, Grid } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { AccountCircle } from '@material-ui/icons';
 
-import { useAppSelector, useAppDispatch } from 'src/app/hooks';
-import { selectLogin, logout } from 'src/features/login/loginSlice';
-import { LoginState } from 'src/features/login/LoginState.model';
-import { isLoggedIn } from 'src/features/login/loginUtils';
+import { useLoginState } from 'src/hooks';
 
 const useStyles = makeStyles({
   AccountInfo: {
@@ -33,15 +30,15 @@ const useStyles = makeStyles({
   },
 });
 
-const LoggedInActions = ({ loginState }: { loginState: LoginState }) => {
+const LoggedInActions = () => {
   const classes = useStyles();
-  const dispatch = useAppDispatch();
+  const { logout, loginState } = useLoginState();
 
   return (
     <>
       <Button
         variant="outlined"
-        onClick={() => dispatch(logout())}
+        onClick={logout}
         className={classes.HeaderButton}
       >
         Logout
@@ -85,16 +82,12 @@ const LoggedOutActions = () => {
 };
 
 const AccountInfo = () => {
-  const loginState = useAppSelector(selectLogin);
+  const { isLoggedIn } = useLoginState();
   const classes = useStyles();
 
   return (
     <Grid item md={4} xs={8} className={classes.AccountInfo}>
-      {isLoggedIn(loginState) ? (
-        <LoggedInActions loginState={loginState} />
-      ) : (
-        <LoggedOutActions />
-      )}
+      {isLoggedIn ? <LoggedInActions /> : <LoggedOutActions />}
     </Grid>
   );
 };
