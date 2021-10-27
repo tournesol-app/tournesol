@@ -308,7 +308,7 @@
     version: "{{item.version}}"
   with_items:
     - name: grafana-image-renderer
-      version: "2.0.0" # downgraded from 3.2.1 because of https://github.com/grafana/grafana-image-renderer/issues/297
+      version: "3.2.1"
   when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
   notify: Enable and restart Grafana
 
