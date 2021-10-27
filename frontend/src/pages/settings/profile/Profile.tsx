@@ -2,12 +2,12 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 import ContentHeader from '../../../components/ContentHeader';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import BuildIcon from '@material-ui/icons/Build';
+import ProfileForm from '../../../features/settings/profile/ProfileForm';
 
 function ProfilePage() {
   return (
@@ -36,11 +36,7 @@ function ProfilePage() {
               </Box>
             </Grid>
             <Grid item md={6}>
-              <Typography paragraph>
-                <BuildIcon color="primary" />
-                &nbsp;&nbsp;Page under construction...&nbsp;&nbsp;
-                <BuildIcon color="primary" />
-              </Typography>
+              <ProfileForm />
             </Grid>
           </Grid>
         </Grid>
