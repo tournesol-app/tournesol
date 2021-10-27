@@ -47,7 +47,10 @@ describe('Account creation', () => {
     cy.get('input[name=email]').type('user@example.com');
     cy.get('input[name=username]').type('test-user');
     cy.get('input[name=password]').type('tourne50l');
-    cy.get('input[name=password_confirm]').type('tourne50l').type('{enter}');
+    cy.get('input[name=password_confirm]').type('tourne50l');
+    // Agree to the privacy policy
+    cy.get('form input[type=checkbox]').check();
+    cy.contains('Sign up').click();
     cy.contains('verification link').should('be.visible');
     cy.getEmailLink().then(verificationLink => cy.visit(verificationLink));
     cy.contains('account is now verified').should('be.visible');
