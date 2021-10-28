@@ -58,7 +58,7 @@ urlpatterns = [
         name="ratings_me_list",
     ),
     path(
-        "users/me/contributor_ratings/<str:youtube_video_id>/",
+        "users/me/contributor_ratings/<str:video_id>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
     ),

@@ -3,33 +3,33 @@ API endpoint to manipulate contributor ratings
 """
 
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics
-from rest_framework.response import Response
+from rest_framework import generics
 
-from ..models import ContributorRating, Video
+from ..models import ContributorRating
 from ..serializers import ContributorRatingSerializer
 
 
-class ContributorRatingDetail(generics.GenericAPIView):
+class ContributorRatingDetail(generics.RetrieveAPIView):
+    """
+    Retrieve the logged in user's ratings for a specific video
+    (computed automatically from the user's comparisons)
+    """
+    serializer_class = ContributorRatingSerializer
 
-    def get(self, request, youtube_video_id):
-        """
-        Get video details and criteria that are related to it
-        """
-        video = get_object_or_404(Video, video_id=youtube_video_id)
-        ratings = get_object_or_404(ContributorRating, video=video, user=request.user)
-        ratings_serialized = ContributorRatingSerializer(ratings)
-        return Response(ratings_serialized.data, status=status.HTTP_200_OK)
+    def get_object(self):
+        return get_object_or_404(
+            ContributorRating,
+            video__video_id=self.kwargs["video_id"],
+            user=self.request.user
+        )
 
 
 class ContributorRatingList(generics.ListAPIView):
-
-    queryset = ContributorRating.objects.all()
+    """
+    Retrieve the logged in user's ratings per video
+    (computed automatically from the user's comparisons)
+    """
     serializer_class = ContributorRatingSerializer
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(user=self.request.user)
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        return ContributorRating.objects.filter(user=self.request.user)

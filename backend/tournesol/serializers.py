@@ -8,8 +8,10 @@ from django.db.models import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.serializers import Serializer, ModelSerializer
 
-from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater, VideoCriteriaScore
-from .models import ContributorRating
+from .models import (
+    Comparison, ComparisonCriteriaScore, Video, VideoRateLater,
+    VideoCriteriaScore, ContributorRating, ContributorRatingCriteriaScore
+)
 
 
 class VideoSerializer(ModelSerializer):
@@ -54,7 +56,7 @@ class VideoReadOnlySerializer(Serializer):
 class VideoCriteriaScoreSerializer(ModelSerializer):
     class Meta:
         model = VideoCriteriaScore
-        fields = "__all__"
+        fields = ["criteria", "score", "uncertainty", "quantile"]
 
 
 class VideoSerializerWithCriteria(ModelSerializer):
@@ -221,8 +223,15 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         return instance
 
 
+class ContributorCriteriaScore(ModelSerializer):
+    class Meta:
+        model = ContributorRatingCriteriaScore
+        fields = ["criteria", "score", "uncertainty"]
+
+
 class ContributorRatingSerializer(ModelSerializer):
     video = VideoSerializer()
+    criteria_scores = ContributorCriteriaScore(many=True)
 
     class Meta:
         model = ContributorRating

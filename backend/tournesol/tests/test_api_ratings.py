@@ -3,7 +3,7 @@ from rest_framework import request, status
 from rest_framework.test import APIClient
 
 from core.models import User
-from tournesol.models import Video, ContributorRating
+from tournesol.models import Video, ContributorRating, ContributorRatingCriteriaScore
 
 
 class RatingApi(TestCase):
@@ -57,7 +57,14 @@ class RatingApi(TestCase):
         user = User.objects.get(username=self._user)
         factory.force_authenticate(user=user)
         video = Video.objects.create(video_id='6QDWbKnwRcc')
-        ContributorRating.objects.create(video=video, user=user)
+        rating = ContributorRating.objects.create(video=video, user=user)
+        ContributorRatingCriteriaScore.objects.create(
+            contributor_rating=rating,
+            criteria="test-criteria",
+            score=1,
+            uncertainty=2,
+        )
+
         response = factory.get(
             "/users/me/contributor_ratings/6QDWbKnwRcc/",
             args=[user.username],
@@ -65,6 +72,12 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["video"]["video_id"], '6QDWbKnwRcc')
+        self.assertEqual(response.data["is_public"], False)
+        self.assertEqual(response.data["criteria_scores"], [{
+            "criteria": "test-criteria",
+            "score": 1,
+            "uncertainty": 2,
+        }])
 
     def test_list(self):
         factory = APIClient()
