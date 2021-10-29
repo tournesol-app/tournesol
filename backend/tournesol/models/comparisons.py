@@ -26,8 +26,6 @@ from core.utils.models import (
 )
 from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
 
-from .video import Video
-
 
 class Comparison(models.Model, WithFeatures):
     """Rating given by a user."""
@@ -47,13 +45,13 @@ class Comparison(models.Model, WithFeatures):
         help_text="Contributor (user) who left the rating",
     )
     video_1 = models.ForeignKey(
-        Video,
+        'Video',
         on_delete=models.CASCADE,
         related_name="comparisons_video_1",
         help_text="Left video to compare",
     )
     video_2 = models.ForeignKey(
-        Video,
+        'Video',
         on_delete=models.CASCADE,
         related_name="comparisons_video_2",
         help_text="Right video to compare",
@@ -163,6 +161,7 @@ class Comparison(models.Model, WithFeatures):
     @staticmethod
     def sample_rated_video(username):
         """Get an already rated video, or a random one."""
+        from .video import Video
 
         # annotation: number of comparisons for the video by username
         annotate_num_comparisons = Count(
@@ -258,14 +257,14 @@ class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
     )
 
     video_left = models.ForeignKey(
-        to=Video,
+        to='Video',
         on_delete=models.CASCADE,
         help_text="Left video",
         related_name="slider_left",
         null=True,
     )
     video_right = models.ForeignKey(
-        to=Video,
+        to='Video',
         on_delete=models.CASCADE,
         help_text="Right video",
         related_name="slider_right",
@@ -315,6 +314,7 @@ class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
             self.video_right,
             self.datetime,
         )
+
 
 # adding dynamic fields
 WithDynamicFields.create_all()

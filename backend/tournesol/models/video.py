@@ -9,7 +9,6 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils import timezone
 
 import computed_property
 from languages.languages import LANGUAGES
@@ -26,6 +25,8 @@ from core.utils.models import (
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX, TS_CONSTANTS
 from tournesol.utils import VideoSearchEngine
 from settings.settings import CRITERIAS
+
+from .comparisons import Comparison
 
 
 class Video(models.Model, WithFeatures, WithEmbedding):
