@@ -5,11 +5,20 @@ import Lines from './Lines';
 interface Props {
   name: string;
   label: string;
-  formError: Record<string, string[]>;
+  formError?: Record<string, string[]>;
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   [propName: string]: unknown;
 }
 
-const FormTextField = ({ name, label, formError, ...rest }: Props) => {
+const FormTextField = ({
+  name,
+  label,
+  formError,
+  onChange,
+  ...rest
+}: Props) => {
   const errorMessages = formError?.[name];
   const [showError, setShowError] = useState(false);
 
@@ -28,7 +37,12 @@ const FormTextField = ({ name, label, formError, ...rest }: Props) => {
       variant="outlined"
       error={showError}
       helperText={showError && <Lines messages={errorMessages} />}
-      onChange={() => setShowError(false)}
+      onChange={(e) => {
+        setShowError(false);
+        if (onChange) {
+          onChange(e);
+        }
+      }}
       {...rest}
     />
   );

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
 import { Typography } from '@material-ui/core';
 import { AccountsService, VerifyRegistration } from 'src/services/openapi';
 import { ContentHeader, ContentBox } from 'src/components';
+import { useSearchParams } from 'src/hooks';
 
 function VerifyUser() {
-  const location = useLocation();
+  const searchParams = useSearchParams();
   const [verificationState, setVerificationState] = useState<
     'loading' | 'fail' | 'success'
   >('loading');
@@ -32,7 +32,7 @@ function VerifyUser() {
       }
     };
     verifyParams();
-  }, [location.search]);
+  }, [searchParams]);
 
   return (
     <>
