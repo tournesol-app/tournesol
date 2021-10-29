@@ -2,8 +2,6 @@
 Models for Tournesol's main functions related to contributor's ratings
 """
 
-from languages.languages import LANGUAGES
-
 from django.db import models
 
 from core.models import User
