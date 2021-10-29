@@ -20,3 +20,16 @@ export const allCriteriaNames: string[][] = [
 
 export const allCriteriaNamesObj: { [c: string]: string } =
   Object.fromEntries(allCriteriaNames);
+
+export const optionalCriterias: { [c: string]: boolean } = {
+  largely_recommended: false,
+  reliability: true,
+  pedagogy: true,
+  importance: true,
+  layman_friendly: true,
+  entertaining_relaxing: true,
+  engaging: true,
+  diversity_inclusion: true,
+  better_habits: true,
+  backfire_risk: true,
+};
