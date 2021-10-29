@@ -19,6 +19,8 @@ export const changePassword = (
   });
 };
 
-export const deleteAccountAPI = () => {
-  return UsersService.usersMeDestroy();
+export const deleteAccountAPI = (access_token: string) => {
+  OpenAPI.TOKEN = access_token;
+  OpenAPI.BASE = api_url ?? '';
+  UsersService.usersMeDestroy();
 };

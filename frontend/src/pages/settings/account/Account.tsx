@@ -8,6 +8,8 @@ import ContentHeader from '../../../components/ContentHeader';
 import PasswordForm from '../../../features/settings/account/PasswordForm';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
 import { deleteAccountAPI } from 'src/features/account/accountAPI';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { selectLogin, logout } from '../../../features/login/loginSlice';
 
 const useStyles = makeStyles(() => ({
   warning: {
@@ -16,10 +18,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 function AccountPage() {
+  const dispatch = useAppDispatch();
+  const token = useAppSelector(selectLogin);
+  const access_token = token.access_token ? token.access_token : '';
   const classes = useStyles();
   const history = useHistory();
   const deleteAccount = async () => {
-    await deleteAccountAPI();
+    await deleteAccountAPI(access_token);
+    dispatch(logout());
     history.push('/');
   };
 
