@@ -31,8 +31,8 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         search = request.query_params.get('search')
         if search:
-            queryset = queryset.filter(Q(name__icontains=search) |
-                                       Q(description__icontains=search))
+            queryset = queryset.filter(Q(name__search=search) |
+                                       Q(description__search=search))
 
         date_lte = request.query_params.get('date_lte') \
             if request.query_params.get('date_lte') else ""
