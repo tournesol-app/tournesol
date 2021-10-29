@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
 
 import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
 import { allCriteriaNames, optionalCriterias } from 'src/utils/constants';
@@ -95,17 +96,18 @@ const ComparisonComponent = ({
     setComparison({ ...comparison }); // this is only here to refresh the state
   };
 
-  const handleCollapseCriterias = () => {
-    allCriteriaNames.forEach(([criteria]) => {
-      if (criteriaValues[criteria] === undefined) {
-        handleSliderChange(criteria, 0);
-      }
-    });
-  };
-
   const showOptionalCriterias = comparison.criteria_scores.some(
     ({ criteria }) => optionalCriterias[criteria]
   );
+
+  const handleCollapseCriterias = () => {
+    const optionalCriteriaNames = allCriteriaNames.filter(
+      ([criteria]) => optionalCriterias[criteria]
+    );
+    optionalCriteriaNames.forEach(([criteria]) =>
+      handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
+    );
+  };
 
   if (videoA == videoB) {
     return (
@@ -133,16 +135,16 @@ const ComparisonComponent = ({
               handleSliderChange={handleSliderChange}
             />
           ))}
-        {!showOptionalCriterias && (
-          <Button
-            onClick={handleCollapseCriterias}
-            startIcon={<ExpandMore />}
-            size="small"
-            style={{ marginBottom: 8 }}
-          >
-            Optional Rating Criteria
-          </Button>
-        )}
+        <Button
+          onClick={handleCollapseCriterias}
+          startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
+          size="small"
+          style={{ marginBottom: 8, color: showOptionalCriterias ? 'red' : '' }}
+        >
+          {showOptionalCriterias
+            ? 'Remove optional criterias'
+            : 'Add optional criteria'}
+        </Button>
         <Collapse
           in={showOptionalCriterias}
           timeout="auto"
