@@ -12,9 +12,6 @@ function VerifyUser() {
 
   useEffect(() => {
     const verifyParams = async () => {
-      const searchParams = Object.fromEntries(
-        new URLSearchParams(location.search)
-      );
       const { user_id, timestamp, signature } = searchParams;
       const verificationData: VerifyRegistration = {
         user_id,
@@ -32,7 +29,12 @@ function VerifyUser() {
       }
     };
     verifyParams();
-  }, [searchParams]);
+
+    // Let's make sure the verification runs only once,
+    // even if searchParams are re-evaluated.
+    //
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
