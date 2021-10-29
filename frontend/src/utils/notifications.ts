@@ -20,11 +20,6 @@ export const showErrorAlert = (
   message: React.ReactNode
 ) => {
   enqueueSnackbar(message, {
-    anchorOrigin: {
-      vertical: 'bottom',
-      horizontal: 'center',
-    },
-    autoHideDuration: 5000,
     variant: 'error',
   });
 };

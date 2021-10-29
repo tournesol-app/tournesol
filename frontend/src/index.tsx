@@ -23,7 +23,14 @@ ReactDOM.render(
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme}>
           <BrowserRouter>
-            <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
+            <SnackbarProvider
+              maxSnack={6}
+              autoHideDuration={6000}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+            >
               <App />
             </SnackbarProvider>
           </BrowserRouter>

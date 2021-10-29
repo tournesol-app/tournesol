@@ -1,27 +1,21 @@
 import React, { useState } from 'react';
-import { Typography, Grid, Button } from '@material-ui/core';
+import { useHistory } from 'react-router';
+import { useSnackbar } from 'notistack';
+import { Grid, Button } from '@material-ui/core';
 import {
   AccountsService,
   ResetPassword as ResetPasswordData,
 } from 'src/services/openapi';
 import { ContentHeader, ContentBox, FormTextField } from 'src/components';
-import { useSnackbar } from 'notistack';
 import { useLoginState, useSearchParams } from 'src/hooks';
 import { showErrorAlert } from 'src/utils/notifications';
 
-const ResetSuccess = () => (
-  <Typography>
-    Your password has been modified successfully. You can now log in to
-    Tournesol.
-  </Typography>
-);
-
 function ResetPassword() {
+  const history = useHistory();
   const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
   const [formError, setFormError] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { logout } = useLoginState();
@@ -39,8 +33,12 @@ function ResetPassword() {
 
     try {
       await AccountsService.accountsResetPasswordCreate(resetPasswordData);
-      setSuccess(true);
       logout();
+      enqueueSnackbar(
+        'Your password has been modified successfully. You can now log in to Tournesol.',
+        { variant: 'success' }
+      );
+      history.replace('/login');
     } catch (err) {
       if (err?.status !== 400) {
         showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
@@ -60,49 +58,45 @@ function ResetPassword() {
   return (
     <>
       <ContentHeader title="Reset your password" />
-      <ContentBox maxWidth={success ? 'sm' : 'xs'}>
-        {success ? (
-          <ResetSuccess />
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3} direction="column" alignItems="stretch">
-              <Grid item xs={12}>
-                <FormTextField
-                  type="password"
-                  name="password"
-                  label="New password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  formError={formError}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormTextField
-                  type="password"
-                  name="confirm_password"
-                  label="Confirm your new password"
-                  error={confirmPassword !== '' && !confirmPasswordIsValid}
-                  helperText={
-                    confirmPassword !== '' && !confirmPasswordIsValid
-                      ? 'Passwords do not match'
-                      : undefined
-                  }
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  color="secondary"
-                  fullWidth
-                  variant="contained"
-                  disabled={isLoading || !confirmPasswordIsValid}
-                >
-                  Reset password
-                </Button>
-              </Grid>
+      <ContentBox maxWidth="xs">
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3} direction="column" alignItems="stretch">
+            <Grid item xs={12}>
+              <FormTextField
+                type="password"
+                name="password"
+                label="New password"
+                onChange={(e) => setPassword(e.target.value)}
+                formError={formError}
+              />
             </Grid>
-          </form>
-        )}
+            <Grid item xs={12}>
+              <FormTextField
+                type="password"
+                name="confirm_password"
+                label="Confirm your new password"
+                error={confirmPassword !== '' && !confirmPasswordIsValid}
+                helperText={
+                  confirmPassword !== '' && !confirmPasswordIsValid
+                    ? 'Passwords do not match'
+                    : undefined
+                }
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                color="secondary"
+                fullWidth
+                variant="contained"
+                disabled={isLoading || !confirmPasswordIsValid}
+              >
+                Reset password
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
       </ContentBox>
     </>
   );
