@@ -25,6 +25,7 @@ jobs:
         with:
           working-directory: tests
           wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
         
       - uses: actions/upload-artifact@v1
         if: failure()
