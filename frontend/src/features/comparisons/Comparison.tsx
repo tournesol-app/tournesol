@@ -143,7 +143,7 @@ const ComparisonComponent = ({
         >
           {showOptionalCriterias
             ? 'Remove optional criterias'
-            : 'Add optional criteria'}
+            : 'Add optional criterias'}
         </Button>
         <Collapse
           in={showOptionalCriterias}
