@@ -16,6 +16,7 @@ class ComparisonApiMixin:
     """
     A mixin providing several common tools to all comparison API views.
     """
+
     def comparison_already_exists(self, request):
         """Return True if the comparison already exist, False instead."""
         try:
@@ -94,10 +95,10 @@ class ComparisonListApi(
         response = self.create(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
             # Update video_a and video_b ratings
-            video_id_a = request.data['video_a']['video_id']
-            video_id_b = request.data['video_b']['video_id']
-            set_origin_video_n_ratings(video_id_a, request.user)
-            set_origin_video_n_ratings(video_id_b, request.user)
+            video_a = Video.objects.get(video_id=request.data['video_a']['video_id'])
+            video_a.update_n_ratings()
+            video_b = Video.objects.get(video_id=request.data['video_b']['video_id'])
+            video_b.update_n_ratings()
         return response
 
 
@@ -105,6 +106,7 @@ class ComparisonListOnlyApi(ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user.
     """
+
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user."""
         return self.list(request, *args, **kwargs)
@@ -188,14 +190,3 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     def delete(self, request, *args, **kwargs):
         """Delete a comparison made by the logged user."""
         return self.destroy(request, *args, **kwargs)
-
-def set_origin_video_n_ratings(video_request, user):
-    video = Video.objects.get(video_id=video_request)
-    if video.rating_n_ratings == 0:
-        video.rating_n_ratings = Comparison.objects.filter(Q(video_1=video) | Q(video_2=video)).count()
-        video.rating_n_contributors = Comparison.objects.filter(Q(video_1=video) | Q(video_2=video)).distinct("user").count()
-    else:
-        video.rating_n_ratings +=1
-        if Comparison.objects.filter(Q(video_1=video) | Q(video_2=video), user=user).count() == 1:
-            video.rating_n_contributors += 1
-    video.save()

@@ -135,6 +135,15 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         help_text="Total number of certified contributors who rated the video",
     )
 
+    def update_n_ratings(self):
+        self.rating_n_ratings = Comparison.objects.filter(
+            Q(video_1=self) | Q(video_2=self)
+        ).count()
+        self.rating_n_contributors = Comparison.objects.filter(
+            Q(video_1=self) | Q(video_2=self)
+        ).distinct("user").count()
+        self.save()
+
     COMPUTED_PROPERTIES = [
         "n_public_contributors",
         "n_private_contributors",
