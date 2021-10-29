@@ -30,7 +30,14 @@ class VideoSerializer(ModelSerializer):
             "rating_n_contributors",
             ]
         read_only_fields = [
-            "name", "description", "publication_date", "views", "uploader", "language"
+            "name",
+            "description",
+            "publication_date",
+            "views",
+            "uploader",
+            "language",
+            "rating_n_ratings",
+            "rating_n_contributors",
         ]
 
 
