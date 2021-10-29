@@ -54,3 +54,23 @@ class UserRegistrationTest(TestCase):
             "email": "me@example.com",
         }, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_register_with_existing_email(self):
+        client = APIClient()
+        response = client.post("/accounts/register/", data={
+            "username": "test-user",
+            "password": "a_safe_password",
+            "password_confirm": "a_safe_password",
+            "email": "me@example.com",
+        }, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = client.post("/accounts/register/", data={
+            "username": "test-user2",
+            "password": "a_safe_password",
+            "password_confirm": "a_safe_password",
+            "email": "me@example.com",
+        }, format="json")
+        self.assertContains(response,
+            text="email address already exists",
+            status_code=400
+        )
