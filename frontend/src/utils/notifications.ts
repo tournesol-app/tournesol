@@ -1,6 +1,10 @@
 import React from 'react';
 import { ProviderContext, VariantType } from 'notistack';
 
+/**
+ * Display an alert variant, followed by an invitation to reach an
+ * administrator.
+ */
 export const contactAdministrator = (
   display: ProviderContext['enqueueSnackbar'],
   variant: VariantType,
@@ -13,6 +17,15 @@ export const contactAdministrator = (
     variant: 'warning',
   });
   display(message, { variant: variant });
+};
+
+export const showSuccessAlert = (
+  enqueueSnackbar: ProviderContext['enqueueSnackbar'],
+  message: React.ReactNode
+) => {
+  enqueueSnackbar(message, {
+    variant: 'success',
+  });
 };
 
 export const showErrorAlert = (

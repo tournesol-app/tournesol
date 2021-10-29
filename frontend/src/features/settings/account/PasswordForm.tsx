@@ -9,17 +9,24 @@ import { useSnackbar } from 'notistack';
 import { useAppSelector } from '../../../app/hooks';
 import { changePassword } from '../../account/accountAPI';
 import { selectLogin } from '../../login/loginSlice';
-import { contactAdministrator } from '../../../utils/notifications';
+import {
+  contactAdministrator,
+  showErrorAlert,
+  showSuccessAlert,
+} from '../../../utils/notifications';
 
 const PasswordForm = () => {
   const token = useAppSelector(selectLogin);
   const access_token = token.access_token ? token.access_token : '';
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
-  const { enqueueSnackbar } = useSnackbar();
+  const passwordConfirmMatches =
+    password !== '' && password === passwordConfirm;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -34,9 +41,7 @@ const PasswordForm = () => {
     ).catch((reason: { body: { [k: string]: string[] } }) => {
       if (reason && 'body' in reason) {
         const newErrorMessages = Object.values(reason['body']).flat();
-        newErrorMessages.map((msg) =>
-          enqueueSnackbar(msg, { variant: 'error' })
-        );
+        newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
       } else {
         contactAdministrator(
           enqueueSnackbar,
@@ -49,11 +54,9 @@ const PasswordForm = () => {
     // handle success and malformed success
     if (response) {
       if ('detail' in response) {
-        enqueueSnackbar(response['detail'], { variant: 'success' });
+        showSuccessAlert(enqueueSnackbar, response['detail']);
       } else {
-        enqueueSnackbar('Password changed successfully', {
-          variant: 'success',
-        });
+        showSuccessAlert(enqueueSnackbar, 'Password changed successfully');
       }
 
       setOldPassword('');
@@ -107,6 +110,12 @@ const PasswordForm = () => {
             type="password"
             variant="outlined"
             value={passwordConfirm}
+            helperText={
+              passwordConfirm !== '' && !passwordConfirmMatches
+                ? 'Passwords do not match'
+                : undefined
+            }
+            error={passwordConfirm !== '' && !passwordConfirmMatches}
             onChange={(event) => setPasswordConfirm(event.target.value)}
             inputProps={{ 'data-testid': 'password_confirm' }}
           />
