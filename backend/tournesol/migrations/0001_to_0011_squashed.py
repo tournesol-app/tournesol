@@ -10,10 +10,48 @@ import django.db.models.expressions
 import uuid
 
 
-# Functions from the following migrations need manual copying.
-# Move them and any dependencies into this file, then update the
-# RunPython operations to refer to the local versions:
-# tournesol.migrations.0005_add_criteria_score_models
+def fill_scores_from_old_models(apps, schema_editor):
+    Video = apps.get_model("tournesol", "Video")
+    VideoCriteriaScore = apps.get_model("tournesol", "VideoCriteriaScore")
+    ContributorRating = apps.get_model("tournesol", "ContributorRating")
+    ContributorRatingCriteriaScore = apps.get_model("tournesol", "ContributorRatingCriteriaScore")
+    Comparison = apps.get_model("tournesol", "Comparison")
+    ComparisonCriteriaScore = apps.get_model("tournesol", "ComparisonCriteriaScore")
+
+    VideoCriteriaScore.objects.bulk_create([
+        VideoCriteriaScore(
+            video=video,
+            criteria=criteria,
+            score=getattr(video, criteria),
+            uncertainty=getattr(video, f"{criteria}_uncertainty"),
+            quantile=getattr(video, f"{criteria}_quantile", 1.0),
+        )
+        for video in Video.objects.all()
+        for criteria in CRITERIAS
+    ])
+
+    ContributorRatingCriteriaScore.objects.bulk_create([
+        ContributorRatingCriteriaScore(
+            rating=rating,
+            criteria=criteria,
+            score=getattr(rating, criteria),
+            uncertainty=getattr(rating, f"{criteria}_uncertainty"),
+        )
+        for rating in ContributorRating.objects.all()
+        for criteria in CRITERIAS
+    ])
+
+    ComparisonCriteriaScore.objects.bulk_create([
+        ComparisonCriteriaScore(
+            comparison=comparison,
+            criteria=criteria,
+            score=getattr(comparison, criteria),
+            weight=getattr(comparison, f"{criteria}_weight"),
+        )
+        for comparison in Comparison.objects.all()
+        for criteria in CRITERIAS
+        if getattr(comparison, criteria, None) is not None
+    ])
 
 class Migration(migrations.Migration):
 
@@ -687,7 +725,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.RunPython(
-            code=tournesol.migrations.0005_add_criteria_score_models.fill_scores_from_old_models,
+            code=fill_scores_from_old_models,
         ),
         migrations.RemoveField(
             model_name='comparison',
