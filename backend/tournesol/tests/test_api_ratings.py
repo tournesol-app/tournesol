@@ -1,5 +1,5 @@
 from django.test import TestCase
-from rest_framework import request, status
+from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
@@ -12,7 +12,7 @@ class RatingApi(TestCase):
 
     """
     _user = "user_with_one_video"
-    _other_user= "random_user"
+    _other_user = "random_user"
 
     def setUp(self):
         user1 = User.objects.create(username=self._user)
@@ -21,7 +21,7 @@ class RatingApi(TestCase):
         ContributorRating.objects.create(video=video1, user=user1)
         ContributorRating.objects.create(video=video1, user=user2)
 
-    def test_not_login(self):
+    def test_anonymous_cant_list(self):
         factory = APIClient()
         response = factory.get(
             "/users/me/contributor_ratings/",
@@ -29,7 +29,19 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_try_to_create(self):
+    def test_authenticated_can_list(self):
+        factory = APIClient()
+        user = User.objects.get(username=self._user)
+        factory.force_authenticate(user=user)
+        response = factory.get(
+            "/users/me/contributor_ratings/",
+            args=[user.username],
+            format="json"
+        )
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_authenticated_cant_create(self):
         factory = APIClient()
         user = User.objects.get(username=self._user)
         factory.force_authenticate(user=user)
@@ -41,7 +53,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_video_not_exists(self):
+    def test_authenticated_fetch_non_existing_video(self):
         factory = APIClient()
         user = User.objects.get(username=self._user)
         factory.force_authenticate(user=user)
@@ -52,7 +64,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_video_exists(self):
+    def test_authenticated_fetch_existing_video(self):
         factory = APIClient()
         user = User.objects.get(username=self._user)
         factory.force_authenticate(user=user)
@@ -78,15 +90,3 @@ class RatingApi(TestCase):
             "score": 1,
             "uncertainty": 2,
         }])
-
-    def test_list(self):
-        factory = APIClient()
-        user = User.objects.get(username=self._user)
-        factory.force_authenticate(user=user)
-        response = factory.get(
-            "/users/me/contributor_ratings/",
-            args=[user.username],
-            format="json"
-        )
-        self.assertEqual(response.data["count"], 1)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
