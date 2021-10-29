@@ -37,7 +37,7 @@ describe('Rate later list', () => {
 
 describe('Account creation', () => {
   before(() => {
-    cy.sql("DELETE FROM core_user where username = 'test-user'");
+    cy.sql("DELETE FROM core_user where username = 'test-register'");
   })
 
   it('can create account', () => {
@@ -45,7 +45,7 @@ describe('Account creation', () => {
     cy.contains('Join us').click();
     cy.url().should('contain', '/signup');
     cy.get('input[name=email]').type('user@example.com');
-    cy.get('input[name=username]').type('test-user');
+    cy.get('input[name=username]').type('test-register');
     cy.get('input[name=password]').type('tourne50l');
     cy.get('input[name=password_confirm]').type('tourne50l');
     // Agree to the privacy policy
@@ -54,5 +54,30 @@ describe('Account creation', () => {
     cy.contains('verification link').should('be.visible');
     cy.getEmailLink().then(verificationLink => cy.visit(verificationLink));
     cy.contains('account is now verified').should('be.visible');
+    cy.contains('Verification failed').should('not.exist');
+  })
+})
+
+describe('Password reset flow', () => {
+  before(() => {
+    cy.recreateUser("test-pwreset", "test@example.com", "forgottenPassword");
+  })
+
+  it('can reset password', () => {
+    cy.visit('/login');
+    cy.contains('Forgot').click();
+    cy.url().should('contain', '/forgot');
+    cy.get('input[name=login]').type('test-pwreset').type('{enter}');
+    cy.contains('email will be sent').should('be.visible');
+    cy.getEmailLink().then(resetLink => cy.visit(resetLink));
+    cy.contains('New password').should('be.visible');
+    cy.get('input[name=password]').type('tournesol-new-password');
+    cy.get('input[name=confirm_password]').type('tournesol-new-password').type('{enter}');
+    cy.contains('password has been modified').should('be.visible');
+    cy.url().should('contain', '/login');
+    // Login with the new password
+    cy.get('input[name=username]').type('test-pwreset');
+    cy.get('input[name=password]').type('tournesol-new-password').type('{enter}');
+    cy.contains('a[role=button]', 'test-pwreset').should('be.visible');
   })
 })

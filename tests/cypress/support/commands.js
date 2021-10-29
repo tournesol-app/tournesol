@@ -29,10 +29,14 @@ Cypress.Commands.add('sql', (query) =>
 )
 
 Cypress.Commands.add('getEmailLink', () =>
-  cy.exec('docker logs tournesol-dev-api --since=1m 2>&1 | grep "http://127.0.0.1:3000" | tail -1')
-    .then(result => {
-      const link = result.stdout;
-      // Cypress requires to visit a single origin, and the email contains 127.0.0.1 instead of localhost.
-      return link.replace('127.0.0.1', 'localhost');
-    })
+  cy.exec('docker logs tournesol-dev-api --since=1m 2>&1 | grep "http://localhost:3000" | tail -1')
+    .then(result => result.stdout)
+)
+
+Cypress.Commands.add('recreateUser', (username, email, password) =>
+  cy.exec(`docker exec tournesol-dev-api python manage.py shell --command="
+from core.models import User
+User.objects.filter(username='${username}').delete()
+User.objects.create_user(username='${username}', email='${email}', password='${password}')
+  "`)
 )
