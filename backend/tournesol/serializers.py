@@ -8,7 +8,10 @@ from django.db.models import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.serializers import Serializer, ModelSerializer
 
-from .models import Comparison, ComparisonCriteriaScore, Video, VideoRateLater, VideoCriteriaScore
+from .models import (
+    Comparison, ComparisonCriteriaScore, Video, VideoRateLater,
+    VideoCriteriaScore, ContributorRating, ContributorRatingCriteriaScore
+)
 
 
 class VideoSerializer(ModelSerializer):
@@ -53,7 +56,7 @@ class VideoReadOnlySerializer(Serializer):
 class VideoCriteriaScoreSerializer(ModelSerializer):
     class Meta:
         model = VideoCriteriaScore
-        fields = "__all__"
+        fields = ["criteria", "score", "uncertainty", "quantile"]
 
 
 class VideoSerializerWithCriteria(ModelSerializer):
@@ -174,7 +177,10 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         Also add `video_a` and `video_b` fields to make the representation
         consistent across all comparison serializers.
         """
-        ret = super(ComparisonUpdateSerializer, self).to_representation(instance)
+        ret = super(
+            ComparisonUpdateSerializer,
+            self
+        ).to_representation(instance)
 
         video_1_repr = VideoReadOnlySerializer().to_representation(instance.video_1)
         video_2_repr = VideoReadOnlySerializer().to_representation(instance.video_2)
@@ -215,3 +221,18 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
             instance.criteria_scores.create(**criteria_score)
 
         return instance
+
+
+class ContributorCriteriaScore(ModelSerializer):
+    class Meta:
+        model = ContributorRatingCriteriaScore
+        fields = ["criteria", "score", "uncertainty"]
+
+
+class ContributorRatingSerializer(ModelSerializer):
+    video = VideoSerializer()
+    criteria_scores = ContributorCriteriaScore(many=True)
+
+    class Meta:
+        model = ContributorRating
+        fields = ["video", "is_public", "criteria_scores"]

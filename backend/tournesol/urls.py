@@ -11,6 +11,7 @@ from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListOnlyApi
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 from .views.user import CurrentUserView
+from .views.ratings import ContributorRatingList, ContributorRatingDetail
 
 
 router = routers.DefaultRouter()
@@ -49,5 +50,16 @@ urlpatterns = [
         "users/me/video_rate_later/<str:video_id>/",
         VideoRateLaterDetail.as_view(),
         name="video_rate_later_detail",
+    ),
+    # Ratings API
+    path(
+        "users/me/contributor_ratings/",
+        ContributorRatingList.as_view(),
+        name="ratings_me_list",
+    ),
+    path(
+        "users/me/contributor_ratings/<str:video_id>/",
+        ContributorRatingDetail.as_view(),
+        name="ratings_me_detail",
     ),
 ]
