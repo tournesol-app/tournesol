@@ -80,6 +80,7 @@
     - Yarn build
     - Generate Client from OpenAPI Specification
     - Copy frontend files
+    - Notify frontend upgrade
 
 - name: Copy Frontend Configuration
   template:
