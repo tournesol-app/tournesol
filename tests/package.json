@@ -2,6 +2,7 @@
   "name": "tournesol-e2e-tests",
   "version": "0.1.0",
   "devDependencies": {
+    "@cypress/skip-test": "^2.6.1",
     "cypress": "^8.6.0",
     "typescript": "^4.4.4"
   }
