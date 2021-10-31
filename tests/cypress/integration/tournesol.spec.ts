@@ -54,6 +54,8 @@ describe('Account creation', () => {
     cy.contains('verification link').should('be.visible');
     cy.getEmailLink().then(verificationLink => cy.visit(verificationLink));
     cy.contains('account is now verified').should('be.visible');
+    // Ensure that no other verification request is executed.
+    cy.wait(500);
     cy.contains('Verification failed').should('not.exist');
   })
 })
