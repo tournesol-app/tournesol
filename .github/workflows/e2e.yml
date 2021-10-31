@@ -23,7 +23,7 @@ jobs:
 
       - uses: cypress-io/github-action@v2
         with:
-          browser: chrome
+          command: yarn run cypress run --browser chrome --headed
           working-directory: tests
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
