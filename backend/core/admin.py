@@ -38,7 +38,7 @@ class UserAdmin(DjangoUserAdmin):
 
         # For existing user, show all fields from our custom User model that
         # are not already present on the page, in a separate fieldsets.
-        existing_fields = flatten_fieldsets(fieldsets)
+        existing_fields = set(flatten_fieldsets(fieldsets))
         return fieldsets + (
             ('Other fields', {
                 'classes': ('collapse',),
