@@ -30,6 +30,12 @@ class DegreeAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     ordering = ['-date_joined']
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
 
     def get_fieldsets(self, request, obj) -> List[Tuple]:
         fieldsets = super().get_fieldsets(request, obj=obj)
