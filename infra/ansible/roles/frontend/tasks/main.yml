@@ -67,7 +67,8 @@
 
 - name: Copy React application repository
   copy:
-    src: "{{playbook_dir}}/../../frontend/"
+    src: "/home/git/tournesol/frontend/"
+    remote_src: yes
     dest: /home/react/tournesol-frontend
     force: yes
     owner: react

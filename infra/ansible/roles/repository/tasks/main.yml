@@ -1,0 +1,20 @@
+- name: Create git user
+  user:
+    name: git
+    system: yes
+    create_home: yes
+
+- name: Create remote_tmp directory for git user
+  file:
+    path: /home/git/.ansible/tmp
+    state: directory
+    owner: git
+    group: git
+
+- name: Checkout repository
+  git:
+    repo: 'https://github.com/tournesol-app/tournesol.git'
+    dest: /home/git/tournesol
+    version: "{{git_reference}}"
+  become: yes
+  become_user: git

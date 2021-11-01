@@ -71,12 +71,13 @@
 
 - name: Copy Django application repository
   copy:
-    src: "{{playbook_dir}}/../../backend/"
+    src: "/home/git/tournesol/backend/"
+    remote_src: yes
     dest: /srv/tournesol-backend
     force: yes
     owner: gunicorn
     group: gunicorn
-    mode: u=rw,g=r,o=r
+    mode: preserve
     directory_mode: u=rwx,g=rx,o=rx
   become: yes
   notify:
