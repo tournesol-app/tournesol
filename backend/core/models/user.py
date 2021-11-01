@@ -3,9 +3,12 @@ Defines Tournesol's User model and user preferences
 """
 
 from django.db import models
-from django.db.models import Q, CheckConstraint
+from django.db.models import Q, CheckConstraint, F, Func, Value
+from django.db.models.expressions import OuterRef, Exists
+from django.db.models.functions import Lower
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models.query import QuerySet
 from django_countries import countries
 
 from settings.settings import MAX_VALUE, CRITERIAS, CRITERIAS_DICT
@@ -181,21 +184,46 @@ class User(AbstractUser):
         """Preferences for this user."""
         return UserPreference.objects.get(user=self)
 
-    @property
-    def is_certified(self):
-        """Check if the user's email is certified. See #152"""
-        any_accepted = VerifiableEmail.objects.filter(
-            user=self, is_verified=True, domain_fk__status=EmailDomain.STATUS_ACCEPTED
+    # @property
+    # def is_certified(self):
+    #     """Check if the user's email is certified. See #152"""
+    #     any_accepted = VerifiableEmail.objects.filter(
+    #         user=self, is_verified=True, domain_fk__status=EmailDomain.STATUS_ACCEPTED
+    #     )
+    #     return True if any_accepted else False
+
+    # @property
+    # def is_domain_rejected(self):
+    #     """Check if the user's email is certified. See #152"""
+    #     any_rejected = VerifiableEmail.objects.filter(
+    #         user=self, is_verified=True, domain_fk__status=EmailDomain.STATUS_REJECTED
+    #     ).count()
+    #     return True if any_rejected else False
+
+    @classmethod
+    def trusted_users(cls) -> QuerySet["User"]:
+        accepted_domain = EmailDomain.objects.filter(
+            domain=OuterRef("user_email_domain"), status=EmailDomain.STATUS_ACCEPTED
         )
-        return True if any_accepted else False
+        return (
+            cls.objects.alias(
+                # user_email_domain is extracted from user.email, with leading '@'
+                user_email_domain=Lower(
+                    Func(
+                        F("email"),
+                        Value(r"(.*)(@.*$)"),
+                        Value(r"\2"),
+                        function="regexp_replace",
+                    )
+                )
+            )
+            .alias(is_trusted=Exists(accepted_domain))
+            .filter(is_trusted=True)
+        )
 
     @property
-    def is_domain_rejected(self):
-        """Check if the user's email is certified. See #152"""
-        any_rejected = VerifiableEmail.objects.filter(
-            user=self, is_verified=True, domain_fk__status=EmailDomain.STATUS_REJECTED
-        ).count()
-        return True if any_rejected else False
+    def is_trusted(self):
+        return User.trusted_users().filter(pk=self.pk).exists()
 
 
 class UserPreference(models.Model, WithFeatures, WithDynamicFields):
