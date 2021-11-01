@@ -67,9 +67,24 @@ class ExpertiseKeywordAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.action(description='Mark selected domains as accepted')
+def make_accepted(modeladmin, request, queryset):
+    queryset.update(status=EmailDomain.STATUS_ACCEPTED)
+
+
+@admin.action(description='Mark selected domains as rejected')
+def make_rejected(modeladmin, request, queryset):
+    queryset.update(status=EmailDomain.STATUS_REJECTED)
+
+
 @admin.register(EmailDomain)
 class EmailDomainAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('domain', 'status')
+    list_editable = ('status',)
+    list_filter = ('status',)
+    actions = [make_accepted, make_rejected]
+    radio_fields = {"status": admin.HORIZONTAL}
+    search_fields = ['domain']
 
 
 @admin.register(VerifiableEmail)
