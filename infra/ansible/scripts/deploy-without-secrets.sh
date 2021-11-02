@@ -22,6 +22,8 @@ else
   SETUP_FILE="setup.yml"
 fi
 
+GIT_REFERENCE="$(git rev-parse HEAD)"
+
 ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   $CHECK \
   -e "django_database_password=$DJANGO_DATABASE_PASSWORD" \
@@ -47,3 +49,4 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "discord_alerting_webhook=${DISCORD_ALERTING_WEBHOOK:-""}" \
   -e "aws_access_key_id=${AWS_ACCESS_KEY_ID:-""}" \
   -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY:-""}" \
+  -e "git_reference=${GIT_REFERENCE}" \
