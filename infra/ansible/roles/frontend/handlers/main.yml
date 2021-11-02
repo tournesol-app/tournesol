@@ -25,6 +25,11 @@
   become: yes
   become_user: react
 
+- name: Delete frontend files
+  file:
+    path: /srv/tournesol-frontend
+    state: absent
+
 - name: Copy frontend files
   copy:
     src: /home/react/tournesol-frontend/build/
