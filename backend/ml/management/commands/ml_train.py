@@ -5,7 +5,7 @@ from tournesol.models.video import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     VideoCriteriaScore,
-    User
+    User,
 )
 from django.core.management.base import BaseCommand
 

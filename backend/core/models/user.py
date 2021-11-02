@@ -2,6 +2,7 @@
 Defines Tournesol's User model and user preferences
 """
 
+import logging
 from django.db import models
 from django.db.models import Q, CheckConstraint, F, Func, Value
 from django.db.models.expressions import OuterRef, Exists
@@ -16,6 +17,8 @@ from settings.settings import MAX_VALUE, CRITERIAS, CRITERIAS_DICT
 from ..utils.constants import featureIsEnabledByDeFault
 from ..utils.models import enum_list, WithDynamicFields, WithFeatures
 from ..utils.validators import validate_avatar
+
+logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
@@ -224,6 +227,27 @@ class User(AbstractUser):
     @property
     def is_trusted(self):
         return User.trusted_users().filter(pk=self.pk).exists()
+
+    def ensure_that_email_domain_exists(self):
+        if not self.email:
+            return
+        if '@' not in self.email:
+            # Should never happen, as the address format is validated by the field.
+            logger.warning(
+                'Cannot find email domain for user "%s" with email "%s".',
+                self.username, self.email
+            )
+            return
+        _, domain_part = self.email.rsplit('@', 1)
+        domain = f"@{domain_part}".lower()
+        EmailDomain.objects.get_or_create(domain=domain)
+
+    def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields')
+        # No need to create the EmailDomain, if email is unchanged
+        if update_fields is None or 'email' in update_fields:
+            self.ensure_that_email_domain_exists()
+        return super().save(*args, **kwargs)
 
 
 class UserPreference(models.Model, WithFeatures, WithDynamicFields):
