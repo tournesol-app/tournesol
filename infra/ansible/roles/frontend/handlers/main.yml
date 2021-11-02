@@ -30,6 +30,7 @@
     src: /home/react/tournesol-frontend/build/
     remote_src: yes
     dest: /srv/tournesol-frontend
+    force: yes
     owner: www-data
     group: www-data
 
