@@ -88,6 +88,7 @@ class VideoSerializerWithCriteria(ModelSerializer):
             "views",
             "uploader",
             "criteria_scores",
+            "language",
             "rating_n_ratings",
             "rating_n_contributors",
         ]

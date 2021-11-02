@@ -1,4 +1,4 @@
-import type { Video } from 'src/services/openapi';
+import { VideoSerializerWithCriteria as Video } from 'src/services/openapi/models/VideoSerializerWithCriteria';
 
 const api_url = process.env.REACT_APP_API_URL;
 const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
@@ -21,27 +21,7 @@ export const getVideoInformation = (
     .then((response) => {
       return response.json();
     })
-    .then((data) => {
-      const {
-        name,
-        publication_date,
-        uploader,
-        views,
-        description,
-        rating_n_ratings,
-        rating_n_contributors,
-      } = data;
-      callback({
-        name,
-        publication_date,
-        uploader,
-        views,
-        video_id: videoId,
-        description,
-        rating_n_ratings,
-        rating_n_contributors,
-      });
-    })
+    .then((data: Video) => callback(data))
     .catch((err) => {
       console.log(err);
       callback({
@@ -51,8 +31,10 @@ export const getVideoInformation = (
         views: 0,
         video_id: videoId,
         description: '',
+        language: null,
         rating_n_ratings: 0,
         rating_n_contributors: 0,
+        criteria_scores: [],
       });
     });
 };

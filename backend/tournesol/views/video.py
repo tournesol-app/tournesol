@@ -21,11 +21,12 @@ class VideoViewSet(viewsets.ModelViewSet):
     # Define `filterset_fields` for filtering?
     queryset = Video.objects.all()
 
-    # FIXME: `VideoSerializer` is not the only serializer used by these views.
-    # And the docs do not reflect the actual schema used in the response.
-    # Override `get_serializer_class` and use default pagination?
-    serializer_class = VideoSerializer
     permission_classes = []  # To unlock authentication required
+
+    def get_serializer_class(self):
+        if self.action in ("retrieve", "list"):
+            return VideoSerializerWithCriteria
+        return VideoSerializer
 
     def retrieve(self, request, pk):
         """
