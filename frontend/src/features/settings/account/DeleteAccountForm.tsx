@@ -41,10 +41,11 @@ const DeleteAccountForm = () => {
   return (
     <>
       <Typography>
-        Please type the word <b>{DELETE_ACCOUNT_KEYWORD}</b> in the text box
-        below to enable deleting your account
+        Please type the words <b>{DELETE_ACCOUNT_KEYWORD}</b> in the text box
+        below to enable deleting your account.
       </Typography>
       <TextField
+        size="small"
         variant="outlined"
         color="secondary"
         value={keyword}

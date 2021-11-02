@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { useLoginState } from './hooks';
@@ -19,8 +19,25 @@ import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 
+import { OpenAPI } from 'src/services/openapi';
+import { LoginState } from './features/login/LoginState.model';
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+const initializeOpenAPI = (loginState: LoginState) => {
+  OpenAPI.BASE = API_URL ?? '';
+  OpenAPI.TOKEN = async () => loginState.access_token ?? '';
+  return OpenAPI;
+};
+
 function App() {
-  const { isLoggedIn } = useLoginState();
+  const { isLoggedIn, loginState } = useLoginState();
+  // `useState` is used here to call initializeOpenAPI before first render
+  useState(() => initializeOpenAPI(loginState));
+
+  useEffect(() => {
+    initializeOpenAPI(loginState);
+  }, [loginState]);
 
   return (
     <Frame>
