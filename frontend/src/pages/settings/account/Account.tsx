@@ -44,7 +44,7 @@ function AccountPage() {
               <PasswordForm />
             </Grid>
             <Grid item>
-              <Box marginBottom={2} marginTop={2}>
+              <Box marginBottom={2} marginTop={8}>
                 <Typography variant="h4" className={classes.titleDanger}>
                   Delete account
                 </Typography>
