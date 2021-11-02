@@ -33,6 +33,13 @@ class IsTrustedFilter(admin.SimpleListFilter):
     parameter_name = 'is_trusted'
 
     def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
         return (
             ('1', 'Yes'),
             ('0', 'No'),
