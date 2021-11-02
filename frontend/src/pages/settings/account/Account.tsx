@@ -1,15 +1,20 @@
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Box, Divider, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import ContentHeader from '../../../components/ContentHeader';
 import PasswordForm from '../../../features/settings/account/PasswordForm';
+import DeleteAccountForm from '../../../features/settings/account/DeleteAccountForm';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
 
+const useStyles = makeStyles((theme) => ({
+  titleDanger: { color: theme.palette.error.main },
+}));
+
 function AccountPage() {
+  const classes = useStyles();
+
   return (
     <>
       <ContentHeader title="Settings > Account" />
@@ -37,6 +42,17 @@ function AccountPage() {
             </Grid>
             <Grid item md={4}>
               <PasswordForm />
+            </Grid>
+            <Grid item>
+              <Box marginBottom={2} marginTop={8}>
+                <Typography variant="h4" className={classes.titleDanger}>
+                  Delete account
+                </Typography>
+                <Divider />
+              </Box>
+              <Grid item md={4}>
+                <DeleteAccountForm />
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
