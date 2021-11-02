@@ -1,33 +1,19 @@
 import React from 'react';
 
-import { useHistory } from 'react-router-dom';
-import { Box, Divider, Grid, Typography, Button } from '@material-ui/core';
+import { Box, Divider, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ContentHeader from '../../../components/ContentHeader';
 import PasswordForm from '../../../features/settings/account/PasswordForm';
+import DeleteAccountForm from '../../../features/settings/account/DeleteAccountForm';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
-import { deleteAccountAPI } from 'src/features/account/accountAPI';
-import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { selectLogin, logout } from '../../../features/login/loginSlice';
 
-const useStyles = makeStyles(() => ({
-  warning: {
-    backgroundColor: 'red',
-  },
+const useStyles = makeStyles((theme) => ({
+  titleDanger: { color: theme.palette.error.main },
 }));
 
 function AccountPage() {
-  const dispatch = useAppDispatch();
-  const token = useAppSelector(selectLogin);
-  const access_token = token.access_token ? token.access_token : '';
   const classes = useStyles();
-  const history = useHistory();
-  const deleteAccount = async () => {
-    await deleteAccountAPI(access_token);
-    dispatch(logout());
-    history.push('/');
-  };
 
   return (
     <>
@@ -59,20 +45,13 @@ function AccountPage() {
             </Grid>
             <Grid item>
               <Box marginBottom={2} marginTop={2}>
-                <Typography variant="h4" color="secondary">
+                <Typography variant="h4" className={classes.titleDanger}>
                   Delete account
                 </Typography>
                 <Divider />
               </Box>
               <Grid item md={4}>
-                <Button
-                  className={classes.warning}
-                  onClick={deleteAccount}
-                  fullWidth
-                  variant="contained"
-                >
-                  Delete your account
-                </Button>
+                <DeleteAccountForm />
               </Grid>
             </Grid>
           </Grid>
