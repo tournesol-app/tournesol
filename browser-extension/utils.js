@@ -1,7 +1,10 @@
-let access_token;
-chrome.storage.local.get(['access_token'], (storage) => {
-  access_token = storage.access_token
-})
+async function getAccessToken() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['access_token'], items => {
+      resolve(items.access_token)
+    })
+  })
+}
 
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };
@@ -27,11 +30,12 @@ export const alertNotLoggedInOrError = () => {
   alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persist, please let us know by creating an issue on https://github.com/tournesol-app/tournesol-chrome-extension/')
 }
 
-export const fetchTournesolApi = (url, method, data, callback) => {
+export const fetchTournesolApi = async (url, method, data) => {
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   }
+  const access_token = await getAccessToken();
   if (access_token){
     headers['Authorization']= `Bearer ${access_token}`
   }
@@ -47,7 +51,7 @@ export const fetchTournesolApi = (url, method, data, callback) => {
   return fetch(`https://api.tournesol.app/${url}`, body).then(r => {
     if (r.status == 403 || r.status == 401) alertNotLoggedInOrError()
     return r.json()
-  }).then(callback).catch(console.error)
+  }).catch(console.error)
 }
 
 export const addRateLater = (video_id) => {
