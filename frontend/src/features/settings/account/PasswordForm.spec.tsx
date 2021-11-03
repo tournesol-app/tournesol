@@ -15,6 +15,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import PasswordForm from './PasswordForm';
 import { initialState } from '../../login/loginSlice';
 import { LoginState } from '../../login/LoginState.model';
+import { OpenAPI } from 'src/services/openapi';
 
 interface MockState {
   token: LoginState;
@@ -38,6 +39,7 @@ describe('change password feature', () => {
   > = configureStore([thunk]);
 
   const api_url = process.env.REACT_APP_API_URL;
+  OpenAPI.BASE = api_url;
 
   fetchMock
     .mock(
