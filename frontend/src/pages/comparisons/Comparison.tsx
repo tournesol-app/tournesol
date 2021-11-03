@@ -6,13 +6,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import { UsersService, Comparison, OpenAPI } from 'src/services/openapi';
+import { UsersService, Comparison } from 'src/services/openapi';
 import { ensureVideoExistOrCreate } from 'src/utils/video';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector from 'src/features/video_selector/VideoSelector';
-import { selectLogin } from 'src/features/login/loginSlice';
-
-import { useAppSelector } from '../../app/hooks';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -66,7 +63,6 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ComparisonPage = () => {
-  const token = useAppSelector(selectLogin);
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -89,7 +85,6 @@ const ComparisonPage = () => {
   useEffect(() => {
     setIsLoading(true);
     setInitialComparison(null);
-    OpenAPI.TOKEN = token?.access_token ?? '';
     if (videoA && videoB)
       UsersService.usersMeComparisonsRetrieve(videoA, videoB)
         .then((comparison) => {

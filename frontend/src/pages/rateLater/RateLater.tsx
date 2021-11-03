@@ -5,12 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
-import { useAppSelector } from 'src/app/hooks';
-import { selectLogin } from 'src/features/login/loginSlice';
-import {
-  fetchRateLaterList,
-  addToRateLaterList,
-} from 'src/features/rateLater/rateLaterAPI';
 import Pagination from 'src/components/Pagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import {
@@ -20,7 +14,7 @@ import {
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
 import { CompareNowAction } from 'src/utils/action';
-import { deleteFromRateLaterList } from 'src/features/rateLater/rateLaterAPI';
+import { UsersService } from 'src/services/openapi';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
 
 const RateLaterPage = () => {
   const classes = useStyles();
-  const loginState = useAppSelector(selectLogin);
   const [isLoading, setIsLoading] = React.useState(true);
   const [offset, setOffset] = React.useState(0);
   const [videoCount, setVideoCount] = React.useState<number | null>(null);
@@ -76,10 +69,10 @@ const RateLaterPage = () => {
     setIsLoading(true);
     let rateLaterResponse;
     try {
-      rateLaterResponse = await fetchRateLaterList(loginState, {
-        offset: offset,
-        limit: limit,
-      });
+      rateLaterResponse = await UsersService.usersMeVideoRateLaterList(
+        limit,
+        offset
+      );
     } catch (err) {
       console.error('Fetch rater list failed.', err);
       setIsLoading(false);
@@ -92,10 +85,10 @@ const RateLaterPage = () => {
       setRateLaterList(rateLaterResponse.results);
     }
     setIsLoading(false);
-  }, [offset, setVideoCount, setRateLaterList, loginState]);
+  }, [offset, setVideoCount, setRateLaterList]);
 
   const addToRateLater = async (video_id: string) => {
-    await addToRateLaterList(loginState, { video_id });
+    await UsersService.usersMeVideoRateLaterCreate({ video: { video_id } });
     await loadList();
   };
 
@@ -111,7 +104,7 @@ const RateLaterPage = () => {
         size="medium"
         color="secondary"
         onClick={async () => {
-          await deleteFromRateLaterList(loginState, { video_id });
+          await UsersService.usersMeVideoRateLaterDestroy(video_id);
           await loadList();
         }}
       >

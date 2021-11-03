@@ -1,9 +1,4 @@
-import {
-  OpenAPI,
-  VideoService,
-  UsersService,
-  Video,
-} from 'src/services/openapi';
+import { VideoService, UsersService } from 'src/services/openapi';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -67,7 +62,6 @@ async function retryRandomPick(
 }
 
 export async function getVideoFromRateLaterListForComparison(
-  username: string,
   otherVideo: string | null,
   currentVideo: string | null
 ): Promise<string | null> {
@@ -108,8 +102,6 @@ export async function getVideoFromPreviousComparisons(
 }
 
 export async function getVideoForComparison(
-  token: string | undefined,
-  username: string | undefined,
   otherVideo: string | null,
   currentVideo: string | null
 ): Promise<string | null> {
@@ -119,13 +111,9 @@ export async function getVideoForComparison(
   // 3. Uniformily random from Tournesol's top 100 videos (5% chance)
   // If option 1 is selected and fails, option 2 will be tried
   // If option 2 is selected and fails, option 3 will be tried
-  if (!token || !username) return null;
-  OpenAPI.TOKEN = token;
-
   const x = Math.random();
   if (x < 0.75) {
     const videoFromRateLaterList = await getVideoFromRateLaterListForComparison(
-      username,
       otherVideo,
       currentVideo
     );

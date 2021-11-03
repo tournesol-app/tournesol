@@ -6,19 +6,14 @@ import TextField from '@material-ui/core/TextField';
 
 import { useSnackbar } from 'notistack';
 
-import { useAppSelector } from '../../../app/hooks';
-import { changePassword } from '../../account/accountAPI';
-import { selectLogin } from '../../login/loginSlice';
 import {
   contactAdministrator,
   showErrorAlert,
   showSuccessAlert,
 } from '../../../utils/notifications';
+import { AccountsService } from 'src/services/openapi';
 
 const PasswordForm = () => {
-  const token = useAppSelector(selectLogin);
-  const access_token = token.access_token ? token.access_token : '';
-
   const { enqueueSnackbar } = useSnackbar();
 
   const [oldPassword, setOldPassword] = useState('');
@@ -31,25 +26,26 @@ const PasswordForm = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const response: void | Record<string, string> = await changePassword(
-      access_token,
-      oldPassword,
-      password,
-      passwordConfirm
-
-      // handle errors and unknown errors
-    ).catch((reason: { body: { [k: string]: string[] } }) => {
-      if (reason && 'body' in reason) {
-        const newErrorMessages = Object.values(reason['body']).flat();
-        newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
-      } else {
-        contactAdministrator(
-          enqueueSnackbar,
-          'error',
-          'Sorry, an error has occurred, cannot update password.'
-        );
-      }
-    });
+    const response: void | Record<string, string> =
+      await AccountsService.accountsChangePasswordCreate(
+        {
+          old_password: oldPassword,
+          password,
+          password_confirm: passwordConfirm,
+        }
+        // handle errors and unknown errors
+      ).catch((reason: { body: { [k: string]: string[] } }) => {
+        if (reason && 'body' in reason) {
+          const newErrorMessages = Object.values(reason['body']).flat();
+          newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
+        } else {
+          contactAdministrator(
+            enqueueSnackbar,
+            'error',
+            'Sorry, an error has occurred, cannot update password.'
+          );
+        }
+      });
 
     // handle success and malformed success
     if (response) {

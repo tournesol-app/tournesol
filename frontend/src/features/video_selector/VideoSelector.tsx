@@ -8,8 +8,6 @@ import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { extractVideoId } from 'src/utils/video';
-import { useAppSelector } from 'src/app/hooks';
-import { selectLogin } from 'src/features/login/loginSlice';
 import { getVideoForComparison } from 'src/utils/video';
 
 const useStyles = makeStyles(() => ({
@@ -42,7 +40,6 @@ const VideoSelector = ({
   otherVideo: string | null;
 }) => {
   const classes = useStyles();
-  const loginState = useAppSelector(selectLogin);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const videoId = extractVideoId(e.target.value);
@@ -54,8 +51,6 @@ const VideoSelector = ({
 
   const loadNewVideo = async () => {
     const newVideoId: string | null = await getVideoForComparison(
-      loginState.access_token,
-      loginState.username,
       otherVideo,
       videoId
     );
