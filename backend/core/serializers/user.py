@@ -1,7 +1,10 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 from rest_framework.serializers import EmailField
-from rest_registration.api.serializers import DefaultRegisterUserSerializer
+from rest_registration.api.serializers import (
+    DefaultRegisterUserSerializer,
+    DefaultRegisterEmailSerializer,
+)
 
 from core.models.user import User
 
@@ -24,3 +27,12 @@ class RegisterUserSerializer(DefaultRegisterUserSerializer):
         if value in RESERVED_USERNAMES:
             raise ValidationError(f'"{value}" is a reserved username')
         return value
+
+
+class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
+    email = EmailField(validators=[
+        UniqueValidator(
+            queryset=User.objects.all(),
+            message="A user with this email address already exists."
+        ),
+    ])

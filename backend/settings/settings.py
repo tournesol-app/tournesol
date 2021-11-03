@@ -82,6 +82,7 @@ REST_REGISTRATION = {
     'RESET_PASSWORD_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'reset-password/',
     'RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND': False, # to be set to True to prevent user enumeration
     'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': True,
+    'REGISTER_EMAIL_SERIALIZER_CLASS': 'core.serializers.user.RegisterEmailSerializer',
     'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
     'REGISTER_EMAIL_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'verify-email/',
     'REGISTER_SERIALIZER_CLASS': 'core.serializers.user.RegisterUserSerializer',
