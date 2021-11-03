@@ -228,7 +228,7 @@ class User(AbstractUser):
     def is_trusted(self):
         return User.trusted_users().filter(pk=self.pk).exists()
 
-    def ensure_that_email_domain_exists(self):
+    def ensure_email_domain_exists(self):
         if not self.email:
             return
         if '@' not in self.email:
@@ -246,7 +246,7 @@ class User(AbstractUser):
         update_fields = kwargs.get('update_fields')
         # No need to create the EmailDomain, if email is unchanged
         if update_fields is None or 'email' in update_fields:
-            self.ensure_that_email_domain_exists()
+            self.ensure_email_domain_exists()
         return super().save(*args, **kwargs)
 
 
