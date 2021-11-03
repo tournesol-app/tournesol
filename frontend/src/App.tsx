@@ -7,7 +7,7 @@ import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
 import SignupPage from './pages/signup/Signup';
-import VerifyUser from './pages/signup/VerifyUser';
+import VerifySignature from './pages/signup/Verify';
 import ComparisonListPage from './pages/comparisons/ComparisonList';
 import DonatePage from './pages/donate/Donate';
 import RateLaterPage from './pages/rateLater/RateLater';
@@ -73,7 +73,10 @@ function App() {
           {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
         </Route>
         <Route path="/verify-user">
-          <VerifyUser />
+          <VerifySignature verify="user" />
+        </Route>
+        <Route path="/verify-email">
+          <VerifySignature verify="email" />
         </Route>
         <Route path="/forgot">
           {isLoggedIn ? (
