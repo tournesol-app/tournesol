@@ -5,6 +5,7 @@ from tournesol.models.video import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     VideoCriteriaScore,
+    User,
 )
 from django.core.management.base import BaseCommand
 
@@ -66,7 +67,9 @@ def fetch_data():
             ccs.score,
             ccs.weight,
         ]
-        for ccs in ComparisonCriteriaScore.objects.all().prefetch_related("comparison")
+        for ccs in ComparisonCriteriaScore.objects
+            .filter(comparison__user__in=User.trusted_users())
+            .prefetch_related("comparison")
     ]
     return comparison_data
 

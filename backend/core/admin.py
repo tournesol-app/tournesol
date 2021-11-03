@@ -6,6 +6,7 @@ from typing import List, Tuple
 from django.contrib import admin
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.db.models.query import QuerySet
 from .models import (
     User,
     UserPreference,
@@ -27,9 +28,35 @@ class DegreeAdmin(admin.ModelAdmin):
     pass
 
 
+class IsTrustedFilter(admin.SimpleListFilter):
+    title = 'is trusted'
+    parameter_name = 'is_trusted'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return (
+            ('1', 'Yes'),
+            ('0', 'No'),
+        )
+
+    def queryset(self, request, queryset: QuerySet[User]):
+        if self.value() == '1':
+            return queryset.filter(pk__in=User.trusted_users())
+        if self.value() == '0':
+            return queryset.exclude(pk__in=User.trusted_users())
+
+
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     ordering = ['-date_joined']
+    list_filter = DjangoUserAdmin.list_filter + (IsTrustedFilter,)
+    list_display = DjangoUserAdmin.list_display + ('is_trusted',)
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -55,6 +82,10 @@ class UserAdmin(DjangoUserAdmin):
                 ),
             }),
         )
+
+    @admin.display(boolean=True)
+    def is_trusted(self, instance):
+        return instance.is_trusted
 
 
 @admin.register(Expertise)
