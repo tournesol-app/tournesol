@@ -74,3 +74,28 @@ class UserRegistrationTest(TestCase):
             text="email address already exists",
             status_code=400
         )
+
+class UserRegisterNewEmailTest(TestCase):
+    def setUp(self) -> None:
+        self.user1 = User.objects.create_user(username="user1", email="user1@example.com")
+        self.user2 = User.objects.create_user(username="user2", email="user2@example.com")
+        self.client = APIClient()
+        self.client.force_authenticate(self.user1)
+
+    def test_ask_for_email_update(self):
+        resp = self.client.post("/accounts/register-email/", data={
+            "email": "new.email@example.com"
+        }, format="json")
+        self.assertEqual(resp.status_code, 200)
+        self.user1.refresh_from_db()
+        # Email does not change before the verification link is clicked
+        self.assertEqual(self.user1.email, "user1@example.com")
+
+    def test_cannot_submit_existing_email(self):
+        resp = self.client.post("/accounts/register-email/", data={
+            "email": "user2@example.com"
+        }, format="json")
+        self.assertContains(resp,
+            text="email address already exists",
+            status_code=400
+        )
