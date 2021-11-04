@@ -46,6 +46,7 @@
     - Install Node
     - Yarn install
     - Yarn build
+    - Delete frontend files
     - Copy frontend files
     - Create Frontend OAuth application in Django database
 
@@ -80,6 +81,7 @@
     - Yarn install
     - Yarn build
     - Generate Client from OpenAPI Specification
+    - Delete frontend files
     - Copy frontend files
     - Notify frontend upgrade
 
