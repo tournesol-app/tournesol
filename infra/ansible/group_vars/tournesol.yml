@@ -21,3 +21,6 @@ admin_users:
 
   - name: oizo
     shell: "/usr/bin/zsh"
+
+  - name: aidan
+    shell: "/usr/bin/zsh"
