@@ -1,4 +1,9 @@
-import { OpenAPI, VideoService, UsersService } from 'src/services/openapi';
+import {
+  OpenAPI,
+  VideoService,
+  UsersService,
+  Video,
+} from 'src/services/openapi';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -16,7 +21,7 @@ export async function ensureVideoExistOrCreate(video_id: string) {
   // It's currently impractical to check if the API error
   // is blocking or not.
   try {
-    await VideoService.videoCreate({ video_id });
+    await VideoService.videoCreate({ video_id } as Video);
   } catch (err) {
     if (
       err.status === 400 &&

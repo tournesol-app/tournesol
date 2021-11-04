@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
-import type { Video, ComparisonCriteriaScore } from 'src/services/openapi';
+import type { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { ActionList } from 'src/utils/types';
 
 const useStyles = makeStyles(() => ({
@@ -120,15 +120,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type VideoWithCriteriaScore = Video & {
-  criteria_scores?: Array<ComparisonCriteriaScore>;
-};
-
 function VideoCard({
   video,
   actions,
 }: {
-  video: VideoWithCriteriaScore;
+  video: VideoSerializerWithCriteria;
   actions: ActionList;
 }) {
   const classes = useStyles();
@@ -214,13 +210,13 @@ function VideoCard({
               <span className={classes.nb_tournesol}>
                 {total_score.toFixed(0)}
               </span>
-              {video.rating_n && (
+              {video.rating_n_ratings && (
                 <>
                   <p className={classes.ratings}>
-                    {video.rating_n.ratings} Ratings by
+                    {video.rating_n_ratings} Ratings by
                   </p>
                   <p className={classes.contributors}>
-                    {video.rating_n.contributors} contributors
+                    {video.rating_n_contributors} contributors
                   </p>
                 </>
               )}

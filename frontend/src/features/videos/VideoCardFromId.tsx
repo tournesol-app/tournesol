@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import type { Video } from 'src/services/openapi';
+import { VideoSerializerWithCriteria as Video } from 'src/services/openapi/models/VideoSerializerWithCriteria';
 
 import VideoCard from './VideoCard';
 import { getVideoInformation } from './VideoApi';
@@ -13,7 +13,7 @@ function VideoCardFromId({
   videoId: string;
   actions: ActionList;
 }) {
-  const [video, setVideo] = useState({ video_id: '' });
+  const [video, setVideo] = useState({ video_id: '' } as Video);
 
   useEffect(() => {
     // Fetches the video metadata if they have not been fetched or `videoId` has changed
