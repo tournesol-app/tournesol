@@ -14,8 +14,8 @@ function ProfilePage() {
     <>
       <ContentHeader title="Settings > Profile" />
       <Box m={4}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={2}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={12} md={3}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -25,7 +25,7 @@ function ProfilePage() {
             alignItems="stretch"
             xs={12}
             sm={12}
-            md={10}
+            md={9}
           >
             <Grid item>
               <Box marginBottom={2}>
@@ -35,7 +35,7 @@ function ProfilePage() {
                 <Divider />
               </Box>
             </Grid>
-            <Grid item md={4}>
+            <Grid item md={6}>
               <Typography paragraph>
                 <BuildIcon color="primary" />
                 &nbsp;&nbsp;Page under construction...&nbsp;&nbsp;

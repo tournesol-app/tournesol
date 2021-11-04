@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { useLoginState } from './hooks';
@@ -7,7 +7,7 @@ import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
 import SignupPage from './pages/signup/Signup';
-import VerifyUser from './pages/signup/VerifyUser';
+import VerifySignature from './pages/signup/Verify';
 import ComparisonListPage from './pages/comparisons/ComparisonList';
 import DonatePage from './pages/donate/Donate';
 import RateLaterPage from './pages/rateLater/RateLater';
@@ -19,8 +19,24 @@ import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 
+import { OpenAPI } from 'src/services/openapi';
+import { LoginState } from './features/login/LoginState.model';
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+const initializeOpenAPI = (loginState: LoginState) => {
+  OpenAPI.BASE = API_URL ?? '';
+  OpenAPI.TOKEN = async () => loginState.access_token ?? '';
+};
+
 function App() {
-  const { isLoggedIn } = useLoginState();
+  const { isLoggedIn, loginState } = useLoginState();
+  // `useState` is used here to call initializeOpenAPI before first render
+  useState(() => initializeOpenAPI(loginState));
+
+  useEffect(() => {
+    initializeOpenAPI(loginState);
+  }, [loginState]);
 
   return (
     <Frame>
@@ -56,7 +72,10 @@ function App() {
           {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
         </Route>
         <Route path="/verify-user">
-          <VerifyUser />
+          <VerifySignature verify="user" />
+        </Route>
+        <Route path="/verify-email">
+          <VerifySignature verify="email" />
         </Route>
         <Route path="/forgot">
           {isLoggedIn ? (
