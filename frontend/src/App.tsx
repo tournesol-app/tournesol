@@ -27,7 +27,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const initializeOpenAPI = (loginState: LoginState) => {
   OpenAPI.BASE = API_URL ?? '';
   OpenAPI.TOKEN = async () => loginState.access_token ?? '';
-  return OpenAPI;
 };
 
 function App() {

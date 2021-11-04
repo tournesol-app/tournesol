@@ -22,16 +22,14 @@ const Section = ({
   children: React.ReactNode;
   [rest: string]: unknown;
 }) => {
-  let sectionTitle;
-  if (typeof title === 'string') {
-    sectionTitle = (
+  const sectionTitle =
+    typeof title === 'string' ? (
       <Typography variant="h4" color="secondary">
         {title}
       </Typography>
+    ) : (
+      title
     );
-  } else {
-    sectionTitle = title;
-  }
 
   return (
     <Grid item container style={{ paddingBottom: '40px' }}>

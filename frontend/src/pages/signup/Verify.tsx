@@ -37,14 +37,23 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
     'loading' | 'fail' | 'success'
   >('loading');
 
+  const [executeVerify, title, successMessage] =
+    verify === 'user'
+      ? [
+          executeVerifyUser,
+          'Verify registration',
+          '✅ Your account is now verified.',
+        ]
+      : [
+          executeVerifyEmail,
+          'Verify new email address',
+          '✅ Your new email address is now verified.',
+        ];
+
   useEffect(() => {
     const verifyParams = async () => {
       try {
-        if (verify === 'user') {
-          await executeVerifyUser(searchParams);
-        } else if (verify === 'email') {
-          await executeVerifyEmail(searchParams);
-        }
+        await executeVerify(searchParams);
         setVerificationState('success');
       } catch (err) {
         console.error(err);
@@ -58,14 +67,6 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
     //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const title =
-    verify === 'user' ? 'Verify registration' : 'Verify new email address';
-
-  const successMessage =
-    verify === 'user'
-      ? '✅ Your account is now verified.'
-      : '✅ Your new email address is now verified.';
 
   return (
     <>

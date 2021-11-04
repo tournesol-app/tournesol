@@ -46,56 +46,59 @@ export const EmailAddressForm = () => {
     loadProfile();
   }, []);
 
-  if (isSuccess) {
-    return (
-      <Box marginBottom={2}>
-        <Typography>
-          A verification email will be sent to confirm your new email address.
-        </Typography>
-      </Box>
-    );
-  }
-
   const formError = apiError?.status === 400 ? apiError.body : null;
 
-  return (
-    <>
-      {isLoading && <CircularProgress />}
-      {currentEmail && (
-        <Box marginBottom={2}>
-          <Typography>
-            Your current email address is{' '}
-            <strong>
-              <code>{currentEmail}</code>
-            </strong>
-          </Typography>
-        </Box>
-      )}
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={2} direction="column" alignItems="stretch">
-          <Grid item md={6}>
-            <FormTextField
-              required
-              fullWidth
-              label="New email address"
-              name="email"
-              type="email"
-              formError={formError}
-            />
+  const getContent = () => {
+    if (isSuccess) {
+      return (
+        <Typography>
+          ✅ A verification email has been sent to confirm your new email
+          address.
+        </Typography>
+      );
+    }
+    if (isLoading) {
+      return <CircularProgress />;
+    }
+    return (
+      <>
+        {currentEmail && (
+          <Box marginBottom={2}>
+            <Typography>
+              Your current email address is{' '}
+              <strong>
+                <code>{currentEmail}</code>
+              </strong>
+            </Typography>
+          </Box>
+        )}
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2} direction="column" alignItems="stretch">
+            <Grid item md={6}>
+              <FormTextField
+                required
+                fullWidth
+                label="New email address"
+                name="email"
+                type="email"
+                formError={formError}
+              />
+            </Grid>
+            <Grid item md={6}>
+              <Button
+                type="submit"
+                color="secondary"
+                fullWidth
+                variant="contained"
+              >
+                Send verification email
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item md={6}>
-            <Button
-              type="submit"
-              color="secondary"
-              fullWidth
-              variant="contained"
-              disabled={isLoading}
-            >
-              Send verification email
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
-    </>
-  );
+        </form>
+      </>
+    );
+  };
+
+  return <Box minHeight="150px">{getContent()}</Box>;
 };
