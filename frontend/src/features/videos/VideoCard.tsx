@@ -67,7 +67,7 @@ const useStyles = makeStyles(() => ({
     // color: '#6A6658',
     // marginLeft: '8.92px',
     // marginTop: '5px',
-    // marginRight: '24px',
+    marginRight: '8px',
   },
   ratings: {
     marginRight: '4px',
@@ -210,7 +210,7 @@ function VideoCard({
               <span className={classes.nb_tournesol}>
                 {total_score.toFixed(0)}
               </span>
-              {video.rating_n_ratings && (
+              {!!video.rating_n_ratings && video.rating_n_ratings > 0 && (
                 <>
                   <p className={classes.ratings}>
                     {video.rating_n_ratings} Ratings by
