@@ -39,11 +39,16 @@ export const EmailAddressForm = () => {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const profile = await AccountsService.accountsProfileRetrieve();
-      setCurrentEmail(profile.email);
-      setIsLoading(false);
+      try {
+        const profile = await AccountsService.accountsProfileRetrieve();
+        setCurrentEmail(profile.email);
+        setIsLoading(false);
+      } catch (err) {
+        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+      }
     };
     loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formError = apiError?.status === 400 ? apiError.body : null;
