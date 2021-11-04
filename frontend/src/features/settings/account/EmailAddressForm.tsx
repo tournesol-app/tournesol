@@ -62,45 +62,46 @@ export const EmailAddressForm = () => {
         </Typography>
       );
     }
-    if (isLoading) {
-      return <CircularProgress />;
-    }
     return (
       <>
-        {currentEmail && (
-          <Box marginBottom={2}>
-            <Typography>
-              Your current email address is{' '}
-              <strong>
-                <code>{currentEmail}</code>
-              </strong>
-            </Typography>
-          </Box>
-        )}
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2} direction="column" alignItems="stretch">
-            <Grid item md={6}>
-              <FormTextField
-                required
-                fullWidth
-                label="New email address"
-                name="email"
-                type="email"
-                formError={formError}
-              />
+        {isLoading && <CircularProgress />}
+        {/* "display" is used here to keep the form state during loading. */}
+        <div style={{ display: isLoading ? 'none' : undefined }}>
+          {currentEmail && (
+            <Box marginBottom={2}>
+              <Typography>
+                Your current email address is{' '}
+                <strong>
+                  <code>{currentEmail}</code>
+                </strong>
+              </Typography>
+            </Box>
+          )}
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2} direction="column" alignItems="stretch">
+              <Grid item md={6}>
+                <FormTextField
+                  required
+                  fullWidth
+                  label="New email address"
+                  name="email"
+                  type="email"
+                  formError={formError}
+                />
+              </Grid>
+              <Grid item md={6}>
+                <Button
+                  type="submit"
+                  color="secondary"
+                  fullWidth
+                  variant="contained"
+                >
+                  Send verification email
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item md={6}>
-              <Button
-                type="submit"
-                color="secondary"
-                fullWidth
-                variant="contained"
-              >
-                Send verification email
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
+          </form>
+        </div>
       </>
     );
   };
