@@ -3,14 +3,17 @@ import { useLocation, useHistory } from 'react-router-dom';
 
 import { CircularProgress } from '@material-ui/core';
 
-import type { PaginatedVideoList } from 'src/services/openapi';
+import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';
 import VideoList from 'src/features/videos/VideoList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 
 function VideoRecommendationPage() {
-  const prov: PaginatedVideoList = { count: 0, results: [] };
+  const prov: PaginatedVideoSerializerWithCriteriaList = {
+    count: 0,
+    results: [],
+  };
   const [videos, setVideos] = useState(prov);
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
@@ -28,10 +31,13 @@ function VideoRecommendationPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    getRecommendedVideos(location.search, (videos: PaginatedVideoList) => {
-      setVideos(videos);
-      setIsLoading(false);
-    });
+    getRecommendedVideos(
+      location.search,
+      (videos: PaginatedVideoSerializerWithCriteriaList) => {
+        setVideos(videos);
+        setIsLoading(false);
+      }
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 

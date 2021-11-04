@@ -8,7 +8,7 @@ from django.http import Http404
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 
-from ..models import Comparison
+from ..models import Comparison, Video
 from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
@@ -16,6 +16,7 @@ class ComparisonApiMixin:
     """
     A mixin providing several common tools to all comparison API views.
     """
+
     def comparison_already_exists(self, request):
         """Return True if the comparison already exist, False instead."""
         try:
@@ -91,13 +92,21 @@ class ComparisonListApi(
         if self.comparison_already_exists(request):
             return self.response_400_video_already_exists(request)
 
-        return self.create(request, *args, **kwargs)
+        response = self.create(request, *args, **kwargs)
+        if response.status_code == status.HTTP_201_CREATED:
+            # Update video_a and video_b ratings
+            video_a = Video.objects.get(video_id=request.data['video_a']['video_id'])
+            video_a.update_n_ratings()
+            video_b = Video.objects.get(video_id=request.data['video_b']['video_id'])
+            video_b.update_n_ratings()
+        return response
 
 
 class ComparisonListOnlyApi(ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user.
     """
+
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user."""
         return self.list(request, *args, **kwargs)

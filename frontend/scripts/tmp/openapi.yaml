@@ -634,6 +634,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedComparisonList'
           description: ''
+  /users/me/contributor_ratings/:
+    get:
+      operationId: users_me_contributor_ratings_list
+      description: |-
+        Retrieve the logged in user's ratings per video
+        (computed automatically from the user's comparisons)
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContributorRatingList'
+          description: ''
+  /users/me/contributor_ratings/{video_id}/:
+    get:
+      operationId: users_me_contributor_ratings_retrieve
+      description: |-
+        Retrieve the logged in user's ratings for a specific video
+        (computed automatically from the user's comparisons)
+      parameters:
+      - in: path
+        name: video_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorRating'
+          description: ''
   /users/me/video_rate_later/:
     get:
       operationId: users_me_video_rate_later_list
@@ -665,20 +720,7 @@ paths:
           description: ''
     post:
       operationId: users_me_video_rate_later_create
-      description: |-
-        Add an existing video to a user's rate later list.
-
-        Status code:
-
-            403 Forbidden
-                the logged user is not the target user
-
-            404 Not Found
-                the video doesn't exist in the database
-
-            409 Conflict
-                 the video is already in the rate later list
-                 or there is an other error with the database request
+      description: Add an existing video to a user's rate later list.
       tags:
       - users
       requestBody:
@@ -703,6 +745,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/VideoRateLater'
           description: ''
+        '404':
+          description: 'Not Found: the video doesn''t exist in the database.'
+        '409':
+          description: 'Conflict: the video is already in the rate later list, or
+            there is an other error with the database query.'
   /users/me/video_rate_later/{video_id}/:
     get:
       operationId: users_me_video_rate_later_retrieve
@@ -769,7 +816,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedVideoList'
+                $ref: '#/components/schemas/PaginatedVideoSerializerWithCriteriaList'
           description: ''
     post:
       operationId: video_create
@@ -819,7 +866,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Video'
+                $ref: '#/components/schemas/VideoSerializerWithCriteria'
           description: ''
     put:
       operationId: video_update
@@ -991,6 +1038,38 @@ components:
           description: Time it took to rate the videos (in milliseconds)
       required:
       - criteria_scores
+    ContributorCriteriaScore:
+      type: object
+      properties:
+        criteria:
+          type: string
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          description: Score for the given criteria
+        uncertainty:
+          type: number
+          format: float
+          description: Uncertainty about the video's score for the given criteria
+      required:
+      - criteria
+    ContributorRating:
+      type: object
+      properties:
+        video:
+          $ref: '#/components/schemas/Video'
+        is_public:
+          type: boolean
+          description: Should the rating be public?
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+      required:
+      - criteria_scores
+      - video
     DefaultRegisterEmail:
       type: object
       description: Default serializer used for e-mail registration (e-mail change).
@@ -9579,7 +9658,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Comparison'
-    PaginatedVideoList:
+    PaginatedContributorRatingList:
       type: object
       properties:
         count:
@@ -9598,7 +9677,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Video'
+            $ref: '#/components/schemas/ContributorRating'
     PaginatedVideoRateLaterList:
       type: object
       properties:
@@ -9619,6 +9698,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VideoRateLater'
+    PaginatedVideoSerializerWithCriteriaList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoSerializerWithCriteria'
     PatchedDefaultUserProfile:
       type: object
       description: |-
@@ -9770,35 +9869,39 @@ components:
           maxLength: 20
         name:
           type: string
+          readOnly: true
           description: Video Title
-          maxLength: 1000
         description:
           type: string
-          nullable: true
+          readOnly: true
           description: Video Description from the web page
         publication_date:
           type: string
           format: date
-          nullable: true
+          readOnly: true
           description: Video publication date
         views:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
+          readOnly: true
           description: Number of views
         uploader:
           type: string
-          nullable: true
+          readOnly: true
           description: Name of the channel (uploader)
-          maxLength: 1000
         language:
-          nullable: true
-          description: Language of the video
-          oneOf:
+          allOf:
           - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
+          readOnly: true
+          description: Language of the video
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this videofrom certified
+            contributors
+        rating_n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the video
     PoliticalAffiliationEnum:
       enum:
       - Not Specified
@@ -9851,8 +9954,6 @@ components:
         email:
           type: string
           format: email
-          title: Email address
-          maxLength: 254
         is_demo:
           type: boolean
           description: Is a demo account?
@@ -9972,6 +10073,7 @@ components:
           type: string
           writeOnly: true
       required:
+      - email
       - id
       - password
       - password_confirm
@@ -10297,37 +10399,73 @@ components:
           maxLength: 20
         name:
           type: string
+          readOnly: true
           description: Video Title
-          maxLength: 1000
         description:
           type: string
-          nullable: true
+          readOnly: true
           description: Video Description from the web page
         publication_date:
           type: string
           format: date
-          nullable: true
+          readOnly: true
           description: Video publication date
         views:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-          nullable: true
+          readOnly: true
           description: Number of views
         uploader:
           type: string
-          nullable: true
+          readOnly: true
           description: Name of the channel (uploader)
-          maxLength: 1000
         language:
-          nullable: true
-          description: Language of the video
-          oneOf:
+          allOf:
           - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
+          readOnly: true
+          description: Language of the video
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this videofrom certified
+            contributors
+        rating_n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the video
       required:
+      - description
+      - language
+      - name
+      - publication_date
+      - rating_n_contributors
+      - rating_n_ratings
+      - uploader
       - video_id
+      - views
+    VideoCriteriaScore:
+      type: object
+      properties:
+        criteria:
+          type: string
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          description: Score of the given criteria
+        uncertainty:
+          type: number
+          format: float
+          description: Uncertainty about the video's score for the given criteria
+        quantile:
+          type: number
+          format: float
+          maximum: 1.0
+          description: Top quantile for all rated videos for aggregated scoresfor
+            the given criteria. 0.0=best, 1.0=worst
+          minimum: 0.0
+      required:
+      - criteria
     VideoRateLater:
       type: object
       properties:
@@ -10351,13 +10489,70 @@ components:
           maxLength: 20
       required:
       - video_id
+    VideoSerializerWithCriteria:
+      type: object
+      properties:
+        video_id:
+          type: string
+          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
+          pattern: ^[A-Za-z0-9-_]{11}$
+          maxLength: 20
+        name:
+          type: string
+          description: Video Title
+          maxLength: 1000
+        description:
+          type: string
+          nullable: true
+          description: Video Description from the web page
+        publication_date:
+          type: string
+          format: date
+          nullable: true
+          description: Video publication date
+        views:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+          description: Number of views
+        uploader:
+          type: string
+          nullable: true
+          description: Name of the channel (uploader)
+          maxLength: 1000
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoCriteriaScore'
+        language:
+          nullable: true
+          description: Language of the video
+          oneOf:
+          - $ref: '#/components/schemas/LanguageEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        rating_n_ratings:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Total number of pairwise comparisons for this videofrom certified
+            contributors
+        rating_n_contributors:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Total number of certified contributors who rated the video
+      required:
+      - criteria_scores
+      - video_id
   securitySchemes:
     oauth2:
       type: oauth2
       flows:
         password:
-          tokenUrl: http://localhost:8000/o/token/
-          refreshUrl: http://localhost:8000/o/token/
+          tokenUrl: http://127.0.0.1:8000/o/token/
+          refreshUrl: http://127.0.0.1:8000/o/token/
           scopes:
             openid: OpenID Connect scope
             read: Read scope

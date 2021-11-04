@@ -23,12 +23,16 @@ class ComparisonApiTestCase(TestCase):
     """
 
     _user = "username"
+    _user2 = "username2"
     _other = "other_username"
 
     _video_id_01 = "video_id_01"
     _video_id_02 = "video_id_02"
     _video_id_03 = "video_id_03"
     _video_id_04 = "video_id_04"
+    _video_id_05 = "video_id_05"
+    _video_id_06 = "video_id_06"
+    _video_id_07 = "video_id_07"
 
     non_existing_comparison = {
         "video_a": {
@@ -54,6 +58,7 @@ class ComparisonApiTestCase(TestCase):
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
         user = User.objects.create(username=self._user)
+        user2 = User.objects.create(username=self._user2)
         other = User.objects.create(username=self._other)
         now = datetime.datetime.now()
 
@@ -524,3 +529,88 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(result_comparison1["video_b"]["video_id"], comparison1.video_2.video_id)
         self.assertEqual(result_comparison2["video_a"]["video_id"], comparison2.video_1.video_id)
         self.assertEqual(result_comparison2["video_b"]["video_id"], comparison2.video_2.video_id)
+
+    def test_n_ratings_from_video(self):
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        client.force_authenticate(user=user)
+        Video.objects.create(video_id=self._video_id_05)
+        Video.objects.create(video_id=self._video_id_06)
+        Video.objects.create(video_id=self._video_id_07)
+        data1 = {
+            "video_a": {
+                "video_id": self._video_id_05
+            },
+            "video_b": {
+                "video_id": self._video_id_06
+            },
+            "criteria_scores": [
+                {
+                    "criteria": "over_the_top",
+                    "score": 10,
+                    "weight": 10
+                }
+            ],
+            "duration_ms": 103
+        }
+        response = client.post(
+            reverse("tournesol:comparisons_me_list"), data1, format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+
+        data2 = {
+            "video_a": {
+                "video_id": self._video_id_05
+            },
+            "video_b": {
+                "video_id": self._video_id_07
+            },
+            "criteria_scores": [
+                {
+                    "criteria": "over_the_top",
+                    "score": 10,
+                    "weight": 10
+                }
+            ],
+            "duration_ms": 103
+        }
+        response = client.post(
+            reverse("tournesol:comparisons_me_list"), data2, format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+
+        user2 = User.objects.get(username=self._user2)
+        client.force_authenticate(user=user2)
+
+        data3 = {
+            "video_a": {
+                "video_id": self._video_id_05
+            },
+            "video_b": {
+                "video_id": self._video_id_06
+            },
+            "criteria_scores": [
+                {
+                    "criteria": "over_the_top",
+                    "score": 10,
+                    "weight": 10
+                }
+            ],
+            "duration_ms": 103
+        }
+        response = client.post(
+            reverse("tournesol:comparisons_me_list"), data3, format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+
+        video5 = Video.objects.get(video_id=self._video_id_05)
+        video6 = Video.objects.get(video_id=self._video_id_06)
+        video7 = Video.objects.get(video_id=self._video_id_07)
+
+        self.assertEqual(video5.rating_n_contributors, 2)
+        self.assertEqual(video5.rating_n_ratings, 3)
+        self.assertEqual(video6.rating_n_contributors, 2)
+        self.assertEqual(video6.rating_n_ratings, 2)
+        self.assertEqual(video7.rating_n_contributors, 1)
+        self.assertEqual(video7.rating_n_ratings, 1)

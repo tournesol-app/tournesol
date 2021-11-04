@@ -15,13 +15,29 @@ from .models import (
 
 
 class VideoSerializer(ModelSerializer):
+
     class Meta:
         model = Video
         fields = [
-            "video_id", "name", "description", "publication_date", "views", "uploader", "language"
+            "video_id",
+            "name",
+            "description",
+            "publication_date",
+            "views",
+            "uploader",
+            "language",
+            "rating_n_ratings",
+            "rating_n_contributors",
             ]
         read_only_fields = [
-            "name", "description", "publication_date", "views", "uploader", "language"
+            "name",
+            "description",
+            "publication_date",
+            "views",
+            "uploader",
+            "language",
+            "rating_n_ratings",
+            "rating_n_contributors",
         ]
 
 
@@ -64,8 +80,18 @@ class VideoSerializerWithCriteria(ModelSerializer):
 
     class Meta:
         model = Video
-        fields = ["video_id", "name", "description", "publication_date",
-                  "views", "uploader", "criteria_scores"]
+        fields = [
+            "video_id",
+            "name",
+            "description",
+            "publication_date",
+            "views",
+            "uploader",
+            "criteria_scores",
+            "language",
+            "rating_n_ratings",
+            "rating_n_contributors",
+        ]
 
 
 class VideoRateLaterSerializer(ModelSerializer):

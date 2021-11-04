@@ -122,30 +122,35 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     # computed properties, updated via save signals,
     #  or via manage.py recompute_properties manage.py
 
-    COMPUTED_PROPERTIES = [
-        "rating_n_contributors",
-        "rating_n_ratings",
-        "n_public_contributors",
-        "n_private_contributors",
-        "public_contributors",
-    ]
-
-    # computed via signals AND via recompute_properties command
-    rating_n_contributors = computed_property.ComputedIntegerField(
-        compute_from="get_rating_n_contributors",
-        null=False,
-        default=0,
-        help_text="Total number of certified contributors who rated the video",
-    )
-
-    rating_n_ratings = computed_property.ComputedIntegerField(
-        compute_from="get_rating_n_ratings",
+    rating_n_ratings = models.IntegerField(
         null=False,
         default=0,
         help_text="Total number of pairwise comparisons for this video"
                   "from certified contributors",
     )
 
+    rating_n_contributors = models.IntegerField(
+        null=False,
+        default=0,
+        help_text="Total number of certified contributors who rated the video",
+    )
+
+    def update_n_ratings(self):
+        self.rating_n_ratings = Comparison.objects.filter(
+            Q(video_1=self) | Q(video_2=self)
+        ).count()
+        self.rating_n_contributors = Comparison.objects.filter(
+            Q(video_1=self) | Q(video_2=self)
+        ).distinct("user").count()
+        self.save()
+
+    COMPUTED_PROPERTIES = [
+        "n_public_contributors",
+        "n_private_contributors",
+        "public_contributors",
+    ]
+
+    # computed via signals AND via recompute_properties command
     n_public_contributors = computed_property.ComputedIntegerField(
         compute_from="get_n_public_contributors",
         null=False,
@@ -276,25 +281,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         #     .count()
         # )
         return 1
-
-    def get_rating_n_ratings(self, user=None):
-        """Number of associated ratings."""
-        if user:
-            return (
-                Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
-                .filter(user=user)
-                .count()
-            )
-        return Comparison.objects.filter(Q(video_1=self) | Q(video_2=self)).count()
-
-    def get_rating_n_contributors(self):
-        """Number of contributors in ratings."""
-        return (
-            Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
-            .order_by("user")
-            .distinct("user")
-            .count()
-        )
 
     # /COMPUTED properties implementation
 

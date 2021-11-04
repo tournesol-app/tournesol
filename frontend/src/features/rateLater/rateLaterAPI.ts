@@ -1,6 +1,7 @@
 import { ensureVideoExistOrCreate } from 'src/utils/video';
 import { UsersService } from 'src/services/openapi';
 import { OpenAPI } from 'src/services/openapi/core/OpenAPI';
+import { Video } from 'src/services/openapi';
 import { LoginState } from '../login/LoginState.model';
 
 const api_url = process.env.REACT_APP_API_URL;
@@ -29,7 +30,7 @@ export const addToRateLaterList = async (
   await ensureVideoExistOrCreate(video_id);
 
   return UsersService.usersMeVideoRateLaterCreate({
-    video: { video_id },
+    video: { video_id } as Video,
   });
 };
 

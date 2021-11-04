@@ -1,4 +1,4 @@
-import type { PaginatedVideoList } from 'src/services/openapi/models/PaginatedVideoList';
+import type { PaginatedVideoSerializerWithCriteriaList as PaginatedVideoList } from 'src/services/openapi';
 
 const api_url = process.env.REACT_APP_API_URL;
 const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';

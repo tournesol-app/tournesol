@@ -13,7 +13,10 @@ import {
 } from 'src/features/rateLater/rateLaterAPI';
 import Pagination from 'src/components/Pagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
-import { VideoRateLater } from 'src/services/openapi';
+import {
+  VideoRateLater,
+  VideoSerializerWithCriteria,
+} from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
 import { CompareNowAction } from 'src/utils/action';
@@ -177,16 +180,19 @@ const RateLaterPage = () => {
             visibility: isLoading ? 'hidden' : undefined,
           }}
         >
-          {rateLaterList.map(({ video }) => (
-            <Grid container className={classes.video} key={video.video_id}>
-              <Grid item xs={12}>
-                <VideoCard
-                  video={video}
-                  actions={[CompareNowAction, RemoveVideoFromListAction]}
-                />
+          {rateLaterList.map(({ video }) => {
+            const videoWithCriteriaScore = video as VideoSerializerWithCriteria;
+            return (
+              <Grid container className={classes.video} key={video.video_id}>
+                <Grid item xs={12}>
+                  <VideoCard
+                    video={videoWithCriteriaScore}
+                    actions={[CompareNowAction, RemoveVideoFromListAction]}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
