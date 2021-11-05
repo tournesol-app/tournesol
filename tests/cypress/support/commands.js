@@ -29,7 +29,7 @@ Cypress.Commands.add('sql', (query) =>
 )
 
 Cypress.Commands.add('getEmailLink', () =>
-  cy.exec('docker logs tournesol-dev-api --since=1m 2>&1 | grep "http://localhost:3000" | tail -1')
+  cy.exec('docker logs tournesol-dev-api --since=10s 2>&1 | grep "http://localhost:3000" | tail -1')
     .then(result => result.stdout)
 )
 
@@ -38,5 +38,5 @@ Cypress.Commands.add('recreateUser', (username, email, password) =>
 from core.models import User
 User.objects.filter(username='${username}').delete()
 User.objects.create_user(username='${username}', email='${email}', password='${password}')
-  "`)
+"`)
 )
