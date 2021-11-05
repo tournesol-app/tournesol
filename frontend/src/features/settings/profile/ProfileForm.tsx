@@ -20,12 +20,22 @@ const ProfileForm = () => {
 
   useEffect(() => {
     async function retrieveProfile() {
-      const response = await AccountsService.accountsProfileRetrieve();
-      setUsername(response['username']);
+      const response = await AccountsService.accountsProfileRetrieve().catch(
+        () => {
+          contactAdministrator(
+            enqueueSnackbar,
+            'error',
+            'Sorry, an error has occurred, cannot retrieve your profile.'
+          );
+        }
+      );
+      if (response) {
+        setUsername(response['username']);
+      }
     }
 
     retrieveProfile();
-  }, []);
+  }, [enqueueSnackbar]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
