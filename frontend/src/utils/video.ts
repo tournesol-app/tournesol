@@ -1,4 +1,4 @@
-import { VideoService, UsersService } from 'src/services/openapi';
+import { VideoService, UsersService, Video } from 'src/services/openapi';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(

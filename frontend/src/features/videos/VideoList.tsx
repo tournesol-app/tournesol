@@ -5,6 +5,7 @@ import { Add as AddIcon } from '@material-ui/icons';
 import type {
   PaginatedVideoSerializerWithCriteriaList,
   VideoSerializerWithCriteria,
+  Video,
 } from 'src/services/openapi';
 import VideoCard from '../videos/VideoCard';
 import { CompareNowAction } from 'src/utils/action';
@@ -35,7 +36,7 @@ function VideoList({
             color="secondary"
             onClick={async () => {
               await UsersService.usersMeVideoRateLaterCreate({
-                video: { video_id },
+                video: { video_id } as Video,
               });
             }}
           >

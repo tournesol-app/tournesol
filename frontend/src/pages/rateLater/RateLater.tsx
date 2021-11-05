@@ -10,6 +10,7 @@ import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import {
   VideoRateLater,
   VideoSerializerWithCriteria,
+  Video,
 } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
@@ -88,7 +89,9 @@ const RateLaterPage = () => {
   }, [offset, setVideoCount, setRateLaterList]);
 
   const addToRateLater = async (video_id: string) => {
-    await UsersService.usersMeVideoRateLaterCreate({ video: { video_id } });
+    await UsersService.usersMeVideoRateLaterCreate({
+      video: { video_id } as Video,
+    });
     await loadList();
   };
 
