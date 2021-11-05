@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import type { Comparison } from 'src/services/openapi';
-import { selectLogin } from 'src/features/login/loginSlice';
-import { fetchComparisons } from 'src/features/comparisons/comparisonsAPI';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import Pagination from 'src/components/Pagination';
-
-import { useAppSelector } from '../../app/hooks';
+import { UsersService } from 'src/services/openapi';
 
 function ComparisonsPage() {
-  const token = useAppSelector(selectLogin);
   const [comparisons, setComparisons]: [
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
@@ -27,7 +23,7 @@ function ComparisonsPage() {
   }
 
   useEffect(() => {
-    fetchComparisons(token?.access_token ?? '', limit, offset).then((data) => {
+    UsersService.usersMeComparisonsList(limit, offset).then((data) => {
       setComparisons(data.results);
       setCount(data.count || 0);
     });

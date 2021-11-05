@@ -4,9 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { TextField, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { deleteAccountAPI } from 'src/features/account/accountAPI';
-import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { selectLogin, logout } from '../../../features/login/loginSlice';
+import { UsersService } from 'src/services/openapi';
+import { useLoginState } from 'src/hooks';
 
 const useStyles = makeStyles((theme) => ({
   buttonDanger: {
@@ -24,17 +23,13 @@ const DELETE_ACCOUNT_KEYWORD = 'delete account';
 const DeleteAccountForm = () => {
   const classes = useStyles();
   const [keyword, setKeyword] = useState('');
-
-  const dispatch = useAppDispatch();
-
-  const token = useAppSelector(selectLogin);
+  const { logout } = useLoginState();
 
   const history = useHistory();
-  const access_token = token.access_token ? token.access_token : '';
 
   const deleteAccount = async () => {
-    await deleteAccountAPI(access_token);
-    dispatch(logout());
+    await UsersService.usersMeDestroy();
+    logout();
     history.push('/');
   };
 

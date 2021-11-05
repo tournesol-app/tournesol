@@ -5,12 +5,12 @@ import { Add as AddIcon } from '@material-ui/icons';
 import type {
   PaginatedVideoSerializerWithCriteriaList,
   VideoSerializerWithCriteria,
+  Video,
 } from 'src/services/openapi';
 import VideoCard from '../videos/VideoCard';
 import { CompareNowAction } from 'src/utils/action';
-import { addToRateLaterList } from '../rateLater/rateLaterAPI';
-import { useAppSelector } from 'src/app/hooks';
-import { selectLogin } from 'src/features/login/loginSlice';
+import { UsersService } from 'src/services/openapi';
+import { useLoginState } from 'src/hooks';
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -24,19 +24,20 @@ function VideoList({
   videos: PaginatedVideoSerializerWithCriteriaList;
 }) {
   const classes = useStyles();
-
-  const loginState = useAppSelector(selectLogin);
+  const { isLoggedIn } = useLoginState();
 
   const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
     const video_id = videoId;
     return (
       <div>
-        {loginState.access_token && (
+        {isLoggedIn && (
           <IconButton
             size="medium"
             color="secondary"
             onClick={async () => {
-              await addToRateLaterList(loginState, { video_id });
+              await UsersService.usersMeVideoRateLaterCreate({
+                video: { video_id } as Video,
+              });
             }}
           >
             <AddIcon />
