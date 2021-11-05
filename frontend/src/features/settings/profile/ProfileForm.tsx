@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import Grid from '@material-ui/core/Grid';
@@ -6,16 +6,26 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import { selectLogin } from '../../login/loginSlice';
-import { useAppSelector } from '../../../app/hooks';
-import { contactAdministrator } from '../../../utils/notifications';
+import {
+  contactAdministrator,
+  showErrorAlert,
+  showSuccessAlert,
+} from '../../../utils/notifications';
 import { AccountsService } from '../../../services/openapi';
 
 const ProfileForm = () => {
-  const token = useAppSelector(selectLogin);
-  const [username, setUsername] = useState(token.username);
+  const [username, setUsername] = useState('');
 
   const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    async function retrieveProfile() {
+      const response = await AccountsService.accountsProfileRetrieve();
+      setUsername(response['username']);
+    }
+
+    retrieveProfile();
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -26,9 +36,7 @@ const ProfileForm = () => {
     }).catch((reason: { body: { [k: string]: string[] } }) => {
       if (reason && 'body' in reason) {
         const newErrorMessages = Object.values(reason['body']).flat();
-        newErrorMessages.map((msg) =>
-          enqueueSnackbar(msg, { variant: 'error' })
-        );
+        newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
       } else {
         contactAdministrator(
           enqueueSnackbar,
@@ -41,11 +49,9 @@ const ProfileForm = () => {
     // handle success and malformed success
     if (response) {
       if ('detail' in response) {
-        enqueueSnackbar(response['detail'], { variant: 'success' });
+        showSuccessAlert(enqueueSnackbar, response['detail']);
       } else {
-        enqueueSnackbar('Profile changed successfully', {
-          variant: 'success',
-        });
+        showSuccessAlert(enqueueSnackbar, 'Profile changed successfully');
       }
 
       (document.activeElement as HTMLElement).blur();
