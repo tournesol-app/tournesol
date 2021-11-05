@@ -70,16 +70,19 @@
     group: gunicorn
 
 - name: Copy Django application repository
-  copy:
+  synchronize:
     src: "/home/git/tournesol/backend/"
-    remote_src: yes
     dest: /srv/tournesol-backend
-    force: yes
-    owner: gunicorn
-    group: gunicorn
-    mode: preserve
-    directory_mode: u=rwx,g=rx,o=rx
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+    rsync_opts:
+      - "--exclude=venv/"
+      - "--exclude=*.pyc"
+  delegate_to: "{{ inventory_hostname }}"
   become: yes
+  become_user: gunicorn
   notify:
     - Migrate Django database
     - Collect Django static assets
