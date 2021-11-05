@@ -10,7 +10,7 @@ import {
   contactAdministrator,
   showErrorAlert,
   showSuccessAlert,
-} from '../../../utils/notifications';
+} from 'src/utils/notifications';
 import { AccountsService } from 'src/services/openapi';
 
 const PasswordForm = () => {

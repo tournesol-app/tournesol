@@ -4,6 +4,8 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import CompareIcon from '@material-ui/icons/Compare';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { showSuccessAlert, showInfoAlert } from 'src/utils/notifications';
+import { useSnackbar } from 'notistack';
 
 import { Video, UsersService } from 'src/services/openapi';
 
@@ -23,16 +25,35 @@ export const CompareNowAction = ({ videoId }: { videoId: string }) => {
 
 export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
   const video_id = videoId;
+  const { enqueueSnackbar } = useSnackbar();
   return (
     <Tooltip title="Rate later" placement="left">
       <IconButton
         size="medium"
         color="secondary"
-        onClick={() =>
-          UsersService.usersMeVideoRateLaterCreate({
-            video: { video_id } as Video,
-          })
-        }
+        onClick={async () => {
+          let flag = false;
+          const rateLaterList = await UsersService.usersMeVideoRateLaterList();
+          rateLaterList.results?.forEach((rateLaterVideo) => {
+            if (rateLaterVideo.video.video_id === video_id) {
+              flag = true;
+            }
+          });
+          if (!flag) {
+            await UsersService.usersMeVideoRateLaterCreate({
+              video: { video_id } as Video,
+            });
+            showSuccessAlert(
+              enqueueSnackbar,
+              'The video has been added to your rate later list.'
+            );
+          } else {
+            showInfoAlert(
+              enqueueSnackbar,
+              'The video is already in your rate later list.'
+            );
+          }
+        }}
         style={{ color: '#CDCABC' }}
       >
         <AddIcon />

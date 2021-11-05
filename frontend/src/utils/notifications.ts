@@ -39,3 +39,12 @@ export const showErrorAlert = (
     variant: 'error',
   });
 };
+
+export const showInfoAlert = (
+  enqueueSnackbar: ProviderContext['enqueueSnackbar'],
+  message: React.ReactNode
+) => {
+  enqueueSnackbar(message, {
+    variant: 'info',
+  });
+};
