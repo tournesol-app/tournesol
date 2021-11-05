@@ -83,3 +83,23 @@ describe('Password reset flow', () => {
     cy.contains('a[role=button]', 'test-pwreset').should('be.visible');
   })
 })
+
+describe('Update email address flow', () => {
+  before(() => {
+    cy.recreateUser("test-email-update", "email1@example.com", "tournesol");
+  })
+
+  it('can update email', () => {
+    cy.visit('/settings/account');
+    cy.focused().type('test-email-update');
+    cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+    cy.location('pathname').should('equal', '/settings/account');
+    cy.contains('Your current email address is email1@example.com').should('be.visible');
+    cy.get('input[name=email]').type('email2@example.com').type('{enter}');
+    cy.contains('verification email has been sent ').should('be.visible');
+    cy.getEmailLink().then(verifyLink => cy.visit(verifyLink));
+    cy.contains('new email address is now verified').should('be.visible');
+    cy.visit('/settings/account');
+    cy.contains('Your current email address is email2@example.com').should('be.visible');
+  })
+});
