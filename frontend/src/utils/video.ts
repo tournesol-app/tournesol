@@ -10,7 +10,7 @@ export function extractVideoId(idOrUrl: string) {
   return idOrUrl;
 }
 
-export async function ensureVideoExistOrCreate(video_id: string) {
+export async function ensureVideoExistsOrCreate(video_id: string) {
   // FIXME: should the video be created automatically?
   // And if so, shouldn't the backend be responsible for it?
   // It's currently impractical to check if the API error

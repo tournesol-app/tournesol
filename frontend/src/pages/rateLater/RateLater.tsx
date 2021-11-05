@@ -5,12 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
+import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import Pagination from 'src/components/Pagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import {
   VideoRateLater,
   VideoSerializerWithCriteria,
-  Video,
 } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
@@ -89,9 +89,7 @@ const RateLaterPage = () => {
   }, [offset, setVideoCount, setRateLaterList]);
 
   const addToRateLater = async (video_id: string) => {
-    await UsersService.usersMeVideoRateLaterCreate({
-      video: { video_id } as Video,
-    });
+    await addToRateLaterList({ video_id });
     await loadList();
   };
 

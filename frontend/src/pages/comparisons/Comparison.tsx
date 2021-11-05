@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import { UsersService, Comparison } from 'src/services/openapi';
-import { ensureVideoExistOrCreate } from 'src/utils/video';
+import { ensureVideoExistsOrCreate } from 'src/utils/video';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector from 'src/features/video_selector/VideoSelector';
 
@@ -101,8 +101,8 @@ const ComparisonPage = () => {
   }, [videoA, videoB]);
 
   const onSubmitComparison = async (c: Comparison) => {
-    if (videoA) await ensureVideoExistOrCreate(videoA);
-    if (videoB) await ensureVideoExistOrCreate(videoB);
+    if (videoA) await ensureVideoExistsOrCreate(videoA);
+    if (videoB) await ensureVideoExistsOrCreate(videoB);
     if (initialComparison) {
       const { video_a, video_b, criteria_scores, duration_ms } = c;
       UsersService.usersMeComparisonsUpdate(
