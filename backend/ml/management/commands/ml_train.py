@@ -1,6 +1,6 @@
 import logging
 
-from tournesol.models.video import (
+from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
