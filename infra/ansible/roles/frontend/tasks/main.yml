@@ -46,7 +46,6 @@
     - Install Node
     - Yarn install
     - Yarn build
-    - Delete frontend files
     - Copy frontend files
     - Create Frontend OAuth application in Django database
 
@@ -67,21 +66,25 @@
     group: www-data
 
 - name: Copy React application repository
-  copy:
+  synchronize:
     src: "/home/git/tournesol/frontend/"
-    remote_src: yes
     dest: /home/react/tournesol-frontend
-    force: yes
-    owner: react
-    group: react
-    mode: preserve
-    directory_mode: u=rwx,g=rx,o=rx
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+    rsync_opts:
+      - "--exclude=node_modules/"
+      - "--exclude=build/"
+      - "--exclude=src/services/"
+      - "--exclude=.env"
+  delegate_to: "{{ inventory_hostname }}"
   become: yes
+  become_user: react
   notify:
     - Yarn install
     - Yarn build
     - Generate Client from OpenAPI Specification
-    - Delete frontend files
     - Copy frontend files
     - Notify frontend upgrade
 

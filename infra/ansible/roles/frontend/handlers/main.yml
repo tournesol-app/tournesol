@@ -25,19 +25,17 @@
   become: yes
   become_user: react
 
-- name: Delete frontend files
-  file:
-    path: /srv/tournesol-frontend
-    state: absent
-
 - name: Copy frontend files
-  copy:
+  synchronize:
     src: /home/react/tournesol-frontend/build/
-    remote_src: yes
     dest: /srv/tournesol-frontend
-    force: yes
-    owner: www-data
-    group: www-data
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+  delegate_to: "{{ inventory_hostname }}"
+  become: yes
+  become_user: www-data
 
 - name: Notify frontend upgrade
   shell:

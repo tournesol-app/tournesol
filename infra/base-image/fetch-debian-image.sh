@@ -2,13 +2,14 @@
 
 set -Eeuxo pipefail
 
+DEBIAN_VERSION="11.1.0"
 CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 
 cd "$CURRENT_DIR"
 
-for f in "debian-11.0.0-amd64-netinst.iso" "SHA256SUMS" "SHA256SUMS.sign"
+for f in "debian-${DEBIAN_VERSION}-amd64-netinst.iso" "SHA256SUMS" "SHA256SUMS.sign"
 do
-    [[ -f "$f" ]] || wget "http://debian.ethz.ch/debian-cd/11.0.0/amd64/iso-cd/$f"
+    [[ -f "$f" ]] || wget "http://debian.ethz.ch/debian-cd/${DEBIAN_VERSION}/amd64/iso-cd/$f"
 done
 
 # If key verification fails because you miss the signing public key, get it from the verification output and set it here to retrieve it

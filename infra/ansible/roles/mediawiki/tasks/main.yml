@@ -163,7 +163,7 @@
   file:
     path: "/var/lib/mediawiki/extensions/{{item.item.name}}"
     state: absent
-  when: "not item.stat.islnk"
+  when: "item.stat.exists and not item.stat.islnk"
   with_items: "{{extensions_state.results}}"
 
 - name: Link Mediawiki extensions
