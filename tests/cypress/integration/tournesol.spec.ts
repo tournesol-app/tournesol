@@ -7,10 +7,10 @@ describe('Tournesol basic tests', () => {
   it('can login and logout', () => {
     cy.visit('/');
     cy.contains('Log in').click();
-    cy.url().should('include', '/login')
+    cy.location('pathname').should('equal', '/login')
     cy.focused().type('user');
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
-    cy.url().should('match', /\/$/);
+    cy.location('pathname').should('equal', '/');
     cy.contains('Log in').should('not.exist');
     cy.contains('Logout').click();
     cy.contains('Log in').should('be.visible');
@@ -25,7 +25,7 @@ describe('Rate later list', () => {
 
   it('can add video to rate later list', () => {
     cy.visit('/rate_later');
-    cy.url().should('include', '/login');
+    cy.location('pathname').should('equal', '/login');
     cy.focused().type('user');
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
     cy.contains('0 video').should('be.visible');
@@ -43,7 +43,7 @@ describe('Account creation', () => {
   it('can create account', () => {
     cy.visit('/');
     cy.contains('Join us').click();
-    cy.url().should('contain', '/signup');
+    cy.location('pathname').should('equal', '/signup');
     cy.get('input[name=email]').type('user@example.com');
     cy.get('input[name=username]').type('test-register');
     cy.get('input[name=password]').type('tourne50l');
@@ -68,7 +68,7 @@ describe('Password reset flow', () => {
   it('can reset password', () => {
     cy.visit('/login');
     cy.contains('Forgot').click();
-    cy.url().should('contain', '/forgot');
+    cy.location('pathname').should('equal', '/forgot');
     cy.get('input[name=login]').type('test-pwreset').type('{enter}');
     cy.contains('email will be sent').should('be.visible');
     cy.getEmailLink().then(resetLink => cy.visit(resetLink));
@@ -76,7 +76,7 @@ describe('Password reset flow', () => {
     cy.get('input[name=password]').type('tournesol-new-password');
     cy.get('input[name=confirm_password]').type('tournesol-new-password').type('{enter}');
     cy.contains('password has been modified').should('be.visible');
-    cy.url().should('contain', '/login');
+    cy.location('pathname').should('equal', '/login');
     // Login with the new password
     cy.get('input[name=username]').type('test-pwreset');
     cy.get('input[name=password]').type('tournesol-new-password').type('{enter}');
