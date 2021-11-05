@@ -13,9 +13,12 @@ export const contactAdministrator = (
   if (!message) {
     message = 'Sorry an error has occurred.';
   }
-  display('Please, contact an administrator to report the issue.', {
-    variant: 'warning',
-  });
+  display(
+    'Please, try again later, or contact an administrator if the issue persists.',
+    {
+      variant: 'warning',
+    }
+  );
   display(message, { variant: variant });
 };
 
