@@ -23,9 +23,7 @@ function VideoList({
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
 
-  const actions = isLoggedIn
-    ? [CompareNowAction, AddToRateLaterList]
-    : [CompareNowAction];
+  const actions = isLoggedIn ? [CompareNowAction, AddToRateLaterList] : [];
 
   return (
     <div>
