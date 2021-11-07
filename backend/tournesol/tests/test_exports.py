@@ -1,3 +1,6 @@
+import csv
+import io
+
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -24,17 +27,20 @@ class ExportTest(TestCase):
         self.client.force_authenticate(self.user_with_comparisons)
         resp = self.client.get("/users/me/exports/comparisons/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        # Ensures the csv contains the information about the single comparison criteria score
-        self.assertIn(b'test_all_data_1', resp.content)
-        self.assertIn(b'largely_recommended', resp.content)
+        # Ensures that the csv contians a single row with the correct score
+        csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
+        comparison_list = [row for row in csv_file]
+        self.assertEqual(len(comparison_list), 1)
+        self.assertEqual(float(comparison_list[0]['score']), 5)
 
     def test_authenticated_without_comparisons_can_download_comparisons(self):
         self.client.force_authenticate(self.user_without_comparisons)
         resp = self.client.get("/users/me/exports/comparisons/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures the csv does not contain information about comparison criteria score
-        self.assertNotIn(b'test_all_data_1', resp.content)
-        self.assertNotIn(b'largely_recommended', resp.content)
+        csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
+        comparison_list = [row for row in csv_file]
+        self.assertEqual(len(comparison_list), 0)
 
     def test_not_authenticated_cannot_download_all(self):
         resp = self.client.get("/users/me/exports/all/")
