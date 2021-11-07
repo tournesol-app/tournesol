@@ -28,10 +28,10 @@ class VideoApi(TestCase):
         video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03)
         video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04)
         self._list_of_videos = [video_1, video_2, video_3, video_4]
-        VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=1)
-        VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=1)
-        VideoCriteriaScore.objects.create(video=video_3, criteria="reliability", score=1)
-        VideoCriteriaScore.objects.create(video=video_4, criteria="reliability", score=1)
+        VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=0.1)
+        VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=0.2)
+        VideoCriteriaScore.objects.create(video=video_3, criteria="importance", score=0.3)
+        VideoCriteriaScore.objects.create(video=video_4, criteria="importance", score=0.4)
 
     def test_anonymous_can_list(self):
         """
@@ -154,6 +154,37 @@ class VideoApi(TestCase):
                 else:
                     self.assertEqual(len(response.data["results"]),
                                      videos_in_db - param["offset"])
+
+    def test_list_videos_with_criteria_weights(self):
+        client = APIClient()
+
+        # Default weights: all criterias contribute equally
+        resp = client.get("/video/")
+        self.assertEqual(
+            [r["video_id"] for r in resp.json()["results"]],
+            ["video_id_04", "video_id_03", "video_id_02", "video_id_01"]
+        )
+
+        # Disable reliability
+        resp = client.get("/video/?reliability=0")
+        self.assertEqual(
+            [r["video_id"] for r in resp.json()["results"]],
+            ["video_id_04", "video_id_03"]
+        )
+
+        # Disable both reliability and importance
+        resp = client.get("/video/?reliability=0&importance=0")
+        self.assertEqual(
+            [r["video_id"] for r in resp.json()["results"]],
+            []
+        )
+
+        # More weight to reliability should change the order
+        resp = client.get("/video/?reliability=100&importance=10")
+        self.assertEqual(
+            [r["video_id"] for r in resp.json()["results"]],
+            ["video_id_02", "video_id_01", "video_id_04", "video_id_03"]
+        )
 
     def test_upload_video_without_API_key(self):
         factory = APIClient()
