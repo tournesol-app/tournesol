@@ -10,7 +10,7 @@ from rest_framework import routers
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListOnlyApi
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
-from .views.user import CurrentUserView
+from .views.user import UserDataDumpView, CurrentUserView
 from .views.ratings import ContributorRatingList, ContributorRatingDetail
 
 
@@ -25,6 +25,11 @@ urlpatterns = [
         "users/me/",
         CurrentUserView.as_view(),
         name="users_me"
+    ),
+    path(
+        "users/me/all_data/",
+        UserDataDumpView.as_view(),
+        name="all_data"
     ),
     # Comparison API
     path(

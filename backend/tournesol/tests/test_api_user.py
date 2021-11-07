@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from tournesol.models import Comparison, Video, ComparisonCriteriaScore
 
 
 class UserDeletionTestCase(TestCase):
@@ -99,3 +100,34 @@ class UserRegisterNewEmailTest(TestCase):
             text="email address already exists",
             status_code=400
         )
+
+class UserDataDump(TestCase):
+    def setUp(self) -> None:
+        self.user_with_comparisons = User.objects.create_user(username="user_with", email="user_with@example.com")
+        
+        self.video1 = Video.objects.create(video_id="test_all_data_1", name="test_all_data_1")
+        self.video2 = Video.objects.create(video_id="test_all_data_2", name="test_all_data_2")
+        self.comparison = Comparison.objects.create(user=self.user_with_comparisons, video_1=self.video1, video_2=self.video2)
+        ComparisonCriteriaScore.objects.create(comparison=self.comparison,score=5,criteria="largely_recommended")
+        self.user_without_comparisons = User.objects.create_user(username="user_without", email="user_without@example.com")
+        self.client = APIClient()
+
+    def test_not_authenticated_cannot_download(self):
+        resp = self.client.get("/users/me/all_data/")
+        self.assertEqual(resp.status_code, 401)
+
+    def test_authenticated_with_comparisons_can_download(self):
+        self.client.force_authenticate(self.user_with_comparisons)
+        resp = self.client.get("/users/me/all_data/")
+        self.assertEqual(resp.status_code, 200)
+        # Ensures the csv contains the information about the single comparison criteria score
+        self.assertIn(b'test_all_data_1', resp.content)
+        self.assertIn(b'largely_recommended', resp.content)
+
+    def test_authenticated_without_comparisons_can_download(self):
+        self.client.force_authenticate(self.user_without_comparisons)
+        resp = self.client.get("/users/me/all_data/")
+        self.assertEqual(resp.status_code, 200)
+        # Ensures the csv does not contain information about comparison criteria score
+        self.assertNotIn(b'test_all_data_1', resp.content)
+        self.assertNotIn(b'largely_recommended', resp.content)
