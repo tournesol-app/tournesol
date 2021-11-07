@@ -31,7 +31,7 @@ class ExportTest(TestCase):
         csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
         comparison_list = [row for row in csv_file]
         self.assertEqual(len(comparison_list), 1)
-        self.assertEqual(float(comparison_list[0]['score']), 5)
+        self.assertEqual(float(comparison_list[0]['score']), 5.0)
 
     def test_authenticated_without_comparisons_can_download_comparisons(self):
         self.client.force_authenticate(self.user_without_comparisons)
