@@ -9,11 +9,17 @@ import { mainCriteriaNamesObj } from 'src/utils/constants';
 import type { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { ActionList } from 'src/utils/types';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   main: {
     margin: 4,
     maxWidth: 1000,
-    width: 'calc(100% - 8px)',
+    width: 'calc(100% - 10px)',
+    background: '#FFFFFF',
+    border: '1px solid #DCD8CB',
+    boxShadow:
+      '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
+    borderRadius: '4px',
+    overflow: 'hidden',
   },
   title: {
     fontFamily: 'Poppins',
@@ -84,6 +90,14 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexWrap: 'wrap',
     alignContent: 'space-between',
+  },
+  actionsContainer: {
+    display: 'flex',
+    alignItems: 'end',
+    flexDirection: 'column',
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'row',
+    },
   },
 }));
 
@@ -202,7 +216,7 @@ function VideoCard({
           )}
         </Box>
       </Grid>
-      <Grid item xs={12} sm={1}>
+      <Grid item xs={12} sm={1} className={classes.actionsContainer}>
         {actions.map((Action, index) => (
           <Action key={index} videoId={videoId} />
         ))}
