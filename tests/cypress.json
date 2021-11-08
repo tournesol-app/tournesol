@@ -1,7 +1,4 @@
 {
 	"baseUrl": "http://localhost:3000",
-	"video": false,
-	"env": {
-		"TEST_USER": "user"
-	}
+	"video": false
 }
