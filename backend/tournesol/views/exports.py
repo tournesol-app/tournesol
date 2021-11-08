@@ -53,7 +53,7 @@ class ExportAllView(APIView):
         response = HttpResponse(content_type="application/x-zip-compressed")
         response['Content-Disposition'] = f'attachment; filename={zip_root}.zip'
 
-        zf = zipfile.ZipFile(response, "w")
+        zf = zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED)
 
         # Currently adds only a single file to the zip archive, but we may extend the
         # content of the export in the future
