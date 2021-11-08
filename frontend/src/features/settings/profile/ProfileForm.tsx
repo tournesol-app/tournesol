@@ -6,8 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import { updateUsername } from '../../login/loginSlice';
-import { useAppDispatch } from '../../../app/hooks';
+import { useLoginState } from '../../../hooks';
 import {
   contactAdministrator,
   showErrorAlert,
@@ -16,7 +15,7 @@ import {
 import { AccountsService } from '../../../services/openapi';
 
 const ProfileForm = () => {
-  const dispatch = useAppDispatch();
+  const { updateUsername } = useLoginState();
   const { enqueueSnackbar } = useSnackbar();
 
   const [username, setUsername] = useState('');
@@ -34,12 +33,12 @@ const ProfileForm = () => {
       );
       if (response) {
         setUsername(response['username']);
-        dispatch(updateUsername({ username: response['username'] }));
+        updateUsername(response['username']);
       }
     }
 
     retrieveProfile();
-  }, [enqueueSnackbar]);
+  }, [updateUsername, enqueueSnackbar]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -68,7 +67,7 @@ const ProfileForm = () => {
         showSuccessAlert(enqueueSnackbar, 'Profile changed successfully');
       }
 
-      dispatch(updateUsername({ username: username }));
+      updateUsername(username);
       (document.activeElement as HTMLElement).blur();
     }
   };
