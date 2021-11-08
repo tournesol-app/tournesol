@@ -5,6 +5,7 @@ from io import StringIO
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, OpenApiTypes
 
 from tournesol.serializers import ComparisonSerializer
 from tournesol.models import Comparison
@@ -37,6 +38,10 @@ def write_comparisons_file(request, write_target):
 class ExportComparisonsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        description="Download current user data in .zip file",
+        responses={200: OpenApiTypes.BINARY}
+    )
     def get(self, request):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="export.csv"'
