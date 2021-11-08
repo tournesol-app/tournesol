@@ -79,7 +79,7 @@ const ProfileForm = () => {
           <TextField
             required
             fullWidth
-            label="User name"
+            label="Username"
             name="username"
             color="secondary"
             size="small"
@@ -90,8 +90,8 @@ const ProfileForm = () => {
             inputProps={{ 'data-testid': 'username' }}
           />
           <Typography variant="caption">
-            Your user name will appear in the Tournesol&apos;s public database
-            if you choose to make any of your data on Tournesol public. You can
+            Your username will appear in the Tournesol&apos;s public database if
+            you choose to make any of your data on Tournesol public. You can
             change it at any time.
           </Typography>
         </Grid>
