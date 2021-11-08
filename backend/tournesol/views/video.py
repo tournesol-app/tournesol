@@ -5,7 +5,8 @@ from collections import OrderedDict
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Case, When, Sum, F
+from django.conf import settings
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -74,21 +75,32 @@ class VideoViewSet(viewsets.ModelViewSet):
         language = request.query_params.get('language') \
             if request.query_params.get('language') else ""
         queryset = queryset.filter(language=language) if language else queryset
-        data = []
-        for video in queryset.prefetch_related("criteria_scores"):
-            total = 0
-            for score in video.criteria_scores.all():
-                score_query_weight = int(request.query_params.get(score.criteria)) \
-                    if request.query_params.get(score.criteria) \
-                    and request.query_params.get(score.criteria).isdigit() else 50
-                total += score.score * score_query_weight
-            video.total = total
-            if total > 0:
-                data.append(video)
-        data.sort(key=lambda x: x.total, reverse=True)
-        count = len(data)
-        data = data[offset:offset+limit]
-        data_serialised = [VideoSerializerWithCriteria(video).data for video in data]
+
+        criteria_cases = [
+            When(
+                criteria_scores__criteria=crit,
+                then=int(
+                    request.query_params.get(crit)
+                    if request.query_params.get(crit)
+                    and request.query_params.get(crit).isdigit()
+                    else 50
+                ),
+            )
+            for crit in settings.CRITERIAS
+        ]
+        criteria_weight = Case(*criteria_cases, default=0)
+
+        queryset = (
+            queryset.annotate(
+                total_score=Sum(F("criteria_scores__score") * criteria_weight)
+            )
+            .filter(total_score__gt=0)
+            .order_by("-total_score")
+        )
+
+        count = queryset.count()
+        videos = queryset.prefetch_related("criteria_scores")[offset: offset + limit]
+        data_serialised = [VideoSerializerWithCriteria(video).data for video in videos]
         return Response(OrderedDict([('count', str(count)), ('results', data_serialised)]))
 
     def update(self, request, *args, **kwargs):
