@@ -46,6 +46,10 @@ class ExportComparisonsView(APIView):
 
 class ExportAllView(APIView):
 
+    @extend_schema(
+        description="Download current user data in .zip file",
+        responses={200: OpenApiTypes.BINARY}
+    )
     def get(self, request):
         # Folder name in ZIP archive which contains the above files
         zip_root = f"export_{request.user.username}"
