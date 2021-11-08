@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { LoginState } from './LoginState.model';
 import { fetchToken, fetchTokenFromRefresh } from './loginAPI';
@@ -36,6 +36,12 @@ export const loginSlice = createSlice({
       state.refresh_token = undefined;
       state.access_token_expiration_date = undefined;
       state.username = undefined;
+    },
+    updateUsername: (
+      state: LoginState,
+      action: PayloadAction<{ username: string }>
+    ) => {
+      state.username = action.payload.username;
     },
   },
   extraReducers: (builder) => {
@@ -79,6 +85,6 @@ export const loginSlice = createSlice({
 });
 
 export const selectLogin = (state: RootState) => state.token;
-export const { logout } = loginSlice.actions;
+export const { logout, updateUsername } = loginSlice.actions;
 
 export default loginSlice.reducer;
