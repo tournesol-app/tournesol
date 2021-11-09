@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from tournesol.models import Comparison, Video, ComparisonCriteriaScore
 
 
 class UserDeletionTestCase(TestCase):
