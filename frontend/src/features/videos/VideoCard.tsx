@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
 
 function VideoCard({
   video,
-  actions,
+  actions = [],
 }: {
   video: VideoSerializerWithCriteria;
   actions: ActionList;
@@ -147,7 +147,7 @@ function VideoCard({
           height="100%"
         />
       </Grid>
-      <Grid item xs={12} sm={7}>
+      <Grid item xs={12} sm={7} data-testid="video-card-info">
         <div className={classes.top}>
           <Typography className={classes.title} variant="h5">
             {video.name}
@@ -174,45 +174,55 @@ function VideoCard({
           alignItems="center"
           style={{ gap: '12px' }}
         >
-          {max_criteria.length > 0 && (
-            <>
-              <Box display="flex" alignItems="center">
-                <img
-                  className="tournesol"
-                  src={'/svg/tournesol.svg'}
-                  alt="logo"
-                  title="Overall score"
-                />
-                <span className={classes.nb_tournesol}>
-                  {total_score.toFixed(0)}
-                </span>
-              </Box>
+          {!!video.criteria_scores && (
+            <Box
+              display="flex"
+              alignItems="center"
+              data-testid="video-card-overall-score"
+            >
+              <img
+                className="tournesol"
+                src={'/svg/tournesol.svg'}
+                alt="logo"
+                title="Overall score"
+              />
+              <span className={classes.nb_tournesol}>
+                {total_score.toFixed(0)}
+              </span>
+            </Box>
+          )}
 
-              {!!video.rating_n_ratings && video.rating_n_ratings > 0 && (
-                <Box>
-                  <span className={classes.ratings}>
-                    {video.rating_n_ratings} Ratings by
-                  </span>
-                  <span className={classes.contributors}>
-                    {video.rating_n_contributors} contributors
-                  </span>
-                </Box>
-              )}
-              <Box display="flex" alignItems="center" className={classes.rated}>
-                <span>Rated high:</span>
-                <img
-                  src={`/svg/${max_criteria}.svg`}
-                  alt={max_criteria}
-                  title={mainCriteriaNamesObj[max_criteria]}
-                />
-                <span>Rated low:</span>
-                <img
-                  src={`/svg/${min_criteria}.svg`}
-                  alt={min_criteria}
-                  title={mainCriteriaNamesObj[min_criteria]}
-                />
-              </Box>
-            </>
+          {!!video.rating_n_ratings && video.rating_n_ratings > 0 && (
+            <Box data-testid="video-card-ratings">
+              <span className={classes.ratings}>
+                {video.rating_n_ratings} ratings by{' '}
+              </span>
+              <span className={classes.contributors}>
+                {video.rating_n_contributors} contributors
+              </span>
+            </Box>
+          )}
+
+          {max_criteria !== '' && min_criteria !== max_criteria && (
+            <Box
+              data-testid="video-card-minmax-criterias"
+              display="flex"
+              alignItems="center"
+              className={classes.rated}
+            >
+              <span>Rated high:</span>
+              <img
+                src={`/svg/${max_criteria}.svg`}
+                alt={max_criteria}
+                title={mainCriteriaNamesObj[max_criteria]}
+              />
+              <span>Rated low:</span>
+              <img
+                src={`/svg/${min_criteria}.svg`}
+                alt={min_criteria}
+                title={mainCriteriaNamesObj[min_criteria]}
+              />
+            </Box>
           )}
         </Box>
       </Grid>
