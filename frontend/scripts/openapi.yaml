@@ -45,7 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefaultUserProfile'
+                $ref: '#/components/schemas/UserProfile'
           description: ''
     post:
       operationId: accounts_profile_create
@@ -56,13 +56,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefaultUserProfile'
+              $ref: '#/components/schemas/UserProfile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DefaultUserProfile'
+              $ref: '#/components/schemas/UserProfile'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/DefaultUserProfile'
+              $ref: '#/components/schemas/UserProfile'
         required: true
       security:
       - oauth2:
@@ -72,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefaultUserProfile'
+                $ref: '#/components/schemas/UserProfile'
           description: ''
     put:
       operationId: accounts_profile_update
@@ -83,13 +83,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefaultUserProfile'
+              $ref: '#/components/schemas/UserProfile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DefaultUserProfile'
+              $ref: '#/components/schemas/UserProfile'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/DefaultUserProfile'
+              $ref: '#/components/schemas/UserProfile'
         required: true
       security:
       - oauth2:
@@ -99,7 +99,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefaultUserProfile'
+                $ref: '#/components/schemas/UserProfile'
           description: ''
     patch:
       operationId: accounts_profile_partial_update
@@ -110,13 +110,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedDefaultUserProfile'
+              $ref: '#/components/schemas/PatchedUserProfile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedDefaultUserProfile'
+              $ref: '#/components/schemas/PatchedUserProfile'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedDefaultUserProfile'
+              $ref: '#/components/schemas/PatchedUserProfile'
       security:
       - oauth2:
         - read write groups
@@ -125,7 +125,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefaultUserProfile'
+                $ref: '#/components/schemas/UserProfile'
           description: ''
   /accounts/register/:
     post:
@@ -166,13 +166,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefaultRegisterEmail'
+              $ref: '#/components/schemas/RegisterEmail'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DefaultRegisterEmail'
+              $ref: '#/components/schemas/RegisterEmail'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/DefaultRegisterEmail'
+              $ref: '#/components/schemas/RegisterEmail'
         required: true
       security:
       - oauth2:
@@ -182,7 +182,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DefaultRegisterEmail'
+                $ref: '#/components/schemas/RegisterEmail'
           description: ''
   /accounts/reset-password/:
     post:
@@ -299,6 +299,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VerifyRegistration'
+          description: ''
+  /domains/:
+    get:
+      operationId: domains_list
+      description: List all accepted (=trusted) email domains.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - domains
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmailDomainList'
           description: ''
   /schema/:
     get:
@@ -792,7 +821,6 @@ paths:
   /video/:
     get:
       operationId: video_list
-      description: ''
       parameters:
       - name: limit
         required: false
@@ -870,7 +898,6 @@ paths:
           description: ''
     put:
       operationId: video_update
-      description: ''
       parameters:
       - in: path
         name: id
@@ -904,7 +931,6 @@ paths:
           description: ''
     patch:
       operationId: video_partial_update
-      description: ''
       parameters:
       - in: path
         name: id
@@ -937,7 +963,6 @@ paths:
           description: ''
     delete:
       operationId: video_destroy
-      description: ''
       parameters:
       - in: path
         name: id
@@ -1070,15 +1095,6 @@ components:
       required:
       - criteria_scores
       - video
-    DefaultRegisterEmail:
-      type: object
-      description: Default serializer used for e-mail registration (e-mail change).
-      properties:
-        email:
-          type: string
-          format: email
-      required:
-      - email
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -1091,151 +1107,6 @@ components:
           type: string
       required:
       - login
-    DefaultUserProfile:
-      type: object
-      description: |-
-        Default serializer used for user profile. It will use these:
-
-        * User fields
-        * :ref:`user-hidden-fields-setting` setting
-        * :ref:`user-public-fields-setting` setting
-        * :ref:`user-editable-fields-setting` setting
-
-        to automagically generate the required serializer fields.
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        email:
-          type: string
-          format: email
-          readOnly: true
-          title: Email address
-        is_demo:
-          type: boolean
-          description: Is a demo account?
-        first_name:
-          type: string
-          nullable: true
-          description: First name
-          maxLength: 100
-        last_name:
-          type: string
-          nullable: true
-          description: Last name
-          maxLength: 100
-        title:
-          type: string
-          nullable: true
-          description: Your position
-        bio:
-          type: string
-          nullable: true
-          description: Self-description (degree, biography, ...)
-        comment_anonymously:
-          type: boolean
-          description: Comment anonymously by-default
-        show_online_presence:
-          type: boolean
-          description: Show my online presence on Tournesol
-        show_my_profile:
-          type: boolean
-          description: Show my profile on Tournesol
-        birth_year:
-          type: integer
-          maximum: 2100
-          minimum: 1900
-          nullable: true
-          description: Year of birth
-        gender:
-          allOf:
-          - $ref: '#/components/schemas/GenderEnum'
-          description: Your gender
-        nationality:
-          allOf:
-          - $ref: '#/components/schemas/NationalityEnum'
-          description: Your country of nationality
-        residence:
-          allOf:
-          - $ref: '#/components/schemas/ResidenceEnum'
-          description: Your country of residence
-        race:
-          allOf:
-          - $ref: '#/components/schemas/RaceEnum'
-          description: Your ethnicity
-        political_affiliation:
-          allOf:
-          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
-          description: Your political preference
-        religion:
-          allOf:
-          - $ref: '#/components/schemas/ReligionEnum'
-          description: Your religion
-        degree_of_political_engagement:
-          allOf:
-          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
-          description: Your degree of political engagement
-        moral_philosophy:
-          allOf:
-          - $ref: '#/components/schemas/MoralPhilosophyEnum'
-          description: Your preferred moral philosophy
-        website:
-          type: string
-          format: uri
-          nullable: true
-          description: Your website URL
-          maxLength: 500
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          description: Your LinkedIn URL
-          maxLength: 500
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Youtube channel URL
-          maxLength: 500
-        google_scholar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Google Scholar URL
-          maxLength: 500
-        orcid:
-          type: string
-          format: uri
-          nullable: true
-          description: Your ORCID URL
-          maxLength: 500
-        researchgate:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Researchgate profile URL
-          maxLength: 500
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          description: Your Twitter URL
-          maxLength: 500
-        avatar:
-          type: string
-          format: uri
-          nullable: true
-          description: Your profile picture.
-      required:
-      - email
-      - id
-      - username
     DegreeOfPoliticalEngagementEnum:
       enum:
       - Not Specified
@@ -1246,6 +1117,19 @@ components:
       - Activist
       - Professional
       type: string
+    EmailDomain:
+      type: object
+      properties:
+        domain:
+          type: string
+          description: E-mail domain with leading @
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          description: Status of the domain.
+      required:
+      - domain
     GenderEnum:
       enum:
       - Not Specified
@@ -9678,6 +9562,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContributorRating'
+    PaginatedEmailDomainList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailDomain'
     PaginatedVideoRateLaterList:
       type: object
       properties:
@@ -9718,7 +9622,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VideoSerializerWithCriteria'
-    PatchedDefaultUserProfile:
+    PatchedUserProfile:
       type: object
       description: |-
         Default serializer used for user profile. It will use these:
@@ -9859,6 +9763,8 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
+        is_trusted:
+          type: boolean
     PatchedVideo:
       type: object
       properties:
@@ -9928,6 +9834,15 @@ components:
       - Unknown
       - Other
       type: string
+    RegisterEmail:
+      type: object
+      description: Default serializer used for e-mail registration (e-mail change).
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
     RegisterUser:
       type: object
       description: |-
@@ -10359,6 +10274,160 @@ components:
       - Zambia
       - Zimbabwe
       type: string
+    StatusEnum:
+      enum:
+      - RJ
+      - ACK
+      - PD
+      type: string
+    UserProfile:
+      type: object
+      description: |-
+        Default serializer used for user profile. It will use these:
+
+        * User fields
+        * :ref:`user-hidden-fields-setting` setting
+        * :ref:`user-public-fields-setting` setting
+        * :ref:`user-editable-fields-setting` setting
+
+        to automagically generate the required serializer fields.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        is_demo:
+          type: boolean
+          description: Is a demo account?
+        first_name:
+          type: string
+          nullable: true
+          description: First name
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          description: Last name
+          maxLength: 100
+        title:
+          type: string
+          nullable: true
+          description: Your position
+        bio:
+          type: string
+          nullable: true
+          description: Self-description (degree, biography, ...)
+        comment_anonymously:
+          type: boolean
+          description: Comment anonymously by-default
+        show_online_presence:
+          type: boolean
+          description: Show my online presence on Tournesol
+        show_my_profile:
+          type: boolean
+          description: Show my profile on Tournesol
+        birth_year:
+          type: integer
+          maximum: 2100
+          minimum: 1900
+          nullable: true
+          description: Year of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: Your gender
+        nationality:
+          allOf:
+          - $ref: '#/components/schemas/NationalityEnum'
+          description: Your country of nationality
+        residence:
+          allOf:
+          - $ref: '#/components/schemas/ResidenceEnum'
+          description: Your country of residence
+        race:
+          allOf:
+          - $ref: '#/components/schemas/RaceEnum'
+          description: Your ethnicity
+        political_affiliation:
+          allOf:
+          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
+          description: Your political preference
+        religion:
+          allOf:
+          - $ref: '#/components/schemas/ReligionEnum'
+          description: Your religion
+        degree_of_political_engagement:
+          allOf:
+          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
+          description: Your degree of political engagement
+        moral_philosophy:
+          allOf:
+          - $ref: '#/components/schemas/MoralPhilosophyEnum'
+          description: Your preferred moral philosophy
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: Your website URL
+          maxLength: 500
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          description: Your LinkedIn URL
+          maxLength: 500
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Youtube channel URL
+          maxLength: 500
+        google_scholar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Google Scholar URL
+          maxLength: 500
+        orcid:
+          type: string
+          format: uri
+          nullable: true
+          description: Your ORCID URL
+          maxLength: 500
+        researchgate:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Researchgate profile URL
+          maxLength: 500
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Twitter URL
+          maxLength: 500
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your profile picture.
+        is_trusted:
+          type: boolean
+      required:
+      - email
+      - id
+      - is_trusted
+      - username
     VerifyEmail:
       type: object
       properties:
@@ -10461,9 +10530,9 @@ components:
           type: number
           format: float
           maximum: 1.0
+          minimum: 0.0
           description: Top quantile for all rated videos for aggregated scoresfor
             the given criteria. 0.0=best, 1.0=worst
-          minimum: 0.0
       required:
       - criteria
     VideoRateLater:

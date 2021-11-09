@@ -28,7 +28,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
-    "openapi": "openapi -i scripts/tmp/openapi.yaml -o src/services/openapi",
+    "update-schema": "wget -O scripts/openapi.yaml \"${REACT_APP_API_URL:-http://localhost:8000}/schema/\"",
+    "openapi": "openapi -i scripts/openapi.yaml -o src/services/openapi",
     "lint": "eslint src --ext '.js,.jsx,.ts,.tsx'",
     "lint:fix": "eslint --fix src --ext '.js,.jsx,.ts,.tsx'",
     "prepare": "cd .. && husky install frontend/.husky"

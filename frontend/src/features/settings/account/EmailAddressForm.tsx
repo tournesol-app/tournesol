@@ -1,19 +1,68 @@
 import React, { useState, useEffect } from 'react';
 
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import { CircularProgress, Box, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  Box,
+  Typography,
+  Theme,
+  Grid,
+  Button,
+} from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
 
 import { showErrorAlert } from '../../../utils/notifications';
 import { FormTextField } from 'src/components';
 
-import { AccountsService, ApiError } from 'src/services/openapi';
+import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
+import { Lens as LensIcon, HelpOutline as HelpIcon } from '@material-ui/icons';
+import { useTheme } from '@material-ui/styles';
+
+const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
+  const theme = useTheme<Theme>();
+
+  return (
+    <Box display="flex" flexDirection="row" flexWrap="wrap" alignItems="center">
+      <Typography>
+        <Box display="flex" gridGap="4px" alignItems="center">
+          Email status:
+          <Box
+            display="inline-flex"
+            flexDirection="row"
+            alignItems="center"
+            gridGap="4px"
+            color={
+              isTrusted
+                ? theme.palette.success.main
+                : theme.palette.warning.main
+            }
+            fontWeight="bold"
+          >
+            <LensIcon style={{ fontSize: 16 }} />
+            <Grid item>{isTrusted ? 'Trusted' : 'Non-trusted'}</Grid>
+          </Box>
+        </Box>
+      </Typography>
+
+      <Box display="inline-flex" marginLeft="auto">
+        <Button
+          component={RouterLink}
+          to="/about/trusted_domains"
+          size="small"
+          style={{ fontSize: 13, color: '#777' }}
+          startIcon={<HelpIcon />}
+        >
+          Learn more about trusted domains
+        </Button>
+      </Box>
+    </Box>
+  );
+};
 
 export const EmailAddressForm = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [currentEmail, setCurrentEmail] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [apiError, setApiError] = useState<ApiError | null>(null);
@@ -41,7 +90,7 @@ export const EmailAddressForm = () => {
     const loadProfile = async () => {
       try {
         const profile = await AccountsService.accountsProfileRetrieve();
-        setCurrentEmail(profile.email);
+        setProfileData(profile);
         setIsLoading(false);
       } catch (err) {
         showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
@@ -67,14 +116,15 @@ export const EmailAddressForm = () => {
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
         <div style={{ display: isLoading ? 'none' : undefined }}>
-          {currentEmail && (
+          {profileData && (
             <Box marginBottom={2}>
               <Typography>
                 Your current email address is{' '}
                 <strong>
-                  <code>{currentEmail}</code>
+                  <code>{profileData.email}</code>
                 </strong>
               </Typography>
+              <TrustStatus isTrusted={profileData.is_trusted} />
             </Box>
           )}
           <form onSubmit={handleSubmit}>
@@ -106,5 +156,5 @@ export const EmailAddressForm = () => {
     );
   };
 
-  return <Box minHeight="150px">{getContent()}</Box>;
+  return <Box minHeight="180px">{getContent()}</Box>;
 };
