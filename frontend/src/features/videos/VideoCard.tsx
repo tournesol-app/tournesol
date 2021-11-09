@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
 
 function VideoCard({
   video,
-  actions,
+  actions = [],
 }: {
   video: VideoSerializerWithCriteria;
   actions: ActionList;
@@ -147,7 +147,7 @@ function VideoCard({
           height="100%"
         />
       </Grid>
-      <Grid item xs={12} sm={7}>
+      <Grid item xs={12} sm={7} data-testid="video-card-info">
         <div className={classes.top}>
           <Typography className={classes.title} variant="h5">
             {video.name}
@@ -175,7 +175,11 @@ function VideoCard({
           style={{ gap: '12px' }}
         >
           {!!video.criteria_scores && (
-            <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              alignItems="center"
+              data-testid="video-card-overall-score"
+            >
               <img
                 className="tournesol"
                 src={'/svg/tournesol.svg'}
@@ -189,9 +193,9 @@ function VideoCard({
           )}
 
           {!!video.rating_n_ratings && video.rating_n_ratings > 0 && (
-            <Box>
+            <Box data-testid="video-card-ratings">
               <span className={classes.ratings}>
-                {video.rating_n_ratings} Ratings by
+                {video.rating_n_ratings} ratings by{' '}
               </span>
               <span className={classes.contributors}>
                 {video.rating_n_contributors} contributors
@@ -200,7 +204,12 @@ function VideoCard({
           )}
 
           {max_criteria !== '' && min_criteria !== max_criteria && (
-            <Box display="flex" alignItems="center" className={classes.rated}>
+            <Box
+              data-testid="video-card-minmax-criterias"
+              display="flex"
+              alignItems="center"
+              className={classes.rated}
+            >
               <span>Rated high:</span>
               <img
                 src={`/svg/${max_criteria}.svg`}
