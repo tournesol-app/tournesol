@@ -40,9 +40,7 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # test a request without query parameters
-        response = client.get(
-            reverse("tournesol:video-list"), format="json",
-        )
+        response = client.get('/videos/', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
@@ -61,9 +59,7 @@ class VideoApi(TestCase):
 
         # test a request with the limit query parameter
         limit = 2
-        response = client.get(
-            reverse("tournesol:video-list"), {"limit": limit}, format="json",
-        )
+        response = client.get('/videos/', {"limit": limit}, format="json")
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -74,9 +70,7 @@ class VideoApi(TestCase):
 
         # test that a huge limit doesn't break anything
         limit = 10000
-        response = client.get(
-            reverse("tournesol:video-list"), {"limit": limit}, format="json",
-        )
+        response = client.get('/videos/', {"limit": limit}, format="json")
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -93,9 +87,7 @@ class VideoApi(TestCase):
         existing_video_ids = [video.video_id for video in self._list_of_videos]
 
         offset = 2
-        response = client.get(
-            reverse("tournesol:video-list"), {"offset": offset}, format="json",
-        )
+        response = client.get('/videos/', {"offset": offset}, format="json")
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -105,9 +97,7 @@ class VideoApi(TestCase):
 
         # test that a huge offset doesn't break anything
         offset = 10000
-        response = client.get(
-            reverse("tournesol:video-list"), {"offset": offset}, format="json",
-        )
+        response = client.get('/videos/', {"offset": offset}, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
@@ -135,8 +125,7 @@ class VideoApi(TestCase):
         ]
 
         for param in parameters:
-            response = client.get(
-                reverse("tournesol:video-list"), {
+            response = client.get('/videos/', {
                     "limit": param["limit"], "offset": param["offset"]
                 }, format="json",
             )
@@ -275,7 +264,7 @@ class VideoApi(TestCase):
         client = APIClient()
         data={'video_id':'NeADlWSDFAQ'}
         response = client.post(
-            "/video/",
+            "/videos/",
             data,
             format="json",
         )
@@ -284,7 +273,7 @@ class VideoApi(TestCase):
     def test_upload_video_incorrect_id(self):
         factory = APIClient()
         response = factory.post(
-            "/video/",
+            "/videos/",
             {'video_id':'AZERTYUIOPV3'}, # length of 12
             format="json"
         )
