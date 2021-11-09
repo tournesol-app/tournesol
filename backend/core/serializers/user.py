@@ -1,9 +1,10 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
-from rest_framework.serializers import EmailField
+from rest_framework.serializers import EmailField, BooleanField
 from rest_registration.api.serializers import (
     DefaultRegisterUserSerializer,
     DefaultRegisterEmailSerializer,
+    DefaultUserProfileSerializer,
 )
 
 from core.models.user import User
@@ -36,3 +37,13 @@ class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
             message="A user with this email address already exists."
         ),
     ])
+
+
+class UserProfileSerializer(DefaultUserProfileSerializer):
+    is_trusted = BooleanField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        extra_fields = ('is_trusted',)
+        self.Meta.fields += extra_fields
+        self.Meta.read_only_fields += extra_fields
