@@ -4,24 +4,42 @@
 Defines Tournesol's backend API routes
 """
 
-from django.urls import include, path
-from rest_framework import routers
+from django.urls import path
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListOnlyApi
 from .views.exports import ExportComparisonsView, ExportAllView
-from .views.video import VideoViewSet
+from .views.video import VideoView, VideoRetrieveView
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 from .views.user import CurrentUserView
 from .views.ratings import ContributorRatingList, ContributorRatingDetail
 from .views.email_domains import EmailDomainsList
 
 
-router = routers.DefaultRouter()
-router.register(r'video', VideoViewSet)
-
 app_name = "tournesol"
 urlpatterns = [
-    path("", include(router.urls)),
+    # Video API
+    # TODO: the endpoint below is duplicated for backward compatinility.
+    # We want to keep the enpoints `videos/` and `videos/{id}`
+    path(
+        "video/",
+        VideoView.as_view(),
+        name="list_video"
+    ),
+    path(
+        "video/<str:youtube_id>/",
+        VideoRetrieveView.as_view(),
+        name="retrieve_video"
+    ),
+    path(
+        "videos/",
+        VideoView.as_view(),
+        name="list_videos"
+    ),
+    path(
+        "videos/<str:youtube_id>/",
+        VideoRetrieveView.as_view(),
+        name="retrieve_videos"
+    ),
     # User API
     path(
         "users/me/",

@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
-from rest_framework import viewsets, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
@@ -17,7 +17,7 @@ from tournesol.utils.api_youtube import youtube_video_details
 from tournesol.utils.video_language import compute_video_language
 
 
-class VideoViewSet(viewsets.ModelViewSet):
+class VideoView(generics.GenericAPIView):
     # FIXME: this `queryset` is not used by the implementation
     # Define `filterset_fields` for filtering?
     queryset = Video.objects.all()
@@ -29,15 +29,7 @@ class VideoViewSet(viewsets.ModelViewSet):
             return VideoSerializerWithCriteria
         return VideoSerializer
 
-    def retrieve(self, request, pk):
-        """
-        Get video details and criteria that are related to it
-        """
-        video = get_object_or_404(Video, video_id=pk)
-        video_serialized = VideoSerializerWithCriteria(video)
-        return Response(video_serialized.data)
-
-    def list(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         queryset = Video.objects.all()
         search = request.query_params.get('search')
         if search:
@@ -103,13 +95,7 @@ class VideoViewSet(viewsets.ModelViewSet):
         data_serialised = VideoSerializerWithCriteria(videos, many=True).data
         return Response(OrderedDict([('count', str(count)), ('results', data_serialised)]))
 
-    def update(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def destroy(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def create(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
         Add a video to the db if it does not already exist
         """
@@ -156,3 +142,15 @@ class VideoViewSet(viewsets.ModelViewSet):
             serializer.save(**extra_data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VideoRetrieveView(generics.GenericAPIView):
+    permission_classes = []  # To unlock authentication required
+
+    def get(self, request, youtube_id):
+        """
+        Get video details and criteria that are related to it
+        """
+        video = get_object_or_404(Video, video_id=youtube_id)
+        video_serialized = VideoSerializerWithCriteria(video)
+        return Response(video_serialized.data)
