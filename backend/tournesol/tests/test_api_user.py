@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import User
+from core.models import User, EmailDomain
 from tournesol.models import Comparison, Video, ComparisonCriteriaScore
 
 
@@ -100,3 +100,32 @@ class UserRegisterNewEmailTest(TestCase):
             text="email address already exists",
             status_code=400
         )
+
+
+class AccountProfileTest(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username="user1", email="user1@example.com")
+        EmailDomain.objects.filter(domain="@example.com").update(status=EmailDomain.STATUS_ACCEPTED)
+        self.user2 = User.objects.create_user(username="user2", email="user2@rejected.test")
+        EmailDomain.objects.filter(domain="@rejected.test").update(status=EmailDomain.STATUS_REJECTED)
+
+    def test_user_profile(self):
+        self.client.force_authenticate(self.user1)
+        resp = self.client.get("/accounts/profile/")
+
+        self.assertEqual(resp.status_code, 200)
+        profile_data = resp.json()
+        self.assertEqual(profile_data["username"], "user1")
+        self.assertEqual(profile_data["email"], "user1@example.com")
+        self.assertEqual(profile_data["is_trusted"], True) # Email domain is accepted
+
+    def test_user_profile_with_rejected_domain(self):
+        self.client.force_authenticate(self.user2)
+        resp = self.client.get("/accounts/profile/")
+
+        self.assertEqual(resp.status_code, 200)
+        profile_data = resp.json()
+        self.assertEqual(profile_data["username"], "user2")
+        self.assertEqual(profile_data["email"], "user2@rejected.test")
+        self.assertEqual(profile_data["is_trusted"], False) # Email domain is rejected
