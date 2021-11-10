@@ -1,6 +1,12 @@
 name: Run end-to-end tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   test:
