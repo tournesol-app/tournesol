@@ -5,7 +5,7 @@ set -Eeuo pipefail
 function wait_for_backend() {
   set +e
   for i in `seq 1 50`; do
-    curl localhost:8000
+    curl -s localhost:8000
     if [[ "$?" == "0" ]]; then
       echo ""
       return 0
