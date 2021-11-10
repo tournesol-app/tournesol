@@ -5,7 +5,7 @@ set -Eeuo pipefail
 function wait_for_backend() {
   set +e
   for i in `seq 1 50`; do
-    curl localhost:8000
+    curl -s localhost:8000
     if [[ "$?" == "0" ]]; then
       echo ""
       return 0
@@ -52,7 +52,7 @@ docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d to
 rm "$CURRENT_DIR"/$DB_DIR/dump.sql
 
 echo 'Creating Superuser:'
-USERNAME="${1:-"$USER"}"
+USERNAME="${1:-"user"}"
 PASSWORD="${2:-"tournesol"}"
 EMAIL="${3:-""}"
 "$CURRENT_DIR/../backend/dev-env/create-superuser.exp" "$USERNAME" "$PASSWORD" "$EMAIL"

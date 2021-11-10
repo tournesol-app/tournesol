@@ -27,7 +27,7 @@ Follow the logs with `docker logs -f tournesol-dev-api`
 Similarly, this container uses the code present in `../frontend/` to rebuild the application automatically.  
 Follow the logs with `docker logs -f tournesol-dev-front`
 
-A superuser will be created automatically with your username and the default password `tournesol`.  
+A superuser will be created automatically with username `user` and the default password `tournesol`.
 
 Then, the application is visible on http://localhost:3000.  
 

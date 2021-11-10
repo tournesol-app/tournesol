@@ -30,7 +30,8 @@
       "matches": ["https://*.youtube.com/*"],
       "js": ["addVideoStatistics.js", "addTournesolRecommendations.js", "addRateLaterButton.js"],
       "css": ["addVideoStatistics.css", "addTournesolRecommendations.css", "addRateLaterButton.css"],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": true
     },
     {
       "matches": ["https://tournesol.app/*"],
