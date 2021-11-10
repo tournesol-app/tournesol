@@ -34,8 +34,8 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
             gridGap="4px"
             color={
               isTrusted
-                ? theme.palette.success.main
-                : theme.palette.warning.main
+                ? theme.palette.success.dark
+                : theme.palette.warning.dark
             }
             fontWeight="bold"
           >
@@ -117,10 +117,15 @@ export const EmailAddressForm = () => {
         {/* "display" is used here to keep the form state during loading. */}
         <div style={{ display: isLoading ? 'none' : undefined }}>
           {profileData && (
-            <Box marginBottom={2}>
+            <Box
+              marginBottom={2}
+              display="flex"
+              flexDirection="column"
+              gridGap="8px"
+            >
               <Typography>
                 Your current email address is{' '}
-                <strong>
+                <strong style={{ whiteSpace: 'nowrap' }}>
                   <code>{profileData.email}</code>
                 </strong>
               </Typography>
