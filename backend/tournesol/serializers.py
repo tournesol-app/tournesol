@@ -10,7 +10,7 @@ from rest_framework.serializers import Serializer, ModelSerializer
 
 from .models import (
     Comparison, ComparisonCriteriaScore, Video, VideoRateLater,
-    VideoCriteriaScore, ContributorRating, ContributorRatingCriteriaScore
+    VideoCriteriaScore, ContributorRating, ContributorRatingCriteriaScore, Tag
 )
 
 
@@ -28,7 +28,7 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
-            ]
+        ]
         read_only_fields = [
             "name",
             "description",
@@ -39,6 +39,15 @@ class VideoSerializer(ModelSerializer):
             "rating_n_ratings",
             "rating_n_contributors",
         ]
+
+    def save(self, **kwargs):
+        tags = kwargs.pop('tags')
+        video = super().save(**kwargs)
+        for tag_name in tags:
+            #  The return object is a tuple having first an instance of Tag, and secondly a bool
+            tag = Tag.objects.get_or_create(name=tag_name)
+            video.tags.add(tag[0].id)
+        return video
 
 
 class VideoReadOnlySerializer(Serializer):

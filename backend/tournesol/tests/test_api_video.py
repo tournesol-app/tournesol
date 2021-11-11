@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Video, VideoCriteriaScore
+from ..models import Video, VideoCriteriaScore, Tag
 
 
 class VideoApi(TestCase):
@@ -190,7 +190,7 @@ class VideoApi(TestCase):
         factory = APIClient()
         response = factory.post(
             "/video/",
-            {'video_id':'NeADlWSDFAQ'},
+            {'video_id': 'NeADlWSDFAQ'},
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -222,7 +222,7 @@ class VideoApi(TestCase):
                         "liveBroadcastContent": "none",
                         "localized": {},
                         "publishedAt": "2012-10-01T15:27:35Z",
-                        "tags": [],
+                        "tags": ["tournesol"],
                         "thumbnails": {},
                         "title": "Video title"
                     },
@@ -250,6 +250,9 @@ class VideoApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(response.json()["name"], "Video title")
+        video = Video.objects.get(video_id="NeADlWSDFAQ")
+        tournesol_tag = Tag.objects.get(name="tournesol")
+        self.assertIn(tournesol_tag, video.tags.all())
 
     @patch("tournesol.views.video.youtube_video_details")
     def test_create_video_with_with_youtube_api_no_result(self, mock_youtube):

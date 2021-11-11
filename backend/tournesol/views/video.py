@@ -122,16 +122,18 @@ class VideoViewSet(mixins.CreateModelMixin,
             description = str(yt_info["snippet"]["description"])
             uploader = yt_info["snippet"]["channelTitle"]
             language = compute_video_language(uploader, title, description)
+            tags = yt_info["snippet"]["tags"]
             extra_data = {
                 "name": title,
                 "description": description,
                 "publication_date": published_date,
                 "views": nb_views,
                 "uploader": uploader,
-                "language": language
+                "language": language,
+                "tags": tags,
             }
         except AssertionError:
-            extra_data = {}
+            extra_data = {"tags": []}
         serializer = VideoSerializer(data={"video_id": video_id})
         if serializer.is_valid():
             serializer.save(**extra_data)
