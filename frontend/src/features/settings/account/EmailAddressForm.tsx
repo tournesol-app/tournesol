@@ -21,31 +21,32 @@ import { useTheme } from '@material-ui/styles';
 
 const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
   const theme = useTheme<Theme>();
+  const statusColor = isTrusted
+    ? theme.palette.success.dark
+    : theme.palette.warning.dark;
 
   return (
-    <Box display="flex" flexDirection="row" flexWrap="wrap" alignItems="center">
-      <Typography>
-        <Box display="flex" gridGap="4px" alignItems="center">
-          Email status:
-          <Box
-            display="inline-flex"
-            flexDirection="row"
-            alignItems="center"
-            gridGap="4px"
-            color={
-              isTrusted
-                ? theme.palette.success.dark
-                : theme.palette.warning.dark
-            }
-            fontWeight="bold"
-          >
-            <LensIcon style={{ fontSize: 16 }} />
-            <Grid item>{isTrusted ? 'Trusted' : 'Non-trusted'}</Grid>
-          </Box>
+    <Box
+      display="flex"
+      flexDirection="row"
+      flexWrap="wrap"
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <Typography
+        component="div"
+        style={{ display: 'flex', alignItems: 'center' }}
+      >
+        Email status:
+        <LensIcon
+          style={{ fontSize: 16, color: statusColor, margin: '0 4px' }}
+        />
+        <Box color={statusColor} fontWeight="bold">
+          {isTrusted ? 'Trusted' : 'Non-trusted'}
         </Box>
       </Typography>
 
-      <Box display="inline-flex" marginLeft="auto">
+      <Box display="inline-flex">
         <Button
           component={RouterLink}
           to="/about/trusted_domains"
