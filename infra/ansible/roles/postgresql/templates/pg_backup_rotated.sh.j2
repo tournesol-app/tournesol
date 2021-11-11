@@ -83,6 +83,7 @@ function perform_backups()
 		    set -o pipefail
 		    if ! pg_dumpall -g -h "$HOSTNAME" -U "$USERNAME" | gzip > $FINAL_BACKUP_DIR"globals".sql.gz.in_progress; then
 		            echo "[!!ERROR!!] Failed to produce globals backup" 1>&2
+		            return 1
 		    else
 		            mv $FINAL_BACKUP_DIR"globals".sql.gz.in_progress $FINAL_BACKUP_DIR"globals".sql.gz
 		    fi
@@ -116,6 +117,7 @@ function perform_backups()
 		set -o pipefail
 	        if ! pg_dump -Fp -s -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" | gzip > $FINAL_BACKUP_DIR"$DATABASE"_SCHEMA.sql.gz.in_progress; then
 	                echo "[!!ERROR!!] Failed to backup database schema of $DATABASE" 1>&2
+	                return 1
 	        else
 	                mv $FINAL_BACKUP_DIR"$DATABASE"_SCHEMA.sql.gz.in_progress $FINAL_BACKUP_DIR"$DATABASE"_SCHEMA.sql.gz
 	        fi
@@ -146,6 +148,7 @@ function perform_backups()
 			set -o pipefail
 			if ! pg_dump -Fp -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" | gzip > $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress; then
 				echo "[!!ERROR!!] Failed to produce plain backup database $DATABASE" 1>&2
+				return 1
 			else
 				mv $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress $FINAL_BACKUP_DIR"$DATABASE".sql.gz
 			fi
@@ -159,6 +162,7 @@ function perform_backups()
 	
 			if ! pg_dump -Fc -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" -f $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress; then
 				echo "[!!ERROR!!] Failed to produce custom backup database $DATABASE"
+				return 1
 			else
 				mv $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress $FINAL_BACKUP_DIR"$DATABASE".custom
 			fi
