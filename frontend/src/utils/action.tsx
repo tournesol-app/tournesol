@@ -64,6 +64,7 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
 
 export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ videoId }: { videoId: string }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const video_id = videoId;
     return (
       <Tooltip title="Remove" placement="left">
@@ -72,6 +73,10 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
           onClick={async () => {
             await UsersService.usersMeVideoRateLaterDestroy(video_id);
             if (asyncCallback) await asyncCallback();
+            showSuccessAlert(
+              enqueueSnackbar,
+              'The video has been deleted from your rate later list.'
+            );
           }}
           style={{ color: '#CDCABC' }}
         >
