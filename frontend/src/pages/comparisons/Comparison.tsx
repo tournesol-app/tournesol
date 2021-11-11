@@ -10,6 +10,8 @@ import { UsersService, Comparison } from 'src/services/openapi';
 import { ensureVideoExistsOrCreate } from 'src/utils/video';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector from 'src/features/video_selector/VideoSelector';
+import { showSuccessAlert } from 'src/utils/notifications';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -70,6 +72,7 @@ const ComparisonPage = () => {
   const [initialComparison, setInitialComparison] = useState<Comparison | null>(
     null
   );
+  const { enqueueSnackbar } = useSnackbar();
 
   const searchParams = new URLSearchParams(location.search);
   const videoA: string | null = searchParams.get('videoA');
@@ -114,6 +117,7 @@ const ComparisonPage = () => {
       UsersService.usersMeComparisonsCreate(c);
       setInitialComparison(c);
     }
+    showSuccessAlert(enqueueSnackbar, 'The comparison is correctly submitted.');
   };
 
   return (
