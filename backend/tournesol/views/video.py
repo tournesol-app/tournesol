@@ -100,7 +100,7 @@ class VideoViewSet(viewsets.ModelViewSet):
 
         count = queryset.count()
         videos = queryset.prefetch_related("criteria_scores")[offset: offset + limit]
-        data_serialised = [VideoSerializerWithCriteria(video).data for video in videos]
+        data_serialised = VideoSerializerWithCriteria(videos, many=True).data
         return Response(OrderedDict([('count', str(count)), ('results', data_serialised)]))
 
     def update(self, request, *args, **kwargs):
