@@ -13,6 +13,7 @@ from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 from .views.user import CurrentUserView
 from .views.ratings import ContributorRatingList, ContributorRatingDetail
+from .views.email_domains import EmailDomainsList
 
 
 router = routers.DefaultRouter()
@@ -74,4 +75,9 @@ urlpatterns = [
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
     ),
+    path(
+        "domains/",
+        EmailDomainsList.as_view(),
+        name="email_domains_list"
+    )
 ]

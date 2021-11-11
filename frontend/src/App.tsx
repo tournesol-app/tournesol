@@ -18,6 +18,7 @@ import VideoCardPage from './pages/videos/VideoCard';
 import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
+import TrustedDomains from './pages/about/TrustedDomains';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -86,6 +87,9 @@ function App() {
         </Route>
         <Route path="/reset-password">
           <ResetPassword />
+        </Route>
+        <Route path="/about/trusted_domains">
+          <TrustedDomains />
         </Route>
         <Route path="/">
           <HomePage />
