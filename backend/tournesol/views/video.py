@@ -31,8 +31,11 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         search = request.query_params.get('search')
         if search:
-            queryset = queryset.filter(Q(name__search=search) |
-                                       Q(description__search=search))
+            queryset = queryset.filter(
+                Q(name__search=search) |
+                Q(description__search=search) |
+                Q(tags__name__search=search)
+            )
 
         date_lte = request.query_params.get('date_lte') \
             if request.query_params.get('date_lte') else ""
@@ -122,7 +125,8 @@ class VideoViewSet(mixins.CreateModelMixin,
             description = str(yt_info["snippet"]["description"])
             uploader = yt_info["snippet"]["channelTitle"]
             language = compute_video_language(uploader, title, description)
-            tags = yt_info["snippet"]["tags"]
+            #  if video has no tags, te field doesn't appear on response
+            tags = yt_info["snippet"].get("tags", [])
             extra_data = {
                 "name": title,
                 "description": description,
