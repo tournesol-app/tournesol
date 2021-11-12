@@ -31,6 +31,7 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         search = request.query_params.get('search')
         if search:
+            #  search keywork is about the same as icontains but is more efficient with a psql db
             queryset = queryset.filter(
                 Q(name__search=search) |
                 Q(description__search=search) |
