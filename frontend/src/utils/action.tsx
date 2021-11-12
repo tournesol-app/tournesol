@@ -32,22 +32,16 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
         size="medium"
         color="secondary"
         onClick={async () => {
-          let flag = false;
-          const rateLaterList = await UsersService.usersMeVideoRateLaterList();
-          rateLaterList.results?.forEach((rateLaterVideo) => {
-            if (rateLaterVideo.video.video_id === video_id) {
-              flag = true;
-            }
-          });
-          if (!flag) {
-            await UsersService.usersMeVideoRateLaterCreate({
+          try {
+            const response = await UsersService.usersMeVideoRateLaterCreate({
               video: { video_id } as Video,
             });
+            console.log(response);
             showSuccessAlert(
               enqueueSnackbar,
               'The video has been added to your rate later list.'
             );
-          } else {
+          } catch (error) {
             showInfoAlert(
               enqueueSnackbar,
               'The video is already in your rate later list.'
