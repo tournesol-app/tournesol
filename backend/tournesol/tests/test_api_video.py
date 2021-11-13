@@ -69,7 +69,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertTrue(set(returned_video_ids).issubset(set(existing_video_ids)))
-        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(response.data["count"], len(self._list_of_videos))
         self.assertEqual(len(response.data["results"]), limit)
 
         # test that a huge limit doesn't break anything
