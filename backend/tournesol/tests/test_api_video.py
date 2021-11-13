@@ -81,7 +81,7 @@ class VideoApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(set(returned_video_ids), set(existing_video_ids))
-        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(response.data["count"], len(self._list_of_videos))
         self.assertEqual(len(response.data["results"]), len(self._list_of_videos))
 
     def test_anonymous_can_list_with_offset(self):
@@ -100,7 +100,7 @@ class VideoApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(set(returned_video_ids).issubset(set(existing_video_ids)))
-        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(response.data["count"], len(self._list_of_videos))
         self.assertEqual(len(response.data["results"]), len(self._list_of_videos) - offset)
 
         # test that a huge offset doesn't break anything
@@ -110,7 +110,7 @@ class VideoApi(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(response.data["count"], len(self._list_of_videos))
         self.assertEqual(len(response.data["results"]), 0)
 
     def test_anonymous_can_list_with_pagination(self):
@@ -332,7 +332,7 @@ class VideoApi(TestCase):
         Video.objects.create(video_id=video_null_score)
         response = factory.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(response.data["count"], len(self._list_of_videos))
 
     def test_cannot_get_video_with_particular_request(self):
         factory = APIClient()
@@ -342,7 +342,7 @@ class VideoApi(TestCase):
         VideoCriteriaScore.objects.create(video=video, criteria="importance", score=1)
         good_response = factory.get("/video/?importance=50&engaging=0")
         self.assertEqual(good_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(good_response.data["count"], str(len(self._list_of_videos) + 1))
+        self.assertEqual(good_response.data["count"], len(self._list_of_videos) + 1)
         bad_response = factory.get("/video/?importance=50&engaging=100")
         self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(bad_response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(bad_response.data["count"], len(self._list_of_videos))
