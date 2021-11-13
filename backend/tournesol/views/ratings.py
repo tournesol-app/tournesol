@@ -30,6 +30,7 @@ class ContributorRatingList(generics.ListAPIView):
     (computed automatically from the user's comparisons)
     """
     serializer_class = ContributorRatingSerializer
+    queryset = ContributorRating.objects.none()
 
     def get_queryset(self):
         return ContributorRating.objects.filter(user=self.request.user)

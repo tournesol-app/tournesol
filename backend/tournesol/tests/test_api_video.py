@@ -49,7 +49,7 @@ class VideoApi(TestCase):
         existing_video_ids = [video.video_id for video in self._list_of_videos]
 
         self.assertEqual(set(returned_video_ids), set(existing_video_ids))
-        self.assertEqual(response.data["count"], str(len(self._list_of_videos)))
+        self.assertEqual(response.data["count"], len(self._list_of_videos))
 
     def test_anonymous_can_list_with_limit(self):
         """
