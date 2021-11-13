@@ -26,28 +26,29 @@ export const CompareNowAction = ({ videoId }: { videoId: string }) => {
 export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
   const video_id = videoId;
   const { enqueueSnackbar } = useSnackbar();
+  const handleCreation = async () => {
+    try {
+      const response = await UsersService.usersMeVideoRateLaterCreate({
+        video: { video_id } as Video,
+      });
+      console.log(response);
+      showSuccessAlert(
+        enqueueSnackbar,
+        'The video has been added to your rate later list.'
+      );
+    } catch (error) {
+      showInfoAlert(
+        enqueueSnackbar,
+        'The video is already in your rate later list.'
+      );
+    }
+  };
   return (
     <Tooltip title="Rate later" placement="left">
       <IconButton
         size="medium"
         color="secondary"
-        onClick={async () => {
-          try {
-            const response = await UsersService.usersMeVideoRateLaterCreate({
-              video: { video_id } as Video,
-            });
-            console.log(response);
-            showSuccessAlert(
-              enqueueSnackbar,
-              'The video has been added to your rate later list.'
-            );
-          } catch (error) {
-            showInfoAlert(
-              enqueueSnackbar,
-              'The video is already in your rate later list.'
-            );
-          }
-        }}
+        onClick={handleCreation}
         style={{ color: '#CDCABC' }}
       >
         <AddIcon />
