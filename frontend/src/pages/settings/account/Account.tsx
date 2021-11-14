@@ -1,50 +1,19 @@
 import React from 'react';
 
-import { Box, Divider, Grid, Typography } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import ContentHeader from '../../../components/ContentHeader';
-import PasswordForm from '../../../features/settings/account/PasswordForm';
-import DeleteAccountForm from '../../../features/settings/account/DeleteAccountForm';
-import SettingsMenu from '../../../features/settings/SettingsMenu';
-import { EmailAddressForm } from 'src/features/settings/account/EmailAddressForm';
+import ContentHeader from 'src/components/ContentHeader';
+import PasswordForm from 'src/features/settings/account/PasswordForm';
+import DeleteAccountForm from 'src/features/settings/account/DeleteAccountForm';
+import EmailAddressForm from 'src/features/settings/account/EmailAddressForm';
+import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
+import SettingsMenu from 'src/features/settings/SettingsMenu';
+import Section from 'src/components/Section';
 
 const useStyles = makeStyles((theme) => ({
   titleDanger: { color: theme.palette.error.main },
 }));
-
-const Section = ({
-  title,
-  children,
-  ...rest
-}: {
-  title: string | React.ReactNode;
-  children: React.ReactNode;
-  [rest: string]: unknown;
-}) => {
-  const sectionTitle =
-    typeof title === 'string' ? (
-      <Typography variant="h4" color="secondary">
-        {title}
-      </Typography>
-    ) : (
-      title
-    );
-
-  return (
-    <Grid item container style={{ paddingBottom: '40px' }}>
-      <Grid item xs={12}>
-        <Box marginBottom={2}>
-          {sectionTitle}
-          <Divider />
-        </Box>
-      </Grid>
-      <Grid item {...rest}>
-        {children}
-      </Grid>
-    </Grid>
-  );
-};
 
 export const AccountPage = () => {
   const classes = useStyles();
@@ -73,6 +42,9 @@ export const AccountPage = () => {
               <PasswordForm />
             </Section>
             <Box marginTop={8} />
+            <Section title="Export all data" xs={12}>
+              <ExportAllDataForm />
+            </Section>
             <Section
               title={
                 <Typography variant="h4" className={classes.titleDanger}>
