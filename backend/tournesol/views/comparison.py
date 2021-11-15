@@ -4,6 +4,7 @@ API endpoints to interact with the contributor's comparisons
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
+from drf_spectacular.utils import extend_schema
 
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
@@ -55,6 +56,7 @@ class ComparisonListBaseApi(ComparisonApiMixin,
     Base class of the ComparisonList API.
     """
     serializer_class = ComparisonSerializer
+    queryset = Comparison.objects.none()
 
     def get_queryset(self):
         """
@@ -102,11 +104,12 @@ class ComparisonListApi(
         return response
 
 
-class ComparisonListOnlyApi(ComparisonListBaseApi):
+class ComparisonListFilteredApi(ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user.
     """
 
+    @extend_schema(operation_id='users_me_comparisons_list_filtered')
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user."""
         return self.list(request, *args, **kwargs)

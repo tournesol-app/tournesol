@@ -7,7 +7,7 @@ Defines Tournesol's backend API routes
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListOnlyApi
+from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.exports import ExportComparisonsView, ExportAllView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
@@ -45,7 +45,7 @@ urlpatterns = [
         name="comparisons_me_list",
     ),
     path(
-        "users/me/comparisons/<str:video_id>/", ComparisonListOnlyApi.as_view(),
+        "users/me/comparisons/<str:video_id>/", ComparisonListFilteredApi.as_view(),
         name="comparisons_me_list_filtered",
     ),
     path(
@@ -75,6 +75,7 @@ urlpatterns = [
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
     ),
+    # Email domain API
     path(
         "domains/",
         EmailDomainsList.as_view(),

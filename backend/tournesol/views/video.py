@@ -1,15 +1,15 @@
 """
 API endpoint to manipulate videos
 """
-from collections import OrderedDict
-
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
-from rest_framework import viewsets, status
+from rest_framework import mixins, status
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
 from ..models import Video
@@ -17,44 +17,22 @@ from tournesol.utils.api_youtube import youtube_video_details
 from tournesol.utils.video_language import compute_video_language
 
 
-class VideoViewSet(viewsets.ModelViewSet):
-    # FIXME: this `queryset` is not used by the implementation
-    # Define `filterset_fields` for filtering?
+class VideoViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     queryset = Video.objects.all()
-
+    pagination_class = LimitOffsetPagination
     permission_classes = []  # To unlock authentication required
 
-    def get_serializer_class(self):
-        if self.action in ("retrieve", "list"):
-            return VideoSerializerWithCriteria
-        return VideoSerializer
+    def get_queryset(self):
+        request = self.request
+        queryset = self.queryset
 
-    def retrieve(self, request, pk):
-        """
-        Get video details and criteria that are related to it
-        """
-        video = get_object_or_404(Video, video_id=pk)
-        video_serialized = VideoSerializerWithCriteria(video)
-        return Response(video_serialized.data)
-
-    def list(self, request, *args, **kwargs):
-        queryset = Video.objects.all()
         search = request.query_params.get('search')
         if search:
             queryset = queryset.filter(Q(name__icontains=search) |
                                        Q(description__icontains=search))
-
-        limit = request.query_params.get('limit')
-        if limit and limit.isdigit():
-            limit = int(limit)
-        else:
-            limit = 10
-
-        offset = request.query_params.get('offset')
-        if offset and offset.isdigit():
-            offset = int(offset)
-        else:
-            offset = 0
 
         date_lte = request.query_params.get('date_lte') \
             if request.query_params.get('date_lte') else ""
@@ -89,7 +67,6 @@ class VideoViewSet(viewsets.ModelViewSet):
             for crit in settings.CRITERIAS
         ]
         criteria_weight = Case(*criteria_cases, default=0)
-
         queryset = (
             queryset.annotate(
                 total_score=Sum(F("criteria_scores__score") * criteria_weight)
@@ -98,16 +75,20 @@ class VideoViewSet(viewsets.ModelViewSet):
             .order_by("-total_score")
         )
 
-        count = queryset.count()
-        videos = queryset.prefetch_related("criteria_scores")[offset: offset + limit]
-        data_serialised = VideoSerializerWithCriteria(videos, many=True).data
-        return Response(OrderedDict([('count', str(count)), ('results', data_serialised)]))
+        return queryset.prefetch_related("criteria_scores")
 
-    def update(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    def get_serializer_class(self):
+        if self.action in ("retrieve", "list"):
+            return VideoSerializerWithCriteria
+        return VideoSerializer
 
-    def destroy(self, request, *args, **kwargs):
-        return Response('METHOD_NOT_ALLOWED', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    def retrieve(self, request, pk):
+        """
+        Get video details and criteria that are related to it
+        """
+        video = get_object_or_404(Video, video_id=pk)
+        video_serialized = VideoSerializerWithCriteria(video)
+        return Response(video_serialized.data)
 
     def create(self, request, *args, **kwargs):
         """

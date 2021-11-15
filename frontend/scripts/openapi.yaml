@@ -631,7 +631,7 @@ paths:
           description: No response body
   /users/me/comparisons/{video_id}/:
     get:
-      operationId: users_me_comparisons_list_2
+      operationId: users_me_comparisons_list_filtered
       description: List all comparisons made by the logged user.
       parameters:
       - name: limit
@@ -717,6 +717,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContributorRating'
+          description: ''
+  /users/me/exports/all/:
+    get:
+      operationId: users_me_exports_all_retrieve
+      description: Download current user data in .zip file
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /users/me/exports/comparisons/:
+    get:
+      operationId: users_me_exports_comparisons_retrieve
+      description: Download current user data in .zip file
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -821,6 +855,7 @@ paths:
   /video/:
     get:
       operationId: video_list
+      description: ''
       parameters:
       - name: limit
         required: false
@@ -896,88 +931,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/VideoSerializerWithCriteria'
           description: ''
-    put:
-      operationId: video_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this video.
-        required: true
-      tags:
-      - video
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Video'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Video'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Video'
-        required: true
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Video'
-          description: ''
-    patch:
-      operationId: video_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this video.
-        required: true
-      tags:
-      - video
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedVideo'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedVideo'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedVideo'
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Video'
-          description: ''
-    delete:
-      operationId: video_destroy
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this video.
-        required: true
-      tags:
-      - video
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '204':
-          description: No response body
 components:
   schemas:
     BlankEnum:
@@ -9765,49 +9718,6 @@ components:
           description: Your profile picture.
         is_trusted:
           type: boolean
-    PatchedVideo:
-      type: object
-      properties:
-        video_id:
-          type: string
-          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
-        name:
-          type: string
-          readOnly: true
-          description: Video Title
-        description:
-          type: string
-          readOnly: true
-          description: Video Description from the web page
-        publication_date:
-          type: string
-          format: date
-          readOnly: true
-          description: Video publication date
-        views:
-          type: integer
-          readOnly: true
-          description: Number of views
-        uploader:
-          type: string
-          readOnly: true
-          description: Name of the channel (uploader)
-        language:
-          allOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          readOnly: true
-          description: Language of the video
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          description: Total number of pairwise comparisons for this videofrom certified
-            contributors
-        rating_n_contributors:
-          type: integer
-          readOnly: true
-          description: Total number of certified contributors who rated the video
     PoliticalAffiliationEnum:
       enum:
       - Not Specified
@@ -10530,9 +10440,9 @@ components:
           type: number
           format: float
           maximum: 1.0
-          minimum: 0.0
           description: Top quantile for all rated videos for aggregated scoresfor
             the given criteria. 0.0=best, 1.0=worst
+          minimum: 0.0
       required:
       - criteria
     VideoRateLater:

@@ -23,6 +23,7 @@ class VideoRateLaterList(
 
     serializer_class = VideoRateLaterSerializer
     permission_classes = [IsAuthenticated]
+    queryset = VideoRateLater.objects.none()
 
     def get_queryset(self):
         return VideoRateLater.objects.filter(user=self.request.user)
