@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import type { Comparison } from 'src/services/openapi';
+import { UsersService } from 'src/services/openapi';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import Pagination from 'src/components/Pagination';
-import { UsersService } from 'src/services/openapi';
 
 function ComparisonsPage() {
   const [comparisons, setComparisons]: [

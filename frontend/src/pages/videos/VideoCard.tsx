@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import VideoCardFromId from '../../features/videos/VideoCardFromId';
 import { useParams } from 'react-router-dom';
+import VideoCard from 'src/features/videos/VideoCard';
+import FromVideoId from 'src/features/videos/FromVideoId';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -14,6 +15,8 @@ const useStyles = makeStyles(() => ({
     marginTop: 120,
   },
 }));
+
+const VideoCardFromId = FromVideoId(VideoCard);
 
 function VideoCardPage() {
   const classes = useStyles();

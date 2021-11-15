@@ -1,10 +1,11 @@
 import React from 'react';
-import ReactPlayer from 'react-player/youtube';
 import { Link } from 'react-router-dom';
 
 import { Grid, Container, makeStyles, Theme } from '@material-ui/core';
 
 import type { Comparison } from 'src/services/openapi';
+import VideoThumb from 'src/features/videos/VideoThumb';
+import FromVideoId from 'src/features/videos/FromVideoId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   content: {
@@ -24,18 +25,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const VideoThumbFromVideoId = FromVideoId(VideoThumb);
+
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const classes = useStyles();
   const { video_a, video_b } = comparison;
   return (
     <Grid container className={classes.comparisonContainer}>
       <Grid item xs={5} className={classes.playerWrapper}>
-        <ReactPlayer
-          url={`https://youtube.com/watch?v=${video_a.video_id}`}
-          light
-          width="100%"
-          height="100%"
-        />
+        <VideoThumbFromVideoId videoId={video_a.video_id} />
       </Grid>
       <Grid item xs={2} className={classes.centering}>
         <Link
@@ -45,12 +43,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         </Link>
       </Grid>
       <Grid item xs={5} className={classes.playerWrapper}>
-        <ReactPlayer
-          url={`https://youtube.com/watch?v=${video_b.video_id}`}
-          light
-          width="100%"
-          height="100%"
-        />
+        <VideoThumbFromVideoId videoId={video_b.video_id} />
       </Grid>
     </Grid>
   );
