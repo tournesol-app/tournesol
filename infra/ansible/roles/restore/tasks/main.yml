@@ -1,0 +1,31 @@
+- name: Restore entire postgres backup
+  shell:
+    cmd: |
+      dropdb -e tournesol --if-exists --force
+      pg_restore -v --exit-on-error --dbname postgres --create \
+        /backups/tournesol/db/{{restore_backup_name}}/tournesol.custom 2>&1
+  become: yes
+  become_user: postgres
+  when: restore_backup_name is defined and restore_backup_name != ""
+  register: restore_result
+
+- debug:
+    var: restore_result.stdout_lines
+
+
+- name: Restore postgres backup without overriding oauth applications
+  shell:
+    cmd: |
+      BACKUP_FILE={{restore_backup_path}}/tournesol.custom
+      psql -d tournesol -c "TRUNCATE oauth2_provider_accesstoken CASCADE"
+      pg_restore -v --single-transaction --clean -d tournesol $BACKUP_FILE \
+        -L <(pg_restore -l $BACKUP_FILE | awk '!/oauth2_provider/ || /FK CONSTRAINT/' ) 2>&1
+  args:
+    executable: /bin/bash
+  become: yes
+  become_user: postgres
+  when: restore_backup_path is defined and restore_backup_path != ""
+  register: restore_result
+
+- debug:
+    var: restore_result.stdout_lines

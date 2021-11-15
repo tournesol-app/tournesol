@@ -40,7 +40,6 @@
 
 ## TODO
 
-- Backup automation and monitoring (database mainly?)
 - Application artifacts retrieval with proper triggers on updates (CI integration, CD?) (for now ansible clones, builds and deploys during each run)
 - CI/CD design
 - IDS/IPS? WAF?
@@ -95,4 +94,25 @@ source ./ansible/scripts/get-vm-secrets.sh "tournesol-vm" "jst"
 ssh -t <username>@<domain_name> -- sudo -u postgres 'bash -c '\''DUMP_DATE=$(date +%Y-%m-%d) && pg_dump -d tournesol -T auth_group -T django_content_type -T auth_permission -T auth_group_permissions -T django_admin_log -T django_migrations -T django_session -T oauth2_provider_application -T oauth2_provider_grant -T oauth2_provider_idtoken -T oauth2_provider_accesstoken -T oauth2_provider_refreshtoken --data-only --inserts > /tmp/dump_$DUMP_DATE.sql && tar cvzf /tmp/dump_$DUMP_DATE.sql.tar.gz -C /tmp dump_$DUMP_DATE.sql && rm /tmp/dump_$DUMP_DATE.sql'\'''
 scp "staging.tournesol.app:/tmp/dump_*.sql.tar.gz" .
 ssh -t <username>@<domain_name> -- sudo -u postgres 'rm /tmp/dump_*.sql.tar.gz'
+```
+
+## Restore Postgres backup
+
+### Restore an entire backup from the current host
+
+```bash
+ansible-playbook restore-backup.yml -i inventory.yml -l <ansible-host> -e restore_backup_name=<pg_backup_name>
+```
+e.g:
+```bash
+ansible-playbook restore-backup.yml -i inventory.yml -l tournesol-vm -e restore_backup_name=2021-11-12-weekly
+```
+
+### Import a backup from another host to an existing database
+
+Data related to OAuth applications in the target database will be preserved to keep a configuration compatible with other services (frontend, etc.).
+
+To import a backup from production to the local tournesol VM:
+```
+./ansible/scripts/fetch-and-import-pg-backup.sh --backup-name 2021-11-12-weekly --from tournesol.app --to-ansible-host tournesol-vm
 ```

@@ -1,0 +1,4 @@
+- hosts: tournesol
+  roles:
+    - restore
+  become: true
