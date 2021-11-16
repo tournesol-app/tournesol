@@ -45,11 +45,11 @@ const ExportAllDataForm = () => {
     setLoading(false);
   };
 
-  const prepareExport = () => {
+  const prepareExport = async () => {
     setLoading(true);
     setDownloadUrl('');
     try {
-      downloadExport();
+      await downloadExport();
     } catch (error) {
       showErrorAlert(
         enqueueSnackbar,
