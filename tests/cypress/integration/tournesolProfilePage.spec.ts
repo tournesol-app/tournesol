@@ -52,12 +52,12 @@ describe('Change username flow', () => {
     cy.contains('Logout').click();
     cy.focused().type(user2username);
 
-    // old username must not work anymore
+    // the desired username must not work (because already taken)
     cy.get('input[name="password"]').click().type(user1password).type('{enter}');
     cy.location('pathname').should('equal', '/login');
     cy.contains('Invalid credentials given.');
 
-    // only new username must work
+    // only the original username must work
     cy.get('input[name="username"]').click().clear().type(user1username).type('{enter}');
     cy.location('pathname').should('equal', '/settings/profile');
     cy.contains('Forgot password?').should('not.exist');
