@@ -78,7 +78,7 @@ const ExportAllDataForm = () => {
             color="secondary"
             variant="outlined"
           >
-            Save data
+            Download file
           </Button>
         ) : (
           <Button
@@ -88,7 +88,7 @@ const ExportAllDataForm = () => {
             variant="contained"
             onClick={prepareExport}
           >
-            Download data
+            Prepare export
           </Button>
         )}
       </Grid>
