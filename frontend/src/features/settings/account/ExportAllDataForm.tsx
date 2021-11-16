@@ -16,7 +16,7 @@ import { OpenAPI } from 'src/services/openapi';
 // not support returning response.blob which we need for
 // downloading files from the API endpoint /users/me/exports/all
 async function usersMeExportsAllRetrieveBlob(): Promise<Blob> {
-  const api_url = process.env.REACT_APP_API_URL;
+  const api_url = OpenAPI.BASE;
   const options: ApiRequestOptions = {
     method: 'GET',
     path: '/users/me/exports/all/',
