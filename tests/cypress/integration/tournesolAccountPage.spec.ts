@@ -37,3 +37,41 @@ describe('Check email status', () => {
     cy.contains(/Email status:.?Trusted/).should('be.visible');
   })
 })
+
+describe('Change password flow', () => {
+  const username = 'nobody';
+  const email = 'mr@nobody.org';
+  const oldPassword = 'password'
+
+  before(() => {
+    cy.recreateUser(username, email, oldPassword);
+  })
+
+  it('can update password', () => {
+    const newPaswsword = 'new_password';
+
+    cy.visit('/settings/account');
+    cy.focused().type(username);
+    cy.get('input[name="password"]').click().type(oldPassword).type('{enter}');
+    cy.location('pathname').should('equal', '/settings/account');
+
+    cy.contains('Change password').should('be.visible');
+    cy.get('input[name=old_password]').type(oldPassword);
+    cy.get('input[name=password]').type(newPaswsword);
+    cy.get('input[name=password_confirm]').type(newPaswsword).type('{enter}');
+    cy.contains('Password changed successfully');
+
+    cy.contains('Logout').click();
+    cy.focused().type(username);
+
+    // old password must not work anymore
+    cy.get('input[name="password"]').click().type(oldPassword).type('{enter}');
+    cy.location('pathname').should('equal', '/login');
+    cy.contains('Invalid credentials given.');
+
+    // only new password must work
+    cy.get('input[name="password"]').click().clear().type(newPaswsword).type('{enter}');
+    cy.location('pathname').should('equal', '/settings/account');
+    cy.contains('Forgot password?').should('not.exist');
+  })
+});
