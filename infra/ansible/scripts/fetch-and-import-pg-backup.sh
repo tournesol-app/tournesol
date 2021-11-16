@@ -55,4 +55,4 @@ if ! copy_backup; then
 fi
 
 ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" restore-backup.yml \
-    -e restore_backup_path=/backups/tournesol/"$FROM_DOMAIN_NAME"/"$BACKUP_NAME"
+    -e external_backup_path=/backups/tournesol/"$FROM_DOMAIN_NAME"/"$BACKUP_NAME"
