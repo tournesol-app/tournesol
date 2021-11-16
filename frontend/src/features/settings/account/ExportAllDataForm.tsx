@@ -53,7 +53,7 @@ const ExportAllDataForm = () => {
     } catch (error) {
       showErrorAlert(
         enqueueSnackbar,
-        'An error seems to have occured. If this error persist, please contact us.'
+        'An error seems to have occurred. If this error persists, please contact us.'
       );
       setLoading(false);
     }
