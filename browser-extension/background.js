@@ -66,3 +66,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 });
+
+// Send message to Tournesol tab on URL change, to sync access token
+// during navigation (after login, logout, etc.)
+chrome.webNavigation.onHistoryStateUpdated.addListener(event => {
+  console.info("EVENT", event);
+  chrome.tabs.sendMessage(event.tabId, "historyStateUpdated")
+}, {
+  url: [{hostEquals: "tournesol.app"}]
+});
