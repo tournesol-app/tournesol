@@ -162,3 +162,8 @@ all:
           - name: OpenIDConnect
             url: https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect/archive/da7914745ae62816cb7c37578a4aa8a0894b8a87.zip
             output_dir: mediawiki-extensions-OpenIDConnect-da7914745ae62816cb7c37578a4aa8a0894b8a87
+        mediawiki_oauth2_plugin_name: MW-OAuth2Client
+        mediawiki_oauth2_plugin_url: https://github.com/Schine/MW-OAuth2Client/archive/refs/tags/v0.4.zip
+        mediawiki_oauth2_plugin_output_dir: MW-OAuth2Client-0.4
+        mediawiki_oauth2_client_url: https://github.com/thephpleague/oauth2-client/archive/refs/tags/2.6.0.zip
+        mediawiki_oauth2_client_output_dir: oauth2-client-2.6.0

@@ -180,9 +180,19 @@ $wgDefaultUserOptions['math'] = 'mathml';
 wfLoadExtension( 'PluggableAuth' );
 $wgGroupPermissions['*']['autocreateaccount'] = true;
 
-wfLoadExtension( 'OpenIDConnect' );
-$wgOpenIDConnect_Config['{{django_main_url}}/o/'] = [
-	'scope' => ['openid'],
-	'clientID' => '{{mediawiki_oidc_client_id}}',
-	'clientsecret' => '{{mediawiki_oidc_client_secret}}',
-];
+# wfLoadExtension( 'OpenIDConnect' );
+# $wgOpenIDConnect_Config['{{django_main_url}}/o/'] = [
+# 	'scope' => ['openid'],
+# 	'clientID' => '{{mediawiki_oidc_client_id}}',
+# 	'clientsecret' => '{{mediawiki_oidc_client_secret}}',
+# ];
+
+wfLoadExtension( 'MW-OAuth2Client' );
+$wgOAuth2Client['client']['id']     = '{{mediawiki_oidc_client_id}}';
+$wgOAuth2Client['client']['secret'] = '{{mediawiki_oidc_client_secret}}';
+$wgOAuth2Client['configuration']['authorize_endpoint']     = '{{django_main_url}}/o/authorize/';
+$wgOAuth2Client['configuration']['access_token_endpoint']  = '{{django_main_url}}/o/token/';
+$wgOAuth2Client['configuration']['api_endpoint']           = '{{django_main_url}}/o/userinfo/';
+$wgOAuth2Client['configuration']['redirect_uri']           = '{{mediawiki_scheme}}://{{mediawiki_domain_name}}/wiki/Special:OAuth2Client/callback';
+$wgOAuth2Client['configuration']['username'] = 'username'; // JSON path to username
+$wgOAuth2Client['configuration']['email'] 	 = 'email'; // JSON path to email

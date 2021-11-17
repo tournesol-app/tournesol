@@ -22,7 +22,7 @@ MEDIA_ROOT: /var/www/html/media
 
 EMAIL_BACKEND: console
 
-LOGIN_URL: "/admin/login/"
+LOGIN_URL: "{{frontend_scheme}}://{{domain_name}}/login"
 
 ACCESS_TOKEN_EXPIRE_SECONDS: 36000 # 10h
 REFRESH_TOKEN_EXPIRE_SECONDS: 604800 # 1w

@@ -140,6 +140,19 @@
     - Update Mediawiki database
     - Reload Nginx
 
+- name: Download Mediawiki OAuth2 extension
+  unarchive:
+    remote_src: yes
+    src: "{{mediawiki_oauth2_plugin_url}}"
+    dest: "/var/lib/mediawiki/extensions"
+  notify:
+    - Download OAuth2 client
+    - Link Mediawiki OAuth2 client
+    - Run Composer for OAuth2 client
+    - Run Composer
+    - Update Mediawiki database
+    - Reload Nginx
+
 - name: Extract Mediawiki language extensions
   unarchive:
     src: "/tmp/{{item.name}}"
@@ -166,6 +179,17 @@
   when: "item.stat.exists and not item.stat.islnk"
   with_items: "{{extensions_state.results}}"
 
+- name: Check OAuth2 extension folders
+  stat:
+    path: "/var/lib/mediawiki/extensions/{{mediawiki_oauth2_plugin_name}}"
+  register: oauth2_extension_state
+
+- name: Clean up old (not linked) OAuth2 extension installs
+  file:
+    path: "/var/lib/mediawiki/extensions/{{mediawiki_oauth2_plugin_name}}"
+    state: absent
+  when: "oauth2_extension_state.stat.exists and not oauth2_extension_state.stat.islnk"
+
 - name: Link Mediawiki extensions
   file:
     src: "/var/lib/mediawiki/extensions/{{item.output_dir}}"
@@ -173,6 +197,19 @@
     state: link
   with_items: "{{mediawiki_extensions}}"
   notify:
+    - Run Composer
+    - Update Mediawiki database
+    - Reload Nginx
+
+- name: Link Mediawiki OAuth2 extension
+  file:
+    src: "/var/lib/mediawiki/extensions/{{mediawiki_oauth2_plugin_output_dir}}"
+    dest: "/var/lib/mediawiki/extensions/{{mediawiki_oauth2_plugin_name}}"
+    state: link
+  notify:
+    - Download OAuth2 client
+    - Link Mediawiki OAuth2 client
+    - Run Composer for OAuth2 client
     - Run Composer
     - Update Mediawiki database
     - Reload Nginx

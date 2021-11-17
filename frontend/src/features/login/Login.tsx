@@ -14,6 +14,12 @@ import { useLocation, Redirect } from 'react-router-dom';
 import RedirectState from './RedirectState';
 import { Alert, ContentHeader, ContentBox } from 'src/components';
 
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 const Login = () => {
   const login: LoginState = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
@@ -26,6 +32,8 @@ const Login = () => {
   const [loginError, setLoginError] = useState<Error | null>(null);
   const location = useLocation();
   const { from: fromUrl } = (location?.state ?? {}) as RedirectState;
+  const query = useQuery();
+  const redirectURL = query?.get('next');
 
   useEffect(() => {
     if (hasValidToken(login)) {
@@ -62,6 +70,9 @@ const Login = () => {
   if (validToken) {
     if (fromUrl) {
       return <Redirect to={fromUrl} />;
+    } else if (redirectURL) {
+      console.log(redirectURL);
+      return <Redirect to={redirectURL} />;
     } else {
       return <Redirect to="/" />;
     }

@@ -1,17 +1,17 @@
 - hosts: tournesol
   roles:
-    - upgrade
-    - base
-    - nftables
-    - zsh
-    - users
-    - postgresql
-    - nginx
+    # - upgrade
+    # - base
+    # - nftables
+    # - zsh
+    # - users
+    # - postgresql
+    # - nginx
     - repository
-    - django
-    - monitoring
-    - logging
+    # - django
+    # - monitoring
+    # - logging
     - frontend
-    - mediawiki
-    - backups
+    # - mediawiki
+    # - backups
   become: true
