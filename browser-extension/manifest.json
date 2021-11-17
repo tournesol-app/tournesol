@@ -2,7 +2,7 @@
   "name": "Tournesol Extension",
   "version": "2.0.0",
   "description": "Open Tournesol directly from Youtube",
-  "permissions": ["storage", "cookies", "https://tournesol.app/", "https://www.youtube.com/", "contextMenus", "activeTab"],
+  "permissions": ["storage", "cookies", "https://tournesol.app/", "https://api.tournesol.app/", "https://www.youtube.com/", "contextMenus", "activeTab"],
   "manifest_version": 2,
   "icons": {
     "64": "favicon64.png",
@@ -34,7 +34,6 @@
     }
   ],
   "web_accessible_resources": [
-	  "rate_now_icon.png",
-	  "utils.mjs"
+	  "rate_now_icon.png"
   ]
 }

@@ -53,7 +53,7 @@ function process() {
     img_td.setAttribute('valign', 'middle');
     var image = document.createElement('img');
     image.setAttribute('id', 'tournesol-button-image');
-    image.setAttribute('src', chrome.extension.getURL('rate_now_icon.png'));
+    image.setAttribute('src', chrome.runtime.getURL('rate_now_icon.png'));
     image.setAttribute('width', '20');
     img_td.append(image);
     rateLaterButton.append(img_td);

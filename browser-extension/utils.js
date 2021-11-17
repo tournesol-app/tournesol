@@ -6,19 +6,9 @@ async function getAccessToken() {
   })
 }
 
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
-}
-
 export const alertOnCurrentTab = async (msg) => {
-  const tab = await getCurrentTab();
-  function sendAlert(m) { alert(m, 'ok') }
-  chrome.scripting.executeScript({
-    target: {tabId: tab.id},
-    func: sendAlert,
-    args: [msg]
+  browser.tabs.executeScript({
+    code: `alert("${msg}", 'ok')`
   })
 }
 
@@ -49,15 +39,22 @@ export const fetchTournesolApi = async (url, method, data) => {
     body["body"]= JSON.stringify(data)
   }
   return fetch(`https://api.tournesol.app/${url}`, body).then(r => {
-    if (r.status == 403 || r.status == 401) alertNotLoggedInOrError()
-    return r.json()
+    if (r.status === 403 || r.status === 401) {
+      alertNotLoggedInOrError()
+    }
+    return r;
   }).catch(console.error)
 }
 
-export const addRateLater = (video_id) => {
-  fetchTournesolApi('video/', 'POST', {video_id: video_id}, () => {}).then( () => {
-    fetchTournesolApi('users/me/video_rate_later/', 'POST', {video: {video_id: video_id}}, () => {})
-  })
+export const addRateLater = async (video_id) => {
+  return fetchTournesolApi('video/', 'POST', {video_id: video_id})
+    .then(() =>
+      fetchTournesolApi(
+        'users/me/video_rate_later/',
+        'POST',
+        {video: {video_id: video_id}}
+      )
+    )
 };
 
 /*

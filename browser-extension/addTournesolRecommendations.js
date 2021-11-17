@@ -152,7 +152,11 @@ const getTournesolComponent = (data) => {
 }
 
 // This part creates video boxes from API's response JSON
-function handleResponse({ data }, sender, sendResponse) {
+function handleResponse({ data: videos }) {
+  if (!videos || videos.length === 0) {
+    return
+  }
+
   // Timer will run until needed elements are generated
   var timer = window.setInterval(function () {
     /*
@@ -173,7 +177,7 @@ function handleResponse({ data }, sender, sendResponse) {
     if (old_container) old_container.remove();
 
     // Generate component to display on Youtube home page
-    tournesol_component = getTournesolComponent(data)
+    tournesol_component = getTournesolComponent(videos)
     
     container.insertBefore(tournesol_component, container.children[1]);
   }, 300);
