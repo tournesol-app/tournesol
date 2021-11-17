@@ -66,15 +66,19 @@ function process() {
     rateLaterButton.append(text_td);
 
     // On click
-    rateLaterButton.onclick = async () => {
+    rateLaterButton.onclick = () => {
       rateLaterButton.disabled = true;
-      let success = await chrome.runtime.sendMessage({
-        message: 'addRateLater',
-        video_id: videoId
-      });
-      if (success) {
-        text_td_text.replaceWith(document.createTextNode('Done!'))
-      }
+      chrome.runtime.sendMessage(
+        {
+          message: 'addRateLater',
+          video_id: videoId
+        },
+        (success) => {
+          if (success) {
+            text_td_text.replaceWith(document.createTextNode('Done!'))
+          }
+        }
+      );
     }
 
     // Insert after like and dislike buttons

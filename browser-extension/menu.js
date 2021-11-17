@@ -24,7 +24,7 @@ function rate_now(e) {
   },
     err => {
       button.disabled = true
-      button.setAttribute('data-error', 'Go to a Youtube video page.')
+      button.setAttribute('data-error', 'Not a Youtube video page.')
     }
   );
 }
@@ -34,20 +34,17 @@ function rate_later(e) {
   const button = e.target;
   get_current_tab_video_id().then(async (videoId) => {
     button.disabled = true;
-    const resp = await addRateLater(videoId);
-    if (resp && resp.ok) {
-      button.setAttribute('data-success', 'Done!');
-    }
-    else if (resp && resp.status === 409) {
-      button.setAttribute('data-success', 'Already added.')
+    const { success, message } = await addRateLater(videoId);
+    if (success) {
+      button.setAttribute('data-success', message);
     }
     else {
-      button.setAttribute('data-error', 'Failed');
+      button.setAttribute('data-error', message);
     }
   },
     err => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Go to a Youtube video page.');
+      button.setAttribute('data-error', 'Not a Youtube video page.');
     }
   );
 }
@@ -60,7 +57,7 @@ function details(e) {
   },
     err => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Go to a Youtube video page.');
+      button.setAttribute('data-error', 'Not a Youtube video page.');
     }
   );
 }

@@ -32,9 +32,9 @@ function getDateThreeWeeksAgo() {
   return `${d}-${m}-${y}-${H}-${M}-${S}`;
 }
 
-chrome.runtime.onMessage.addListener(async (request, sender) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message == "addRateLater") {
-    await addRateLater(request.video_id);
+    addRateLater(request.video_id).then(() => sendResponse(true));
     return true;
   }
   else if (request.message == "getVideoStatistics") {
@@ -53,12 +53,16 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
       return []
     };
 
-    const threeWeeksAgo = getDateThreeWeeksAgo()
-    const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
-    const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
-    const recent_sub = getRandomSubarray(recent, 3);
-    const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
-    const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
-    return { data: videos };
+    const process = async () => {
+      const threeWeeksAgo = getDateThreeWeeksAgo()
+      const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
+      const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
+      const recent_sub = getRandomSubarray(recent, 3);
+      const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
+      const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
+      return { data: videos };
+    }
+    process().then(sendResponse);
+    return true;
   }
 });
