@@ -60,6 +60,7 @@ const getTournesolComponent = (data) => {
       lang_option.append(lang);
       lang_option.onclick = () => {
         localStorage.setItem('tournesol_extension_config_language', lang);
+        window.location.reload();
       };
       return lang_option;
     };

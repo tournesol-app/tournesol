@@ -32,9 +32,10 @@ function getDateThreeWeeksAgo() {
   return `${d}-${m}-${y}-${H}-${M}-${S}`;
 }
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async (request, sender) => {
   if (request.message == "addRateLater") {
-    addRateLater(request.video_id)
+    await addRateLater(request.video_id);
+    return true;
   }
   else if (request.message == "getVideoStatistics") {
     // getVideoStatistics(request.video_id).then(sendResponse);
@@ -44,21 +45,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     const api_url = 'video/';
 
     const request_recommendations = async (options) => {
-      const json = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET', null);
-      return json.results;
+      const resp = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET');
+      if (resp && resp.ok) {
+        const json = await resp.json();
+        return json.results
+      }
+      return []
     };
 
-    const process = async () => {
-      const threeWeeksAgo = getDateThreeWeeksAgo()
-      const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
-      const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
-      const recent_sub = getRandomSubarray(recent, 3);
-      const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
-      const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
-      sendResponse({ data: videos });
-    };
-
-    process();
-    return true;
+    const threeWeeksAgo = getDateThreeWeeksAgo()
+    const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
+    const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
+    const recent_sub = getRandomSubarray(recent, 3);
+    const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
+    const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
+    return { data: videos };
   }
 });

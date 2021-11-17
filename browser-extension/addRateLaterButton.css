@@ -12,6 +12,10 @@ button#tournesol-rate-button {
   font-weight: 500;
 }
 
+button#tournesol-rate-button:disabled {
+  opacity: 0.5;
+}
+
 img#tournesol-button-image {
   margin-right: 6px;
   vertical-align: middle;
