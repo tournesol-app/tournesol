@@ -4,6 +4,8 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import CompareIcon from '@material-ui/icons/Compare';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { showSuccessAlert, showInfoAlert } from 'src/utils/notifications';
+import { useSnackbar } from 'notistack';
 
 import { Video, UsersService } from 'src/services/openapi';
 
@@ -23,16 +25,29 @@ export const CompareNowAction = ({ videoId }: { videoId: string }) => {
 
 export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
   const video_id = videoId;
+  const { enqueueSnackbar } = useSnackbar();
+  const handleCreation = async () => {
+    try {
+      await UsersService.usersMeVideoRateLaterCreate({
+        video: { video_id } as Video,
+      });
+      showSuccessAlert(
+        enqueueSnackbar,
+        'The video has been added to your rate later list.'
+      );
+    } catch (error) {
+      showInfoAlert(
+        enqueueSnackbar,
+        'The video is already in your rate later list.'
+      );
+    }
+  };
   return (
     <Tooltip title="Rate later" placement="left">
       <IconButton
         size="medium"
         color="secondary"
-        onClick={() =>
-          UsersService.usersMeVideoRateLaterCreate({
-            video: { video_id } as Video,
-          })
-        }
+        onClick={handleCreation}
         style={{ color: '#CDCABC' }}
       >
         <AddIcon />
@@ -43,6 +58,7 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
 
 export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ videoId }: { videoId: string }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const video_id = videoId;
     return (
       <Tooltip title="Remove" placement="left">
@@ -51,6 +67,10 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
           onClick={async () => {
             await UsersService.usersMeVideoRateLaterDestroy(video_id);
             if (asyncCallback) await asyncCallback();
+            showSuccessAlert(
+              enqueueSnackbar,
+              'The video has been deleted from your rate later list.'
+            );
           }}
           style={{ color: '#CDCABC' }}
         >
