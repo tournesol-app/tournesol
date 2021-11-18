@@ -8,7 +8,7 @@ django-oauth-toolkit==1.5.0
 django-prometheus==2.1.0
 django-rest-registration==0.6.4
 djangorestframework==3.12.4
-drf-spectacular==0.17.3
+drf-spectacular==0.21.0
 fuzzysearch==0.7.3
 numpy==1.21.2
 Pillow==8.2.0
