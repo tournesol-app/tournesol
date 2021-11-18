@@ -9,6 +9,6 @@ updateAccessToken();
 
 chrome.runtime.onMessage.addListener(() => {
   // setTimeout seems to be necessary here, as the localStorage
-  // (when the access token is persisted) is written asynchronously.
+  // (where the access token is persisted) is written asynchronously.
   setTimeout(updateAccessToken)
 });

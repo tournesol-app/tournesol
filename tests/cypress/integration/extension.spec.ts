@@ -1,19 +1,38 @@
-import { skipOn, onlyOn } from '@cypress/skip-test'
+import { onlyOn } from '@cypress/skip-test'
 
 onlyOn('headed', () => {
   describe('Tournesol extension', 
     { browser: ['chromium', 'chrome']}, 
     () => {
-      it('shows Tournesol recommendations on youtube.com', () => {
+      const consent = () => {
+        cy.get('body')
+          .then(($body) => {
+            // Agree to cookies dialog if it's present
+            if ($body.find('#dialog').length) {
+              cy.get('#dialog [role="button"]').last().click();
+            }
+          })
+      }
+
+      beforeEach(() => {
         cy.on('uncaught:exception', (err, runnable) => {
           // returning false here prevents Cypress from
           // failing the test, because of unrelated Youtube errors
           return false
         })
+      })
 
+      it('shows Tournesol recommendations on youtube.com', () => {
         cy.visit('https://www.youtube.com');
+        consent();
         cy.wait(5000);
         cy.contains('Recommended by Tournesol').should('be.visible');
+      })
+
+      it('shows "Rate later" button on video page', () => {
+        cy.visit('https://www.youtube.com/watch?v=6jK9bFWE--g');
+        consent();
+        cy.contains('button', 'Rate later', {matchCase: false}).should('be.visible');
       })
     })
 })
