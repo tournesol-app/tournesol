@@ -28,10 +28,9 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
   const { enqueueSnackbar } = useSnackbar();
   const handleCreation = async () => {
     try {
-      const response = await UsersService.usersMeVideoRateLaterCreate({
+      await UsersService.usersMeVideoRateLaterCreate({
         video: { video_id } as Video,
       });
-      console.log(response);
       showSuccessAlert(
         enqueueSnackbar,
         'The video has been added to your rate later list.'

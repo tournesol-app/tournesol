@@ -117,7 +117,10 @@ const ComparisonPage = () => {
       UsersService.usersMeComparisonsCreate(c);
       setInitialComparison(c);
     }
-    showSuccessAlert(enqueueSnackbar, 'The comparison is correctly submitted.');
+    showSuccessAlert(
+      enqueueSnackbar,
+      'The comparison has been succesfully submitted.'
+    );
   };
 
   return (
