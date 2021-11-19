@@ -1,0 +1,7 @@
+# Building the docker image used by dev-env requires copying
+# the requirements files only. All other files are ignored
+# in the build context, as they will mounted as a volume.
+*
+!*.txt
+!ml/*.txt
+!tests/*.txt

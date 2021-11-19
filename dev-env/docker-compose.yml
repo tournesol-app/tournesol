@@ -22,7 +22,9 @@ services:
       tournesol-dev: {}
 
   api:
-    build: ../backend/dev-env
+    build:
+      context: ../backend
+      dockerfile: dev-env/Dockerfile
     container_name: tournesol-dev-api
     environment:
       - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml

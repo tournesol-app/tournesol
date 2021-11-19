@@ -31,3 +31,10 @@ A superuser will be created automatically with username `user` and the default p
 
 Then, the application is visible on http://localhost:3000.  
 
+#### Rebuild the containers while preserving the database
+
+By default, the database content is initialized from a public dump.
+To restart the containers (e.g to update the backend dependencies) while preserving the data, use:
+```bash
+./run-docker-compose.sh restart
+```
