@@ -2,12 +2,11 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 
 import ContentHeader from '../../../components/ContentHeader';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
 import ProfileForm from '../../../features/settings/profile/ProfileForm';
+import Section from 'src/components/Section';
 
 function ProfilePage() {
   return (
@@ -27,17 +26,9 @@ function ProfilePage() {
             sm={12}
             md={9}
           >
-            <Grid item>
-              <Box marginBottom={2}>
-                <Typography variant="h4" color="secondary">
-                  Profile
-                </Typography>
-                <Divider />
-              </Box>
-            </Grid>
-            <Grid item md={6}>
+            <Section title="Profile" xs={12}>
               <ProfileForm />
-            </Grid>
+            </Section>
           </Grid>
         </Grid>
       </Box>

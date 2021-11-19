@@ -61,7 +61,7 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
   );
 };
 
-export const EmailAddressForm = () => {
+const EmailAddressForm = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -113,10 +113,10 @@ export const EmailAddressForm = () => {
       );
     }
     return (
-      <>
+      <Grid container spacing={2} direction="column" alignItems="stretch">
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
-        <div style={{ display: isLoading ? 'none' : undefined }}>
+        <Grid item md={6} style={{ display: isLoading ? 'none' : undefined }}>
           {profileData && (
             <Box
               marginBottom={2}
@@ -134,33 +134,30 @@ export const EmailAddressForm = () => {
             </Box>
           )}
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={2} direction="column" alignItems="stretch">
-              <Grid item md={6}>
-                <FormTextField
-                  required
-                  fullWidth
-                  label="New email address"
-                  name="email"
-                  type="email"
-                  formError={formError}
-                />
-              </Grid>
-              <Grid item md={6}>
-                <Button
-                  type="submit"
-                  color="secondary"
-                  fullWidth
-                  variant="contained"
-                >
-                  Send verification email
-                </Button>
-              </Grid>
-            </Grid>
+            <FormTextField
+              required
+              fullWidth
+              label="New email address"
+              name="email"
+              type="email"
+              formError={formError}
+              style={{ marginBottom: 16 }}
+            />
+            <Button
+              type="submit"
+              color="secondary"
+              fullWidth
+              variant="contained"
+            >
+              Send verification email
+            </Button>
           </form>
-        </div>
-      </>
+        </Grid>
+      </Grid>
     );
   };
 
   return <Box minHeight="180px">{getContent()}</Box>;
 };
+
+export default EmailAddressForm;
