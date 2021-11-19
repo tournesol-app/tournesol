@@ -17,7 +17,7 @@ export const alertUseOnLinkToYoutube = () => {
 }
 
 export const alertNotLoggedInOrError = () => {
-  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persists, please let us know by creating an issue on https://github.com/tournesol-app/tournesol-chrome-extension/')
+  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persists, please let us know by creating an issue on https://github.com/tournesol-app/tournesol')
 }
 
 export const fetchTournesolApi = async (url, method, data) => {

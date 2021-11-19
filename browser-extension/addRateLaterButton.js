@@ -73,9 +73,12 @@ function process() {
           message: 'addRateLater',
           video_id: videoId
         },
-        (success) => {
-          if (success) {
+        (data) => {
+          if (data.success) {
             text_td_text.replaceWith(document.createTextNode('Done!'))
+          }
+          else {
+            rateLaterButton.disabled = false;
           }
         }
       );

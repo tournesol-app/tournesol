@@ -34,7 +34,7 @@ function getDateThreeWeeksAgo() {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message == "addRateLater") {
-    addRateLater(request.video_id).then(() => sendResponse(true));
+    addRateLater(request.video_id).then(sendResponse);
     return true;
   }
   else if (request.message == "getVideoStatistics") {
@@ -70,7 +70,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Send message to Tournesol tab on URL change, to sync access token
 // during navigation (after login, logout, etc.)
 chrome.webNavigation.onHistoryStateUpdated.addListener(event => {
-  console.info("EVENT", event);
   chrome.tabs.sendMessage(event.tabId, "historyStateUpdated")
 }, {
   url: [{hostEquals: "tournesol.app"}]
