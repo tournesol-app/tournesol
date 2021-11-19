@@ -17,37 +17,47 @@ function get_current_tab_video_id() {
 }
 
 
-function rate_now() {
+function rate_now(e) {
+  const button = e.target;
   get_current_tab_video_id().then(videoId => {
      chrome.tabs.create({url: `https://tournesol.app/comparison/?videoA=${videoId}`})
   },
     err => {
-      alert('This must be used on the page of a youtube video', 'ok');
+      button.disabled = true
+      button.setAttribute('data-error', 'Not a Youtube video page.')
     }
   );
 }
 
 
-function rate_later() {
-  get_current_tab_video_id().then(videoId => {
-    const button = document.getElementById('rate_later')
-    button.innerText = 'Done!'
-    button.disabled = true
-    addRateLater(videoId)
+function rate_later(e) {
+  const button = e.target;
+  get_current_tab_video_id().then(async (videoId) => {
+    button.disabled = true;
+    const { success, message } = await addRateLater(videoId);
+    if (success) {
+      button.setAttribute('data-success', message);
+    }
+    else {
+      button.setAttribute('data-error', message);
+    }
   },
     err => {
-      alert('This must be used on the page of a youtube video', 'ok');
+      button.disabled = true;
+      button.setAttribute('data-error', 'Not a Youtube video page.');
     }
   );
 }
 
 
-function details() {
+function details(e) {
+  const button = e.target;
   get_current_tab_video_id().then(videoId => {
      chrome.tabs.create({url: `https://tournesol.app/video/${videoId}`})
   },
     err => {
-      alert('This must be used on the page of a youtube video', 'ok');
+      button.disabled = true;
+      button.setAttribute('data-error', 'Not a Youtube video page.');
     }
   );
 }

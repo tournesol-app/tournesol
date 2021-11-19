@@ -1,21 +1,14 @@
-let access_token;
-chrome.storage.local.get(['access_token'], (storage) => {
-  access_token = storage.access_token
-})
-
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
+async function getAccessToken() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['access_token'], items => {
+      resolve(items.access_token)
+    })
+  })
 }
 
 export const alertOnCurrentTab = async (msg) => {
-  const tab = await getCurrentTab();
-  function sendAlert(m) { alert(m, 'ok') }
-  chrome.scripting.executeScript({
-    target: {tabId: tab.id},
-    func: sendAlert,
-    args: [msg]
+  chrome.tabs.executeScript({
+    code: `alert("${msg}", 'ok')`
   })
 }
 
@@ -24,14 +17,15 @@ export const alertUseOnLinkToYoutube = () => {
 }
 
 export const alertNotLoggedInOrError = () => {
-  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persist, please let us know by creating an issue on https://github.com/tournesol-app/tournesol-chrome-extension/')
+  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persists, please let us know by creating an issue on https://github.com/tournesol-app/tournesol')
 }
 
-export const fetchTournesolApi = (url, method, data, callback) => {
+export const fetchTournesolApi = async (url, method, data) => {
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   }
+  const access_token = await getAccessToken();
   if (access_token){
     headers['Authorization']= `Bearer ${access_token}`
   }
@@ -45,15 +39,38 @@ export const fetchTournesolApi = (url, method, data, callback) => {
     body["body"]= JSON.stringify(data)
   }
   return fetch(`https://api.tournesol.app/${url}`, body).then(r => {
-    if (r.status == 403 || r.status == 401) alertNotLoggedInOrError()
-    return r.json()
-  }).then(callback).catch(console.error)
+    if (r.status === 403 || r.status === 401) {
+      alertNotLoggedInOrError()
+    }
+    return r;
+  }).catch(console.error)
 }
 
-export const addRateLater = (video_id) => {
-  fetchTournesolApi('video/', 'POST', {video_id: video_id}, () => {}).then( () => {
-    fetchTournesolApi('users/me/video_rate_later/', 'POST', {video: {video_id: video_id}}, () => {})
-  })
+export const addRateLater = async (video_id) => {
+  const resp = await fetchTournesolApi('video/', 'POST', {video_id: video_id})
+    .then(() =>
+      fetchTournesolApi(
+        'users/me/video_rate_later/',
+        'POST',
+        {video: {video_id: video_id}}
+      )
+    );
+  if (resp && resp.ok) {
+    return {
+      success: true,
+      message: 'Done!'
+    }
+  }
+  else if (resp && resp.status === 409) {
+    return {
+      success: true,
+      message: 'Already added.'
+    }
+  }
+  return {
+    success: false,
+    message: 'Failed.'
+  }
 };
 
 /*

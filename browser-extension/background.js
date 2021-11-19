@@ -32,9 +32,10 @@ function getDateThreeWeeksAgo() {
   return `${d}-${m}-${y}-${H}-${M}-${S}`;
 }
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message == "addRateLater") {
-    addRateLater(request.video_id)
+    addRateLater(request.video_id).then(sendResponse);
+    return true;
   }
   else if (request.message == "getVideoStatistics") {
     // getVideoStatistics(request.video_id).then(sendResponse);
@@ -44,8 +45,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     const api_url = 'video/';
 
     const request_recommendations = async (options) => {
-      const json = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET', null);
-      return json.results;
+      const resp = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET');
+      if (resp && resp.ok) {
+        const json = await resp.json();
+        return json.results
+      }
+      return []
     };
 
     const process = async () => {
@@ -55,10 +60,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       const recent_sub = getRandomSubarray(recent, 3);
       const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
       const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
-      sendResponse({ data: videos });
-    };
-
-    process();
+      return { data: videos };
+    }
+    process().then(sendResponse);
     return true;
   }
+});
+
+// Send message to Tournesol tab on URL change, to sync access token
+// during navigation (after login, logout, etc.)
+chrome.webNavigation.onHistoryStateUpdated.addListener(event => {
+  chrome.tabs.sendMessage(event.tabId, "historyStateUpdated")
+}, {
+  url: [{hostEquals: "tournesol.app"}]
 });
