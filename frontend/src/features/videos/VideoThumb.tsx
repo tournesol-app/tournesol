@@ -57,7 +57,7 @@ function VideoThumb({
   actions = [],
 }: {
   video: VideoSerializerWithCriteria;
-  actions: ActionList;
+  actions?: ActionList;
 }) {
   const classes = useStyles();
   const videoId = video.video_id;

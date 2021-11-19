@@ -8,6 +8,7 @@ import {
   Drawer,
   List,
   Theme,
+  Divider,
 } from '@material-ui/core';
 // import ListIcon from '@material-ui/icons/FormatListBulleted';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -20,6 +21,7 @@ import {
   Home as HomeIcon,
   Compare as CompareIcon,
   WatchLater as WatchLaterIcon,
+  ListAlt as ListIcon,
   VideoLibrary,
 } from '@material-ui/icons';
 
@@ -91,22 +93,28 @@ const SideBar = () => {
 
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: 'Home' },
-    //  { targetUrl: "/comparisons", IconComponent: ListIcon, displayText: "My Comparisons"},
+    {
+      targetUrl: '/recommendations',
+      IconComponent: VideoLibrary,
+      displayText: 'Recommendations',
+    },
+    {}, // Divider
     {
       targetUrl: '/comparison',
       IconComponent: CompareIcon,
       displayText: 'Contribute',
     },
     {
-      targetUrl: '/rate_later',
-      IconComponent: WatchLaterIcon,
-      displayText: 'Rate later',
+      targetUrl: '/comparisons',
+      IconComponent: ListIcon,
+      displayText: 'My comparisons',
     },
     {
-      targetUrl: '/recommendations',
-      IconComponent: VideoLibrary,
-      displayText: 'Recommendations',
+      targetUrl: '/rate_later',
+      IconComponent: WatchLaterIcon,
+      displayText: 'My rate later list',
     },
+    {}, // Divider
   ];
 
   return (
@@ -128,6 +136,7 @@ const SideBar = () => {
     >
       <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
         {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
+          if (!IconComponent || !targetUrl) return <Divider />;
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem

@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import { VideoSerializerWithCriteria as Video } from 'src/services/openapi/models/VideoSerializerWithCriteria';
 
 const api_url = process.env.REACT_APP_API_URL;
@@ -5,6 +7,16 @@ const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
 const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
 
 const _inMemoryCache: { [videoId: string]: Video } = {};
+
+export const useVideoMetadata = (videoId: string) => {
+  const [video, setVideo] = useState({ video_id: '' } as Video);
+  useEffect(() => {
+    // Fetches the video metadata if they have not been fetched or `videoId` has changed
+    const process = async () => setVideo(await getVideoInformation(videoId));
+    if (video.video_id != videoId) process();
+  }, [video.video_id, videoId]); // Only re-runs if `videoId` changes
+  return video;
+};
 
 export const getVideoInformation = async (videoId: string) => {
   // TODO: replace this custom method with the automatically generated `VideoService.videoRetrieve``
