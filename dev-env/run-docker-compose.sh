@@ -2,11 +2,21 @@
 
 set -Eeuo pipefail
 
+DB_DIR="db-data"
+
+CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
+cd "$CURRENT_DIR"
+
+function compose_up() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker-compose up --build --force-recreate -d
+}
+
 function wait_for_backend() {
   set +e
-  for i in `seq 1 50`; do
-    curl -s localhost:8000
-    if [[ "$?" == "0" ]]; then
+  for _ in $(seq 1 50); do
+    if curl -s localhost:8000 -o /dev/null; then
       echo ""
       return 0
     fi
@@ -17,13 +27,14 @@ function wait_for_backend() {
   exit 1
 }
 
-CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
-cd "$CURRENT_DIR"
-
-DB_DIR="db-data"
+if [[ "${1:-""}" == 'restart' ]]; then
+  echo "Recreating dev containers..."
+  compose_up
+  exit
+fi
 
 if [ -d $DB_DIR ]; then
-  echo "The existing database at `realpath $DB_DIR` will be deleted."
+  echo "The existing database at $(realpath $DB_DIR) will be deleted."
   read -p "Are you sure? (y/n) " -n 1 -r
   echo ""
   if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -34,14 +45,9 @@ if [ -d $DB_DIR ]; then
 fi
 
 rm -rf $DB_DIR
-
-cp ../backend/requirements.txt ../backend/ml/ml_requirements.txt ../backend/dev-env/
-
 mkdir -p $DB_DIR
 
-DB_UID=$(id -u) \
-DB_GID=$(id -g) \
-docker-compose up --build --force-recreate -d
+compose_up
 
 wait_for_backend
 
@@ -54,7 +60,7 @@ rm "$CURRENT_DIR"/$DB_DIR/dump.sql
 echo 'Creating Superuser:'
 USERNAME="${1:-"user"}"
 PASSWORD="${2:-"tournesol"}"
-EMAIL="${3:-""}"
+EMAIL="${3:-"superuser@example.com"}"
 "$CURRENT_DIR/../backend/dev-env/create-superuser.exp" "$USERNAME" "$PASSWORD" "$EMAIL"
 
 echo 'Creating OAuth Application:'
