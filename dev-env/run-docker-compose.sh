@@ -15,9 +15,8 @@ function compose_up() {
 
 function wait_for_backend() {
   set +e
-  for i in `seq 1 50`; do
-    curl -s localhost:8000
-    if [[ "$?" == "0" ]]; then
+  for _ in $(seq 1 50); do
+    if curl -s localhost:8000 -o /dev/null; then
       echo ""
       return 0
     fi
@@ -28,13 +27,14 @@ function wait_for_backend() {
   exit 1
 }
 
-CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
-cd "$CURRENT_DIR"
-
-DB_DIR="db-data"
+if [[ "${1:-""}" == 'restart' ]]; then
+  echo "Recreating dev containers..."
+  compose_up
+  exit
+fi
 
 if [ -d $DB_DIR ]; then
-  echo "The existing database at `realpath $DB_DIR` will be deleted."
+  echo "The existing database at $(realpath $DB_DIR) will be deleted."
   read -p "Are you sure? (y/n) " -n 1 -r
   echo ""
   if [[ ! $REPLY =~ ^[Yy]$ ]]
