@@ -107,7 +107,6 @@ def save_data(video_scores, contributor_rating_scores):
             ContributorRating(
                 video_id=video_id,
                 user_id=contributor_id,
-                is_public=False,
             )
             for contributor_id, video_id in ratings_to_create
         ]

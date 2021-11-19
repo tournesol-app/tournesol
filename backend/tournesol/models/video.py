@@ -136,7 +136,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         self.rating_n_contributors = Comparison.objects.filter(
             Q(video_1=self) | Q(video_2=self)
         ).distinct("user").count()
-        self.save()
+        self.save(update_fields=['rating_n_ratings', 'rating_n_contributors'])
 
     COMPUTED_PROPERTIES = [
         "n_public_contributors",

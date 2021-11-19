@@ -9,7 +9,7 @@ from ..models import ContributorRating
 from ..serializers import ContributorRatingSerializer
 
 
-class ContributorRatingDetail(generics.RetrieveAPIView):
+class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
     """
     Retrieve the logged in user's ratings for a specific video
     (computed automatically from the user's comparisons)
