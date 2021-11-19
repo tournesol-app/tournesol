@@ -74,7 +74,7 @@ const ExportAllDataForm = () => {
             component="a"
             fullWidth
             href={downloadUrl}
-            download="export.zip"
+            download="export-tournesol-data.zip"
             color="secondary"
             variant="outlined"
           >
