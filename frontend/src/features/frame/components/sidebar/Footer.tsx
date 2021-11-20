@@ -7,7 +7,7 @@ import { handleWikiUrl } from 'src/utils/url';
 const useStyles = makeStyles(() => ({
   root: {
     padding: 8,
-    borderTop: '1px solid #806300',
+    borderTop: '1px solid #e7e5db',
     display: 'flex',
     flexFlow: 'row wrap',
     justifyContent: 'space-between',
@@ -18,8 +18,12 @@ const useStyles = makeStyles(() => ({
     fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'bold',
-    color: '#806300',
+    color: '#A09B87',
     display: 'block',
+    '&:hover': {
+      textDecoration: 'underline',
+      color: '#806300',
+    },
   },
 }));
 
