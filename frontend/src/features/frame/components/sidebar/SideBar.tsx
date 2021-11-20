@@ -25,6 +25,7 @@ import {
 
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
+import Footer from './Footer';
 
 export const sideBarWidth = 264;
 
@@ -32,7 +33,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
     width: sideBarWidth,
     flexShrink: 0,
-    whiteSpace: 'nowrap',
+    minHeight: '100%',
+    position: 'relative',
   },
   drawerOpen: {
     width: sideBarWidth,
@@ -51,9 +53,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   drawerPaper: {
     top: topBarHeight,
+    height: `calc(100% - ${topBarHeight}px)`,
     backgroundColor: '#FAF8F3',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     [theme.breakpoints.down('sm')]: {
       top: 0,
+      height: '100%',
     },
   },
   listItem: {
@@ -146,6 +153,7 @@ const SideBar = () => {
           );
         })}
       </List>
+      {drawerOpen && <Footer />}
     </Drawer>
   );
 };
