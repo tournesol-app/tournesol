@@ -3,7 +3,7 @@ import { Box, makeStyles, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles({
   contentHeader: {
-    background: '#f9f3dc',
+    background: '#FAF8F3',
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
   },
 });

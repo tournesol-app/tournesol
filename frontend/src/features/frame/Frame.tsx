@@ -11,10 +11,12 @@ const useStyles = makeStyles({
   sideBarContainer: {
     display: 'flex',
     flexDirection: 'row',
+    height: '100%',
   },
   main: {
     flexGrow: 1,
     overflow: 'hidden',
+    backgroundColor: '#ffffff',
   },
 });
 
