@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import TopBar from './components/topbar/TopBar';
+import TopBar, { topBarHeight } from './components/topbar/TopBar';
 import SideBar from './components/sidebar/SideBar';
 
 interface Props {
@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   sideBarContainer: {
     display: 'flex',
     flexDirection: 'row',
-    height: '100%',
+    height: `calc(100% - ${topBarHeight})`,
   },
   main: {
     flexGrow: 1,

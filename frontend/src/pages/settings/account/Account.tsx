@@ -12,13 +12,14 @@ import SettingsMenu from 'src/features/settings/SettingsMenu';
 import Section from 'src/components/Section';
 
 const useStyles = makeStyles((theme) => ({
+  root: { height: '100%', overflow: 'auto' },
   titleDanger: { color: theme.palette.error.main },
 }));
 
 export const AccountPage = () => {
   const classes = useStyles();
   return (
-    <>
+    <div className={classes.root}>
       <ContentHeader title="Settings > Account" />
       <Box m={4}>
         <Grid container spacing={4}>
@@ -58,7 +59,7 @@ export const AccountPage = () => {
           </Grid>
         </Grid>
       </Box>
-    </>
+    </div>
   );
 };
 
