@@ -1,9 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Typography } from '@material-ui/core';
-import { handleWikiUrl } from 'src/utils/url';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,41 +57,6 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: 'center',
     },
   },
-  menuLink: {
-    /* Auto Layout */
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: '11px 16px',
-
-    position: 'static',
-
-    border: 'none',
-    boxSizing: 'border-box',
-    background: 'none',
-
-    /* Inside Auto Layout */
-
-    order: 1,
-    flexGrow: 0,
-    marginRight: '0px',
-
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    lineHeight: '18px',
-    color: '#FFFFFF',
-  },
-  menu: {
-    display: 'flex',
-    flexFlow: 'row-reverse',
-    background: 'none',
-    maxHeight: '80px',
-    [theme.breakpoints.down('sm')]: {
-      justifyContent: 'center',
-    },
-  },
   intro: {
     maxWidth: 640,
     fontFamily: 'Poppins',
@@ -106,38 +69,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Navigation = () => {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.menu}>
-      <Link to="/comparison" className={classes.menuLink}>
-        CONTRIBUTE
-      </Link>
-      <a
-        className={classes.menuLink}
-        href={`${handleWikiUrl(window.location.host)}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        ABOUT
-      </a>
-      <Link className={classes.menuLink} to="/donate">
-        DONATE
-      </Link>
-    </div>
-  );
-};
-
 const HomePage = () => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <Grid container className={classes.rectangle67}>
-        <Grid item xs={12}>
-          <Navigation />
-        </Grid>
         <Grid item xs={12} md={8} className={classes.titleContainer}>
           <Typography variant="h1" className={classes.title}>
             Collaborative Content Recommendations
@@ -156,15 +93,6 @@ const HomePage = () => {
             quality. We hope to contribute to making today&apos;s and
             tomorrow&apos;s large-scale algorithms{' '}
             <strong>robustly beneficial</strong> for all of humanity.
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid container className={classes.content}>
-        <Grid item xs={12} className={classes.introContainer}>
-          <Typography paragraph className={classes.intro}>
-            <a href="/pdf/privacy_policy_tournesol.pdf" download>
-              privacy policy
-            </a>
           </Typography>
         </Grid>
       </Grid>
