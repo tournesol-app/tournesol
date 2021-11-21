@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import VideoCardFromId from '../../features/videos/VideoCardFromId';
 import { useParams } from 'react-router-dom';
+import VideoCard from 'src/features/videos/VideoCard';
+import { useVideoMetadata } from 'src/features/videos/VideoApi';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -15,6 +16,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const VideoCardFromId = ({ videoId }: { videoId: string }) => {
+  const video = useVideoMetadata(videoId);
+  return <VideoCard video={video} />;
+};
+
 function VideoCardPage() {
   const classes = useStyles();
   const { video_id } = useParams<{ video_id: string }>();
@@ -22,7 +28,7 @@ function VideoCardPage() {
   return (
     <div>
       <div className={classes.root}>
-        <VideoCardFromId videoId={video_id} actions={[]} />
+        <VideoCardFromId videoId={video_id} />
       </div>
     </div>
   );
