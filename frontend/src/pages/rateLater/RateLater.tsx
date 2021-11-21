@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
   stickyPagination: {
     position: 'sticky',
     top: 4,
+    z-index: 1,
     padding: '6px',
   },
   video: {
