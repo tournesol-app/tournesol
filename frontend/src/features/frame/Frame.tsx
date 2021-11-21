@@ -9,13 +9,15 @@ interface Props {
 
 const useStyles = makeStyles({
   sideBarContainer: {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'row',
-    height: `calc(100% - ${topBarHeight})`,
+    height: `calc(100% - ${topBarHeight}px)`,
   },
   main: {
     flexGrow: 1,
-    overflow: 'hidden',
+    overflow: 'auto',
+    height: '100%',
     backgroundColor: '#ffffff',
   },
 });

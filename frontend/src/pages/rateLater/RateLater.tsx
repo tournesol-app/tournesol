@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
   stickyPagination: {
     position: 'sticky',
-    top: `${topBarHeight}px`,
+    top: 4,
     padding: '6px',
   },
   video: {
