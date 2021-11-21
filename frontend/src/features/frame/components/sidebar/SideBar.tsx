@@ -98,7 +98,7 @@ const SideBar = () => {
       IconComponent: VideoLibrary,
       displayText: 'Recommendations',
     },
-    {}, // Divider
+    { displayText: 'divider_1' },
     {
       targetUrl: '/comparison',
       IconComponent: CompareIcon,
@@ -114,7 +114,7 @@ const SideBar = () => {
       IconComponent: WatchLaterIcon,
       displayText: 'My rate later list',
     },
-    {}, // Divider
+    { displayText: 'divider_2' },
   ];
 
   return (
@@ -136,7 +136,8 @@ const SideBar = () => {
     >
       <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
         {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
-          if (!IconComponent || !targetUrl) return <Divider />;
+          if (!IconComponent || !targetUrl)
+            return <Divider key={displayText} />;
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem
