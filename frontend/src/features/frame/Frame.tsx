@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import TopBar from './components/topbar/TopBar';
+import TopBar, { topBarHeight } from './components/topbar/TopBar';
 import SideBar from './components/sidebar/SideBar';
 
 interface Props {
@@ -9,12 +9,16 @@ interface Props {
 
 const useStyles = makeStyles({
   sideBarContainer: {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'row',
+    height: `calc(100% - ${topBarHeight}px)`,
   },
   main: {
     flexGrow: 1,
-    overflow: 'hidden',
+    overflow: 'auto',
+    height: '100%',
+    backgroundColor: '#ffffff',
   },
 });
 
