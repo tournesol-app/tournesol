@@ -29,6 +29,19 @@ export const theme = responsiveFontSizes(
         fontSize: '1.5rem',
         fontWeight: 600,
       },
+      fontFamily: [
+        'Poppins',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
     },
     overrides: {
       MuiDrawer: {

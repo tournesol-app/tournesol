@@ -75,7 +75,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#806300',
   },
   listItemText: {
-    fontFamily: 'Poppins',
     fontWeight: 'bold',
   },
 }));

@@ -16,7 +16,6 @@ const useStyles = makeStyles({
     gap: '8px',
   },
   HeaderButton: {
-    fontFamily: 'Poppins',
     textTransform: 'initial',
     fontWeight: 'bold',
     borderWidth: '2px',
