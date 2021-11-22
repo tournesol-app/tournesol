@@ -80,7 +80,7 @@ const Logo = () => {
       >
         <Menu />
       </IconButton>
-      <Link to="/home">
+      <Link to="/">
         <Hidden xsDown>
           <img src="/svg/Logo.svg" alt="logo" />
         </Hidden>

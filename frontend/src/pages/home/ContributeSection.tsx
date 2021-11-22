@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Link } from 'react-router-dom';
 import { Typography, Button, Box } from '@material-ui/core';
 
 // ContributeSection is a paragraph displayed on the HomePage
@@ -24,10 +25,9 @@ const ContributeSection = () => {
       <Button
         color="primary"
         variant="contained"
-        component="a"
-        href="/comparisons"
+        component={Link}
+        to="/comparison"
       >
-        {' '}
         Compare videos now
       </Button>
     </Box>
