@@ -15,7 +15,6 @@ const useStyles = makeStyles(() => ({
   menuLink: {
     margin: 4,
     textDecoration: 'none',
-    fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'bold',
     color: '#A09B87',

@@ -31,7 +31,7 @@ const renderComponent = (drawerOpen: boolean) =>
     </Provider>
   );
 
-test('renders Tournesol banner', () => {
-  const { getByText } = renderComponent(true);
-  expect(getByText(/Tournesol/i)).toBeInTheDocument();
+test('Home page renders and contains the word "Tournesol"', () => {
+  const { getAllByText } = renderComponent(true);
+  expect(getAllByText(/Tournesol/i).length).toBeGreaterThan(0);
 });

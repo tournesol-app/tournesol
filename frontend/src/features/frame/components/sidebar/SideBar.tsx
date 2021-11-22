@@ -10,7 +10,6 @@ import {
   Theme,
   Divider,
 } from '@material-ui/core';
-// import ListIcon from '@material-ui/icons/FormatListBulleted';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -64,6 +63,12 @@ const useStyles = makeStyles((theme: Theme) => ({
       top: 0,
       height: '100%',
     },
+    overflowX: 'hidden',
+    '& > *': {
+      // All direct children of the drawer paper should keep a min-width:
+      // their content should not be wrapped during the drawer animation.
+      minWidth: `${sideBarWidth}px`,
+    },
   },
   listItem: {
     height: '64px',
@@ -75,7 +80,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#806300',
   },
   listItemText: {
-    fontFamily: 'Poppins',
     fontWeight: 'bold',
   },
 }));
@@ -134,7 +138,10 @@ const SideBar = () => {
         }),
       }}
     >
-      <List onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}>
+      <List
+        disablePadding
+        onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
+      >
         {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
           if (!IconComponent || !targetUrl)
             return <Divider key={displayText} />;
