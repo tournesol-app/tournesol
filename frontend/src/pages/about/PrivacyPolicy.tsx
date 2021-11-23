@@ -53,8 +53,8 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography variant="h5">Contact form</Typography>
           <Typography paragraph>
-            There is no contact form. If you need to contact us, please email
-            tournesol.application (at) gmail.com
+            There is no contact form. If you need to contact us, please use the
+            following email: tournesol.application(at)gmail.com
           </Typography>
           <Typography variant="h5">Cookies</Typography>
           <Typography paragraph>
