@@ -8,6 +8,7 @@ import {
   FormTextField,
 } from 'src/components';
 import { AccountsService, RegisterUser, ApiError } from 'src/services/openapi';
+import { Link } from 'react-router-dom';
 
 const SignupSuccess = ({ email }: { email: string }) => (
   <Typography>
@@ -100,10 +101,12 @@ const Signup = () => {
                   checked={acceptPolicy}
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
                 />
-                <span>I have read and agree with the </span>
-                <a href="/pdf/privacy_policy_tournesol.pdf" download>
-                  privacy policy
-                </a>
+                <span>
+                  I have read and agree with the{' '}
+                  <Link to="/about/privacy_policy" target="_blank">
+                    privacy policy
+                  </Link>
+                </span>
               </Grid>
               <Grid item xs={12}>
                 <Button
