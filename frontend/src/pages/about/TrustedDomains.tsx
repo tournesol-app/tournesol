@@ -34,7 +34,7 @@ const TrustedDomains = () => {
 
   return (
     <>
-      <ContentHeader title="About trusted email domains" />
+      <ContentHeader title="About > Trusted email domains" />
       <ContentBox maxWidth="md">
         <Box marginBottom={6}>
           <Typography component="div">
