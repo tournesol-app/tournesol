@@ -19,6 +19,7 @@ import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
+import PrivacyPolicy from './pages/about/PrivacyPolicy';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -90,6 +91,9 @@ function App() {
         </Route>
         <Route path="/about/trusted_domains">
           <TrustedDomains />
+        </Route>
+        <Route path="/about/privacy_policy">
+          <PrivacyPolicy />
         </Route>
         <Route path="/">
           <HomePage />
