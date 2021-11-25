@@ -67,6 +67,7 @@ function VideoThumb({
       <Grid item xs={12} style={{ aspectRatio: '16 / 9', padding: 0 }}>
         <ReactPlayer
           url={`https://youtube.com/watch?v=${videoId}`}
+          playing
           light
           width="100%"
           height="100%"
