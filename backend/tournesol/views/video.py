@@ -3,6 +3,9 @@ API endpoint to manipulate videos
 """
 import re
 from django.utils import timezone, dateparse
+import isodate
+
+from django.utils import timezone
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
@@ -169,6 +172,7 @@ class VideoViewSet(mixins.CreateModelMixin,
             language = compute_video_language(uploader, title, description)
             #  if video has no tags, te field doesn't appear on response
             tags = yt_info["snippet"].get("tags", [])
+            duration = isodate.parse_duration(yt_info["contentDetails"]["duration"])
             extra_data = {
                 "name": title,
                 "description": description,
@@ -177,6 +181,7 @@ class VideoViewSet(mixins.CreateModelMixin,
                 "uploader": uploader,
                 "language": language,
                 "tags": tags,
+                "duration": duration,
             }
         except AssertionError:
             extra_data = {"tags": []}
