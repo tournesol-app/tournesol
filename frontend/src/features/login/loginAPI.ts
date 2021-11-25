@@ -82,3 +82,20 @@ export const fetchTokenFromRefresh = async (refresh_token: string) => {
   });
   return { data: jresp };
 };
+
+export const revokeAccessToken = async (token: string) => {
+  const params = new URLSearchParams();
+  params.append('token', token);
+  params.append('client_id', client_id);
+  params.append('client_secret', client_secret);
+  const response = await fetch(api_url + '/o/revoke_token/', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params.toString(),
+  });
+
+  return response;
+};

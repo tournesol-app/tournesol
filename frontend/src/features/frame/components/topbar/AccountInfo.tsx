@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { AccountCircle } from '@material-ui/icons';
 
 import { useLoginState } from 'src/hooks';
+import { revokeAccessToken } from '../../../login/loginAPI';
 
 const useStyles = makeStyles({
   AccountInfo: {
@@ -33,11 +34,18 @@ const LoggedInActions = () => {
   const classes = useStyles();
   const { logout, loginState } = useLoginState();
 
+  const logoutProcess = async () => {
+    if (loginState.access_token) {
+      await revokeAccessToken(loginState.access_token);
+    }
+    logout();
+  };
+
   return (
     <>
       <Button
         variant="outlined"
-        onClick={logout}
+        onClick={logoutProcess}
         className={classes.HeaderButton}
       >
         Logout
