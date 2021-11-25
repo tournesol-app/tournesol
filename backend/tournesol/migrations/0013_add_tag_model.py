@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='video',
             name='tags',
-            field=models.ManyToManyField(to='tournesol.Tag'),
+            field=models.ManyToManyField(blank=True, to='tournesol.Tag'),
         ),
     ]

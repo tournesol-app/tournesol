@@ -100,7 +100,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     is_update_pending = models.BooleanField(
         default=False, help_text="If true, recompute properties"
     )
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     # computed in the Video.recompute_pareto(),
     #  called via the manage.py compute_quantile_pareto command

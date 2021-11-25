@@ -41,7 +41,7 @@ class VideoSerializer(ModelSerializer):
         ]
 
     def save(self, **kwargs):
-        tags = kwargs.pop('tags')
+        tags = kwargs.pop('tags', [])
         video = super().save(**kwargs)
         for tag_name in tags:
             #  The return object is a tuple having first an instance of Tag, and secondly a bool
