@@ -38,7 +38,8 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
-        ]
+            "duration",
+            ]
         read_only_fields = [
             "name",
             "description",
@@ -48,6 +49,7 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
+            "duration",
         ]
 
     def save(self, **kwargs):
@@ -108,6 +110,7 @@ class VideoSerializerWithCriteria(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
+            "duration",
         ]
 
 

@@ -1,4 +1,5 @@
 from datetime import date
+import isodate
 from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
@@ -254,6 +255,9 @@ class VideoApi(TestCase):
         video = Video.objects.get(video_id="NeADlWSDFAQ")
         tournesol_tag = Tag.objects.get(name="tournesol")
         self.assertIn(tournesol_tag, video.tags.all())
+        self.assertEqual(response.json()["duration"], '00:21:03')
+        video = Video.objects.get(video_id='NeADlWSDFAQ')
+        self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
 
     @patch("tournesol.views.video.youtube_video_details")
     def test_create_video_with_with_youtube_api_no_result(self, mock_youtube):
@@ -300,7 +304,7 @@ class VideoApi(TestCase):
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_get_existing_video(self):
         factory = APIClient()
         response = factory.get("/video/video_id_01/")
