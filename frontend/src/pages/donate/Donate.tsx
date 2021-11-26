@@ -42,6 +42,8 @@ const DonatePage = () => {
           }}
         >
           <Typography variant="h6">By direct transfer:</Typography>
+          <pre>Association Tournesol</pre>
+          <pre>Lausanne, Switzerland</pre>
           <pre>IBAN: CH42 0900 0000 1569 4102 5</pre>
           <pre>BIC: POFICHBEXXX</pre>
         </div>
