@@ -35,8 +35,9 @@ const DonatePage = () => {
             , or join our <a href="https://discord.gg/TvsFB8RNBV">Discord</a>.{' '}
           </Typography>
 
-          <Typography variant="h5">Make a donation</Typography>
-
+          <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
+            How to make a donation?
+          </Typography>
           <div
             style={{
               padding: 8,
