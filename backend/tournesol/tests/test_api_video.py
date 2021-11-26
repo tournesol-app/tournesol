@@ -255,7 +255,7 @@ class VideoApi(TestCase):
         video = Video.objects.get(video_id="NeADlWSDFAQ")
         tournesol_tag = Tag.objects.get(name="tournesol")
         self.assertIn(tournesol_tag, video.tags.all())
-        self.assertEqual(response.json()["duration"], '00:21:03')
+        self.assertEqual(response.json()["duration"], 1263)
         video = Video.objects.get(video_id='NeADlWSDFAQ')
         self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
 

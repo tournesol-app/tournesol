@@ -26,6 +26,8 @@ from .models import (
 
 
 class VideoSerializer(ModelSerializer):
+    duration = serializers.SerializerMethodField()
+
     class Meta:
         model = Video
         fields = [
@@ -60,6 +62,12 @@ class VideoSerializer(ModelSerializer):
             tag = Tag.objects.get_or_create(name=tag_name)
             video.tags.add(tag[0].id)
         return video
+
+    # Convert duration to seconds to facilitate use of Humanize package
+    def get_duration(self, obj):
+        if obj.duration:
+            return int(obj.duration.total_seconds())
+        return 0
 
 
 class VideoReadOnlySerializer(Serializer):
@@ -96,6 +104,7 @@ class VideoCriteriaScoreSerializer(ModelSerializer):
 
 class VideoSerializerWithCriteria(ModelSerializer):
     criteria_scores = VideoCriteriaScoreSerializer(many=True)
+    duration = serializers.SerializerMethodField()
 
     class Meta:
         model = Video
@@ -112,6 +121,12 @@ class VideoSerializerWithCriteria(ModelSerializer):
             "rating_n_contributors",
             "duration",
         ]
+
+    # Convert duration to seconds to facilitate use of Humanize package
+    def get_duration(self, obj):
+        if obj.duration:
+            return int(obj.duration.total_seconds())
+        return 0
 
 
 class VideoRateLaterSerializer(ModelSerializer):
