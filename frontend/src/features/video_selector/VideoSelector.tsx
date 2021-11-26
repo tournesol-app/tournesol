@@ -64,6 +64,7 @@ const VideoSelector = ({
           <ReactPlayer
             url={`https://youtube.com/watch?v=${videoId}`}
             controls
+            playing
             light
             width="100%"
             height="100%"
