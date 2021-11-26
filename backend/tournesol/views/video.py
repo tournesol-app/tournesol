@@ -31,8 +31,11 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         search = request.query_params.get('search')
         if search:
-            queryset = queryset.filter(Q(name__icontains=search) |
-                                       Q(description__icontains=search))
+            queryset = queryset.filter(
+                Q(name__icontains=search) |
+                Q(description__icontains=search) |
+                Q(tags__name__icontains=search)
+            )
 
         date_lte = request.query_params.get('date_lte') \
             if request.query_params.get('date_lte') else ""
@@ -122,16 +125,19 @@ class VideoViewSet(mixins.CreateModelMixin,
             description = str(yt_info["snippet"]["description"])
             uploader = yt_info["snippet"]["channelTitle"]
             language = compute_video_language(uploader, title, description)
+            #  if video has no tags, te field doesn't appear on response
+            tags = yt_info["snippet"].get("tags", [])
             extra_data = {
                 "name": title,
                 "description": description,
                 "publication_date": published_date,
                 "views": nb_views,
                 "uploader": uploader,
-                "language": language
+                "language": language,
+                "tags": tags,
             }
         except AssertionError:
-            extra_data = {}
+            extra_data = {"tags": []}
         serializer = VideoSerializer(data={"video_id": video_id})
         if serializer.is_valid():
             serializer.save(**extra_data)

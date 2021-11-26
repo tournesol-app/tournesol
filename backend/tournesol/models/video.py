@@ -9,6 +9,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
+from settings.settings import CRITERIAS
 
 import computed_property
 from languages.languages import LANGUAGES
@@ -23,10 +24,10 @@ from core.utils.models import (
     query_and,
 )
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX, TS_CONSTANTS
+from tournesol.models.tags import Tag
 from tournesol.utils import VideoSearchEngine
-from settings.settings import CRITERIAS
 
-from .comparisons import Comparison
+from tournesol.models.comparisons import Comparison
 
 
 class Video(models.Model, WithFeatures, WithEmbedding):
@@ -99,6 +100,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     is_update_pending = models.BooleanField(
         default=False, help_text="If true, recompute properties"
     )
+    tags = models.ManyToManyField(Tag, blank=True)
 
     # computed in the Video.recompute_pareto(),
     #  called via the manage.py compute_quantile_pareto command
