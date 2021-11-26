@@ -4,6 +4,7 @@ API endpoints to interact with the contributor's comparisons
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
+from django.db import transaction
 from drf_spectacular.utils import extend_schema
 
 from rest_framework import generics, mixins, status, exceptions
@@ -89,6 +90,7 @@ class ComparisonListApi(
         """List all comparisons made by the logged user."""
         return self.list(request, *args, **kwargs)
 
+    @transaction.atomic
     def perform_create(self, serializer):
         if self.comparison_already_exists(self.request):
             raise exceptions.ValidationError(

@@ -51,6 +51,6 @@ class ContributorRatingList(generics.ListAPIView):
                 ratings = ratings.filter(is_public=False)
             else:
                 raise exceptions.ValidationError(
-                    "'is_public' query param should be 'true' or 'false'"
+                    "'is_public' query param must be 'true' or 'false'"
                 )
         return ratings
