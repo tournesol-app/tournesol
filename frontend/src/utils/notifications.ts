@@ -25,7 +25,7 @@ export const contactAdministrator = (
 /**
  * Display an info alert, followed by an invitation to report an issue.
  *
- * Contrary to `contactAdministrator` this function always use the info alert
+ * Contrary to `contactAdministrator` this function use only the info alert
  * variant to notify the user of the presence of non-impacting error. It should
  * not be used to report blocking errors or errors requiring an action from the
  * user.
@@ -38,7 +38,7 @@ export const contactAdministratorLowSeverity = (
     message = 'Oops, a non impacting error occurred.';
   }
   display('Please, contact an administrator to report the issue.', {
-    variant: 'warning',
+    variant: 'info',
   });
   display(message, { variant: 'info' });
 };

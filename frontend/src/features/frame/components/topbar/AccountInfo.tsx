@@ -40,8 +40,8 @@ const LoggedInActions = () => {
   const { logout, loginState } = useLoginState();
 
   const logoutProcess = async () => {
-    if (loginState.access_token) {
-      await revokeAccessToken(loginState.access_token).catch(() => {
+    if (loginState.refresh_token) {
+      await revokeAccessToken(loginState.refresh_token).catch(() => {
         contactAdministratorLowSeverity(
           enqueueSnackbar,
           'A non impacting error occurred during your logout.'
