@@ -27,7 +27,7 @@ def forward_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tournesol", "0012_auto_20211021_0922"),
+        ("tournesol", "0013_add_tag_model"),
     ]
 
     operations = [
