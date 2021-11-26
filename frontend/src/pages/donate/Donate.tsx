@@ -1,29 +1,39 @@
 import React from 'react';
 
+import { makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
 import { ContentHeader } from 'src/components';
 
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  content: {
+    maxWidth: '100%',
+    width: 640,
+    padding: 24,
+  },
+  box: {
+    padding: 8,
+    marginTop: 8,
+    background: '#FFFFFF',
+    border: '1px solid #DCD8CB',
+    boxShadow:
+      '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
+    borderRadius: '4px',
+  },
+});
+
 const DonatePage = () => {
+  const classes = useStyles();
   return (
     <>
       <ContentHeader title="Donate" />
-      <div
-        style={{
-          marginTop: 24,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '100%',
-            width: 640,
-            color: '#4A473E',
-            padding: 24,
-          }}
-        >
+      <div className={classes.root}>
+        <div className={classes.content}>
           <Typography paragraph>
             Because we are a small team of mostly volunteers, the development of
             Tournesol is slower than we would like it to be. If you can, please
@@ -38,30 +48,16 @@ const DonatePage = () => {
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
             How to make a donation?
           </Typography>
-          <div
-            style={{
-              padding: 8,
-              backgroundColor: 'rgba(0, 0, 0, 0.08)',
-              borderRadius: 8,
-              marginTop: 8,
-            }}
-          >
-            <Typography variant="h6">By direct transfer:</Typography>
+          <div className={classes.box}>
+            <Typography variant="h6">By direct transfer</Typography>
             <pre>Association Tournesol</pre>
             <pre>Lausanne, Switzerland</pre>
             <pre>IBAN: CH42 0900 0000 1569 4102 5</pre>
             <pre>BIC: POFICHBEXXX</pre>
           </div>
 
-          <div
-            style={{
-              padding: 8,
-              backgroundColor: 'rgba(0, 0, 0, 0.08)',
-              borderRadius: 8,
-              marginTop: 8,
-            }}
-          >
-            <Typography variant="h6">By Paypal:</Typography>
+          <div className={classes.box}>
+            <Typography variant="h6">By Paypal</Typography>
 
             <form
               action="https://www.paypal.com/donate"
