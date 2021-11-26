@@ -181,7 +181,10 @@ function VideoCard({
         direction="column"
       >
         <div className={classes.top}>
-          <Typography className={classes.title} variant="h5">
+          <Typography
+            className={classes.title}
+            variant={compact ? 'body1' : 'h5'}
+          >
             {video.name}
           </Typography>
         </div>

@@ -7,11 +7,11 @@ import {
   Theme,
   Tooltip,
   Fab,
+  Box,
 } from '@material-ui/core';
 import { Compare as CompareIcon } from '@material-ui/icons';
 import type { Comparison } from 'src/services/openapi';
-import VideoThumb from 'src/features/videos/VideoThumb';
-import { useVideoMetadata } from 'src/features/videos/VideoApi';
+import { VideoCardFromId } from '../videos/VideoCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
   content: {
@@ -27,10 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'stretch',
-  },
-  playerWrapper: {
-    aspectRatio: '16 / 9',
-    width: 'calc(50% - 26px)',
+    gap: '16px',
   },
   centering: {
     display: 'flex',
@@ -39,20 +36,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const VideoThumbFromVideoId = ({ videoId }: { videoId: string }) => {
-  const video = useVideoMetadata(videoId);
-  return <VideoThumb video={video} />;
-};
-
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const classes = useStyles();
   const { video_a, video_b } = comparison;
   return (
-    <Grid container className={classes.comparisonContainer}>
-      <Grid item className={classes.playerWrapper}>
-        <VideoThumbFromVideoId videoId={video_a.video_id} />
-      </Grid>
-      <Grid item className={classes.centering} style={{ position: 'relative' }}>
+    <Box className={classes.comparisonContainer}>
+      <VideoCardFromId compact videoId={video_a.video_id} />
+      <Box className={classes.centering} style={{ position: 'relative' }}>
         <div
           style={{
             border: '1px solid #F1EFE7',
@@ -71,11 +61,9 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
             <CompareIcon style={{ color: '#B6B1A1' }} />
           </Fab>
         </Tooltip>
-      </Grid>
-      <Grid item className={classes.playerWrapper}>
-        <VideoThumbFromVideoId videoId={video_b.video_id} />
-      </Grid>
-    </Grid>
+      </Box>
+      <VideoCardFromId compact videoId={video_b.video_id} />
+    </Box>
   );
 };
 
