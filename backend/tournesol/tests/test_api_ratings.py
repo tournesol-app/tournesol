@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from tournesol.models import Video, ContributorRating, ContributorRatingCriteriaScore
+from tournesol.models import Comparison, Video, ContributorRating, ContributorRatingCriteriaScore
 
 
 class RatingApi(TestCase):
@@ -17,8 +17,11 @@ class RatingApi(TestCase):
     def setUp(self):
         self.user1 = User.objects.create(username=self._user)
         self.user2 = User.objects.create(username=self._other_user)
-        video1 = Video.objects.create(video_id='RD4g4XLGFTDG8')
-        video2 = Video.objects.create(video_id='RD4g4XLGFTDG9')
+        video1 = Video.objects.create(video_id='4g4XLGFTDG8')
+        video2 = Video.objects.create(video_id='4g4XLGFTDG9')
+        video3 = Video.objects.create(video_id='video-id-03')
+        Comparison.objects.create(video_1=video1, video_2=video2, user=self.user1)
+        Comparison.objects.create(video_1=video1, video_2=video2, user=self.user2)
         ContributorRating.objects.create(video=video1, user=self.user1, is_public=False)
         ContributorRating.objects.create(video=video1, user=self.user2, is_public=False)
         ContributorRating.objects.create(video=video2, user=self.user2, is_public=True)
@@ -41,7 +44,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_authenticated_cant_create(self):
+    def test_authenticated_cant_create_rating_about_non_existing_video(self):
         factory = APIClient()
         factory.force_authenticate(user=self.user1)
         response = factory.post(
@@ -49,7 +52,23 @@ class RatingApi(TestCase):
             {'video_id': 'NeADlWSDFAQ'},
             format="json"
         )
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_authenticated_initialize_rating_as_public(self):
+        factory = APIClient()
+        factory.force_authenticate(user=self.user1)
+        response = factory.post(
+            "/users/me/contributor_ratings/",
+            {
+                'video_id': 'video-id-03',
+                'is_public': True
+            },
+            format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["video"]["video_id"], "video-id-03")
+        self.assertEqual(response.data["is_public"], True)
+        self.assertEqual(response.data["n_comparisons"], 0)
 
     def test_authenticated_fetch_non_existing_video(self):
         factory = APIClient()
@@ -85,6 +104,7 @@ class RatingApi(TestCase):
             "score": 1,
             "uncertainty": 2,
         }])
+        self.assertEqual(response.data["n_comparisons"], 0)
 
     def test_ratings_list_with_filter(self):
         client = APIClient()
@@ -96,7 +116,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["count"], 1)
-        self.assertEqual(response.json()["results"][0]["video"]["video_id"], "RD4g4XLGFTDG8")
+        self.assertEqual(response.json()["results"][0]["video"]["video_id"], "4g4XLGFTDG8")
 
         response = client.get(
             "/users/me/contributor_ratings/?is_public=true",
@@ -104,7 +124,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["count"], 1)
-        self.assertEqual(response.json()["results"][0]["video"]["video_id"], "RD4g4XLGFTDG9")
+        self.assertEqual(response.json()["results"][0]["video"]["video_id"], "4g4XLGFTDG9")
 
     def test_patch_rating_is_public(self):
         client = APIClient()
@@ -113,7 +133,7 @@ class RatingApi(TestCase):
 
         self.assertEqual(rating.is_public, False)
         response = client.patch(
-            "/users/me/contributor_ratings/RD4g4XLGFTDG8/",
+            "/users/me/contributor_ratings/4g4XLGFTDG8/",
             data={"is_public": True},
             format="json"
         )
