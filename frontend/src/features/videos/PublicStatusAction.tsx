@@ -5,7 +5,7 @@ import { AccountBox as AccountBoxIcon } from '@material-ui/icons';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 
 const setPublicStatus = async (videoId: string, isPublic: boolean) => {
-  await UsersService.usersMeContributorRatingsPartialUpdate(videoId, {
+  return await UsersService.usersMeContributorRatingsPartialUpdate(videoId, {
     is_public: isPublic,
   });
 };
@@ -14,17 +14,22 @@ export const UserRatingPublicToggle = ({
   videoId,
   nComparisons,
   isPublic,
+  onChange,
 }: {
   videoId: string;
   nComparisons: number;
   isPublic: boolean;
+  onChange?: (rating: ContributorRating) => void;
 }) => {
   const [checked, setChecked] = useState(isPublic);
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStatus = e.target.checked;
-    await setPublicStatus(videoId, newStatus);
-    setChecked(newStatus);
+    const rating = await setPublicStatus(videoId, newStatus);
+    setChecked(rating.is_public ?? false);
+    if (onChange) {
+      onChange(rating);
+    }
   };
 
   return (

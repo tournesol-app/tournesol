@@ -68,13 +68,19 @@ const VideoSelector = React.forwardRef<VideoSelectorHandle | undefined, Props>(
         setRating(contributorRating);
       } catch (err) {
         if (err?.status === 404) {
-          await ensureVideoExistsOrCreate(videoId);
-          const contributorRating =
-            await UsersService.usersMeContributorRatingsCreate({
-              video_id: videoId,
-            } as ContributorRatingCreate);
-          setRating(contributorRating);
+          try {
+            await ensureVideoExistsOrCreate(videoId);
+            const contributorRating =
+              await UsersService.usersMeContributorRatingsCreate({
+                video_id: videoId,
+              } as ContributorRatingCreate);
+            setRating(contributorRating);
+          } catch (err) {
+            console.error('Failed to initialize contributor rating.', err);
+            setRating(null);
+          }
         } else {
+          console.error('Failed to retrieve contributor rating.', err);
           setRating(null);
         }
       }

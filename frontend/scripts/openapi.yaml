@@ -956,7 +956,6 @@ paths:
   /video/:
     get:
       operationId: video_list
-      description: ''
       parameters:
       - name: limit
         required: false
@@ -10599,9 +10598,9 @@ components:
           type: number
           format: float
           maximum: 1.0
+          minimum: 0.0
           description: Top quantile for all rated videos for aggregated scoresfor
             the given criteria. 0.0=best, 1.0=worst
-          minimum: 0.0
       required:
       - criteria
     VideoRateLater:
