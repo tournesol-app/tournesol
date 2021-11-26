@@ -18,7 +18,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
     setApiError(null);
     setHasSucceeded(false);
     try {
-      await addVideo(extractVideoId(formVideo));
+      await addVideo(extractVideoId(formVideo) || '');
       await setFormVideo('');
     } catch (err) {
       console.error('Add to rate later list failed.', `${err}\n`, err.body);

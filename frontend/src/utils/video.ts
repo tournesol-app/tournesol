@@ -4,10 +4,15 @@ export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu.be\/)([A-Za-z0-9-_]+)/
   );
-  if (matchUrl) {
-    return matchUrl[1];
+  const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
+  if (isVideoIdValid(id)) {
+    return id;
   }
-  return idOrUrl;
+  return null;
+}
+
+export function isVideoIdValid(videoId: string) {
+  return !!videoId.match(/^[A-Za-z0-9-_]{11}$/);
 }
 
 export async function ensureVideoExistsOrCreate(video_id: string) {

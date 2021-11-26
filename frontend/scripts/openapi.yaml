@@ -517,7 +517,9 @@ paths:
           description: ''
     post:
       operationId: users_me_comparisons_create
-      description: Create a new comparison, paired with the logged user.
+      description: |-
+        List all or a filtered list of comparisons made by the logged user, or
+        create a new one.
       tags:
       - users
       requestBody:
@@ -666,10 +668,13 @@ paths:
   /users/me/contributor_ratings/:
     get:
       operationId: users_me_contributor_ratings_list
-      description: |-
-        Retrieve the logged in user's ratings per video
-        (computed automatically from the user's comparisons)
+      description: Retrieve the logged in user's ratings per video (computed automatically
+        from the user's comparisons).
       parameters:
+      - in: query
+        name: is_public
+        schema:
+          type: boolean
       - name: limit
         required: false
         in: query
@@ -694,6 +699,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedContributorRatingList'
           description: ''
+    post:
+      operationId: users_me_contributor_ratings_create
+      description: Initialize the rating object for the current user about a specific
+        video, with optional visibility settings.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributorRatingCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContributorRatingCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContributorRatingCreate'
+        required: true
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorRatingCreate'
+          description: ''
   /users/me/contributor_ratings/{video_id}/:
     get:
       operationId: users_me_contributor_ratings_retrieve
@@ -708,6 +741,74 @@ paths:
         required: true
       tags:
       - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorRating'
+          description: ''
+    put:
+      operationId: users_me_contributor_ratings_update
+      description: |-
+        Retrieve the logged in user's ratings for a specific video
+        (computed automatically from the user's comparisons)
+      parameters:
+      - in: path
+        name: video_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributorRating'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContributorRating'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContributorRating'
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorRating'
+          description: ''
+    patch:
+      operationId: users_me_contributor_ratings_partial_update
+      description: |-
+        Retrieve the logged in user's ratings for a specific video
+        (computed automatically from the user's comparisons)
+      parameters:
+      - in: path
+        name: video_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContributorRating'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedContributorRating'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContributorRating'
       security:
       - oauth2:
         - read write groups
@@ -1037,7 +1138,9 @@ components:
       type: object
       properties:
         video:
-          $ref: '#/components/schemas/Video'
+          allOf:
+          - $ref: '#/components/schemas/Video'
+          readOnly: true
         is_public:
           type: boolean
           description: Should the rating be public?
@@ -1045,9 +1148,45 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        n_comparisons:
+          type: integer
+          readOnly: true
+          description: Number of comparisons submitted by the current user about the
+            current video
       required:
       - criteria_scores
+      - n_comparisons
       - video
+    ContributorRatingCreate:
+      type: object
+      properties:
+        video_id:
+          type: string
+          writeOnly: true
+          pattern: ^[A-Za-z0-9-_]{11}$
+        is_public:
+          type: boolean
+          description: Should the rating be public?
+        video:
+          allOf:
+          - $ref: '#/components/schemas/Video'
+          readOnly: true
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        n_comparisons:
+          type: integer
+          readOnly: true
+          description: Number of comparisons submitted by the current user about the
+            current video
+      required:
+      - criteria_scores
+      - n_comparisons
+      - video
+      - video_id
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -9575,6 +9714,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VideoSerializerWithCriteria'
+    PatchedContributorRating:
+      type: object
+      properties:
+        video:
+          allOf:
+          - $ref: '#/components/schemas/Video'
+          readOnly: true
+        is_public:
+          type: boolean
+          description: Should the rating be public?
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        n_comparisons:
+          type: integer
+          readOnly: true
+          description: Number of comparisons submitted by the current user about the
+            current video
     PatchedUserProfile:
       type: object
       description: |-

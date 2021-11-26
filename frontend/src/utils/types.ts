@@ -1,3 +1,5 @@
+import { Video, VideoSerializerWithCriteria } from 'src/services/openapi';
+
 export type JSONValue =
   | string
   | number
@@ -11,5 +13,7 @@ export interface JSONObject {
 }
 
 export type ActionList = Array<
-  ({ videoId }: { videoId: string }) => JSX.Element
+  ({ videoId }: { videoId: string }) => JSX.Element | null
 >;
+
+export type VideoObject = Video | VideoSerializerWithCriteria;

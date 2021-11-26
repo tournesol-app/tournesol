@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,9 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import { UsersService, Comparison } from 'src/services/openapi';
 import { ensureVideoExistsOrCreate } from 'src/utils/video';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
-import VideoSelector from 'src/features/video_selector/VideoSelector';
+import VideoSelector, {
+  VideoSelectorHandle,
+} from 'src/features/video_selector/VideoSelector';
 import { showSuccessAlert } from 'src/utils/notifications';
 import { useSnackbar } from 'notistack';
+import { ContentHeader } from 'src/components';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -25,8 +28,6 @@ const useStyles = makeStyles(() => ({
     paddingTop: 32,
   },
   content: {
-    paddingBottom: 32,
-    paddingTop: 32,
     width: '880px',
     maxWidth: '100%',
   },
@@ -75,8 +76,10 @@ const ComparisonPage = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const searchParams = new URLSearchParams(location.search);
-  const videoA: string | null = searchParams.get('videoA');
-  const videoB: string | null = searchParams.get('videoB');
+  const videoA: string = searchParams.get('videoA') || '';
+  const videoB: string = searchParams.get('videoB') || '';
+  const selectorARef = useRef<VideoSelectorHandle>();
+  const selectorBRef = useRef<VideoSelectorHandle>();
 
   const setVideo = (videoKey: string) => (videoId: string | null) => {
     searchParams.delete(videoKey);
@@ -108,14 +111,16 @@ const ComparisonPage = () => {
     if (videoB) await ensureVideoExistsOrCreate(videoB);
     if (initialComparison) {
       const { video_a, video_b, criteria_scores, duration_ms } = c;
-      UsersService.usersMeComparisonsUpdate(
+      await UsersService.usersMeComparisonsUpdate(
         video_a.video_id,
         video_b.video_id,
         { criteria_scores, duration_ms }
       );
     } else {
-      UsersService.usersMeComparisonsCreate(c);
+      await UsersService.usersMeComparisonsCreate(c);
       setInitialComparison(c);
+      selectorARef.current?.updateRating();
+      selectorBRef.current?.updateRating();
     }
     showSuccessAlert(
       enqueueSnackbar,
@@ -124,42 +129,54 @@ const ComparisonPage = () => {
   };
 
   return (
-    <div className={`${classes.root} ${classes.centering}`}>
-      <Grid container className={classes.content}>
-        <Grid item xs={6}>
-          <VideoSelector
-            videoId={videoA}
-            setId={setVideoA}
-            otherVideo={videoB}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <VideoSelector
-            videoId={videoB}
-            setId={setVideoB}
-            otherVideo={videoA}
-          />
-        </Grid>
-        <Grid item xs={12} className={classes.centering}>
-          {videoA && videoB ? (
-            isLoading ? (
-              <CircularProgress />
+    <>
+      <ContentHeader title="Submit a comparison" />
+      <div className={`${classes.root} ${classes.centering}`}>
+        <Grid container className={classes.content} spacing={1}>
+          <Grid item xs={6}>
+            <Typography variant="h5">Video 1</Typography>
+            <VideoSelector
+              ref={selectorARef}
+              videoId={videoA}
+              setId={setVideoA}
+              otherVideo={videoB}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="h5">Video 2</Typography>
+            <VideoSelector
+              ref={selectorBRef}
+              videoId={videoB}
+              setId={setVideoB}
+              otherVideo={videoA}
+            />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            className={classes.centering}
+            style={{ marginTop: '36px' }}
+          >
+            {videoA && videoB ? (
+              isLoading ? (
+                <CircularProgress />
+              ) : (
+                <ComparisonSliders
+                  submit={onSubmitComparison}
+                  initialComparison={initialComparison}
+                  videoA={videoA}
+                  videoB={videoB}
+                />
+              )
             ) : (
-              <ComparisonSliders
-                submit={onSubmitComparison}
-                initialComparison={initialComparison}
-                videoA={videoA}
-                videoB={videoB}
-              />
-            )
-          ) : (
-            <Typography paragraph>
-              Please, enter two URLs or IDs of Youtube videos to compare them.
-            </Typography>
-          )}
+              <Typography paragraph>
+                Please, enter two URLs or IDs of Youtube videos to compare them.
+              </Typography>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </>
   );
 };
 

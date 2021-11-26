@@ -1,46 +1,35 @@
 import React from 'react';
 
-import { Typography, makeStyles, Grid } from '@material-ui/core';
-import type {
-  PaginatedVideoSerializerWithCriteriaList,
-  VideoSerializerWithCriteria,
-} from 'src/services/openapi';
+import { Typography, Box } from '@material-ui/core';
 import VideoCard from '../videos/VideoCard';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import { useLoginState } from 'src/hooks';
+import { ActionList, VideoObject } from 'src/utils/types';
 
-const useStyles = makeStyles(() => ({
-  card: {
-    alignItems: 'center',
-  },
-}));
+interface Props {
+  videos: VideoObject[];
+  settings?: ActionList;
+}
 
-function VideoList({
-  videos,
-}: {
-  videos: PaginatedVideoSerializerWithCriteriaList;
-}) {
-  const classes = useStyles();
+function VideoList({ videos, settings = [] }: Props) {
   const { isLoggedIn } = useLoginState();
 
   const actions = isLoggedIn ? [CompareNowAction, AddToRateLaterList] : [];
 
   return (
-    <div>
-      {videos.results?.length ? (
-        videos.results.map((video: VideoSerializerWithCriteria) => (
-          <Grid container className={classes.card} key={video.video_id}>
-            <Grid item xs={12}>
-              <VideoCard video={video} actions={actions} />
-            </Grid>
-          </Grid>
+    <>
+      {videos.length ? (
+        videos.map((video: VideoObject) => (
+          <Box key={video.video_id} margin={1}>
+            <VideoCard video={video} actions={actions} settings={settings} />
+          </Box>
         ))
       ) : (
         <Typography variant="h5" component="h2">
-          No video corresponds to your research criterias
+          No video corresponds to your search criterias
         </Typography>
       )}
-    </div>
+    </>
   );
 }
 
