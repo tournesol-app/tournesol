@@ -287,6 +287,7 @@ SPECTACULAR_SETTINGS = {
     'OAUTH2_TOKEN_URL': MAIN_URL + "o/token/",
     'OAUTH2_REFRESH_URL': MAIN_URL + "o/token/",
     'OAUTH2_SCOPES': "read write groups",
+    'TITLE': 'Tournesol API',
 }
 
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "")
