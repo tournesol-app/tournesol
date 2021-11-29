@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useImperativeHandle,
-} from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import ReplayIcon from '@material-ui/icons/Replay';
@@ -43,117 +38,135 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface Props {
-  videoId: string;
-  setId: (pk: string) => void;
+  value: VideoSelectorValue;
+  onChange: (newValue: VideoSelectorValue) => void;
   otherVideo: string | null;
+  submitted?: boolean;
 }
 
-export interface VideoSelectorHandle {
-  updateRating: () => void;
+export interface VideoSelectorValue {
+  videoId: string;
+  rating: ContributorRating | null;
 }
 
-const VideoSelector = React.forwardRef<VideoSelectorHandle | undefined, Props>(
-  ({ videoId, setId, otherVideo }: Props, ref) => {
-    const classes = useStyles();
-    const [rating, setRating] = useState<ContributorRating | null>(null);
+const VideoSelector = ({
+  value,
+  onChange,
+  otherVideo,
+  submitted = false,
+}: Props) => {
+  const { videoId, rating } = value;
+  const classes = useStyles();
 
-    const loadRating = useCallback(async () => {
-      if (!isVideoIdValid(videoId)) {
-        setRating(null);
-        return;
-      }
-      try {
-        const contributorRating =
-          await UsersService.usersMeContributorRatingsRetrieve(videoId);
-        setRating(contributorRating);
-      } catch (err) {
-        if (err?.status === 404) {
-          try {
-            await ensureVideoExistsOrCreate(videoId);
-            const contributorRating =
-              await UsersService.usersMeContributorRatingsCreate({
-                video_id: videoId,
-              } as ContributorRatingCreate);
-            setRating(contributorRating);
-          } catch (err) {
-            console.error('Failed to initialize contributor rating.', err);
-            setRating(null);
-          }
-        } else {
-          console.error('Failed to retrieve contributor rating.', err);
-          setRating(null);
+  const loadRating = useCallback(async () => {
+    try {
+      const contributorRating =
+        await UsersService.usersMeContributorRatingsRetrieve(videoId);
+      onChange({
+        videoId,
+        rating: contributorRating,
+      });
+    } catch (err) {
+      if (err?.status === 404) {
+        try {
+          await ensureVideoExistsOrCreate(videoId);
+          const contributorRating =
+            await UsersService.usersMeContributorRatingsCreate({
+              video_id: videoId,
+            } as ContributorRatingCreate);
+          onChange({
+            videoId,
+            rating: contributorRating,
+          });
+        } catch (err) {
+          console.error('Failed to initialize contributor rating.', err);
         }
+      } else {
+        console.error('Failed to retrieve contributor rating.', err);
       }
-    }, [videoId]);
+    }
+  }, [videoId, onChange]);
 
-    useEffect(() => {
+  useEffect(() => {
+    if (isVideoIdValid(videoId) && rating == null) {
       loadRating();
-    }, [loadRating]);
+    }
+  }, [loadRating, videoId, rating]);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        updateRating: loadRating,
-      }),
-      [loadRating]
+  useEffect(() => {
+    // Reload rating after the parent (comparison) form has been submitted.
+    if (submitted) {
+      loadRating();
+    }
+  }, [loadRating, submitted]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const videoIdFromValue = extractVideoId(e.target.value);
+    const newVideoId = videoIdFromValue
+      ? videoIdFromValue
+      : e.target.value.replace(/[^A-Za-z0-9-_]/g, '').substring(0, 11);
+    onChange({
+      videoId: newVideoId,
+      rating: null,
+    });
+  };
+
+  const handleRatingUpdate = useCallback(
+    (newValue: ContributorRating) => {
+      onChange({
+        videoId: newValue.video.video_id,
+        rating: newValue,
+      });
+    },
+    [onChange]
+  );
+
+  const loadNewVideo = async () => {
+    const newVideoId: string | null = await getVideoForComparison(
+      otherVideo,
+      videoId
     );
+    if (newVideoId) {
+      onChange({
+        videoId: newVideoId,
+        rating: null,
+      });
+    }
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const videoId = extractVideoId(e.target.value);
-      const _videoId = videoId
-        ? videoId
-        : e.target.value.replace(/[^A-Za-z0-9-_]/g, '').substring(0, 11);
-      setId(_videoId);
-    };
+  const toggleAction = useMemo(() => {
+    return rating?.is_public != null ? (
+      <UserRatingPublicToggle
+        videoId={rating.video.video_id}
+        nComparisons={rating.n_comparisons}
+        isPublic={rating.is_public}
+        onChange={handleRatingUpdate}
+      />
+    ) : undefined;
+  }, [handleRatingUpdate, rating]);
 
-    const loadNewVideo = async () => {
-      const newVideoId: string | null = await getVideoForComparison(
-        otherVideo,
-        videoId
-      );
-      if (newVideoId) setId(newVideoId);
-    };
-
-    return (
-      <div className={classes.root}>
-        <div className={classes.controls}>
-          <TextField
-            placeholder="Paste URL or Video ID"
-            style={{ flex: 1, minWidth: '10em' }}
-            value={videoId || ''}
-            onChange={handleChange}
-          />
-          <Tooltip title="New Video" aria-label="new_video">
-            <IconButton aria-label="new_video" onClick={loadNewVideo}>
-              <ReplayIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
-        {rating ? (
-          <VideoCard
-            video={rating.video}
-            compact
-            settings={[
-              () => (
-                <>
-                  {rating.is_public != null && (
-                    <UserRatingPublicToggle
-                      videoId={rating.video.video_id}
-                      nComparisons={rating.n_comparisons}
-                      isPublic={rating.is_public}
-                    />
-                  )}
-                </>
-              ),
-            ]}
-          />
-        ) : (
-          <EmptyVideoCard compact />
-        )}
+  return (
+    <div className={classes.root}>
+      <div className={classes.controls}>
+        <TextField
+          placeholder="Paste URL or Video ID"
+          style={{ flex: 1 }}
+          value={videoId || ''}
+          onChange={handleChange}
+        />
+        <Tooltip title="New Video" aria-label="new_video">
+          <IconButton aria-label="new_video" onClick={loadNewVideo}>
+            <ReplayIcon />
+          </IconButton>
+        </Tooltip>
       </div>
-    );
-  }
-);
+      {rating ? (
+        <VideoCard compact video={rating.video} settings={toggleAction} />
+      ) : (
+        <EmptyVideoCard compact />
+      )}
+    </div>
+  );
+};
 
-VideoSelector.displayName = 'VideoSelector';
 export default VideoSelector;

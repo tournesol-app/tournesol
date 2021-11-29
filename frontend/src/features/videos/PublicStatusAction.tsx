@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Tooltip, Typography, Box, Switch } from '@material-ui/core';
-import { AccountBox as AccountBoxIcon } from '@material-ui/icons';
+import { Visibility as VisibilityIcon } from '@material-ui/icons';
 
 import { UsersService, ContributorRating } from 'src/services/openapi';
 
@@ -21,30 +21,30 @@ export const UserRatingPublicToggle = ({
   isPublic: boolean;
   onChange?: (rating: ContributorRating) => void;
 }) => {
-  const [checked, setChecked] = useState(isPublic);
-
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newStatus = e.target.checked;
-    const rating = await setPublicStatus(videoId, newStatus);
-    setChecked(rating.is_public ?? false);
-    if (onChange) {
-      onChange(rating);
-    }
-  };
+  const handleChange = React.useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newStatus = e.target.checked;
+      const rating = await setPublicStatus(videoId, newStatus);
+      if (onChange) {
+        onChange(rating);
+      }
+    },
+    [onChange, videoId]
+  );
 
   return (
     <Box display="flex" alignItems="center" gridGap="8px" flexWrap="wrap">
-      <AccountBoxIcon color="action" titleAccess="Your contributions" />
-      <Typography variant="caption">
+      <VisibilityIcon color="action" titleAccess="Your contributions" />
+      <Typography variant="caption" style={{ fontSize: '11px' }}>
         {nComparisons > 0
-          ? `${nComparisons} comparison(s)`
-          : 'No comparison yet'}
+          ? `${nComparisons} comparison(s) by you`
+          : 'Not yet compared by you'}
       </Typography>
       |
       <Tooltip
         title={
           <Typography variant="caption">
-            {checked
+            {isPublic
               ? 'Your contributions about this video are currently public. \
              They may appear in public data, associated with your profile.'
               : 'Your contributions about this video are currently private. \
@@ -57,19 +57,19 @@ export const UserRatingPublicToggle = ({
         <Box component="label" display="inline-flex" alignItems="center">
           <Typography
             variant="caption"
-            style={{ color: checked ? '#bbb' : '#222' }}
+            style={{ color: isPublic ? '#bbb' : '#222' }}
           >
             Private
           </Typography>
           <Switch
-            checked={checked}
+            checked={isPublic}
             onChange={handleChange}
             size="small"
             color="primary"
           />
           <Typography
             variant="caption"
-            style={{ color: checked ? '#222' : '#bbb' }}
+            style={{ color: isPublic ? '#222' : '#bbb' }}
           >
             Public
           </Typography>

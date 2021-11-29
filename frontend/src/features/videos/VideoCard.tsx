@@ -35,6 +35,11 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'normal',
     fontWeight: 'normal',
     color: '#1D1A14',
+    // Limit text to 3 lines
+    display: '-webkit-box',
+    overflow: 'hidden',
+    '-webkit-line-clamp': 3,
+    '-webkit-box-orient': 'vertical',
   },
   youtube_complements: {
     margin: 4,
@@ -119,7 +124,7 @@ function VideoCard({
 }: {
   video: VideoObject;
   actions?: ActionList;
-  settings?: ActionList;
+  settings?: ActionList | JSX.Element;
   compact?: boolean;
 }) {
   const theme = useTheme();
@@ -131,6 +136,8 @@ function VideoCard({
   let max_criteria = '';
   let min_criteria = '';
 
+  const hasSettings =
+    !!settings && (!Array.isArray(settings) || settings.length > 0);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const [settingsVisible, setSettingsVisible] = useState(false);
 
@@ -272,7 +279,7 @@ function VideoCard({
         {actions.map((Action, index) => (
           <Action key={index} videoId={videoId} />
         ))}
-        {isSmallScreen && settings.length > 0 && (
+        {isSmallScreen && hasSettings && (
           <>
             <Box flexGrow={1} />
             <IconButton
@@ -285,7 +292,7 @@ function VideoCard({
           </>
         )}
       </Grid>
-      {settings.length > 0 && (
+      {hasSettings && (
         <Grid item xs={12}>
           <Collapse in={!isSmallScreen || settingsVisible}>
             <Box
@@ -296,9 +303,11 @@ function VideoCard({
               gridGap="16px"
               color="text.secondary"
             >
-              {settings.map((Action, index) => (
-                <Action key={index} videoId={videoId} />
-              ))}
+              {Array.isArray(settings)
+                ? settings.map((Action, index) => (
+                    <Action key={index} videoId={videoId} />
+                  ))
+                : settings}
             </Box>
           </Collapse>
         </Grid>

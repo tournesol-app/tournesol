@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,10 +7,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import { UsersService, Comparison } from 'src/services/openapi';
-import { ensureVideoExistsOrCreate } from 'src/utils/video';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector, {
-  VideoSelectorHandle,
+  VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
 import { showSuccessAlert } from 'src/utils/notifications';
 import { useSnackbar } from 'notistack';
@@ -74,19 +73,37 @@ const ComparisonPage = () => {
     null
   );
   const { enqueueSnackbar } = useSnackbar();
-
   const searchParams = new URLSearchParams(location.search);
   const videoA: string = searchParams.get('videoA') || '';
   const videoB: string = searchParams.get('videoB') || '';
-  const selectorARef = useRef<VideoSelectorHandle>();
-  const selectorBRef = useRef<VideoSelectorHandle>();
+  const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
+    videoId: videoA,
+    rating: null,
+  });
+  const [selectorB, setSelectorB] = useState<VideoSelectorValue>({
+    videoId: videoB,
+    rating: null,
+  });
+  const [submitted, setSubmitted] = useState(false);
 
-  const setVideo = (videoKey: string) => (videoId: string | null) => {
-    searchParams.delete(videoKey);
-    if (videoId) searchParams.append(videoKey, videoId);
-    history.push('?' + searchParams.toString());
-  };
-  const [setVideoA, setVideoB] = [setVideo('videoA'), setVideo('videoB')];
+  const onChange = useCallback(
+    (videoKey: string) => (newValue: VideoSelectorValue) => {
+      const searchParams = new URLSearchParams(location.search);
+      const videoId = newValue.videoId;
+      searchParams.delete(videoKey);
+      if (videoId) searchParams.append(videoKey, videoId);
+      history.push('?' + searchParams.toString());
+      if (videoKey === 'videoA') {
+        setSelectorA(newValue);
+      } else if (videoKey === 'videoB') {
+        setSelectorB(newValue);
+      }
+      setSubmitted(false);
+    },
+    [history, location.search]
+  );
+  const onChangeA = useMemo(() => onChange('videoA'), [onChange]);
+  const onChangeB = useMemo(() => onChange('videoB'), [onChange]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -107,8 +124,6 @@ const ComparisonPage = () => {
   }, [videoA, videoB]);
 
   const onSubmitComparison = async (c: Comparison) => {
-    if (videoA) await ensureVideoExistsOrCreate(videoA);
-    if (videoB) await ensureVideoExistsOrCreate(videoB);
     if (initialComparison) {
       const { video_a, video_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate(
@@ -119,8 +134,8 @@ const ComparisonPage = () => {
     } else {
       await UsersService.usersMeComparisonsCreate(c);
       setInitialComparison(c);
-      selectorARef.current?.updateRating();
-      selectorBRef.current?.updateRating();
+      // Refresh ratings statistics after the comparisons have been submitted
+      setSubmitted(true);
     }
     showSuccessAlert(
       enqueueSnackbar,
@@ -136,28 +151,28 @@ const ComparisonPage = () => {
           <Grid item xs={6}>
             <Typography variant="h5">Video 1</Typography>
             <VideoSelector
-              ref={selectorARef}
-              videoId={videoA}
-              setId={setVideoA}
+              value={selectorA}
+              onChange={onChangeA}
               otherVideo={videoB}
+              submitted={submitted}
             />
           </Grid>
           <Grid item xs={6}>
             <Typography variant="h5">Video 2</Typography>
             <VideoSelector
-              ref={selectorBRef}
-              videoId={videoB}
-              setId={setVideoB}
+              value={selectorB}
+              onChange={onChangeB}
               otherVideo={videoA}
+              submitted={submitted}
             />
           </Grid>
           <Grid
             item
             xs={12}
             className={classes.centering}
-            style={{ marginTop: '36px' }}
+            style={{ marginTop: '16px' }}
           >
-            {videoA && videoB ? (
+            {selectorA.rating && selectorB.rating ? (
               isLoading ? (
                 <CircularProgress />
               ) : (
@@ -166,6 +181,9 @@ const ComparisonPage = () => {
                   initialComparison={initialComparison}
                   videoA={videoA}
                   videoB={videoB}
+                  isComparisonPublic={
+                    selectorA.rating.is_public && selectorB.rating.is_public
+                  }
                 />
               )
             ) : (
