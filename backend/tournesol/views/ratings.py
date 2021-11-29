@@ -23,12 +23,21 @@ RatingsWithAnnotations = ContributorRating.objects.annotate(
 )
 
 
+@extend_schema_view(
+    get=extend_schema(
+        description="Retrieve the logged-in user's ratings for a specific video "
+        "(computed automatically from the user's comparisons)"
+    ),
+    put=extend_schema(
+        description="Update public / private status of the logged-in user ratings "
+        "for a specific video."
+    ),
+    patch=extend_schema(
+        description="Update public / private status of the logged-in user ratings "
+        "for a specific video."
+    ),
+)
 class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
-    """
-    Retrieve the logged in user's ratings for a specific video
-    (computed automatically from the user's comparisons)
-    """
-
     serializer_class = ContributorRatingSerializer
 
     def get_object(self):
