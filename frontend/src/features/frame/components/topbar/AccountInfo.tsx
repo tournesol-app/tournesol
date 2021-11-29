@@ -1,11 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import clsx from 'clsx';
+import { useSnackbar } from 'notistack';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import { AccountCircle } from '@material-ui/icons';
 
 import { useLoginState } from 'src/hooks';
+import { revokeAccessToken } from '../../../login/loginAPI';
+import { contactAdministratorLowSeverity } from '../../../../utils/notifications';
 
 const useStyles = makeStyles({
   AccountInfo: {
@@ -30,14 +34,28 @@ const useStyles = makeStyles({
 });
 
 const LoggedInActions = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const classes = useStyles();
   const { logout, loginState } = useLoginState();
+
+  const logoutProcess = async () => {
+    if (loginState.refresh_token) {
+      await revokeAccessToken(loginState.refresh_token).catch(() => {
+        contactAdministratorLowSeverity(
+          enqueueSnackbar,
+          'A non impacting error occurred during your logout.'
+        );
+      });
+    }
+    logout();
+  };
 
   return (
     <>
       <Button
         variant="outlined"
-        onClick={logout}
+        onClick={logoutProcess}
         className={classes.HeaderButton}
       >
         Logout
