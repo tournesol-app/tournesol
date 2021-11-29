@@ -70,6 +70,17 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
 
+        # Create the same rating object raises a validation error
+        response = factory.post(
+            "/users/me/contributor_ratings/",
+            {
+                'video_id': 'video-id-03',
+                'is_public': True
+            },
+            format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_authenticated_fetch_non_existing_video(self):
         factory = APIClient()
         factory.force_authenticate(user=self.user1)

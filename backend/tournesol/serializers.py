@@ -302,6 +302,14 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
             video = Video.objects.get(video_id=video_id)
         except Video.DoesNotExist:
             raise ValidationError(f"Video with video_id '{video_id}' does not exist")
+
+        user = self.context["request"].user
+        if user.contributorvideoratings.filter(video=video).exists():
+            raise ValidationError(
+                "A ContributorRating already exists for this (user, video)",
+                code='unique',
+            )
+
         attrs["video"] = video
-        attrs["user"] = self.context["request"].user
+        attrs["user"] = user
         return attrs
