@@ -265,8 +265,8 @@ class ContributorCriteriaScore(ModelSerializer):
 
 
 class ContributorRatingSerializer(ModelSerializer):
-    video = VideoSerializer()
-    criteria_scores = ContributorCriteriaScore(many=True)
+    video = VideoSerializer(read_only=True)
+    criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
 
     class Meta:
         model = ContributorRating

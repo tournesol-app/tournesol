@@ -4,12 +4,13 @@ API endpoints to interact with the contributor's comparisons
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
+from django.db import transaction
 from drf_spectacular.utils import extend_schema
 
-from rest_framework import generics, mixins, status
+from rest_framework import generics, mixins, status, exceptions
 from rest_framework.response import Response
 
-from ..models import Comparison, Video
+from ..models import Comparison, ContributorRating
 from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
@@ -89,19 +90,23 @@ class ComparisonListApi(
         """List all comparisons made by the logged user."""
         return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        """Create a new comparison, paired with the logged user."""
-        if self.comparison_already_exists(request):
-            return self.response_400_video_already_exists(request)
+    @transaction.atomic
+    def perform_create(self, serializer):
+        if self.comparison_already_exists(self.request):
+            raise exceptions.ValidationError(
+                "You've already compared {0} with {1}.".format(
+                    self.request.data['video_a']['video_id'],
+                    self.request.data['video_b']['video_id']
+                )
+            )
+        comparison: Comparison = serializer.save()
+        comparison.video_1.update_n_ratings()
+        comparison.video_2.update_n_ratings()
+        ContributorRating.objects.get_or_create(user=self.request.user, video=comparison.video_1)
+        ContributorRating.objects.get_or_create(user=self.request.user, video=comparison.video_2)
 
-        response = self.create(request, *args, **kwargs)
-        if response.status_code == status.HTTP_201_CREATED:
-            # Update video_a and video_b ratings
-            video_a = Video.objects.get(video_id=request.data['video_a']['video_id'])
-            video_a.update_n_ratings()
-            video_b = Video.objects.get(video_id=request.data['video_b']['video_id'])
-            video_b.update_n_ratings()
-        return response
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
