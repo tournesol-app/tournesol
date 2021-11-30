@@ -3,19 +3,29 @@ Serializer used by Tournesol's API
 """
 
 from django.db import transaction
-from django.db.models import ObjectDoesNotExist
+from django.db.models import ObjectDoesNotExist, Q
 
 from rest_framework import serializers
+from rest_framework.fields import RegexField, SerializerMethodField
 from rest_framework.serializers import Serializer, ModelSerializer
+from rest_framework.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 
+from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from .models import (
-    Comparison, ComparisonCriteriaScore, Video, VideoRateLater,
-    VideoCriteriaScore, ContributorRating, ContributorRatingCriteriaScore, Tag
+    Comparison,
+    ComparisonCriteriaScore,
+    Video,
+    VideoRateLater,
+    VideoCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    Tag,
 )
 
 
 class VideoSerializer(ModelSerializer):
-
     class Meta:
         model = Video
         fields = [
@@ -60,9 +70,8 @@ class VideoReadOnlySerializer(Serializer):
 
     ex: adding a new Comparison shouldn't create new Video in the database
     """
-    video_id = serializers.CharField(
-        max_length=20
-    )
+
+    video_id = serializers.CharField(max_length=20)
 
     class Meta:
         fields = ["video_id"]
@@ -74,7 +83,6 @@ class VideoReadOnlySerializer(Serializer):
             raise serializers.ValidationError(
                 "The video with id '{}' does not exist.".format(value)
             )
-
         return value
 
 
@@ -135,6 +143,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     Use `ComparisonUpdateSerializer` for the update operation.
     """
+
     video_a = VideoReadOnlySerializer(source="video_1")
     video_b = VideoReadOnlySerializer(source="video_2")
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
@@ -142,9 +151,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     class Meta:
         model = Comparison
-        fields = [
-            "user", "video_a", "video_b", "criteria_scores", "duration_ms"
-        ]
+        fields = ["user", "video_a", "video_b", "criteria_scores", "duration_ms"]
 
     def to_representation(self, instance):
         """
@@ -174,14 +181,15 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         default_duration_ms = Comparison._meta.get_field("duration_ms").get_default()
 
         comparison = Comparison.objects.create(
-            video_1=video_1, video_2=video_2, user=validated_data.get("user"),
-            duration_ms=validated_data.get("duration_ms", default_duration_ms)
+            video_1=video_1,
+            video_2=video_2,
+            user=validated_data.get("user"),
+            duration_ms=validated_data.get("duration_ms", default_duration_ms),
         )
 
         for criteria_score in validated_data.pop("criteria_scores"):
             ComparisonCriteriaScore.objects.create(
-                comparison=comparison,
-                **criteria_score
+                comparison=comparison, **criteria_score
             )
 
         return comparison
@@ -196,13 +204,12 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     Use `ComparisonSerializer` for all other operations.
     """
+
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
 
     class Meta:
         model = Comparison
-        fields = [
-            "criteria_scores", "duration_ms"
-        ]
+        fields = ["criteria_scores", "duration_ms"]
 
     def to_representation(self, instance):
         """
@@ -212,10 +219,7 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         Also add `video_a` and `video_b` fields to make the representation
         consistent across all comparison serializers.
         """
-        ret = super(
-            ComparisonUpdateSerializer,
-            self
-        ).to_representation(instance)
+        ret = super(ComparisonUpdateSerializer, self).to_representation(instance)
 
         video_1_repr = VideoReadOnlySerializer().to_representation(instance.video_1)
         video_2_repr = VideoReadOnlySerializer().to_representation(instance.video_2)
@@ -267,7 +271,45 @@ class ContributorCriteriaScore(ModelSerializer):
 class ContributorRatingSerializer(ModelSerializer):
     video = VideoSerializer(read_only=True)
     criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
+    n_comparisons = SerializerMethodField(
+        help_text="Number of comparisons submitted by the current user about the current video",
+    )
 
     class Meta:
         model = ContributorRating
-        fields = ["video", "is_public", "criteria_scores"]
+        fields = ["video", "is_public", "criteria_scores", "n_comparisons"]
+
+    @extend_schema_field(OpenApiTypes.INT)
+    def get_n_comparisons(self, obj):
+        if hasattr(obj, "n_comparisons"):
+            # Use annotated field if it has been defined by the queryset
+            return obj.n_comparisons
+        return obj.user.comparisons.filter(
+            Q(video_1=obj.video) | Q(video_2=obj.video)
+        ).count()
+
+
+class ContributorRatingCreateSerializer(ContributorRatingSerializer):
+    video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX, write_only=True)
+
+    class Meta:
+        model = ContributorRating
+        fields = ["video_id", "is_public", "video", "criteria_scores", "n_comparisons"]
+
+    def validate(self, attrs):
+        video_id = attrs.pop("video_id")
+        try:
+            video = Video.objects.get(video_id=video_id)
+        except Video.DoesNotExist:
+            raise ValidationError(f"Video with video_id '{video_id}' does not exist")
+
+        user = self.context["request"].user
+        if user.contributorvideoratings.filter(video=video).exists():
+            raise ValidationError(
+                "A ContributorRating already exists for this (user, video)",
+                code='unique',
+            )
+
+        attrs["video"] = video
+        attrs["user"] = user
+        return attrs
