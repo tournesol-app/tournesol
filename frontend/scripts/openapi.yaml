@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: ''
+  title: Tournesol API
   version: 0.0.0
 paths:
   /accounts/change-password/:
@@ -730,9 +730,8 @@ paths:
   /users/me/contributor_ratings/{video_id}/:
     get:
       operationId: users_me_contributor_ratings_retrieve
-      description: |-
-        Retrieve the logged in user's ratings for a specific video
-        (computed automatically from the user's comparisons)
+      description: Retrieve the logged-in user's ratings for a specific video (computed
+        automatically from the user's comparisons)
       parameters:
       - in: path
         name: video_id
@@ -753,9 +752,8 @@ paths:
           description: ''
     put:
       operationId: users_me_contributor_ratings_update
-      description: |-
-        Retrieve the logged in user's ratings for a specific video
-        (computed automatically from the user's comparisons)
+      description: Update public / private status of the logged-in user ratings for
+        a specific video.
       parameters:
       - in: path
         name: video_id
@@ -787,9 +785,8 @@ paths:
           description: ''
     patch:
       operationId: users_me_contributor_ratings_partial_update
-      description: |-
-        Retrieve the logged in user's ratings for a specific video
-        (computed automatically from the user's comparisons)
+      description: Update public / private status of the logged-in user ratings for
+        a specific video.
       parameters:
       - in: path
         name: video_id
@@ -956,6 +953,7 @@ paths:
   /video/:
     get:
       operationId: video_list
+      description: ''
       parameters:
       - name: limit
         required: false
@@ -10598,9 +10596,9 @@ components:
           type: number
           format: float
           maximum: 1.0
-          minimum: 0.0
           description: Top quantile for all rated videos for aggregated scoresfor
             the given criteria. 0.0=best, 1.0=worst
+          minimum: 0.0
       required:
       - criteria
     VideoRateLater:
