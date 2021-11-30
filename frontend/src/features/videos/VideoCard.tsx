@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
       '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
     borderRadius: '4px',
     alignContent: 'flex-start',
+    overflow: 'hidden',
   },
   title: {
     fontFamily: 'Poppins',
