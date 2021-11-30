@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
@@ -16,8 +16,9 @@ import {
 } from 'src/services/openapi';
 import { UserRatingPublicToggle } from '../videos/PublicStatusAction';
 import { ensureVideoExistsOrCreate } from 'src/utils/video';
+import { ActionList } from 'src/utils/types';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 4,
   },
@@ -31,9 +32,15 @@ const useStyles = makeStyles(() => ({
     left: 0,
   },
   controls: {
-    marginTop: '12px',
     display: 'flex',
     flexWrap: 'wrap',
+    padding: '4px 0',
+    alignItems: 'center',
+  },
+  input: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.7rem',
+    },
   },
 }));
 
@@ -134,21 +141,25 @@ const VideoSelector = ({
     }
   };
 
-  const toggleAction = useMemo(() => {
-    return rating?.is_public != null ? (
-      <UserRatingPublicToggle
-        videoId={rating.video.video_id}
-        nComparisons={rating.n_comparisons}
-        isPublic={rating.is_public}
-        onChange={handleRatingUpdate}
-      />
-    ) : undefined;
+  const toggleAction: ActionList = useMemo(() => {
+    return rating?.is_public != null
+      ? [
+          <UserRatingPublicToggle
+            key="isPublicToggle"
+            videoId={rating.video.video_id}
+            nComparisons={rating.n_comparisons}
+            isPublic={rating.is_public}
+            onChange={handleRatingUpdate}
+          />,
+        ]
+      : [];
   }, [handleRatingUpdate, rating]);
 
   return (
     <div className={classes.root}>
       <div className={classes.controls}>
         <TextField
+          InputProps={{ classes: { input: classes.input } }}
           placeholder="Paste URL or Video ID"
           style={{ flex: 1 }}
           value={videoId || ''}

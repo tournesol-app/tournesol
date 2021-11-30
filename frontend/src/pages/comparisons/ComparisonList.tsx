@@ -36,8 +36,9 @@ function ComparisonsPage() {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        paddingBottom: 32,
-        paddingTop: 32,
+        paddingBottom: 16,
+        paddingTop: 16,
+        gap: 16,
       }}
     >
       <Pagination

@@ -29,13 +29,14 @@ const useStyles = makeStyles((theme) => ({
     boxShadow:
       '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
     borderRadius: '4px',
+    alignContent: 'flex-start',
   },
   title: {
     fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'normal',
     color: '#1D1A14',
-    // Limit text to 3 lines
+    // Limit text to 3 lines and show ellipsis
     display: '-webkit-box',
     overflow: 'hidden',
     '-webkit-line-clamp': 3,
@@ -109,7 +110,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'end',
     flexDirection: 'column',
-    color: '#CDCABC',
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'row',
     },
@@ -124,7 +124,7 @@ function VideoCard({
 }: {
   video: VideoObject;
   actions?: ActionList;
-  settings?: ActionList | JSX.Element;
+  settings?: ActionList;
   compact?: boolean;
 }) {
   const theme = useTheme();
@@ -136,8 +136,6 @@ function VideoCard({
   let max_criteria = '';
   let min_criteria = '';
 
-  const hasSettings =
-    !!settings && (!Array.isArray(settings) || settings.length > 0);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const [settingsVisible, setSettingsVisible] = useState(false);
 
@@ -191,6 +189,7 @@ function VideoCard({
           <Typography
             className={classes.title}
             variant={compact ? 'body1' : 'h5'}
+            title={video.name}
           >
             {video.name}
           </Typography>
@@ -276,15 +275,19 @@ function VideoCard({
         sm={compact ? 12 : 1}
         className={classes.actionsContainer}
       >
-        {actions.map((Action, index) => (
-          <Action key={index} videoId={videoId} />
-        ))}
-        {isSmallScreen && hasSettings && (
+        {actions.map((Action, index) =>
+          typeof Action === 'function' ? (
+            <Action key={index} videoId={videoId} />
+          ) : (
+            Action
+          )
+        )}
+        {isSmallScreen && settings.length > 0 && (
           <>
             <Box flexGrow={1} />
             <IconButton
-              aria-label="show settings related to this video"
-              color="inherit"
+              size="small"
+              aria-label="Show settings related to this video"
               onClick={() => setSettingsVisible(!settingsVisible)}
             >
               {settingsVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -292,22 +295,23 @@ function VideoCard({
           </>
         )}
       </Grid>
-      {hasSettings && (
+      {settings.length > 0 && (
         <Grid item xs={12}>
           <Collapse in={!isSmallScreen || settingsVisible}>
             <Box
               paddingY={1}
-              borderTop="1px solid #eee"
-              borderColor="text.divider"
+              borderTop="1px solid rgba(0, 0, 0, 0.12)"
               display="flex"
               gridGap="16px"
               color="text.secondary"
             >
-              {Array.isArray(settings)
-                ? settings.map((Action, index) => (
-                    <Action key={index} videoId={videoId} />
-                  ))
-                : settings}
+              {settings.map((Action, index) =>
+                typeof Action === 'function' ? (
+                  <Action key={index} videoId={videoId} />
+                ) : (
+                  Action
+                )
+              )}
             </Box>
           </Collapse>
         </Grid>

@@ -182,7 +182,7 @@ const ComparisonComponent = ({
         </Button>
         {isComparisonPublic && (
           <Box display="flex" alignItems="center" gridGap="8px" m={2}>
-            <InfoIcon fontSize="small" />
+            <InfoIcon fontSize="small" color="action" />
             <Typography variant="caption" color="textSecondary">
               {initialComparison
                 ? 'This comparison is included in the public dataset.'

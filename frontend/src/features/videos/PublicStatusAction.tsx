@@ -1,6 +1,5 @@
 import React from 'react';
 import { Tooltip, Typography, Box, Switch } from '@material-ui/core';
-import { Visibility as VisibilityIcon } from '@material-ui/icons';
 
 import { UsersService, ContributorRating } from 'src/services/openapi';
 
@@ -33,20 +32,19 @@ export const UserRatingPublicToggle = ({
   );
 
   return (
-    <Box display="flex" alignItems="center" gridGap="8px" flexWrap="wrap">
-      <VisibilityIcon color="action" titleAccess="Your contributions" />
+    <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
       <Typography variant="caption" style={{ fontSize: '11px' }}>
         {nComparisons > 0
           ? `${nComparisons} comparison(s) by you`
           : 'Not yet compared by you'}
       </Typography>
-      |
+      <Box flexGrow={1} />
       <Tooltip
         title={
           <Typography variant="caption">
             {isPublic
               ? 'Your contributions about this video are currently public. \
-             They may appear in public data, associated with your profile.'
+             They are visible in public data, associated with your profile.'
               : 'Your contributions about this video are currently private. \
             The details of your personal ratings are not published, but\
             they may still be used to compute public aggregated scores about videos.'}
@@ -55,17 +53,12 @@ export const UserRatingPublicToggle = ({
         placement="bottom"
       >
         <Box component="label" display="inline-flex" alignItems="center">
-          <Typography
-            variant="caption"
-            style={{ color: isPublic ? '#bbb' : '#222' }}
-          >
-            Private
-          </Typography>
           <Switch
             checked={isPublic}
             onChange={handleChange}
             size="small"
             color="primary"
+            edge="start"
           />
           <Typography
             variant="caption"

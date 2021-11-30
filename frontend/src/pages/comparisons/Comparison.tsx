@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
-    paddingTop: 32,
+    paddingTop: 16,
   },
   content: {
     width: '880px',
@@ -149,7 +149,9 @@ const ComparisonPage = () => {
       <div className={`${classes.root} ${classes.centering}`}>
         <Grid container className={classes.content} spacing={1}>
           <Grid item xs={6}>
-            <Typography variant="h5">Video 1</Typography>
+            <Typography variant="h5" color="textSecondary">
+              Video 1
+            </Typography>
             <VideoSelector
               value={selectorA}
               onChange={onChangeA}
@@ -158,7 +160,9 @@ const ComparisonPage = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="h5">Video 2</Typography>
+            <Typography variant="h5" color="textSecondary">
+              Video 2
+            </Typography>
             <VideoSelector
               value={selectorB}
               onChange={onChangeB}
