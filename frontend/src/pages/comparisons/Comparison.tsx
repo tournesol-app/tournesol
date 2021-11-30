@@ -90,9 +90,13 @@ const ComparisonPage = () => {
     (videoKey: string) => (newValue: VideoSelectorValue) => {
       const searchParams = new URLSearchParams(location.search);
       const videoId = newValue.videoId;
-      searchParams.delete(videoKey);
-      if (videoId) searchParams.append(videoKey, videoId);
-      history.push('?' + searchParams.toString());
+      if (searchParams.get(videoKey) !== videoId) {
+        searchParams.delete(videoKey);
+        if (videoId) {
+          searchParams.append(videoKey, videoId);
+        }
+        history.push('?' + searchParams.toString());
+      }
       if (videoKey === 'videoA') {
         setSelectorA(newValue);
       } else if (videoKey === 'videoB') {
@@ -108,6 +112,12 @@ const ComparisonPage = () => {
   useEffect(() => {
     setIsLoading(true);
     setInitialComparison(null);
+    if (selectorA.videoId !== videoA) {
+      setSelectorA({ videoId: videoA, rating: null });
+    }
+    if (selectorB.videoId !== videoB) {
+      setSelectorB({ videoId: videoB, rating: null });
+    }
     if (videoA && videoB)
       UsersService.usersMeComparisonsRetrieve(videoA, videoB)
         .then((comparison) => {
