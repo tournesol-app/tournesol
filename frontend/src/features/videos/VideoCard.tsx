@@ -137,8 +137,10 @@ function VideoCard({
   let max_criteria = '';
   let min_criteria = '';
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
-  const [settingsVisible, setSettingsVisible] = useState(false);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'), {
+    noSsr: true,
+  });
+  const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
   if ('criteria_scores' in video) {
     video.criteria_scores?.forEach((criteria) => {
@@ -298,7 +300,7 @@ function VideoCard({
       </Grid>
       {settings.length > 0 && (
         <Grid item xs={12}>
-          <Collapse in={!isSmallScreen || settingsVisible}>
+          <Collapse in={settingsVisible}>
             <Box
               paddingY={1}
               borderTop="1px solid rgba(0, 0, 0, 0.12)"
