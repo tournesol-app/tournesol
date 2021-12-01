@@ -305,7 +305,16 @@ class VideoApi(TestCase):
         response = factory.get("/video/video_id_01/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], 'video_id_01')
-    
+
+    def test_get_video_with_score_zero(self):
+        # The default filter used to fetch a list should not be applied to retrieve a single video
+        factory = APIClient()
+        video_null_score = 'vid_score_0'
+        Video.objects.create(video_id=video_null_score)
+        response = factory.get("/video/vid_score_0/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["video_id"], 'vid_score_0')
+
     def test_get_non_existing_video(self):
         factory = APIClient()
         response = factory.get("/video/video_id_00/")

@@ -268,6 +268,7 @@ CRITERIAS = list(CRITERIAS_DICT.keys())
 MAX_FEATURE_WEIGHT = 8
 
 SPECTACULAR_SETTINGS = {
+    'SORT_OPERATION_PARAMETERS': False,
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "persistAuthorization": True,

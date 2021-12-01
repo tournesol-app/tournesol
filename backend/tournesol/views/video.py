@@ -1,7 +1,6 @@
 """
 API endpoint to manipulate videos
 """
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
@@ -10,6 +9,8 @@ from rest_framework import mixins, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
 
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
 from ..models import Video
@@ -17,6 +18,28 @@ from tournesol.utils.api_youtube import youtube_video_details
 from tournesol.utils.video_language import compute_video_language
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Retrieve details about a single video."
+    ),
+    list=extend_schema(
+        description="Retrieve a list of recommended videos, sorted by decreasing total score.",
+        parameters=[
+            OpenApiParameter("search"),
+            OpenApiParameter("language"),
+            OpenApiParameter("date_lte"),
+            OpenApiParameter("date_gte"),
+            *[
+                OpenApiParameter(
+                    crit,
+                    OpenApiTypes.INT,
+                    description=f"Weight for criteria '{crit}', between 0 and 100"
+                )
+                for crit in settings.CRITERIAS
+            ],
+        ],
+    )
+)
 class VideoViewSet(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
@@ -24,8 +47,12 @@ class VideoViewSet(mixins.CreateModelMixin,
     queryset = Video.objects.all()
     pagination_class = LimitOffsetPagination
     permission_classes = []  # To unlock authentication required
+    lookup_field = "video_id"
 
     def get_queryset(self):
+        if self.action != "list":
+            return self.queryset
+
         request = self.request
         queryset = self.queryset
 
@@ -77,21 +104,12 @@ class VideoViewSet(mixins.CreateModelMixin,
             .filter(total_score__gt=0)
             .order_by("-total_score")
         )
-
         return queryset.prefetch_related("criteria_scores")
 
     def get_serializer_class(self):
         if self.action in ("retrieve", "list"):
             return VideoSerializerWithCriteria
         return VideoSerializer
-
-    def retrieve(self, request, pk):
-        """
-        Get video details and criteria that are related to it
-        """
-        video = get_object_or_404(Video, video_id=pk)
-        video_serialized = VideoSerializerWithCriteria(video)
-        return Response(video_serialized.data)
 
     def create(self, request, *args, **kwargs):
         """
