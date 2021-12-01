@@ -22,19 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 4,
   },
-  playerWrapper: {
-    position: 'relative',
-    aspectRatio: '16 / 9',
-  },
-  reactPlayer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
   controls: {
     display: 'flex',
     flexWrap: 'wrap',
-    padding: '4px 0',
+    paddingBottom: '4px',
     alignItems: 'center',
   },
   input: {

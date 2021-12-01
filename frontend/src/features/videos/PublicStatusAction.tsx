@@ -38,13 +38,13 @@ export const UserRatingPublicToggle = ({
           ? `${nComparisons} comparison(s) by you`
           : 'Not yet compared by you'}
       </Typography>
-      <Box flexGrow={1} />
+      <Box flexGrow={1} minWidth="12px" />
       <Tooltip
         title={
           <Typography variant="caption">
             {isPublic
               ? 'Your contributions about this video are currently public. \
-             They are visible in public data, associated with your profile.'
+              Comparisons appear in the public data associated to your profile only if you tag both videos as public.'
               : 'Your contributions about this video are currently private. \
             The details of your personal ratings are not published, but\
             they may still be used to compute public aggregated scores about videos.'}

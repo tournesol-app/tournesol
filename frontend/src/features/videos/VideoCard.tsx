@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
+import clsx from 'clsx';
 
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -31,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '4px',
     alignContent: 'flex-start',
     overflow: 'hidden',
+    fontSize: '16px',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '14px',
+    },
   },
   title: {
     fontFamily: 'Poppins',
@@ -43,6 +48,9 @@ const useStyles = makeStyles((theme) => ({
     '-webkit-line-clamp': 3,
     '-webkit-box-orient': 'vertical',
   },
+  title_compact: {
+    fontSize: '1em',
+  },
   youtube_complements: {
     margin: 4,
     display: 'flex',
@@ -51,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Poppins',
     fontStyle: 'italic',
     fontWeight: 'normal',
-    fontSize: '13px',
+    fontSize: '0.8em',
     lineHeight: '19px',
     color: '#B6B1A1',
   },
@@ -61,21 +69,11 @@ const useStyles = makeStyles((theme) => ({
   channel: {
     textDecorationLine: 'underline',
   },
-  summary: {
-    flex: 1,
-    maxHeight: 85,
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    fontSize: '11px',
-    color: '#4A473E',
-    overflow: 'auto',
-  },
   nb_tournesol: {
     fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'bold',
-    fontSize: '32px',
+    fontSize: '2em',
     lineHeight: '32px',
   },
   ratings: {
@@ -83,14 +81,14 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Poppins',
     fontStyle: 'italic',
     fontWeight: 'normal',
-    fontSize: '15px',
+    fontSize: '0.9em',
     color: '#A09B87',
   },
   contributors: {
     fontFamily: 'Poppins',
     fontStyle: 'italic',
     fontWeight: 500,
-    fontSize: '15px',
+    fontSize: '0.9em',
     textDecorationLine: 'underline',
     color: '#B38B00',
   },
@@ -98,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Poppins',
     fontStyle: 'normal',
     fontWeight: 'normal',
-    fontSize: '15px',
+    fontSize: '0.9em',
     color: '#847F6E',
     gap: '8px',
   },
@@ -190,8 +188,10 @@ function VideoCard({
       >
         <div className={classes.top}>
           <Typography
-            className={classes.title}
-            variant={compact ? 'body1' : 'h5'}
+            className={clsx(classes.title, {
+              [classes.title_compact]: compact,
+            })}
+            variant={compact ? 'inherit' : 'h5'}
             title={video.name}
           >
             {video.name}
@@ -230,6 +230,7 @@ function VideoCard({
                   src={'/svg/tournesol.svg'}
                   alt="logo"
                   title="Overall score"
+                  width={32}
                 />
                 <span className={classes.nb_tournesol}>
                   {total_score.toFixed(0)}

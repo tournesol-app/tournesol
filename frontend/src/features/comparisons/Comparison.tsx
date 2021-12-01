@@ -181,8 +181,14 @@ const ComparisonComponent = ({
           {submitted ? 'Edit comparison' : 'Submit'}
         </Button>
         {isComparisonPublic && (
-          <Box display="flex" alignItems="center" gridGap="8px" m={2}>
-            <InfoIcon fontSize="small" color="action" />
+          <Box
+            display="flex"
+            alignItems="center"
+            gridGap="8px"
+            m={2}
+            color="text.hint"
+          >
+            <InfoIcon fontSize="small" color="inherit" />
             <Typography variant="caption" color="textSecondary">
               {initialComparison
                 ? 'This comparison is included in the public dataset.'

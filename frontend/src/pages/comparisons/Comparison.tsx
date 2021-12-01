@@ -2,9 +2,14 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import {
+  CircularProgress,
+  Grid,
+  Typography,
+  Card,
+  Box,
+  Theme,
+} from '@material-ui/core';
 
 import { UsersService, Comparison } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
@@ -15,7 +20,7 @@ import { showSuccessAlert } from 'src/utils/notifications';
 import { useSnackbar } from 'notistack';
 import { ContentHeader } from 'src/components';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '100%',
     height: '100%',
@@ -27,40 +32,14 @@ const useStyles = makeStyles(() => ({
     paddingTop: 16,
   },
   content: {
-    width: '880px',
-    maxWidth: '100%',
+    maxWidth: '880px',
+    gap: '8px',
   },
-  videoContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: '16px',
+  card: {
+    alignSelf: 'start',
   },
-  featuresContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  sliderContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '620px',
-    alignItems: 'center',
-    margin: '-2px',
-  },
-  slider: {
-    flex: '1 1 0px',
-  },
-  formControl: {
-    width: '128px',
-  },
-  featureNameDisplay: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  alertTop: {
-    marginBottom: '15px',
+  cardTitle: {
+    color: theme.palette.text.hint,
   },
 }));
 
@@ -157,11 +136,13 @@ const ComparisonPage = () => {
     <>
       <ContentHeader title="Submit a comparison" />
       <div className={`${classes.root} ${classes.centering}`}>
-        <Grid container className={classes.content} spacing={1}>
-          <Grid item xs={6}>
-            <Typography variant="h5" color="textSecondary">
-              Video 1
-            </Typography>
+        <Grid container className={classes.content}>
+          <Grid item xs component={Card} className={classes.card}>
+            <Box m={0.5}>
+              <Typography variant="h5" className={classes.cardTitle}>
+                Video 1
+              </Typography>
+            </Box>
             <VideoSelector
               value={selectorA}
               onChange={onChangeA}
@@ -169,10 +150,12 @@ const ComparisonPage = () => {
               submitted={submitted}
             />
           </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h5" color="textSecondary">
-              Video 2
-            </Typography>
+          <Grid item xs component={Card} className={classes.card}>
+            <Box m={0.5}>
+              <Typography variant="h5" className={classes.cardTitle}>
+                Video 2
+              </Typography>
+            </Box>
             <VideoSelector
               value={selectorB}
               onChange={onChangeB}
