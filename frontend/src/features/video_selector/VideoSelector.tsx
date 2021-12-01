@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import ReplayIcon from '@material-ui/icons/Replay';
@@ -55,8 +55,10 @@ const VideoSelector = ({
 }: Props) => {
   const { videoId, rating } = value;
   const classes = useStyles();
+  const [loading, setLoading] = useState(false);
 
   const loadRating = useCallback(async () => {
+    setLoading(true);
     try {
       const contributorRating =
         await UsersService.usersMeContributorRatingsRetrieve(videoId);
@@ -84,6 +86,7 @@ const VideoSelector = ({
         console.error('Failed to retrieve contributor rating.', err);
       }
     }
+    setLoading(false);
   }, [videoId, onChange]);
 
   useEffect(() => {
@@ -121,6 +124,7 @@ const VideoSelector = ({
   );
 
   const loadNewVideo = async () => {
+    setLoading(true);
     const newVideoId: string | null = await getVideoForComparison(
       otherVideo,
       videoId
@@ -130,6 +134,8 @@ const VideoSelector = ({
         videoId: newVideoId,
         rating: null,
       });
+    } else {
+      setLoading(false);
     }
   };
 
@@ -166,7 +172,7 @@ const VideoSelector = ({
       {rating ? (
         <VideoCard compact video={rating.video} settings={toggleAction} />
       ) : (
-        <EmptyVideoCard compact />
+        <EmptyVideoCard compact loading={loading} />
       )}
     </div>
   );

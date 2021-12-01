@@ -113,6 +113,19 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'row',
     },
   },
+  '@keyframes scaling': {
+    '0%': {
+      opacity: 0.05,
+      transform: 'scale(70%)',
+    },
+    '100%': {
+      opacity: 1,
+      transform: 'scale(160%)',
+    },
+  },
+  loadingEffect: {
+    animation: '1.2s ease-out infinite alternate $scaling',
+  },
 }));
 
 function VideoCard({
@@ -338,7 +351,13 @@ export const VideoCardFromId = ({
   return <VideoCard video={video} compact={compact} />;
 };
 
-export const EmptyVideoCard = ({ compact }: { compact?: boolean }) => {
+export const EmptyVideoCard = ({
+  compact,
+  loading = false,
+}: {
+  compact?: boolean;
+  loading?: boolean;
+}) => {
   const classes = useStyles();
 
   return (
@@ -355,7 +374,12 @@ export const EmptyVideoCard = ({ compact }: { compact?: boolean }) => {
         alignItems="center"
         justifyContent="center"
       >
-        <img src="/svg/LogoSmall.svg" alt="logo" style={{ opacity: '0.3' }} />
+        <img
+          src="/svg/LogoSmall.svg"
+          alt="logo"
+          className={loading ? classes.loadingEffect : undefined}
+          style={{ opacity: '0.3' }}
+        />
       </Grid>
     </Grid>
   );
