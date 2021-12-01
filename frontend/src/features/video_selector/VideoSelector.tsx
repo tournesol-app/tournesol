@@ -71,6 +71,7 @@ const VideoSelector = ({
           const contributorRating =
             await UsersService.usersMeContributorRatingsCreate({
               video_id: videoId,
+              is_public: true,
             } as ContributorRatingCreate);
           onChange({
             videoId,
