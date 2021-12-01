@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    color: '#1D1A14',
     // Limit text to 3 lines and show ellipsis
     display: '-webkit-box',
     overflow: 'hidden',

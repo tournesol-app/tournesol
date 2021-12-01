@@ -28,11 +28,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  criteriaContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
 }));
 
 const ComparisonComponent = ({
