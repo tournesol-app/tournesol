@@ -1,8 +1,8 @@
 """
 API endpoint to manipulate videos
 """
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
+import re
+from django.utils import timezone, dateparse
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
@@ -10,6 +10,9 @@ from rest_framework import mixins, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.exceptions import ValidationError
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
 
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
 from ..models import Video
@@ -17,6 +20,40 @@ from tournesol.utils.api_youtube import youtube_video_details
 from tournesol.utils.video_language import compute_video_language
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Retrieve details about a single video."
+    ),
+    list=extend_schema(
+        description="Retrieve a list of recommended videos, sorted by decreasing total score.",
+        parameters=[
+            OpenApiParameter("search"),
+            OpenApiParameter("language"),
+            OpenApiParameter(
+                "date_lte",
+                OpenApiTypes.DATETIME,
+                description="Return videos published **before** this date.  \n"
+                "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
+                "or legacy: `dd-mm-yy-hh-mm-ss`."
+            ),
+            OpenApiParameter(
+                "date_gte",
+                OpenApiTypes.DATETIME,
+                description="Return videos published **after** this date.  \n"
+                "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
+                "or legacy: `dd-mm-yy-hh-mm-ss`."
+            ),
+            *[
+                OpenApiParameter(
+                    crit,
+                    OpenApiTypes.INT,
+                    description=f"Weight for criteria '{crit}', between 0 and 100"
+                )
+                for crit in settings.CRITERIAS
+            ],
+        ],
+    )
+)
 class VideoViewSet(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
@@ -24,8 +61,24 @@ class VideoViewSet(mixins.CreateModelMixin,
     queryset = Video.objects.all()
     pagination_class = LimitOffsetPagination
     permission_classes = []  # To unlock authentication required
+    lookup_field = "video_id"
+
+    def parse_datetime(self, value: str):
+        """
+        Parse ISO datetime from query string.
+        Also accepts legacy format 'DD-MM-YY-HH-MM-SS'
+        """
+        if re.match(r'^\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$', value):
+            return timezone.datetime.strptime(value, '%d-%m-%y-%H-%M-%S')
+        parsed = dateparse.parse_datetime(value)
+        if parsed is None:
+            raise ValueError(f'Failed to parse "{value}" as datetime')
+        return parsed
 
     def get_queryset(self):
+        if self.action != "list":
+            return self.queryset
+
         request = self.request
         queryset = self.queryset
 
@@ -37,22 +90,20 @@ class VideoViewSet(mixins.CreateModelMixin,
                 Q(tags__name__icontains=search)
             )
 
-        date_lte = request.query_params.get('date_lte') \
-            if request.query_params.get('date_lte') else ""
+        date_lte = request.query_params.get('date_lte') or ""
         if date_lte:
             try:
-                date_lte = timezone.datetime.strptime(date_lte, '%d-%m-%y-%H-%M-%S')
+                date_lte = self.parse_datetime(date_lte)
                 queryset = queryset.filter(publication_date__lte=date_lte)
             except ValueError:
-                pass
-        date_gte = request.query_params.get('date_gte') \
-            if request.query_params.get('date_gte') else ""
+                raise ValidationError('"date_lte" is an invalid datetime.')
+        date_gte = request.query_params.get('date_gte') or ""
         if date_gte:
             try:
-                date_gte = timezone.datetime.strptime(date_gte, '%d-%m-%y-%H-%M-%S')
+                date_gte = self.parse_datetime(date_gte)
                 queryset = queryset.filter(publication_date__gte=date_gte)
             except ValueError:
-                pass
+                raise ValidationError('"date_gte" is an invalid datetime')
         language = request.query_params.get('language') \
             if request.query_params.get('language') else ""
         queryset = queryset.filter(language=language) if language else queryset
@@ -77,21 +128,12 @@ class VideoViewSet(mixins.CreateModelMixin,
             .filter(total_score__gt=0)
             .order_by("-total_score")
         )
-
         return queryset.prefetch_related("criteria_scores")
 
     def get_serializer_class(self):
         if self.action in ("retrieve", "list"):
             return VideoSerializerWithCriteria
         return VideoSerializer
-
-    def retrieve(self, request, pk):
-        """
-        Get video details and criteria that are related to it
-        """
-        video = get_object_or_404(Video, video_id=pk)
-        video_serialized = VideoSerializerWithCriteria(video)
-        return Response(video_serialized.data)
 
     def create(self, request, *args, **kwargs):
         """
