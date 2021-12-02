@@ -12,7 +12,12 @@ const ContentHeader = ({ title }: { title: string }) => {
   const classes = useStyles();
 
   return (
-    <Box px={4} py={2} color="text.secondary" className={classes.contentHeader}>
+    <Box
+      px={[2, 4]}
+      py={2}
+      color="text.secondary"
+      className={classes.contentHeader}
+    >
       <Typography variant="h4">{title}</Typography>
     </Box>
   );

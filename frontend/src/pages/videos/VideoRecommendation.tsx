@@ -8,6 +8,7 @@ import Pagination from 'src/components/Pagination';
 import VideoList from 'src/features/videos/VideoList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
+import { ContentBox } from 'src/components';
 
 function VideoRecommendationPage() {
   const prov: PaginatedVideoSerializerWithCriteriaList = {
@@ -42,9 +43,13 @@ function VideoRecommendationPage() {
   }, [location.search]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <ContentBox noMinPadding>
       <SearchFilter />
-      {isLoading ? <CircularProgress /> : <VideoList videos={videos} />}
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        <VideoList videos={videos.results || []} />
+      )}
       {!isLoading && videoCount > 0 && (
         <Pagination
           offset={offset}
@@ -53,7 +58,7 @@ function VideoRecommendationPage() {
           limit={limit}
         />
       )}
-    </div>
+    </ContentBox>
   );
 }
 

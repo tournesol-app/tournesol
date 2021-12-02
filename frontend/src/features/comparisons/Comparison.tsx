@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
+import { Box, Button, Collapse, Typography } from '@material-ui/core';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
+import { Info as InfoIcon } from '@material-ui/icons';
 
 import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
 import { allCriteriaNames, optionalCriterias } from 'src/utils/constants';
@@ -29,11 +28,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  criteriaContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
 }));
 
 const ComparisonComponent = ({
@@ -41,11 +35,13 @@ const ComparisonComponent = ({
   initialComparison,
   videoA,
   videoB,
+  isComparisonPublic,
 }: {
-  submit: (c: Comparison) => void;
+  submit: (c: Comparison) => Promise<void>;
   initialComparison: Comparison | null;
   videoA: string;
   videoB: string;
+  isComparisonPublic?: boolean;
 }) => {
   const classes = useStyles();
   const castToComparison = (c: Comparison | null): Comparison => {
@@ -76,9 +72,9 @@ const ComparisonComponent = ({
     [initialComparison]
   );
 
-  const submitComparison = () => {
+  const submitComparison = async () => {
+    await submit(comparison);
     setSubmitted(true);
-    submit(comparison);
   };
 
   const handleSliderChange = (criteria: string, score: number | undefined) => {
@@ -179,6 +175,22 @@ const ComparisonComponent = ({
         >
           {submitted ? 'Edit comparison' : 'Submit'}
         </Button>
+        {isComparisonPublic && (
+          <Box
+            display="flex"
+            alignItems="center"
+            gridGap="8px"
+            m={2}
+            color="text.hint"
+          >
+            <InfoIcon fontSize="small" color="inherit" />
+            <Typography variant="caption" color="textSecondary">
+              {initialComparison
+                ? 'This comparison is included in the public dataset.'
+                : 'After submission, this comparison will be included in the public dataset.'}
+            </Typography>
+          </Box>
+        )}
       </div>
     </div>
   );

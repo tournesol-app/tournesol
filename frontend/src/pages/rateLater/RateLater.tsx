@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
   video: {
     alignItems: 'center',
+    margin: '12px 0',
   },
 }));
 

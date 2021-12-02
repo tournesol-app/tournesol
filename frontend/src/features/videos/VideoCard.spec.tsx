@@ -24,7 +24,7 @@ describe('VideoCard content', () => {
       '154988 views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
-      '9 ratings by 4 contributors'
+      '9 comparisons by 4 contributors'
     );
     expect(
       screen.queryByTestId('video-card-overall-score')
@@ -58,7 +58,7 @@ describe('VideoCard content', () => {
       '154988 views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
-      '9 ratings by 4 contributors'
+      '9 comparisons by 4 contributors'
     );
     expect(screen.queryByTestId('video-card-overall-score')).toHaveTextContent(
       '4'
@@ -98,7 +98,7 @@ describe('VideoCard content', () => {
       '17'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
-      '9 ratings by 4 contributors'
+      '9 comparisons by 4 contributors'
     );
     expect(screen.queryByTestId('video-card-minmax-criterias')).toBeVisible();
   });

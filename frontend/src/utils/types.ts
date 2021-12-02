@@ -1,3 +1,6 @@
+import React from 'react';
+import { Video, VideoSerializerWithCriteria } from 'src/services/openapi';
+
 export type JSONValue =
   | string
   | number
@@ -11,5 +14,7 @@ export interface JSONObject {
 }
 
 export type ActionList = Array<
-  ({ videoId }: { videoId: string }) => JSX.Element
+  (({ videoId }: { videoId: string }) => JSX.Element) | React.ReactNode
 >;
+
+export type VideoObject = Video | VideoSerializerWithCriteria;
