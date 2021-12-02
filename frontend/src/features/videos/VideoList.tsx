@@ -20,7 +20,7 @@ function VideoList({ videos, settings = [] }: Props) {
     <>
       {videos.length ? (
         videos.map((video: VideoObject) => (
-          <Box key={video.video_id} margin={1}>
+          <Box key={video.video_id} mx={1} my={2}>
             <VideoCard video={video} actions={actions} settings={settings} />
           </Box>
         ))
