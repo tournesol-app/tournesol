@@ -1,26 +1,16 @@
 import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { makeStyles, Collapse, Button, Grid } from '@material-ui/core';
+import { Collapse, Button, Grid, Box, Theme } from '@material-ui/core';
+import { useTheme } from '@material-ui/styles';
+
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 
-const useStyles = makeStyles(() => ({
-  filter: {
-    color: '#506AD4',
-    margin: '8px',
-  },
-  collapse: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'space-between',
-  },
-}));
-
 function SearchFilter() {
-  const classes = useStyles();
+  const theme: Theme = useTheme();
   const [expanded, setExpanded] = useState(false);
   const Location = useLocation();
   const history = useHistory();
@@ -45,31 +35,36 @@ function SearchFilter() {
   }
 
   return (
-    <div className="filters">
+    <Box color="text.secondary">
       <Button
-        color="secondary"
         size="large"
-        className={classes.filter}
         startIcon={!expanded ? <ExpandMore /> : <ExpandLess />}
         aria-expanded={expanded}
         aria-label="show more"
         onClick={handleExpandClick}
+        style={{
+          padding: '8px 0',
+          color: expanded
+            ? theme.palette.secondary.main
+            : theme.palette.text.hint,
+        }}
       >
         Filters
       </Button>
-      <Collapse
-        className={classes.collapse}
-        in={expanded}
-        timeout="auto"
-        unmountOnExit
-      >
-        <Grid container>
-          <CriteriaFilter setFilter={setFilter} />
-          <DateFilter setFilter={setFilter} />
-          <LanguageFilter setFilter={setFilter} />
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Grid container spacing={4} style={{ marginBottom: '8px' }}>
+          <Grid item xs={12} sm={12} md={6}>
+            <CriteriaFilter setFilter={setFilter} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <DateFilter setFilter={setFilter} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <LanguageFilter setFilter={setFilter} />
+          </Grid>
         </Grid>
       </Collapse>
-    </div>
+    </Box>
   );
 }
 

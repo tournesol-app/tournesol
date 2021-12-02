@@ -10,17 +10,19 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { mainCriteriaNames } from 'src/utils/constants';
+import { FilterSection } from 'src/components/filter/FilterSection';
 
 const useStyles = makeStyles(() => ({
   featuresContainer: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'left',
+    margin: '2px 0px',
   },
   sliderContainer: {
     display: 'flex',
     flexDirection: 'row',
-    width: 'calc(100% - 64px)',
+    width: '100%',
     alignItems: 'center',
     margin: '-2px',
   },
@@ -28,28 +30,34 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
   },
   criteria_img: {
-    marginRight: 4,
+    marginRight: 6,
+  },
+  criteriaName: {
+    flex: 1,
+    fontSize: '0.85rem',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   valueText: {
-    margin: 4,
+    maxWidth: 'calc(100% - 8px)',
+    margin: 2,
+    fontSize: '0.7rem',
+    fontWeight: 600,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
 }));
 
 const CustomSlider = withStyles({
   root: {
     color: '#1282B2',
-    height: 2,
-    padding: '15px 0',
   },
   active: {},
-  track: {
-    height: 2,
-  },
   rail: {
-    height: 2,
     opacity: 0.5,
     backgroundColor: '#bfbfbf',
   },
@@ -105,11 +113,8 @@ function CriteriaFilter({
   }
 
   return (
-    <Grid item xs={12} sm={12} md={6}>
-      <Typography variant="h5" component="h2">
-        Criteria
-      </Typography>
-      <Grid container>
+    <FilterSection title="Criteria">
+      <Grid container spacing={1}>
         {mainCriteriaNames.map(([criteria, criteria_name]) => (
           <Grid item xs={12} sm={6} key={criteria}>
             <div
@@ -121,16 +126,17 @@ function CriteriaFilter({
                   item
                   xs={12}
                   direction="row"
-                  justifyContent="center"
+                  justifyContent="flex-start"
                   alignItems="center"
                   container
                 >
                   <img
                     className={classes.criteria_img}
                     src={`/svg/${criteria}.svg`}
+                    width="16px"
                   />
-                  <Typography>
-                    <span>{criteria_name}</span>
+                  <Typography className={classes.criteriaName}>
+                    <span title={criteria_name}>{criteria_name}</span>
                   </Typography>
                 </Grid>
               </div>
@@ -143,9 +149,9 @@ function CriteriaFilter({
                   alignItems="flex-start"
                   container
                 >
-                  <span className={classes.valueText}>
+                  <Typography className={classes.valueText}>
                     {valuetoText(parseInt(searchParams.get(criteria) || '50'))}
-                  </span>
+                  </Typography>
                 </Grid>
                 <Grid
                   item
@@ -175,7 +181,7 @@ function CriteriaFilter({
           </Grid>
         ))}
       </Grid>
-    </Grid>
+    </FilterSection>
   );
 }
 
