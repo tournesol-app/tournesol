@@ -3,7 +3,6 @@ Defines Tournesol's backend admin interface
 """
 
 from django.contrib import admin
-from django.utils.html import format_html
 
 from .models import (
     Video,
@@ -32,9 +31,6 @@ class VideoAdmin(admin.ModelAdmin):
         ('language', admin.AllValuesFieldListFilter),
     )
 
-    def link_to_youtube(self, obj):
-        return format_html('<a href="https://youtu.be/{}">Play ▶</a>', obj.video_id)
-
 
 @admin.register(VideoCriteriaScore)
 class VideoCriteriaScoreAdmin(admin.ModelAdmin):
@@ -43,7 +39,18 @@ class VideoCriteriaScoreAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorRating)
 class ContributorRatingAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'user',
+        'video',
+        'link_to_youtube',
+        'is_public',
+    )
+    list_filter = (
+        ('is_public', admin.AllValuesFieldListFilter),
+    )
+
+    def link_to_youtube(self, obj):
+        return obj.video.link_to_youtube()
 
 
 @admin.register(ContributorRatingCriteriaScore)

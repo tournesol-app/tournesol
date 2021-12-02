@@ -5,10 +5,12 @@ Models for Tournesol's main functions related to videos
 import logging
 import numpy as np
 
+
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.html import format_html
 from settings.settings import CRITERIAS
 
 import computed_property
@@ -351,9 +353,12 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     #     return self.score_fcn()
 
     def __str__(self):
-        is_correct = self.name and not self.wrong_url and self.views
-        correct_str = "VALID" if is_correct else "INVALID"
-        return f"{self.video_id}, {correct_str}"
+        return f"{self.video_id}"
+
+    def link_to_youtube(self):
+        return format_html(
+            '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
+        )
 
     @property
     def tournesol_score(self):
