@@ -5,3 +5,4 @@ export { default as Lines } from './Lines';
 export { default as FormTextField } from './FormTextField';
 export { default as FilterSection } from './filter/FilterSection';
 export { default as ChoicesFilterSection } from './filter/ChoicesFilterSection';
+export { default as FiltersButton } from './filter/FiltersButton';

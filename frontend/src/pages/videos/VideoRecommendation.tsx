@@ -25,9 +25,8 @@ function VideoRecommendationPage() {
   const videoCount = videos.count || 0;
 
   function handleOffsetChange(newOffset: number) {
-    searchParams.delete('offset');
-    searchParams.append('offset', newOffset.toString());
-    history.push('/recommendations/?' + searchParams.toString());
+    searchParams.set('offset', newOffset.toString());
+    history.push({ search: searchParams.toString() });
   }
 
   useEffect(() => {

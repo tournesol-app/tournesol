@@ -7,10 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import Pagination from 'src/components/Pagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
-import {
-  VideoRateLater,
-  VideoSerializerWithCriteria,
-} from 'src/services/openapi';
+import { VideoRateLater } from 'src/services/openapi';
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 import VideoCard from 'src/features/videos/VideoCard';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
@@ -160,12 +157,11 @@ const RateLaterPage = () => {
           }}
         >
           {rateLaterList.map(({ video }) => {
-            const videoWithCriteriaScore = video as VideoSerializerWithCriteria;
             return (
               <Grid container className={classes.video} key={video.video_id}>
                 <Grid item xs={12}>
                   <VideoCard
-                    video={videoWithCriteriaScore}
+                    video={video}
                     actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
                   />
                 </Grid>
