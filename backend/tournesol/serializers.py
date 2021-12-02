@@ -2,6 +2,7 @@
 Serializer used by Tournesol's API
 """
 
+from typing import Optional
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 
@@ -41,7 +42,7 @@ class VideoSerializer(ModelSerializer):
             "rating_n_ratings",
             "rating_n_contributors",
             "duration",
-            ]
+        ]
         read_only_fields = [
             "name",
             "description",
@@ -64,10 +65,10 @@ class VideoSerializer(ModelSerializer):
         return video
 
     # Convert duration to seconds to facilitate use of Humanize package
-    def get_duration(self, obj):
+    def get_duration(self, obj) -> Optional[int]:
         if obj.duration:
             return int(obj.duration.total_seconds())
-        return 0
+        return None
 
 
 class VideoReadOnlySerializer(Serializer):
