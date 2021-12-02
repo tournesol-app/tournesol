@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
@@ -23,10 +24,10 @@ class VideoApi(TestCase):
 
     def setUp(self):
         
-        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01)
-        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02)
-        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03)
-        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04)
+        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01, publication_date=date(2021,1,1))
+        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02, publication_date=date(2021,1,2))
+        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03, publication_date=date(2021,1,3))
+        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04, publication_date=date(2021,1,4))
         self._list_of_videos = [video_1, video_2, video_3, video_4]
         VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=0.1)
         VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=0.2)
@@ -358,3 +359,25 @@ class VideoApi(TestCase):
         bad_response = factory.get("/video/?importance=50&engaging=100")
         self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
         self.assertEqual(bad_response.data["count"], len(self._list_of_videos))
+
+    def test_get_video_date_filters(self):
+        client = APIClient()
+
+        resp = client.get('/video/?date_gte=2021-01-04T00:00:00')
+        self.assertEqual(resp.status_code, 200, resp.data)
+        self.assertEqual(resp.data["count"], 1)
+
+        resp = client.get('/video/?date_lte=2021-01-03T00:00:00')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["count"], 3)
+
+    def test_get_video_date_filters_legacy_format(self):
+        client = APIClient()
+
+        resp = client.get('/video/?date_gte=04-01-21-00-00-00')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["count"], 1)
+
+        resp = client.get('/video/?date_lte=03-01-21-00-00-00')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["count"], 3)

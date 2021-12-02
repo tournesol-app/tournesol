@@ -1,7 +1,8 @@
 """
 API endpoint to manipulate videos
 """
-from django.utils import timezone
+import re
+from django.utils import timezone, dateparse
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
@@ -9,6 +10,7 @@ from rest_framework import mixins, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.exceptions import ValidationError
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from drf_spectacular.types import OpenApiTypes
 
@@ -27,8 +29,20 @@ from tournesol.utils.video_language import compute_video_language
         parameters=[
             OpenApiParameter("search"),
             OpenApiParameter("language"),
-            OpenApiParameter("date_lte"),
-            OpenApiParameter("date_gte"),
+            OpenApiParameter(
+                "date_lte",
+                OpenApiTypes.DATETIME,
+                description="Return videos published **before** this date.  \n"
+                "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
+                "or legacy: `dd-mm-yy-hh-mm-ss`."
+            ),
+            OpenApiParameter(
+                "date_gte",
+                OpenApiTypes.DATETIME,
+                description="Return videos published **after** this date.  \n"
+                "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
+                "or legacy: `dd-mm-yy-hh-mm-ss`."
+            ),
             *[
                 OpenApiParameter(
                     crit,
@@ -49,6 +63,18 @@ class VideoViewSet(mixins.CreateModelMixin,
     permission_classes = []  # To unlock authentication required
     lookup_field = "video_id"
 
+    def parse_datetime(self, value: str):
+        """
+        Parse ISO datetime from query string.
+        Also accepts legacy format 'DD-MM-YY-HH-MM-SS'
+        """
+        if re.match(r'^\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$', value):
+            return timezone.datetime.strptime(value, '%d-%m-%y-%H-%M-%S')
+        parsed = dateparse.parse_datetime(value)
+        if parsed is None:
+            raise ValueError(f'Failed to parse "{value}" as datetime')
+        return parsed
+
     def get_queryset(self):
         if self.action != "list":
             return self.queryset
@@ -64,22 +90,20 @@ class VideoViewSet(mixins.CreateModelMixin,
                 Q(tags__name__icontains=search)
             )
 
-        date_lte = request.query_params.get('date_lte') \
-            if request.query_params.get('date_lte') else ""
+        date_lte = request.query_params.get('date_lte') or ""
         if date_lte:
             try:
-                date_lte = timezone.datetime.strptime(date_lte, '%d-%m-%y-%H-%M-%S')
+                date_lte = self.parse_datetime(date_lte)
                 queryset = queryset.filter(publication_date__lte=date_lte)
             except ValueError:
-                pass
-        date_gte = request.query_params.get('date_gte') \
-            if request.query_params.get('date_gte') else ""
+                raise ValidationError('"date_lte" is an invalid datetime.')
+        date_gte = request.query_params.get('date_gte') or ""
         if date_gte:
             try:
-                date_gte = timezone.datetime.strptime(date_gte, '%d-%m-%y-%H-%M-%S')
+                date_gte = self.parse_datetime(date_gte)
                 queryset = queryset.filter(publication_date__gte=date_gte)
             except ValueError:
-                pass
+                raise ValidationError('"date_gte" is an invalid datetime')
         language = request.query_params.get('language') \
             if request.query_params.get('language') else ""
         queryset = queryset.filter(language=language) if language else queryset
