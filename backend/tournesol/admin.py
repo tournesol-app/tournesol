@@ -46,7 +46,7 @@ class ContributorRatingAdmin(admin.ModelAdmin):
         'is_public',
     )
     list_filter = (
-        ('is_public', admin.AllValuesFieldListFilter),
+        'is_public',
     )
 
     def link_to_youtube(self, obj):
