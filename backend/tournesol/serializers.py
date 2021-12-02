@@ -102,31 +102,11 @@ class VideoCriteriaScoreSerializer(ModelSerializer):
         fields = ["criteria", "score", "uncertainty", "quantile"]
 
 
-class VideoSerializerWithCriteria(ModelSerializer):
+class VideoSerializerWithCriteria(VideoSerializer):
     criteria_scores = VideoCriteriaScoreSerializer(many=True)
-    duration = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Video
-        fields = [
-            "video_id",
-            "name",
-            "description",
-            "publication_date",
-            "views",
-            "uploader",
-            "criteria_scores",
-            "language",
-            "rating_n_ratings",
-            "rating_n_contributors",
-            "duration",
-        ]
-
-    # Convert duration to seconds to facilitate use of Humanize package
-    def get_duration(self, obj):
-        if obj.duration:
-            return int(obj.duration.total_seconds())
-        return 0
+    class Meta(VideoSerializer.Meta):
+        fields = VideoSerializer.Meta.fields + ['criteria_scores']
 
 
 class VideoRateLaterSerializer(ModelSerializer):
