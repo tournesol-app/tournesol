@@ -84,6 +84,8 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         search = request.query_params.get('search')
         if search:
+            # Filtering in a nested queryset is necessary here, to be able to annotate
+            # each video without duplicated scores, due to the m2m field 'tags'.
             queryset = queryset.filter(pk__in=Video.objects.filter(
                 Q(name__icontains=search) |
                 Q(description__icontains=search) |
