@@ -381,3 +381,18 @@ class VideoApi(TestCase):
         resp = client.get('/video/?date_lte=03-01-21-00-00-00')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 3)
+
+    def test_search_in_tags_should_not_affect_order(self):
+        video1 = Video.objects.get(video_id=self._video_id_01)
+        video1.tags.create(name="tag1")
+        video1.tags.create(name="tag2")
+        video1.tags.create(name="tag3")
+        video2 = Video.objects.get(video_id=self._video_id_02)
+        video2.tags.create(name="tag4")
+
+        client = APIClient()
+        resp = client.get('/video/?search=tag')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data["results"]), 2)
+        # Video2 with higher score should remain listed as the top video
+        self.assertEqual(resp.data["results"][0]["video_id"], self._video_id_02)
