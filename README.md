@@ -8,7 +8,7 @@ This repository host the open source code of the Tournesol platform. Learn more 
 - [frontend](./frontend) is a React JS application which is the main website and a frontend to Tournesol's API
 - [infra](./infra) contains an ansible recipe used to configure the servers running Tournesol
 - [browser-extension](./browser-extension) is a JavaScript extension for Google Chrome and Mozilla Firefox
-- [test](./test) contains  end-to-end tests for Tournesol
+- [tests](./tests) contains end-to-end tests for Tournesol
 
 
 ## Set-up
