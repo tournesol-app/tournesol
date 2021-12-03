@@ -39,11 +39,10 @@ function VideoRecommendationPage() {
         setIsLoading(false);
       }
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   return (
-    <ContentBox noMinPadding>
+    <ContentBox noMinPadding maxWidth="xl">
       <Box px={{ xs: 2, sm: 0 }}>
         <SearchFilter />
       </Box>

@@ -1,52 +1,24 @@
 import React from 'react';
+import ChoicesFilterSection from 'src/components/filter/ChoicesFilterSection';
 
-import { useLocation } from 'react-router-dom';
-import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
-import { CheckCircle, CheckCircleOutline } from '@material-ui/icons';
-import { FilterSection } from 'src/components/filter/FilterSection';
+const languageChoices = {
+  en: 'English',
+  fr: 'French',
+  de: 'German',
+};
 
-function LanguageFilter({
-  setFilter,
-}: {
-  setFilter: (k: string, v: string) => void;
-}) {
-  const Location = useLocation();
-  const searchParams = new URLSearchParams(Location.search);
-  const language = searchParams.get('language') || '';
+interface Props {
+  value: string;
+  onChange: (value: string) => void;
+}
 
-  const languageChoices = {
-    en: 'English',
-    fr: 'French',
-    de: 'German',
-  };
-
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter('language', event.target.name);
-  };
-
+function LanguageFilter(props: Props) {
   return (
-    <FilterSection title="Language">
-      <Box display="flex" flexDirection="column">
-        {Object.entries(languageChoices).map(
-          ([language_key, language_value]) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  icon={<CheckCircleOutline />}
-                  checkedIcon={<CheckCircle />}
-                  checked={language == language_key}
-                  onChange={handleLanguageChange}
-                  name={language_key}
-                  size="small"
-                />
-              }
-              label={<Typography variant="body2">{language_value}</Typography>}
-              key={language_key}
-            />
-          )
-        )}
-      </Box>
-    </FilterSection>
+    <ChoicesFilterSection
+      title="Language"
+      choices={languageChoices}
+      {...props}
+    ></ChoicesFilterSection>
   );
 }
 

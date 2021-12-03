@@ -73,6 +73,21 @@ const CustomSlider = withStyles({
   },
 })(Slider);
 
+interface Props {
+  children: React.ReactElement;
+  open: boolean;
+  value: number;
+}
+
+function ValueLabelComponent(props: Props) {
+  const { children, open, value } = props;
+  return (
+    <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
+      {children}
+    </Tooltip>
+  );
+}
+
 function CriteriaFilter({
   setFilter,
 }: {
@@ -95,21 +110,6 @@ function CriteriaFilter({
     } else {
       return 'Crucial';
     }
-  }
-
-  interface Props {
-    children: React.ReactElement;
-    open: boolean;
-    value: number;
-  }
-
-  function ValueLabelComponent(props: Props) {
-    const { children, open, value } = props;
-    return (
-      <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
-        {children}
-      </Tooltip>
-    );
   }
 
   return (
