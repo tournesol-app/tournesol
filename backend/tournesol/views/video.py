@@ -2,10 +2,9 @@
 API endpoint to manipulate videos
 """
 import re
-from django.utils import timezone, dateparse
 import isodate
 
-from django.utils import timezone
+from django.utils import timezone, dateparse
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
