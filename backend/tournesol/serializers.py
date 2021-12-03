@@ -2,6 +2,7 @@
 Serializer used by Tournesol's API
 """
 
+from typing import Optional
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 
@@ -26,6 +27,8 @@ from .models import (
 
 
 class VideoSerializer(ModelSerializer):
+    duration = serializers.SerializerMethodField()
+
     class Meta:
         model = Video
         fields = [
@@ -38,6 +41,7 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
+            "duration",
         ]
         read_only_fields = [
             "name",
@@ -48,6 +52,7 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
+            "duration",
         ]
 
     def save(self, **kwargs):
@@ -58,6 +63,12 @@ class VideoSerializer(ModelSerializer):
             tag = Tag.objects.get_or_create(name=tag_name)
             video.tags.add(tag[0].id)
         return video
+
+    # Convert duration to seconds to facilitate use of Humanize package
+    def get_duration(self, obj) -> Optional[int]:
+        if obj.duration:
+            return int(obj.duration.total_seconds())
+        return None
 
 
 class VideoReadOnlySerializer(Serializer):
@@ -92,23 +103,11 @@ class VideoCriteriaScoreSerializer(ModelSerializer):
         fields = ["criteria", "score", "uncertainty", "quantile"]
 
 
-class VideoSerializerWithCriteria(ModelSerializer):
+class VideoSerializerWithCriteria(VideoSerializer):
     criteria_scores = VideoCriteriaScoreSerializer(many=True)
 
-    class Meta:
-        model = Video
-        fields = [
-            "video_id",
-            "name",
-            "description",
-            "publication_date",
-            "views",
-            "uploader",
-            "criteria_scores",
-            "language",
-            "rating_n_ratings",
-            "rating_n_contributors",
-        ]
+    class Meta(VideoSerializer.Meta):
+        fields = VideoSerializer.Meta.fields + ['criteria_scores']
 
 
 class VideoRateLaterSerializer(ModelSerializer):
