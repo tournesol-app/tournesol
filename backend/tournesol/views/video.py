@@ -89,6 +89,10 @@ class VideoViewSet(mixins.CreateModelMixin,
         request = self.request
         queryset = self.queryset
 
+        uploader = request.query_params.get('uploader')
+        if uploader:
+            queryset = queryset.filter(uploader=uploader)
+
         search = request.query_params.get('search')
         if search:
             # Filtering in a nested queryset is necessary here, to be able to annotate

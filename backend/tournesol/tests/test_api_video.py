@@ -34,21 +34,25 @@ class VideoApi(TestCase):
             video_id=self._video_id_01,
             name=self._video_id_01,
             publication_date=date(2021, 1, 1),
+            uploader="uploader1",
         )
         video_2 = Video.objects.create(
             video_id=self._video_id_02,
             name=self._video_id_02,
             publication_date=date(2021, 1, 2),
+            uploader="uploader2",
         )
         video_3 = Video.objects.create(
             video_id=self._video_id_03,
             name=self._video_id_03,
             publication_date=date(2021, 1, 3),
+            uploader="uploader2",
         )
         video_4 = Video.objects.create(
             video_id=self._video_id_04,
             name=self._video_id_04,
             publication_date=date(2021, 1, 4),
+            uploader="uploader3",
         )
         self._list_of_videos = [video_1, video_2, video_3, video_4]
         VideoCriteriaScore.objects.create(
@@ -585,3 +589,9 @@ class VideoApi(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             Video.objects.get(video_id=new_video_id)
+
+    def test_get_video_uploader(self):
+        client = APIClient()
+        resp = client.get('/video/?uploader=uploader2')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["count"], 2)
