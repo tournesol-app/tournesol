@@ -19,6 +19,7 @@ const ProfileForm = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [username, setUsername] = useState('');
+  const [disabled, setDisabled] = React.useState(false);
 
   useEffect(() => {
     async function retrieveProfile() {
@@ -42,6 +43,7 @@ const ProfileForm = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setDisabled(true);
 
     const response = await AccountsService.accountsProfilePartialUpdate({
       username,
@@ -70,6 +72,7 @@ const ProfileForm = () => {
       updateUsername(username);
       (document.activeElement as HTMLElement).blur();
     }
+    setDisabled(false);
   };
 
   return (
@@ -96,7 +99,13 @@ const ProfileForm = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <Button type="submit" color="secondary" fullWidth variant="contained">
+          <Button
+            fullWidth
+            type="submit"
+            color="secondary"
+            variant="contained"
+            disabled={disabled}
+          >
             Update profile
           </Button>
         </Grid>
