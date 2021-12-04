@@ -123,26 +123,33 @@ describe('change password feature', () => {
     const oldPassword = screen.getByTestId('old_password');
     const password = screen.getByTestId('password');
     const passwordConfirm = screen.getByTestId('password_confirm');
+    const submit = screen.getByText(/UPDATE PASSWORD/i);
+
     return {
       oldPassword,
       password,
       passwordConfirm,
+      submit,
       rendered,
     };
   };
 
   it('handles successful password updates', async () => {
-    const { oldPassword, password, passwordConfirm } = setup();
+    const { oldPassword, password, passwordConfirm, submit } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'success' } });
     fireEvent.change(password, { target: { value: 'new_passwd' } });
     fireEvent.change(passwordConfirm, { target: { value: 'new_passwd' } });
+    expect(submit).toBeEnabled();
+
     await act(async () => {
-      fireEvent.click(screen.getByText(/UPDATE PASSWORD/i));
+      fireEvent.click(submit);
     });
+
     expect(oldPassword).toHaveValue('');
     expect(password).toHaveValue('');
     expect(passwordConfirm).toHaveValue('');
+    expect(submit).toBeEnabled();
     expect(mockEnqueueSnackbar).toBeCalledTimes(1);
     expect(mockEnqueueSnackbar).toBeCalledWith(
       'Password changed successfully',
@@ -153,17 +160,21 @@ describe('change password feature', () => {
   });
 
   it('handles success body responses containing no detail key', async () => {
-    const { oldPassword, password, passwordConfirm } = setup();
+    const { oldPassword, password, passwordConfirm, submit } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'success_malformed' } });
     fireEvent.change(password, { target: { value: 'new_passwd' } });
     fireEvent.change(passwordConfirm, { target: { value: 'new_passwd' } });
+    expect(submit).toBeEnabled();
+
     await act(async () => {
-      fireEvent.click(screen.getByText(/UPDATE PASSWORD/i));
+      fireEvent.click(submit);
     });
+
     expect(oldPassword).toHaveValue('');
     expect(password).toHaveValue('');
     expect(passwordConfirm).toHaveValue('');
+    expect(submit).toBeEnabled();
     expect(mockEnqueueSnackbar).toBeCalledTimes(1);
     expect(mockEnqueueSnackbar).toBeCalledWith(
       'Password changed successfully',
@@ -174,17 +185,21 @@ describe('change password feature', () => {
   });
 
   it('handles bad requests and displays all error messages', async () => {
-    const { oldPassword, password, passwordConfirm } = setup();
+    const { oldPassword, password, passwordConfirm, submit } = setup();
 
     fireEvent.change(oldPassword, { target: { value: 'errors' } });
     fireEvent.change(password, { target: { value: 'too_short' } });
     fireEvent.change(passwordConfirm, { target: { value: 'too_short' } });
+    expect(submit).toBeEnabled();
+
     await act(async () => {
-      fireEvent.click(screen.getByText(/UPDATE PASSWORD/i));
+      fireEvent.click(submit);
     });
+
     expect(oldPassword).toHaveValue('errors');
     expect(password).toHaveValue('too_short');
     expect(passwordConfirm).toHaveValue('too_short');
+    expect(submit).toBeEnabled();
     expect(mockEnqueueSnackbar).toBeCalledTimes(2);
     expect(mockEnqueueSnackbar).toBeCalledWith('Old password is not correct', {
       variant: 'error',

@@ -19,12 +19,14 @@ const PasswordForm = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [disabled, setDisabled] = React.useState(false);
 
   const passwordConfirmMatches =
     password !== '' && password === passwordConfirm;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setDisabled(true);
 
     const response: void | Record<string, string> =
       await AccountsService.accountsChangePasswordCreate(
@@ -60,6 +62,7 @@ const PasswordForm = () => {
       setPasswordConfirm('');
       (document.activeElement as HTMLElement).blur();
     }
+    setDisabled(false);
   };
 
   return (
@@ -117,7 +120,13 @@ const PasswordForm = () => {
           />
         </Grid>
         <Grid item>
-          <Button type="submit" color="secondary" fullWidth variant="contained">
+          <Button
+            fullWidth
+            type="submit"
+            color="secondary"
+            variant="contained"
+            disabled={disabled}
+          >
             Update password
           </Button>
         </Grid>
