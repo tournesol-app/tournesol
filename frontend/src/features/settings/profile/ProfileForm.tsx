@@ -19,7 +19,7 @@ const ProfileForm = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [username, setUsername] = useState('');
-  const [disabled, setDisabled] = React.useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     async function retrieveProfile() {
