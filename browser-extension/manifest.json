@@ -15,7 +15,8 @@
   },
   "browser_action": {
     "default_icon": {              
-      "16": "Logo16.png"
+      "16": "Logo16.png",
+      "64": "Logo64.png"
     },
     "default_title": "Tournesol actions",
     "default_popup": "menu.html"  
