@@ -19,7 +19,7 @@ const PasswordForm = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [disabled, setDisabled] = React.useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const passwordConfirmMatches =
     password !== '' && password === passwordConfirm;
