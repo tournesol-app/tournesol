@@ -52,13 +52,13 @@ function SearchFilter() {
       </Button>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Grid container spacing={4} style={{ marginBottom: '8px' }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={6} md={3} lg={2}>
             <DateFilter
               value={searchParams.get('date') ?? ''}
               onChange={(value) => setFilter('date', value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={6} md={3} lg={2}>
             <LanguageFilter
               value={searchParams.get('language') ?? ''}
               onChange={(value) => setFilter('language', value)}
