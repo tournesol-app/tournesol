@@ -400,3 +400,55 @@ class VideoApi(TestCase):
         self.assertEqual(len(resp.data["results"]), 2)
         # Video2 with higher score should remain listed as the top video
         self.assertEqual(resp.data["results"][0]["video_id"], self._video_id_02)
+
+    @patch("tournesol.views.video.youtube_video_details")
+    def test_create_video_with_missing_statistics(self, mock_youtube):
+        mock_youtube.return_value = {
+            "items": [
+                {
+                    "contentDetails": {
+                        "caption": "true",
+                        "contentRating": {},
+                        "definition": "hd",
+                        "dimension": "2d",
+                        "duration": "PT21M3S",
+                        "licensedContent": True,
+                        "projection": "rectangular"
+                    },
+                    "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
+                    "id": "NeADlWSDFAQ",
+                    "kind": "youtube#video",
+                    "snippet": {
+                        "categoryId": "22",
+                        "channelId": "UCAuUUnT6oDeKwE6v1NGQxug",
+                        "channelTitle": "TED",
+                        "defaultAudioLanguage": "en",
+                        "defaultLanguage": "en",
+                        "description": "Video description",
+                        "liveBroadcastContent": "none",
+                        "localized": {},
+                        "publishedAt": "2012-10-01T15:27:35Z",
+                        "tags": ["tournesol"],
+                        "thumbnails": {},
+                        "title": "Video title"
+                    },
+                    "statistics": {}
+                }
+            ],
+            "kind": "youtube#videoListResponse",
+            "pageInfo": {
+                "resultsPerPage": 1,
+                "totalResults": 1
+            }
+        }
+
+        client = APIClient()
+        response = client.post(
+            "/video/",
+            data={"video_id": "NeADlWSDFAQ"},
+            format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        self.assertEqual(response.json()["name"], "Video title")
+        video = Video.objects.get(video_id="NeADlWSDFAQ")
+        self.assertEqual(video.views, None)

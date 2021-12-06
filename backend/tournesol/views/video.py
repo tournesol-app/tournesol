@@ -8,11 +8,10 @@ from django.utils import timezone, dateparse
 from django.db.models import Q, Case, When, Sum, F
 from django.conf import settings
 
-from rest_framework import mixins, status
+from rest_framework import mixins
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from drf_spectacular.types import OpenApiTypes
 
@@ -23,6 +22,9 @@ from tournesol.utils.video_language import compute_video_language
 
 
 @extend_schema_view(
+    create=extend_schema(
+        description="Add a video to the db if it does not already exist."
+    ),
     retrieve=extend_schema(
         description="Retrieve details about a single video."
     ),
@@ -139,32 +141,16 @@ class VideoViewSet(mixins.CreateModelMixin,
             return VideoSerializerWithCriteria
         return VideoSerializer
 
-    def create(self, request, *args, **kwargs):
-        """
-        Add a video to the db if it does not already exist
-        """
-        video_id = request.data.get("video_id")
-        if not video_id:
-            return Response('No video_id given', status=status.HTTP_400_BAD_REQUEST)
-        if len(video_id) != 11:
-            return Response("video_id is not valid", status=status.HTTP_400_BAD_REQUEST)
-        if Video.objects.filter(video_id=video_id):
-            Response(
-                "The video with the id : {id} is already registered".format(
-                    id=request.data["video_id"]),
-                status=status.HTTP_400_BAD_REQUEST
-            )
+    def perform_create(self, serializer):
+        video_id = serializer.validated_data["video_id"]
         try:
-            yt_response = youtube_video_details(request.data["video_id"])
+            yt_response = youtube_video_details(video_id)
             yt_items = yt_response.get("items", [])
             if len(yt_items) == 0:
-                return Response(
-                    "The video has not been found. `video_id` may be incorrect.",
-                    status=status.HTTP_404_NOT_FOUND
-                )
+                raise NotFound("The video has not been found. `video_id` may be incorrect.")
             yt_info = yt_items[0]
             title = yt_info["snippet"]["title"]
-            nb_views = yt_info["statistics"]["viewCount"]
+            nb_views = yt_info.get("statistics", {}).get("viewCount")
             published_date = str(yt_info["snippet"]["publishedAt"])
             published_date = published_date.split("T")[0]
             # we could truncate description to spare some space
@@ -186,8 +172,4 @@ class VideoViewSet(mixins.CreateModelMixin,
             }
         except AssertionError:
             extra_data = {"tags": []}
-        serializer = VideoSerializer(data={"video_id": video_id})
-        if serializer.is_valid():
-            serializer.save(**extra_data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save(**extra_data)
