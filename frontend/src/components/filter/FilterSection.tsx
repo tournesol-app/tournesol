@@ -6,7 +6,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const FilterSection = ({ title, children }: Props) => {
+const FilterSection = ({ title, children }: Props) => {
   return (
     <>
       <Typography
@@ -19,3 +19,5 @@ export const FilterSection = ({ title, children }: Props) => {
     </>
   );
 };
+
+export default FilterSection;

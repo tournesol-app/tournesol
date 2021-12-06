@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
 import { CheckCircle, CheckCircleOutline } from '@material-ui/icons';
-import { FilterSection } from 'src/components/filter/FilterSection';
+import { FilterSection } from 'src/components';
 
 interface Props {
   title: string;

@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { mainCriteriaNames } from 'src/utils/constants';
-import { FilterSection } from 'src/components/filter/FilterSection';
+import { FilterSection } from 'src/components';
 
 const useStyles = makeStyles(() => ({
   featuresContainer: {

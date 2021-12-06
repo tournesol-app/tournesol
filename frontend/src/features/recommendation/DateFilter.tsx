@@ -1,5 +1,5 @@
 import React from 'react';
-import ChoicesFilterSection from 'src/components/filter/ChoicesFilterSection';
+import { ChoicesFilterSection } from 'src/components';
 
 interface Props {
   value: string;
