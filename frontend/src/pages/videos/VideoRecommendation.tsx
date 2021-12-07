@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Box } from '@material-ui/core';
 
 import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';
@@ -39,12 +39,13 @@ function VideoRecommendationPage() {
         setIsLoading(false);
       }
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   return (
-    <ContentBox noMinPadding>
-      <SearchFilter />
+    <ContentBox noMinPadding maxWidth="xl">
+      <Box px={{ xs: 2, sm: 0 }}>
+        <SearchFilter />
+      </Box>
       {isLoading ? (
         <CircularProgress />
       ) : (

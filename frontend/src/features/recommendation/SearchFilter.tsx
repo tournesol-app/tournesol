@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import clsx from 'clsx';
 
-import { makeStyles, Collapse, Button, Grid } from '@material-ui/core';
+import { Collapse, Button, Grid, Box, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 
-const useStyles = makeStyles(() => ({
-  filter: {
-    color: '#506AD4',
-    margin: '8px',
+const useStyles = makeStyles((theme: Theme) => ({
+  filtersButton: {
+    padding: '8px 0',
   },
-  collapse: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'space-between',
+  filtersButtonDefault: {
+    color: theme.palette.action.active,
+  },
+  filtersButtonExpanded: {
+    color: theme.palette.secondary.main,
+  },
+  filtersContainer: {
+    marginBottom: '8px',
   },
 }));
 
@@ -31,45 +37,53 @@ function SearchFilter() {
   };
 
   function setFilter(key: string, value: string) {
-    if (searchParams.get(key) === value) {
-      searchParams.delete(key);
+    if (value) {
+      searchParams.set(key, value);
     } else {
       searchParams.delete(key);
-      searchParams.append(key, value);
     }
     // Reset pagination if filters change
-    if (key != 'offset') {
+    if (key !== 'offset') {
       searchParams.delete('offset');
     }
-    history.push('/recommendations/?' + searchParams.toString());
+    history.push({ search: searchParams.toString() });
   }
 
   return (
-    <div className="filters">
+    <Box color="text.secondary">
       <Button
-        color="secondary"
         size="large"
-        className={classes.filter}
         startIcon={!expanded ? <ExpandMore /> : <ExpandLess />}
         aria-expanded={expanded}
         aria-label="show more"
         onClick={handleExpandClick}
+        className={clsx(classes.filtersButton, {
+          [classes.filtersButtonDefault]: !expanded,
+          [classes.filtersButtonExpanded]: expanded,
+        })}
       >
         Filters
       </Button>
-      <Collapse
-        className={classes.collapse}
-        in={expanded}
-        timeout="auto"
-        unmountOnExit
-      >
-        <Grid container>
-          <CriteriaFilter setFilter={setFilter} />
-          <DateFilter setFilter={setFilter} />
-          <LanguageFilter setFilter={setFilter} />
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Grid container spacing={4} className={classes.filtersContainer}>
+          <Grid item xs={6} md={3} lg={2}>
+            <DateFilter
+              value={searchParams.get('date') ?? ''}
+              onChange={(value) => setFilter('date', value)}
+            />
+          </Grid>
+          <Grid item xs={6} md={3} lg={2}>
+            <LanguageFilter
+              value={searchParams.get('language') ?? ''}
+              onChange={(value) => setFilter('language', value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <CriteriaFilter setFilter={setFilter} />
+          </Grid>
         </Grid>
       </Collapse>
-    </div>
+    </Box>
   );
 }
 
