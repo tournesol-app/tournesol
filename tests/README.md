@@ -41,4 +41,3 @@ The tests related to the browser extension will be skipped if these conditions a
 ```
 yarn run cypress run --browser chrome --headed
 ```
-

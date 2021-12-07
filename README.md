@@ -14,3 +14,7 @@ This repository host the open source code of the Tournesol platform. Learn more 
 ## Set-up
 
 Please refer to the `dev-env` directory or the corresponding documents in `frontend`and `backend` directories.
+
+## Contribute
+
+See the wiki page [Contribute to Tournesol](https://wiki.tournesol.app/index.php/Contribute_to_Tournesol) for details.
