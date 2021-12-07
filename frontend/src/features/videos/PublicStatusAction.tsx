@@ -75,16 +75,15 @@ export const UserRatingPublicToggle = ({
   );
 };
 
-interface PublicStatusContextValue {
+interface RatingsContextValue {
   getContributorRating?: (videoId: string) => ContributorRating;
-  onChange?: (rating: ContributorRating) => void;
+  onChange?: (rating?: ContributorRating) => void;
 }
 
-export const PublicStatusContext =
-  React.createContext<PublicStatusContextValue>({});
+export const RatingsContext = React.createContext<RatingsContextValue>({});
 
 export const PublicStatusAction = ({ videoId }: { videoId: string }) => {
-  const { getContributorRating, onChange } = useContext(PublicStatusContext);
+  const { getContributorRating, onChange } = useContext(RatingsContext);
   const contributorRating = getContributorRating?.(videoId);
   if (contributorRating == null || contributorRating.is_public == null) {
     return null;

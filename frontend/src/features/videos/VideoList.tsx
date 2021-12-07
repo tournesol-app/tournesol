@@ -9,9 +9,16 @@ import { ActionList, VideoObject } from 'src/utils/types';
 interface Props {
   videos: VideoObject[];
   settings?: ActionList;
+  emptyMessage?: string;
 }
 
-function VideoList({ videos, settings = [] }: Props) {
+const DEFAULT_MESSAGE = 'No video found.';
+
+function VideoList({
+  videos,
+  settings = [],
+  emptyMessage = DEFAULT_MESSAGE,
+}: Props) {
   const { isLoggedIn } = useLoginState();
 
   const actions = isLoggedIn ? [CompareNowAction, AddToRateLaterList] : [];
@@ -26,7 +33,7 @@ function VideoList({ videos, settings = [] }: Props) {
         ))
       ) : (
         <Typography variant="h5" component="h2">
-          No video corresponds to your search criterias
+          {emptyMessage}
         </Typography>
       )}
     </>

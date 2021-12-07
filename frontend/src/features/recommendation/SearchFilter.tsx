@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import { Collapse, Grid, Box } from '@material-ui/core';
+import { Collapse, Grid, Box, makeStyles } from '@material-ui/core';
 
 import { FiltersButton } from 'src/components';
 import LanguageFilter from './LanguageFilter';

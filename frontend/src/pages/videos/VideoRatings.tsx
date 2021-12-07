@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import { CircularProgress, Box } from '@material-ui/core';
@@ -13,7 +13,7 @@ import { UsersService } from 'src/services/openapi';
 import { ContentBox } from 'src/components';
 import {
   PublicStatusAction,
-  PublicStatusContext,
+  RatingsContext,
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 
@@ -31,27 +31,28 @@ function VideoRatingsPage() {
   const offset = Number(searchParams.get('offset') || 0);
   const videoCount = ratings.count || 0;
 
-  function handleOffsetChange(newOffset: number) {
+  const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    history.push('/recommendations/?' + searchParams.toString());
-  }
+    history.push({ search: searchParams.toString() });
+  };
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    const urlParams = new URLSearchParams(location.search);
+    const isPublicParam = urlParams.get('isPublic');
+    const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
+    const response = await UsersService.usersMeContributorRatingsList(
+      limit,
+      offset,
+      isPublic
+    );
+    setRatings(response);
+    setIsLoading(false);
+  }, [offset, location.search]);
 
   useEffect(() => {
-    setIsLoading(true);
-    const loadData = async () => {
-      const urlParams = new URLSearchParams(location.search);
-      const isPublicParam = urlParams.get('isPublic');
-      const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
-      const response = await UsersService.usersMeContributorRatingsList(
-        limit,
-        offset,
-        isPublic
-      );
-      setRatings(response);
-      setIsLoading(false);
-    };
     loadData();
-  }, [offset, location.search]);
+  }, [loadData]);
 
   const videos = (ratings.results || []).map(
     (rating: ContributorRating) => rating.video
@@ -60,43 +61,57 @@ function VideoRatingsPage() {
   const idToRating = Object.fromEntries(
     (ratings.results || []).map((rating) => [rating.video.video_id, rating])
   );
-  const getPublicStatus = (videoId: string) => idToRating[videoId];
+  const getRating = (videoId: string) => idToRating[videoId];
 
-  const onRatingChange = (newRating: ContributorRating) => {
-    setRatings((prevRatings) => {
-      const updatedResults = (prevRatings.results || []).map((rating) =>
-        rating.video.video_id === newRating.video.video_id ? newRating : rating
-      );
-      return { ...prevRatings, results: updatedResults };
-    });
+  const onRatingChange = (newRating: ContributorRating | undefined) => {
+    if (newRating) {
+      setRatings((prevRatings) => {
+        const updatedResults = (prevRatings.results || []).map((rating) =>
+          rating.video.video_id === newRating.video.video_id
+            ? newRating
+            : rating
+        );
+        return { ...prevRatings, results: updatedResults };
+      });
+    } else {
+      // All ratings have been changed.
+      if (searchParams.get('isPublic')) {
+        // A filter had been selected. Let's reset the filter to reload the list.
+        searchParams.delete('isPublic');
+        history.push({ search: searchParams.toString() });
+      } else {
+        // No filter is selected. Let's simply refresh the list.
+        loadData();
+      }
+    }
   };
 
   return (
-    <ContentBox noMinPadding maxWidth="md">
-      <Box px={{ xs: 2, sm: 0 }}>
-        <RatingsFilter />
-      </Box>
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <PublicStatusContext.Provider
-          value={{
-            getContributorRating: getPublicStatus,
-            onChange: onRatingChange,
-          }}
-        >
+    <RatingsContext.Provider
+      value={{
+        getContributorRating: getRating,
+        onChange: onRatingChange,
+      }}
+    >
+      <ContentBox noMinPadding maxWidth="md">
+        <Box px={{ xs: 2, sm: 0 }}>
+          <RatingsFilter />
+        </Box>
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
           <VideoList videos={videos} settings={[PublicStatusAction]} />
-        </PublicStatusContext.Provider>
-      )}
-      {!isLoading && videoCount > 0 && (
-        <Pagination
-          offset={offset}
-          count={videoCount}
-          onOffsetChange={handleOffsetChange}
-          limit={limit}
-        />
-      )}
-    </ContentBox>
+        )}
+        {!isLoading && videoCount > 0 && (
+          <Pagination
+            offset={offset}
+            count={videoCount}
+            onOffsetChange={handleOffsetChange}
+            limit={limit}
+          />
+        )}
+      </ContentBox>
+    </RatingsContext.Provider>
   );
 }
 

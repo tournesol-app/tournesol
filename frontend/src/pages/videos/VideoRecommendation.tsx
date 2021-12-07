@@ -46,7 +46,10 @@ function VideoRecommendationPage() {
       {isLoading ? (
         <CircularProgress />
       ) : (
-        <VideoList videos={videos.results || []} />
+        <VideoList
+          videos={videos.results || []}
+          emptyMessage="No video corresponds to your search criterias."
+        />
       )}
       {!isLoading && videoCount > 0 && (
         <Pagination
