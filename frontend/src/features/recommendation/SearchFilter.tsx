@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import clsx from 'clsx';
 
 import { Collapse, Button, Grid, Box, Theme } from '@material-ui/core';
-import { useTheme } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/styles';
 
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  filtersButton: {
+    padding: '8px 0',
+  },
+  filtersButtonDefault: {
+    color: theme.palette.action.active,
+  },
+  filtersButtonExpanded: {
+    color: theme.palette.secondary.main,
+  },
+  filtersContainer: {
+    marginBottom: '8px',
+  },
+}));
+
 function SearchFilter() {
-  const theme: Theme = useTheme();
+  const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const Location = useLocation();
   const history = useHistory();
@@ -41,17 +57,15 @@ function SearchFilter() {
         aria-expanded={expanded}
         aria-label="show more"
         onClick={handleExpandClick}
-        style={{
-          padding: '8px 0',
-          color: expanded
-            ? theme.palette.secondary.main
-            : theme.palette.action.active,
-        }}
+        className={clsx(classes.filtersButton, {
+          [classes.filtersButtonDefault]: !expanded,
+          [classes.filtersButtonExpanded]: expanded,
+        })}
       >
         Filters
       </Button>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Grid container spacing={4} style={{ marginBottom: '8px' }}>
+        <Grid container spacing={4} className={classes.filtersContainer}>
           <Grid item xs={6} md={3} lg={2}>
             <DateFilter
               value={searchParams.get('date') ?? ''}

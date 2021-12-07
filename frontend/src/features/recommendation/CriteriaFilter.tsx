@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { useLocation } from 'react-router-dom';
 import {
   Grid,
@@ -9,6 +8,7 @@ import {
   Slider,
   Tooltip,
 } from '@material-ui/core';
+
 import { mainCriteriaNames } from 'src/utils/constants';
 import { FilterSection } from 'src/components';
 
