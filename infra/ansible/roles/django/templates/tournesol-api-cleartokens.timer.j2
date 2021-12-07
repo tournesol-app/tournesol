@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol API clear tokens
+
+[Timer]
+OnCalendar={{tournesol_api_cleartokens_schedule}}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target
