@@ -5,11 +5,16 @@ API endpoint to manipulate contributor ratings
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, F, Q
 from rest_framework import generics, exceptions
+from rest_framework.response import Response
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 
 from ..models import ContributorRating
-from ..serializers import ContributorRatingSerializer, ContributorRatingCreateSerializer
+from ..serializers import (
+    ContributorRatingSerializer,
+    ContributorRatingCreateSerializer,
+    ContributorRatingUpdateAllSerializer,
+)
 
 
 RatingsWithAnnotations = ContributorRating.objects.annotate(
@@ -20,7 +25,7 @@ RatingsWithAnnotations = ContributorRating.objects.annotate(
             | Q(user__comparisons__video_2=F("video"))
         ),
     )
-)
+).order_by("-pk")
 
 
 @extend_schema_view(
@@ -84,3 +89,21 @@ class ContributorRatingList(generics.ListCreateAPIView):
                     "'is_public' query param must be 'true' or 'false'"
                 )
         return ratings
+
+
+class ContributorRatingUpdateAll(generics.GenericAPIView):
+    """
+    Mark all contributor ratings by current user as public or private.
+    """
+
+    serializer_class = ContributorRatingUpdateAllSerializer
+
+    def get_queryset(self):
+        return ContributorRating.objects.filter(user=self.request.user)
+
+    def patch(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        queryset.update(is_public=serializer.validated_data["is_public"])
+        return Response(serializer.data)
