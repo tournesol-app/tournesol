@@ -185,3 +185,28 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+# set up a daily API refresh token clean-up
+
+- name: Copy Discord Tournesol API cleartokens failure alert
+  template:
+    dest: /usr/local/bin/discord-tournesolapi-cleartokens-fail-alert.sh
+    src: discord-tournesolapi-cleartokens-fail-alert.sh.j2
+    mode: a=rx
+
+- name: Copy Tournesol API cleartokens service
+  template:
+    dest: /etc/systemd/system/tournesol-api-cleartokens.service
+    src: tournesol-api-cleartokens.service.j2
+
+- name: Copy Tournesol API cleartokens timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-cleartokens.timer
+    src: tournesol-api-cleartokens.timer.j2
+
+- name: Enable and start Tournesol API cleartokens timer
+  systemd:
+    name: tournesol-api-cleartokens.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
