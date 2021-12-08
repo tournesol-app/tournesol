@@ -32,9 +32,9 @@ const Signup = () => {
     const formData = new FormData(event.currentTarget);
     const formObject: unknown = Object.fromEntries(formData);
     try {
-      const createdUser = await AccountsService.accountsRegisterCreate(
-        formObject as RegisterUser
-      );
+      const createdUser = await AccountsService.accountsRegisterCreate({
+        requestBody: formObject as RegisterUser,
+      });
       setSuccessEmailAddress(createdUser.email || '');
     } catch (err) {
       setApiError(err as ApiError);

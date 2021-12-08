@@ -22,7 +22,10 @@ const TrustedDomains = () => {
       let offset = 0;
       let response;
       do {
-        response = await DomainsService.domainsList(DOMAINS_PAGE_SIZE, offset);
+        response = await DomainsService.domainsList({
+          limit: DOMAINS_PAGE_SIZE,
+          offset,
+        });
         const responseDomains = response.results || [];
         offset += responseDomains.length;
         result.push(...responseDomains);

@@ -1,13 +1,6 @@
-import type { PaginatedVideoSerializerWithCriteriaList as PaginatedVideoList } from 'src/services/openapi';
+import { VideoService } from 'src/services/openapi';
 
-const api_url = process.env.REACT_APP_API_URL;
-const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
-const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
-
-export const getRecommendedVideos = (
-  searchString: string,
-  callback: (m: PaginatedVideoList) => void
-) => {
+export const getRecommendedVideos = async (searchString: string) => {
   const dayInMillisecondes = 1000 * 60 * 60 * 24;
   const conversionTime = new Map();
   const params = new URLSearchParams(searchString);
@@ -48,30 +41,34 @@ export const getRecommendedVideos = (
     }
   }
 
-  params.append('limit', '20');
-  searchString = params.toString();
+  const getNumberValue = (key: string): number | undefined => {
+    const value = params.get(key);
+    return value ? Number(value) : undefined;
+  };
 
-  // TODO once backend is fixed, use automatically generated code
-  fetch(`${api_url}/video/?`.concat(searchString), {
-    // /?language=` + language + '&date=' + date if you wan to add parameters
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
-    },
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      callback(data);
-    })
-    .catch((err) => {
-      console.log(err);
-      callback({
-        results: [],
-        count: 0,
-      });
+  try {
+    return await VideoService.videoList({
+      limit: 20,
+      offset: getNumberValue('offset'),
+      search: params.get('search') ?? undefined,
+      language: params.get('language') ?? undefined,
+      dateGte: params.get('date_gte') ?? undefined,
+      largelyRecommended: getNumberValue('largely_recommended'),
+      reliability: getNumberValue('reliability'),
+      importance: getNumberValue('importance'),
+      engaging: getNumberValue('engaging'),
+      pedagogy: getNumberValue('pedagogy'),
+      laymanFriendly: getNumberValue('layman_friendly'),
+      diversityInclusion: getNumberValue('diversity_inclusion'),
+      backfireRisk: getNumberValue('backfire_risk'),
+      betterHabits: getNumberValue('better_habits'),
+      entertainingRelaxing: getNumberValue('entertaining_relaxing'),
     });
+  } catch (err) {
+    console.error(err);
+    return {
+      results: [],
+      count: 0,
+    };
+  }
 };

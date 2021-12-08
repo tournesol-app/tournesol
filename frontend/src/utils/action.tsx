@@ -29,7 +29,9 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
   const handleCreation = async () => {
     try {
       await UsersService.usersMeVideoRateLaterCreate({
-        video: { video_id } as Video,
+        requestBody: {
+          video: { video_id } as Video,
+        },
       });
       showSuccessAlert(
         enqueueSnackbar,
@@ -59,13 +61,12 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
 export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ videoId }: { videoId: string }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const video_id = videoId;
     return (
       <Tooltip title="Remove" placement="left">
         <IconButton
           size="medium"
           onClick={async () => {
-            await UsersService.usersMeVideoRateLaterDestroy(video_id);
+            await UsersService.usersMeVideoRateLaterDestroy({ videoId });
             if (asyncCallback) await asyncCallback();
             showSuccessAlert(
               enqueueSnackbar,

@@ -98,7 +98,10 @@ const ComparisonPage = () => {
       setSelectorB({ videoId: videoB, rating: null });
     }
     if (videoA && videoB)
-      UsersService.usersMeComparisonsRetrieve(videoA, videoB)
+      UsersService.usersMeComparisonsRetrieve({
+        videoIdA: videoA,
+        videoIdB: videoB,
+      })
         .then((comparison) => {
           setInitialComparison(comparison);
           setIsLoading(false);
@@ -115,13 +118,13 @@ const ComparisonPage = () => {
   const onSubmitComparison = async (c: Comparison) => {
     if (initialComparison) {
       const { video_a, video_b, criteria_scores, duration_ms } = c;
-      await UsersService.usersMeComparisonsUpdate(
-        video_a.video_id,
-        video_b.video_id,
-        { criteria_scores, duration_ms }
-      );
+      await UsersService.usersMeComparisonsUpdate({
+        videoIdA: video_a.video_id,
+        videoIdB: video_b.video_id,
+        requestBody: { criteria_scores, duration_ms },
+      });
     } else {
-      await UsersService.usersMeComparisonsCreate(c);
+      await UsersService.usersMeComparisonsCreate({ requestBody: c });
       setInitialComparison(c);
       // Refresh ratings statistics after the comparisons have been submitted
       setSubmitted(true);

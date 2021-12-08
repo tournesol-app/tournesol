@@ -74,7 +74,9 @@ const EmailAddressForm = () => {
 
     try {
       await AccountsService.accountsRegisterEmailCreate({
-        email: new FormData(event.currentTarget).get('email') as string,
+        requestBody: {
+          email: new FormData(event.currentTarget).get('email') as string,
+        },
       });
       setIsSuccess(true);
     } catch (err) {

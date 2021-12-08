@@ -9,6 +9,8 @@ export const addToRateLaterList = async ({
 }) => {
   await ensureVideoExistsOrCreate(video_id);
   return UsersService.usersMeVideoRateLaterCreate({
-    video: { video_id } as Video,
+    requestBody: {
+      video: { video_id } as Video,
+    },
   });
 };

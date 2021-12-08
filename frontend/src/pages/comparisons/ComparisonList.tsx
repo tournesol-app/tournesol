@@ -23,7 +23,7 @@ function ComparisonsPage() {
   }
 
   useEffect(() => {
-    UsersService.usersMeComparisonsList(limit, offset).then((data) => {
+    UsersService.usersMeComparisonsList({ limit, offset }).then((data) => {
       setComparisons(data.results);
       setCount(data.count || 0);
     });

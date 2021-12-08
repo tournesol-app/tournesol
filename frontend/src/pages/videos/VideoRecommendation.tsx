@@ -31,14 +31,12 @@ function VideoRecommendationPage() {
   }
 
   useEffect(() => {
-    setIsLoading(true);
-    getRecommendedVideos(
-      location.search,
-      (videos: PaginatedVideoSerializerWithCriteriaList) => {
-        setVideos(videos);
-        setIsLoading(false);
-      }
-    );
+    const fetchVideos = async () => {
+      setIsLoading(true);
+      setVideos(await getRecommendedVideos(location.search));
+      setIsLoading(false);
+    };
+    fetchVideos();
   }, [location.search]);
 
   return (

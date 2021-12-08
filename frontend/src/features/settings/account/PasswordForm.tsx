@@ -31,9 +31,11 @@ const PasswordForm = () => {
     const response: void | Record<string, string> =
       await AccountsService.accountsChangePasswordCreate(
         {
-          old_password: oldPassword,
-          password,
-          password_confirm: passwordConfirm,
+          requestBody: {
+            old_password: oldPassword,
+            password,
+            password_confirm: passwordConfirm,
+          },
         }
         // handle errors and unknown errors
       ).catch((reason: { body: { [k: string]: string[] } }) => {

@@ -71,10 +71,10 @@ const RateLaterPage = () => {
     setIsLoading(true);
     let rateLaterResponse;
     try {
-      rateLaterResponse = await UsersService.usersMeVideoRateLaterList(
+      rateLaterResponse = await UsersService.usersMeVideoRateLaterList({
         limit,
-        offset
-      );
+        offset,
+      });
     } catch (err) {
       console.error('Fetch rater list failed.', err);
       setIsLoading(false);

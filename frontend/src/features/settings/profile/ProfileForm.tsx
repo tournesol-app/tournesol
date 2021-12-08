@@ -46,9 +46,11 @@ const ProfileForm = () => {
     setDisabled(true);
 
     const response = await AccountsService.accountsProfilePartialUpdate({
-      username,
-      // handle errors and unknown errors
+      requestBody: {
+        username,
+      },
     }).catch((reason: { body: { [k: string]: string[] } }) => {
+      // handle errors and unknown errors
       if (reason && 'body' in reason) {
         const newErrorMessages = Object.values(reason['body']).flat();
         newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
