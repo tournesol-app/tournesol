@@ -152,3 +152,15 @@ class RatingApi(TestCase):
         self.assertEqual(response.json()["is_public"], True, response.json())
         rating.refresh_from_db()
         self.assertEqual(rating.is_public, True)
+
+    def test_patch_all_ratings(self):
+        client = APIClient()
+        client.force_authenticate(self.user2)
+        self.assertEqual(self.user2.contributorvideoratings.count(), 2)
+        self.assertEqual(self.user2.contributorvideoratings.filter(is_public=False).count(), 1)
+        response = client.patch(
+            "/users/me/contributor_ratings/_all/",
+            data={"is_public": False}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.user2.contributorvideoratings.filter(is_public=False).count(), 2)

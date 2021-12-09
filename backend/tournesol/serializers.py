@@ -7,7 +7,7 @@ from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 
 from rest_framework import serializers
-from rest_framework.fields import RegexField, SerializerMethodField
+from rest_framework.fields import RegexField, SerializerMethodField, BooleanField
 from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework.exceptions import ValidationError
 from drf_spectacular.utils import extend_schema_field
@@ -319,3 +319,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         attrs["video"] = video
         attrs["user"] = user
         return attrs
+
+
+class ContributorRatingUpdateAllSerializer(Serializer):
+    is_public = BooleanField()

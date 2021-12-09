@@ -12,7 +12,11 @@ from .views.exports import ExportComparisonsView, ExportAllView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 from .views.user import CurrentUserView
-from .views.ratings import ContributorRatingList, ContributorRatingDetail
+from .views.ratings import (
+    ContributorRatingList,
+    ContributorRatingDetail,
+    ContributorRatingUpdateAll,
+)
 from .views.email_domains import EmailDomainsList
 
 
@@ -69,6 +73,11 @@ urlpatterns = [
         "users/me/contributor_ratings/",
         ContributorRatingList.as_view(),
         name="ratings_me_list",
+    ),
+    path(
+        "users/me/contributor_ratings/_all/",
+        ContributorRatingUpdateAll.as_view(),
+        name="ratings_me_list_update_is_public",
     ),
     path(
         "users/me/contributor_ratings/<str:video_id>/",
