@@ -1,31 +1,23 @@
 import React, { useEffect, useCallback } from 'react';
 
-import { Grid } from '@material-ui/core';
+import { Card, Box, CardContent, CardActions } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
-import Pagination from 'src/components/Pagination';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { VideoRateLater } from 'src/services/openapi';
-import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
-import VideoCard from 'src/features/videos/VideoCard';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
+import { ContentBox, LoaderWrapper, Pagination } from 'src/components';
+import VideoList from 'src/features/videos/VideoList';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: 24,
-    [theme.breakpoints.down('sm')]: {
-      padding: '24px 4px 24px 4px',
-    },
-  },
+const useStyles = makeStyles({
   rateLaterIntro: {
     textAlign: 'center',
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
-    justifyContent: 'center',
   },
   rateLaterContent: {
     flexDirection: 'column',
@@ -34,12 +26,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: '20px',
-    scrollMarginTop: `${topBarHeight}px`,
-  },
-  videoList: {
-    paddingTop: '20px',
-    width: '100%',
-    maxWidth: '1100px',
   },
   stickyPagination: {
     position: 'sticky',
@@ -47,11 +33,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     padding: '6px',
   },
-  video: {
-    alignItems: 'center',
-    margin: '12px 0',
-  },
-}));
+});
 
 const RateLaterPage = () => {
   const classes = useStyles();
@@ -100,12 +82,15 @@ const RateLaterPage = () => {
     loadList();
   }, [loadList]);
 
+  const videos = rateLaterList.map((r) => r.video);
+
   return (
-    <div className={classes.root}>
-      <div className={classes.rateLaterIntro}>
-        <Typography variant="h5">Add videos to your rate-later list</Typography>
-        <br />
-        <span>
+    <ContentBox noMinPadding maxWidth="md">
+      <Card className={classes.rateLaterIntro} elevation={4}>
+        <CardContent>
+          <Typography variant="h6">
+            Add videos to your rate-later list
+          </Typography>
           Copy-paste the id or the URL of a favorite video of yours:
           <br />
           You can search them in your{' '}
@@ -124,11 +109,11 @@ const RateLaterPage = () => {
           can also help you import videos effortlessly.
           <br />
           You will then be able to rate the videos you imported.
-        </span>
-        <br />
-      </div>
-
-      <RateLaterAddForm addVideo={addToRateLater} />
+        </CardContent>
+        <CardActions>
+          <RateLaterAddForm addVideo={addToRateLater} />
+        </CardActions>
+      </Card>
 
       <div className={classes.rateLaterContent} ref={videoListTopRef}>
         {videoCount !== null && (
@@ -137,7 +122,7 @@ const RateLaterPage = () => {
           </Typography>
         )}
 
-        {videoCount && (
+        {!!videoCount && (
           <div className={classes.stickyPagination}>
             <Pagination
               offset={offset}
@@ -148,29 +133,16 @@ const RateLaterPage = () => {
           </div>
         )}
 
-        {isLoading && <p>Loading...</p>}
-
-        <div
-          className={classes.videoList}
-          style={{
-            visibility: isLoading ? 'hidden' : undefined,
-          }}
-        >
-          {rateLaterList.map(({ video }) => {
-            return (
-              <Grid container className={classes.video} key={video.video_id}>
-                <Grid item xs={12}>
-                  <VideoCard
-                    video={video}
-                    actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
-                  />
-                </Grid>
-              </Grid>
-            );
-          })}
-        </div>
+        <Box width="100%" textAlign="center">
+          <LoaderWrapper isLoading={isLoading}>
+            <VideoList
+              videos={videos}
+              actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
+            />
+          </LoaderWrapper>
+        </Box>
       </div>
-    </div>
+    </ContentBox>
   );
 };
 

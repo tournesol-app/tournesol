@@ -37,7 +37,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
         alignItems="center"
         spacing={3}
       >
-        <Grid item sm={4}>
+        <Grid item>
           <TextField
             autoFocus
             required
