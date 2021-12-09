@@ -816,6 +816,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContributorRating'
           description: ''
+  /users/me/contributor_ratings/_all/:
+    patch:
+      operationId: users_me_contributor_ratings__all_partial_update
+      description: Mark all contributor ratings by current user as public or private.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContributorRatingUpdateAll'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedContributorRatingUpdateAll'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContributorRatingUpdateAll'
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorRatingUpdateAll'
+          description: ''
   /users/me/exports/all/:
     get:
       operationId: users_me_exports_all_retrieve
@@ -1257,6 +1284,13 @@ components:
       - n_comparisons
       - video
       - video_id
+    ContributorRatingUpdateAll:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+      required:
+      - is_public
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -9804,6 +9838,11 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+    PatchedContributorRatingUpdateAll:
+      type: object
+      properties:
+        is_public:
+          type: boolean
     PatchedUserProfile:
       type: object
       description: |-

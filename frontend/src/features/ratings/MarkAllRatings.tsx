@@ -10,7 +10,7 @@ function MarkAllRatings() {
 
   const updateRatings = async (isPublic: boolean) => {
     await UsersService.usersMeContributorRatingsAllPartialUpdate({
-      is_public: isPublic,
+      requestBody: { is_public: isPublic },
     });
     if (onRatingChange) {
       onRatingChange();

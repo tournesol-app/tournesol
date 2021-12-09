@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { CircularProgress, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';
@@ -9,6 +9,7 @@ import VideoList from 'src/features/videos/VideoList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 import { ContentBox } from 'src/components';
+import LoaderWrapper from 'src/components/LoaderWrapper';
 
 function VideoRecommendationPage() {
   const prov: PaginatedVideoSerializerWithCriteriaList = {
@@ -27,6 +28,7 @@ function VideoRecommendationPage() {
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
+    document.querySelector('main')?.scrollTo({ top: 0 });
   }
 
   useEffect(() => {
@@ -39,18 +41,18 @@ function VideoRecommendationPage() {
   }, [location.search]);
 
   return (
-    <ContentBox noMinPadding maxWidth="xl">
+    <ContentBox noMinPadding maxWidth="lg">
       <Box px={{ xs: 2, sm: 0 }}>
         <SearchFilter />
       </Box>
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
+      <LoaderWrapper isLoading={isLoading}>
         <VideoList
           videos={videos.results || []}
-          emptyMessage="No video corresponds to your search criterias."
+          emptyMessage={
+            isLoading ? '' : 'No video corresponds to your search criterias.'
+          }
         />
-      )}
+      </LoaderWrapper>
       {!isLoading && videoCount > 0 && (
         <Pagination
           offset={offset}

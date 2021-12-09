@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-
-import { CircularProgress, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 import type {
   ContributorRating,
@@ -10,7 +9,7 @@ import type {
 import Pagination from 'src/components/Pagination';
 import VideoList from 'src/features/videos/VideoList';
 import { UsersService } from 'src/services/openapi';
-import { ContentBox } from 'src/components';
+import { ContentBox, LoaderWrapper } from 'src/components';
 import {
   PublicStatusAction,
   RatingsContext,
@@ -34,6 +33,7 @@ function VideoRatingsPage() {
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
+    document.querySelector('main')?.scrollTo({ top: 0 });
   };
 
   const loadData = useCallback(async () => {
@@ -41,11 +41,11 @@ function VideoRatingsPage() {
     const urlParams = new URLSearchParams(location.search);
     const isPublicParam = urlParams.get('isPublic');
     const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
-    const response = await UsersService.usersMeContributorRatingsList(
+    const response = await UsersService.usersMeContributorRatingsList({
       limit,
       offset,
-      isPublic
-    );
+      isPublic,
+    });
     setRatings(response);
     setIsLoading(false);
   }, [offset, location.search]);
@@ -97,11 +97,9 @@ function VideoRatingsPage() {
         <Box px={{ xs: 2, sm: 0 }}>
           <RatingsFilter />
         </Box>
-        {isLoading ? (
-          <CircularProgress />
-        ) : (
+        <LoaderWrapper isLoading={isLoading}>
           <VideoList videos={videos} settings={[PublicStatusAction]} />
-        )}
+        </LoaderWrapper>
         {!isLoading && videoCount > 0 && (
           <Pagination
             offset={offset}

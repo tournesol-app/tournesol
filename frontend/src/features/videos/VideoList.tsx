@@ -8,6 +8,7 @@ import { ActionList, VideoObject } from 'src/utils/types';
 
 interface Props {
   videos: VideoObject[];
+  actions?: ActionList;
   settings?: ActionList;
   emptyMessage?: string;
 }
@@ -16,25 +17,35 @@ const DEFAULT_MESSAGE = 'No video found.';
 
 function VideoList({
   videos,
+  actions,
   settings = [],
   emptyMessage = DEFAULT_MESSAGE,
 }: Props) {
   const { isLoggedIn } = useLoginState();
 
-  const actions = isLoggedIn ? [CompareNowAction, AddToRateLaterList] : [];
+  const defaultActions = isLoggedIn
+    ? [CompareNowAction, AddToRateLaterList]
+    : [];
+  const cardActions = actions || defaultActions;
 
   return (
     <>
       {videos.length ? (
         videos.map((video: VideoObject) => (
           <Box key={video.video_id} mx={1} my={2}>
-            <VideoCard video={video} actions={actions} settings={settings} />
+            <VideoCard
+              video={video}
+              actions={cardActions}
+              settings={settings}
+            />
           </Box>
         ))
       ) : (
-        <Typography variant="h5" component="h2">
-          {emptyMessage}
-        </Typography>
+        <Box m={2}>
+          <Typography variant="h5" component="h2" align="center">
+            {emptyMessage}
+          </Typography>
+        </Box>
       )}
     </>
   );
