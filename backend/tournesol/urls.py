@@ -43,6 +43,11 @@ urlpatterns = [
         ExportAllView.as_view(),
         name="export_all"
     ),
+    # path(
+    #     "exports/comparisons/",
+    #     #ExportAllView.as_view(),
+    #     name="export_public"
+    # ),
     # Comparison API
     path(
         "users/me/comparisons/", ComparisonListApi.as_view(),
