@@ -2,7 +2,10 @@ import { onlyOn } from '@cypress/skip-test'
 
 onlyOn('headed', () => {
   describe('Tournesol extension', 
-    { browser: ['chromium', 'chrome']}, 
+    {
+      browser: ['chromium', 'chrome'],
+      defaultCommandTimeout: 8000,
+    },
     () => {
       const consent = () => {
         cy.get('body')
@@ -25,7 +28,6 @@ onlyOn('headed', () => {
       it('shows Tournesol recommendations on youtube.com', () => {
         cy.visit('https://www.youtube.com');
         consent();
-        cy.wait(5000);
         cy.contains('Recommended by Tournesol').should('be.visible');
       })
 
