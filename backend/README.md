@@ -35,3 +35,9 @@ Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` de
 * Once you have created your API key, put it into `YOUTUBE_API_KEY` environment variable (`export YOUTUBE_API_KEY=xxx`)
 
 * Then go to https://console.cloud.google.com/apis/credentials/consent, and add a user test (typicaly your gmail account)
+
+# Testing
+
+In order to ease your testing and debug time, use pytest : `pytest`
+Moreover, you can run the following command to have a complete recap in a html document for each test:
+`pytest --html=report.html --self-contained-html`
