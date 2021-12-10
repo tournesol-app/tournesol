@@ -1,4 +1,4 @@
-Django==3.2.9
+Django==3.2.10
 django-computed-property==0.3.0
 django-cors-headers==3.7.0
 django-countries==7.2.1
@@ -13,7 +13,6 @@ fuzzysearch==0.7.3
 numpy==1.21.2
 Pillow==8.2.0
 psycopg2-binary==2.9.1
-pytest==6.2.4
 PyYAML==5.4.1
 tqdm==4.62.1
 langdetect==1.0.8
