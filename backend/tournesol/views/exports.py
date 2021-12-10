@@ -3,7 +3,6 @@ import zipfile
 from io import StringIO
 
 from django.http import HttpResponse
-from backend.tournesol.models.ratings import ContributorRating
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiTypes
@@ -37,13 +36,13 @@ def write_comparisons_file(request, write_target):
 
 def write_public_comparisons_file(request, write_target):
     """
-    Writes all comparisons data that are publicly avaliable as a CSV file to write_target which can be
+    Writes a user's comparisons as a CSV file to write_target which can be
     among other options an HttpResponse or a StringIO
     """
     fieldnames = ['video_a', 'video_b', 'criteria', 'weight', 'score']
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
-    comparisons = Comparison.objects.filter(ContributorRating.is_public)\
+    comparisons = Comparison.objects.filter(user=request.user)\
         .select_related("video_1", "video_2")\
         .prefetch_related("criteria_scores")
     serialized_comparisons = [ComparisonSerializer(comparison).data for comparison in comparisons]
