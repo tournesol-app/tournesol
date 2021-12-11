@@ -8,7 +8,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
-from .views.exports import ExportComparisonsView, ExportAllView
+from .views.exports import ExportComparisonsView, ExportAllView, ExportPublicComparisonsView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 from .views.user import CurrentUserView
@@ -43,11 +43,11 @@ urlpatterns = [
         ExportAllView.as_view(),
         name="export_all"
     ),
-    # path(
-    #     "exports/comparisons/",
-    #     #ExportAllView.as_view(),
-    #     name="export_public"
-    # ),
+    path(
+        "exports/comparisons/",
+        ExportPublicComparisonsView.as_view(),
+        name="export_public"
+    ),
     # Comparison API
     path(
         "users/me/comparisons/", ComparisonListApi.as_view(),

@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiTypes
 
-from tournesol.serializers import ComparisonSerializer
-from tournesol.models import Comparison
+from tournesol.serializers import ComparisonSerializer, ContributorRatingSerializer
+from tournesol.models import Comparison, ContributorRating
 
 
 def write_comparisons_file(request, write_target):
@@ -34,6 +34,37 @@ def write_comparisons_file(request, write_target):
         for criteria_score in comparison['criteria_scores']
     )
 
+# Another option
+# def write_public_comparisons_file(request, write_target):
+#     """
+#     Writes a user's comparisons as a CSV file to write_target which can be
+#     among other options an HttpResponse or a StringIO
+#     """
+#     fieldnames = ['video_a', 'video_b', 'criteria', 'weight', 'score']
+#     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+#     writer.writeheader()
+#     comparisons = Comparison.objects.all()\
+#         .select_related("user", "video_1", "video_2")\
+#         .prefetch_related("criteria_scores")
+#     serialized_comparisons = [] #[ComparisonSerializer(comparison).data for comparison in comparisons]
+#     for comparison in comparisons:
+#         user = comparison.user #ComparisonSerializer(comparison).data["user"]
+#         video_1 = ContributorRating.objects.filter(video=comparison.video_1, user=user).values('is_public')
+#         video_2 = ContributorRating.objects.filter(video=comparison.video_2, user=user).values('is_public')
+#         if (video_1 and video_2):
+#             if (video_1[0]['is_public'] and video_2[0]['is_public']):
+#                 serialized_comparisons.append(ComparisonSerializer(comparison).data)
+    
+#     writer.writerows(
+#         {
+#             "video_a": comparison["video_a"]["video_id"],
+#             "video_b": comparison["video_b"]["video_id"],
+#             **criteria_score
+#         }
+#         for comparison in serialized_comparisons
+#         for criteria_score in comparison['criteria_scores']
+#     )
+
 def write_public_comparisons_file(request, write_target):
     """
     Writes a user's comparisons as a CSV file to write_target which can be
@@ -42,10 +73,20 @@ def write_public_comparisons_file(request, write_target):
     fieldnames = ['video_a', 'video_b', 'criteria', 'weight', 'score']
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
-    comparisons = Comparison.objects.filter(user=request.user)\
-        .select_related("video_1", "video_2")\
-        .prefetch_related("criteria_scores")
-    serialized_comparisons = [ComparisonSerializer(comparison).data for comparison in comparisons]
+    public_data = ContributorRating.objects.filter(is_public=True).select_related("user", "video")
+    serialized_comparisons = []
+    public_videos = set()
+    users = set()
+    for public_video in public_data:
+        public_videos.add((public_video.user, public_video.video))
+        users.add(public_video.user)
+    for user in users:
+        comparisons = Comparison.objects.filter(user=user)\
+            .select_related("video_1", "video_2")\
+            .prefetch_related("criteria_scores")
+        for comparison in comparisons:
+            if (((user, comparison.video_1) in public_videos) and ((user, comparison.video_2) in public_videos)):
+                serialized_comparisons.append(ComparisonSerializer(comparison).data)
 
     writer.writerows(
         {
@@ -79,7 +120,7 @@ class ExportPublicComparisonsView(APIView):
     def get(self, request):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="export.csv"'
-        write_comparisons_file(request, response)
+        write_public_comparisons_file(request, response)
         return response
 
 class ExportAllView(APIView):
