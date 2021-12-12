@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from tournesol.models import Comparison, Video, ComparisonCriteriaScore
+from tournesol.models import Comparison, Video, ComparisonCriteriaScore, ContributorRating
 
 class ExportTest(TestCase):
     def setUp(self) -> None:
@@ -17,6 +17,19 @@ class ExportTest(TestCase):
         self.comparison = Comparison.objects.create(user=self.user_with_comparisons, video_1=self.video1, video_2=self.video2)
         ComparisonCriteriaScore.objects.create(comparison=self.comparison,score=5,criteria="largely_recommended")
         self.user_without_comparisons = User.objects.create_user(username="user_without", email="user_without@example.com")
+
+        self.public_comparisons = User.objects.create_user(username="user_public", email="user_public@example.com")
+        self.video_public_1 = Video.objects.create(video_id="test_public_data_1", name="test_public_data_1")
+        self.video_public_2 = Video.objects.create(video_id="test_public_data_2", name="test_public_data_2")
+        self.video_private_3 = Video.objects.create(video_id="test_private_data_3", name="test_private_data_3")
+        ContributorRating.objects.create(video=self.video_public_1, user=self.public_comparisons, is_public=True)
+        ContributorRating.objects.create(video=self.video_public_2, user=self.public_comparisons, is_public=True)
+        ContributorRating.objects.create(video=self.video_private_3, user=self.public_comparisons, is_public=False)
+        self.comparison_public = Comparison.objects.create(user=self.public_comparisons, video_1=self.video_public_1, video_2=self.video_public_2)
+        ComparisonCriteriaScore.objects.create(comparison=self.comparison_public,score=5,criteria="largely_recommended")
+        self.comparison_private = Comparison.objects.create(user=self.public_comparisons, video_1=self.video_public_1, video_2=self.video_private_3)
+        ComparisonCriteriaScore.objects.create(comparison=self.comparison_private,score=5,criteria="largely_recommended")
+
         self.client = APIClient()
 
     def test_not_authenticated_cannot_download_comparisons(self):
@@ -55,3 +68,13 @@ class ExportTest(TestCase):
         self.client.force_authenticate(self.user_without_comparisons)
         resp = self.client.get("/users/me/exports/all/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    
+    def test_not_authenticated_can_download_public_comparisons(self):
+        resp = self.client.get("/exports/comparisons/")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Ensures the csv does not contain information that are not public comparisons
+        csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
+        comparison_list = [row for row in csv_file]
+        self.assertEqual(len(comparison_list), 1)
+        self.assertEqual(comparison_list[0]['video_a'], "test_public_data_1")
+        self.assertEqual(comparison_list[0]['video_b'], "test_public_data_2")

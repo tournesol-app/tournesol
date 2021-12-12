@@ -4,7 +4,7 @@ from io import StringIO
 
 from django.http import HttpResponse
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiTypes
 
 from tournesol.serializers import ComparisonSerializer
@@ -45,20 +45,17 @@ def write_public_comparisons_file(request, write_target):
     writer.writeheader()
     public_data = ContributorRating.objects.filter(is_public=True).select_related("user", "video")
     serialized_comparisons = []
-    public_videos = set()
-    users = set()
-    for public_video in public_data:
-        public_videos.add((public_video.user, public_video.video))
-        users.add(public_video.user)
-    for user in users:
-        comparisons = Comparison.objects.filter(user=user)\
-            .select_related("video_1", "video_2")\
-            .prefetch_related("criteria_scores")
-        for comparison in comparisons:
-            if ((user, comparison.video_1) in public_videos
-                    and (user, comparison.video_2) in public_videos):
-                serialized_comparisons.append(
-                    (user.username, ComparisonSerializer(comparison).data))
+    public_videos = set((rating.user, rating.video) for rating in public_data)
+    comparisons = Comparison.objects.all()\
+        .select_related("video_1", "video_2")\
+        .prefetch_related("criteria_scores")
+    public_comparisons = [
+        comparison for comparison in comparisons
+        if ((comparison.user, comparison.video_1) in public_videos
+            and (comparison.user, comparison.video_2) in public_videos)]
+    serialized_comparisons = [
+        (comparison.user.username, ComparisonSerializer(comparison).data)
+        for comparison in public_comparisons]
 
     writer.writerows(
         {
@@ -87,8 +84,10 @@ class ExportComparisonsView(APIView):
 
 
 class ExportPublicComparisonsView(APIView):
+    permission_classes = [AllowAny]
+
     @extend_schema(
-        description="Download public data in .zip file",
+        description="Download public data in .csv file",
         responses={200: OpenApiTypes.BINARY}
     )
     def get(self, request):
