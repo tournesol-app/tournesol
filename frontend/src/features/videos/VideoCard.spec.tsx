@@ -21,7 +21,7 @@ describe('VideoCard content', () => {
       'Video title'
     );
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      '154988 views'
+      '154,988 views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'
@@ -55,7 +55,7 @@ describe('VideoCard content', () => {
       'Video title'
     );
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      '154988 views'
+      '154,988 views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'
