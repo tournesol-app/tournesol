@@ -143,21 +143,11 @@ export async function getVideoForComparison(
 }
 
 export const convertDurationToClockDuration = (duration: number) => {
-  let stringDuration = '';
   const roundToTwoDigits = (number: number) => {
-    if (number < 10) {
-      return `0${number}`;
-    } else {
-      return `${number}`;
-    }
+    return number < 10 ? `0${number}` : `${number}`;
   };
-  const list_duration = [];
-  list_duration.push(Math.floor(duration / 3600));
-  duration = duration % 3600;
-  list_duration.push(Math.floor(duration / 60));
-  list_duration.push(duration % 60);
-  list_duration.forEach((number) => {
-    stringDuration = stringDuration.concat(`${roundToTwoDigits(number)}:`);
-  });
-  return stringDuration.slice(0, -1);
+  const hours = Math.floor(duration / 3600);
+  const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
+  const seconds = roundToTwoDigits(duration % 60);
+  return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
 };
