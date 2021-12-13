@@ -1,4 +1,8 @@
 import { VideoService } from 'src/services/openapi';
+import { allCriteriaNamesObj } from 'src/utils/constants';
+import { snakeToCamel } from 'src/utils/string';
+
+const CRITERIA_KEYS = Object.keys(allCriteriaNamesObj);
 
 export const getRecommendedVideos = async (searchString: string) => {
   const dayInMillisecondes = 1000 * 60 * 60 * 24;
@@ -53,16 +57,9 @@ export const getRecommendedVideos = async (searchString: string) => {
       search: params.get('search') ?? undefined,
       language: params.get('language') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
-      largelyRecommended: getNumberValue('largely_recommended'),
-      reliability: getNumberValue('reliability'),
-      importance: getNumberValue('importance'),
-      engaging: getNumberValue('engaging'),
-      pedagogy: getNumberValue('pedagogy'),
-      laymanFriendly: getNumberValue('layman_friendly'),
-      diversityInclusion: getNumberValue('diversity_inclusion'),
-      backfireRisk: getNumberValue('backfire_risk'),
-      betterHabits: getNumberValue('better_habits'),
-      entertainingRelaxing: getNumberValue('entertaining_relaxing'),
+      ...Object.fromEntries(
+        CRITERIA_KEYS.map((c) => [snakeToCamel(c), getNumberValue(c)])
+      ),
     });
   } catch (err) {
     console.error(err);
