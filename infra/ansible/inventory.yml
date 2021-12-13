@@ -27,7 +27,7 @@ all:
           npm_lts_version: fermium
           frontend_scheme: http
           frontend_csp_connect_src: https://noembed.com
-          frontend_csp_image_src: https://i.ytimg.com
+          frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com"
 
           mediawiki_domain_name: tournesol-wiki
           mediawiki_scheme: http
@@ -75,7 +75,7 @@ all:
           npm_lts_version: fermium
           frontend_scheme: https
           frontend_csp_connect_src: https://noembed.com
-          frontend_csp_image_src: https://i.ytimg.com
+          frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com"
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
@@ -130,7 +130,7 @@ all:
           npm_lts_version: fermium
           frontend_scheme: https
           frontend_csp_connect_src: https://noembed.com
-          frontend_csp_image_src: https://i.ytimg.com
+          frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com"
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
