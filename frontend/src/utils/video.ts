@@ -72,6 +72,7 @@ export async function getVideoFromRateLaterListForComparison(
 ): Promise<string | null> {
   const rateLaterResult = await UsersService.usersMeVideoRateLaterList({
     limit: 99,
+    offset: 0,
   });
   const rateLaterList =
     rateLaterResult?.results?.map((v) => v.video.video_id) || [];
@@ -89,7 +90,8 @@ export async function getVideoFromPreviousComparisons(
   currentVideo: string | null
 ): Promise<string | null> {
   const comparisonCount: number =
-    (await UsersService.usersMeComparisonsList({ limit: 0 }))?.count || 0;
+    (await UsersService.usersMeComparisonsList({ limit: 0, offset: 0 }))
+      ?.count || 0;
   const comparisonVideoResult = await UsersService.usersMeComparisonsList({
     limit: 99,
     offset: Math.floor(Math.random() * comparisonCount),
@@ -133,7 +135,7 @@ export async function getVideoForComparison(
     );
     if (videoFromComparisons) return videoFromComparisons;
   }
-  const videoResult = await VideoService.videoList({ limit: 100 });
+  const videoResult = await VideoService.videoList({ limit: 100, offset: 0 });
   const videoList = (videoResult?.results || []).map((v) => v.video_id);
   const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
   if (videoId) return videoId;
