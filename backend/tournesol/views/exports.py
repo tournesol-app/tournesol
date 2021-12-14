@@ -55,7 +55,6 @@ def write_public_comparisons_file(request, write_target):
             and (comparison.user, comparison.video_2) in public_videos)]
     public_usernames = [comparison.user.username for comparison in public_comparisons]
     serialized_comparisons = ComparisonSerializer(public_comparisons, many=True).data
-    
     writer.writerows(
         {
             "public_username": public_username,
