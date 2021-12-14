@@ -4,8 +4,11 @@ import { Tooltip, Typography, Box, Switch } from '@material-ui/core';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 
 const setPublicStatus = async (videoId: string, isPublic: boolean) => {
-  return await UsersService.usersMeContributorRatingsPartialUpdate(videoId, {
-    is_public: isPublic,
+  return await UsersService.usersMeContributorRatingsPartialUpdate({
+    videoId,
+    requestBody: {
+      is_public: isPublic,
+    },
   });
 };
 

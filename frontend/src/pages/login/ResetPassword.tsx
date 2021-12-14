@@ -32,7 +32,9 @@ function ResetPassword() {
     };
 
     try {
-      await AccountsService.accountsResetPasswordCreate(resetPasswordData);
+      await AccountsService.accountsResetPasswordCreate({
+        requestBody: resetPasswordData,
+      });
       logout();
       enqueueSnackbar(
         'Your password has been modified successfully. You can now log in to Tournesol.',

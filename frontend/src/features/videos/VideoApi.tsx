@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 
-import { VideoSerializerWithCriteria as Video } from 'src/services/openapi/models/VideoSerializerWithCriteria';
+import {
+  VideoService,
+  VideoSerializerWithCriteria as Video,
+} from 'src/services/openapi';
 
-const api_url = process.env.REACT_APP_API_URL;
-const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
-const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
-
-const _inMemoryCache: { [videoId: string]: Video } = {};
+const _inMemoryCache: { [videoId: string]: Promise<Video> } = {};
 
 export const useVideoMetadata = (videoId: string) => {
   const [video, setVideo] = useState({ video_id: '' } as Video);
@@ -18,23 +17,13 @@ export const useVideoMetadata = (videoId: string) => {
   return video;
 };
 
-export const getVideoInformation = async (videoId: string) => {
+export const getVideoInformation = async (videoId: string): Promise<Video> => {
   // TODO: replace this custom method with the automatically generated `VideoService.videoRetrieve``
   // VideoService.videoRetrieve is currently not used because the URL is incorrect
   if (_inMemoryCache[videoId] == undefined) {
-    try {
-      const response = await fetch(`${api_url}/video/${videoId}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
-        },
-      });
-      _inMemoryCache[videoId] = await response.json();
-    } catch (err) {
+    const promise = VideoService.videoRetrieve({ videoId }).catch((err) => {
       console.log(err);
-      return {
+      const defautVideo: Video = {
         name: 'Missing Information',
         publication_date: '',
         uploader: '',
@@ -45,8 +34,11 @@ export const getVideoInformation = async (videoId: string) => {
         rating_n_ratings: 0,
         rating_n_contributors: 0,
         criteria_scores: [],
+        duration: null,
       };
-    }
+      return defautVideo;
+    });
+    _inMemoryCache[videoId] = promise;
   }
   return _inMemoryCache[videoId];
 };

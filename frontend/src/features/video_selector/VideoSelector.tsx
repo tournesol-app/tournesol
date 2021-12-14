@@ -61,7 +61,7 @@ const VideoSelector = ({
     setLoading(true);
     try {
       const contributorRating =
-        await UsersService.usersMeContributorRatingsRetrieve(videoId);
+        await UsersService.usersMeContributorRatingsRetrieve({ videoId });
       onChange({
         videoId,
         rating: contributorRating,
@@ -72,9 +72,11 @@ const VideoSelector = ({
           await ensureVideoExistsOrCreate(videoId);
           const contributorRating =
             await UsersService.usersMeContributorRatingsCreate({
-              video_id: videoId,
-              is_public: true,
-            } as ContributorRatingCreate);
+              requestBody: {
+                video_id: videoId,
+                is_public: true,
+              } as ContributorRatingCreate,
+            });
           onChange({
             videoId,
             rating: contributorRating,

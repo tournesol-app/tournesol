@@ -21,7 +21,7 @@ export async function ensureVideoExistsOrCreate(video_id: string) {
   // It's currently impractical to check if the API error
   // is blocking or not.
   try {
-    await VideoService.videoCreate({ video_id } as Video);
+    await VideoService.videoCreate({ requestBody: { video_id } as Video });
   } catch (err) {
     if (
       err.status === 400 &&
@@ -70,7 +70,10 @@ export async function getVideoFromRateLaterListForComparison(
   otherVideo: string | null,
   currentVideo: string | null
 ): Promise<string | null> {
-  const rateLaterResult = await UsersService.usersMeVideoRateLaterList(99, 0);
+  const rateLaterResult = await UsersService.usersMeVideoRateLaterList({
+    limit: 99,
+    offset: 0,
+  });
   const rateLaterList =
     rateLaterResult?.results?.map((v) => v.video.video_id) || [];
   const rateLaterVideoId = await retryRandomPick(
@@ -87,11 +90,12 @@ export async function getVideoFromPreviousComparisons(
   currentVideo: string | null
 ): Promise<string | null> {
   const comparisonCount: number =
-    (await UsersService.usersMeComparisonsList(0, 0))?.count || 0;
-  const comparisonVideoResult = await UsersService.usersMeComparisonsList(
-    99,
-    Math.floor(Math.random() * comparisonCount)
-  );
+    (await UsersService.usersMeComparisonsList({ limit: 0, offset: 0 }))
+      ?.count || 0;
+  const comparisonVideoResult = await UsersService.usersMeComparisonsList({
+    limit: 99,
+    offset: Math.floor(Math.random() * comparisonCount),
+  });
   const cl = comparisonVideoResult?.results || [];
   const comparisonVideoList = [
     ...cl.map((v) => v.video_a.video_id),
@@ -131,7 +135,7 @@ export async function getVideoForComparison(
     );
     if (videoFromComparisons) return videoFromComparisons;
   }
-  const videoResult = await VideoService.videoList(100, 0);
+  const videoResult = await VideoService.videoList({ limit: 100, offset: 0 });
   const videoList = (videoResult?.results || []).map((v) => v.video_id);
   const videoId = await retryRandomPick(5, otherVideo, currentVideo, videoList);
   if (videoId) return videoId;

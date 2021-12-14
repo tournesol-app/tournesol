@@ -15,9 +15,9 @@ const executeVerifyUser = async (searchParams: Record<string, string>) => {
     timestamp: Number(timestamp),
     signature,
   };
-  return await AccountsService.accountsVerifyRegistrationCreate(
-    verificationData
-  );
+  return await AccountsService.accountsVerifyRegistrationCreate({
+    requestBody: verificationData,
+  });
 };
 
 const executeVerifyEmail = async (searchParams: Record<string, string>) => {
@@ -28,7 +28,9 @@ const executeVerifyEmail = async (searchParams: Record<string, string>) => {
     signature,
     email,
   };
-  return await AccountsService.accountsVerifyEmailCreate(verificationData);
+  return await AccountsService.accountsVerifyEmailCreate({
+    requestBody: verificationData,
+  });
 };
 
 const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {

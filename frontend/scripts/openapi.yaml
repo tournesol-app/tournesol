@@ -636,6 +636,11 @@ paths:
       operationId: users_me_comparisons_list_filtered
       description: List all comparisons made by the logged user.
       parameters:
+      - in: path
+        name: video_id
+        schema:
+          type: string
+        required: true
       - name: limit
         required: false
         in: query
@@ -648,11 +653,6 @@ paths:
         description: The initial index from which to return the results.
         schema:
           type: integer
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
       tags:
       - users
       security:
@@ -671,10 +671,6 @@ paths:
       description: Retrieve the logged in user's ratings per video (computed automatically
         from the user's comparisons).
       parameters:
-      - in: query
-        name: is_public
-        schema:
-          type: boolean
       - name: limit
         required: false
         in: query
@@ -687,6 +683,10 @@ paths:
         description: The initial index from which to return the results.
         schema:
           type: integer
+      - in: query
+        name: is_public
+        schema:
+          type: boolean
       tags:
       - users
       security:
@@ -953,7 +953,8 @@ paths:
   /video/:
     get:
       operationId: video_list
-      description: ''
+      description: Retrieve a list of recommended videos, sorted by decreasing total
+        score.
       parameters:
       - name: limit
         required: false
@@ -967,6 +968,78 @@ paths:
         description: The initial index from which to return the results.
         schema:
           type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+      - in: query
+        name: language
+        schema:
+          type: string
+      - in: query
+        name: date_lte
+        schema:
+          type: string
+          format: date-time
+        description: "Return videos published **before** this date.  \nAccepted formats:\
+          \ ISO 8601 datetime (e.g `2021-12-01T12:45:00`) or legacy: `dd-mm-yy-hh-mm-ss`."
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+        description: "Return videos published **after** this date.  \nAccepted formats:\
+          \ ISO 8601 datetime (e.g `2021-12-01T12:45:00`) or legacy: `dd-mm-yy-hh-mm-ss`."
+      - in: query
+        name: largely_recommended
+        schema:
+          type: integer
+        description: Weight for criteria 'largely_recommended', between 0 and 100
+      - in: query
+        name: reliability
+        schema:
+          type: integer
+        description: Weight for criteria 'reliability', between 0 and 100
+      - in: query
+        name: importance
+        schema:
+          type: integer
+        description: Weight for criteria 'importance', between 0 and 100
+      - in: query
+        name: engaging
+        schema:
+          type: integer
+        description: Weight for criteria 'engaging', between 0 and 100
+      - in: query
+        name: pedagogy
+        schema:
+          type: integer
+        description: Weight for criteria 'pedagogy', between 0 and 100
+      - in: query
+        name: layman_friendly
+        schema:
+          type: integer
+        description: Weight for criteria 'layman_friendly', between 0 and 100
+      - in: query
+        name: diversity_inclusion
+        schema:
+          type: integer
+        description: Weight for criteria 'diversity_inclusion', between 0 and 100
+      - in: query
+        name: backfire_risk
+        schema:
+          type: integer
+        description: Weight for criteria 'backfire_risk', between 0 and 100
+      - in: query
+        name: better_habits
+        schema:
+          type: integer
+        description: Weight for criteria 'better_habits', between 0 and 100
+      - in: query
+        name: entertaining_relaxing
+        schema:
+          type: integer
+        description: Weight for criteria 'entertaining_relaxing', between 0 and 100
       tags:
       - video
       security:
@@ -981,7 +1054,7 @@ paths:
           description: ''
     post:
       operationId: video_create
-      description: Add a video to the db if it does not already exist
+      description: Add a video to the db if it does not already exist.
       tags:
       - video
       requestBody:
@@ -1006,16 +1079,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Video'
           description: ''
-  /video/{id}/:
+  /video/{video_id}/:
     get:
       operationId: video_retrieve
-      description: Get video details and criteria that are related to it
+      description: Retrieve details about a single video.
       parameters:
       - in: path
-        name: id
+        name: video_id
         schema:
-          type: integer
-        description: A unique integer value identifying this video.
+          type: string
+          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
         required: true
       tags:
       - video
@@ -10567,8 +10640,13 @@ components:
           type: integer
           readOnly: true
           description: Total number of certified contributors who rated the video
+        duration:
+          type: integer
+          nullable: true
+          readOnly: true
       required:
       - description
+      - duration
       - language
       - name
       - publication_date
@@ -10596,9 +10674,9 @@ components:
           type: number
           format: float
           maximum: 1.0
+          minimum: 0.0
           description: Top quantile for all rated videos for aggregated scoresfor
             the given criteria. 0.0=best, 1.0=worst
-          minimum: 0.0
       required:
       - criteria
     VideoRateLater:
@@ -10656,10 +10734,6 @@ components:
           nullable: true
           description: Name of the channel (uploader)
           maxLength: 1000
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/VideoCriteriaScore'
         language:
           nullable: true
           description: Language of the video
@@ -10678,8 +10752,17 @@ components:
           maximum: 2147483647
           minimum: -2147483648
           description: Total number of certified contributors who rated the video
+        duration:
+          type: integer
+          nullable: true
+          readOnly: true
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/VideoCriteriaScore'
       required:
       - criteria_scores
+      - duration
       - video_id
   securitySchemes:
     oauth2:

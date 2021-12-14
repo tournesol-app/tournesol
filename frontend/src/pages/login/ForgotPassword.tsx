@@ -35,9 +35,9 @@ const ForgotPassword = () => {
     const formData = new FormData(event.currentTarget);
     const formObject: unknown = Object.fromEntries(formData);
     try {
-      await AccountsService.accountsSendResetPasswordLinkCreate(
-        formObject as DefaultSendResetPasswordLink
-      );
+      await AccountsService.accountsSendResetPasswordLinkCreate({
+        requestBody: formObject as DefaultSendResetPasswordLink,
+      });
       setSuccess(true);
     } catch (err) {
       setApiError(err as ApiError);
