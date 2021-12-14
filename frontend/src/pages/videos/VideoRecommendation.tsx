@@ -10,6 +10,7 @@ import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 import { ContentBox } from 'src/components';
 import LoaderWrapper from 'src/components/LoaderWrapper';
+import { scrollToTop } from 'src/utils/ui';
 
 function VideoRecommendationPage() {
   const prov: PaginatedVideoSerializerWithCriteriaList = {
@@ -28,7 +29,7 @@ function VideoRecommendationPage() {
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
-    document.querySelector('main')?.scrollTo({ top: 0 });
+    scrollToTop();
   }
 
   useEffect(() => {

@@ -110,6 +110,9 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'row',
     },
   },
+  settingsContainer: {
+    padding: 0,
+  },
   '@keyframes scaling': {
     '0%': {
       opacity: 0.05,
@@ -348,7 +351,7 @@ function VideoCard({
         )}
       </Grid>
       {settings.length > 0 && (
-        <Grid item xs={12} style={{ padding: 0 }}>
+        <Grid item xs={12} className={classes.settingsContainer}>
           <Collapse in={settingsVisible || !isSmallScreen}>
             <Box
               paddingY={1}

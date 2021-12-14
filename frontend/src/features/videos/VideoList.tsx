@@ -10,7 +10,7 @@ interface Props {
   videos: VideoObject[];
   actions?: ActionList;
   settings?: ActionList;
-  emptyMessage?: string;
+  emptyMessage?: React.ReactNode;
 }
 
 const DEFAULT_MESSAGE = 'No video found.';
@@ -26,7 +26,6 @@ function VideoList({
   const defaultActions = isLoggedIn
     ? [CompareNowAction, AddToRateLaterList]
     : [];
-  const cardActions = actions || defaultActions;
 
   return (
     <>
@@ -35,7 +34,7 @@ function VideoList({
           <Box key={video.video_id} mx={1} my={2}>
             <VideoCard
               video={video}
-              actions={cardActions}
+              actions={actions ?? defaultActions}
               settings={settings}
             />
           </Box>

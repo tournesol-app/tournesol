@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { Box } from '@material-ui/core';
+import { useLocation, useHistory, Link } from 'react-router-dom';
+import { Box, Button, Divider } from '@material-ui/core';
 
 import type {
   ContributorRating,
@@ -15,13 +15,31 @@ import {
   RatingsContext,
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
+import { scrollToTop } from 'src/utils/ui';
 
-function VideoRatingsPage() {
-  const prov: PaginatedContributorRatingList = {
-    count: 0,
-    results: [],
-  };
-  const [ratings, setRatings] = useState(prov);
+const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => (
+  <>
+    <Divider />
+    {hasFilter ? (
+      <Box my={2}>{'No video in this list.'}</Box>
+    ) : (
+      <>
+        <Box my={2}>{"You haven't compared any video yet 🥺"}</Box>
+        <Button
+          component={Link}
+          to="/comparison"
+          variant="contained"
+          color="primary"
+        >
+          Compare videos
+        </Button>
+      </>
+    )}
+  </>
+);
+
+const VideoRatingsPage = () => {
+  const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const history = useHistory();
@@ -29,11 +47,12 @@ function VideoRatingsPage() {
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
   const videoCount = ratings.count || 0;
+  const hasFilter = searchParams.get('isPublic') != null;
 
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
-    document.querySelector('main')?.scrollTo({ top: 0 });
+    scrollToTop();
   };
 
   const loadData = useCallback(async () => {
@@ -57,7 +76,6 @@ function VideoRatingsPage() {
   const videos = (ratings.results || []).map(
     (rating: ContributorRating) => rating.video
   );
-
   const idToRating = Object.fromEntries(
     (ratings.results || []).map((rating) => [rating.video.video_id, rating])
   );
@@ -74,8 +92,8 @@ function VideoRatingsPage() {
         return { ...prevRatings, results: updatedResults };
       });
     } else {
-      // All ratings have been changed.
-      if (searchParams.get('isPublic')) {
+      // All ratings have been updated.
+      if (hasFilter) {
         // A filter had been selected. Let's reset the filter to reload the list.
         searchParams.delete('isPublic');
         history.push({ search: searchParams.toString() });
@@ -98,7 +116,11 @@ function VideoRatingsPage() {
           <RatingsFilter />
         </Box>
         <LoaderWrapper isLoading={isLoading}>
-          <VideoList videos={videos} settings={[PublicStatusAction]} />
+          <VideoList
+            videos={videos}
+            settings={[PublicStatusAction]}
+            emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
+          />
         </LoaderWrapper>
         {!isLoading && videoCount > 0 && (
           <Pagination
@@ -111,6 +133,6 @@ function VideoRatingsPage() {
       </ContentBox>
     </RatingsContext.Provider>
   );
-}
+};
 
 export default VideoRatingsPage;
