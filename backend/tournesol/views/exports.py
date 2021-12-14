@@ -47,23 +47,23 @@ def write_public_comparisons_file(request, write_target):
     serialized_comparisons = []
     public_videos = set((rating.user, rating.video) for rating in public_data)
     comparisons = Comparison.objects.all()\
-        .select_related("video_1", "video_2")\
+        .select_related("video_1", "video_2", "user")\
         .prefetch_related("criteria_scores")
     public_comparisons = [
         comparison for comparison in comparisons
         if ((comparison.user, comparison.video_1) in public_videos
             and (comparison.user, comparison.video_2) in public_videos)]
-    serialized_comparisons = [
-        (comparison.user.username, ComparisonSerializer(comparison).data)
-        for comparison in public_comparisons]
-
+    public_usernames = [comparison.user.username for comparison in public_comparisons]
+    serialized_comparisons = ComparisonSerializer(public_comparisons, many=True).data
+    
     writer.writerows(
         {
-            "public_username": comparison[0],
+            "public_username": public_username,
             "video_a": comparison[1]["video_a"]["video_id"],
             "video_b": comparison[1]["video_b"]["video_id"],
             **criteria_score
         }
+        for public_username in public_usernames
         for comparison in serialized_comparisons
         for criteria_score in comparison[1]['criteria_scores']
     )

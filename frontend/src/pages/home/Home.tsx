@@ -5,7 +5,7 @@ import { Grid, Typography, Box } from '@material-ui/core';
 
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
-import PublicDownloadSection from './PublicDownloadSection'
+import PublicDownloadSection from './PublicDownloadSection';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,7 +95,9 @@ const HomePage = () => {
           </Box>
         </Grid>
         <Grid
-          item xs={12} className={classes.container}
+          item
+          xs={12}
+          className={classes.container}
           style={{ background: '#1282B2' }}
         >
           <ExtensionSection />
@@ -104,7 +106,9 @@ const HomePage = () => {
           <ContributeSection />
         </Grid>
         <Grid
-          item xs={12} className={classes.container}
+          item
+          xs={12}
+          className={classes.container}
           style={{ background: '#1282B2' }}
         >
           <PublicDownloadSection />
