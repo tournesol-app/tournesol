@@ -20,6 +20,7 @@ import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
+import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -43,6 +44,15 @@ function App() {
   return (
     <Frame>
       <Switch>
+        <Route path="/about">
+          <About />
+        </Route>
+        <Route path="/about/privacy_policy">
+          <PrivacyPolicy />
+        </Route>
+        <Route path="/about/trusted_domains">
+          <TrustedDomains />
+        </Route>
         <Route path="/video/:video_id">
           <VideoCardPage />
         </Route>
@@ -88,12 +98,6 @@ function App() {
         </Route>
         <Route path="/reset-password">
           <ResetPassword />
-        </Route>
-        <Route path="/about/trusted_domains">
-          <TrustedDomains />
-        </Route>
-        <Route path="/about/privacy_policy">
-          <PrivacyPolicy />
         </Route>
         <Route path="/">
           <HomePage />
