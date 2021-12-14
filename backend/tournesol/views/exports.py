@@ -59,13 +59,13 @@ def write_public_comparisons_file(request, write_target):
     writer.writerows(
         {
             "public_username": public_username,
-            "video_a": comparison[1]["video_a"]["video_id"],
-            "video_b": comparison[1]["video_b"]["video_id"],
+            "video_a": comparison["video_a"]["video_id"],
+            "video_b": comparison["video_b"]["video_id"],
             **criteria_score
         }
         for public_username in public_usernames
         for comparison in serialized_comparisons
-        for criteria_score in comparison[1]['criteria_scores']
+        for criteria_score in comparison['criteria_scores']
     )
 
 
@@ -92,7 +92,7 @@ class ExportPublicComparisonsView(APIView):
     )
     def get(self, request):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="export.csv"'
+        response['Content-Disposition'] = 'attachment; filename="tournesol_public_export.csv"'
         write_public_comparisons_file(request, response)
         return response
 

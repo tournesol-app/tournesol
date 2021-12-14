@@ -23,8 +23,7 @@ const PublicDownloadSection = () => {
       <Button
         component="a"
         href={`${api_url}/exports/comparisons/`}
-        // to change once zip folder functionality is implemented on the backend
-        download="export.csv"
+        download="tournesol_public_export.csv"
         color="primary"
         variant="contained"
       >
