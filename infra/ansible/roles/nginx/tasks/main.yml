@@ -81,4 +81,12 @@
   notify:
     - Reload Nginx
 
+- name: Override certbot service to authenticate via nginx
+  template:
+    src: certbot.service
+    dest: /lib/systemd/system/certbot.service
+  notify:
+    # Make sure that systemd reloads any changes
+    - Reload Nginx
+
 - meta: flush_handlers
