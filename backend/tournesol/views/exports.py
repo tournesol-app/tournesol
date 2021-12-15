@@ -4,11 +4,11 @@ from io import StringIO
 
 from django.http import HttpResponse
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiTypes
 
 from tournesol.serializers import ComparisonSerializer
-from tournesol.models import Comparison
+from tournesol.models import Comparison, ContributorRating
 
 
 def write_comparisons_file(request, write_target):
@@ -35,6 +35,38 @@ def write_comparisons_file(request, write_target):
     )
 
 
+def write_public_comparisons_file(request, write_target):
+    """
+    Writes all public comparisons data as a CSV file to write_target which can be
+    among other options an HttpResponse or a StringIO
+    """
+    fieldnames = ['public_username', 'video_a', 'video_b', 'criteria', 'weight', 'score']
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    public_data = ContributorRating.objects.filter(is_public=True).select_related("user", "video")
+    serialized_comparisons = []
+    public_videos = set((rating.user, rating.video) for rating in public_data)
+    comparisons = Comparison.objects.all()\
+        .select_related("video_1", "video_2", "user")\
+        .prefetch_related("criteria_scores")
+    public_comparisons = [
+        comparison for comparison in comparisons
+        if ((comparison.user, comparison.video_1) in public_videos
+            and (comparison.user, comparison.video_2) in public_videos)]
+    public_usernames = [comparison.user.username for comparison in public_comparisons]
+    serialized_comparisons = ComparisonSerializer(public_comparisons, many=True).data
+    writer.writerows(
+        {
+            "public_username": public_username,
+            "video_a": comparison["video_a"]["video_id"],
+            "video_b": comparison["video_b"]["video_id"],
+            **criteria_score
+        }
+        for (public_username, comparison) in zip(public_usernames, serialized_comparisons)
+        for criteria_score in comparison['criteria_scores']
+    )
+
+
 class ExportComparisonsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -46,6 +78,20 @@ class ExportComparisonsView(APIView):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="export.csv"'
         write_comparisons_file(request, response)
+        return response
+
+
+class ExportPublicComparisonsView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        description="Download public data in .csv file",
+        responses={200: OpenApiTypes.BINARY}
+    )
+    def get(self, request):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="tournesol_public_export.csv"'
+        write_public_comparisons_file(request, response)
         return response
 
 
