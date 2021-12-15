@@ -47,6 +47,8 @@ services:
     container_name: tournesol-dev-front
     working_dir: /frontend
     entrypoint: bash -c
+    environment:
+      - DISABLE_ESLINT_PLUGIN=${CI:-false}  # Disable eslint plugin during e2e tests (where CI=true)
     command:
       - yarn install --frozen-lockfile && ./scripts/generate-services-from-openapi.sh && yarn start
     volumes:
