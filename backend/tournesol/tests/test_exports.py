@@ -78,3 +78,22 @@ class ExportTest(TestCase):
         self.assertEqual(len(comparison_list), 1)
         self.assertEqual(comparison_list[0]['video_a'], "test_public_data_1")
         self.assertEqual(comparison_list[0]['video_b'], "test_public_data_2")
+    
+    def test_not_authenticated_can_download_public_comparisons_multiple_users(self):
+        self.public_comparisons2 = User.objects.create_user(username="user_public2", email="user_public2@example.com")
+        self.video_public_3 = Video.objects.create(video_id="test_public_data_3", name="test_public_data_3")
+        self.video_public_4 = Video.objects.create(video_id="test_public_data_4", name="test_public_data_4")
+        ContributorRating.objects.create(video=self.video_public_3, user=self.public_comparisons2, is_public=True)
+        ContributorRating.objects.create(video=self.video_public_4, user=self.public_comparisons2, is_public=True)
+        self.comparison_public2 = Comparison.objects.create(user=self.public_comparisons2, video_1=self.video_public_3, video_2=self.video_public_4)
+        ComparisonCriteriaScore.objects.create(comparison=self.comparison_public2,score=10,criteria="largely_recommended")
+        resp = self.client.get("/exports/comparisons/")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Ensures the csv does not contain information that are not public comparisons
+        csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
+        comparison_list = [row for row in csv_file]
+        self.assertEqual(len(comparison_list), 2)
+        self.assertEqual(comparison_list[0]['video_a'], "test_public_data_1")
+        self.assertEqual(comparison_list[0]['video_b'], "test_public_data_2")
+        self.assertEqual(comparison_list[1]['video_a'], "test_public_data_3")
+        self.assertEqual(comparison_list[1]['video_b'], "test_public_data_4")

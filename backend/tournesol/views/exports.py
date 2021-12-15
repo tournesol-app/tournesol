@@ -62,8 +62,7 @@ def write_public_comparisons_file(request, write_target):
             "video_b": comparison["video_b"]["video_id"],
             **criteria_score
         }
-        for public_username in public_usernames
-        for comparison in serialized_comparisons
+        for (public_username, comparison) in zip(public_usernames, serialized_comparisons)
         for criteria_score in comparison['criteria_scores']
     )
 
