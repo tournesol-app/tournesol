@@ -19,7 +19,6 @@ function is_front_ready() {
   curl -s localhost:3000 --max-time 1 -o /dev/null
 }
 
-
 function compose_up() {
   DB_UID=$(id -u) \
   DB_GID=$(id -g) \
