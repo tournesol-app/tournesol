@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontFamily: 'Poppins',
+    textAlign: 'left',
     // Limit text to 3 lines and show ellipsis
     display: '-webkit-box',
     overflow: 'hidden',
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1em',
   },
   youtube_complements: {
-    margin: 4,
+    margin: '4px 0',
     display: 'flex',
     flexWrap: 'wrap',
     alignContent: 'space-between',
