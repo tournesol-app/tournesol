@@ -26,6 +26,10 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: http
+          frontend_csp_connect_src: https://noembed.com
+          frontend_csp_frame_src: https://www.youtube.com
+          frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com"
+          frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
 
           mediawiki_domain_name: tournesol-wiki
           mediawiki_scheme: http
@@ -72,6 +76,10 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
+          frontend_csp_connect_src: https://noembed.com
+          frontend_csp_frame_src: https://www.youtube.com
+          frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com"
+          frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
@@ -125,6 +133,10 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
+          frontend_csp_connect_src: https://noembed.com
+          frontend_csp_frame_src: https://www.youtube.com
+          frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com"
+          frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
