@@ -29,13 +29,13 @@ function wait_for() {
   local command=$1;
   local service_name=${2:-"service"}
   set +e
-  for _ in $(seq 1 50); do
+  for _ in $(seq 1 60); do
     if "$command"; then
       echo ""
       return 0
     fi
     echo "Waiting for $service_name to be ready..."
-    sleep 1
+    sleep 2
   done
   echo "$service_name is unreachable."
   exit 1
