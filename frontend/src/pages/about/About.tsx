@@ -105,10 +105,28 @@ const AboutPage = () => {
       </Grid>
 
       <Grid container className={classes.root}>
-        <Grid item xs={12} className={classes.container}>
+        <Grid
+          item
+          xs={12}
+          className={classes.container}
+          style={{ textAlign: 'center' }}
+        >
           <ContentBox>
-            <Typography variant="h1">Our Vision</Typography>
-            <Typography paragraph>...</Typography>
+            <Typography variant="h3">
+              We seek to build the foundations of a robustly beneficial
+              algorithmic gouvernance of information at scale
+            </Typography>
+            <Typography paragraph style={{ width: '100%', marginTop: 16 }}>
+              Through raising awareness of the global information crisis
+            </Typography>
+            <Typography paragraph style={{ width: '100%' }}>
+              Through the development of a collaborative platform for evaluation
+              and recommendation of online content
+            </Typography>
+            <Typography paragraph style={{ width: '100%' }}>
+              Through research on ethics of algorithms relying on a large and
+              reliable database of human judgements
+            </Typography>
           </ContentBox>
         </Grid>
       </Grid>
@@ -225,10 +243,10 @@ const AboutPage = () => {
             <Typography variant="h4">Partnership with Polyconseil</Typography>
             <Typography paragraph>
               We are also supported by the software company PolyConseil, in the
-              context of their #Tech4Good program. .... accompanying our
-              software development through organizational support. Since August
-              2021, PolyConseil is also allocating an engineering intern one day
-              per week to developing Tournesol and is proposing UX/UI designs.
+              context of their #Tech4Good program. Since August 2021,
+              PolyConseil allocated a software engineering intern one day per
+              week to the technical development of Tournesol and supported us on
+              a monthly basis through organizational support and UX/UI designs.
               We are very grateful for their help.
             </Typography>
           </ContentBox>
@@ -236,11 +254,14 @@ const AboutPage = () => {
 
         <Grid item xs={12} md={6} className={classes.container}>
           <ContentBox className={classes.card}>
-            <Typography variant="h4">Kleis</Typography>
             {/* TODO: logo */}
+            <Typography variant="h4">Partnership with Kleis</Typography>
             <Typography paragraph>
-              , as well as by the software company Kleis. through organizational
-              support, ... and more
+              We received support from the technology and consulting company
+              Kleis who helped us shape our organizational processes, develop
+              the vision of our product and adopt efficient developments
+              practices. Our partnership with Kleis has been extremely
+              impactful.
             </Typography>
           </ContentBox>
         </Grid>
