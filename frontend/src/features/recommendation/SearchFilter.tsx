@@ -8,6 +8,7 @@ import { useListFilter } from 'src/hooks';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
+import UploaderFilter from './UploaderFilter';
 
 const useStyles = makeStyles({
   filtersContainer: {
@@ -29,13 +30,13 @@ function SearchFilter() {
       <CollapseButton expanded={expanded} onClick={handleExpandClick} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Grid container spacing={4} className={classes.filtersContainer}>
-          <Grid item xs={6} md={3} lg={2}>
+          <Grid item xs={6} md={2} lg={2}>
             <DateFilter
               value={filterParams.get('date') ?? ''}
               onChange={(value) => setFilter('date', value)}
             />
           </Grid>
-          <Grid item xs={6} md={3} lg={2}>
+          <Grid item xs={6} md={2} lg={2}>
             <LanguageFilter
               value={filterParams.get('language') ?? ''}
               onChange={(value) => setFilter('language', value)}
@@ -44,6 +45,14 @@ function SearchFilter() {
           <Grid item xs={12} sm={12} md={6}>
             <CriteriaFilter setFilter={setFilter} />
           </Grid>
+          {searchParams.get('uploader') && (
+            <Grid item xs={12} sm={12} md={2}>
+              <UploaderFilter
+                value={searchParams.get('uploader') ?? ''}
+                onChange={() => setFilter('uploader', '')}
+              />
+            </Grid>
+          )}
         </Grid>
       </Collapse>
     </Box>
