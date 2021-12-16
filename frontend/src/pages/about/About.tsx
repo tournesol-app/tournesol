@@ -32,13 +32,15 @@ const PeopleCard = ({
   image,
   institution,
   role,
-  description,
+  title,
+  job,
 }: {
   name: string;
   image: string;
   institution: string;
   role: string;
-  description: string;
+  title: string;
+  job: string;
 }) => {
   const classes = useStyles();
 
@@ -51,7 +53,8 @@ const PeopleCard = ({
       />
       <Typography variant="h3">{name}</Typography>
       <Typography>{role}</Typography>
-      <Typography>{description}</Typography>
+      <Typography>{title}</Typography>
+      <Typography>{job}</Typography>
       <Typography>{institution}</Typography>
     </Card>
   );
@@ -170,31 +173,34 @@ const AboutPage = () => {
 
         <Grid item xs={12} sm={4} lg={3} className={classes.container}>
           <PeopleCard
-            name="Lê"
+            name="Lê Nguyên Hoang"
             image="/people/Le.jpeg"
             institution="IC School, EPFL"
             role="President"
-            description="Dr. in Mathematics, AI Researcher and Communicator"
+            title="Dr. in Mathematics"
+            job="AI Researcher and Communicator"
           />
         </Grid>
 
         <Grid item xs={12} sm={4} lg={3} className={classes.container}>
           <PeopleCard
-            name="Louis"
+            name="Louis Faucon"
             image="/people/Louis.jpeg"
             institution="MSCI, Inc."
             role="Treasurer"
-            description="Dr. in Computer Science, Software engineer"
+            title="Dr. in Computer Science"
+            job="Software engineer"
           />
         </Grid>
 
         <Grid item xs={12} sm={4} lg={3} className={classes.container}>
           <PeopleCard
-            name="Aidan"
+            name="Aidan Jungo"
             image="/people/Aidan.jpg"
             institution="CFS Engineering SA"
             role="Secretary"
-            description="Master of Science, Research Scientist"
+            title="Master of Science"
+            job="Research Scientist"
           />
         </Grid>
       </Grid>
@@ -222,8 +228,9 @@ const AboutPage = () => {
             name="Adrien Matissart"
             image="/people/Adrien.jpeg"
             institution="School ID, EPFL"
+            title="title??"
             role="Research Engineer"
-            description=""
+            job=""
           />
         </Grid>
       </Grid>
