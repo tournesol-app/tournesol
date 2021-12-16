@@ -1004,6 +1004,10 @@ paths:
         schema:
           type: string
       - in: query
+        name: uploader
+        schema:
+          type: string
+      - in: query
         name: date_lte
         schema:
           type: string
