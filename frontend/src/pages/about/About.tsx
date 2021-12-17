@@ -104,7 +104,16 @@ const AboutPage = () => {
               contributors&apos; judgements on content quality. We hope to
               contribute to making today&apos;s and tomorrow&apos;s large-scale
               algorithms robustly beneficial for all of humanity. Find out more
-              with our white paper, our{' '}
+              with our{' '}
+              <a
+                href="https://arxiv.org/abs/2107.07334"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'white' }}
+              >
+                white paper
+              </a>
+              , our{' '}
               <a
                 href="https://wiki.staging.tournesol.app/wiki/Main_Page"
                 target="_blank"
@@ -120,7 +129,7 @@ const AboutPage = () => {
                 style={{ color: 'white' }}
                 rel="noreferrer"
               >
-                github
+                GitHub
               </a>
               , and our{' '}
               <a
@@ -245,13 +254,13 @@ const AboutPage = () => {
             <Typography variant="h4">Partnership with EPFL</Typography>
             {/* TODO: EPFL logo */}
             <Typography paragraph>
-              Today, our main contributor is the Swiss Federal Institute of
-              Technology of Lausanne, also known as EPFL. In particular, Adrien
-              Matissart is a research scientist from the Distributed Computing
-              Laboratory of the School of Computer and Communication Sciences
-              who is fully dedicated to the development of the Tournesol
-              platform, while many researchers from the Laboratory are designing
-              and studying the Tournesol algorithms.
+              Today, our main contributor is École Polytechique Fédérale de
+              Lausanne (EPFL). In particular, Adrien Matissart is a research
+              scientist from the Distributed Computing Laboratory of the School
+              of Computer and Communication Sciences who is fully dedicated to
+              the development of the Tournesol platform, while many researchers
+              from the Laboratory are designing and studying the Tournesol
+              algorithms.
             </Typography>
           </ContentBox>
         </Grid>
@@ -299,9 +308,9 @@ const AboutPage = () => {
             <Typography paragraph>
               We received support from the technology and consulting company
               Kleis who helped us shape our organizational processes, develop
-              the vision of our product and adopt efficient developments
-              practices. Our partnership with Kleis has been extremely
-              impactful.
+              the vision of our product, make foundational technical choices,
+              and adopt efficient developments practices. Our partnership with
+              Kleis has been extremely impactful.
             </Typography>
           </ContentBox>
         </Grid>
