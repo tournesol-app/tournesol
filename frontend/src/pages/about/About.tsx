@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Typography, Box, Card } from '@material-ui/core';
 
 import { ContentHeader } from 'src/components';
+import PublicDownloadSection from './PublicDownloadSection';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,6 +25,9 @@ const useStyles = makeStyles(() => ({
     padding: 8,
     width: '100%',
     background: '#FFFFFF',
+  },
+  important: {
+    fontWeight: 'bold',
   },
 }));
 
@@ -100,36 +104,65 @@ const AboutPage = () => {
               contributors&apos; judgements on content quality. We hope to
               contribute to making today&apos;s and tomorrow&apos;s large-scale
               algorithms robustly beneficial for all of humanity. Find out more
-              with our white paper, our wiki, our github, and our Discord.{' '}
-              {/* TODO links */}
+              with our white paper, our{' '}
+              <a
+                href="https://wiki.staging.tournesol.app/wiki/Main_Page"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'white' }}
+              >
+                wiki
+              </a>
+              , our{' '}
+              <a
+                href="https://github.com/tournesol-app/tournesol"
+                target="_blank"
+                style={{ color: 'white' }}
+                rel="noreferrer"
+              >
+                github
+              </a>
+              , and our{' '}
+              <a
+                href="https://discord.gg/TvsFB8RNBV"
+                target="_blank"
+                style={{ color: 'white' }}
+                rel="noreferrer"
+              >
+                Discord
+              </a>
+              .{' '}
             </Typography>
           </ContentBox>
         </Grid>
       </Grid>
 
       <Grid container className={classes.root}>
-        <Grid
-          item
-          xs={12}
-          className={classes.container}
-          style={{ textAlign: 'center' }}
-        >
+        <Grid item xs={12} className={classes.container}>
           <ContentBox>
-            <Typography variant="h3">
-              We seek to build the foundations of a robustly beneficial
+            <Typography variant="h4">
+              We seek to build the foundations of a robust and beneficial
               algorithmic gouvernance of information at scale
             </Typography>
-            <Typography paragraph style={{ width: '100%', marginTop: 16 }}>
-              Through raising awareness of the global information crisis
-            </Typography>
-            <Typography paragraph style={{ width: '100%' }}>
-              Through the development of a collaborative platform for evaluation
-              and recommendation of online content
-            </Typography>
-            <Typography paragraph style={{ width: '100%' }}>
-              Through research on ethics of algorithms relying on a large and
-              reliable database of human judgements
-            </Typography>
+            <ul>
+              <li>
+                <Typography paragraph className={classes.important}>
+                  Through raising awareness of the global information crisis
+                </Typography>
+              </li>
+              <li>
+                <Typography paragraph className={classes.important}>
+                  Through the development of a collaborative platform for
+                  evaluation and recommendation of online content
+                </Typography>
+              </li>
+              <li>
+                <Typography paragraph className={classes.important}>
+                  Through research on ethics of algorithms relying on a large
+                  and reliable database of human judgements
+                </Typography>
+              </li>
+            </ul>
           </ContentBox>
         </Grid>
       </Grid>
@@ -261,7 +294,7 @@ const AboutPage = () => {
 
         <Grid item xs={12} md={6} className={classes.container}>
           <ContentBox className={classes.card}>
-            {/* TODO: logo */}
+            <img height="96px" src="/logos/Kleis_Logo.svg" />
             <Typography variant="h4">Partnership with Kleis</Typography>
             <Typography paragraph>
               We received support from the technology and consulting company
@@ -302,32 +335,7 @@ const AboutPage = () => {
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
-            <Typography variant="h1">Public Database</Typography>
-            <Typography paragraph>
-              Tournesol aims to benefit research ... Our public database can be
-              downloaded by clicking here (TODO). It is published under{' '}
-              <a
-                href="https://opendatacommons.org/licenses/by/1-0/"
-                style={{ color: 'white' }}
-              >
-                Open Data Commons Attribution License (ODC-By)
-              </a>
-              .
-            </Typography>
-            <Typography paragraph>
-              Possible thanks to our users ... Finally, we would like to thank
-              all of the volunteers who compared videos on Tournesol. We count
-              so far about 2500 users who compared 9000 times more than 3000
-              videos.
-            </Typography>
-          </ContentBox>
-        </Grid>
-      </Grid>
-      <Grid container className={classes.root}>
-        <Grid item xs={12} className={classes.container}>
-          <ContentBox>
-            <Typography variant="h1">Something else?</Typography>
-            <Typography paragraph>...</Typography>
+            <PublicDownloadSection />
           </ContentBox>
         </Grid>
       </Grid>
