@@ -20,9 +20,8 @@ describe('VideoCard content', () => {
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
       'Video title'
     );
-    // handle all the possible number notations of 154988 with a regex
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      /(1.?54.?988|١٥٤٬٩٨٨|۱۵۴٬۹۸۸) views/
+      '154,988 views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'
@@ -55,9 +54,8 @@ describe('VideoCard content', () => {
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
       'Video title'
     );
-    // handle all the possible number notations of 154988 with a regex
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
-      /(1.?54.?988|١٥٤٬٩٨٨|۱۵۴٬۹۸۸) views/
+      '154,988 views'
     );
     expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
       '9 comparisons by 4 contributors'

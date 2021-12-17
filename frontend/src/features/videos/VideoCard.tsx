@@ -210,7 +210,7 @@ function VideoCard({
         <div className={classes.youtube_complements}>
           {video.views && (
             <span className={classes.youtube_complements_p}>
-              {video.views.toLocaleString()} views
+              {video.views.toLocaleString('en-US')} views
             </span>
           )}
           {video.publication_date && (
