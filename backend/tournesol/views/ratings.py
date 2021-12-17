@@ -25,7 +25,7 @@ RatingsWithAnnotations = ContributorRating.objects.annotate(
             | Q(user__comparisons__video_2=F("video"))
         ),
     )
-).order_by("-pk")
+).order_by("-video__publication_date", "-pk")
 
 
 @extend_schema_view(
@@ -77,7 +77,7 @@ class ContributorRatingList(generics.ListCreateAPIView):
     def get_queryset(self):
         ratings = RatingsWithAnnotations.filter(
             user=self.request.user, n_comparisons__gt=0
-        )
+        ).select_related("video")
         is_public = self.request.query_params.get("is_public")
         if is_public:
             if is_public == "true":
