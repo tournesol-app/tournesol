@@ -6,12 +6,12 @@ const isPublicChoices = {
   false: 'Private',
 };
 
-interface Props {
+interface FilterProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-function IsPublicFilter(props: Props) {
+function IsPublicFilter(props: FilterProps) {
   return (
     <ChoicesFilterSection
       title="Filter by visibility"

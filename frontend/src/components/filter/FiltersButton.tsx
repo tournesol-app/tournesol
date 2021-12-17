@@ -16,13 +16,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
+interface FiltersButtonProps {
   children?: React.ReactNode;
   expanded: boolean;
   onClick?: (event: React.ChangeEvent<EventTarget>) => void;
 }
 
-const FiltersButton = ({ children = 'Filters', expanded, onClick }: Props) => {
+const FiltersButton = ({
+  children = 'Filters',
+  expanded,
+  onClick,
+}: FiltersButtonProps) => {
   const classes = useStyles();
   return (
     <Button

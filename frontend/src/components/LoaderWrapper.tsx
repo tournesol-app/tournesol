@@ -9,12 +9,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface Props {
+interface LoaderProps {
   isLoading: boolean;
   children: React.ReactNode;
 }
 
-const LoaderWrapper = ({ isLoading, children }: Props) => {
+const LoaderWrapper = ({ isLoading, children }: LoaderProps) => {
   const classes = useStyles();
 
   return (
