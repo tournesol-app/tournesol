@@ -3,6 +3,7 @@ API endpoint to manipulate videos
 """
 import re
 import isodate
+from urllib.parse import unquote
 
 from django.utils import timezone, dateparse
 from django.db.models import Q, Case, When, Sum, F
@@ -92,7 +93,7 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         uploader = request.query_params.get('uploader')
         if uploader:
-            queryset = queryset.filter(uploader=uploader)
+            queryset = queryset.filter(uploader=unquote(uploader))
 
         search = request.query_params.get('search')
         if search:
