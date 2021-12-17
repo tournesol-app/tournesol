@@ -247,35 +247,36 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid container className={classes.root}>
-        <Grid item xs={12} className={classes.container}>
-          <ContentBox>
-            <img height="84px" src="/logos/EPFL_Logo.png" />
-            <Typography variant="h4">Partnership with EPFL</Typography>
-            {/* TODO: EPFL logo */}
-            <Typography paragraph>
-              Today, our main contributor is École Polytechique Fédérale de
-              Lausanne (EPFL). In particular, Adrien Matissart is a research
-              scientist from the Distributed Computing Laboratory of the School
-              of Computer and Communication Sciences who is fully dedicated to
-              the development of the Tournesol platform, while many researchers
-              from the Laboratory are designing and studying the Tournesol
-              algorithms.
-            </Typography>
-          </ContentBox>
-        </Grid>
+      {window.location.host == 'staging.tournesol.app' && (
+        <Grid container className={classes.root}>
+          <Grid item xs={12} className={classes.container}>
+            <ContentBox>
+              <img height="84px" src="/logos/EPFL_Logo.png" />
+              <Typography variant="h4">Partnership with EPFL</Typography>
+              <Typography paragraph>
+                Today, our main contributor is École Polytechique Fédérale de
+                Lausanne (EPFL). In particular, Adrien Matissart is a research
+                scientist from the Distributed Computing Laboratory of the
+                School of Computer and Communication Sciences who is fully
+                dedicated to the development of the Tournesol platform, while
+                many researchers from the Laboratory are designing and studying
+                the Tournesol algorithms.
+              </Typography>
+            </ContentBox>
+          </Grid>
 
-        <Grid item xs={12} sm={4} className={classes.container}>
-          <PeopleCard
-            name="Adrien Matissart"
-            image="/people/Adrien.jpeg"
-            institution="IC School, EPFL"
-            title="Tech lead, architect"
-            role="Research Engineer"
-            job=""
-          />
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <PeopleCard
+              name="Adrien Matissart"
+              image="/people/Adrien.jpeg"
+              institution="IC School, EPFL"
+              title="Tech lead, architect"
+              role="Research Engineer"
+              job=""
+            />
+          </Grid>
         </Grid>
-      </Grid>
+      )}
 
       <Grid
         container
