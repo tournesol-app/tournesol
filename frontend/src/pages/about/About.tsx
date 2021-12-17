@@ -227,8 +227,8 @@ const AboutPage = () => {
           <PeopleCard
             name="Adrien Matissart"
             image="/people/Adrien.jpeg"
-            institution="School ID, EPFL"
-            title="title??"
+            institution="IC School, EPFL"
+            title="Tech lead, architect"
             role="Research Engineer"
             job=""
           />
