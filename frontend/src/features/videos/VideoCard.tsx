@@ -21,6 +21,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@material-ui/icons';
+import { convertDurationToClockDuration } from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -125,6 +126,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const PlayerWrapper = ({
+  duration,
+  children,
+}: {
+  duration?: string;
+  children: React.ReactNode;
+}) => {
+  const [isDurationVisible, setIsDurationVisible] = useState(true);
+  return (
+    <Box
+      position="relative"
+      height="100%"
+      onClick={() => setIsDurationVisible(false)}
+    >
+      {isDurationVisible && duration && (
+        <Box
+          position="absolute"
+          bottom={0}
+          right={0}
+          bgcolor="rgba(0,0,0,0.5)"
+          color="#fff"
+          px={1}
+          fontSize="0.8em"
+          fontWeight="bold"
+          style={{ pointerEvents: 'none' }}
+        >
+          {duration}
+        </Box>
+      )}
+      {children}
+    </Box>
+  );
+};
+
 function VideoCard({
   video,
   actions = [],
@@ -186,6 +221,10 @@ function VideoCard({
           light
           width="100%"
           height="100%"
+          wrapper={PlayerWrapper}
+          duration={
+            !!video.duration && convertDurationToClockDuration(video.duration)
+          }
         />
       </Grid>
       <Grid
