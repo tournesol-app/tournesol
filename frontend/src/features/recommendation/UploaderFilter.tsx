@@ -1,32 +1,23 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
-import { FilterSection } from 'src/components';
+import { Typography, Chip } from '@material-ui/core';
 
-interface Props {
+interface UploaderProps {
   value: string;
-  onChange: () => void;
+  onDelete: () => void;
 }
 
-function UploaderFilter(props: Props) {
+function UploaderFilter(props: UploaderProps) {
   return (
-    <FilterSection title="Uploader">
-      <Box
-        display="flex"
-        flexDirection="column"
-        style={{ textAlign: 'center' }}
-      >
-        <span style={{ padding: 4 }}>Uploader: {props.value}</span>
-        <Button
-          type="submit"
-          size="large"
-          variant="contained"
-          color="primary"
-          onClick={props.onChange}
-        >
-          <span>Reset</span>
-        </Button>
-      </Box>
-    </FilterSection>
+    <Chip
+      label={
+        <Typography variant="body2">
+          <strong>Uploader: </strong>
+          {props.value}
+        </Typography>
+      }
+      color="secondary"
+      onDelete={props.onDelete}
+    />
   );
 }
 
