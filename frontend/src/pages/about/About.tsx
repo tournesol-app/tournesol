@@ -186,7 +186,7 @@ const AboutPage = () => {
             <Typography variant="h1">Who builds Tournesol?</Typography>
             <Typography paragraph>
               Tournesol seeks to be an extremely transparent project. All
-              contributions to the project are openly visible on our github,
+              contributions to the project are openly visible on our GitHub,
               description of important concepts and Tournesol’s vision can be
               found on our wiki, and discussions that guide the development of
               Tournesol happen openly on our Discord.
