@@ -21,7 +21,7 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => (
   <>
     <Divider />
     {hasFilter ? (
-      <Box my={2}>{'No video in this list.'}</Box>
+      <Box my={2}>{'No video corresponds to your filter.'}</Box>
     ) : (
       <>
         <Box my={2}>{"You haven't compared any video yet 🥺"}</Box>
