@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
 
 import { handleWikiUrl } from 'src/utils/url';
-import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -38,13 +38,13 @@ const Footer = () => {
         target="_blank"
         rel="noreferrer"
       >
-        about
+        wiki
       </a>
-      <Link className={classes.menuLink} to="/donate">
-        donate
-      </Link>
       <Link className={classes.menuLink} to="/about/privacy_policy">
         privacy policy
+      </Link>
+      <Link className={classes.menuLink} to="/about/donate">
+        donate
       </Link>
       <a
         className={classes.menuLink}

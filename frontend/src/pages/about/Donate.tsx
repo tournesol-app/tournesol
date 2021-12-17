@@ -31,7 +31,7 @@ const DonatePage = () => {
   const classes = useStyles();
   return (
     <>
-      <ContentHeader title="Donate" />
+      <ContentHeader title="About > Donate" />
       <div className={classes.root}>
         <div className={classes.content}>
           <Typography paragraph>

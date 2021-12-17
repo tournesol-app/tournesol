@@ -9,7 +9,7 @@ import SettingsProfilePage from './pages/settings/profile/Profile';
 import SignupPage from './pages/signup/Signup';
 import VerifySignature from './pages/signup/Verify';
 import ComparisonListPage from './pages/comparisons/ComparisonList';
-import DonatePage from './pages/donate/Donate';
+import DonatePage from './pages/about/Donate';
 import RateLaterPage from './pages/rateLater/RateLater';
 import Frame from './features/frame/Frame';
 import ComparisonPage from './pages/comparisons/Comparison';
@@ -20,6 +20,7 @@ import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
 import PrivacyPolicy from './pages/about/PrivacyPolicy';
+import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
@@ -43,21 +44,26 @@ function App() {
   return (
     <Frame>
       <Switch>
+        {/* About routes */}
+        <Route path="/about/privacy_policy">
+          <PrivacyPolicy />
+        </Route>
+        <Route path="/about/trusted_domains">
+          <TrustedDomains />
+        </Route>
+        <Route path="/about/donate">
+          <DonatePage />
+        </Route>
+        <Route path="/about">
+          <About />
+        </Route>
+        {/* Videos and Comparisons routes */}
         <Route path="/video/:video_id">
           <VideoCardPage />
         </Route>
         <Route path="/recommendations">
           <VideoRecommendationPage />
         </Route>
-        <Route path="/login">
-          <LoginPage />
-        </Route>
-        <PrivateRoute path="/settings/profile">
-          <SettingsProfilePage />
-        </PrivateRoute>
-        <PrivateRoute path="/settings/account">
-          <SettingsAccountPage />
-        </PrivateRoute>
         <PrivateRoute path="/comparisons">
           <ComparisonListPage />
         </PrivateRoute>
@@ -67,9 +73,16 @@ function App() {
         <PrivateRoute path="/rate_later">
           <RateLaterPage />
         </PrivateRoute>
-        <Route path="/donate">
-          <DonatePage />
+        {/* User Management routes */}
+        <Route path="/login">
+          <LoginPage />
         </Route>
+        <PrivateRoute path="/settings/profile">
+          <SettingsProfilePage />
+        </PrivateRoute>
+        <PrivateRoute path="/settings/account">
+          <SettingsAccountPage />
+        </PrivateRoute>
         <Route path="/signup">
           {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
         </Route>
@@ -89,12 +102,7 @@ function App() {
         <Route path="/reset-password">
           <ResetPassword />
         </Route>
-        <Route path="/about/trusted_domains">
-          <TrustedDomains />
-        </Route>
-        <Route path="/about/privacy_policy">
-          <PrivacyPolicy />
-        </Route>
+        {/* Home page */}
         <Route path="/">
           <HomePage />
         </Route>

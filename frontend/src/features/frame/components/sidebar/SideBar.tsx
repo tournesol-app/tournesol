@@ -21,6 +21,7 @@ import {
   Compare as CompareIcon,
   WatchLater as WatchLaterIcon,
   ListAlt as ListIcon,
+  Info as InfoIcon,
   VideoLibrary,
 } from '@material-ui/icons';
 
@@ -119,6 +120,11 @@ const SideBar = () => {
       displayText: 'My rate later list',
     },
     { displayText: 'divider_2' },
+    {
+      targetUrl: '/about',
+      IconComponent: InfoIcon,
+      displayText: 'About',
+    },
   ];
 
   return (
