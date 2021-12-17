@@ -329,6 +329,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedEmailDomainList'
           description: ''
+  /exports/comparisons/:
+    get:
+      operationId: exports_comparisons_retrieve
+      description: Download public data in .csv file
+      tags:
+      - exports
+      security:
+      - oauth2:
+        - read write groups
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /schema/:
     get:
       operationId: schema_retrieve
@@ -10717,9 +10735,9 @@ components:
           type: number
           format: float
           maximum: 1.0
-          minimum: 0.0
           description: Top quantile for all rated videos for aggregated scoresfor
             the given criteria. 0.0=best, 1.0=worst
+          minimum: 0.0
       required:
       - criteria
     VideoRateLater:
@@ -10812,8 +10830,8 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: http://127.0.0.1:8000/o/token/
-          refreshUrl: http://127.0.0.1:8000/o/token/
+          tokenUrl: https://localhost:8000/o/token/
+          refreshUrl: https://localhost:8000/o/token/
           scopes:
             openid: OpenID Connect scope
             read: Read scope
