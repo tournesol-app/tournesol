@@ -36,6 +36,7 @@ from tournesol.utils.video_language import compute_video_language
             OpenApiParameter("language",
                              description="Accepted languages separated by commas "
                                          "(e.g. 'en,fr,de'). If empty, accept all languages."),
+            OpenApiParameter("uploader"),
             OpenApiParameter(
                 "date_lte",
                 OpenApiTypes.DATETIME,
