@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Box, Card } from '@material-ui/core';
+import { Grid, Typography, Box, Card, Link } from '@material-ui/core';
 
 import { ContentHeader } from 'src/components';
 import PublicDownloadSection from './PublicDownloadSection';
@@ -301,17 +301,29 @@ const AboutPage = () => {
         </Grid>
 
         <Grid item xs={12} md={6} className={classes.container}>
-          <ContentBox className={classes.card}>
-            <img height="96px" src="/logos/Kleis_Logo.svg" />
-            <Typography variant="h4">Partnership with Kleis</Typography>
-            <Typography paragraph>
-              We received support from the technology and consulting company
-              Kleis who helped us shape our organizational processes, develop
-              the vision of our product, make foundational technical choices,
-              and adopt efficient developments practices. Our partnership with
-              Kleis has been extremely impactful.
-            </Typography>
-          </ContentBox>
+          <Link
+            href="https://kleis.ch/"
+            rel="noopener"
+            target="_blank"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+          >
+            <ContentBox className={classes.card}>
+              <img height="64px" src="/logos/Kleis_Logo.svg" />
+              <Typography variant="h4">
+                Partnership with Kleis Technology
+              </Typography>
+              <Typography paragraph>
+                We received support from the technology and consulting company
+                Kleis to help us shape our organizational processes and adopt
+                efficient developments practices. Our partnership with Kleis is
+                extremely structuring for the development of our vision for the
+                product and to bring perspective for foundational technical
+                choices.
+              </Typography>
+            </ContentBox>
+          </Link>
         </Grid>
       </Grid>
 
