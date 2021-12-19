@@ -15,6 +15,11 @@ interface LoaderProps {
   children: React.ReactNode;
 }
 
+/**
+ * Wraps content that should be represented as loading when
+ * `isLoading`is True. The content will then be displayed as greyed-out,
+ * and a circular loader will be visibled in an overlay.
+ */
 const LoaderWrapper = ({ isLoading, children }: LoaderProps) => {
   const classes = useStyles();
 
