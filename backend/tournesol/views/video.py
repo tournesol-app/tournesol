@@ -32,7 +32,7 @@ from tournesol.utils.video_language import compute_video_language
         description="Retrieve a list of recommended videos, sorted by decreasing total score.",
         parameters=[
             OpenApiParameter("search"),
-            OpenApiParameter("language"),
+            OpenApiParameter("languages"),
             OpenApiParameter(
                 "date_lte",
                 OpenApiTypes.DATETIME,
@@ -110,9 +110,10 @@ class VideoViewSet(mixins.CreateModelMixin,
                 queryset = queryset.filter(publication_date__gte=date_gte)
             except ValueError:
                 raise ValidationError('"date_gte" is an invalid datetime')
-        language = request.query_params.get('language') \
-            if request.query_params.get('language') else ""
-        queryset = queryset.filter(language=language) if language else queryset
+
+        languages = request.query_params.get('languages').split(",") \
+            if request.query_params.get('languages') else []
+        queryset = queryset.filter(language__in=languages) if languages else queryset
 
         criteria_cases = [
             When(
