@@ -6,6 +6,7 @@ const useStyles = makeStyles(() => ({
   loadingContent: {
     opacity: '30%',
     filter: 'grayscale(100%) blur(2px)',
+    pointerEvents: 'none',
   },
 }));
 
