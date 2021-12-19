@@ -6,7 +6,8 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   filtersButton: {
-    padding: '8px 0',
+    padding: '8px',
+    marginLeft: '-8px', // keep the text aligned to the left
   },
   filtersButtonDefault: {
     color: theme.palette.action.active,

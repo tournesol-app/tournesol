@@ -112,7 +112,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   settingsContainer: {
-    padding: 0,
+    '&.MuiGrid-item': {
+      padding: 0,
+    },
   },
   '@keyframes scaling': {
     '0%': {
