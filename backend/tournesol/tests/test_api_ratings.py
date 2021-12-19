@@ -23,6 +23,7 @@ class RatingApi(TestCase):
         Comparison.objects.create(video_1=video1, video_2=video2, user=self.user1)
         Comparison.objects.create(video_1=video1, video_2=video2, user=self.user2)
         ContributorRating.objects.create(video=video1, user=self.user1, is_public=False)
+        ContributorRating.objects.create(video=video2, user=self.user1, is_public=False)
         ContributorRating.objects.create(video=video1, user=self.user2, is_public=False)
         ContributorRating.objects.create(video=video2, user=self.user2, is_public=True)
 
@@ -41,8 +42,12 @@ class RatingApi(TestCase):
             "/users/me/contributor_ratings/",
             format="json"
         )
-        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["count"], 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        rating = response.data["results"][0]
+        self.assertEqual(rating["video"]["video_id"], "4g4XLGFTDG9")
+        self.assertEqual(rating["is_public"], False)
+        self.assertEqual(rating["n_comparisons"], 1)
 
     def test_authenticated_cant_create_rating_about_non_existing_video(self):
         factory = APIClient()
@@ -140,7 +145,7 @@ class RatingApi(TestCase):
     def test_patch_rating_is_public(self):
         client = APIClient()
         client.force_authenticate(self.user1)
-        rating = ContributorRating.objects.get(user=self.user1)
+        rating = ContributorRating.objects.get(user=self.user1, video__video_id="4g4XLGFTDG8")
 
         self.assertEqual(rating.is_public, False)
         response = client.patch(
