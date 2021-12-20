@@ -131,7 +131,7 @@ const AboutPage = () => {
               >
                 GitHub
               </a>
-              , and our{' '}
+              , our{' '}
               <a
                 href="https://discord.gg/TvsFB8RNBV"
                 target="_blank"
@@ -140,7 +140,16 @@ const AboutPage = () => {
               >
                 Discord
               </a>
-              .{' '}
+              , or our{' '}
+              <a
+                href="https://www.linkedin.com/company/tournesol-app/"
+                target="_blank"
+                style={{ color: 'white' }}
+                rel="noreferrer"
+              >
+                LinkedIn page
+              </a>
+              .
             </Typography>
           </ContentBox>
         </Grid>
@@ -282,22 +291,31 @@ const AboutPage = () => {
         style={{ background: '#FAF8F3' }}
       >
         <Grid item xs={12} md={6} className={classes.container}>
-          <ContentBox className={classes.card}>
-            <img
-              height="64px"
-              src="/logos/Polyconseil_Logo.png"
-              style={{ maxWidth: '100%' }}
-            />
-            <Typography variant="h4">Partnership with Polyconseil</Typography>
-            <Typography paragraph>
-              We are also supported by the software company PolyConseil, in the
-              context of their #Tech4Good program. Since August 2021,
-              PolyConseil allocated a software engineering intern one day per
-              week to the technical development of Tournesol and supported us on
-              a monthly basis through organizational support and UX/UI designs.
-              We are very grateful for their help.
-            </Typography>
-          </ContentBox>
+          <Link
+            href="https://www.polyconseil.fr/"
+            rel="noopener"
+            target="_blank"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+          >
+            <ContentBox className={classes.card}>
+              <img
+                height="64px"
+                src="/logos/Polyconseil_Logo.png"
+                style={{ maxWidth: '100%' }}
+              />
+              <Typography variant="h4">Partnership with Polyconseil</Typography>
+              <Typography paragraph>
+                We are also supported by the technology and consulting company
+                Polyconseil, in the context of their #Tech4Good program. Since
+                August 2021, Polyconseil allocated a software engineering intern
+                one day per week to the technical development of Tournesol and
+                supported us on a monthly basis through organizational support
+                and UX/UI designs. We are very grateful for their help.
+              </Typography>
+            </ContentBox>
+          </Link>
         </Grid>
 
         <Grid item xs={12} md={6} className={classes.container}>
