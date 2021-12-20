@@ -377,7 +377,8 @@ class VideoApi(TestCase):
 
         resp = client.get("/video/?languages=")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp.data["count"], len(self._list_of_videos) + 3) # not filtered, 3 videos were added
+        # not filtered, 3 videos were added
+        self.assertEqual(resp.data["count"], len(self._list_of_videos) + 3)
 
         resp = client.get("/video/?languages=fr")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
