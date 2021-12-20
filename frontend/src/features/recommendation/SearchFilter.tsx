@@ -6,7 +6,7 @@ import { Collapse, Button, Grid, Box, Theme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import LanguageFilter from './LanguageFilter';
+import LanguagesFilter from './LanguagesFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 
@@ -73,9 +73,9 @@ function SearchFilter() {
             />
           </Grid>
           <Grid item xs={6} md={3} lg={2}>
-            <LanguageFilter
-              value={searchParams.get('language') ?? ''}
-              onChange={(value) => setFilter('language', value)}
+            <LanguagesFilter
+              value={searchParams.get('languages') ?? ''}
+              onChange={(value) => setFilter('languages', value)}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6}>

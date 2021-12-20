@@ -32,7 +32,8 @@ from tournesol.utils.video_language import compute_video_language
         description="Retrieve a list of recommended videos, sorted by decreasing total score.",
         parameters=[
             OpenApiParameter("search"),
-            OpenApiParameter("languages"),
+            OpenApiParameter("languages", description="Accepted languages separated by commas (e.g. 'en,fr,de')."
+                                                      "If empty, accept all languages"),
             OpenApiParameter(
                 "date_lte",
                 OpenApiTypes.DATETIME,
