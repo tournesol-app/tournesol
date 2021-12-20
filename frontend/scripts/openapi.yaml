@@ -973,7 +973,7 @@ paths:
         schema:
           type: string
       - in: query
-        name: languages
+        name: language
         schema:
           type: string
       - in: query

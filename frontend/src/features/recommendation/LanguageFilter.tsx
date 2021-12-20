@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChoicesFilterSection } from 'src/components';
 
-const languagesChoice = {
+const languageChoices = {
   en: 'English',
   fr: 'French',
   de: 'German',
@@ -12,14 +12,14 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-function LanguagesFilter(props: Props) {
+function LanguageFilter(props: Props) {
   return (
     <ChoicesFilterSection
-      title="Languages"
-      choices={languagesChoice}
+      title="Language"
+      choices={languageChoices}
       {...props}
     ></ChoicesFilterSection>
   );
 }
 
-export default LanguagesFilter;
+export default LanguageFilter;

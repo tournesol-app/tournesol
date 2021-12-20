@@ -375,16 +375,16 @@ class VideoApi(TestCase):
         VideoCriteriaScore.objects.create(video=video2, criteria="engaging", score=1)
         VideoCriteriaScore.objects.create(video=video3, criteria="engaging", score=1)
 
-        resp = client.get("/video/?languages=")
+        resp = client.get("/video/?language=")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # not filtered, 3 videos were added
         self.assertEqual(resp.data["count"], len(self._list_of_videos) + 3)
 
-        resp = client.get("/video/?languages=fr")
+        resp = client.get("/video/?language=fr")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data["count"], 1) # 1 French video
 
-        resp = client.get("/video/?languages=de,en,fr")
+        resp = client.get("/video/?language=de,en,fr")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data["count"], 3) # 1 French and 2 English videos
 
