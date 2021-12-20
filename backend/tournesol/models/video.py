@@ -13,7 +13,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.html import format_html
 from settings.settings import CRITERIAS
 
-import computed_property
 from languages.languages import LANGUAGES
 from tqdm.auto import tqdm
 
@@ -21,11 +20,10 @@ from core.models import User
 from core.utils.models import (
     WithFeatures,
     WithEmbedding,
-    ComputedJsonField,
     query_or,
     query_and,
 )
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX, TS_CONSTANTS
+from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.models.tags import Tag
 from tournesol.utils import VideoSearchEngine
 
@@ -99,9 +97,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         default=False, help_text="Was last download unsuccessful"
     )
 
-    is_update_pending = models.BooleanField(
-        default=False, help_text="If true, recompute properties"
-    )
     tags = models.ManyToManyField(Tag, blank=True)
 
     # computed in the Video.recompute_pareto(),
@@ -114,9 +109,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         default=False,
         help_text="Is the video pareto-optimal based on aggregated scores?",
     )
-
-    # computed properties, updated via save signals,
-    #  or via manage.py recompute_properties manage.py
 
     rating_n_ratings = models.IntegerField(
         null=False,
@@ -140,146 +132,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         ).distinct("user").count()
         self.save(update_fields=['rating_n_ratings', 'rating_n_contributors'])
 
-    COMPUTED_PROPERTIES = [
-        "n_public_contributors",
-        "n_private_contributors",
-        "public_contributors",
-    ]
-
-    # computed via signals AND via recompute_properties command
-    n_public_contributors = computed_property.ComputedIntegerField(
-        compute_from="get_n_public_contributors",
-        null=False,
-        default=0,
-        help_text="Number of certified contributors who rated this video publicly",
-    )
-
-    n_private_contributors = computed_property.ComputedIntegerField(
-        compute_from="get_n_private_contributors",
-        null=False,
-        default=0,
-        help_text="Number of certified contributors who rated this video privately",
-    )
-
-    public_contributors = ComputedJsonField(
-        compute_from="get_certified_top_raters_list",
-        null=False,
-        default=list,
-        help_text=f"Top {TS_CONSTANTS['N_PUBLIC_CONTRIBUTORS_SHOW']}"
-                  f" certified public contributor usernames",
-    )
-
-    # COMPUTED properties implementation
-    # TODO create _annotate_is_certified function
-    def get_certified_top_raters(
-        self,
-        # add_user__username=None
-    ):
-        """Get certified raters for this video, sorted by number of comparisons."""
-        # TODO: re-enable showing names of public contributors on recommended videos
-
-        # logging.warning("get_certified_top_raters")
-
-        # if self.id is None:
-        #     return User.objects.none()
-
-        # filter_this_video = Q(comparisons__video_1=self) | Q(comparisons__video_2=self)
-
-        # qs = User.objects.filter(filter_this_video)
-        # # qs = User._annotate_is_certified(qs)
-        # # filter_query = Q(_is_certified=True)
-        # # if add_user__username:
-        # #     filter_query = filter_query | Q(user__username=add_user__username)
-        # # qs = qs.filter(filter_query)
-        # # qs = qs.annotate(_n_comparisons=Count('user__userpreferences__comparison',
-        # #                                   filter_this_video))
-        # qs = qs.distinct()
-        # # qs = qs.order_by('-_n_comparisons')
-        # return qs
-
-        return None
-
-    # public rating and a public contributor
-    FILTER_PUBLIC = Q(n_public_rating=1, show_my_profile=True)
-
-    def get_certified_top_raters_list(
-        self,
-        # limit=TS_CONSTANTS["N_PUBLIC_CONTRIBUTORS_SHOW"],
-        # only_public=True,
-        # return_json=True,
-    ):
-        """Compute the top certified public top raters and return JSON."""
-        # TODO: re-enable making comparisons and rating public
-
-        # logging.warning("get_certified_top_raters_list")
-
-        # qs = self.get_certified_top_raters()
-
-        # if qs.count() > 0:
-        #     # annotating with whether the rating is public
-        #     pref_privacy = "user__userpreferences__videoratingprivacy"
-
-        #     qs = ContributorRating._annotate_privacy(
-        #         qs=qs,
-        #         prefix=pref_privacy,
-        #         field_user=None,
-        #         filter_add={f"{pref_privacy}__video": self},
-        #     )
-
-        #     qs = qs.annotate(
-        #         n_public_rating=Case(
-        #             When(_is_public=True, then=Value(1)),
-        #             default=Value(0),
-        #             output_field=IntegerField(),
-        #         )
-        #     )
-        # else:
-        #     # dummy value in case if we are creating a video
-        #     qs = qs.annotate(n_public_rating=Value(0, output_field=IntegerField()))
-
-        # if only_public:
-        #     qs = qs.filter(self.FILTER_PUBLIC)
-
-        # if limit is not None:
-        #     qs = qs[:limit]
-
-        # if return_json:
-        #     return json.dumps([{"username": user.user.username} for user in qs])
-
-        # return qs
-
-        return []
-
-    def get_n_public_contributors(self):
-        """Get the number of public certified contributors who rated this video."""
-
-        # TODO: re-enable counting the number of contributors for a given video
-        # logging.warning("get_n_public_contributors")
-
-        # return (
-        #     self.get_certified_top_raters_list(
-        #         limit=None, return_json=False, only_public=False
-        #     )
-        #     .filter(self.FILTER_PUBLIC)
-        #     .count()
-        # )
-        return 1
-
-    def get_n_private_contributors(self):
-        """Get the number of private certified contributors who rated this video."""
-        # TODO: re-enable counting the number of contributors for a given video
-
-        # return (
-        #     self.get_certified_top_raters_list(
-        #         limit=None, return_json=False, only_public=False
-        #     )
-        #     .filter(~self.FILTER_PUBLIC)
-        #     .count()
-        # )
-        return 1
-
-    # /COMPUTED properties implementation
-
     def get_pareto_optimal(self):
         """Compute pareto-optimality in sql. Runs in O(n^2) where n=num videos."""
         f_1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in CRITERIAS])
@@ -287,20 +139,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
         qs = Video.objects.filter(f_1).filter(f_2)
         return qs.count() == 0
-
-    @staticmethod
-    def get_or_create_with_validation(**kwargs):
-        """Get an object or validate data and create."""
-        qs = Video.objects.filter(**kwargs)
-        if qs.count() == 1:
-            return qs.get()
-        elif qs.count() > 1:
-            raise ValueError("Queryset contains more than one item")
-        else:
-            video = Video(**kwargs)
-            video.full_clean()
-            video.save()
-            return video
 
     @property
     def best_text(self, min_len=5):
@@ -365,19 +203,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         """Overall score computed for a video based on aggregated contributions"""
         # computed by a query
         return 0.0
-
-    # TODO create _annotate_is_certified function
-    # def ratings(self, user=None, only_certified=True):
-    #     """All associated certified ratings."""
-    #     f = Q(video_1=self) | Q(video_2=self)
-    #     if user is not None:
-    #         f = f & Q(user=user)
-    #     qs = Comparison.objects.filter(f)
-    #     qs = User._annotate_is_certified(
-    #         qs, prefix="user__user__")
-    #     if only_certified:
-    #         qs = qs.filter(_is_certified=True)
-    #     return qs
 
     @staticmethod
     def recompute_quantiles():
