@@ -317,7 +317,7 @@ const AboutPage = () => {
               <Typography paragraph>
                 We received support from the technology and consulting company
                 Kleis to help us shape our organizational processes and adopt
-                efficient developments practices. Our partnership with Kleis is
+                efficient development practices. Our partnership with Kleis is
                 extremely structuring for the development of our vision for the
                 product and to bring perspective for foundational technical
                 choices.
