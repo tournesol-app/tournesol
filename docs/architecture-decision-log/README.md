@@ -41,6 +41,21 @@ You can find the documentation of each template section in
 
 You can find several [examples here][github-adr-examples].
 
+## License
+
+No Copyright.
+
+All Architecture Decision Records are available under the term of the license
+`CC0 1.0 Universal`.
+
+**human readable summary**
+
+https://creativecommons.org/publicdomain/zero/1.0/
+
+**full legal code**
+
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
 [github-adr]: https://github.com/joelparkerhenderson/architecture-decision-record
 [github-adr-examples]: https://github.com/joelparkerhenderson/architecture-decision-record/tree/main/examples
 
