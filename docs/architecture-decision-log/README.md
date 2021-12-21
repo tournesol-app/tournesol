@@ -23,11 +23,9 @@ instead.
 Prefix the newly created file by the date of the decision, following the
 format `YYYY_MM_DD_`.
 
-Edit the file and set its status, list the deciders, and add the date.
+Finally, describe the decision.
 
-Finally, describe the decision by following the documentation bellow.
-
-### Template documentation
+### The decision template
 
 Our template is an adaptation of the template described by Jeff Tyree and Art
 Akerman in _« Architecture Decisions: Demystifying Architecture »_
@@ -36,10 +34,10 @@ Akerman in _« Architecture Decisions: Demystifying Architecture »_
 In order to make a decision state more visible, we moved the status section
 at the beginning of the document.
 
-You can find the documentation of each template section in
-[this documentation][adr-by-jtyree-aakerman].
+### Examples
 
-You can find several [examples here][github-adr-examples].
+You can find several examples of decisions described using the adapted
+template in [this repository][github-adr-examples].
 
 ## License
 
