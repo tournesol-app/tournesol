@@ -110,7 +110,8 @@ organize its content.
 
 ### Related artifacts
 
-... todo ...
+The A.D.L. [README.md](../README.md) will contain instructions explaining how
+to add new A.D.R.
 
 ### Related principles
 
