@@ -10,9 +10,23 @@ Decision Record (A.D.R.).
 
 Learn more about A.D.R. in [this other documentation][github-adr].
 
+* [Usage](#summary)
+  * [Rules](#rules)
+  * [Add a new decision record](#issue)
+  * [Update a decision record's status](#decision)
+* [Documentation](#documentation)
+  * [Keywords](#Keywords)
+  * [The A.D.R. template](#the-ADR-template)
+  * [Examples](#examples)
+* [License](#license)
+
 ## Usage
 
-### Add a new decision
+### Rules
+
+...
+
+### Add a new decision record
 
 First, copy the [A.D.R. template](./adr_template.md) in the appropriate
 sub-folder.
@@ -25,7 +39,34 @@ format `YYYY_MM_DD_`.
 
 Finally, describe the decision.
 
-### The decision template
+### Update a decision record's status
+
+...
+
+## Documentation
+
+### Keywords
+
+**AD** - architecture decision
+
+An architecture decision (AD) is a software design choice that addresses a
+significant requirement.
+
+**ADR** - architecture decision record
+
+An architecture decision record (ADR) is a document that captures an important
+architectural decision made along with its context and consequences.
+
+**ADL** - architecture decision log
+
+An architecture decision log (ADL) is the collection of all ADRs created and
+maintained for a particular project (or organization).
+
+**AKM** - architecture knowledge management
+
+All these are within the topic of architecture knowledge management (AKM).
+
+### The A.D.R. template
 
 Our template is an adaptation of the template described by Jeff Tyree and Art
 Akerman in _« Architecture Decisions: Demystifying Architecture »_
