@@ -364,6 +364,30 @@ class VideoApi(TestCase):
         self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
         self.assertEqual(bad_response.data["count"], len(self._list_of_videos))
 
+    def test_get_video_languages_filter(self):
+        client = APIClient()
+
+        # Add 1 video in French and 2 videos in English
+        video1 = Video.objects.create(language="fr", video_id="youtube1233")
+        video2 = Video.objects.create(language="en", video_id="youtube1238")
+        video3 = Video.objects.create(language="en", video_id="youtube1239")
+        VideoCriteriaScore.objects.create(video=video1, criteria="engaging", score=1)
+        VideoCriteriaScore.objects.create(video=video2, criteria="engaging", score=1)
+        VideoCriteriaScore.objects.create(video=video3, criteria="engaging", score=1)
+
+        resp = client.get("/video/?language=")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # not filtered, 3 videos were added
+        self.assertEqual(resp.data["count"], len(self._list_of_videos) + 3)
+
+        resp = client.get("/video/?language=fr")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data["count"], 1) # 1 French video
+
+        resp = client.get("/video/?language=de,en,fr")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data["count"], 3) # 1 French and 2 English videos
+
     def test_get_video_date_filters(self):
         client = APIClient()
 
