@@ -29,7 +29,7 @@ Contents:
 ### Issue
 
 At the time of writing, the Tournesol platform has been structured by multiple
-software design decisions, and none of them are documented.
+software design choices, and none of them are documented.
 
 This knowledge only lives in the team members' memories, and therefore is not
 easily accessible.
@@ -45,17 +45,18 @@ Tournesol mono-repository.
 
 ### Assumptions
 
-We want to be able to easily share our decisions.
+We want to document our decisions and to be able to easily share them.
 
-We want to be able to refer to them, and enforce them when needed.
+We want to be able to refer to them, both orally and in writing, and enforce
+them when needed.
 
 ### Constraints
 
-The A.D.L. should be easy to access.
+The A.D.L. should be easy to access for anyone.
 
 The A.D.L. should be readable in a browser, without requiring to install Git.
 
-The A.D.L. should explain how to add new architecture decision record (A.D.R.).
+The A.D.L. should explain how to add new architecture decision records (A.D.R.).
 
 ### Positions
 
@@ -85,7 +86,7 @@ etc.
 The A.D.R. must be written in `Markdown` to allow GitHub to display them
 nicely.
 
-The A.D.R. should follow, as far as possible, the same document structure. 
+The A.D.R. should follow, as far as possible, the same template.
 
 The A.D.R. should not be edited after they have been published.
 
@@ -97,15 +98,15 @@ decision. For instance, a status can evolve from `accepted` to `deprecated` or
 
 ### Related decisions
 
-We expect our future important architecture and software design decisions to
-be added as A.D.R.
+We expect our future important architecture decisions and software design
+choices to be added as A.D.R.
 
 ### Related requirements
 
 We need to add a `docs` sub-folder in the Tournesol mono-repository.
 
-We need to document how to add a new A.D.R., how to name and structure the
-file.
+We need to document how to add a new A.D.R., how to name it, and how to
+organize its content.
 
 ### Related artifacts
 
@@ -123,7 +124,6 @@ community.
 
 More information about A.D.L. and A.D.R. in the following GitHub repository:
 - https://github.com/joelparkerhenderson/architecture-decision-record
-
 
 [gh-aidanjungo]: https://github.com/aidanjungo
 [gh-amatissart]: https://github.com/amatissart
