@@ -5,29 +5,29 @@ import { ExpandMore, ExpandLess } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  filtersButton: {
+  collapseButton: {
     padding: '8px',
     marginLeft: '-8px', // keep the text aligned to the left
   },
-  filtersButtonDefault: {
+  collapseButtonDefault: {
     color: theme.palette.action.active,
   },
-  filtersButtonExpanded: {
+  collapseButtonExpanded: {
     color: theme.palette.secondary.main,
   },
 }));
 
-interface FiltersButtonProps {
+interface CollapseButtonProps {
   children?: React.ReactNode;
   expanded: boolean;
   onClick?: (event: React.ChangeEvent<EventTarget>) => void;
 }
 
-const FiltersButton = ({
+const CollapseButton = ({
   children = 'Filters',
   expanded,
   onClick,
-}: FiltersButtonProps) => {
+}: CollapseButtonProps) => {
   const classes = useStyles();
   return (
     <Button
@@ -36,9 +36,9 @@ const FiltersButton = ({
       aria-expanded={expanded}
       aria-label="show more"
       onClick={onClick}
-      className={clsx(classes.filtersButton, {
-        [classes.filtersButtonDefault]: !expanded,
-        [classes.filtersButtonExpanded]: expanded,
+      className={clsx(classes.collapseButton, {
+        [classes.collapseButtonDefault]: !expanded,
+        [classes.collapseButtonExpanded]: expanded,
       })}
     >
       {children}
@@ -46,4 +46,4 @@ const FiltersButton = ({
   );
 };
 
-export default FiltersButton;
+export default CollapseButton;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Collapse, Grid, Box } from '@material-ui/core';
 
-import { FiltersButton } from 'src/components';
+import { CollapseButton } from 'src/components';
 import { useListFilter } from 'src/hooks';
 import IsPublicFilter from './IsPublicFilter';
 import MarkAllRatingsMenu from './MarkAllRatings';
@@ -16,9 +16,9 @@ function RatingsFilter() {
 
   return (
     <Box color="text.secondary">
-      <FiltersButton expanded={expanded} onClick={handleExpandClick}>
+      <CollapseButton expanded={expanded} onClick={handleExpandClick}>
         Options
-      </FiltersButton>
+      </CollapseButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Grid container spacing={4} style={{ marginBottom: '8px' }}>
           <Grid item xs={12} sm={6} md={4}>

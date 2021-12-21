@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Collapse, Grid, Box, makeStyles } from '@material-ui/core';
 
-import { FiltersButton } from 'src/components';
+import { CollapseButton } from 'src/components';
 import { useListFilter } from 'src/hooks';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
@@ -24,7 +24,7 @@ function SearchFilter() {
 
   return (
     <Box color="text.secondary">
-      <FiltersButton expanded={expanded} onClick={handleExpandClick} />
+      <CollapseButton expanded={expanded} onClick={handleExpandClick} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Grid container spacing={4} className={classes.filtersContainer}>
           <Grid item xs={6} md={3} lg={2}>

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Box, Divider, Grid, Typography } from '@material-ui/core';
 
-const Section = ({
+const SettingsSection = ({
   title,
   children,
   ...rest
@@ -39,4 +39,4 @@ const Section = ({
   );
 };
 
-export default Section;
+export default SettingsSection;

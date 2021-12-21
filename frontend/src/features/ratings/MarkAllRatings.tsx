@@ -3,7 +3,7 @@ import { Button, Box } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 
-import { FilterSection } from 'src/components';
+import { TitledSection } from 'src/components';
 import { UsersService } from 'src/services/openapi';
 import { RatingsContext } from 'src/features/videos/PublicStatusAction';
 import { showErrorAlert, showInfoAlert } from 'src/utils/notifications';
@@ -33,7 +33,7 @@ function MarkAllRatings() {
   };
 
   return (
-    <FilterSection title="Update visibility">
+    <TitledSection title="Update visibility">
       <Box display="flex" flexDirection="column" gridGap="8px" py={1}>
         <Button
           color="primary"
@@ -58,7 +58,7 @@ function MarkAllRatings() {
           </span>
         </Button>
       </Box>
-    </FilterSection>
+    </TitledSection>
   );
 }
 

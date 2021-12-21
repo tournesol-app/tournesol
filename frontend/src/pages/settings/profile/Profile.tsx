@@ -3,10 +3,9 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
-import ContentHeader from '../../../components/ContentHeader';
+import { ContentHeader, SettingsSection } from 'src/components';
 import SettingsMenu from '../../../features/settings/SettingsMenu';
 import ProfileForm from '../../../features/settings/profile/ProfileForm';
-import Section from 'src/components/Section';
 
 function ProfilePage() {
   return (
@@ -26,9 +25,9 @@ function ProfilePage() {
             sm={12}
             md={9}
           >
-            <Section title="Profile" xs={12}>
+            <SettingsSection title="Profile" xs={12}>
               <ProfileForm />
-            </Section>
+            </SettingsSection>
           </Grid>
         </Grid>
       </Box>
