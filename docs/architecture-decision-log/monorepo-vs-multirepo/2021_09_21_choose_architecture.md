@@ -52,7 +52,8 @@ Use a mono-repository architecture.
 
 ### Assumptions
 
-... todo ...
+We want to ease the development process, the continuous integration and the
+deployments.
 
 ### Constraints
 
