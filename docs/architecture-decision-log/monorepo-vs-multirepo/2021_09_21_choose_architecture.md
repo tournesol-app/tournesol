@@ -6,6 +6,19 @@
   [@jstainer-kleis][gh-jstainer-kleis], [@sandre35][gh-sandre35]
 * Date: 2021-09-28
 
+Contents:
+
+* [Summary](#summary)
+  * [Issue](#issue)
+  * [Decision](#decision)
+* [Details](#details)
+  * [Assumptions](#assumptions)
+  * [Constraints](#constraints)
+  * [Positions](#positions)
+  * [Arguments](#arguments)
+  * [Implications](#implications)
+* [Notes](#notes)
+
 ## Summary
 
 ### Issue
