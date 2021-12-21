@@ -17,6 +17,10 @@ Contents:
   * [Positions](#positions)
   * [Arguments](#arguments)
   * [Implications](#implications)
+* [Related](#related)
+  * [Related decisions](#related-decisions)
+  * [Related requirements](#related-requirements)
+  * [Related artifacts](#related-artifacts)
 * [Notes](#notes)
 
 ## Summary
@@ -124,6 +128,35 @@ GitHub.
 
 Maintainers should be vigilant during code reviews and prevent as far as
 possible the code of distinct software to be tightly coupled. 
+
+## Related
+
+### Related decisions
+
+We expect all our software depending on the API, to be added to the
+mono-repository.
+
+We expect all our software deployed by our deployment recipes, to be added to
+the mono-repository.
+
+We expect to add more software in the mono-repository as long as the team
+agrees.
+
+The old repositories will be archived on GitHub:
+- tournesol-app/tournesol-backend
+- tournesol-app/tournesol-frontend
+- tournesol-app/tournesol-infra
+- tournesol-app/tournesol-browser-extension
+
+### Related requirements
+
+We need to create the continuous integration pipeline in GitHub, so that it
+runs the back end tests, the front end tests, and the end-to-end tests.
+
+### Related artifacts
+
+The folder `.github/workflows` will contain the continuous integration
+configuration.
 
 ## Notes
 
