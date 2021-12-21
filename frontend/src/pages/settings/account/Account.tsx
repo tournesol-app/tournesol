@@ -9,7 +9,7 @@ import DeleteAccountForm from 'src/features/settings/account/DeleteAccountForm';
 import EmailAddressForm from 'src/features/settings/account/EmailAddressForm';
 import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
-import Section from 'src/components/Section';
+import { SettingsSection } from 'src/components';
 
 const useStyles = makeStyles((theme) => ({
   titleDanger: { color: theme.palette.error.main },
@@ -35,17 +35,17 @@ export const AccountPage = () => {
             md={9}
             spacing={3}
           >
-            <Section title="Change email address" xs={12}>
+            <SettingsSection title="Change email address" xs={12}>
               <EmailAddressForm />
-            </Section>
-            <Section title="Change password" xs={12} md={6}>
+            </SettingsSection>
+            <SettingsSection title="Change password" xs={12} md={6}>
               <PasswordForm />
-            </Section>
+            </SettingsSection>
             <Box marginTop={8} />
-            <Section title="Export all data" xs={12}>
+            <SettingsSection title="Export all data" xs={12}>
               <ExportAllDataForm />
-            </Section>
-            <Section
+            </SettingsSection>
+            <SettingsSection
               title={
                 <Typography variant="h4" className={classes.titleDanger}>
                   Delete account
@@ -54,7 +54,7 @@ export const AccountPage = () => {
               md={6}
             >
               <DeleteAccountForm />
-            </Section>
+            </SettingsSection>
           </Grid>
         </Grid>
       </Box>

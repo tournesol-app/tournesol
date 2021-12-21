@@ -14,7 +14,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const FilterSection = ({ title, children }: Props) => {
+const TitledSection = ({ title, children }: Props) => {
   const classes = useStyles();
   return (
     <>
@@ -26,4 +26,4 @@ const FilterSection = ({ title, children }: Props) => {
   );
 };
 
-export default FilterSection;
+export default TitledSection;

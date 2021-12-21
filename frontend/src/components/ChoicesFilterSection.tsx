@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
 import { CheckCircle, CheckCircleOutline } from '@material-ui/icons';
-import { FilterSection } from 'src/components';
+import { TitledSection } from 'src/components';
 
 interface Props {
   title: string;
@@ -21,7 +21,7 @@ const ChoicesFilterSection = ({ title, value, choices, onChange }: Props) => {
   };
 
   return (
-    <FilterSection title={title}>
+    <TitledSection title={title}>
       <Box display="flex" flexDirection="column">
         {Object.entries(choices).map(([choiceValue, choiceLabel]) => {
           const checked = value === choiceValue;
@@ -50,7 +50,7 @@ const ChoicesFilterSection = ({ title, value, choices, onChange }: Props) => {
           );
         })}
       </Box>
-    </FilterSection>
+    </TitledSection>
   );
 };
 

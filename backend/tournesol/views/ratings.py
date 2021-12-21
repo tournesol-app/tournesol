@@ -3,13 +3,13 @@ API endpoint to manipulate contributor ratings
 """
 
 from django.shortcuts import get_object_or_404
-from django.db.models import Count, F, Q
+from django.db.models import Q, Subquery, Func, OuterRef
 from rest_framework import generics, exceptions
 from rest_framework.response import Response
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 
-from ..models import ContributorRating
+from ..models import ContributorRating, Comparison
 from ..serializers import (
     ContributorRatingSerializer,
     ContributorRatingCreateSerializer,
@@ -17,15 +17,16 @@ from ..serializers import (
 )
 
 
-RatingsWithAnnotations = ContributorRating.objects.annotate(
-    n_comparisons=Count(
-        "user__comparisons",
-        filter=(
-            Q(user__comparisons__video_1=F("video"))
-            | Q(user__comparisons__video_2=F("video"))
-        ),
+def get_annotated_ratings():
+    comparison_counts = (
+        Comparison.objects.filter(user=OuterRef("user"))
+        .filter(Q(video_1=OuterRef("video")) | Q(video_2=OuterRef("video")))
+        .annotate(count=Func("id", function="Count"))
+        .values("count")
     )
-).order_by("-pk")
+    return ContributorRating.objects.annotate(
+        n_comparisons=Subquery(comparison_counts)
+    ).order_by("-video__publication_date", "-pk")
 
 
 @extend_schema_view(
@@ -47,7 +48,7 @@ class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return get_object_or_404(
-            RatingsWithAnnotations,
+            get_annotated_ratings(),
             video__video_id=self.kwargs["video_id"],
             user=self.request.user,
         )
@@ -75,8 +76,11 @@ class ContributorRatingList(generics.ListCreateAPIView):
         return ContributorRatingSerializer
 
     def get_queryset(self):
-        ratings = RatingsWithAnnotations.filter(
-            user=self.request.user, n_comparisons__gt=0
+        ratings = (
+            get_annotated_ratings()
+            .filter(user=self.request.user, n_comparisons__gt=0)
+            .select_related("video")
+            .prefetch_related("criteria_scores")
         )
         is_public = self.request.query_params.get("is_public")
         if is_public:

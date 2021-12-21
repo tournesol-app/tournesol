@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Tooltip, Typography, Box, Switch } from '@material-ui/core';
 
 import { UsersService, ContributorRating } from 'src/services/openapi';
@@ -75,21 +75,25 @@ export const UserRatingPublicToggle = ({
   );
 };
 
-export const getPublicStatusAction = (
-  getContributorRating: (videoId: string) => ContributorRating | null
-) => {
-  const Action = ({ videoId }: { videoId: string }) => {
-    const contributorRating = getContributorRating(videoId);
-    if (contributorRating == null || contributorRating.is_public == null) {
-      return null;
-    }
-    return (
-      <UserRatingPublicToggle
-        nComparisons={contributorRating.n_comparisons}
-        isPublic={contributorRating.is_public}
-        videoId={videoId}
-      />
-    );
-  };
-  return Action;
+interface RatingsContextValue {
+  getContributorRating?: (videoId: string) => ContributorRating;
+  onChange?: (rating?: ContributorRating) => void;
+}
+
+export const RatingsContext = React.createContext<RatingsContextValue>({});
+
+export const PublicStatusAction = ({ videoId }: { videoId: string }) => {
+  const { getContributorRating, onChange } = useContext(RatingsContext);
+  const contributorRating = getContributorRating?.(videoId);
+  if (contributorRating == null || contributorRating.is_public == null) {
+    return null;
+  }
+  return (
+    <UserRatingPublicToggle
+      nComparisons={contributorRating.n_comparisons}
+      isPublic={contributorRating.is_public}
+      videoId={videoId}
+      onChange={onChange}
+    />
+  );
 };

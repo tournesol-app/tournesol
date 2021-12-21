@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import clsx from 'clsx';
@@ -40,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontFamily: 'Poppins',
+    textAlign: 'left',
     // Limit text to 3 lines and show ellipsis
     display: '-webkit-box',
     overflow: 'hidden',
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1em',
   },
   youtube_complements: {
-    margin: 4,
+    margin: '4px 0',
     display: 'flex',
     flexWrap: 'wrap',
     alignContent: 'space-between',
@@ -109,6 +109,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'row',
+    },
+  },
+  settingsContainer: {
+    '&.MuiGrid-item': {
+      padding: 0,
     },
   },
   '@keyframes scaling': {
@@ -349,7 +354,7 @@ function VideoCard({
         )}
       </Grid>
       {settings.length > 0 && (
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.settingsContainer}>
           <Collapse in={settingsVisible || !isSmallScreen}>
             <Box
               paddingY={1}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { CircularProgress, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 
 import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';
@@ -9,6 +9,8 @@ import VideoList from 'src/features/videos/VideoList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 import { ContentBox } from 'src/components';
+import LoaderWrapper from 'src/components/LoaderWrapper';
+import { scrollToTop } from 'src/utils/ui';
 
 function VideoRecommendationPage() {
   const prov: PaginatedVideoSerializerWithCriteriaList = {
@@ -25,9 +27,9 @@ function VideoRecommendationPage() {
   const videoCount = videos.count || 0;
 
   function handleOffsetChange(newOffset: number) {
-    searchParams.delete('offset');
-    searchParams.append('offset', newOffset.toString());
-    history.push('/recommendations/?' + searchParams.toString());
+    searchParams.set('offset', newOffset.toString());
+    history.push({ search: searchParams.toString() });
+    scrollToTop();
   }
 
   useEffect(() => {
@@ -40,15 +42,18 @@ function VideoRecommendationPage() {
   }, [location.search]);
 
   return (
-    <ContentBox noMinPadding maxWidth="xl">
+    <ContentBox noMinPadding maxWidth="lg">
       <Box px={{ xs: 2, sm: 0 }}>
         <SearchFilter />
       </Box>
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <VideoList videos={videos.results || []} />
-      )}
+      <LoaderWrapper isLoading={isLoading}>
+        <VideoList
+          videos={videos.results || []}
+          emptyMessage={
+            isLoading ? '' : 'No video corresponds to your search criterias.'
+          }
+        />
+      </LoaderWrapper>
       {!isLoading && videoCount > 0 && (
         <Pagination
           offset={offset}

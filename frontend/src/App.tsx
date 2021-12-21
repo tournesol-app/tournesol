@@ -16,6 +16,7 @@ import ComparisonPage from './pages/comparisons/Comparison';
 import { PrivateRoute } from './features/login/PrivateRoute';
 import VideoCardPage from './pages/videos/VideoCard';
 import VideoRecommendationPage from './pages/videos/VideoRecommendation';
+import VideoRatingsPage from './pages/videos/VideoRatings';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
 import TrustedDomains from './pages/about/TrustedDomains';
@@ -72,6 +73,9 @@ function App() {
         </PrivateRoute>
         <PrivateRoute path="/rate_later">
           <RateLaterPage />
+        </PrivateRoute>
+        <PrivateRoute path="/ratings">
+          <VideoRatingsPage />
         </PrivateRoute>
         {/* User Management routes */}
         <Route path="/login">

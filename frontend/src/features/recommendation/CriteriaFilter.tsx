@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 
 import { mainCriteriaNames } from 'src/utils/constants';
-import { FilterSection } from 'src/components';
+import { TitledSection } from 'src/components';
 
 const useStyles = makeStyles(() => ({
   featuresContainer: {
@@ -113,7 +113,7 @@ function CriteriaFilter({
   }
 
   return (
-    <FilterSection title="Criteria">
+    <TitledSection title="Criteria">
       <Grid container spacing={1}>
         {mainCriteriaNames.map(([criteria, criteria_name]) => (
           <Grid item xs={12} sm={6} key={criteria}>
@@ -181,7 +181,7 @@ function CriteriaFilter({
           </Grid>
         ))}
       </Grid>
-    </FilterSection>
+    </TitledSection>
   );
 }
 
