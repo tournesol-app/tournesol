@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+import { theme } from 'src/theme';
+
 export const drawerOpenSlice = createSlice({
   name: 'drawerOpen',
   initialState: {
-    value: false,
+    value: window.innerWidth >= theme.breakpoints.values['sm'],
   },
   reducers: {
     openDrawer: (state) => {
