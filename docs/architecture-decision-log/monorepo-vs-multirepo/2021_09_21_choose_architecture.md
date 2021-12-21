@@ -21,7 +21,6 @@ Contents:
   * [Related decisions](#related-decisions)
   * [Related requirements](#related-requirements)
   * [Related artifacts](#related-artifacts)
-* [Notes](#notes)
 
 ## Summary
 
@@ -77,7 +76,7 @@ current architecture before the decision process starts.
 
 We have chosen the mono-repository architecture because it makes the
 development process easier, and encourages building a strong continuous
-integration pipeline in GitHub. It will increase the stability of the
+integration (CI) pipeline in GitHub. It will increase the stability of the
 Tournesol platform, making it deployable at any point in time.
 
 **development benefits**
@@ -99,8 +98,8 @@ As maintaining a healthy mono-repository depends on the CI quality, this
 architecture also makes the deployments easier and safer.
 
 Deploying the `head` of the repository will deploy software compatible with
-each others. No manual investigation will be required to determine of the
-deployed platform Tournesol platform will work.
+each others. No manual investigation will be required to determine if the
+deployed Tournesol platform will work.
 
 Having a single CI configuration for a mono-repository is more
 maintainable than having several CI configurations dispatched in several
@@ -157,10 +156,6 @@ runs the back end tests, the front end tests, and the end-to-end tests.
 
 The folder `.github/workflows` will contain the continuous integration
 configuration.
-
-## Notes
-
-... todo ...
 
 [gh-amatissart]: https://github.com/amatissart
 [gh-gresillesiffle]: https://github.com/gresillesiffle
