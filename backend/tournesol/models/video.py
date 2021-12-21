@@ -11,11 +11,11 @@ from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.html import format_html
-from settings.settings import CRITERIAS
 
 from languages.languages import LANGUAGES
 from tqdm.auto import tqdm
 
+from settings.settings import CRITERIAS
 from core.models import User
 from core.utils.models import (
     WithFeatures,
@@ -247,34 +247,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
         Video.objects.bulk_update(
             video_objects, batch_size=200, fields=["pareto_optimal"]
-        )
-
-    @staticmethod
-    def recompute_computed_properties(only_pending=False):
-        """Routine to pre-compute some tournesol statistics for each video"""
-        qs = Video.objects.all()
-
-        if only_pending:
-            logging.warning("Updating pending videos")
-            qs = qs.filter(is_update_pending=True)
-        else:
-            logging.warning("Updating all videos")
-
-        def process_video(v):
-            for f in Video.COMPUTED_PROPERTIES:
-                getattr(v, f)
-            v.is_update_pending = False
-            return v
-
-        video_objects = []
-        for v in tqdm(qs):
-            # computing new values
-            video_objects.append(process_video(v))
-
-        Video.objects.bulk_update(
-            video_objects,
-            batch_size=200,
-            fields=Video.COMPUTED_PROPERTIES + ["is_update_pending"],
         )
 
 
