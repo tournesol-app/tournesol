@@ -4,7 +4,7 @@ import { RootState } from '../../app/store';
 export const drawerOpenSlice = createSlice({
   name: 'drawerOpen',
   initialState: {
-    value: false,
+    value: true,
   },
   reducers: {
     openDrawer: (state) => {
