@@ -13,7 +13,7 @@ interface Props {
   title: string;
   value: string;
   choices: Record<string, string>;
-  multipleChoice: boolean;
+  multipleChoice?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -79,6 +79,7 @@ const ChoicesFilterSection = ({
                 <Typography
                   variant="body2"
                   color={checked ? 'secondary' : 'textPrimary'}
+                  style={{ textTransform: 'capitalize' }}
                 >
                   {choiceLabel}
                 </Typography>

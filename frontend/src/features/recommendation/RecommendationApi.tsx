@@ -1,8 +1,6 @@
 import { VideoService } from 'src/services/openapi';
-import { allCriteriaNamesObj } from 'src/utils/constants';
+import { allCriterias } from 'src/utils/constants';
 import { snakeToCamel } from 'src/utils/string';
-
-const CRITERIA_KEYS = Object.keys(allCriteriaNamesObj);
 
 export const getRecommendedVideos = async (searchString: string) => {
   const dayInMillisecondes = 1000 * 60 * 60 * 24;
@@ -59,7 +57,7 @@ export const getRecommendedVideos = async (searchString: string) => {
       uploader: params.get('uploader') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
       ...Object.fromEntries(
-        CRITERIA_KEYS.map((c) => [snakeToCamel(c), getNumberValue(c)])
+        allCriterias.map((c) => [snakeToCamel(c), getNumberValue(c)])
       ),
     });
   } catch (err) {

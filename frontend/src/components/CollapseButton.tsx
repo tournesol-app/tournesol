@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Button, Theme } from '@mui/material';
 import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme: Theme) => ({
   collapseButton: {
@@ -23,8 +24,17 @@ interface CollapseButtonProps {
   onClick?: (event: React.ChangeEvent<EventTarget>) => void;
 }
 
+const DefaultText = () => {
+  const { t } = useTranslation();
+  return (
+    <span style={{ textTransform: 'uppercase' }}>
+      {t('components.filtersButton')}
+    </span>
+  );
+};
+
 const CollapseButton = ({
-  children = 'Filters',
+  children = <DefaultText />,
   expanded,
   onClick,
 }: CollapseButtonProps) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Trans, useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box } from '@mui/material';
 
@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const HomePage = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -68,7 +69,7 @@ const HomePage = () => {
       <Grid container>
         <Grid item xs={12} md={8} className={classes.titleContainer}>
           <Typography variant="h1" className={classes.title}>
-            Collaborative Content Recommendations
+            {t('home.collaborativeContentRecommendations')}
           </Typography>
         </Grid>
         <Grid item xs={12} md={4} className={classes.imageContainer}>
@@ -81,14 +82,16 @@ const HomePage = () => {
             maxWidth="640px"
             alignItems="flex-start"
           >
-            <Typography variant="h1">What is Tournesol?</Typography>
+            <Typography variant="h1">{t('home.whatIsTournesol')}</Typography>
             <Typography paragraph>
-              Tournesol is an <strong>open source</strong> platform which aims
-              to <strong>collaboratively</strong> identify top videos of public
-              utility by eliciting contributors&apos; judgements on content
-              quality. We hope to contribute to making today&apos;s and
-              tomorrow&apos;s large-scale algorithms{' '}
-              <strong>robustly beneficial</strong> for all of humanity.
+              <Trans t={t} i18nKey="home.tournesolPlatformDescription">
+                Tournesol is an <strong>open source</strong> platform which aims
+                to <strong>collaboratively</strong> identify top videos of
+                public utility by eliciting contributors&apos; judgements on
+                content quality. We hope to contribute to making today&apos;s
+                and tomorrow&apos;s large-scale algorithms{' '}
+                <strong>robustly beneficial</strong> for all of humanity.
+              </Trans>
             </Typography>
           </Box>
         </Grid>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -35,6 +35,7 @@ async function usersMeExportsAllRetrieveBlob(): Promise<Blob> {
 }
 
 const ExportAllDataForm = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
   const { enqueueSnackbar } = useSnackbar();
@@ -51,10 +52,7 @@ const ExportAllDataForm = () => {
     try {
       await downloadExport();
     } catch (error) {
-      showErrorAlert(
-        enqueueSnackbar,
-        'An error seems to have occurred. If this error persists, please contact us.'
-      );
+      showErrorAlert(enqueueSnackbar, t('settings.errorOccurredDuringExport'));
       setLoading(false);
     }
   };
@@ -62,9 +60,7 @@ const ExportAllDataForm = () => {
   return (
     <Grid container spacing={2} direction="column" alignItems="stretch">
       <Grid item md={6}>
-        <Typography>
-          Download all the comparisons that you have submitted to Tournesol
-        </Typography>
+        <Typography>{t('settings.downloadAllComparisons')}</Typography>
       </Grid>
       <Grid item md={6}>
         {loading ? (
@@ -78,7 +74,7 @@ const ExportAllDataForm = () => {
             color="secondary"
             variant="outlined"
           >
-            Download file
+            {t('settings.downloadFile')}
           </Button>
         ) : (
           <Button
@@ -88,7 +84,7 @@ const ExportAllDataForm = () => {
             variant="contained"
             onClick={prepareExport}
           >
-            Prepare export
+            {t('settings.prepareExport')}
           </Button>
         )}
       </Grid>

@@ -4,6 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Link } from 'react-router-dom';
 
 import { handleWikiUrl } from 'src/utils/url';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Footer = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -39,13 +41,13 @@ const Footer = () => {
         target="_blank"
         rel="noreferrer"
       >
-        wiki
+        {t('footer.wiki')}
       </a>
       <Link className={classes.menuLink} to="/about/privacy_policy">
-        privacy policy
+        {t('footer.privacyPolicy')}
       </Link>
       <Link className={classes.menuLink} to="/about/donate">
-        donate
+        {t('footer.donate')}
       </Link>
       <a
         className={classes.menuLink}
@@ -53,7 +55,7 @@ const Footer = () => {
         target="_blank"
         rel="noreferrer"
       >
-        white paper
+        {t('footer.whitePaper')}
       </a>
       <a
         className={classes.menuLink}

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import { Info as InfoIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
-import { allCriteriaNames, optionalCriterias } from 'src/utils/constants';
+import {
+  allCriterias,
+  optionalCriterias,
+  getCriteriaName,
+} from 'src/utils/constants';
 
 import CriteriaSlider from './CriteriaSlider';
 
@@ -43,6 +47,7 @@ const ComparisonComponent = ({
   videoB: string;
   isComparisonPublic?: boolean;
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const castToComparison = (c: Comparison | null): Comparison => {
     return c
@@ -50,9 +55,9 @@ const ComparisonComponent = ({
       : {
           video_a: { video_id: videoA },
           video_b: { video_id: videoB },
-          criteria_scores: allCriteriaNames
-            .filter(([c]) => !optionalCriterias[c])
-            .map(([criteria]) => ({ criteria, score: 0 })),
+          criteria_scores: allCriterias
+            .filter((c) => !optionalCriterias[c])
+            .map((criteria) => ({ criteria, score: 0 })),
         };
   };
   const [comparison, setComparison] = useState<Comparison>(
@@ -97,10 +102,10 @@ const ComparisonComponent = ({
   );
 
   const handleCollapseCriterias = () => {
-    const optionalCriteriaNames = allCriteriaNames.filter(
-      ([criteria]) => optionalCriterias[criteria]
+    const optionalCriteriasKeys = allCriterias.filter(
+      (criteria) => optionalCriterias[criteria]
     );
-    optionalCriteriaNames.forEach(([criteria]) =>
+    optionalCriteriasKeys.forEach((criteria) =>
       handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
     );
   };
@@ -109,8 +114,8 @@ const ComparisonComponent = ({
     return (
       <div className={classes.root}>
         <Typography paragraph style={{ textAlign: 'center' }}>
-          These two videos are very similar, it is probably not useful to
-          compare them. 🌻
+          {t('comparison.videosAreSimilar')}
+          {' 🌻'}
         </Typography>
       </div>
     );
@@ -119,13 +124,13 @@ const ComparisonComponent = ({
   return (
     <div className={classes.root}>
       <div className={classes.centered}>
-        {allCriteriaNames
-          .filter(([c]) => !optionalCriterias[c])
-          .map(([criteria, criteria_name]) => (
+        {allCriterias
+          .filter((c) => !optionalCriterias[c])
+          .map((criteria) => (
             <CriteriaSlider
               key={criteria}
               criteria={criteria}
-              criteria_name={criteria_name}
+              criteria_name={getCriteriaName(t, criteria)}
               criteriaValue={criteriaValues[criteria]}
               disabled={submitted}
               handleSliderChange={handleSliderChange}
@@ -139,21 +144,21 @@ const ComparisonComponent = ({
           style={{ marginBottom: 8, color: showOptionalCriterias ? 'red' : '' }}
         >
           {showOptionalCriterias
-            ? 'Remove optional criterias'
-            : 'Add optional criterias'}
+            ? t('comparison.removeOptionalCriterias')
+            : t('comparison.addOptionalCriterias')}
         </Button>
         <Collapse
           in={showOptionalCriterias}
           timeout="auto"
           style={{ width: '100%' }}
         >
-          {allCriteriaNames
-            .filter(([c]) => optionalCriterias[c])
-            .map(([criteria, criteria_name]) => (
+          {allCriterias
+            .filter((c) => optionalCriterias[c])
+            .map((criteria) => (
               <CriteriaSlider
                 key={criteria}
                 criteria={criteria}
-                criteria_name={criteria_name}
+                criteria_name={getCriteriaName(t, criteria)}
                 criteriaValue={criteriaValues[criteria]}
                 disabled={submitted}
                 handleSliderChange={handleSliderChange}
@@ -162,9 +167,7 @@ const ComparisonComponent = ({
         </Collapse>
         {submitted && (
           <div id="id_submitted_text_info">
-            <Typography>
-              Change one of the video to submit a new comparison
-            </Typography>
+            <Typography>{t('comparison.changeOneVideo')}</Typography>
           </div>
         )}
         <Button
@@ -174,7 +177,7 @@ const ComparisonComponent = ({
           id="expert_submit_btn"
           onClick={submitted ? () => setSubmitted(false) : submitComparison}
         >
-          {submitted ? 'Edit comparison' : 'Submit'}
+          {submitted ? t('comparison.editComparison') : t('submit')}
         </Button>
         {isComparisonPublic && (
           <Box
@@ -187,8 +190,8 @@ const ComparisonComponent = ({
             <InfoIcon fontSize="small" color="inherit" />
             <Typography variant="caption" color="textSecondary">
               {initialComparison
-                ? 'This comparison is included in the public dataset.'
-                : 'After submission, this comparison will be included in the public dataset.'}
+                ? t('comparison.comparisonInPublicDataset')
+                : t('comparison.comparisonInPublicDatasetAfterSubmission')}
             </Typography>
           </Box>
         )}

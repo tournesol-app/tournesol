@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Redirect } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { i18n as i18nInterface } from 'i18next';
 
 import { useLoginState } from './hooks';
 import HomePage from './pages/home/Home';
@@ -29,19 +31,25 @@ import { LoginState } from './features/login/LoginState.model';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const initializeOpenAPI = (loginState: LoginState) => {
+const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
   OpenAPI.BASE = API_URL ?? '';
   OpenAPI.TOKEN = async () => loginState.access_token ?? '';
+  OpenAPI.HEADERS = async () => ({
+    // Set the current language in API requests to
+    // get localized error messages in the response.
+    'accept-language': i18n.resolvedLanguage,
+  });
 };
 
 function App() {
+  const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
   // `useState` is used here to call initializeOpenAPI before first render
-  useState(() => initializeOpenAPI(loginState));
+  useState(() => initializeOpenAPI(loginState, i18n));
 
   useEffect(() => {
-    initializeOpenAPI(loginState);
-  }, [loginState]);
+    initializeOpenAPI(loginState, i18n);
+  }, [loginState, i18n]);
 
   return (
     <Frame>

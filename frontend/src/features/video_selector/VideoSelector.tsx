@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-
+import { useTranslation } from 'react-i18next';
 import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -55,6 +55,7 @@ const VideoSelector = ({
   submitted = false,
 }: Props) => {
   const { videoId, rating } = value;
+  const { t } = useTranslation();
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
 
@@ -161,13 +162,16 @@ const VideoSelector = ({
       <div className={classes.controls}>
         <TextField
           InputProps={{ classes: { input: classes.input } }}
-          placeholder="Paste URL or Video ID"
+          placeholder={t('videoSelector.pasteUrlOrVideoId')}
           style={{ flex: 1 }}
           value={videoId || ''}
           onChange={handleChange}
           variant="standard"
         />
-        <Tooltip title="New Video" aria-label="new_video">
+        <Tooltip
+          title={`${t('videoSelector.newVideo')}`}
+          aria-label="new_video"
+        >
           <IconButton
             aria-label="new_video"
             onClick={loadNewVideo}

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-
 import { Link as RouterLink } from 'react-router-dom';
 import { useLocation, Redirect } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TextField, Grid, Button, Link, Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { ContentHeader, ContentBox } from 'src/components';
-
 import { getTokenAsync, selectLogin } from './loginSlice';
 import { hasValidToken } from './loginUtils';
 import { LoginState } from './LoginState.model';
@@ -15,8 +14,8 @@ import RedirectState from './RedirectState';
 import { showErrorAlert } from '../../utils/notifications';
 
 const Login = () => {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-
   const login: LoginState = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState('');
@@ -58,7 +57,7 @@ const Login = () => {
 
   return (
     <>
-      <ContentHeader title="Log in to Tournesol" />
+      <ContentHeader title={t('login.loginToTournesol')} />
       <ContentBox maxWidth="xs">
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3} direction="column" alignItems="stretch">
@@ -66,7 +65,7 @@ const Login = () => {
               <TextField
                 required
                 fullWidth
-                label="Username"
+                label={t('username')}
                 name="username"
                 color="secondary"
                 size="small"
@@ -79,7 +78,7 @@ const Login = () => {
               <TextField
                 required
                 fullWidth
-                label="Password"
+                label={t('password')}
                 name="password"
                 color="secondary"
                 size="small"
@@ -96,7 +95,7 @@ const Login = () => {
                 variant="contained"
                 disabled={login.status == 'loading'}
               >
-                Log In
+                {t('login.logInAction')}
               </Button>
             </Grid>
           </Grid>
@@ -108,7 +107,7 @@ const Login = () => {
             color="secondary"
             underline="hover"
           >
-            Forgot your password?
+            {t('login.forgotYourPassword')}
           </Link>
         </Box>
       </ContentBox>

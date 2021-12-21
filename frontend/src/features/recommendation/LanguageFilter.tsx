@@ -1,11 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChoicesFilterSection } from 'src/components';
-
-export const languageChoices = {
-  en: 'English',
-  fr: 'French',
-  de: 'German',
-};
 
 interface Props {
   value: string;
@@ -13,10 +8,18 @@ interface Props {
 }
 
 function LanguageFilter(props: Props) {
+  const { t } = useTranslation();
+
+  const languageChoices = {
+    en: t('language.english'),
+    fr: t('language.french'),
+    de: t('language.german'),
+  };
+
   return (
     <ChoicesFilterSection
-      title="Language"
-      multipleChoice={true}
+      title={t('filter.language')}
+      multipleChoice
       choices={languageChoices}
       {...props}
     ></ChoicesFilterSection>

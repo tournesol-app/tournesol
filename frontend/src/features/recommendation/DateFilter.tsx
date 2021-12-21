@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChoicesFilterSection } from 'src/components';
 
 interface Props {
@@ -6,18 +7,19 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-export const dateChoices = {
-  Today: 'Today',
-  Week: 'This week',
-  Month: 'This month',
-  Year: 'This year',
-};
-
 function DateFilter(props: Props) {
+  const { t } = useTranslation();
+
+  const dateChoices = {
+    Today: t('filter.today'),
+    Week: t('filter.thisWeek'),
+    Month: t('filter.thisMonth'),
+    Year: t('filter.thisYear'),
+  };
+
   return (
     <ChoicesFilterSection
-      title="Upload date"
-      multipleChoice={false}
+      title={t('filter.uploadDate')}
       choices={dateChoices}
       {...props}
     />

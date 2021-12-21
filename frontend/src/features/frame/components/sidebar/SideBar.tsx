@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ListItem,
   ListItemText,
@@ -88,6 +89,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const SideBar = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
@@ -98,38 +100,38 @@ const SideBar = () => {
   const isItemSelected = (url: string) => url === location.pathname;
 
   const menuItems = [
-    { targetUrl: '/', IconComponent: HomeIcon, displayText: 'Home' },
+    { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },
     {
       targetUrl: '/recommendations',
       IconComponent: VideoLibrary,
-      displayText: 'Recommendations',
+      displayText: t('menu.recommendations'),
     },
     { displayText: 'divider_1' },
     {
       targetUrl: '/comparison',
       IconComponent: CompareIcon,
-      displayText: 'Contribute',
+      displayText: t('menu.compare'),
     },
     {
       targetUrl: '/comparisons',
       IconComponent: ListIcon,
-      displayText: 'My comparisons',
+      displayText: t('menu.myComparisons'),
     },
     {
       targetUrl: '/ratings',
       IconComponent: StarsIcon,
-      displayText: 'My rated videos',
+      displayText: t('menu.myRatedVideos'),
     },
     {
       targetUrl: '/rate_later',
       IconComponent: WatchLaterIcon,
-      displayText: 'My rate later list',
+      displayText: t('menu.myRateLaterList'),
     },
     { displayText: 'divider_2' },
     {
       targetUrl: '/about',
       IconComponent: InfoIcon,
-      displayText: 'About',
+      displayText: t('menu.about'),
     },
   ];
 

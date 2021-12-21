@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 
 import Grid from '@mui/material/Grid';
@@ -15,6 +16,7 @@ import {
 import { AccountsService, ApiError } from 'src/services/openapi';
 
 const ProfileForm = () => {
+  const { t } = useTranslation();
   const { updateUsername } = useLoginState();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -28,7 +30,7 @@ const ProfileForm = () => {
           contactAdministrator(
             enqueueSnackbar,
             'error',
-            'Sorry, an error has occurred, cannot retrieve your profile.'
+            t('settings.errorOccurredWhenRetrievingProfile')
           );
         }
       );
@@ -39,7 +41,7 @@ const ProfileForm = () => {
     }
 
     retrieveProfile();
-  }, [updateUsername, enqueueSnackbar]);
+  }, [t, updateUsername, enqueueSnackbar]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -53,7 +55,7 @@ const ProfileForm = () => {
       displayErrors(
         enqueueSnackbar,
         reason,
-        'Sorry, an error has occurred, cannot update the profile.'
+        t('settings.errorOccurredWhenUpdatingProfile')
       );
     });
 
@@ -62,7 +64,10 @@ const ProfileForm = () => {
       if ('detail' in response) {
         showSuccessAlert(enqueueSnackbar, response['detail']);
       } else {
-        showSuccessAlert(enqueueSnackbar, 'Profile changed successfully');
+        showSuccessAlert(
+          enqueueSnackbar,
+          t('settings.profileChangedSuccessfully')
+        );
       }
 
       updateUsername(username);
@@ -78,7 +83,7 @@ const ProfileForm = () => {
           <TextField
             required
             fullWidth
-            label="Username"
+            label={t('username')}
             name="username"
             color="secondary"
             size="small"
@@ -89,9 +94,7 @@ const ProfileForm = () => {
             inputProps={{ 'data-testid': 'username' }}
           />
           <Typography variant="caption">
-            Your username will appear in the Tournesol&apos;s public database if
-            you choose to make any of your data on Tournesol public. You can
-            change it at any time.
+            {t('settings.captionUsernameWillAppearInPublicDatabase')}
           </Typography>
         </Grid>
         <Grid item>
@@ -102,7 +105,7 @@ const ProfileForm = () => {
             variant="contained"
             disabled={disabled}
           >
-            Update profile
+            {t('settings.updateProfile')}
           </Button>
         </Grid>
       </Grid>
