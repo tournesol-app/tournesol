@@ -26,6 +26,8 @@ Contents:
 
 ### Issue
 
+Explain the organization's situation.
+
 Describe the architectural design issue we're addressing, leaving no questions
 about why we're addressing this issue now.
 
@@ -37,8 +39,16 @@ Clearly state the position we've selected.
 
 ### Assumptions
 
+Clearly describe the underlying assumptions in the environment in which we're
+making the decision.
+
+Include rationale and considerations based on social and skills makeups of the
+teams.
 
 ### Constraints
+
+Capture any additional constraints to the environment that the chosen position
+might pose.
 
 ### Positions
 
@@ -56,9 +66,9 @@ This is probably as important as the decision itself.
 
 A decision comes with many implications.
 
-For example, a decision might introduce a need to make other decisions, create
-new requirements, or modify existing requirements; pose additional constraints
-to the environment; or require additional staff training, etc.
+**Right approach** - We need to start doing X instead of Y.
+
+**Wrong approach** - Explaining the position in terms of pros and cons.
 
 ## Related
 
@@ -72,8 +82,7 @@ Map the decision to objectives and requirements.
 
 ### Related artifacts
 
-List the related architecture, design, or scope documents that this decision
-impacts.
+List the related architecture or design documents that this decision impacts.
 
 ### Related principles
 
@@ -82,5 +91,5 @@ consistent with one or more of them.
 
 ## Notes
 
-Because the decision-making process can be long, it's useful to capture notes
-and issues that the team discusses during the socialization process.
+It's useful to capture notes and issues that the team discusses during the
+decision process.
