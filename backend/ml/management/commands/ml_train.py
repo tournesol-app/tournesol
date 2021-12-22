@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 from tournesol.models import (
     ComparisonCriteriaScore,
@@ -88,6 +89,7 @@ def save_data(video_scores, contributor_rating_scores):
                 uncertainty=uncertainty,
             )
             for video_id, criteria, score, uncertainty in video_scores
+            if not np.isnan(score)
         ]
     )
 
@@ -124,6 +126,7 @@ def save_data(video_scores, contributor_rating_scores):
                 uncertainty=uncertainty,
             )
             for contributor_id, video_id, criteria, score, uncertainty in contributor_rating_scores
+            if not np.isnan(score)
         ]
     )
 
