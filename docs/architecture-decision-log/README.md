@@ -88,12 +88,12 @@ The URI must point to the last updated version of the new decision.
 
 Example:
 
-> Status: **superseded by** [2021_12_12 create an ADL][adr-20211212-create-an-adl]
+> Status: **superseded by** [2021-12-12 Create an ADL][adr-20211212-create-an-adl]
 
 Raw Markdown:
 
 ```markdown
-Status: **superseded by** [2021_12_12 create an ADL](https://github.com/tournesol-app/tournesol/blob/adl/docs/architecture-decision-log/architecture-knowledge/2021_12_12_create_an_adl.md)
+Status: **superseded by** [2021-12-12 Create an ADL](https://github.com/tournesol-app/tournesol/blob/adl/docs/architecture-decision-log/architecture-knowledge/2021_12_12_create_an_adl.md)
 ```
 
 ### Update more section of an A.D.R.?
@@ -137,7 +137,7 @@ https://creativecommons.org/publicdomain/zero/1.0/
 
 https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
-[adr-20211212-create-an-adl]: https://github.com/tournesol-app/tournesol/blob/adl/docs/architecture-decision-log/architecture-knowledge/2021_12_12_create_an_adl.md
+[adr-20211212-create-an-adl]: https://github.com/tournesol-app/tournesol/blob/adl/docs/architecture-decision-log/architecture-knowledge/2021-12-12_create_an_adl.md
 
 [github-adr]: https://github.com/joelparkerhenderson/architecture-decision-record
 [github-adr-examples]: https://github.com/joelparkerhenderson/architecture-decision-record/tree/main/examples
