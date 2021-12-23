@@ -332,7 +332,7 @@ function VideoCard({
                   >
                     {{ count: nbRatings }} comparisons by
                   </Trans>
-                </span>
+                </span>{' '}
                 <span className={classes.contributors}>
                   <Trans
                     t={t}
