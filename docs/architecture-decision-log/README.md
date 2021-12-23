@@ -14,6 +14,7 @@ Learn more about A.D.R. in [this other documentation][github-adr].
 
 Table of Content
 
+* [What's new](#whats-new)
 * [Keywords](#keywords)
 * [Usage](#summary)
   * [Rules](#rules)
@@ -23,6 +24,10 @@ Table of Content
   * [The A.D.R. template](#the-ADR-template)
   * [Examples](#examples)
 * [License](#license)
+
+## What's new?
+
+See the complete A.D.L. history in the [CHANGELOG.md](./CHANGELOG.md).
 
 ## Keywords
 
@@ -72,9 +77,11 @@ If this new decision is related to a new topic, create a new sub-folder
 instead.
 
 Prefix the newly created file by the date of the decision, following the
-format `YYYY_MM_DD_`.
+format `YYYY-MM-DD_`.
 
-Finally, edit the file and describe the decision.
+Edit the file and describe the decision.
+
+Finally, add the decision to the `CHANGELOG.md` 
 
 ### Update a decision record's status
 
@@ -82,7 +89,8 @@ If a decision becomes obsolete, or is replaced by a new one, its status must
 be updated accordingly.
 
 Edit the A.D.R. and set the status field to **deprecated**, or
-**superseded by** followed by a URI pointing to the new decision.
+**superseded by** followed by a URI pointing to the new decision. Record the
+update by adding a new line in the `CHANGELOG.md`.
 
 The URI must point to the last updated version of the new decision. 
 
@@ -102,6 +110,8 @@ In theory a published A.D.R. should not be altered.
 
 In practice some information can be added afterward, like missing deciders,
 forgotten related artifacts, notes, etc.
+
+These kinds of correction don't require to update the `CHANGELOG.md`.
 
 ## Documentation
 
@@ -137,7 +147,7 @@ https://creativecommons.org/publicdomain/zero/1.0/
 
 https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
-[adr-20211212-create-an-adl]: https://github.com/tournesol-app/tournesol/blob/adl/docs/architecture-decision-log/architecture-knowledge/2021-12-12_create_an_adl.md
+[adr-20211212-create-an-adl]: ./architecture-knowledge/2021-12-12_create_an_adl.md
 
 [github-adr]: https://github.com/joelparkerhenderson/architecture-decision-record
 [github-adr-examples]: https://github.com/joelparkerhenderson/architecture-decision-record/tree/main/examples
