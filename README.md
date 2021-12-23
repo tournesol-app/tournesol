@@ -1,6 +1,6 @@
 # Tournesol
 
-This repository host the free and open source code of the Tournesol platform.
+This repository hosts the free and open source code of the Tournesol platform.
 
 Learn more about the project on our [Wiki][tournesol-wiki], or meet our community
 on [Discord][tournesol-discord-join].
