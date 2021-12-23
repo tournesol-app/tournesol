@@ -26,7 +26,7 @@ Contents:
 
 ### Issue
 
-Explain the organization's situation.
+Briefly summarize the organization's situation.
 
 Describe the architectural design issue we're addressing, leaving no questions
 about why we're addressing this issue now.
@@ -47,7 +47,7 @@ teams.
 
 ### Constraints
 
-Capture any additional constraints to the environment that the chosen position
+Include any additional constraints to the environment that the chosen position
 might pose.
 
 ### Positions
@@ -64,7 +64,7 @@ This is probably as important as the decision itself.
 
 ### Implications
 
-A decision comes with many implications.
+List the implications that come with the position.
 
 **Right approach** - We need to start doing X instead of Y.
 
@@ -78,7 +78,7 @@ When many decisions are related, we can list them here.
 
 ### Related requirements
 
-Map the decision to objectives and requirements.
+Map this decision to objectives and requirements.
 
 ### Related artifacts
 
@@ -91,5 +91,5 @@ consistent with one or more of them.
 
 ## Notes
 
-It's useful to capture notes and issues that the team discusses during the
+It's useful to keep notes and issues that the team discusses during the
 decision process.
