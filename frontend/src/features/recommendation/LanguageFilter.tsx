@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChoicesFilterSection } from 'src/components';
 
-const languageChoices = {
+export const languageChoices = {
   en: 'English',
   fr: 'French',
   de: 'German',

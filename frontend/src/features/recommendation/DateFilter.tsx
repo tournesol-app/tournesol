@@ -6,7 +6,7 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-const dateChoices = {
+export const dateChoices = {
   Today: 'Today',
   Week: 'This week',
   Month: 'This month',
