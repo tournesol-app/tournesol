@@ -17,6 +17,7 @@ function DateFilter(props: Props) {
   return (
     <ChoicesFilterSection
       title="Upload date"
+      exclusiveChoice={true}
       choices={dateChoices}
       {...props}
     />

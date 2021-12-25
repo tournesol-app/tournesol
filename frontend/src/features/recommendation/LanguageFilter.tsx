@@ -16,6 +16,7 @@ function LanguageFilter(props: Props) {
   return (
     <ChoicesFilterSection
       title="Language"
+      exclusiveChoice={false}
       choices={languageChoices}
       {...props}
     ></ChoicesFilterSection>
