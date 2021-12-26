@@ -103,6 +103,7 @@ const Search = () => {
     event.preventDefault();
     searchParams.delete('search');
     searchParams.append('search', search);
+    searchParams.delete('offset');
     history.push('/recommendations/?' + searchParams.toString());
   };
 
