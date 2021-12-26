@@ -105,12 +105,10 @@ const Search = () => {
     searchParams.append('search', search);
     searchParams.delete('offset');
     history.push('/recommendations/?' + searchParams.toString());
-  
   };
 
   return (
-   
-   <Grid item md={4}>
+    <Grid item md={4}>
       <form onSubmit={onSubmit} className={classes.search}>
         <input
           type="text"
