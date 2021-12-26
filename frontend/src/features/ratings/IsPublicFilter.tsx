@@ -15,7 +15,7 @@ function IsPublicFilter(props: FilterProps) {
   return (
     <ChoicesFilterSection
       title="Filter by visibility"
-      exclusiveChoice={true}
+      multipleChoice={false}
       choices={isPublicChoices}
       {...props}
     ></ChoicesFilterSection>

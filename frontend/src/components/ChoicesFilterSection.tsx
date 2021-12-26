@@ -1,14 +1,19 @@
 import React from 'react';
 
-import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
-import { CheckCircle, CheckCircleOutline } from '@material-ui/icons';
 import { TitledSection } from 'src/components';
+import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
+import {
+  CheckCircle,
+  CheckCircleOutline,
+  CheckBox,
+  CheckBoxOutlineBlank,
+} from '@material-ui/icons';
 
 interface Props {
   title: string;
   value: string;
   choices: Record<string, string>;
-  exclusiveChoice: boolean;
+  multipleChoice: boolean;
   onChange: (value: string) => void;
 }
 
@@ -16,18 +21,11 @@ const ChoicesFilterSection = ({
   title,
   value,
   choices,
-  exclusiveChoice,
+  multipleChoice,
   onChange,
 }: Props) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (exclusiveChoice) {
-      // Only one value allowed
-      if (event.target.checked) {
-        onChange(event.target.name);
-      } else {
-        onChange('');
-      }
-    } else {
+    if (multipleChoice) {
       // Multiple values allowed
       let all_values = value ? value.split(',') : [];
 
@@ -39,23 +37,36 @@ const ChoicesFilterSection = ({
         all_values = all_values.filter((item) => item !== event.target.name);
       }
       onChange(all_values.join(','));
+    } else {
+      // Only one value allowed
+      if (event.target.checked) {
+        onChange(event.target.name);
+      } else {
+        onChange('');
+      }
     }
   };
+
+  const valuesList = multipleChoice ? value.split(',') : [value];
 
   return (
     <TitledSection title={title}>
       <Box display="flex" flexDirection="column">
         {Object.entries(choices).map(([choiceValue, choiceLabel]) => {
-          const checked = exclusiveChoice
-            ? value === choiceValue
-            : value != '' && value.split(',').includes(choiceValue);
+          const checked = valuesList.includes(choiceValue);
 
           return (
             <FormControlLabel
               control={
                 <Checkbox
-                  icon={<CheckCircleOutline />}
-                  checkedIcon={<CheckCircle />}
+                  icon={
+                    multipleChoice ? (
+                      <CheckBoxOutlineBlank />
+                    ) : (
+                      <CheckCircleOutline />
+                    )
+                  }
+                  checkedIcon={multipleChoice ? <CheckBox /> : <CheckCircle />}
                   checked={checked}
                   onChange={handleChange}
                   name={choiceValue}
