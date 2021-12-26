@@ -27,6 +27,7 @@ function VideoRecommendationPage() {
   const videoCount = videos.count || 0;
 
   function handleOffsetChange(newOffset: number) {
+  
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
     scrollToTop();
@@ -56,7 +57,7 @@ function VideoRecommendationPage() {
       </LoaderWrapper>
       {!isLoading && videoCount > 0 && (
         <Pagination
-          offset={offset}
+          offset= {offset}
           count={videoCount}
           onOffsetChange={handleOffsetChange}
           limit={limit}
