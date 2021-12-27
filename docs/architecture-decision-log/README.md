@@ -14,7 +14,7 @@ Learn more about A.D.R. in [this other documentation][github-adr].
 
 Table of Content
 
-* [What's new](#whats-new)
+* [What's new?](#whats-new)
 * [Keywords](#keywords)
 * [Usage](#summary)
   * [Rules](#rules)
