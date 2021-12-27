@@ -131,19 +131,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PlayerWrapper = ({
-  duration,
-  children,
-}: {
-  duration?: string;
-  children: React.ReactNode;
-}) => {
+const PlayerWrapper = React.forwardRef(function PlayerWrapper(
+  {
+    duration,
+    children,
+  }: {
+    duration?: string;
+    children: React.ReactNode;
+  },
+  ref
+) {
   const [isDurationVisible, setIsDurationVisible] = useState(true);
   return (
     <Box
       position="relative"
       height="100%"
       onClick={() => setIsDurationVisible(false)}
+      // Use spread operator to work around missing typing for 'ref' in MUI `Box`
+      // See https://github.com/mui-org/material-ui/issues/17010
+      {...{ ref }}
     >
       {isDurationVisible && duration && (
         <Box
@@ -163,7 +169,7 @@ const PlayerWrapper = ({
       {children}
     </Box>
   );
-};
+});
 
 function VideoCard({
   video,
