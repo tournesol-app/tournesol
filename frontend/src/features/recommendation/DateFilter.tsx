@@ -6,7 +6,7 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-const dateChoices = {
+export const dateChoices = {
   Today: 'Today',
   Week: 'This week',
   Month: 'This month',
@@ -17,6 +17,7 @@ function DateFilter(props: Props) {
   return (
     <ChoicesFilterSection
       title="Upload date"
+      multipleChoice={false}
       choices={dateChoices}
       {...props}
     />

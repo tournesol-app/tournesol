@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChoicesFilterSection } from 'src/components';
 
-const languageChoices = {
+export const languageChoices = {
   en: 'English',
   fr: 'French',
   de: 'German',
@@ -16,6 +16,7 @@ function LanguageFilter(props: Props) {
   return (
     <ChoicesFilterSection
       title="Language"
+      multipleChoice={true}
       choices={languageChoices}
       {...props}
     ></ChoicesFilterSection>
