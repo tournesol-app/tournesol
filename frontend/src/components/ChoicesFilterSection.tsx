@@ -21,7 +21,7 @@ const ChoicesFilterSection = ({
   title,
   value,
   choices,
-  multipleChoice,
+  multipleChoice = false,
   onChange,
 }: Props) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
