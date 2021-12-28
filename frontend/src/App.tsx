@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Redirect } from 'react-router-dom';
 
 import { useLoginState } from './hooks';
 import HomePage from './pages/home/Home';
@@ -13,7 +13,8 @@ import DonatePage from './pages/about/Donate';
 import RateLaterPage from './pages/rateLater/RateLater';
 import Frame from './features/frame/Frame';
 import ComparisonPage from './pages/comparisons/Comparison';
-import { PrivateRoute } from './features/login/PrivateRoute';
+import PublicRoute from './features/login/PublicRoute';
+import PrivateRoute from './features/login/PrivateRoute';
 import VideoCardPage from './pages/videos/VideoCard';
 import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import VideoRatingsPage from './pages/videos/VideoRatings';
@@ -46,25 +47,25 @@ function App() {
     <Frame>
       <Switch>
         {/* About routes */}
-        <Route path="/about/privacy_policy">
+        <PublicRoute path="/about/privacy_policy">
           <PrivacyPolicy />
-        </Route>
-        <Route path="/about/trusted_domains">
+        </PublicRoute>
+        <PublicRoute path="/about/trusted_domains">
           <TrustedDomains />
-        </Route>
-        <Route path="/about/donate">
+        </PublicRoute>
+        <PublicRoute path="/about/donate">
           <DonatePage />
-        </Route>
-        <Route path="/about">
+        </PublicRoute>
+        <PublicRoute path="/about">
           <About />
-        </Route>
+        </PublicRoute>
         {/* Videos and Comparisons routes */}
-        <Route path="/video/:video_id">
+        <PublicRoute path="/video/:video_id">
           <VideoCardPage />
-        </Route>
-        <Route path="/recommendations">
+        </PublicRoute>
+        <PublicRoute path="/recommendations">
           <VideoRecommendationPage />
-        </Route>
+        </PublicRoute>
         <PrivateRoute path="/comparisons">
           <ComparisonListPage />
         </PrivateRoute>
@@ -78,38 +79,38 @@ function App() {
           <VideoRatingsPage />
         </PrivateRoute>
         {/* User Management routes */}
-        <Route path="/login">
+        <PublicRoute path="/login">
           <LoginPage />
-        </Route>
+        </PublicRoute>
         <PrivateRoute path="/settings/profile">
           <SettingsProfilePage />
         </PrivateRoute>
         <PrivateRoute path="/settings/account">
           <SettingsAccountPage />
         </PrivateRoute>
-        <Route path="/signup">
+        <PublicRoute path="/signup">
           {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
-        </Route>
-        <Route path="/verify-user">
+        </PublicRoute>
+        <PublicRoute path="/verify-user">
           <VerifySignature verify="user" />
-        </Route>
-        <Route path="/verify-email">
+        </PublicRoute>
+        <PublicRoute path="/verify-email">
           <VerifySignature verify="email" />
-        </Route>
-        <Route path="/forgot">
+        </PublicRoute>
+        <PublicRoute path="/forgot">
           {isLoggedIn ? (
             <Redirect to="/settings/account" />
           ) : (
             <ForgotPassword />
           )}
-        </Route>
-        <Route path="/reset-password">
+        </PublicRoute>
+        <PublicRoute path="/reset-password">
           <ResetPassword />
-        </Route>
+        </PublicRoute>
         {/* Home page */}
-        <Route path="/">
+        <PublicRoute path="/">
           <HomePage />
-        </Route>
+        </PublicRoute>
       </Switch>
     </Frame>
   );
