@@ -20,7 +20,7 @@ def enum_list(*lst):
     return zip(lst, lst)
 
 
-class WithDynamicFields(object):
+class WithDynamicFields:
     """Add dynamically-created fields to a model."""
 
     fields_created = False
@@ -68,7 +68,7 @@ class WithFeatures:
         return self.features_as_vector - self.VECTOR_OFFSET
 
 
-class WithEmbedding(object):
+class WithEmbedding:
     """Define embedding setters and getters."""
 
     _EMBEDDING_FIELD = "embedding"

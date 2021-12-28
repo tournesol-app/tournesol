@@ -14,7 +14,6 @@ from django.db.models import (
     Count,
 )
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils import timezone
 
 import computed_property
 
@@ -27,7 +26,7 @@ from core.utils.models import (
 from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
 
 
-class Comparison(models.Model, WithFeatures):
+class Comparison(models.Model):
     """Rating given by a user."""
 
     class Meta:
@@ -81,14 +80,9 @@ class Comparison(models.Model, WithFeatures):
     )
 
     @property
-    def video_first_second(self, videos=None):
+    def video_first_second(self):
         """String representing two video IDs in sorted order."""
-        if videos is None:
-            videos = [self.video_1, self.video_2]
-
-        videos = [x.id for x in videos]
-        a, b = min(videos), max(videos)
-        b = max(videos)
+        a, b = sorted([self.video_1_id, self.video_2_id])
         return f"{a}_{b}"
 
     @staticmethod
@@ -196,18 +190,6 @@ class Comparison(models.Model, WithFeatures):
             video = Comparison.sample_video_to_rate(username)
         return video
 
-    def weights_vector(self):
-        """How important are the individual scores, according to the rater?"""
-        return self._features_as_vector_fcn(suffix="_weight")
-
-    def save(self, *args, **kwargs):
-        """Save the object data."""
-        if not kwargs.pop("ignore_lastedit", False):
-            self.datetime_lastedit = timezone.now()
-        if self.pk is None:
-            kwargs["force_insert"] = True
-        return super().save(*args, **kwargs)
-
     def __str__(self):
         return "%s [%s/%s]" % (self.user, self.video_1, self.video_2)
 
@@ -226,10 +208,9 @@ class ComparisonCriteriaScore(models.Model):
         help_text="Name of the criteria",
         db_index=True,
     )
-    # TODO: currently scores range from [0, 100], update them to range from [-10, 10]
-    # and add validation
     score = models.FloatField(
         help_text="Score for the given comparison",
+        validators=[MinValueValidator(-10.0), MaxValueValidator(10.0)],
     )
     # TODO: ask Lê if weights should be in a certain range (maybe always > 0)
     # and add validation if required
