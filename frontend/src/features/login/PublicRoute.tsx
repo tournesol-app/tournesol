@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Route } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
@@ -13,15 +13,19 @@ interface Props {
 const PublicRoute = (props: Props) => {
   const login: LoginState = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
-  const [shouldTryRefresh, setShouldTryRefresh] = useState(true);
 
   useEffect(() => {
-    if (shouldTryRefresh && login.refresh_token && !isLoggedIn(login)) {
+    const should_refresh =
+      !isLoggedIn(login) ||
+      !login.access_token_expiration_date ||
+      // the token should be refreshed if it expires in less than 10 minutes
+      new Date(login.access_token_expiration_date) <
+        new Date(new Date().getTime() + 600000);
+    if (login.status !== 'loading' && login.refresh_token && should_refresh) {
       console.log('token invalid but refresh token present, trying to refresh');
-      setShouldTryRefresh(false);
       dispatch(getTokenFromRefreshAsync(login.refresh_token));
     }
-  }, [shouldTryRefresh, login, dispatch]);
+  }, [login, dispatch]);
 
   return <Route {...props} />;
 };
