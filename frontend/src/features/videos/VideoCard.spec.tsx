@@ -1,7 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+
+import { LanguageEnum } from 'src/services/openapi';
 
 import { VideoObject } from 'src/utils/types';
+import { theme } from 'src/theme';
 import VideoCard from './VideoCard';
 
 describe('VideoCard content', () => {
@@ -14,10 +18,15 @@ describe('VideoCard content', () => {
       uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
-      criteria_scores: [],
       duration: 120,
+      publication_date: '',
+      language: LanguageEnum.FR,
     };
-    render(<VideoCard video={video} />);
+    render(
+      <ThemeProvider theme={theme}>
+        <VideoCard video={video} />
+      </ThemeProvider>
+    );
 
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
       'Video title'
@@ -52,8 +61,11 @@ describe('VideoCard content', () => {
       ],
       duration: 4200,
     };
-    render(<VideoCard video={video} />);
-
+    render(
+      <ThemeProvider theme={theme}>
+        <VideoCard video={video} />
+      </ThemeProvider>
+    );
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
       'Video title'
     );
@@ -96,8 +108,11 @@ describe('VideoCard content', () => {
       ],
       duration: 120,
     };
-    render(<VideoCard video={video} />);
-
+    render(
+      <ThemeProvider theme={theme}>
+        <VideoCard video={video} />
+      </ThemeProvider>
+    );
     expect(screen.queryByTestId('video-card-overall-score')).toHaveTextContent(
       '17'
     );
