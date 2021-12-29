@@ -2,11 +2,13 @@ import csv
 import io
 
 from django.test import TestCase
+from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Comparison, Video, ComparisonCriteriaScore, ContributorRating
+
 
 class ExportTest(TestCase):
     def setUp(self) -> None:
@@ -78,6 +80,7 @@ class ExportTest(TestCase):
         self.assertEqual(len(comparison_list), 1)
         self.assertEqual(comparison_list[0]['video_a'], "test_public_data_1")
         self.assertEqual(comparison_list[0]['video_b'], "test_public_data_2")
+        cache.clear()
     
     def test_not_authenticated_can_download_public_comparisons_multiple_users(self):
         self.public_comparisons2 = User.objects.create_user(username="user_public2", email="user_public2@example.com")
@@ -97,3 +100,4 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[0]['video_b'], "test_public_data_2")
         self.assertEqual(comparison_list[1]['video_a'], "test_public_data_3")
         self.assertEqual(comparison_list[1]['video_b'], "test_public_data_4")
+        cache.clear()
