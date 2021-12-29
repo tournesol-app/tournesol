@@ -45,6 +45,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
             placeholder="Video id or URL"
             onChange={(e) => setFormVideo(e.target.value)}
             value={formVideo}
+            variant="standard"
           />
         </Grid>
 

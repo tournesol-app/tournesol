@@ -109,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'end',
     flexDirection: 'column',
+    padding: 4,
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'row',
     },
