@@ -11,7 +11,7 @@ import { useLoginState } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
 import { contactAdministratorLowSeverity } from '../../../../utils/notifications';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   AccountInfo: {
     display: 'flex',
     alignItems: 'center',
@@ -23,6 +23,7 @@ const useStyles = makeStyles({
     textTransform: 'initial',
     fontWeight: 'bold',
     borderWidth: '2px',
+    color: theme.palette.text.primary,
   },
   JoinUsButton: {
     background: '#3198C4',
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
     },
     color: '#FFFFFF',
   },
-});
+}));
 
 const LoggedInActions = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -55,12 +56,16 @@ const LoggedInActions = () => {
     <>
       <Button
         variant="outlined"
+        color="secondary"
+        style={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
         onClick={logoutProcess}
         className={classes.HeaderButton}
       >
         Logout
       </Button>
       <Button
+        variant="text"
+        color="secondary"
         component={Link}
         to="/settings/profile"
         className={classes.HeaderButton}
@@ -78,8 +83,10 @@ const LoggedOutActions = () => {
   return (
     <>
       <Button
-        component={Link}
         variant="outlined"
+        color="secondary"
+        style={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
+        component={Link}
         className={classes.HeaderButton}
         to="/login"
       >
