@@ -17,6 +17,7 @@ const useStyles = makeStyles(() => ({
     margin: 4,
     textDecoration: 'none',
     fontStyle: 'normal',
+    fontSize: '80%',
     fontWeight: 'bold',
     color: '#A09B87',
     display: 'block',
