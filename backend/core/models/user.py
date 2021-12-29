@@ -10,6 +10,7 @@ from django.db.models.functions import Lower
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.query import QuerySet
+from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 
 from settings.settings import MAX_VALUE, CRITERIAS, CRITERIAS_DICT
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
 
+    email = models.EmailField(_('email address'), unique=True)
     is_demo = models.BooleanField(default=False, help_text="Is a demo account?")
     first_name = models.CharField(
         max_length=100, blank=True, null=True, help_text="First name"

@@ -15,8 +15,8 @@ class RatingApi(TestCase):
     _other_user = "random_user"
 
     def setUp(self):
-        self.user1 = User.objects.create(username=self._user)
-        self.user2 = User.objects.create(username=self._other_user)
+        self.user1 = User.objects.create(username=self._user, email="user1@test")
+        self.user2 = User.objects.create(username=self._other_user, email="user2@test")
         video1 = Video.objects.create(video_id='4g4XLGFTDG8')
         video2 = Video.objects.create(video_id='4g4XLGFTDG9')
         video3 = Video.objects.create(video_id='video-id-03')

@@ -34,8 +34,8 @@ class VideoRateLaterApi(TestCase):
         At least two users are required, each of them having a distinct rate
         later list.
         """
-        user1 = User.objects.create(username=self._user)
-        user2 = User.objects.create(username=self._other)
+        user1 = User.objects.create(username=self._user, email="user1@test")
+        user2 = User.objects.create(username=self._other, email="user2@test")
 
         video1 = Video.objects.create(
             video_id="test_video_id_1", name=self._users_video
