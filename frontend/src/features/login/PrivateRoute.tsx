@@ -1,21 +1,23 @@
 import React from 'react';
-import { useAppSelector } from '../../app/hooks';
+import { Redirect } from 'react-router-dom';
+
+import { useAppSelector } from 'src/app/hooks';
 import { selectLogin } from './loginSlice';
 import { isLoggedIn } from './loginUtils';
-import { Route, Redirect } from 'react-router-dom';
 import RedirectState from './RedirectState';
+import PublicRoute from './PublicRoute';
 
 interface Props {
   children?: React.ReactNode;
   [propName: string]: unknown;
 }
 
-export const PrivateRoute = ({ children, ...rest }: Props) => {
+const PrivateRoute = ({ children, ...rest }: Props) => {
   const login = useAppSelector(selectLogin);
   return (
-    <Route
+    <PublicRoute
       {...rest}
-      render={({ location }) =>
+      render={({ location }: { location: string }) =>
         isLoggedIn(login) ? (
           children
         ) : (
@@ -30,3 +32,5 @@ export const PrivateRoute = ({ children, ...rest }: Props) => {
     />
   );
 };
+
+export default PrivateRoute;

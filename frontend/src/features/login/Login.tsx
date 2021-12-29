@@ -3,11 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { TextField, Grid, Button, Link, Box } from '@material-ui/core';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import {
-  getTokenAsync,
-  selectLogin,
-  getTokenFromRefreshAsync,
-} from './loginSlice';
+import { getTokenAsync, selectLogin } from './loginSlice';
 import { LoginState } from './LoginState.model';
 import { hasValidToken } from './loginUtils';
 import { useLocation, Redirect } from 'react-router-dom';
@@ -20,9 +16,6 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [validToken, setValidToken] = useState(hasValidToken(login));
-  const [shouldTryRefresh, setShouldTryRefresh] = useState(
-    login.refresh_token && !hasValidToken(login)
-  );
   const [loginError, setLoginError] = useState<Error | null>(null);
   const location = useLocation();
   const { from: fromUrl } = (location?.state ?? {}) as RedirectState;
@@ -38,14 +31,6 @@ const Login = () => {
       }
     }
   }, [login, validToken]);
-
-  useEffect(() => {
-    if (!validToken && shouldTryRefresh && login.refresh_token) {
-      console.log('token invalid but refresh token present, trying to refresh');
-      setShouldTryRefresh(false);
-      dispatch(getTokenFromRefreshAsync(login.refresh_token));
-    }
-  }, [validToken, shouldTryRefresh, login.refresh_token, dispatch]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

@@ -1,13 +1,13 @@
 import React from 'react';
+import { MemoryRouter, Switch, Route } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
+
 import loginReducer, { initialState } from './loginSlice';
 import { LoginState } from './LoginState.model';
-import { PrivateRoute } from './PrivateRoute';
-import { MemoryRouter } from 'react-router-dom';
-import { Switch, Route } from 'react-router-dom';
+import PrivateRoute from './PrivateRoute';
 
 const renderComponent = ({
   login,

@@ -19,101 +19,102 @@ import {
   getTokenFromRefreshAsync,
 } from './loginSlice';
 
-interface MockState {
+export interface MockState {
   token: LoginState;
 }
 
-describe('login feature', () => {
-  const mockStore: MockStoreCreator<
-    MockState,
-    ThunkDispatch<LoginState, undefined, AnyAction>
-  > = configureStore([thunk]);
-  const api_url = process.env.REACT_APP_API_URL;
-  const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
-  const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
-  fetchMock
-    .mock(
-      {
-        name: 'valid_login',
-        url: api_url + '/o/token/',
-        method: 'POST',
-        headers: {
-          Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
-        },
-        functionMatcher: (_, { body }) => {
-          const params = new URLSearchParams(body?.toString());
-          return (
-            params.get('grant_type') === 'password' &&
-            params.get('username') === 'jst' &&
-            params.get('password') === 'yop' &&
-            params.get('scope') === 'read write groups'
-          );
-        },
-      },
-      {
-        status: 200,
-        body: {
-          access_token: 'dummy_new_access_token',
-          refresh_token: 'dummy_new_refresh_token',
-          expires_in: 3600,
-        },
-      },
-      { sendAsJson: true }
-    )
-    .mock(
-      {
-        name: 'invalid_login',
-        url: api_url + '/o/token/',
-        method: 'POST',
-        functionMatcher: (_, { headers, body }) => {
-          const params = new URLSearchParams(body?.toString());
-          if (!headers) {
-            return false;
-          }
-          return (
-            params.get('grant_type') === 'password' &&
-            (headers.Authorization !==
-              'Basic ' + btoa(client_id + ':' + client_secret) ||
-              params.get('username') !== 'jst' ||
-              params.get('password') !== 'yop' ||
-              params.get('scope') !== 'read write groups')
-          );
-        },
-      },
-      {
-        status: 401,
-        body: {},
-      },
-      { sendAsJson: true }
-    )
-    .mock(
-      {
-        name: 'token_from_refresh_token',
-        url: api_url + '/o/token/',
-        method: 'POST',
-        headers: {
-          Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
-        },
-        functionMatcher: (_, { body }) => {
-          const params = new URLSearchParams(body?.toString());
-          return (
-            params.get('grant_type') === 'refresh_token' &&
-            params.get('refresh_token') === 'dummy_refresh_token' &&
-            params.get('scope') === 'read write groups'
-          );
-        },
-      },
-      {
-        status: 200,
-        body: {
-          access_token: 'dummy_new_access_token',
-          refresh_token: 'dummy_new_refresh_token',
-          expires_in: 3600,
-        },
-      },
-      { sendAsJson: true }
-    );
+export const mockStore: MockStoreCreator<
+  MockState,
+  ThunkDispatch<LoginState, undefined, AnyAction>
+> = configureStore([thunk]);
 
+const api_url = process.env.REACT_APP_API_URL;
+const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
+const client_secret = process.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
+fetchMock
+  .mock(
+    {
+      name: 'valid_login',
+      url: api_url + '/o/token/',
+      method: 'POST',
+      headers: {
+        Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+      },
+      functionMatcher: (_, { body }) => {
+        const params = new URLSearchParams(body?.toString());
+        return (
+          params.get('grant_type') === 'password' &&
+          params.get('username') === 'jst' &&
+          params.get('password') === 'yop' &&
+          params.get('scope') === 'read write groups'
+        );
+      },
+    },
+    {
+      status: 200,
+      body: {
+        access_token: 'dummy_new_access_token',
+        refresh_token: 'dummy_new_refresh_token',
+        expires_in: 3600,
+      },
+    },
+    { sendAsJson: true }
+  )
+  .mock(
+    {
+      name: 'invalid_login',
+      url: api_url + '/o/token/',
+      method: 'POST',
+      functionMatcher: (_, { headers, body }) => {
+        const params = new URLSearchParams(body?.toString());
+        if (!headers) {
+          return false;
+        }
+        return (
+          params.get('grant_type') === 'password' &&
+          (headers.Authorization !==
+            'Basic ' + btoa(client_id + ':' + client_secret) ||
+            params.get('username') !== 'jst' ||
+            params.get('password') !== 'yop' ||
+            params.get('scope') !== 'read write groups')
+        );
+      },
+    },
+    {
+      status: 401,
+      body: {},
+    },
+    { sendAsJson: true }
+  )
+  .mock(
+    {
+      name: 'token_from_refresh_token',
+      url: api_url + '/o/token/',
+      method: 'POST',
+      headers: {
+        Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+      },
+      functionMatcher: (_, { body }) => {
+        const params = new URLSearchParams(body?.toString());
+        return (
+          params.get('grant_type') === 'refresh_token' &&
+          params.get('refresh_token') === 'dummy_refresh_token' &&
+          params.get('scope') === 'read write groups'
+        );
+      },
+    },
+    {
+      status: 200,
+      body: {
+        access_token: 'dummy_new_access_token',
+        refresh_token: 'dummy_new_refresh_token',
+        expires_in: 3600,
+      },
+    },
+    { sendAsJson: true }
+  );
+
+describe('login feature', () => {
   const component = ({ store }: { store: MockStoreEnhanced<MockState> }) =>
     render(
       <Provider store={store}>
