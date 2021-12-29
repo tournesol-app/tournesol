@@ -3,13 +3,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 
-import Paper from '@material-ui/core/Paper';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Settings from '@material-ui/icons/Settings';
+import Paper from '@mui/material/Paper';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuList from '@mui/material/MenuList';
+import MenuItem from '@mui/material/MenuItem';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Settings from '@mui/icons-material/Settings';
 
 export default function SettingsMenu() {
   const location = useLocation();

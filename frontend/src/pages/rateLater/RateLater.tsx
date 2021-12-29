@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback } from 'react';
 
-import { Card, Box, CardContent, CardActions } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Card, Box, CardContent, CardActions } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';

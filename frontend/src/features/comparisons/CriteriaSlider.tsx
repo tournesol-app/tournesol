@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Slider from '@material-ui/core/Slider';
-import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Slider from '@mui/material/Slider';
+import Grid from '@mui/material/Grid';
+import Checkbox from '@mui/material/Checkbox';
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 
 import { handleWikiUrl } from 'src/utils/url';
 import { optionalCriterias } from 'src/utils/constants';
@@ -109,7 +109,7 @@ const CriteriaSlider = ({
             padding: 0,
           }}
           disabled={disabled}
-        >
+          size="large">
           <DoubleArrowIcon />
         </IconButton>
         <Slider
@@ -133,7 +133,7 @@ const CriteriaSlider = ({
           onClick={() => handleSliderChange(criteria, 10)}
           style={{ color: 'black', padding: 0 }}
           disabled={disabled}
-        >
+          size="large">
           <DoubleArrowIcon />
         </IconButton>
       </div>

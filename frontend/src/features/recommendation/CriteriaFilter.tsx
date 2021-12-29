@@ -1,13 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  Grid,
-  Typography,
-  makeStyles,
-  withStyles,
-  Slider,
-  Tooltip,
-} from '@material-ui/core';
+import { Grid, Typography, Slider, Tooltip } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 
 import { mainCriteriaNames } from 'src/utils/constants';
 import { TitledSection } from 'src/components';

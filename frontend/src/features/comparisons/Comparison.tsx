@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Collapse, Typography } from '@material-ui/core';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import { Info as InfoIcon } from '@material-ui/icons';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, Button, Collapse, Typography } from '@mui/material';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import { Info as InfoIcon } from '@mui/icons-material';
 
 import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
 import { allCriteriaNames, optionalCriterias } from 'src/utils/constants';
@@ -179,7 +179,7 @@ const ComparisonComponent = ({
           <Box
             display="flex"
             alignItems="center"
-            gridGap="8px"
+            gap="8px"
             m={2}
             color="text.hint"
           >

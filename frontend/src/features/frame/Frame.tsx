@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import TopBar, { topBarHeight } from './components/topbar/TopBar';
 import SideBar from './components/sidebar/SideBar';
 

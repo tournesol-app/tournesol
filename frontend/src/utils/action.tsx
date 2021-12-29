@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { IconButton, Tooltip } from '@material-ui/core';
-import CompareIcon from '@material-ui/icons/Compare';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { IconButton, Tooltip } from '@mui/material';
+import CompareIcon from '@mui/icons-material/Compare';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { showSuccessAlert, showInfoAlert } from 'src/utils/notifications';
 import { useSnackbar } from 'notistack';
 

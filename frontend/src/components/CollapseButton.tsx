@@ -1,8 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
-import { Button, Theme } from '@material-ui/core';
-import { ExpandMore, ExpandLess } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
+import { Button, Theme } from '@mui/material';
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   collapseButton: {

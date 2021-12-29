@@ -1,6 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
-import { Box, CircularProgress, makeStyles } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
   loadingContent: {

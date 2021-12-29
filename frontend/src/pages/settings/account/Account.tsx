@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Box, Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Grid, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 
 import ContentHeader from 'src/components/ContentHeader';
 import PasswordForm from 'src/features/settings/account/PasswordForm';

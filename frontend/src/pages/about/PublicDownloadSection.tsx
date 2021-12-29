@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Typography, Button } from '@material-ui/core';
+import { Typography, Button } from '@mui/material';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case

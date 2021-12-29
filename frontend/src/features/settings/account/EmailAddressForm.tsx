@@ -7,7 +7,7 @@ import {
   Theme,
   Grid,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
@@ -16,8 +16,8 @@ import { showErrorAlert } from '../../../utils/notifications';
 import { FormTextField } from 'src/components';
 
 import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
-import { Lens as LensIcon, HelpOutline as HelpIcon } from '@material-ui/icons';
-import { useTheme } from '@material-ui/styles';
+import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
+import { useTheme } from '@mui/styles';
 
 const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
   const theme = useTheme<Theme>();
@@ -124,7 +124,7 @@ const EmailAddressForm = () => {
               marginBottom={2}
               display="flex"
               flexDirection="column"
-              gridGap="8px"
+              gap="8px"
             >
               <Typography>
                 Your current email address is{' '}

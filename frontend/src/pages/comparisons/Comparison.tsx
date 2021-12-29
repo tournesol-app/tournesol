@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   CircularProgress,
   Grid,
@@ -9,7 +9,7 @@ import {
   Card,
   Box,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { UsersService, Comparison } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/Comparison';

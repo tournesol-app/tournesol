@@ -9,9 +9,10 @@ import {
   List,
   Theme,
   Divider,
-} from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useAppSelector } from '../../../../app/hooks';
 import { selectFrame } from '../../drawerOpenSlice';
@@ -24,7 +25,7 @@ import {
   Info as InfoIcon,
   Stars as StarsIcon,
   VideoLibrary,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
@@ -61,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       top: 0,
       height: '100%',
     },
@@ -91,7 +92,7 @@ const SideBar = () => {
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
 
   const isItemSelected = (url: string) => url === location.pathname;

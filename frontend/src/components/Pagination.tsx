@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, makeStyles, Paper } from '@material-ui/core';
+import { Button, Paper } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 interface PaginationProps {
   limit: number;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box } from '@mui/material';
 import VideoCard from '../videos/VideoCard';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import { useLoginState } from 'src/hooks';

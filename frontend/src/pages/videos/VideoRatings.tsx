@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useHistory, Link } from 'react-router-dom';
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button, Divider } from '@mui/material';
 
 import type {
   ContributorRating,

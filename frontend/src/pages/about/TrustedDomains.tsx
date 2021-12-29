@@ -6,7 +6,7 @@ import {
   List,
   ListItem,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { ContentHeader, ContentBox } from 'src/components';
 import { EmailDomain, DomainsService } from 'src/services/openapi';

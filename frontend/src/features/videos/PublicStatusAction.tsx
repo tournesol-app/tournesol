@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Tooltip, Typography, Box, Switch } from '@material-ui/core';
+import { Tooltip, Typography, Box, Switch } from '@mui/material';
 
 import { UsersService, ContributorRating } from 'src/services/openapi';
 

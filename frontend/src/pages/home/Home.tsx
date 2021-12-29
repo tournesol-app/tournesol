@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Box } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Grid, Typography, Box } from '@mui/material';
 
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
@@ -18,13 +18,13 @@ const useStyles = makeStyles((theme) => ({
     color: '#ffffff',
     textAlign: 'right',
     fontSize: '400%',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       fontSize: '300%',
     },
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: '200%',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       textAlign: 'center',
     },
     float: 'right',
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     padding: 24,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       padding: 4,
     },
   },
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     background: '#1282B2',
     display: 'flex',
     justifyContent: 'left',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       justifyContent: 'center',
     },
     padding: 16,
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     padding: 32,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       padding: '32px 8px 32px 8px',
     },
   },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Router } from 'react-router-dom';
@@ -9,6 +9,13 @@ import SearchFilter from './SearchFilter';
 import { dateChoices } from './DateFilter';
 import { languageChoices } from './LanguageFilter';
 import { mainCriteriaNames } from 'src/utils/constants';
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 describe('Filters feature', () => {
   let pushSpy = null;
@@ -20,9 +27,11 @@ describe('Filters feature', () => {
     // Some context is needed by the component SearchFilter
     render(
       <Router history={history}>
-        <ThemeProvider theme={theme}>
-          <SearchFilter />
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <SearchFilter />
+          </ThemeProvider>
+        </StyledEngineProvider>
       </Router>
     );
   });

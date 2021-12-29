@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import clsx from 'clsx';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   Typography,
   Grid,
@@ -11,7 +11,7 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
 import { ActionList, VideoObject } from 'src/utils/types';
@@ -19,7 +19,7 @@ import { useVideoMetadata } from './VideoApi';
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { convertDurationToClockDuration } from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     alignContent: 'flex-start',
     overflow: 'hidden',
     fontSize: '16px',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: '14px',
     },
   },
@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'end',
     flexDirection: 'column',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       flexDirection: 'row',
     },
   },
@@ -191,7 +191,7 @@ function VideoCard({
   let max_criteria = '';
   let min_criteria = '';
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'), {
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
@@ -366,7 +366,7 @@ function VideoCard({
               paddingY={1}
               borderTop="1px solid rgba(0, 0, 0, 0.12)"
               display="flex"
-              gridGap="16px"
+              gap="16px"
               color="text.secondary"
             >
               {settings.map((Action, index) =>

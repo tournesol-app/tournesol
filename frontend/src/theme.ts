@@ -1,7 +1,7 @@
-import { createTheme, responsiveFontSizes } from '@material-ui/core/styles';
+import { createTheme, responsiveFontSizes, adaptV4Theme } from '@mui/material/styles';
 
 export const theme = responsiveFontSizes(
-  createTheme({
+  createTheme(adaptV4Theme({
     palette: {
       primary: {
         main: '#ffc800',
@@ -50,5 +50,5 @@ export const theme = responsiveFontSizes(
         },
       },
     },
-  })
+  }))
 );

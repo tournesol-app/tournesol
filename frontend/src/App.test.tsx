@@ -6,8 +6,15 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import drawerOpenReducer from './features/frame/drawerOpenSlice';
 import loginReducer, { initialState } from 'src/features/login/loginSlice';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/styles';
 import { theme } from './theme';
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 const renderComponent = (drawerOpen: boolean) =>
   render(
@@ -23,11 +30,13 @@ const renderComponent = (drawerOpen: boolean) =>
         }
       )}
     >
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </Provider>
   );
 

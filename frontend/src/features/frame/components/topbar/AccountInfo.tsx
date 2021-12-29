@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Button, Grid } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import makeStyles from '@mui/styles/makeStyles';
+import { Button, Grid } from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 
 import { useLoginState } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';

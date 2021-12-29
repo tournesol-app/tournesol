@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Button, Typography, Box, Link } from '@material-ui/core';
+import { Grid, Button, Typography, Box, Link } from '@mui/material';
 import {
   ContentHeader,
   ContentBox,
@@ -51,62 +51,60 @@ const ForgotPassword = () => {
 
   const formError = apiError?.status === 400 ? apiError.body : null;
 
-  return (
-    <>
-      <ContentHeader title="Reset your password" />
-      <ContentBox maxWidth={success ? 'sm' : 'xs'}>
-        {success ? (
-          <ResetSuccess />
-        ) : (
-          <>
-            <form onSubmit={handleSubmit}>
-              <Grid
-                container
-                spacing={3}
-                direction="column"
-                alignItems="stretch"
-              >
-                {formError && (
-                  <Grid item xs={12}>
-                    <Typography color="error">
-                      Failed to send the reset link.
-                      <br />
-                      {formError?.non_field_errors && (
-                        <Lines messages={formError.non_field_errors} />
-                      )}
-                    </Typography>
-                  </Grid>
-                )}
+  return <>
+    <ContentHeader title="Reset your password" />
+    <ContentBox maxWidth={success ? 'sm' : 'xs'}>
+      {success ? (
+        <ResetSuccess />
+      ) : (
+        <>
+          <form onSubmit={handleSubmit}>
+            <Grid
+              container
+              spacing={3}
+              direction="column"
+              alignItems="stretch"
+            >
+              {formError && (
                 <Grid item xs={12}>
-                  <FormTextField
-                    name="login"
-                    label="Username"
-                    formError={formError}
-                  />
+                  <Typography color="error">
+                    Failed to send the reset link.
+                    <br />
+                    {formError?.non_field_errors && (
+                      <Lines messages={formError.non_field_errors} />
+                    )}
+                  </Typography>
                 </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    type="submit"
-                    color="secondary"
-                    fullWidth
-                    variant="contained"
-                    disabled={isLoading}
-                  >
-                    Send reset email
-                  </Button>
-                </Grid>
+              )}
+              <Grid item xs={12}>
+                <FormTextField
+                  name="login"
+                  label="Username"
+                  formError={formError}
+                />
               </Grid>
-            </form>
-            <Box my={2}>
-              <Link component={RouterLink} to="/login" color="secondary">
-                Back to Log in
-              </Link>
-            </Box>
-          </>
-        )}
-      </ContentBox>
-    </>
-  );
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  color="secondary"
+                  fullWidth
+                  variant="contained"
+                  disabled={isLoading}
+                >
+                  Send reset email
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+          <Box my={2}>
+            <Link component={RouterLink} to="/login" color="secondary" underline="hover">
+              Back to Log in
+            </Link>
+          </Box>
+        </>
+      )}
+    </ContentBox>
+  </>;
 };
 
 export default ForgotPassword;

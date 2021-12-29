@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Box, Card, Link } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Grid, Typography, Box, Card, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
 import PublicDownloadSection from './PublicDownloadSection';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Button } from '@material-ui/core';
+import { Grid, TextField, Button } from '@mui/material';
 import Alert from 'src/components/Alert';
 import { ApiError } from 'src/services/openapi/core/ApiError';
 import { extractVideoId } from 'src/utils/video';
