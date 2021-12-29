@@ -3,6 +3,8 @@ import zipfile
 from io import StringIO
 
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiTypes
@@ -84,6 +86,7 @@ class ExportComparisonsView(APIView):
 class ExportPublicComparisonsView(APIView):
     permission_classes = [AllowAny]
 
+    @method_decorator(cache_page(60*10))  # 10 minutes cache
     @extend_schema(
         description="Download public data in .csv file",
         responses={200: OpenApiTypes.BINARY}
