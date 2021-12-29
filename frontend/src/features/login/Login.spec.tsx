@@ -65,15 +65,16 @@ fetchMock
       name: 'invalid_login',
       url: api_url + '/o/token/',
       method: 'POST',
-      functionMatcher: (_, { headers, body }) => {
+      // TODO figure out the typing here
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      functionMatcher: (_, { headers, body }: any) => {
         const params = new URLSearchParams(body?.toString());
         if (!headers) {
           return false;
         }
         return (
           params.get('grant_type') === 'password' &&
-          // TODO figure this out
-          ((headers as any).Authorization !==
+          (headers.Authorization !==
             'Basic ' + btoa(client_id + ':' + client_secret) ||
             params.get('username') !== 'jst' ||
             params.get('password') !== 'yop' ||

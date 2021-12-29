@@ -20,6 +20,8 @@ declare module '@mui/styles/defaultTheme' {
 }
 
 describe('Filters feature', () => {
+  // TODO figure out the typing here
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pushSpy: any = null;
   beforeEach(() => {
     // Used to spy on URL parameters updates
