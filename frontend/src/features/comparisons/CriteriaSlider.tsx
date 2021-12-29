@@ -2,11 +2,9 @@ import React from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 
 import { handleWikiUrl } from 'src/utils/url';
 import { optionalCriterias } from 'src/utils/constants';
@@ -21,7 +19,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     maxWidth: 660,
-    width: '100%',
+    width: 'calc(100% - 64px)',
     alignItems: 'center',
   },
   slider: {
@@ -100,27 +98,14 @@ const CriteriaSlider = ({
         </Grid>
       </div>
       <div className={classes.sliderContainer}>
-        <IconButton
-          aria-label="left"
-          onClick={() => handleSliderChange(criteria, -10)}
-          style={{
-            color: 'black',
-            transform: 'rotate(180deg)',
-            padding: 0,
-          }}
-          disabled={disabled}
-          size="large"
-        >
-          <DoubleArrowIcon />
-        </IconButton>
         <Slider
-          // ValueLabelComponent={ValueLabelComponent}
           id={`slider_expert_${criteria}`}
           aria-label="custom thumb label"
           color="secondary"
           min={-10}
           step={1}
           max={10}
+          marks
           value={criteriaValue || 0}
           className={classes.slider}
           track={false}
@@ -129,15 +114,6 @@ const CriteriaSlider = ({
             handleSliderChange(criteria, score as number)
           }
         />
-        <IconButton
-          aria-label="right"
-          onClick={() => handleSliderChange(criteria, 10)}
-          style={{ color: 'black', padding: 0 }}
-          disabled={disabled}
-          size="large"
-        >
-          <DoubleArrowIcon />
-        </IconButton>
       </div>
     </div>
   );

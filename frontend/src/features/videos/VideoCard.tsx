@@ -24,6 +24,8 @@ import { convertDurationToClockDuration } from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
   main: {
+    margin: 0,
+    width: '100%',
     maxWidth: 1000,
     background: '#FFFFFF',
     border: '1px solid #DCD8CB',

@@ -163,13 +163,15 @@ function CriteriaFilter({
                     step={25}
                     min={0}
                     max={100}
+                    size="small"
                     valueLabelDisplay="auto"
                     valueLabelFormat={valuetoText}
                     onChangeCommitted={(e, value) =>
                       setFilter(criteria, value.toString())
                     }
-                    /* TODO: figure this out
-                    ValueLabelComponent={ValueLabelComponent}*/
+                    components={{
+                      ValueLabel: ValueLabelComponent,
+                    }}
                     marks={marks}
                   />
                 </Grid>

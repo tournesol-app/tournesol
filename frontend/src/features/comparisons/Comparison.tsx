@@ -135,6 +135,7 @@ const ComparisonComponent = ({
           onClick={handleCollapseCriterias}
           startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
           size="small"
+          color="secondary"
           style={{ marginBottom: 8, color: showOptionalCriterias ? 'red' : '' }}
         >
           {showOptionalCriterias

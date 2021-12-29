@@ -21,12 +21,12 @@ import { ActionList } from 'src/utils/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    margin: 4,
+    margin: 0,
   },
   controls: {
+    margin: 4,
     display: 'flex',
     flexWrap: 'wrap',
-    paddingBottom: '4px',
     alignItems: 'center',
   },
   input: {
@@ -165,6 +165,7 @@ const VideoSelector = ({
           style={{ flex: 1 }}
           value={videoId || ''}
           onChange={handleChange}
+          variant="standard"
         />
         <Tooltip title="New Video" aria-label="new_video">
           <IconButton
