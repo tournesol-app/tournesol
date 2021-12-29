@@ -1,19 +1,21 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-import { Video } from 'src/services/openapi';
+import { VideoObject } from 'src/utils/types';
 import VideoCard from './VideoCard';
 
 describe('VideoCard content', () => {
   it('shows video metadata without criterias', () => {
-    const video: Video = {
+    const video: VideoObject = {
       video_id: 'xSqqXN0D4fY',
       name: 'Video title',
       description: 'Video description',
       views: 154988,
-      upload: 'Channel name',
+      uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
+      criteria_scores: [],
+      duration: 120,
     };
     render(<VideoCard video={video} />);
 
@@ -32,12 +34,12 @@ describe('VideoCard content', () => {
   });
 
   it('shows video card with single criteria', () => {
-    const video: Video = {
+    const video: VideoObject = {
       video_id: 'xSqqXN0D4fY',
       name: 'Video title',
       description: 'Video description',
       views: 154988,
-      upload: 'Channel name',
+      uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
       criteria_scores: [
@@ -48,6 +50,7 @@ describe('VideoCard content', () => {
           quantile: 1.0,
         },
       ],
+            duration: 4200,
     };
     render(<VideoCard video={video} />);
 
@@ -69,12 +72,12 @@ describe('VideoCard content', () => {
   });
 
   it('shows video card with multiple criteria', () => {
-    const video: Video = {
+    const video: VideoObject = {
       video_id: 'xSqqXN0D4fY',
       name: 'Video title',
       description: 'Video description',
       views: 154988,
-      upload: 'Channel name',
+      uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
       criteria_scores: [
@@ -91,6 +94,8 @@ describe('VideoCard content', () => {
           quantile: 1.0,
         },
       ],
+            duration: 120,
+
     };
     render(<VideoCard video={video} />);
 

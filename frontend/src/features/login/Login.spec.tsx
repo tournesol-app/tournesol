@@ -72,8 +72,9 @@ fetchMock
         }
         return (
           params.get('grant_type') === 'password' &&
-          (headers.Authorization !==
-            'Basic ' + btoa(client_id + ':' + client_secret) ||
+          // TODO figure this out
+          ((headers as any).Authorization !==
+            'Basic '  + btoa(client_id + ':' + client_secret) ||
             params.get('username') !== 'jst' ||
             params.get('password') !== 'yop' ||
             params.get('scope') !== 'read write groups')

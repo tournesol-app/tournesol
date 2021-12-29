@@ -168,7 +168,8 @@ function CriteriaFilter({
                     onChangeCommitted={(e, value) =>
                       setFilter(criteria, value.toString())
                     }
-                    ValueLabelComponent={ValueLabelComponent}
+                    /* TODO: figure this out
+                    ValueLabelComponent={ValueLabelComponent}*/
                     marks={marks}
                   />
                 </Grid>

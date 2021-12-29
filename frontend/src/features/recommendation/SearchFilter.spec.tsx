@@ -18,7 +18,7 @@ declare module '@mui/styles/defaultTheme' {
 
 
 describe('Filters feature', () => {
-  let pushSpy = null;
+  let pushSpy: any = null;
   beforeEach(() => {
     // Used to spy on URL parameters updates
     const history = createMemoryHistory();
@@ -39,6 +39,7 @@ describe('Filters feature', () => {
   function clickOnShowMore(wasClosed = true) {
     const checkboxDisplayFilters = screen.queryByLabelText('show more');
     expect(checkboxDisplayFilters).not.toBeNull();
+    if(checkboxDisplayFilters == null) throw "checkboxDisplayFilters should not be null"
 
     // aria-expanded should be set to false if the filters menu was closed, and true otherwise
     expect(checkboxDisplayFilters.getAttribute('aria-expanded')).toBe(
@@ -71,11 +72,12 @@ describe('Filters feature', () => {
   }
 
   // Click on a date filter checkbox and verify the resulting URL parameters
-  function clickOnDateCheckbox({ checkbox, expectInUrl }) {
+  function clickOnDateCheckbox({ checkbox, expectInUrl }:{ checkbox: 'Today' | 'Week' | 'Month' | 'Year', expectInUrl: string }) {
     const dateCheckbox = screen.queryByTestId(
       'Upload date: ' + dateChoices[checkbox]
     );
     expect(dateCheckbox).not.toBeNull();
+    if(dateCheckbox == null) throw "dateCheckbox should not be null"
 
     fireEvent.click(dateCheckbox);
 
@@ -87,12 +89,12 @@ describe('Filters feature', () => {
   }
 
   // Click on a language checkbox and verify the resulting URL parameters
-  function clickOnLanguageCheckbox({ checkbox, expectInUrl }) {
+  function clickOnLanguageCheckbox({ checkbox, expectInUrl }: { checkbox: 'en' | 'fr' | 'de', expectInUrl: string}) {
     const languageCheckbox = screen.queryByTestId(
       'Language: ' + languageChoices[checkbox]
     );
     expect(languageCheckbox).not.toBeNull();
-
+    if(languageCheckbox == null) throw "languageCheckbox should not be null"
     fireEvent.click(languageCheckbox);
 
     // Check that it updated the URL with the new language filter

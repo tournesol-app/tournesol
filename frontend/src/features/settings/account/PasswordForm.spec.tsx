@@ -38,7 +38,7 @@ describe('change password feature', () => {
     ThunkDispatch<LoginState, undefined, AnyAction>
   > = configureStore([thunk]);
 
-  const api_url = process.env.REACT_APP_API_URL;
+  const api_url = process.env.REACT_APP_API_URL || '';
   OpenAPI.BASE = api_url;
 
   fetchMock

@@ -124,7 +124,7 @@ const CriteriaSlider = ({
           className={classes.slider}
           track={false}
           disabled={disabled || criteriaValue === undefined}
-          onChange={(_: React.ChangeEvent<unknown>, score: number | number[]) =>
+          onChange={(_: Event, score: number | number[]) =>
             handleSliderChange(criteria, score as number)
           }
         />

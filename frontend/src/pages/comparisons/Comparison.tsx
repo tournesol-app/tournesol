@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignSelf: 'start',
   },
   cardTitle: {
-    color: theme.palette.text.hint,
+    color: theme.palette.text.secondary,
   },
 }));
 
