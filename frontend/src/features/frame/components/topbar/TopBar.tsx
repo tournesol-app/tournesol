@@ -77,7 +77,8 @@ const Logo = () => {
     <Grid item md={4} xs={4} className={classes.logo}>
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
-        size="large">
+        size="large"
+      >
         <Menu />
       </IconButton>
       <Link to="/">

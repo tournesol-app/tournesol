@@ -109,7 +109,8 @@ const CriteriaSlider = ({
             padding: 0,
           }}
           disabled={disabled}
-          size="large">
+          size="large"
+        >
           <DoubleArrowIcon />
         </IconButton>
         <Slider
@@ -133,7 +134,8 @@ const CriteriaSlider = ({
           onClick={() => handleSliderChange(criteria, 10)}
           style={{ color: 'black', padding: 0 }}
           disabled={disabled}
-          size="large">
+          size="large"
+        >
           <DoubleArrowIcon />
         </IconButton>
       </div>

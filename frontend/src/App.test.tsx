@@ -1,7 +1,11 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
-import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
+import {
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+} from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 
@@ -10,12 +14,10 @@ import drawerOpenReducer from './features/frame/drawerOpenSlice';
 import loginReducer, { initialState } from 'src/features/login/loginSlice';
 import { theme } from './theme';
 
-
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 const renderComponent = (drawerOpen: boolean) =>
   render(

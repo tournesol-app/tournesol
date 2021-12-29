@@ -52,58 +52,65 @@ const Login = () => {
     }
   }
 
-  return <>
-    <ContentHeader title="Log in to Tournesol" />
-    <ContentBox maxWidth="xs">
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={3} direction="column" alignItems="stretch">
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              label="Username"
-              name="username"
-              color="secondary"
-              size="small"
-              variant="outlined"
-              autoFocus={true}
-              onChange={(event) => setUsername(event.target.value)}
-            />
+  return (
+    <>
+      <ContentHeader title="Log in to Tournesol" />
+      <ContentBox maxWidth="xs">
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3} direction="column" alignItems="stretch">
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Username"
+                name="username"
+                color="secondary"
+                size="small"
+                variant="outlined"
+                autoFocus={true}
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Password"
+                name="password"
+                color="secondary"
+                size="small"
+                type="password"
+                variant="outlined"
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                color="secondary"
+                fullWidth
+                variant="contained"
+                disabled={login.status == 'loading'}
+              >
+                Log In
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              label="Password"
-              name="password"
-              color="secondary"
-              size="small"
-              type="password"
-              variant="outlined"
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              type="submit"
-              color="secondary"
-              fullWidth
-              variant="contained"
-              disabled={login.status == 'loading'}
-            >
-              Log In
-            </Button>
-          </Grid>
-        </Grid>
-        {loginError && <Alert>❌ {loginError.message}</Alert>}
-      </form>
-      <Box my={2}>
-        <Link component={RouterLink} to="/forgot" color="secondary" underline="hover">
-          Forgot your password?
-        </Link>
-      </Box>
-    </ContentBox>
-  </>;
+          {loginError && <Alert>❌ {loginError.message}</Alert>}
+        </form>
+        <Box my={2}>
+          <Link
+            component={RouterLink}
+            to="/forgot"
+            color="secondary"
+            underline="hover"
+          >
+            Forgot your password?
+          </Link>
+        </Box>
+      </ContentBox>
+    </>
+  );
 };
 
 export default Login;

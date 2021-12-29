@@ -7,7 +7,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { SnackbarProvider } from 'notistack';
 
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
+import {
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+} from '@mui/material/styles';
 
 import './index.css';
 import App from './App';
@@ -16,12 +20,10 @@ import { store, persistor } from './app/store';
 import * as serviceWorker from './serviceWorker';
 import { theme } from './theme';
 
-
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 ReactDOM.render(
   <React.StrictMode>

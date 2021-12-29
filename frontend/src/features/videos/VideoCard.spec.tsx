@@ -50,7 +50,7 @@ describe('VideoCard content', () => {
           quantile: 1.0,
         },
       ],
-            duration: 4200,
+      duration: 4200,
     };
     render(<VideoCard video={video} />);
 
@@ -94,8 +94,7 @@ describe('VideoCard content', () => {
           quantile: 1.0,
         },
       ],
-            duration: 120,
-
+      duration: 120,
     };
     render(<VideoCard video={video} />);
 

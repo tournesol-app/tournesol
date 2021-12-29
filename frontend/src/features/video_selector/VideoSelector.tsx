@@ -167,7 +167,11 @@ const VideoSelector = ({
           onChange={handleChange}
         />
         <Tooltip title="New Video" aria-label="new_video">
-          <IconButton aria-label="new_video" onClick={loadNewVideo} size="large">
+          <IconButton
+            aria-label="new_video"
+            onClick={loadNewVideo}
+            size="large"
+          >
             <ReplayIcon />
           </IconButton>
         </Tooltip>
