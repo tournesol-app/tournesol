@@ -62,11 +62,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    overflowX: 'hidden',
     [theme.breakpoints.down('md')]: {
       top: 0,
       height: '100%',
     },
-    overflowX: 'hidden',
     '& > *': {
       // All direct children of the drawer paper should keep a min-width:
       // their content should not be wrapped during the drawer animation.

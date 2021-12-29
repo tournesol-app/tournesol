@@ -17,7 +17,7 @@ import AccountInfo from './AccountInfo';
 export const topBarHeight = 80;
 
 const useStyles = makeStyles((theme) => ({
-  appBar: { zIndex: theme.zIndex.drawer + 1 },
+  appBar: { [theme.breakpoints.up('md')]: { zIndex: theme.zIndex.drawer + 1 } },
   container: {
     width: '100%',
   },
