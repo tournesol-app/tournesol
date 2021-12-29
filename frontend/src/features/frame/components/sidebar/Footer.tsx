@@ -7,7 +7,7 @@ import { handleWikiUrl } from 'src/utils/url';
 
 const useStyles = makeStyles(() => ({
   root: {
-    padding: 8,
+    padding: '0px 8px',
     borderTop: '1px solid #e7e5db',
     display: 'flex',
     flexFlow: 'row wrap',
