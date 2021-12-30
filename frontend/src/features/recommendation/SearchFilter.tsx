@@ -26,12 +26,12 @@ function SearchFilter() {
   };
 
   return (
-    <Box color="text.secondary">
+    <Box color="text.secondary" marginBottom={1}>
       <CollapseButton expanded={expanded} onClick={handleExpandClick} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {searchParams.get('uploader') && (
+        {filterParams.get('uploader') && (
           <UploaderFilter
-            value={searchParams.get('uploader') ?? ''}
+            value={filterParams.get('uploader') ?? ''}
             onDelete={() => setFilter('uploader', '')}
           />
         )}
