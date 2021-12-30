@@ -277,7 +277,9 @@ function VideoCard({
             <div>
               {video.uploader && (
                 <Link
-                  to={`/recommendations?uploader=${video.uploader}`}
+                  to={`/recommendations?uploader=${encodeURIComponent(
+                    video.uploader
+                  )}`}
                   className={classes.channel}
                 >
                   {video.uploader}
