@@ -18,6 +18,7 @@ class VideoApi(TestCase):
     """
     TestCase of the video API.
     """
+
     _user = "username"
 
     _video_id_01 = "video_id_01"
@@ -29,15 +30,39 @@ class VideoApi(TestCase):
     def setUp(self):
         User.objects.create(username=self._user, email="user@test")
 
-        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01, publication_date=date(2021, 1, 1))
-        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02, publication_date=date(2021, 1, 2))
-        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03, publication_date=date(2021, 1, 3))
-        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04, publication_date=date(2021, 1, 4))
+        video_1 = Video.objects.create(
+            video_id=self._video_id_01,
+            name=self._video_id_01,
+            publication_date=date(2021, 1, 1),
+        )
+        video_2 = Video.objects.create(
+            video_id=self._video_id_02,
+            name=self._video_id_02,
+            publication_date=date(2021, 1, 2),
+        )
+        video_3 = Video.objects.create(
+            video_id=self._video_id_03,
+            name=self._video_id_03,
+            publication_date=date(2021, 1, 3),
+        )
+        video_4 = Video.objects.create(
+            video_id=self._video_id_04,
+            name=self._video_id_04,
+            publication_date=date(2021, 1, 4),
+        )
         self._list_of_videos = [video_1, video_2, video_3, video_4]
-        VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=0.1)
-        VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=0.2)
-        VideoCriteriaScore.objects.create(video=video_3, criteria="importance", score=0.3)
-        VideoCriteriaScore.objects.create(video=video_4, criteria="importance", score=0.4)
+        VideoCriteriaScore.objects.create(
+            video=video_1, criteria="reliability", score=0.1
+        )
+        VideoCriteriaScore.objects.create(
+            video=video_2, criteria="reliability", score=0.2
+        )
+        VideoCriteriaScore.objects.create(
+            video=video_3, criteria="importance", score=0.3
+        )
+        VideoCriteriaScore.objects.create(
+            video=video_4, criteria="importance", score=0.4
+        )
 
     def test_anonymous_can_list(self):
         """
@@ -47,7 +72,8 @@ class VideoApi(TestCase):
 
         # test a request without query parameters
         response = client.get(
-            reverse("tournesol:video-list"), format="json",
+            reverse("tournesol:video-list"),
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -68,7 +94,9 @@ class VideoApi(TestCase):
         # test a request with the limit query parameter
         limit = 2
         response = client.get(
-            reverse("tournesol:video-list"), {"limit": limit}, format="json",
+            reverse("tournesol:video-list"),
+            {"limit": limit},
+            format="json",
         )
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
 
@@ -81,7 +109,9 @@ class VideoApi(TestCase):
         # test that a huge limit doesn't break anything
         limit = 10000
         response = client.get(
-            reverse("tournesol:video-list"), {"limit": limit}, format="json",
+            reverse("tournesol:video-list"),
+            {"limit": limit},
+            format="json",
         )
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
 
@@ -100,19 +130,25 @@ class VideoApi(TestCase):
 
         offset = 2
         response = client.get(
-            reverse("tournesol:video-list"), {"offset": offset}, format="json",
+            reverse("tournesol:video-list"),
+            {"offset": offset},
+            format="json",
         )
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(set(returned_video_ids).issubset(set(existing_video_ids)))
         self.assertEqual(response.data["count"], len(self._list_of_videos))
-        self.assertEqual(len(response.data["results"]), len(self._list_of_videos) - offset)
+        self.assertEqual(
+            len(response.data["results"]), len(self._list_of_videos) - offset
+        )
 
         # test that a huge offset doesn't break anything
         offset = 10000
         response = client.get(
-            reverse("tournesol:video-list"), {"offset": offset}, format="json",
+            reverse("tournesol:video-list"),
+            {"offset": offset},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -133,20 +169,22 @@ class VideoApi(TestCase):
 
         parameters = [
             # no parameters exceed the number of videos
-            {"limit": 1, "offset":  videos_in_db - 2},
+            {"limit": 1, "offset": videos_in_db - 2},
             # the limit exceeds the number of videos, not the offset
             {"limit": videos_in_db * 2, "offset": videos_in_db - 2},
             # the limit exceeds the number of videos, so does the offset
-            {"limit": videos_in_db * 2, "offset": videos_in_db + 1}
+            {"limit": videos_in_db * 2, "offset": videos_in_db + 1},
         ]
 
         for param in parameters:
             response = client.get(
-                reverse("tournesol:video-list"), {
-                    "limit": param["limit"], "offset": param["offset"]
-                }, format="json",
+                reverse("tournesol:video-list"),
+                {"limit": param["limit"], "offset": param["offset"]},
+                format="json",
             )
-            returned_video_ids = [video["video_id"] for video in response.data["results"]]
+            returned_video_ids = [
+                video["video_id"] for video in response.data["results"]
+            ]
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertTrue(set(returned_video_ids).issubset(set(existing_video_ids)))
@@ -158,8 +196,9 @@ class VideoApi(TestCase):
                 if param["offset"] >= videos_in_db:
                     self.assertEqual(len(response.data["results"]), 0)
                 else:
-                    self.assertEqual(len(response.data["results"]),
-                                     videos_in_db - param["offset"])
+                    self.assertEqual(
+                        len(response.data["results"]), videos_in_db - param["offset"]
+                    )
 
     def test_list_videos_with_criteria_weights(self):
         client = APIClient()
@@ -168,44 +207,41 @@ class VideoApi(TestCase):
         resp = client.get("/video/")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_04", "video_id_03", "video_id_02", "video_id_01"]
+            ["video_id_04", "video_id_03", "video_id_02", "video_id_01"],
         )
 
         # Disable reliability
         resp = client.get("/video/?reliability=0")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_04", "video_id_03"]
+            ["video_id_04", "video_id_03"],
         )
 
         # Disable both reliability and importance
         resp = client.get("/video/?reliability=0&importance=0")
-        self.assertEqual(
-            [r["video_id"] for r in resp.json()["results"]],
-            []
-        )
+        self.assertEqual([r["video_id"] for r in resp.json()["results"]], [])
 
         # More weight to reliability should change the order
         resp = client.get("/video/?reliability=100&importance=10")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_02", "video_id_01", "video_id_04", "video_id_03"]
+            ["video_id_02", "video_id_01", "video_id_04", "video_id_03"],
         )
 
     def test_anonymous_can_get_video(self):
         client = APIClient()
         response = client.get("/video/video_id_01/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["video_id"], 'video_id_01')
+        self.assertEqual(response.json()["video_id"], "video_id_01")
 
     def test_anonymous_can_get_video_with_score_zero(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
         client = APIClient()
-        video_null_score = 'vid_score_0'
+        video_null_score = "vid_score_0"
         Video.objects.create(video_id=video_null_score)
         response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["video_id"], 'vid_score_0')
+        self.assertEqual(response.json()["video_id"], "vid_score_0")
 
     def test_anonymous_cant_get_video_non_existing(self):
         client = APIClient()
@@ -213,16 +249,33 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_language_detection(self):
-        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1233")
-        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1234")
-        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1235")
-        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1236")
-        Video.objects.create(uploader="Tournesol4All", language="fr", video_id="youtube1237")
-        # Not enough videos to qualify for skipping language detection
-        Video.objects.create(uploader="Sunflower4All", language="en", video_id="youtube1238")
-        Video.objects.create(uploader="Sunflower4All", language="en", video_id="youtube1239")
+        Video.objects.create(
+            uploader="Tournesol4All", language="fr", video_id="youtube1233"
+        )
+        Video.objects.create(
+            uploader="Tournesol4All", language="fr", video_id="youtube1234"
+        )
+        Video.objects.create(
+            uploader="Tournesol4All", language="fr", video_id="youtube1235"
+        )
+        Video.objects.create(
+            uploader="Tournesol4All", language="fr", video_id="youtube1236"
+        )
+        Video.objects.create(
+            uploader="Tournesol4All", language="fr", video_id="youtube1237"
+        )
+        # Not enough videos to qualify for skipping language detection
+        Video.objects.create(
+            uploader="Sunflower4All", language="en", video_id="youtube1238"
+        )
+        Video.objects.create(
+            uploader="Sunflower4All", language="en", video_id="youtube1239"
+        )
         test_details = [
-            (["Tournesol4All", "I speak english", "I have not description"], "fr"), # fr because of existing known channel
+            (
+                ["Tournesol4All", "I speak english", "I have not description"],
+                "fr",
+            ),  # fr because of existing known channel
             (["Sunflower4All", "I speak english", "I have not description"], "en"),
             (["Sunflower4All", "Je parle Français", "Bonjour, Merci beaucoup"], "fr"),
             (["Sunflower4All", "Ich spreche Deutsch", "Hallo, Danke schön"], "de"),
@@ -232,7 +285,7 @@ class VideoApi(TestCase):
 
     def test_cannot_get_existing_video_without_positive_score(self):
         client = APIClient()
-        video_null_score = 'video_null_score'
+        video_null_score = "video_null_score"
         Video.objects.create(video_id=video_null_score)
         response = client.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -269,31 +322,31 @@ class VideoApi(TestCase):
 
         resp = client.get("/video/?language=fr")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp.data["count"], 1) # 1 French video
+        self.assertEqual(resp.data["count"], 1)  # 1 French video
 
         resp = client.get("/video/?language=de,en,fr")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp.data["count"], 3) # 1 French and 2 English videos
+        self.assertEqual(resp.data["count"], 3)  # 1 French and 2 English videos
 
     def test_get_video_date_filters(self):
         client = APIClient()
 
-        resp = client.get('/video/?date_gte=2021-01-04T00:00:00')
+        resp = client.get("/video/?date_gte=2021-01-04T00:00:00")
         self.assertEqual(resp.status_code, 200, resp.data)
         self.assertEqual(resp.data["count"], 1)
 
-        resp = client.get('/video/?date_lte=2021-01-03T00:00:00')
+        resp = client.get("/video/?date_lte=2021-01-03T00:00:00")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 3)
 
     def test_get_video_date_filters_legacy_format(self):
         client = APIClient()
 
-        resp = client.get('/video/?date_gte=04-01-21-00-00-00')
+        resp = client.get("/video/?date_gte=04-01-21-00-00-00")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 1)
 
-        resp = client.get('/video/?date_lte=03-01-21-00-00-00')
+        resp = client.get("/video/?date_lte=03-01-21-00-00-00")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 3)
 
@@ -306,7 +359,7 @@ class VideoApi(TestCase):
         video2.tags.create(name="tag4")
 
         client = APIClient()
-        resp = client.get('/video/?search=tag')
+        resp = client.get("/video/?search=tag")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data["results"]), 2)
         # Video2 with higher score should remain listed as the top video
@@ -317,9 +370,7 @@ class VideoApi(TestCase):
         An anonymous user can't add a new video.
         """
         client = APIClient()
-        response = client.post(
-            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
-        )
+        response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_create_without_yt_api_key(self):
@@ -334,12 +385,9 @@ class VideoApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        response = client.post(
-            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
-        )
+        response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Video.objects.all().count(),
-                         initial_video_nbr + 1)
+        self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -373,16 +421,12 @@ class VideoApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        response = client.post(
-            "/video/", {"video_id": id_too_big}, format="json"
-        )
+        response = client.post("/video/", {"video_id": id_too_big}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
             Video.objects.get(video_id=id_too_big)
 
-        response = client.post(
-            "/video/", {"video_id": id_too_small}, format="json"
-        )
+        response = client.post("/video/", {"video_id": id_too_small}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
             Video.objects.get(video_id=id_too_small)
@@ -403,7 +447,7 @@ class VideoApi(TestCase):
                         "dimension": "2d",
                         "duration": "PT21M3S",
                         "licensedContent": True,
-                        "projection": "rectangular"
+                        "projection": "rectangular",
                     },
                     "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
                     "id": "NeADlWSDFAQ",
@@ -420,22 +464,19 @@ class VideoApi(TestCase):
                         "publishedAt": "2012-10-01T15:27:35Z",
                         "tags": ["tournesol"],
                         "thumbnails": {},
-                        "title": "Video title"
+                        "title": "Video title",
                     },
                     "statistics": {
                         "commentCount": "8887",
                         "dislikeCount": "5773",
                         "favoriteCount": "0",
                         "likeCount": "307433",
-                        "viewCount": "20186268"
-                    }
+                        "viewCount": "20186268",
+                    },
                 }
             ],
             "kind": "youtube#videoListResponse",
-            "pageInfo": {
-                "resultsPerPage": 1,
-                "totalResults": 1
-            }
+            "pageInfo": {"resultsPerPage": 1, "totalResults": 1},
         }
 
         client = APIClient()
@@ -449,8 +490,7 @@ class VideoApi(TestCase):
             "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(Video.objects.all().count(),
-                         initial_video_nbr + 1)
+        self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
 
         video = Video.objects.get(video_id="NeADlWSDFAQ")
         tournesol_tag = Tag.objects.get(name="tournesol")
@@ -476,7 +516,7 @@ class VideoApi(TestCase):
                         "dimension": "2d",
                         "duration": "PT21M3S",
                         "licensedContent": True,
-                        "projection": "rectangular"
+                        "projection": "rectangular",
                     },
                     "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
                     "id": "NeADlWSDFAQ",
@@ -493,16 +533,13 @@ class VideoApi(TestCase):
                         "publishedAt": "2012-10-01T15:27:35Z",
                         "tags": ["tournesol"],
                         "thumbnails": {},
-                        "title": "Video title"
+                        "title": "Video title",
                     },
-                    "statistics": {}
+                    "statistics": {},
                 }
             ],
             "kind": "youtube#videoListResponse",
-            "pageInfo": {
-                "resultsPerPage": 1,
-                "totalResults": 1
-            }
+            "pageInfo": {"resultsPerPage": 1, "totalResults": 1},
         }
 
         client = APIClient()
@@ -513,13 +550,10 @@ class VideoApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            "/video/",
-            data={"video_id": "NeADlWSDFAQ"},
-            format="json"
+            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(Video.objects.all().count(),
-                         initial_video_nbr + 1)
+        self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
 
         video = Video.objects.get(video_id="NeADlWSDFAQ")
         self.assertEqual(response.json()["name"], "Video title")
@@ -534,10 +568,7 @@ class VideoApi(TestCase):
         mock_youtube.return_value = {
             "items": [],
             "kind": "youtube#videoListResponse",
-            "pageInfo": {
-                "resultsPerPage": 0,
-                "totalResults": 0
-            }
+            "pageInfo": {"resultsPerPage": 0, "totalResults": 0},
         }
         client = APIClient()
 
