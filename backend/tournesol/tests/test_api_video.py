@@ -280,8 +280,8 @@ class VideoApi(TestCase):
             (["Sunflower4All", "Je parle Français", "Bonjour, Merci beaucoup"], "fr"),
             (["Sunflower4All", "Ich spreche Deutsch", "Hallo, Danke schön"], "de"),
         ]
-        for input, output in test_details:
-            self.assertEqual(compute_video_language(*input), output)
+        for input_, output in test_details:
+            self.assertEqual(compute_video_language(*input_), output)
 
     def test_cannot_get_existing_video_without_positive_score(self):
         client = APIClient()
