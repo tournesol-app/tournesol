@@ -85,7 +85,7 @@ const LoggedOutActions = () => {
       <Button
         variant="outlined"
         color="inherit"
-        style={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
+        sx={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
         component={Link}
         className={classes.HeaderButton}
         to="/login"
