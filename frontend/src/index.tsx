@@ -6,8 +6,12 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import { SnackbarProvider } from 'notistack';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import {
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+} from '@mui/material/styles';
 
 import './index.css';
 import App from './App';
@@ -16,25 +20,32 @@ import { store, persistor } from './app/store';
 import * as serviceWorker from './serviceWorker';
 import { theme } from './theme';
 
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider theme={theme}>
-          <BrowserRouter>
-            <SnackbarProvider
-              maxSnack={6}
-              autoHideDuration={6000}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-            >
-              <App />
-            </SnackbarProvider>
-          </BrowserRouter>
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <BrowserRouter>
+              <SnackbarProvider
+                maxSnack={6}
+                autoHideDuration={6000}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+              >
+                <App />
+              </SnackbarProvider>
+            </BrowserRouter>
+          </ThemeProvider>
+        </StyledEngineProvider>
       </PersistGate>
     </Provider>
   </React.StrictMode>,

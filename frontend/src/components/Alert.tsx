@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
+import Snackbar from '@mui/material/Snackbar';
 
 const Alert = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(true);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';

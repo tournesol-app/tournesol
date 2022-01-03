@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 import { useLoginState } from '../../../hooks';
 import {

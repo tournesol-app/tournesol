@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
+import makeStyles from '@mui/styles/makeStyles';
+import AppBar from '@mui/material/AppBar';
+import Grid from '@mui/material/Grid';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
 
-import { Menu } from '@material-ui/icons';
+import { Menu } from '@mui/icons-material';
 
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
@@ -17,7 +17,7 @@ import AccountInfo from './AccountInfo';
 export const topBarHeight = 80;
 
 const useStyles = makeStyles((theme) => ({
-  appBar: { zIndex: theme.zIndex.drawer + 1 },
+  appBar: { [theme.breakpoints.up('md')]: { zIndex: theme.zIndex.drawer + 1 } },
   container: {
     width: '100%',
   },
@@ -77,11 +77,12 @@ const Logo = () => {
     <Grid item md={4} xs={4} className={classes.logo}>
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
+        size="large"
       >
         <Menu />
       </IconButton>
       <Link to="/">
-        <Hidden xsDown>
+        <Hidden smDown>
           <img src="/svg/Logo.svg" alt="logo" />
         </Hidden>
         <Hidden smUp>
@@ -132,7 +133,7 @@ const TopBar = () => {
       <Toolbar className={classes.toolbar}>
         <Grid container className={classes.container}>
           <Logo />
-          <Hidden smDown>
+          <Hidden mdDown>
             <Search />
           </Hidden>
           <AccountInfo />

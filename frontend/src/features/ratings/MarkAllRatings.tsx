@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { Button, Box } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { Button, Box } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 
 import { TitledSection } from 'src/components';
@@ -34,7 +34,7 @@ function MarkAllRatings() {
 
   return (
     <TitledSection title="Update visibility">
-      <Box display="flex" flexDirection="column" gridGap="8px" py={1}>
+      <Box display="flex" flexDirection="column" gap="8px" py={1}>
         <Button
           color="primary"
           variant="contained"

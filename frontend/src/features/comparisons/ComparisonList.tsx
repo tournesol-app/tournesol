@@ -1,22 +1,15 @@
 import React from 'react';
 
-import {
-  Grid,
-  Container,
-  makeStyles,
-  Theme,
-  Tooltip,
-  Fab,
-  Box,
-} from '@material-ui/core';
-import { Compare as CompareIcon } from '@material-ui/icons';
+import { Grid, Container, Theme, Tooltip, Fab, Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { Compare as CompareIcon } from '@mui/icons-material';
 import type { Comparison } from 'src/services/openapi';
 import { VideoCardFromId } from '../videos/VideoCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
   content: {
     padding: theme.spacing(3),
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(0),
     },
     maxWidth: 840,

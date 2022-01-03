@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Button, Typography, Box, Link } from '@material-ui/core';
+import { Grid, Button, Typography, Box, Link } from '@mui/material';
 import {
   ContentHeader,
   ContentBox,
@@ -98,7 +98,12 @@ const ForgotPassword = () => {
               </Grid>
             </form>
             <Box my={2}>
-              <Link component={RouterLink} to="/login" color="secondary">
+              <Link
+                component={RouterLink}
+                to="/login"
+                color="secondary"
+                underline="hover"
+              >
                 Back to Log in
               </Link>
             </Box>

@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { TitledSection } from 'src/components';
-import { Typography, FormControlLabel, Checkbox, Box } from '@material-ui/core';
+import { Typography, FormControlLabel, Checkbox, Box } from '@mui/material';
 import {
   CheckCircle,
   CheckCircleOutline,
   CheckBox,
   CheckBoxOutlineBlank,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 interface Props {
   title: string;
@@ -59,6 +59,7 @@ const ChoicesFilterSection = ({
             <FormControlLabel
               control={
                 <Checkbox
+                  color="secondary"
                   icon={
                     multipleChoice ? (
                       <CheckBoxOutlineBlank />

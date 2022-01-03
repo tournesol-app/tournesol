@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { TextField, Grid, Button, Link, Box } from '@material-ui/core';
+import { TextField, Grid, Button, Link, Box } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getTokenAsync, selectLogin } from './loginSlice';
 import { LoginState } from './LoginState.model';
@@ -99,7 +99,12 @@ const Login = () => {
           {loginError && <Alert>❌ {loginError.message}</Alert>}
         </form>
         <Box my={2}>
-          <Link component={RouterLink} to="/forgot" color="secondary">
+          <Link
+            component={RouterLink}
+            to="/forgot"
+            color="secondary"
+            underline="hover"
+          >
             Forgot your password?
           </Link>
         </Box>

@@ -1,12 +1,13 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import { BrowserRouter } from 'react-router-dom';
+
 import App from './App';
 import drawerOpenReducer from './features/frame/drawerOpenSlice';
 import loginReducer, { initialState } from 'src/features/login/loginSlice';
-import { ThemeProvider } from '@material-ui/styles';
 import { theme } from './theme';
 
 const renderComponent = (drawerOpen: boolean) =>
@@ -23,11 +24,13 @@ const renderComponent = (drawerOpen: boolean) =>
         }
       )}
     >
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </Provider>
   );
 

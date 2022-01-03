@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 import { useHistory } from 'react-router-dom';
-import { TextField, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { TextField, Typography, Button } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 
 import { UsersService } from 'src/services/openapi';
 import { useLoginState } from 'src/hooks';

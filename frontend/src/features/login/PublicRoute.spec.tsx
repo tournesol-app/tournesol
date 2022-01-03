@@ -7,7 +7,7 @@ import { MockStoreEnhanced } from 'redux-mock-store';
 
 import { initialState } from './loginSlice';
 import PublicRoute from './PublicRoute';
-import { mockStore, MockState } from './Login.spec.tsx';
+import { mockStore, MockState } from './Login.spec';
 
 describe('Public Route component', () => {
   const renderComponent = (store: MockStoreEnhanced<MockState>) =>

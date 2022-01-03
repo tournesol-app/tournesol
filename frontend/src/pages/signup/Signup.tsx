@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Button, Typography, Checkbox } from '@material-ui/core';
+import { Grid, Button, Typography, Checkbox } from '@mui/material';
 import {
   Alert,
   ContentHeader,

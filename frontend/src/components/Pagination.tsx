@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, makeStyles, Paper } from '@material-ui/core';
+import { Button, Paper, Typography } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 interface PaginationProps {
   limit: number;
@@ -15,9 +17,6 @@ const useStyles = makeStyles({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  paginationStatusText: {
-    margin: '0 20px',
   },
 });
 
@@ -42,10 +41,10 @@ const Pagination = ({
       >
         Previous {limit}
       </Button>
-      <span className={classes.paginationStatusText}>
+      <Typography variant="body2" mx={2}>
         Showing videos {offset + 1} to {Math.min(count, offset + limit)}
         {count && ` of ${count}`}
-      </span>
+      </Typography>
       <Button
         disabled={offset + limit >= count}
         variant="contained"

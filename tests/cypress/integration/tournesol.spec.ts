@@ -80,7 +80,7 @@ describe('Password reset flow', () => {
     // Login with the new password
     cy.get('input[name=username]').type('test-pwreset');
     cy.get('input[name=password]').type('tournesol-new-password').type('{enter}');
-    cy.contains('a[role=button]', 'test-pwreset').should('be.visible');
+    cy.contains('a[href="/settings/profile"]', 'test-pwreset').should('be.visible');
   })
 })
 

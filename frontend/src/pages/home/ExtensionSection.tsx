@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Typography, Button, Box } from '@material-ui/core';
+import { Typography, Button, Box } from '@mui/material';
 
 const getWebBrowser = () => {
   if (navigator.userAgent.includes('Chrome/')) return 'chrome';

@@ -1,13 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  Grid,
-  Typography,
-  makeStyles,
-  withStyles,
-  Slider,
-  Tooltip,
-} from '@material-ui/core';
+import { Grid, Typography, Slider, Tooltip } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 
 import { mainCriteriaNames } from 'src/utils/constants';
 import { TitledSection } from 'src/components';
@@ -65,7 +61,6 @@ const CustomSlider = withStyles({
     backgroundColor: '#bfbfbf',
     height: 8,
     width: 1,
-    marginTop: -3,
   },
   markActive: {
     opacity: 1,
@@ -167,12 +162,15 @@ function CriteriaFilter({
                     step={25}
                     min={0}
                     max={100}
+                    size="small"
                     valueLabelDisplay="auto"
                     valueLabelFormat={valuetoText}
                     onChangeCommitted={(e, value) =>
                       setFilter(criteria, value.toString())
                     }
-                    ValueLabelComponent={ValueLabelComponent}
+                    components={{
+                      ValueLabel: ValueLabelComponent,
+                    }}
                     marks={marks}
                   />
                 </Grid>

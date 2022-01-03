@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useParams } from 'react-router-dom';
 import { VideoCardFromId } from 'src/features/videos/VideoCard';
 

@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Button, Grid } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import makeStyles from '@mui/styles/makeStyles';
+import { Button, Grid } from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 
 import { useLoginState } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
 import { contactAdministratorLowSeverity } from '../../../../utils/notifications';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   AccountInfo: {
     display: 'flex',
     alignItems: 'center',
@@ -23,6 +23,7 @@ const useStyles = makeStyles({
     textTransform: 'initial',
     fontWeight: 'bold',
     borderWidth: '2px',
+    color: theme.palette.text.primary,
   },
   JoinUsButton: {
     background: '#3198C4',
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
     },
     color: '#FFFFFF',
   },
-});
+}));
 
 const LoggedInActions = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -55,16 +56,20 @@ const LoggedInActions = () => {
     <>
       <Button
         variant="outlined"
+        color="inherit"
+        sx={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
         onClick={logoutProcess}
         className={classes.HeaderButton}
       >
         Logout
       </Button>
       <Button
+        variant="text"
+        color="secondary"
         component={Link}
         to="/settings/profile"
         className={classes.HeaderButton}
-        endIcon={<AccountCircle style={{ fontSize: '36px' }} color="action" />}
+        endIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
       >
         {loginState.username}
       </Button>
@@ -78,8 +83,10 @@ const LoggedOutActions = () => {
   return (
     <>
       <Button
-        component={Link}
         variant="outlined"
+        color="inherit"
+        sx={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
+        component={Link}
         className={classes.HeaderButton}
         to="/login"
       >

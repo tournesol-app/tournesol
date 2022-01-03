@@ -9,9 +9,10 @@ import {
   List,
   Theme,
   Divider,
-} from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useAppSelector } from '../../../../app/hooks';
 import { selectFrame } from '../../drawerOpenSlice';
@@ -24,7 +25,7 @@ import {
   Info as InfoIcon,
   Stars as StarsIcon,
   VideoLibrary,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: 'hidden',
-    width: theme.spacing(7) + 1,
+    width: `calc(${theme.spacing(7)} + 1px)`,
   },
   drawerPaper: {
     top: topBarHeight,
@@ -61,11 +62,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    [theme.breakpoints.down('sm')]: {
+    overflowX: 'hidden',
+    [theme.breakpoints.down('md')]: {
       top: 0,
       height: '100%',
     },
-    overflowX: 'hidden',
     '& > *': {
       // All direct children of the drawer paper should keep a min-width:
       // their content should not be wrapped during the drawer animation.
@@ -91,7 +92,7 @@ const SideBar = () => {
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
 
   const isItemSelected = (url: string) => url === location.pathname;
@@ -165,6 +166,14 @@ const SideBar = () => {
               className={classes.listItem}
               component={Link}
               to={targetUrl}
+              sx={{
+                '&.Mui-selected': {
+                  bgcolor: 'action.selected',
+                },
+                '&.Mui-selected:hover': {
+                  bgcolor: 'action.selected',
+                },
+              }}
             >
               <ListItemIcon>
                 <IconComponent

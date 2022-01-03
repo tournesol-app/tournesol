@@ -1,4 +1,4 @@
-import { createTheme, responsiveFontSizes } from '@material-ui/core/styles';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 export const theme = responsiveFontSizes(
   createTheme({
@@ -42,13 +42,6 @@ export const theme = responsiveFontSizes(
         '"Segoe UI Emoji"',
         '"Segoe UI Symbol"',
       ].join(','),
-    },
-    overrides: {
-      MuiDrawer: {
-        docked: {
-          width: 240,
-        },
-      },
     },
   })
 );

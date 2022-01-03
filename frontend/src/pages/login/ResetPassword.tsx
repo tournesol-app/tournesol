@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button } from '@mui/material';
 import {
   AccountsService,
   ResetPassword as ResetPasswordData,

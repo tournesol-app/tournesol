@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Link } from 'react-router-dom';
 
 import { handleWikiUrl } from 'src/utils/url';
 
 const useStyles = makeStyles(() => ({
   root: {
-    padding: 8,
+    padding: '8px',
     borderTop: '1px solid #e7e5db',
     display: 'flex',
     flexFlow: 'row wrap',
@@ -17,6 +17,7 @@ const useStyles = makeStyles(() => ({
     margin: 4,
     textDecoration: 'none',
     fontStyle: 'normal',
+    fontSize: '0.875em',
     fontWeight: 'bold',
     color: '#A09B87',
     display: 'block',

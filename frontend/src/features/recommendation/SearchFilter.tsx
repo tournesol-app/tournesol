@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Collapse, Grid, Box, makeStyles } from '@material-ui/core';
+import { Collapse, Grid, Box } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 import { CollapseButton } from 'src/components';
 import { useListFilter } from 'src/hooks';

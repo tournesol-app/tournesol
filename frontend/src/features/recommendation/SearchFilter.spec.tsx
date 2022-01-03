@@ -1,5 +1,11 @@
+/*
+  Because of a regression in CRA v5, Typescript is wrongly enforced here
+  See https://github.com/facebook/create-react-app/pull/11875
+*/
+// eslint-disable-next-line
+// @ts-nocheck
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Router } from 'react-router-dom';
@@ -20,9 +26,11 @@ describe('Filters feature', () => {
     // Some context is needed by the component SearchFilter
     render(
       <Router history={history}>
-        <ThemeProvider theme={theme}>
-          <SearchFilter />
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <SearchFilter />
+          </ThemeProvider>
+        </StyledEngineProvider>
       </Router>
     );
   });
@@ -62,7 +70,13 @@ describe('Filters feature', () => {
   }
 
   // Click on a date filter checkbox and verify the resulting URL parameters
-  function clickOnDateCheckbox({ checkbox, expectInUrl }) {
+  function clickOnDateCheckbox({
+    checkbox,
+    expectInUrl,
+  }: {
+    checkbox: 'Today' | 'Week' | 'Month' | 'Year';
+    expectInUrl: string;
+  }) {
     const dateCheckbox = screen.queryByTestId(
       'Upload date: ' + dateChoices[checkbox]
     );
@@ -78,7 +92,13 @@ describe('Filters feature', () => {
   }
 
   // Click on a language checkbox and verify the resulting URL parameters
-  function clickOnLanguageCheckbox({ checkbox, expectInUrl }) {
+  function clickOnLanguageCheckbox({
+    checkbox,
+    expectInUrl,
+  }: {
+    checkbox: 'en' | 'fr' | 'de';
+    expectInUrl: string;
+  }) {
     const languageCheckbox = screen.queryByTestId(
       'Language: ' + languageChoices[checkbox]
     );

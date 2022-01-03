@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ReplayIcon from '@material-ui/icons/Replay';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import ReplayIcon from '@mui/icons-material/Replay';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 
 import { extractVideoId, isVideoIdValid } from 'src/utils/video';
 import { getVideoForComparison } from 'src/utils/video';
@@ -20,16 +21,16 @@ import { ActionList } from 'src/utils/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    margin: 4,
+    margin: 0,
   },
   controls: {
+    margin: 4,
     display: 'flex',
     flexWrap: 'wrap',
-    paddingBottom: '4px',
     alignItems: 'center',
   },
   input: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: '0.7rem',
     },
   },
@@ -164,9 +165,14 @@ const VideoSelector = ({
           style={{ flex: 1 }}
           value={videoId || ''}
           onChange={handleChange}
+          variant="standard"
         />
         <Tooltip title="New Video" aria-label="new_video">
-          <IconButton aria-label="new_video" onClick={loadNewVideo}>
+          <IconButton
+            aria-label="new_video"
+            onClick={loadNewVideo}
+            size="large"
+          >
             <ReplayIcon />
           </IconButton>
         </Tooltip>

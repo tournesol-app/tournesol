@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Link } from 'react-router-dom';
-import { Typography, Button, Box } from '@material-ui/core';
+import { Typography, Button, Box } from '@mui/material';
 
 // ContributeSection is a paragraph displayed on the HomePage
 // that helps users know how to contribute as users of Tournesol
