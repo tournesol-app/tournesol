@@ -192,173 +192,6 @@ class VideoApi(TestCase):
             ["video_id_02", "video_id_01", "video_id_04", "video_id_03"]
         )
 
-    def test_anonymous_cant_create(self):
-        """
-        An anonymous user can't add a new video.
-        """
-        client = APIClient()
-        response = client.post(
-            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_authenticated_can_create_without_yt_api_key(self):
-        """
-        An authenticated user can add a new video, even without a YouTube API
-        key.
-        """
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        initial_video_nbr = Video.objects.all().count()
-
-        client.force_authenticate(user=user)
-
-        response = client.post(
-            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Video.objects.all().count(),
-                         initial_video_nbr + 1)
-
-    @patch("tournesol.views.video.youtube_video_details")
-    def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
-        """
-        An authenticated user can add a new video, with a YouTube API key.
-        """
-        mock_youtube.return_value = {
-            "items": [
-                {
-                    "contentDetails": {
-                        "caption": "true",
-                        "contentRating": {},
-                        "definition": "hd",
-                        "dimension": "2d",
-                        "duration": "PT21M3S",
-                        "licensedContent": True,
-                        "projection": "rectangular"
-                    },
-                    "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
-                    "id": "NeADlWSDFAQ",
-                    "kind": "youtube#video",
-                    "snippet": {
-                        "categoryId": "22",
-                        "channelId": "UCAuUUnT6oDeKwE6v1NGQxug",
-                        "channelTitle": "TED",
-                        "defaultAudioLanguage": "en",
-                        "defaultLanguage": "en",
-                        "description": "Video description",
-                        "liveBroadcastContent": "none",
-                        "localized": {},
-                        "publishedAt": "2012-10-01T15:27:35Z",
-                        "tags": ["tournesol"],
-                        "thumbnails": {},
-                        "title": "Video title"
-                    },
-                    "statistics": {
-                        "commentCount": "8887",
-                        "dislikeCount": "5773",
-                        "favoriteCount": "0",
-                        "likeCount": "307433",
-                        "viewCount": "20186268"
-                    }
-                }
-            ],
-            "kind": "youtube#videoListResponse",
-            "pageInfo": {
-                "resultsPerPage": 1,
-                "totalResults": 1
-            }
-        }
-
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        initial_video_nbr = Video.objects.all().count()
-
-        client.force_authenticate(user=user)
-
-        response = client.post(
-            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(Video.objects.all().count(),
-                         initial_video_nbr + 1)
-
-        video = Video.objects.get(video_id="NeADlWSDFAQ")
-        tournesol_tag = Tag.objects.get(name="tournesol")
-
-        self.assertEqual(response.json()["name"], "Video title")
-        self.assertIn(tournesol_tag, video.tags.all())
-        self.assertEqual(response.json()["duration"], 1263)
-        self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
-
-    @patch("tournesol.views.video.youtube_video_details")
-    def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
-        """
-        An authenticated user can't add a new video, if the YouTube API
-        answers with an empty list.
-        """
-        mock_youtube.return_value = {
-            "items": [],
-            "kind": "youtube#videoListResponse",
-            "pageInfo": {
-                "resultsPerPage": 0,
-                "totalResults": 0
-            }
-        }
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        client.force_authenticate(user=user)
-
-        response = client.post(
-            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id="NeADlWSDFAQ")
-
-    def test_authenticated_cant_create_twice(self):
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        client.force_authenticate(user=user)
-
-        Video.objects.create(video_id="NeADlWSDFAQ")
-        data = {"video_id": "NeADlWSDFAQ"}
-
-        response = client.post(
-            "/video/", data, format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        video = Video.objects.filter(video_id="NeADlWSDFAQ")
-        self.assertEqual(video.count(), 1)
-
-    def test_authenticated_cant_create_with_incorrect_id(self):
-        client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        id_too_big = "AZERTYUIOPQS"
-        id_too_small = "AZERTYUIOP"
-
-        client.force_authenticate(user=user)
-
-        response = client.post(
-            "/video/", {"video_id": id_too_big}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id=id_too_big)
-
-        response = client.post(
-            "/video/", {"video_id": id_too_small}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id=id_too_small)
-
     def test_anonymous_can_get_video(self):
         client = APIClient()
         response = client.get("/video/video_id_01/")
@@ -479,8 +312,160 @@ class VideoApi(TestCase):
         # Video2 with higher score should remain listed as the top video
         self.assertEqual(resp.data["results"][0]["video_id"], self._video_id_02)
 
+    def test_anonymous_cant_create(self):
+        """
+        An anonymous user can't add a new video.
+        """
+        client = APIClient()
+        response = client.post(
+            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_authenticated_can_create_without_yt_api_key(self):
+        """
+        An authenticated user can add a new video, even without a YouTube API
+        key configured.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_video_nbr = Video.objects.all().count()
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Video.objects.all().count(),
+                         initial_video_nbr + 1)
+
+    def test_authenticated_cant_create_twice(self):
+        """
+        An authenticated user can't add more than one video with the same video
+        id.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        new_video_id = "NeADlWSDFAQ"
+        data = {"video_id": new_video_id}
+
+        client.force_authenticate(user=user)
+
+        Video.objects.create(video_id=new_video_id)
+
+        response = client.post("/video/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        video = Video.objects.filter(video_id=new_video_id)
+        self.assertEqual(video.count(), 1)
+
+    def test_authenticated_cant_create_with_incorrect_id(self):
+        """
+        An authenticated user can't add a video with an invalid video id.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        id_too_big = "AZERTYUIOPQS"
+        id_too_small = "AZERTYUIOP"
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            "/video/", {"video_id": id_too_big}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        with self.assertRaises(ObjectDoesNotExist):
+            Video.objects.get(video_id=id_too_big)
+
+        response = client.post(
+            "/video/", {"video_id": id_too_small}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        with self.assertRaises(ObjectDoesNotExist):
+            Video.objects.get(video_id=id_too_small)
+
     @patch("tournesol.views.video.youtube_video_details")
-    def test_create_video_with_missing_statistics(self, mock_youtube):
+    def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
+        """
+        An authenticated user can add a new video, with a YouTube API key
+        configured.
+        """
+        mock_youtube.return_value = {
+            "items": [
+                {
+                    "contentDetails": {
+                        "caption": "true",
+                        "contentRating": {},
+                        "definition": "hd",
+                        "dimension": "2d",
+                        "duration": "PT21M3S",
+                        "licensedContent": True,
+                        "projection": "rectangular"
+                    },
+                    "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
+                    "id": "NeADlWSDFAQ",
+                    "kind": "youtube#video",
+                    "snippet": {
+                        "categoryId": "22",
+                        "channelId": "UCAuUUnT6oDeKwE6v1NGQxug",
+                        "channelTitle": "TED",
+                        "defaultAudioLanguage": "en",
+                        "defaultLanguage": "en",
+                        "description": "Video description",
+                        "liveBroadcastContent": "none",
+                        "localized": {},
+                        "publishedAt": "2012-10-01T15:27:35Z",
+                        "tags": ["tournesol"],
+                        "thumbnails": {},
+                        "title": "Video title"
+                    },
+                    "statistics": {
+                        "commentCount": "8887",
+                        "dislikeCount": "5773",
+                        "favoriteCount": "0",
+                        "likeCount": "307433",
+                        "viewCount": "20186268"
+                    }
+                }
+            ],
+            "kind": "youtube#videoListResponse",
+            "pageInfo": {
+                "resultsPerPage": 1,
+                "totalResults": 1
+            }
+        }
+
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_video_nbr = Video.objects.all().count()
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        self.assertEqual(Video.objects.all().count(),
+                         initial_video_nbr + 1)
+
+        video = Video.objects.get(video_id="NeADlWSDFAQ")
+        tournesol_tag = Tag.objects.get(name="tournesol")
+
+        self.assertEqual(response.json()["name"], "Video title")
+        self.assertIn(tournesol_tag, video.tags.all())
+        self.assertEqual(response.json()["duration"], 1263)
+        self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
+
+    @patch("tournesol.views.video.youtube_video_details")
+    def test_authenticated_can_create_with_yt_no_statistics(self, mock_youtube):
+        """
+        An authenticated user can add a new video, even if the YouTube API
+        does not return its statistics.
+        """
         mock_youtube.return_value = {
             "items": [
                 {
@@ -536,6 +521,33 @@ class VideoApi(TestCase):
         self.assertEqual(Video.objects.all().count(),
                          initial_video_nbr + 1)
 
-        self.assertEqual(response.json()["name"], "Video title")
         video = Video.objects.get(video_id="NeADlWSDFAQ")
+        self.assertEqual(response.json()["name"], "Video title")
         self.assertEqual(video.views, None)
+
+    @patch("tournesol.views.video.youtube_video_details")
+    def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
+        """
+        An authenticated user can't add a new video, if the YouTube API
+        answers with an empty list.
+        """
+        mock_youtube.return_value = {
+            "items": [],
+            "kind": "youtube#videoListResponse",
+            "pageInfo": {
+                "resultsPerPage": 0,
+                "totalResults": 0
+            }
+        }
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            Video.objects.get(video_id="NeADlWSDFAQ")
