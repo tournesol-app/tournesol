@@ -484,15 +484,16 @@ class VideoApi(TestCase):
         user = User.objects.get(username=self._user)
         initial_video_nbr = Video.objects.all().count()
 
+        new_video_id = "NeADlWSDFAQ"
+        data = {"video_id": new_video_id}
+
         client.force_authenticate(user=user)
 
-        response = client.post(
-            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
-        )
+        response = client.post("/video/", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
 
-        video = Video.objects.get(video_id="NeADlWSDFAQ")
+        video = Video.objects.get(video_id=new_video_id)
         tournesol_tag = Tag.objects.get(name="tournesol")
 
         self.assertEqual(response.json()["name"], "Video title")
@@ -547,15 +548,16 @@ class VideoApi(TestCase):
         user = User.objects.get(username=self._user)
         initial_video_nbr = Video.objects.all().count()
 
+        new_video_id = "NeADlWSDFAQ"
+        data = {"video_id": new_video_id}
+
         client.force_authenticate(user=user)
 
-        response = client.post(
-            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
-        )
+        response = client.post("/video/", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
 
-        video = Video.objects.get(video_id="NeADlWSDFAQ")
+        video = Video.objects.get(video_id=new_video_id)
         self.assertEqual(response.json()["name"], "Video title")
         self.assertEqual(video.views, None)
 
@@ -573,12 +575,13 @@ class VideoApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
+        new_video_id = "NeADlWSDFAQ"
+        data = {"video_id": new_video_id}
+
         client.force_authenticate(user=user)
 
-        response = client.post(
-            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
-        )
+        response = client.post("/video/", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id="NeADlWSDFAQ")
+            Video.objects.get(video_id=new_video_id)
