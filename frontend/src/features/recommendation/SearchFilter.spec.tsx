@@ -1,9 +1,11 @@
+/*
+  Because of a regression in CRA v5, Typescript is wrongly enforced here
+  See https://github.com/facebook/create-react-app/pull/11875
+*/
+// eslint-disable-next-line
+// @ts-nocheck
 import React from 'react';
-import {
-  ThemeProvider,
-  Theme,
-  StyledEngineProvider,
-} from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Router } from 'react-router-dom';
@@ -14,15 +16,8 @@ import { dateChoices } from './DateFilter';
 import { languageChoices } from './LanguageFilter';
 import { mainCriteriaNames } from 'src/utils/constants';
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
 describe('Filters feature', () => {
-  // TODO figure out the typing here
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let pushSpy: any = null;
+  let pushSpy = null;
   beforeEach(() => {
     // Used to spy on URL parameters updates
     const history = createMemoryHistory();
@@ -43,8 +38,6 @@ describe('Filters feature', () => {
   function clickOnShowMore(wasClosed = true) {
     const checkboxDisplayFilters = screen.queryByLabelText('show more');
     expect(checkboxDisplayFilters).not.toBeNull();
-    if (checkboxDisplayFilters == null)
-      throw 'checkboxDisplayFilters should not be null';
 
     // aria-expanded should be set to false if the filters menu was closed, and true otherwise
     expect(checkboxDisplayFilters.getAttribute('aria-expanded')).toBe(
@@ -88,7 +81,6 @@ describe('Filters feature', () => {
       'Upload date: ' + dateChoices[checkbox]
     );
     expect(dateCheckbox).not.toBeNull();
-    if (dateCheckbox == null) throw 'dateCheckbox should not be null';
 
     fireEvent.click(dateCheckbox);
 
@@ -111,7 +103,7 @@ describe('Filters feature', () => {
       'Language: ' + languageChoices[checkbox]
     );
     expect(languageCheckbox).not.toBeNull();
-    if (languageCheckbox == null) throw 'languageCheckbox should not be null';
+
     fireEvent.click(languageCheckbox);
 
     // Check that it updated the URL with the new language filter

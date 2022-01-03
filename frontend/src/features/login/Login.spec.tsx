@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { render } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
@@ -65,8 +66,6 @@ fetchMock
       name: 'invalid_login',
       url: api_url + '/o/token/',
       method: 'POST',
-      // TODO figure out the typing here
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       functionMatcher: (_, { headers, body }: any) => {
         const params = new URLSearchParams(body?.toString());
         if (!headers) {
