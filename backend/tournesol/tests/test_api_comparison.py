@@ -57,9 +57,9 @@ class ComparisonApiTestCase(TestCase):
 
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
-        user = User.objects.create(username=self._user)
-        user2 = User.objects.create(username=self._user2)
-        other = User.objects.create(username=self._other)
+        user = User.objects.create(username=self._user, email="user@test")
+        user2 = User.objects.create(username=self._user2, email="user2@test")
+        other = User.objects.create(username=self._other, email="other@test")
         now = datetime.datetime.now()
 
         self.videos = Video.objects.bulk_create([

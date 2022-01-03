@@ -13,17 +13,6 @@ RESERVED_USERNAMES = ["me"]
 
 
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
-    # Temporary validator, to reject existing email on account creation.
-    # The uniquessness will be enforced in the model, after the database
-    # (and the dev datasets) have been cleaned up, and the migration can
-    # be executed safely.
-    email = EmailField(validators=[
-        UniqueValidator(
-            queryset=User.objects.all(),
-            message="A user with this email address already exists."
-        ),
-    ])
-
     def validate_username(self, value):
         if value in RESERVED_USERNAMES:
             raise ValidationError(f'"{value}" is a reserved username')
