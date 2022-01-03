@@ -61,7 +61,6 @@ const CustomSlider = withStyles({
     backgroundColor: '#bfbfbf',
     height: 8,
     width: 1,
-    marginTop: -3,
   },
   markActive: {
     opacity: 1,

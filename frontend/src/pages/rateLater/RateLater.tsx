@@ -18,6 +18,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
+    fontSize: '14px',
   },
   rateLaterContent: {
     flexDirection: 'column',

@@ -56,8 +56,8 @@ const LoggedInActions = () => {
     <>
       <Button
         variant="outlined"
-        color="secondary"
-        style={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
+        color="inherit"
+        sx={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
         onClick={logoutProcess}
         className={classes.HeaderButton}
       >
@@ -69,7 +69,7 @@ const LoggedInActions = () => {
         component={Link}
         to="/settings/profile"
         className={classes.HeaderButton}
-        endIcon={<AccountCircle style={{ fontSize: '36px' }} color="action" />}
+        endIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
       >
         {loginState.username}
       </Button>
@@ -84,7 +84,7 @@ const LoggedOutActions = () => {
     <>
       <Button
         variant="outlined"
-        color="secondary"
+        color="inherit"
         style={{ borderColor: 'rgba(0, 0, 0, 0.23)' }}
         component={Link}
         className={classes.HeaderButton}

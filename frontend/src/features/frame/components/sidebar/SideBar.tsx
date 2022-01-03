@@ -166,6 +166,14 @@ const SideBar = () => {
               className={classes.listItem}
               component={Link}
               to={targetUrl}
+              sx={{
+                '&.Mui-selected': {
+                  bgcolor: 'action.selected',
+                },
+                '&.Mui-selected:hover': {
+                  bgcolor: 'action.selected',
+                },
+              }}
             >
               <ListItemIcon>
                 <IconComponent
