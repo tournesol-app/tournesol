@@ -85,6 +85,7 @@
   become_user: gunicorn
   notify:
     - Migrate Django database
+    - Create database cache
     - Collect Django static assets
     - Restart Gunicorn
     - Notify backend upgrade
