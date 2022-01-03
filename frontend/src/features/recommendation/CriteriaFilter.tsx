@@ -170,6 +170,7 @@ function CriteriaFilter({
                       step={25}
                       min={0}
                       max={100}
+                      size="small"
                       valueLabelDisplay="auto"
                       valueLabelFormat={valuetoText}
                       onChangeCommitted={(e, value) =>

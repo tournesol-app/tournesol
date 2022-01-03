@@ -123,7 +123,7 @@ describe('change password feature', () => {
     const oldPassword = screen.getByTestId('old_password');
     const password = screen.getByTestId('password');
     const passwordConfirm = screen.getByTestId('password_confirm');
-    const submit = screen.getByRole('button', { type: 'submit' });
+    const submit = screen.getByRole('button', { name: /update/i });
 
     return {
       oldPassword,

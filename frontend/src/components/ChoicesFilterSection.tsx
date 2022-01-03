@@ -72,7 +72,7 @@ const ChoicesFilterSection = ({
                   onChange={handleChange}
                   name={choiceValue}
                   size="small"
-                  data-testid={title + ': ' + choiceLabel}
+                  data-testid={`checkbox-choice-${choiceValue}`}
                 />
               }
               label={

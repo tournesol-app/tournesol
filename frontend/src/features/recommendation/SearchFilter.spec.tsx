@@ -7,14 +7,16 @@
 import React from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  queryAllByTestId,
+} from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 
 import SearchFilter from './SearchFilter';
-import { dateChoices } from './DateFilter';
-import { languageChoices } from './LanguageFilter';
-import { mainCriteriaNames } from 'src/utils/constants';
 
 describe('Filters feature', () => {
   let pushSpy = null;
@@ -54,19 +56,22 @@ describe('Filters feature', () => {
 
   function verifyFiltersPresence() {
     // Check date filters presence
-    for (const [, label] of Object.entries(dateChoices)) {
-      expect(screen.queryAllByTestId('Upload date: ' + label)).toHaveLength(1);
-    }
+    const dateFilter = document.querySelector(
+      '[data-testid=search-date-filter]'
+    );
+    expect(queryAllByTestId(dateFilter, /checkbox-choice/i)).toHaveLength(4);
 
     // Check language filters presence
-    for (const [, label] of Object.entries(languageChoices)) {
-      expect(screen.queryAllByTestId('Language: ' + label)).toHaveLength(1);
-    }
+    const languageFilter = document.querySelector(
+      '[data-testid=search-language-filter]'
+    );
+    expect(queryAllByTestId(languageFilter, /checkbox-choice/i)).toHaveLength(
+      3
+    );
 
     // Check criteria filters presence
-    for (const [, label] of mainCriteriaNames) {
-      expect(screen.queryAllByTitle(label)).toHaveLength(1);
-    }
+    // 1 slider per criteria, "Neutral" position by default
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(9);
   }
 
   // Click on a date filter checkbox and verify the resulting URL parameters
@@ -77,9 +82,7 @@ describe('Filters feature', () => {
     checkbox: 'Today' | 'Week' | 'Month' | 'Year';
     expectInUrl: string;
   }) {
-    const dateCheckbox = screen.queryByTestId(
-      'Upload date: ' + dateChoices[checkbox]
-    );
+    const dateCheckbox = screen.queryByTestId('checkbox-choice-' + checkbox);
     expect(dateCheckbox).not.toBeNull();
 
     fireEvent.click(dateCheckbox);
@@ -100,7 +103,7 @@ describe('Filters feature', () => {
     expectInUrl: string;
   }) {
     const languageCheckbox = screen.queryByTestId(
-      'Language: ' + languageChoices[checkbox]
+      'checkbox-choice-' + checkbox
     );
     expect(languageCheckbox).not.toBeNull();
 
