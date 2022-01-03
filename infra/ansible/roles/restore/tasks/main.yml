@@ -23,6 +23,7 @@
       notify:
         - Restart Gunicorn
         - Migrate Django database
+        - Create database cache
 
     - debug:
         var: restore_result.stdout_lines
@@ -48,6 +49,7 @@
       become_user: postgres
       notify:
         - Migrate Django database
+        - Create database cache
       register: restore_result
 
     - debug:
