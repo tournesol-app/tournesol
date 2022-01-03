@@ -11,7 +11,6 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.utils.video_language import compute_video_language
-
 from ..models import Tag, Video, VideoCriteriaScore
 
 
@@ -197,8 +196,8 @@ class VideoApi(TestCase):
         """
         An anonymous user can't add a new video.
         """
-        factory = APIClient()
-        response = factory.post(
+        client = APIClient()
+        response = client.post(
             "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -361,23 +360,23 @@ class VideoApi(TestCase):
             Video.objects.get(video_id=id_too_small)
 
     def test_anonymous_can_get_video(self):
-        factory = APIClient()
-        response = factory.get("/video/video_id_01/")
+        client = APIClient()
+        response = client.get("/video/video_id_01/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], 'video_id_01')
 
     def test_anonymous_can_get_video_with_score_zero(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
-        factory = APIClient()
+        client = APIClient()
         video_null_score = 'vid_score_0'
         Video.objects.create(video_id=video_null_score)
-        response = factory.get("/video/vid_score_0/")
+        response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], 'vid_score_0')
 
     def test_anonymous_cant_get_video_non_existing(self):
-        factory = APIClient()
-        response = factory.get("/video/video_id_00/")
+        client = APIClient()
+        response = client.get("/video/video_id_00/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_language_detection(self):
@@ -399,23 +398,23 @@ class VideoApi(TestCase):
             self.assertEqual(compute_video_language(*input), output)
 
     def test_cannot_get_existing_video_without_positive_score(self):
-        factory = APIClient()
+        client = APIClient()
         video_null_score = 'video_null_score'
         Video.objects.create(video_id=video_null_score)
-        response = factory.get("/video/")
+        response = client.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(self._list_of_videos))
 
     def test_cannot_get_video_with_particular_request(self):
-        factory = APIClient()
+        client = APIClient()
         _video_id_05 = "video_id_05"
         video = Video.objects.create(video_id=_video_id_05)
         VideoCriteriaScore.objects.create(video=video, criteria="engaging", score=-1)
         VideoCriteriaScore.objects.create(video=video, criteria="importance", score=1)
-        good_response = factory.get("/video/?importance=50&engaging=0")
+        good_response = client.get("/video/?importance=50&engaging=0")
         self.assertEqual(good_response.status_code, status.HTTP_200_OK)
         self.assertEqual(good_response.data["count"], len(self._list_of_videos) + 1)
-        bad_response = factory.get("/video/?importance=50&engaging=100")
+        bad_response = client.get("/video/?importance=50&engaging=100")
         self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
         self.assertEqual(bad_response.data["count"], len(self._list_of_videos))
 
