@@ -13,14 +13,13 @@ Django app for tournesol app.
 - Create a python env and install the requirements
   `pip install -r requirements.txt`
 
-- Install migrations on database
-  `python manage.py migrate`
+- Install migrations on database `python manage.py migrate`
 
-- Create superuser
-  `python manage.py createsuperuser`
+- Create the database cache `python manage.py createcachetable`
 
-- Run the server
-  `python manage.py runserver`
+- Create superuser `python manage.py createsuperuser`
+
+- Run the server `python manage.py runserver`
 
 ## Dependencies
 

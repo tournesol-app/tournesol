@@ -17,6 +17,13 @@
   become: true
   become_user: gunicorn
 
+- name: Create database cache
+  shell:
+    cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createcachetable"
+    executable: /usr/bin/bash
+  become: true
+  become_user: gunicorn
+
 - name: Notify backend upgrade
   shell:
     cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - new back end deployed: {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_alerting_webhook}}?wait=true'"
