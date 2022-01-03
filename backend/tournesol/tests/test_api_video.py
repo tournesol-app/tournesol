@@ -1,21 +1,25 @@
 from datetime import date
-import isodate
 from unittest.mock import patch
+
+import isodate
+
+from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from core.models import User
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Video, VideoCriteriaScore, Tag
+from ..models import Tag, Video, VideoCriteriaScore
 
 
 class VideoApi(TestCase):
     """
     TestCase of the video API.
     """
+    _user = "username"
 
     _video_id_01 = "video_id_01"
     _video_id_02 = "video_id_02"
@@ -24,11 +28,12 @@ class VideoApi(TestCase):
     _list_of_videos = []
 
     def setUp(self):
-        
-        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01, publication_date=date(2021,1,1))
-        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02, publication_date=date(2021,1,2))
-        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03, publication_date=date(2021,1,3))
-        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04, publication_date=date(2021,1,4))
+        User.objects.create(username=self._user, email="user@test")
+
+        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01, publication_date=date(2021, 1, 1))
+        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02, publication_date=date(2021, 1, 2))
+        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03, publication_date=date(2021, 1, 3))
+        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04, publication_date=date(2021, 1, 4))
         self._list_of_videos = [video_1, video_2, video_3, video_4]
         VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=0.1)
         VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=0.2)
@@ -188,17 +193,40 @@ class VideoApi(TestCase):
             ["video_id_02", "video_id_01", "video_id_04", "video_id_03"]
         )
 
-    def test_upload_video_without_API_key(self):
+    def test_anonymous_cant_create(self):
+        """
+        An anonymous user can't add a new video.
+        """
         factory = APIClient()
         response = factory.post(
-            "/video/",
-            {'video_id': 'NeADlWSDFAQ'},
-            format="json"
+            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_authenticated_can_create_without_yt_api_key(self):
+        """
+        An authenticated user can add a new video, even without a YouTube API
+        key.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_video_nbr = Video.objects.all().count()
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            "/video/", {"video_id": "NeADlWSDFAQ"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Video.objects.all().count(),
+                         initial_video_nbr + 1)
 
     @patch("tournesol.views.video.youtube_video_details")
-    def test_create_video_with_youtube_api(self, mock_youtube):
+    def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
+        """
+        An authenticated user can add a new video, with a YouTube API key.
+        """
         mock_youtube.return_value = {
             "items": [
                 {
@@ -245,22 +273,33 @@ class VideoApi(TestCase):
         }
 
         client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_video_nbr = Video.objects.all().count()
+
+        client.force_authenticate(user=user)
+
         response = client.post(
-            "/video/",
-            data={"video_id": "NeADlWSDFAQ"},
-            format="json"
+            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(response.json()["name"], "Video title")
+        self.assertEqual(Video.objects.all().count(),
+                         initial_video_nbr + 1)
+
         video = Video.objects.get(video_id="NeADlWSDFAQ")
         tournesol_tag = Tag.objects.get(name="tournesol")
+
+        self.assertEqual(response.json()["name"], "Video title")
         self.assertIn(tournesol_tag, video.tags.all())
         self.assertEqual(response.json()["duration"], 1263)
-        video = Video.objects.get(video_id='NeADlWSDFAQ')
         self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
 
     @patch("tournesol.views.video.youtube_video_details")
-    def test_create_video_with_with_youtube_api_no_result(self, mock_youtube):
+    def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
+        """
+        An authenticated user can't add a new video, if the YouTube API
+        answers with an empty list.
+        """
         mock_youtube.return_value = {
             "items": [],
             "kind": "youtube#videoListResponse",
@@ -269,49 +308,65 @@ class VideoApi(TestCase):
                 "totalResults": 0
             }
         }
-
         client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        client.force_authenticate(user=user)
+
         response = client.post(
-            "/video/",
-            data={"video_id": "NeADlWSDFAQ"},
-            format="json"
+            "/video/", data={"video_id": "NeADlWSDFAQ"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_upload_video_already_exist_without_API_key(self):
-        Video.objects.create(video_id="NeADlWSDFAQ")
+        with self.assertRaises(ObjectDoesNotExist):
+            Video.objects.get(video_id="NeADlWSDFAQ")
+
+    def test_authenticated_cant_create_twice(self):
         client = APIClient()
-        data={'video_id':'NeADlWSDFAQ'}
+
+        user = User.objects.get(username=self._user)
+        client.force_authenticate(user=user)
+
+        Video.objects.create(video_id="NeADlWSDFAQ")
+        data = {"video_id": "NeADlWSDFAQ"}
+
         response = client.post(
-            "/video/",
-            data,
-            format="json",
+            "/video/", data, format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        video = Video.objects.filter(video_id="NeADlWSDFAQ")
+        self.assertEqual(video.count(), 1)
 
-    def test_upload_video_incorrect_id(self):
-        factory = APIClient()
-        response = factory.post(
-            "/video/",
-            {'video_id':'AZERTYUIOPV3'}, # length of 12
-            format="json"
+    def test_authenticated_cant_create_with_incorrect_id(self):
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        id_too_big = "AZERTYUIOPQS"
+        id_too_small = "AZERTYUIOP"
+
+        client.force_authenticate(user=user)
+
+        response = client.post(
+            "/video/", {"video_id": id_too_big}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        with self.assertRaises(ObjectDoesNotExist):
+            Video.objects.get(video_id=id_too_big)
 
-        response = factory.post(
-            "/video/",
-            {'video_id':'AZERTYUPV3'}, # length of 10
-            format="json"
+        response = client.post(
+            "/video/", {"video_id": id_too_small}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        with self.assertRaises(ObjectDoesNotExist):
+            Video.objects.get(video_id=id_too_small)
 
-    def test_get_existing_video(self):
+    def test_anonymous_can_get_video(self):
         factory = APIClient()
         response = factory.get("/video/video_id_01/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], 'video_id_01')
 
-    def test_get_video_with_score_zero(self):
+    def test_anonymous_can_get_video_with_score_zero(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
         factory = APIClient()
         video_null_score = 'vid_score_0'
@@ -320,7 +375,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], 'vid_score_0')
 
-    def test_get_non_existing_video(self):
+    def test_anonymous_cant_get_video_non_existing(self):
         factory = APIClient()
         response = factory.get("/video/video_id_00/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -467,12 +522,21 @@ class VideoApi(TestCase):
         }
 
         client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        initial_video_nbr = Video.objects.all().count()
+
+        client.force_authenticate(user=user)
+
         response = client.post(
             "/video/",
             data={"video_id": "NeADlWSDFAQ"},
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        self.assertEqual(Video.objects.all().count(),
+                         initial_video_nbr + 1)
+
         self.assertEqual(response.json()["name"], "Video title")
         video = Video.objects.get(video_id="NeADlWSDFAQ")
         self.assertEqual(video.views, None)
