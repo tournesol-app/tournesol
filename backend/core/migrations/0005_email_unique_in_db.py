@@ -1,4 +1,5 @@
 import logging
+
 from django.db import migrations, models
 from django.db.models import Count, Window, F
 from django.db.models.functions.window import RowNumber
