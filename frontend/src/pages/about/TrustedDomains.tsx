@@ -66,7 +66,12 @@ const TrustedDomains = () => {
           <List>
             {domains !== null ? (
               domains.map((domain) => (
-                <ListItem key={domain.domain} dense disableGutters>
+                <ListItem
+                  key={domain.domain}
+                  dense
+                  disableGutters
+                  sx={{ fontSize: '14px' }}
+                >
                   {domain.domain}
                 </ListItem>
               ))

@@ -31,6 +31,7 @@ const CollapseButton = ({
   const classes = useStyles();
   return (
     <Button
+      color="secondary"
       size="large"
       startIcon={!expanded ? <ExpandMore /> : <ExpandLess />}
       aria-expanded={expanded}

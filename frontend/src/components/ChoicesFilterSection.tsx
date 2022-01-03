@@ -59,6 +59,7 @@ const ChoicesFilterSection = ({
             <FormControlLabel
               control={
                 <Checkbox
+                  color="secondary"
                   icon={
                     multipleChoice ? (
                       <CheckBoxOutlineBlank />

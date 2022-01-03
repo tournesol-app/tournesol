@@ -17,19 +17,18 @@ const useStyles = makeStyles((theme) => ({
   title: {
     color: '#ffffff',
     textAlign: 'right',
-    fontSize: '400%',
+    fontSize: '340%',
     [theme.breakpoints.down('lg')]: {
-      fontSize: '300%',
+      fontSize: '240%',
     },
     [theme.breakpoints.down('sm')]: {
-      fontSize: '200%',
+      fontSize: '180%',
     },
     [theme.breakpoints.down('md')]: {
       textAlign: 'center',
     },
     float: 'right',
-    marginTop: 24,
-    marginBottom: 24,
+    margin: '24px 8px',
     maxWidth: 1000,
   },
   titleContainer: {
