@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -13,6 +13,7 @@ import {
   useMediaQuery,
   useTheme,
   Tooltip,
+  Link,
 } from '@mui/material';
 
 import { mainCriteriaNamesObj } from 'src/utils/constants';
@@ -68,9 +69,6 @@ const useStyles = makeStyles((theme) => ({
   youtube_complements_p: {
     marginRight: '12px',
   },
-  channel: {
-    textDecorationLine: 'underline',
-  },
   nb_tournesol: {
     fontFamily: 'Poppins',
     fontStyle: 'normal',
@@ -91,7 +89,6 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'italic',
     fontWeight: 500,
     fontSize: '0.9em',
-    textDecorationLine: 'underline',
     color: '#B38B00',
   },
   rated: {
@@ -277,10 +274,11 @@ function VideoCard({
             <div>
               {video.uploader && (
                 <Link
+                  color="inherit"
+                  component={RouterLink}
                   to={`/recommendations?uploader=${encodeURIComponent(
                     video.uploader
                   )}`}
-                  className={classes.channel}
                 >
                   {video.uploader}
                 </Link>

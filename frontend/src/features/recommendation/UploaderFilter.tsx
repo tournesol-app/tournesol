@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Chip } from '@material-ui/core';
+import { Typography, Chip } from '@mui/material';
 
 interface UploaderProps {
   value: string;

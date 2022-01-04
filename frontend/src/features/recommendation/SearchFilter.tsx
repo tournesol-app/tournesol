@@ -26,14 +26,16 @@ function SearchFilter() {
   };
 
   return (
-    <Box color="text.secondary" marginBottom={1}>
+    <Box color="text.secondary">
       <CollapseButton expanded={expanded} onClick={handleExpandClick} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         {filterParams.get('uploader') && (
-          <UploaderFilter
-            value={filterParams.get('uploader') ?? ''}
-            onDelete={() => setFilter('uploader', '')}
-          />
+          <Box marginBottom={1}>
+            <UploaderFilter
+              value={filterParams.get('uploader') ?? ''}
+              onDelete={() => setFilter('uploader', '')}
+            />
+          </Box>
         )}
         <Grid container spacing={4} className={classes.filtersContainer}>
           <Grid item xs={6} md={3} lg={2}>
