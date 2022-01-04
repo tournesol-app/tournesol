@@ -8,6 +8,7 @@ interface PaginationProps {
   offset: number;
   count: number;
   onOffsetChange: (n: number) => void;
+  itemType?: string;
 }
 
 const useStyles = makeStyles({
@@ -25,6 +26,7 @@ const Pagination = ({
   limit,
   onOffsetChange,
   count,
+  itemType = 'videos',
 }: PaginationProps) => {
   const classes = useStyles();
 
@@ -42,7 +44,7 @@ const Pagination = ({
         Previous {limit}
       </Button>
       <Typography variant="body2" mx={2}>
-        Showing videos {offset + 1} to {Math.min(count, offset + limit)}
+        Showing {itemType} {offset + 1} to {Math.min(count, offset + limit)}
         {count && ` of ${count}`}
       </Typography>
       <Button
