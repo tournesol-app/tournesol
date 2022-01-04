@@ -270,7 +270,10 @@ function VideoCard({
               {video.publication_date}
             </span>
           )}
-          <Tooltip title="Filter by uploader" placement="bottom">
+          <Tooltip
+            title="See recommended videos of the same uploader"
+            placement="bottom"
+          >
             <div>
               {video.uploader && (
                 <Link
