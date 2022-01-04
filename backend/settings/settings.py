@@ -306,3 +306,10 @@ LOGGING = {
         'level': os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
     },
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'default_cache_table',
+    }
+}

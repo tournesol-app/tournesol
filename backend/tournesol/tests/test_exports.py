@@ -2,11 +2,13 @@ import csv
 import io
 
 from django.test import TestCase
+from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Comparison, Video, ComparisonCriteriaScore, ContributorRating
+
 
 class ExportTest(TestCase):
     def setUp(self) -> None:
@@ -31,6 +33,7 @@ class ExportTest(TestCase):
         ComparisonCriteriaScore.objects.create(comparison=self.comparison_private,score=5,criteria="largely_recommended")
 
         self.client = APIClient()
+        cache.clear()
 
     def test_not_authenticated_cannot_download_comparisons(self):
         resp = self.client.get("/users/me/exports/comparisons/")

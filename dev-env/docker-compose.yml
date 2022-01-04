@@ -31,7 +31,7 @@ services:
     command: 
         - bash
         - -c
-        - "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+        - "python manage.py migrate && python manage.py createcachetable && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ../backend:/backend
     ports:
