@@ -54,7 +54,7 @@ const Pagination = ({
       </Button>
       <Typography variant="body2" mx={2}>
         <Trans t={t} i18nKey="pagination.showingCounts">
-          Showing {{ itemTypeText }} {{ firstShowing }} to {{ lastShowing }} of
+          Showing {{ itemTypeText }} {{ firstShowing }} to {{ lastShowing }} of{' '}
           {{ total: count }}
         </Trans>
       </Typography>

@@ -3,9 +3,11 @@
     "filtersButton": "filters"
   },
   "pagination": {
+    "videos": "videos",
     "previousButton": "Previous {{limit}}",
-    "showingCounts": "Showing {{firstShowing}} to {{lastShowing}} of {{total}}",
-    "nextButton": "Next {{limit}}"
+    "showingCounts": "Showing {{itemTypeText}} {{firstShowing}} to {{lastShowing}} of {{total}}",
+    "nextButton": "Next {{limit}}",
+    "comparisons": "comparisons"
   },
   "comparison": {
     "videosAreSimilar": "These two videos are very similar, it is probably not useful to compare them.",
