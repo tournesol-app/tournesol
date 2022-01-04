@@ -18,6 +18,11 @@ from drf_spectacular.types import OpenApiTypes
 
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
 from ..models import Video
+from tournesol.throttling import (
+    PostScopeRateThrottle,
+    BurstUserRateThrottle,
+    SustainedUserRateThrottle
+)
 from tournesol.utils.api_youtube import youtube_video_details
 from tournesol.utils.video_language import compute_video_language
 
@@ -69,6 +74,14 @@ class VideoViewSet(mixins.CreateModelMixin,
     queryset = Video.objects.all()
     pagination_class = LimitOffsetPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    throttle_classes = [
+        PostScopeRateThrottle,
+        BurstUserRateThrottle,
+        SustainedUserRateThrottle
+    ]
+    throttle_scope = "api_video_post"
+
     lookup_field = "video_id"
 
     def parse_datetime(self, value: str):

@@ -111,7 +111,6 @@
     "currentEmailAddressIs": "Your current email address is",
     "newEmailAddress": "New email address",
     "sendVerificationEmail": "Send verification email",
-    "errorOccurredDuringExport": "An error seems to have occurred. If this error persists, please contact us.",
     "downloadAllComparisons": "Download all the comparisons that you have submitted to Tournesol",
     "downloadFile": "Download file",
     "prepareExport": "Prepare export",
@@ -159,7 +158,8 @@
     "errorOccurred": "Sorry an error has occurred.",
     "tryAgainLaterOrContactAdministrator": "Please, try again later, or contact an administrator if the issue persists.",
     "nonImpactingError": "Oops, a non impacting error occurred.",
-    "pleaseContactAnAdministratorToReportIssue": "Please, contact an administrator to report the issue."
+    "pleaseContactAnAdministratorToReportIssue": "Please, contact an administrator to report the issue.",
+    "youTemporarilyMadeTooManyRequests": "Sorry, you temporarily made too many requests. Please try again later."
   },
   "about": {
     "title": "About",

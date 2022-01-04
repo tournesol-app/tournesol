@@ -13,7 +13,7 @@ import { useNotifications } from 'src/hooks';
 // from services/openapi/core/request.ts because it does
 // not support returning response.blob which we need for
 // downloading files from the API endpoint /users/me/exports/all
-async function usersMeExportsAllRetrieveBlob(): Promise<Blob> {
+async function usersMeExportsAllRetrieveBlob(): Promise<Response> {
   const api_url = OpenAPI.BASE;
   const options: ApiRequestOptions = {
     method: 'GET',
@@ -29,18 +29,32 @@ async function usersMeExportsAllRetrieveBlob(): Promise<Blob> {
     method: options.method,
     headers: headers,
   });
-  return response.blob();
+  return response;
 }
 
 const ExportAllDataForm = () => {
   const { t } = useTranslation();
+  const { contactAdministrator, showErrorAlert, showTooManyRequests } =
+    useNotifications();
+
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
-  const { showErrorAlert } = useNotifications();
 
   const downloadExport = async () => {
-    const zipFileBlob = await usersMeExportsAllRetrieveBlob();
-    setDownloadUrl(window.URL.createObjectURL(zipFileBlob));
+    const response = await usersMeExportsAllRetrieveBlob();
+
+    if (response.ok === true) {
+      const zipFileBlob = response.blob();
+      setDownloadUrl(window.URL.createObjectURL(zipFileBlob));
+    } else {
+      // avoid promises fulfilled by HTTP errors to be considered as successful
+      if (response.status == 429) {
+        showTooManyRequests();
+      } else {
+        showErrorAlert(response.statusText);
+      }
+    }
+
     setLoading(false);
   };
 
@@ -50,7 +64,7 @@ const ExportAllDataForm = () => {
     try {
       await downloadExport();
     } catch (error) {
-      showErrorAlert(t('settings.errorOccurredDuringExport'));
+      contactAdministrator('error');
       setLoading(false);
     }
   };
