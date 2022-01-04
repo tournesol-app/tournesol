@@ -592,6 +592,6 @@ class VideoApi(TestCase):
 
     def test_get_video_uploader(self):
         client = APIClient()
-        resp = client.get('/video/?uploader=uploader2')
+        resp = client.get("/video/?uploader=uploader2")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 2)
