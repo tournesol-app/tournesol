@@ -10,6 +10,7 @@ from django.conf import settings
 
 from rest_framework import mixins
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.exceptions import ValidationError, NotFound
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -66,7 +67,7 @@ class VideoViewSet(mixins.CreateModelMixin,
                    GenericViewSet):
     queryset = Video.objects.all()
     pagination_class = LimitOffsetPagination
-    permission_classes = []  # To unlock authentication required
+    permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "video_id"
 
     def parse_datetime(self, value: str):
