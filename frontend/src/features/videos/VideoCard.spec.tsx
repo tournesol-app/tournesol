@@ -1,12 +1,21 @@
 import React from 'react';
+import { MemoryRouter as Router } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 
 import { LanguageEnum } from 'src/services/openapi';
-
 import { VideoObject } from 'src/utils/types';
 import { theme } from 'src/theme';
 import VideoCard from './VideoCard';
+
+const renderVideoCard = (video: VideoObject) =>
+  render(
+    <Router>
+      <ThemeProvider theme={theme}>
+        <VideoCard video={video} />
+      </ThemeProvider>
+    </Router>
+  );
 
 describe('VideoCard content', () => {
   it('shows video metadata without criterias', () => {
@@ -22,11 +31,7 @@ describe('VideoCard content', () => {
       publication_date: '',
       language: LanguageEnum.FR,
     };
-    render(
-      <ThemeProvider theme={theme}>
-        <VideoCard video={video} />
-      </ThemeProvider>
-    );
+    renderVideoCard(video);
 
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
       'Video title'
@@ -61,11 +66,8 @@ describe('VideoCard content', () => {
       ],
       duration: 4200,
     };
-    render(
-      <ThemeProvider theme={theme}>
-        <VideoCard video={video} />
-      </ThemeProvider>
-    );
+    renderVideoCard(video);
+
     expect(screen.getByTestId('video-card-info')).toHaveTextContent(
       'Video title'
     );
@@ -108,11 +110,8 @@ describe('VideoCard content', () => {
       ],
       duration: 120,
     };
-    render(
-      <ThemeProvider theme={theme}>
-        <VideoCard video={video} />
-      </ThemeProvider>
-    );
+    renderVideoCard(video);
+
     expect(screen.queryByTestId('video-card-overall-score')).toHaveTextContent(
       '17'
     );

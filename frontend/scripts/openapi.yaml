@@ -329,6 +329,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedEmailDomainList'
           description: ''
+  /exports/comparisons/:
+    get:
+      operationId: exports_comparisons_retrieve
+      description: Download public data in .csv file
+      tags:
+      - exports
+      security:
+      - oauth2:
+        - read write groups
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /schema/:
     get:
       operationId: schema_retrieve
@@ -1003,6 +1021,12 @@ paths:
         name: language
         schema:
           type: string
+        description: Accepted languages separated by commas (e.g. 'en,fr,de'). If
+          empty, accept all languages.
+      - in: query
+        name: uploader
+        schema:
+          type: string
       - in: query
         name: date_lte
         schema:
@@ -1072,6 +1096,7 @@ paths:
       security:
       - oauth2:
         - read write groups
+      - {}
       responses:
         '200':
           content:
@@ -1122,6 +1147,7 @@ paths:
       security:
       - oauth2:
         - read write groups
+      - {}
       responses:
         '200':
           content:
@@ -1185,6 +1211,8 @@ components:
         score:
           type: number
           format: float
+          maximum: 10.0
+          minimum: -10.0
           description: Score for the given comparison
         weight:
           type: number
@@ -10047,6 +10075,8 @@ components:
         email:
           type: string
           format: email
+          title: Email address
+          maxLength: 254
         is_demo:
           type: boolean
           description: Is a demo account?

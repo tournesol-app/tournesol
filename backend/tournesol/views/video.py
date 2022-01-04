@@ -36,6 +36,7 @@ from tournesol.utils.video_language import compute_video_language
             OpenApiParameter("language",
                              description="Accepted languages separated by commas "
                                          "(e.g. 'en,fr,de'). If empty, accept all languages."),
+            OpenApiParameter("uploader"),
             OpenApiParameter(
                 "date_lte",
                 OpenApiTypes.DATETIME,
@@ -88,6 +89,10 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         request = self.request
         queryset = self.queryset
+
+        uploader = request.query_params.get('uploader')
+        if uploader:
+            queryset = queryset.filter(uploader=uploader)
 
         search = request.query_params.get('search')
         if search:

@@ -56,6 +56,7 @@ export const getRecommendedVideos = async (searchString: string) => {
       offset: getNumberValue('offset'),
       search: params.get('search') ?? undefined,
       language: params.get('language') ?? undefined,
+      uploader: params.get('uploader') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
       ...Object.fromEntries(
         CRITERIA_KEYS.map((c) => [snakeToCamel(c), getNumberValue(c)])

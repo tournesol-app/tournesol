@@ -8,6 +8,7 @@ import { useListFilter } from 'src/hooks';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
+import UploaderFilter from './UploaderFilter';
 
 const useStyles = makeStyles({
   filtersContainer: {
@@ -28,6 +29,14 @@ function SearchFilter() {
     <Box color="text.secondary">
       <CollapseButton expanded={expanded} onClick={handleExpandClick} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {filterParams.get('uploader') && (
+          <Box marginBottom={1}>
+            <UploaderFilter
+              value={filterParams.get('uploader') ?? ''}
+              onDelete={() => setFilter('uploader', '')}
+            />
+          </Box>
+        )}
         <Grid container spacing={4} className={classes.filtersContainer}>
           <Grid item xs={6} md={3} lg={2}>
             <DateFilter
