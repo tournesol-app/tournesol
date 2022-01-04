@@ -75,7 +75,8 @@
     "thisMonth": "This month",
     "thisYear": "This year",
     "uploadDate": "Upload date",
-    "language": "Language"
+    "language": "Language",
+    "uploader": "Uploader"
   },
   "ratings": {
     "allRatingsMarkedPublic": "All your ratings have been marked as public.",
@@ -139,6 +140,7 @@
     "contributionsArePublicMessage": "Your contributions about this video are currently public. Comparisons appear in the public data associated to your profile only if you tag both videos as public.",
     "contributionsArePrivateMessage": "Your contributions about this video are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores about videos.",
     "nbViews": "{{nbViews}} views",
+    "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
     "nbComparisonsBy_one": "{{count}} comparison by",
     "nbComparisonsBy_other": "{{count}} comparisons by",
     "nbContributors_one": "{{count}} contributor",

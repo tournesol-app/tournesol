@@ -278,7 +278,7 @@ function VideoCard({
             </span>
           )}
           <Tooltip
-            title="See recommended videos of the same uploader"
+            title={`${t('video.seeRecommendedVideosSameUploader')}`}
             placement="bottom"
           >
             <div>
