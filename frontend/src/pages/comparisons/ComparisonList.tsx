@@ -46,6 +46,7 @@ function ComparisonsPage() {
         count={count}
         onOffsetChange={handleOffsetChange}
         limit={limit}
+        itemType="comparisons"
       />
       <ComparisonList comparisons={comparisons} />
     </div>
