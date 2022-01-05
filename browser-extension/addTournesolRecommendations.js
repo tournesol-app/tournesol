@@ -53,11 +53,19 @@ const getTournesolComponent = (data) => {
     inline_div.append(tournesol_title);
 
     // Language options
+    const langToFlag = {
+      "fr":"fr",
+      "en":"gb",
+      "de":"de",
+    }
     const makeLanguageLink = (lang) => {
-      lang_option = document.createElement('a');
+      const flag = langToFlag[lang];
+      // lang_option = document.createElement('a');
+      lang_option = document.createElement('img');
+      lang_option.setAttribute('id', lang+'icon');
+      lang_option.setAttribute('src', chrome.runtime.getURL('images/flags/'+flag+'.svg'));
+      lang_option.setAttribute('width', '14');
       lang_option.className = 'language_option';
-      lang_option.href = '#';
-      lang_option.append(lang);
       lang_option.onclick = () => {
         localStorage.setItem('tournesol_extension_config_language', lang);
         window.location.reload();
