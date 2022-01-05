@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { TextField, Grid, Button, Link, Box } from '@mui/material';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { getTokenAsync, selectLogin } from './loginSlice';
-import { LoginState } from './LoginState.model';
-import { hasValidToken } from './loginUtils';
 import { useLocation, Redirect } from 'react-router-dom';
+import { TextField, Grid, Button, Link, Box } from '@mui/material';
+import { useSnackbar } from 'notistack';
+
+import { useAppSelector, useAppDispatch } from 'src/app/hooks';
+import { ContentHeader, ContentBox } from 'src/components';
+
+import { getTokenAsync, selectLogin } from './loginSlice';
+import { hasValidToken } from './loginUtils';
+import { LoginState } from './LoginState.model';
 import RedirectState from './RedirectState';
-import { Alert, ContentHeader, ContentBox } from 'src/components';
+import { showErrorAlert } from '../../utils/notifications';
 
 const Login = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const login: LoginState = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [validToken, setValidToken] = useState(hasValidToken(login));
-  const [loginError, setLoginError] = useState<Error | null>(null);
   const location = useLocation();
   const { from: fromUrl } = (location?.state ?? {}) as RedirectState;
 
@@ -34,13 +39,12 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setLoginError(null);
     const result: unknown = await dispatch(
       getTokenAsync({ username: username, password: password })
     );
     const resultWithError = result as { error: Error | undefined };
     if (resultWithError.error) {
-      setLoginError(resultWithError.error);
+      showErrorAlert(enqueueSnackbar, resultWithError.error.message);
     }
   };
 
@@ -96,7 +100,6 @@ const Login = () => {
               </Button>
             </Grid>
           </Grid>
-          {loginError && <Alert>❌ {loginError.message}</Alert>}
         </form>
         <Box my={2}>
           <Link
