@@ -48,6 +48,12 @@
   margin-left: 12px;
 }
 
+#expand_button {
+  float: right;
+  margin-top: 0px;
+  margin-left: 12px;
+}
+
 #tournesol_icon {
   position: absolute;
   left: 0px;
