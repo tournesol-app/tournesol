@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
 import fetchMock from 'fetch-mock-jest';
+import { SnackbarProvider } from 'notistack';
 import Login from './Login';
 import { LoginState } from './LoginState.model';
 import {
@@ -120,11 +121,13 @@ describe('login feature', () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={['/login']}>
-          <Switch>
-            <Route path="/login">
-              <Login />
-            </Route>
-          </Switch>
+          <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
+            <Switch>
+              <Route path="/login">
+                <Login />
+              </Route>
+            </Switch>
+          </SnackbarProvider>
         </MemoryRouter>
       </Provider>
     );
