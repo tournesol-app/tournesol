@@ -56,11 +56,10 @@ const getTournesolComponent = (data) => {
     const makeLanguageLink = (lang) => {
       lang_option = document.createElement('a');
       lang_option.className = 'language_option';
-      lang_option.href = '#';
       lang_option.append(lang);
       lang_option.onclick = () => {
         localStorage.setItem('tournesol_extension_config_language', lang);
-        window.location.reload();
+        loadRecommandations();
       };
       return lang_option;
     };
@@ -176,7 +175,7 @@ function handleResponse({ data: videos }) {
     // Verify that Tournesol's container has not yet been rendered
     old_container = document.getElementById('tournesol_container');
     if (old_container) old_container.remove();
-
+    
     // Generate component to display on Youtube home page
     tournesol_component = getTournesolComponent(videos)
     
@@ -184,7 +183,11 @@ function handleResponse({ data: videos }) {
   }, 300);
 }
 
-function process() {
+function process(){
+  loadRecommandations();
+}
+
+function loadRecommandations() {
   // Only enable on youtube.com/
   if (location.pathname != '/') return;
 
