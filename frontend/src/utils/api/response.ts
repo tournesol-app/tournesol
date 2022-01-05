@@ -52,11 +52,11 @@ export const displayErrors = (
   if (reason && 'body' in reason) {
     // override message from the API
     if (overrideStatuses) {
-      const status = overrideStatuses.filter(
+      const status = overrideStatuses.find(
         (elem) => elem.status === reason.status
       );
       if (status) {
-        display(status[0].msg, { variant: status[0].variant });
+        display(status.msg, { variant: status.variant });
         return;
       }
     }
