@@ -78,6 +78,17 @@ const getTournesolComponent = (data) => {
     tournesol_link.append('learn more');
     inline_div.append(tournesol_link);
 
+    // Refresh button
+    refresh_button = document.createElement('img');
+    refresh_button.setAttribute('id', 'refresh_button');
+    refresh_button.setAttribute('src', chrome.runtime.getURL('images/Refresh_icon.png'));
+    refresh_button.setAttribute('width', '24');
+    // refresh_button.className = 'refresh_button'
+    refresh_button.onclick = () => {
+      loadRecommandations();
+    };
+    inline_div.append(refresh_button);
+
     tournesol_container.append(inline_div);
 
     // Push videos into new container
