@@ -85,7 +85,7 @@ const RateLaterPage = () => {
             {
               status: 409,
               variant: 'warning',
-              msg: 'This video is already in your rate later list',
+              msg: 'This video is already in your rate later list.',
             },
           ]
         );
