@@ -6,13 +6,13 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { useLoginState } from '../../../hooks';
+import { useLoginState } from 'src/hooks';
+import { displayErrors } from 'src/utils/api/response';
 import {
   contactAdministrator,
-  showErrorAlert,
   showSuccessAlert,
-} from '../../../utils/notifications';
-import { AccountsService } from '../../../services/openapi';
+} from 'src/utils/notifications';
+import { AccountsService, ApiError } from 'src/services/openapi';
 
 const ProfileForm = () => {
   const { updateUsername } = useLoginState();
@@ -49,18 +49,12 @@ const ProfileForm = () => {
       requestBody: {
         username,
       },
-    }).catch((reason: { body: { [k: string]: string[] } }) => {
-      // handle errors and unknown errors
-      if (reason && 'body' in reason) {
-        const newErrorMessages = Object.values(reason['body']).flat();
-        newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
-      } else {
-        contactAdministrator(
-          enqueueSnackbar,
-          'error',
-          'Sorry, an error has occurred, cannot update the profile.'
-        );
-      }
+    }).catch((reason: ApiError) => {
+      displayErrors(
+        enqueueSnackbar,
+        reason,
+        'Sorry, an error has occurred, cannot update the profile.'
+      );
     });
 
     // handle success and malformed success

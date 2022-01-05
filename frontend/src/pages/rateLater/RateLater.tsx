@@ -6,11 +6,14 @@ import Typography from '@mui/material/Typography';
 
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
-import { VideoRateLater } from 'src/services/openapi';
+import { ApiError, VideoRateLater } from 'src/services/openapi';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, LoaderWrapper, Pagination } from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
+import { showSuccessAlert } from '../../utils/notifications';
+import { useSnackbar } from 'notistack';
+import { displayErrors } from '../../utils/api/response';
 
 const useStyles = makeStyles({
   rateLaterIntro: {
@@ -37,6 +40,8 @@ const useStyles = makeStyles({
 });
 
 const RateLaterPage = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(true);
   const [offset, setOffset] = React.useState(0);
@@ -69,9 +74,29 @@ const RateLaterPage = () => {
     setIsLoading(false);
   }, [offset, setVideoCount, setRateLaterList]);
 
-  const addToRateLater = async (video_id: string) => {
-    await addToRateLaterList({ video_id });
-    await loadList();
+  const addToRateLater = async (video_id: string): Promise<boolean> => {
+    const response = await addToRateLaterList({ video_id }).catch(
+      (reason: ApiError) => {
+        displayErrors(
+          enqueueSnackbar,
+          reason,
+          'Sorry, an error has occurred, cannot add the video to your rate later list.',
+          [
+            {
+              status: 409,
+              variant: 'warning',
+              msg: 'This video is already in your rate later list.',
+            },
+          ]
+        );
+      }
+    );
+    if (response) {
+      showSuccessAlert(enqueueSnackbar, 'Video added to your rate later list.');
+      await loadList();
+      return true;
+    }
+    return false;
   };
 
   const onOffsetChange = (newOffset: number) => {

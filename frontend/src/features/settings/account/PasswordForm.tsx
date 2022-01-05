@@ -6,12 +6,9 @@ import TextField from '@mui/material/TextField';
 
 import { useSnackbar } from 'notistack';
 
-import {
-  contactAdministrator,
-  showErrorAlert,
-  showSuccessAlert,
-} from 'src/utils/notifications';
-import { AccountsService } from 'src/services/openapi';
+import { AccountsService, ApiError } from 'src/services/openapi';
+import { showSuccessAlert } from 'src/utils/notifications';
+import { displayErrors } from 'src/utils/api/response';
 
 const PasswordForm = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -29,26 +26,18 @@ const PasswordForm = () => {
     setDisabled(true);
 
     const response: void | Record<string, string> =
-      await AccountsService.accountsChangePasswordCreate(
-        {
-          requestBody: {
-            old_password: oldPassword,
-            password,
-            password_confirm: passwordConfirm,
-          },
-        }
-        // handle errors and unknown errors
-      ).catch((reason: { body: { [k: string]: string[] } }) => {
-        if (reason && 'body' in reason) {
-          const newErrorMessages = Object.values(reason['body']).flat();
-          newErrorMessages.map((msg) => showErrorAlert(enqueueSnackbar, msg));
-        } else {
-          contactAdministrator(
-            enqueueSnackbar,
-            'error',
-            'Sorry, an error has occurred, cannot update password.'
-          );
-        }
+      await AccountsService.accountsChangePasswordCreate({
+        requestBody: {
+          old_password: oldPassword,
+          password,
+          password_confirm: passwordConfirm,
+        },
+      }).catch((reason: ApiError) => {
+        displayErrors(
+          enqueueSnackbar,
+          reason,
+          'Sorry, an error has occurred, cannot update password.'
+        );
       });
 
     // handle success and malformed success

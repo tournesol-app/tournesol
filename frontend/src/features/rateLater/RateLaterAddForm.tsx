@@ -1,31 +1,24 @@
 import React, { useState } from 'react';
 import { Grid, TextField, Button } from '@mui/material';
-import Alert from 'src/components/Alert';
-import { ApiError } from 'src/services/openapi/core/ApiError';
 import { extractVideoId } from 'src/utils/video';
 
 interface FormProps {
-  addVideo: (id: string) => void;
+  addVideo: (id: string) => Promise<boolean>;
 }
 
 const RateLaterAddForm = ({ addVideo }: FormProps) => {
-  const [apiError, setApiError] = useState<ApiError | null>(null);
-  const [hasSucceeded, setHasSucceeded] = useState(false);
   const [formVideo, setFormVideo] = useState('');
 
+  /**
+   * The potential API errors raised by the function `addVideo` are not caught
+   * here, and are considered already handled by the function itself.
+   */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setApiError(null);
-    setHasSucceeded(false);
-    try {
-      await addVideo(extractVideoId(formVideo) || '');
-      await setFormVideo('');
-    } catch (err) {
-      console.error('Add to rate later list failed.', `${err}\n`, err.body);
-      setApiError(err);
-      return;
+    const success = await addVideo(extractVideoId(formVideo) || '');
+    if (success) {
+      setFormVideo('');
     }
-    setHasSucceeded(true);
   };
 
   return (
@@ -60,14 +53,6 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
           </Button>
         </Grid>
       </Grid>
-
-      {hasSucceeded && <Alert>✅ Video added to your Rate Later list!</Alert>}
-      {apiError && apiError?.status === 409 && (
-        <Alert>⚠️ The video is already in your Rate Later list.</Alert>
-      )}
-      {apiError && apiError?.status !== 409 && (
-        <Alert>❌ An error has occured. {apiError.statusText}</Alert>
-      )}
     </form>
   );
 };
