@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import { Card, Box, CardContent, CardActions } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -40,6 +40,7 @@ const useStyles = makeStyles({
 });
 
 const RateLaterPage = () => {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const classes = useStyles();
@@ -80,19 +81,19 @@ const RateLaterPage = () => {
         displayErrors(
           enqueueSnackbar,
           reason,
-          'Sorry, an error has occurred, cannot add the video to your rate later list.',
+          t('ratelater.errorOccurredCannotAddVideo'),
           [
             {
               status: 409,
               variant: 'warning',
-              msg: 'This video is already in your rate later list.',
+              msg: t('ratelater.videoAlreadyInList'),
             },
           ]
         );
       }
     );
     if (response) {
-      showSuccessAlert(enqueueSnackbar, 'Video added to your rate later list.');
+      showSuccessAlert(enqueueSnackbar, t('ratelater.videoAdded'));
       await loadList();
       return true;
     }
@@ -115,26 +116,28 @@ const RateLaterPage = () => {
       <Card className={classes.rateLaterIntro} elevation={4}>
         <CardContent>
           <Typography variant="h6">
-            Add videos to your rate-later list
+            {t('ratelater.addVideosToRateLaterList')}
           </Typography>
-          Copy-paste the id or the URL of a favorite video of yours:
-          <br />
-          You can search them in your{' '}
-          <a href="https://www.youtube.com/feed/history">
-            YouTube history page
-          </a>
-          , or your{' '}
-          <a href="https://www.youtube.com/playlist?list=LL">
-            liked video playlist
-          </a>
-          .<br />
-          Our{' '}
-          <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
-            Google chrome extension
-          </a>{' '}
-          can also help you import videos effortlessly.
-          <br />
-          You will then be able to rate the videos you imported.
+          <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
+            Copy-paste the id or the URL of a favorite video of yours.
+            <br />
+            You can search them in your{' '}
+            <a href="https://www.youtube.com/feed/history">
+              YouTube history page
+            </a>
+            , or your{' '}
+            <a href="https://www.youtube.com/playlist?list=LL">
+              liked video playlist
+            </a>
+            .<br />
+            Our{' '}
+            <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
+              browser extension
+            </a>{' '}
+            can also help you import videos effortlessly.
+            <br />
+            You will then be able to rate the videos you imported.
+          </Trans>
         </CardContent>
         <CardActions>
           <RateLaterAddForm addVideo={addToRateLater} />
