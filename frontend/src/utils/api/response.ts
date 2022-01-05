@@ -65,10 +65,12 @@ export const displayErrors = (
     if (reason.status === 429) {
       showInfoAlert(display, reason.body['detail']);
     } else {
-      const newErrorMessages = Object.values(reason['body']).flat();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      newErrorMessages.map((msg) => showErrorAlert(display, msg));
+      const body = reason.body;
+      const newErrorMessages =
+        typeof body === 'string'
+          ? [body]
+          : Object.values(reason['body']).flat();
+      newErrorMessages.map((msg) => showErrorAlert(display, msg as string));
     }
   } else {
     contactAdministrator(display, 'error', message);
