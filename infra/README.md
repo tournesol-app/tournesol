@@ -1,8 +1,25 @@
-## Fetching Debian Bullseye Image and Verifying It
 
-- `./base-image/fetch-debian-image.sh`
+## Environment choice
+This section covers how to set a production-like environment. 
+For most developments, it is better to use the containers instead (see the dev-env directory). The infrastructure environment provides additional services like reverse-proxy (nginx) and monitoring, but is also usually not necessary and less practical for backend and frontend development tasks.
 
-## Installing in a VM for Infrastructure Code Development
+There are 2 options, renting a server to a cloud provider, or creating a test VM for development:
+- Renting a server in the cloud is closer to the production environment. Most cloud providers (Vultr, Digital Ocean, AWS...) offer free credit for new users, but it can get costly if you rent a powerful server and forget to stop it after use.
+- Setting up a VM (development only). It is potentially safer, since it is free and not exposed to the internet. This may significantly slow your computer on runtime. A specific network configuration like port forwarding is also needed to communicate with the VM.
+
+
+## Option 1: Using a cloud server
+
+- Choose a cloud provider (Vultr, Digital Ocean, AWS...). Most offer a free trial or free credit for new users.
+- Select a Debian server. 1 CPU cores and 2 GB of RAM should be sufficient, at least for development (to avoid fees, don't forget to close it after all your tests are done).
+- connect to the server via ssh
+- install `sudo` if not present: `apt install sudo`
+- create your user: `sudo useradd <username>` and set its password: `sudo passwd <username>`
+- add your user to the `sudo` group: `gpasswd -a <username> sudo`
+
+## Option 2: Installing a VM for Infrastructure Code Development
+
+- Fetch the Debian Bullseye Image and verify it: `./base-image/fetch-debian-image.sh`
 
 - Create a VM using the installer from the previously downloaded ISO
 
@@ -25,12 +42,13 @@
 
 - Once the installation terminates and the VM has rebooted:
   - login as root using your hypervisor interface, install `sudo` and add your user into the `sudo` group: `apt install sudo && gpasswd -a <username> sudo`
-  - still as root, run `visudo` to edit `/etc/sudoers` and change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL` to allow members of the `sudo` group to execute commands as root without entering their password
-  - push your ssh key with `ssh-copy-id <username>@<vm-address>` using the password defined during installation
+  - make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
 
 ## Provisioning
 
-- make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
+- push your ssh key with `ssh-copy-id <username>@<ip-address>` using the password defined during installation
+- Connect to the SSH port 22
+- As root, run `visudo` to edit `/etc/sudoers` and change the line `%sudo ALL=(ALL:ALL) ALL` into `%sudo ALL=(ALL:ALL) NOPASSWD:ALL` to allow members of the `sudo` group to execute commands as root without entering their password
 - Adapt `ansible/inventory.yml` file to reflect how you connect to the host you configure (if you don't have the necessary setup, don't set `letsencrypt_email` variable)
 - One way to use the `ansible_host`, `domain_name`, `api_domain_name`, `mediawiki_domain_name` and `grafana_domain_name` variables is to let them as is (`tournesol-vm`, `tournesol-api`, `tournesol-wiki` and `tournesol-grafana`) and to put a `<VM_IP> tournesol-vm tournesol-api tournesol-wiki tournesol-grafana` line in your `/etc/hosts` file
 - Check the administrators list in `ansible/group_vars/tournesol.yml`
