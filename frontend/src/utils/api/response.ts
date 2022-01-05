@@ -66,7 +66,8 @@ export const displayErrors = (
       showInfoAlert(display, reason.body['detail']);
     } else {
       const newErrorMessages = Object.values(reason['body']).flat();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       newErrorMessages.map((msg) => showErrorAlert(display, msg));
     }
   } else {
