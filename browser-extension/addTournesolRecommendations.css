@@ -54,6 +54,38 @@
   left: 0px;
 }
 
+.icon {
+  -webkit-filter: opacity(50%);
+  filter: opacity(50%);
+  width: 24;
+  height: 24;
+  border-radius: 12px;
+  color: #f8f5e8;
+}
+
+.icon:hover {
+  -webkit-filter: opacity(100%);
+  filter: opacity(100%);
+
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.icon:active {
+  -webkit-filter: opacity(100%);
+  filter: opacity(100%);
+  background: #bdbcb2;
+
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
 .video_box {
   position: relative;
   margin-left: calc(var(--ytd-rich-grid-item-margin) / 2);
