@@ -3,12 +3,13 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
-document.addEventListener('yt-navigate-finish', process);
+let videos = [];
+let areVideosLoaded = false;
+loadRecommandations();
 
+document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
 else document.addEventListener('DOMContentLoaded', process);
-
-/* ********************************************************************* */
 
 const getParentComponent = () => {
   try {
@@ -153,7 +154,7 @@ const getTournesolComponent = (data) => {
 }
 
 // This part creates video boxes from API's response JSON
-function handleResponse({ data: videos }) {
+function displayRecommendations() {
   if (!videos || videos.length === 0) {
     return
   }
@@ -184,7 +185,22 @@ function handleResponse({ data: videos }) {
   }, 300);
 }
 
-function process() {
+
+function process(){
+  areVideosLoaded = true;
+  if(videos.length > 0){
+    displayRecommendations();
+  }
+}
+
+function handleResponse({ data: videosReponse }){
+  videos = videosReponse;
+  if(areVideosLoaded){
+    displayRecommendations();
+  }
+}
+
+function loadRecommandations() {
   // Only enable on youtube.com/
   if (location.pathname != '/') return;
 
