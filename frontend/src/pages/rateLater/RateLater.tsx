@@ -140,7 +140,10 @@ const RateLaterPage = () => {
       <div className={classes.rateLaterContent} ref={videoListTopRef}>
         {videoCount !== null && (
           <Typography variant="subtitle1">
-            Your rate-later list now has <strong>{videoCount}</strong> video(s).
+            <Trans t={t} i18nKey="ratelater.listHasNbVideos" count={videoCount}>
+              Your rate-later list now has{' '}
+              <strong>{{ count: videoCount }}</strong> video(s).
+            </Trans>
           </Typography>
         )}
 

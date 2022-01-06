@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import { Grid, Button, Typography, Box, Link } from '@mui/material';
 import {
@@ -14,15 +15,21 @@ import {
 } from 'src/services/openapi';
 import { useNotifications } from 'src/hooks';
 
-const ResetSuccess = () => (
-  <Typography>
-    Done!
-    <br />
-    If this user exists, an email will be sent with a reset link.
-  </Typography>
-);
+const ResetSuccess = () => {
+  const { t } = useTranslation();
+  return (
+    <Typography>
+      <Trans t={t} i18nKey="reset.ifUserExistsResetLinkWillBeSent">
+        Done!
+        <br />
+        If this user exists, an email will be sent with a reset link.
+      </Trans>
+    </Typography>
+  );
+};
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
   const { showErrorAlert } = useNotifications();
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +59,7 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <ContentHeader title="Reset your password" />
+      <ContentHeader title={t('reset.resetYourPassword')} />
       <ContentBox maxWidth={success ? 'sm' : 'xs'}>
         {success ? (
           <ResetSuccess />
@@ -68,7 +75,7 @@ const ForgotPassword = () => {
                 {formError && (
                   <Grid item xs={12}>
                     <Typography color="error">
-                      Failed to send the reset link.
+                      {t('reset.failToSendResetLink')}
                       <br />
                       {formError?.non_field_errors && (
                         <Lines messages={formError.non_field_errors} />
@@ -79,7 +86,7 @@ const ForgotPassword = () => {
                 <Grid item xs={12}>
                   <FormTextField
                     name="login"
-                    label="Username"
+                    label={t('username')}
                     formError={formError}
                   />
                 </Grid>
@@ -91,7 +98,7 @@ const ForgotPassword = () => {
                     variant="contained"
                     disabled={isLoading}
                   >
-                    Send reset email
+                    {t('reset.sendResetEmailButton')}
                   </Button>
                 </Grid>
               </Grid>
@@ -103,7 +110,7 @@ const ForgotPassword = () => {
                 color="secondary"
                 underline="hover"
               >
-                Back to Log in
+                {t('reset.backToLogIn')}
               </Link>
             </Box>
           </>
