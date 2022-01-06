@@ -7,13 +7,12 @@ import {
   Lines,
   FormTextField,
 } from 'src/components';
-import { showErrorAlert } from 'src/utils/notifications';
 import {
   AccountsService,
   ApiError,
   DefaultSendResetPasswordLink,
 } from 'src/services/openapi';
-import { useSnackbar } from 'notistack';
+import { useNotifications } from 'src/hooks';
 
 const ResetSuccess = () => (
   <Typography>
@@ -24,7 +23,7 @@ const ResetSuccess = () => (
 );
 
 const ForgotPassword = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert } = useNotifications();
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -42,7 +41,7 @@ const ForgotPassword = () => {
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       }
     } finally {
       setIsLoading(false);

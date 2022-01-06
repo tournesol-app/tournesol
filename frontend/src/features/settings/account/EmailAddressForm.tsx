@@ -9,13 +9,12 @@ import {
   Button,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
 
-import { showErrorAlert } from 'src/utils/notifications';
 import { FormTextField } from 'src/components';
 import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
 import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/styles';
+import { useNotifications } from 'src/hooks';
 
 const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
   const { t } = useTranslation();
@@ -65,7 +64,7 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
 
 const EmailAddressForm = () => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert } = useNotifications();
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -85,7 +84,7 @@ const EmailAddressForm = () => {
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       }
     } finally {
       setIsLoading(false);
@@ -99,7 +98,7 @@ const EmailAddressForm = () => {
         setProfileData(profile);
         setIsLoading(false);
       } catch (err) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       }
     };
     loadProfile();
