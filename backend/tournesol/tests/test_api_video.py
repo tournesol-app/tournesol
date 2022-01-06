@@ -209,7 +209,7 @@ class VideoApi(TestCase):
         resp = client.get("/video/")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_04", "video_id_03", "video_id_02", "video_id_01"],
+            [video.video_id for video in self._list_of_videos],
         )
 
         # Disable reliability
