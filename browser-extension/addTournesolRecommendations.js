@@ -4,7 +4,7 @@
 /* ********************************************************************* */
 
 let videos = [];
-let canDisplay = false;
+let areVideosLoaded = false;
 loadRecommandations();
 
 document.addEventListener('yt-navigate-finish', process);
@@ -187,7 +187,7 @@ function displayRecommendations() {
 
 
 function process(){
-  canDisplay = true;
+  areVideosLoaded = true;
   if(videos.length > 0){
     displayRecommendations();
   }
@@ -195,7 +195,7 @@ function process(){
 
 function handleResponse({ data: videosReponse }){
   videos = videosReponse;
-  if(canDisplay){
+  if(areVideosLoaded){
     displayRecommendations();
   }
 }
