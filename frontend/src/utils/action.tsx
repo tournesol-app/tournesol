@@ -4,10 +4,9 @@ import { IconButton, Tooltip } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { showSuccessAlert, showInfoAlert } from 'src/utils/notifications';
-import { useSnackbar } from 'notistack';
 
 import { Video, UsersService } from 'src/services/openapi';
+import { useNotifications } from 'src/hooks';
 
 export const CompareNowAction = ({ videoId }: { videoId: string }) => {
   const { t } = useTranslation();
@@ -26,7 +25,7 @@ export const CompareNowAction = ({ videoId }: { videoId: string }) => {
 
 export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showSuccessAlert, showInfoAlert } = useNotifications();
   const handleCreation = async () => {
     try {
       await UsersService.usersMeVideoRateLaterCreate({
@@ -34,9 +33,9 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
           video: { video_id: videoId } as Video,
         },
       });
-      showSuccessAlert(enqueueSnackbar, t('actions.videoAddedToRateLaterList'));
+      showSuccessAlert(t('actions.videoAddedToRateLaterList'));
     } catch (error) {
-      showInfoAlert(enqueueSnackbar, t('actions.videoAlreadyInRateLaterList'));
+      showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
     }
   };
   return (
@@ -56,7 +55,7 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
 export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ videoId }: { videoId: string }) => {
     const { t } = useTranslation();
-    const { enqueueSnackbar } = useSnackbar();
+    const { showSuccessAlert } = useNotifications();
     return (
       <Tooltip title={`${t('actions.remove')}`} placement="left">
         <IconButton
@@ -64,10 +63,7 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
           onClick={async () => {
             await UsersService.usersMeVideoRateLaterDestroy({ videoId });
             if (asyncCallback) await asyncCallback();
-            showSuccessAlert(
-              enqueueSnackbar,
-              t('actions.videoDeletedFromRateLaterList')
-            );
+            showSuccessAlert(t('actions.videoDeletedFromRateLaterList'));
           }}
           style={{ color: '#CDCABC' }}
         >

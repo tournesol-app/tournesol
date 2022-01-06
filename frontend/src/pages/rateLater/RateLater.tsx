@@ -11,9 +11,7 @@ import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, LoaderWrapper, Pagination } from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
-import { showSuccessAlert } from '../../utils/notifications';
-import { useSnackbar } from 'notistack';
-import { displayErrors } from '../../utils/api/response';
+import { useNotifications } from 'src/hooks';
 
 const useStyles = makeStyles({
   rateLaterIntro: {
@@ -41,7 +39,7 @@ const useStyles = makeStyles({
 
 const RateLaterPage = () => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
 
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(true);
@@ -78,22 +76,17 @@ const RateLaterPage = () => {
   const addToRateLater = async (video_id: string): Promise<boolean> => {
     const response = await addToRateLaterList({ video_id }).catch(
       (reason: ApiError) => {
-        displayErrors(
-          enqueueSnackbar,
-          reason,
-          t('ratelater.errorOccurredCannotAddVideo'),
-          [
-            {
-              status: 409,
-              variant: 'warning',
-              msg: t('ratelater.videoAlreadyInList'),
-            },
-          ]
-        );
+        displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
+          {
+            status: 409,
+            variant: 'warning',
+            msg: t('ratelater.videoAlreadyInList'),
+          },
+        ]);
       }
     );
     if (response) {
-      showSuccessAlert(enqueueSnackbar, t('ratelater.videoAdded'));
+      showSuccessAlert(t('ratelater.videoAdded'));
       await loadList();
       return true;
     }
@@ -147,7 +140,10 @@ const RateLaterPage = () => {
       <div className={classes.rateLaterContent} ref={videoListTopRef}>
         {videoCount !== null && (
           <Typography variant="subtitle1">
-            Your rate-later list now has <strong>{videoCount}</strong> video(s).
+            <Trans t={t} i18nKey="ratelater.listHasNbVideos" count={videoCount}>
+              Your rate-later list now has <strong>{{ videoCount }}</strong>{' '}
+              video(s).
+            </Trans>
           </Typography>
         )}
 

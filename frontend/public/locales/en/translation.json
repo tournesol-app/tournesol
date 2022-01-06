@@ -62,7 +62,9 @@
     "videoAlreadyInList": "The video is already in your Rate Later list.",
     "videoAdded": "Video added to your Rate Later list!",
     "addVideosToRateLaterList": "Add videos to your rate-later list",
-    "rateLaterFormIntroduction": "Copy-paste the id or the URL of a favorite video of yours.<1></1>You can search them in your <4>YouTube history page</4>, or your <7>liked video playlist</7>.<9></9>Our <12>browser extension</12> can also help you import videos effortlessly.<15></15>You will then be able to rate the videos you imported."
+    "rateLaterFormIntroduction": "Copy-paste the id or the URL of a favorite video of yours.<1></1>You can search them in your <4>YouTube history page</4>, or your <7>liked video playlist</7>.<9></9>Our <12>browser extension</12> can also help you import videos effortlessly.<15></15>You will then be able to rate the videos you imported.",
+    "listHasNbVideos_one": "Your rate-later list now has <1>{{videoCount}}</1> video.",
+    "listHasNbVideos_other": "Your rate-later list now has <1>{{videoCount}}</1> videos."
   },
   "public": "public",
   "private": "private",
@@ -153,6 +155,12 @@
     "criteriaRatedLow": "Rated low:",
     "labelShowSettings": "Show settings related to this video"
   },
+  "notifications": {
+    "errorOccurred": "Sorry an error has occurred.",
+    "tryAgainLaterOrContactAdministrator": "Please, try again later, or contact an administrator if the issue persists.",
+    "nonImpactingError": "Oops, a non impacting error occurred.",
+    "pleaseContactAnAdministratorToReportIssue": "Please, contact an administrator to report the issue."
+  },
   "about": {
     "title": "About",
     "whatIsTournesol": "What is Tournesol?",
@@ -200,6 +208,18 @@
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
     "whatIsTournesol": "What is Tournesol?",
     "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which aims to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+  },
+  "reset": {
+    "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
+    "resetYourPassword": "Reset your password",
+    "failToSendResetLink": "Failed to send the reset link.",
+    "sendResetEmailButton": "Send reset email",
+    "backToLogIn": "Back to Log in",
+    "passwordModifiedSuccessfully": "Your password has been modified successfully. You can now log in to Tournesol.",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm your new password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "resetPasswordButton": "Reset password"
   },
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",

@@ -2,17 +2,16 @@ import React, { useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Button, Box } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useSnackbar } from 'notistack';
 
 import { TitledSection } from 'src/components';
 import { UsersService } from 'src/services/openapi';
 import { RatingsContext } from 'src/features/videos/PublicStatusAction';
-import { showErrorAlert, showInfoAlert } from 'src/utils/notifications';
+import { useNotifications } from 'src/hooks';
 
 function MarkAllRatings() {
   const { t } = useTranslation();
   const { onChange: onRatingChange } = useContext(RatingsContext);
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert, showInfoAlert } = useNotifications();
 
   const updateRatings = async (isPublic: boolean) => {
     try {
@@ -20,14 +19,13 @@ function MarkAllRatings() {
         requestBody: { is_public: isPublic },
       });
     } catch (err) {
-      showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+      showErrorAlert(err?.message || 'Server error');
       return;
     }
     if (onRatingChange) {
       onRatingChange();
     }
     showInfoAlert(
-      enqueueSnackbar,
       isPublic
         ? t('ratings.allRatingsMarkedPublic')
         : t('ratings.allRatingsMarkedPrivate')

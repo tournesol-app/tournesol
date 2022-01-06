@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -16,10 +17,8 @@ import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
-import { showSuccessAlert } from 'src/utils/notifications';
-import { useSnackbar } from 'notistack';
 import { ContentHeader } from 'src/components';
-import { useTranslation } from 'react-i18next';
+import { useNotifications } from 'src/hooks';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -53,7 +52,7 @@ const ComparisonPage = () => {
   const [initialComparison, setInitialComparison] = useState<Comparison | null>(
     null
   );
-  const { enqueueSnackbar } = useSnackbar();
+  const { showSuccessAlert } = useNotifications();
   const searchParams = new URLSearchParams(location.search);
   const videoA: string = searchParams.get('videoA') || '';
   const videoB: string = searchParams.get('videoB') || '';
@@ -131,7 +130,7 @@ const ComparisonPage = () => {
       // Refresh ratings statistics after the comparisons have been submitted
       setSubmitted(true);
     }
-    showSuccessAlert(enqueueSnackbar, t('comparison.successfullySubmitted'));
+    showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
   return (

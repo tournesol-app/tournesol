@@ -4,12 +4,10 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
-import { useSnackbar } from 'notistack';
-
-import { showErrorAlert } from '../../../utils/notifications';
 
 import type { ApiRequestOptions } from 'src/services/openapi/core/ApiRequestOptions';
 import { OpenAPI } from 'src/services/openapi';
+import { useNotifications } from 'src/hooks';
 
 // The method below replaces the auto-generated usersMeExportsAllRetrieve
 // from services/openapi/core/request.ts because it does
@@ -38,7 +36,7 @@ const ExportAllDataForm = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert } = useNotifications();
 
   const downloadExport = async () => {
     const zipFileBlob = await usersMeExportsAllRetrieveBlob();
@@ -52,7 +50,7 @@ const ExportAllDataForm = () => {
     try {
       await downloadExport();
     } catch (error) {
-      showErrorAlert(enqueueSnackbar, t('settings.errorOccurredDuringExport'));
+      showErrorAlert(t('settings.errorOccurredDuringExport'));
       setLoading(false);
     }
   };

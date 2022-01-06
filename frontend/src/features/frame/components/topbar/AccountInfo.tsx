@@ -1,16 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { Button, Grid } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
-import { useLoginState } from 'src/hooks';
+import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
-import { contactAdministratorLowSeverity } from '../../../../utils/notifications';
 
 const useStyles = makeStyles((theme) => ({
   AccountInfo: {
@@ -37,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LoggedInActions = () => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { contactAdministratorLowSeverity } = useNotifications();
 
   const classes = useStyles();
   const { logout, loginState } = useLoginState();
@@ -45,10 +43,7 @@ const LoggedInActions = () => {
   const logoutProcess = async () => {
     if (loginState.refresh_token) {
       await revokeAccessToken(loginState.refresh_token).catch(() => {
-        contactAdministratorLowSeverity(
-          enqueueSnackbar,
-          t('logoutNonImpactingError')
-        );
+        contactAdministratorLowSeverity(t('logoutNonImpactingError'));
       });
     }
     logout();

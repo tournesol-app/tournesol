@@ -3,15 +3,13 @@ import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import { useSnackbar } from 'notistack';
 
 import { AccountsService, ApiError } from 'src/services/openapi';
-import { showSuccessAlert } from 'src/utils/notifications';
-import { displayErrors } from 'src/utils/api/response';
+import { useNotifications } from 'src/hooks';
 
 const PasswordForm = () => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -32,8 +30,7 @@ const PasswordForm = () => {
           password_confirm: passwordConfirm,
         },
       }).catch((reason: ApiError) => {
-        displayErrors(
-          enqueueSnackbar,
+        displayErrorsFrom(
           reason,
           t('settings.errorOccurredDuringPasswordUpdate')
         );
@@ -42,12 +39,9 @@ const PasswordForm = () => {
     // handle success and malformed success
     if (response) {
       if ('detail' in response) {
-        showSuccessAlert(enqueueSnackbar, response['detail']);
+        showSuccessAlert(response['detail']);
       } else {
-        showSuccessAlert(
-          enqueueSnackbar,
-          t('settings.passwordChangedSuccessfully')
-        );
+        showSuccessAlert(t('settings.passwordChangedSuccessfully'));
       }
 
       setOldPassword('');
