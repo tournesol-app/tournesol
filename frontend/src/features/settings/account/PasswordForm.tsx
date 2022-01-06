@@ -9,7 +9,7 @@ import { useNotifications } from 'src/hooks';
 
 const PasswordForm = () => {
   const { t } = useTranslation();
-  const { showSuccessAlert, displayErrors } = useNotifications();
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -30,7 +30,10 @@ const PasswordForm = () => {
           password_confirm: passwordConfirm,
         },
       }).catch((reason: ApiError) => {
-        displayErrors(reason, t('settings.errorOccurredDuringPasswordUpdate'));
+        displayErrorsFrom(
+          reason,
+          t('settings.errorOccurredDuringPasswordUpdate')
+        );
       });
 
     // handle success and malformed success

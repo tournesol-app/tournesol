@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 
 const RateLaterPage = () => {
   const { t } = useTranslation();
-  const { showSuccessAlert, displayErrors } = useNotifications();
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
 
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(true);
@@ -76,7 +76,7 @@ const RateLaterPage = () => {
   const addToRateLater = async (video_id: string): Promise<boolean> => {
     const response = await addToRateLaterList({ video_id }).catch(
       (reason: ApiError) => {
-        displayErrors(reason, t('ratelater.errorOccurredCannotAddVideo'), [
+        displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
           {
             status: 409,
             variant: 'warning',

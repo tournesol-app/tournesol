@@ -3,6 +3,10 @@ import { useSnackbar, VariantType } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from 'src/services/openapi';
 
+/**
+ * Provide several functions allowing to display different kinds of message to
+ * the user, without interrupting its experience.
+ */
 export const useNotifications = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
@@ -85,7 +89,7 @@ export const useNotifications = () => {
    * Ex
    *      const response = await addNewVideo({ video_id }).catch(
    *        (reason: ApiError) => {
-   *          displayErrors(enqueueSnackbar, reason);
+   *          displayErrorsFrom(reason);
    *        }
    *      );
    *
@@ -96,8 +100,7 @@ export const useNotifications = () => {
    * Ex
    *      const response = await addNewVideo({ video_id }).catch(
    *        (reason: ApiError) => {
-   *          displayErrors(
-   *            enqueueSnackbar,
+   *          displayErrorsFrom(
    *            reason,
    *            'Sorry, an error has occurred. The video cannot be added.',
    *            [{ status: 409, variant: 'error', msg: 'Video already added.' }]
@@ -108,7 +111,7 @@ export const useNotifications = () => {
    * Unknown `Error` or malformed `ApiError` are displayed as an invitation to
    * try again later or contact an administrator.
    */
-  const displayErrors = useCallback(
+  const displayErrorsFrom = useCallback(
     (
       reason: ApiError | Error,
       message?: string,
@@ -154,6 +157,6 @@ export const useNotifications = () => {
     showErrorAlert,
     contactAdministrator,
     contactAdministratorLowSeverity,
-    displayErrors,
+    displayErrorsFrom,
   };
 };

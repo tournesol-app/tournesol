@@ -12,7 +12,7 @@ import { AccountsService, ApiError } from 'src/services/openapi';
 const ProfileForm = () => {
   const { t } = useTranslation();
   const { updateUsername } = useLoginState();
-  const { displayErrors, contactAdministrator, showSuccessAlert } =
+  const { contactAdministrator, displayErrorsFrom, showSuccessAlert } =
     useNotifications();
 
   const [username, setUsername] = useState('');
@@ -46,7 +46,7 @@ const ProfileForm = () => {
         username,
       },
     }).catch((reason: ApiError) => {
-      displayErrors(reason, t('settings.errorOccurredWhenUpdatingProfile'));
+      displayErrorsFrom(reason, t('settings.errorOccurredWhenUpdatingProfile'));
     });
 
     // handle success and malformed success
