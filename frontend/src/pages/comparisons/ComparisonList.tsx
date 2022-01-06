@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
@@ -7,6 +8,7 @@ import ComparisonList from 'src/features/comparisons/ComparisonList';
 import Pagination from 'src/components/Pagination';
 
 function ComparisonsPage() {
+  const { t } = useTranslation();
   const [comparisons, setComparisons]: [
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
@@ -46,7 +48,7 @@ function ComparisonsPage() {
         count={count}
         onOffsetChange={handleOffsetChange}
         limit={limit}
-        itemType="comparisons"
+        itemType={t('pagination.comparisons')}
       />
       <ComparisonList comparisons={comparisons} />
     </div>

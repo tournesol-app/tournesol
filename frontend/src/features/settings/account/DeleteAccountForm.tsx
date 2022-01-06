@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { TextField, Typography, Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
 const DeleteAccountForm = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const [keyword, setKeyword] = useState('');
   const { logout } = useLoginState();
@@ -36,8 +37,10 @@ const DeleteAccountForm = () => {
   return (
     <>
       <Typography>
-        Please type the words <b>{DELETE_ACCOUNT_KEYWORD}</b> in the text box
-        below to enable deleting your account.
+        <Trans t={t} i18nKey="settings.typeKeywordDeleteAccount">
+          Please type the words <b>{{ DELETE_ACCOUNT_KEYWORD }}</b> in the text
+          box below to enable deleting your account.
+        </Trans>
       </Typography>
       <TextField
         size="small"
@@ -54,7 +57,7 @@ const DeleteAccountForm = () => {
         fullWidth
         variant="contained"
       >
-        Delete your account
+        {t('settings.deleteYourAccount')}
       </Button>
     </>
   );

@@ -2,13 +2,24 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Setup
 
-This frontend works using Tournesol's backend from [this repository](https://github.com/tournesol-app/tournesol-backend)
+### Start the development server using the "dev-env" (recommended)
+
+Follow the instructions in [dev-env](../dev-env/README.md)  
+Both the frontend and the backend development servers will be started in docker containers.
+
+### Start the development server locally
+
+This setup assumes that an API server is already configured.  
+URLs and credentials can be configured in [.env.development](./.env.development).
+
+Requirements:
+ * Node.js 14
+ * yarn
 
 Setup:
-1. On the backend repository, start the backend server using the script `dev-env/run-docker-compose.sh` 
-2. On the frontend repository, install frontend dependencies: `yarn install`
-3. Generate openapi service with the script `generate-services-from-openapi.sh` 
-4. Start the local frontend server: `yarn start`
+1. In this folder, install frontend dependencies: `yarn install`
+2. Generate the OpenAPI client with the script `./scripts/generate-services-from-openapi.sh`
+3. Start the local development server: `yarn start`
 
 ## Available Scripts
 
@@ -41,6 +52,10 @@ This is especially useful to apply `prettier` format rules, if they are not enfo
 
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `yarn i18n:parse`
+
+Parses source code to extract all translation keys used in frontend, and updates the translation catalogs accordingly in `public/locales`.
 
 ### `yarn build`
 

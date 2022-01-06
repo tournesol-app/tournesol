@@ -19,6 +19,7 @@ import VideoSelector, {
 import { showSuccessAlert } from 'src/utils/notifications';
 import { useSnackbar } from 'notistack';
 import { ContentHeader } from 'src/components';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const ComparisonPage = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -129,15 +131,12 @@ const ComparisonPage = () => {
       // Refresh ratings statistics after the comparisons have been submitted
       setSubmitted(true);
     }
-    showSuccessAlert(
-      enqueueSnackbar,
-      'The comparison has been succesfully submitted.'
-    );
+    showSuccessAlert(enqueueSnackbar, t('comparison.successfullySubmitted'));
   };
 
   return (
     <>
-      <ContentHeader title="Submit a comparison" />
+      <ContentHeader title={t('comparison.submitAComparison')} />
       <div className={`${classes.root} ${classes.centering}`}>
         <Grid container className={classes.content}>
           <Grid item xs component={Card} className={classes.card}>
@@ -188,7 +187,7 @@ const ComparisonPage = () => {
               )
             ) : (
               <Typography paragraph>
-                Please, enter two URLs or IDs of Youtube videos to compare them.
+                {t('comparison.pleaseSelectTwoVideos')}
               </Typography>
             )}
           </Grid>

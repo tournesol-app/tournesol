@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 
 import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
@@ -13,6 +13,7 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 import { scrollToTop } from 'src/utils/ui';
 
 function VideoRecommendationPage() {
+  const { t } = useTranslation();
   const prov: PaginatedVideoSerializerWithCriteriaList = {
     count: 0,
     results: [],
@@ -50,7 +51,7 @@ function VideoRecommendationPage() {
         <VideoList
           videos={videos.results || []}
           emptyMessage={
-            isLoading ? '' : 'No video corresponds to your search criterias.'
+            isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
           }
         />
       </LoaderWrapper>

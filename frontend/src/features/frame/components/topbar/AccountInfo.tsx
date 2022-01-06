@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { Button, Grid } from '@mui/material';
@@ -35,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LoggedInActions = () => {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const classes = useStyles();
@@ -45,7 +47,7 @@ const LoggedInActions = () => {
       await revokeAccessToken(loginState.refresh_token).catch(() => {
         contactAdministratorLowSeverity(
           enqueueSnackbar,
-          'A non impacting error occurred during your logout.'
+          t('logoutNonImpactingError')
         );
       });
     }
@@ -61,7 +63,7 @@ const LoggedInActions = () => {
         onClick={logoutProcess}
         className={classes.HeaderButton}
       >
-        Logout
+        {t('logoutButton')}
       </Button>
       <Button
         variant="text"
@@ -78,6 +80,7 @@ const LoggedInActions = () => {
 };
 
 const LoggedOutActions = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -90,7 +93,7 @@ const LoggedOutActions = () => {
         className={classes.HeaderButton}
         to="/login"
       >
-        Log in
+        {t('loginButton')}
       </Button>
       <Button
         component={Link}
@@ -99,7 +102,7 @@ const LoggedOutActions = () => {
         className={clsx(classes.HeaderButton, classes.JoinUsButton)}
         to="/signup"
       >
-        Join us
+        {t('joinUsButton')}
       </Button>
     </>
   );

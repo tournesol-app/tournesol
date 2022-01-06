@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CircularProgress, Typography } from '@mui/material';
 import {
   AccountsService,
@@ -34,6 +35,7 @@ const executeVerifyEmail = async (searchParams: Record<string, string>) => {
 };
 
 const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const [verificationState, setVerificationState] = useState<
     'loading' | 'fail' | 'success'
@@ -43,13 +45,13 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
     verify === 'user'
       ? [
           executeVerifyUser,
-          'Verify registration',
-          '✅ Your account is now verified.',
+          t('verify.verifyRegistration'),
+          `✅ ${t('verify.yourAccountIsNowVerified')}`,
         ]
       : [
           executeVerifyEmail,
           'Verify new email address',
-          '✅ Your new email address is now verified.',
+          `✅ ${t('verify.yourNewEmailAddressIsNowVerified')}`,
         ];
 
   useEffect(() => {
@@ -76,7 +78,7 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
       <ContentBox maxWidth="sm">
         <Typography>
           {verificationState == 'loading' && <CircularProgress />}
-          {verificationState == 'fail' && 'Verification failed.'}
+          {verificationState == 'fail' && t('verify.verificationFailed')}
           {verificationState == 'success' && successMessage}
         </Typography>
       </ContentBox>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import AppBar from '@mui/material/AppBar';
@@ -94,6 +95,7 @@ const Logo = () => {
 };
 
 const Search = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
   const paramsString = useLocation().search;
@@ -119,7 +121,7 @@ const Search = () => {
           onChange={(e) => setSearch(e.target.value)}
         ></input>
         <button type="submit" className={classes.searchButton}>
-          <img src="/svg/Search.svg" alt="search" />
+          <img src="/svg/Search.svg" alt={t('topbar.search')} />
         </button>
       </form>
     </Grid>

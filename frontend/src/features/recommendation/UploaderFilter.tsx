@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Typography, Chip } from '@mui/material';
 
 interface UploaderProps {
@@ -7,11 +8,15 @@ interface UploaderProps {
 }
 
 function UploaderFilter(props: UploaderProps) {
+  const { t } = useTranslation();
   return (
     <Chip
       label={
         <Typography variant="body2">
-          <strong>Uploader: </strong>
+          <strong>
+            {t('filter.uploader')}
+            {': '}
+          </strong>
           {props.value}
         </Typography>
       }

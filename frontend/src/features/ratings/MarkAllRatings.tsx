@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Button, Box } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
@@ -9,6 +10,7 @@ import { RatingsContext } from 'src/features/videos/PublicStatusAction';
 import { showErrorAlert, showInfoAlert } from 'src/utils/notifications';
 
 function MarkAllRatings() {
+  const { t } = useTranslation();
   const { onChange: onRatingChange } = useContext(RatingsContext);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -27,13 +29,13 @@ function MarkAllRatings() {
     showInfoAlert(
       enqueueSnackbar,
       isPublic
-        ? 'All your ratings have been marked as public.'
-        : 'All your ratings have been marked as private.'
+        ? t('ratings.allRatingsMarkedPublic')
+        : t('ratings.allRatingsMarkedPrivate')
     );
   };
 
   return (
-    <TitledSection title="Update visibility">
+    <TitledSection title={t('ratings.updateVisibility')}>
       <Box display="flex" flexDirection="column" gap="8px" py={1}>
         <Button
           color="primary"
@@ -43,7 +45,9 @@ function MarkAllRatings() {
           startIcon={<Visibility />}
         >
           <span>
-            Mark all as <strong>public</strong>
+            <Trans t={t} i18nKey="ratings.markAllAsPublic">
+              Mark all as <strong>public</strong>
+            </Trans>
           </span>
         </Button>
         <Button
@@ -54,7 +58,9 @@ function MarkAllRatings() {
           startIcon={<VisibilityOff />}
         >
           <span>
-            Mark all as <strong>private</strong>
+            <Trans t={t} i18nKey="ratings.markAllAsPrivate">
+              Mark all as <strong>private</strong>
+            </Trans>
           </span>
         </Button>
       </Box>

@@ -38,13 +38,13 @@ function SearchFilter() {
           </Box>
         )}
         <Grid container spacing={4} className={classes.filtersContainer}>
-          <Grid item xs={6} md={3} lg={2}>
+          <Grid item xs={6} md={3} lg={2} data-testid="search-date-filter">
             <DateFilter
               value={filterParams.get('date') ?? ''}
               onChange={(value) => setFilter('date', value)}
             />
           </Grid>
-          <Grid item xs={6} md={3} lg={2}>
+          <Grid item xs={6} md={3} lg={2} data-testid="search-language-filter">
             <LanguageFilter
               value={filterParams.get('language') ?? ''}
               onChange={(value) => setFilter('language', value)}

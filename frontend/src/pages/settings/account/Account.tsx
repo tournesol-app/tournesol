@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import { Box, Grid, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -16,10 +16,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const AccountPage = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   return (
     <>
-      <ContentHeader title="Settings > Account" />
+      <ContentHeader
+        title={`${t('settings.title')} > ${t('settings.account')}`}
+      />
       <Box m={4}>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={3}>
@@ -35,20 +38,24 @@ export const AccountPage = () => {
             md={9}
             spacing={3}
           >
-            <SettingsSection title="Change email address" xs={12}>
+            <SettingsSection title={t('settings.changeEmailAddress')} xs={12}>
               <EmailAddressForm />
             </SettingsSection>
-            <SettingsSection title="Change password" xs={12} md={6}>
+            <SettingsSection
+              title={t('settings.changePassword')}
+              xs={12}
+              md={6}
+            >
               <PasswordForm />
             </SettingsSection>
             <Box marginTop={8} />
-            <SettingsSection title="Export all data" xs={12}>
+            <SettingsSection title={t('settings.exportAllData')} xs={12}>
               <ExportAllDataForm />
             </SettingsSection>
             <SettingsSection
               title={
                 <Typography variant="h4" className={classes.titleDanger}>
-                  Delete account
+                  {t('settings.deleteAccount')}
                 </Typography>
               }
               md={6}

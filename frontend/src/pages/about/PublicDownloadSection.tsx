@@ -1,31 +1,32 @@
 import React from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button } from '@mui/material';
 
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case
 const PublicDownloadSection = () => {
+  const { t } = useTranslation();
   const api_url = process.env.REACT_APP_API_URL;
   return (
     <>
-      <Typography variant="h1">Public Database</Typography>
+      <Typography variant="h1">{t('about.publicDatabase')}</Typography>
       <Typography paragraph>
-        Contributors on Tournesol can decide to make their data public. We hope
-        this important data will prove useful for researchers on ethics of
-        algorithms and large scale recommender systems. Our public database can
-        be downloaded by clicking the button below and is published under{' '}
-        <a
-          href="https://opendatacommons.org/licenses/by/1-0/"
-          style={{ color: 'white' }}
-        >
-          Open Data Commons Attribution License (ODC-By)
-        </a>
-        .
+        <Trans t={t} i18nKey="about.publicDatabaseDetailAndLicense">
+          Contributors on Tournesol can decide to make their data public. We
+          hope this important data will prove useful for researchers on ethics
+          of algorithms and large scale recommender systems. Our public database
+          can be downloaded by clicking the button below and is published under{' '}
+          <a
+            href="https://opendatacommons.org/licenses/by/1-0/"
+            style={{ color: 'white' }}
+          >
+            Open Data Commons Attribution License (ODC-By)
+          </a>
+          .
+        </Trans>
       </Typography>
       <Typography paragraph>
-        Finally, we would like to thank all of the contributors who compared
-        videos on Tournesol. We count so far about 2500 users who compared 9000
-        times more than 3000 videos.
+        {t('about.publicDatabaseThanksToContributors')}
       </Typography>
 
       <Button
@@ -35,7 +36,7 @@ const PublicDownloadSection = () => {
         color="primary"
         variant="contained"
       >
-        Click to Download
+        {t('clickToDownload')}
       </Button>
     </>
   );

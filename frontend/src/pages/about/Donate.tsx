@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 });
 
 const DonatePage = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   return (
     <>
@@ -35,21 +36,25 @@ const DonatePage = () => {
       <div className={classes.root}>
         <div className={classes.content}>
           <Typography paragraph>
-            Because we are a small team of mostly volunteers, the development of
-            Tournesol is slower than we would like it to be. If you can, please
-            consider helping us, through coding or through donations. Check-out
-            our{' '}
-            <a href="https://github.com/tournesol-app/tournesol">
-              open source code
-            </a>
-            , or join our <a href="https://discord.gg/TvsFB8RNBV">Discord</a>.{' '}
+            <Trans t={t} i18nKey="about.donateWeAreASmallTeam">
+              Because we are a small team of mostly volunteers, the development
+              of Tournesol is slower than we would like it to be. If you can,
+              please consider helping us, through coding or through donations.
+              Check-out our{' '}
+              <a href="https://github.com/tournesol-app/tournesol">
+                open source code
+              </a>
+              , or join our <a href="https://discord.gg/TvsFB8RNBV">Discord</a>.
+            </Trans>
           </Typography>
 
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
-            How to make a donation?
+            {t('about.donateHowTo')}
           </Typography>
           <div className={classes.box}>
-            <Typography variant="h6">By direct transfer</Typography>
+            <Typography variant="h6">
+              {t('about.donateByDirectTransfer')}
+            </Typography>
             <pre>Association Tournesol</pre>
             <pre>Lausanne, Switzerland</pre>
             <pre>IBAN: CH42 0900 0000 1569 4102 5</pre>
@@ -57,7 +62,7 @@ const DonatePage = () => {
           </div>
 
           <div className={classes.box}>
-            <Typography variant="h6">By Paypal</Typography>
+            <Typography variant="h6">{t('about.donateByPaypal')}</Typography>
 
             <form
               action="https://www.paypal.com/donate"

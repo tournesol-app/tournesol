@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -14,6 +14,7 @@ import {
 } from '@mui/material/styles';
 
 import './index.css';
+import './i18n';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store, persistor } from './app/store';
@@ -41,7 +42,9 @@ ReactDOM.render(
                   horizontal: 'center',
                 }}
               >
-                <App />
+                <Suspense fallback={null}>
+                  <App />
+                </Suspense>
               </SnackbarProvider>
             </BrowserRouter>
           </ThemeProvider>

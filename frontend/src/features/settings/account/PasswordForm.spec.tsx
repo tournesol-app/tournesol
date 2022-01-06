@@ -123,7 +123,7 @@ describe('change password feature', () => {
     const oldPassword = screen.getByTestId('old_password');
     const password = screen.getByTestId('password');
     const passwordConfirm = screen.getByTestId('password_confirm');
-    const submit = screen.getByText(/UPDATE PASSWORD/i);
+    const submit = screen.getByRole('button', { name: /update/i });
 
     return {
       oldPassword,
@@ -152,7 +152,7 @@ describe('change password feature', () => {
     expect(submit).toBeEnabled();
     expect(mockEnqueueSnackbar).toBeCalledTimes(1);
     expect(mockEnqueueSnackbar).toBeCalledWith(
-      'Password changed successfully',
+      expect.stringMatching(/successfully/i),
       {
         variant: 'success',
       }
@@ -177,7 +177,7 @@ describe('change password feature', () => {
     expect(submit).toBeEnabled();
     expect(mockEnqueueSnackbar).toBeCalledTimes(1);
     expect(mockEnqueueSnackbar).toBeCalledWith(
-      'Password changed successfully',
+      expect.stringMatching(/successfully/i),
       {
         variant: 'success',
       }

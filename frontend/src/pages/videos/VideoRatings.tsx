@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory, Link } from 'react-router-dom';
 import { Box, Button, Divider } from '@mui/material';
 
@@ -17,26 +18,32 @@ import {
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 import { scrollToTop } from 'src/utils/ui';
 
-const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => (
-  <>
-    <Divider />
-    {hasFilter ? (
-      <Box my={2}>{'No video corresponds to your filter.'}</Box>
-    ) : (
-      <>
-        <Box my={2}>{"You haven't compared any video yet 🥺"}</Box>
-        <Button
-          component={Link}
-          to="/comparison"
-          variant="contained"
-          color="primary"
-        >
-          Compare videos
-        </Button>
-      </>
-    )}
-  </>
-);
+const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Divider />
+      {hasFilter ? (
+        <Box my={2}>{t('ratings.noVideoCorrespondsToFilter')}</Box>
+      ) : (
+        <>
+          <Box my={2}>
+            {t('ratings.noVideoComparedYet')}
+            {' 🥺'}
+          </Box>
+          <Button
+            component={Link}
+            to="/comparison"
+            variant="contained"
+            color="primary"
+          >
+            {t('ratings.compareVideosButton')}
+          </Button>
+        </>
+      )}
+    </>
+  );
+};
 
 const VideoRatingsPage = () => {
   const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
