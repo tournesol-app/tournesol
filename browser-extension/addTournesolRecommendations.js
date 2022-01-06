@@ -56,8 +56,11 @@ const getTournesolComponent = (data) => {
     const makeLanguageLink = (lang) => {
       lang_option = document.createElement('a');
       lang_option.className = 'language_option';
+      lang_option.href = '#';
+      lang_option.setAttribute('role', 'button');
       lang_option.append(lang);
-      lang_option.onclick = () => {
+      lang_option.onclick = (event) => {
+        event.preventDefault();
         localStorage.setItem('tournesol_extension_config_language', lang);
         loadRecommandations();
       };
