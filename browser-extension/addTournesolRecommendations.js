@@ -4,7 +4,9 @@
 /* ********************************************************************* */
 
 let videos = [];
-let areVideosLoaded = false;
+let isPageLoaded = false;
+let areRecommandationsLoading = false;
+
 loadRecommandations();
 
 document.addEventListener('yt-navigate-finish', process);
@@ -200,15 +202,16 @@ function displayRecommendations() {
 
 
 function process(){
-  areVideosLoaded = true;
+  isPageLoaded = true;
   if(videos.length > 0){
     displayRecommendations();
   }
 }
 
 function handleResponse({ data: videosReponse }){
+  areRecommandationsLoading = false;
   videos = videosReponse;
-  if(areVideosLoaded){
+  if(isPageLoaded){
     displayRecommendations();
   }
 }
@@ -217,6 +220,9 @@ function loadRecommandations() {
   // Only enable on youtube.com/
   if (location.pathname != '/') return;
 
+  if(areRecommandationsLoading) return;
+  
+  areRecommandationsLoading = true;
   /*
    ** Send message to background.js to get recommendations from the API of Tournesol.
    ** I put video amount here because we can get the value of --ytd-rich-grid-posts-per-row (css) to know how many videos we should retreive from api
