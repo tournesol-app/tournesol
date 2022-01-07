@@ -12,13 +12,13 @@ else document.addEventListener('DOMContentLoaded', process);
 
 function process() {
   // Get video id via URL
-  var videoId = new URL(location.href).searchParams.get('v');
+  let videoId = new URL(location.href).searchParams.get('v');
 
   // Only enable on youtube.com/watch?v=* pages
   if (!location.pathname.startsWith('/watch') || !videoId) return;
 
   // Timer will run until needed elements are generated
-  var timer = window.setInterval(createButtonIsReady, 300);
+  let timer = window.setInterval(createButtonIsReady, 300);
 
   function createButtonIsReady() {
     /*
@@ -35,37 +35,41 @@ function process() {
       !document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed']
     ) return;
 
+    window.clearInterval(timer);
 
     // If the button already exists, don't create a new one
-    if (document.getElementById('tournesol-rate-button')) {
-      window.clearInterval(timer);
+    if (document.getElementById('tournesol-rate-later-button')) {
       return;
     }
 
-    window.clearInterval(timer);
+    // Create Buttons
+    function getRateButton(buttonText){
+      let rateButton = document.createElement('button');
+      rateButton.className = 'tournesol-rate-button';
 
-    // Create Button
-    var rateLaterButton = document.createElement('button');
-    rateLaterButton.setAttribute('id', 'tournesol-rate-button');
+      // Image td for better vertical alignment
+      let img_td = document.createElement('td');
+      img_td.setAttribute('valign', 'middle');
+      let image = document.createElement('img');
+      image.setAttribute('id', 'tournesol-button-image');
+      image.setAttribute('src', chrome.runtime.getURL('Logo128.png'));
+      image.setAttribute('width', '20');
+      img_td.append(image);
+      rateButton.append(img_td);
 
-    // Image td for better vertical alignment
-    var img_td = document.createElement('td');
-    img_td.setAttribute('valign', 'middle');
-    var image = document.createElement('img');
-    image.setAttribute('id', 'tournesol-button-image');
-    image.setAttribute('src', chrome.runtime.getURL('Logo128.png'));
-    image.setAttribute('width', '20');
-    img_td.append(image);
-    rateLaterButton.append(img_td);
+      // Text td for better vertical alignment
+      let text_td = document.createElement('td');
+      text_td.setAttribute('valign', 'middle');
+      text_td_text = document.createTextNode(buttonText)
+      text_td.append(text_td_text);
+      rateButton.append(text_td);
 
-    // Text td for better vertical alignment
-    var text_td = document.createElement('td');
-    text_td.setAttribute('valign', 'middle');
-    text_td_text = document.createTextNode('Rate Later')
-    text_td.append(text_td_text);
-    rateLaterButton.append(text_td);
+      return rateButton;
+    }
 
-    // On click
+    // Rate later button
+    let rateLaterButton = getRateButton('Rate Later');
+    rateLaterButton.setAttribute('id', 'tournesol-rate-later-button');
     rateLaterButton.onclick = () => {
       rateLaterButton.disabled = true;
       chrome.runtime.sendMessage(
@@ -84,8 +88,31 @@ function process() {
       );
     }
 
+    // Rate now button
+
+    let rateNowButton = getRateButton('Rate Now');
+    rateNowButton.setAttribute('id', 'tournesol-rate-now-button');
+    rateNowButton.onclick = () => {
+      rateNowButton.disabled = true;
+      chrome.runtime.sendMessage(
+        {
+          message: 'addRateLater',
+          video_id: videoId
+        },
+        (data) => {
+          if (data.success) {
+            text_td_text.replaceWith(document.createTextNode('Done!'))
+          }
+          else {
+            rateNowButton.disabled = false;
+          }
+        }
+      );
+    }
+
     // Insert after like and dislike buttons
-    var div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
+    let div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
     div.insertBefore(rateLaterButton, div.children[2]);
+    div.insertBefore(rateNowButton, div.children[2]);
   }
 }

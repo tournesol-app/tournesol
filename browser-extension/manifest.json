@@ -32,8 +32,8 @@
     },
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["addVideoStatistics.js", "addRateLaterButton.js"],
-      "css": ["addVideoStatistics.css", "addRateLaterButton.css"],
+      "js": ["addVideoStatistics.js", "addRateButtons.js"],
+      "css": ["addVideoStatistics.css", "addRateButtons.css"],
       "run_at": "document_end",
       "all_frames": true
     },

@@ -1,4 +1,4 @@
-button#tournesol-rate-button {
+button.tournesol-rate-button {
   background: transparent;
   border: none;
   border-radius: 2px;
@@ -12,7 +12,7 @@ button#tournesol-rate-button {
   font-weight: 500;
 }
 
-button#tournesol-rate-button:disabled {
+button.tournesol-rate-button:disabled {
   opacity: 0.5;
 }
 
