@@ -87,6 +87,7 @@ const getTournesolComponent = (data) => {
     refresh_button.setAttribute('width', '24');
     refresh_button.className = 'icon';
     refresh_button.onclick = () => {
+      refresh_button.className = 'icon-disabled';
       loadRecommandations();
     };
     inline_div.append(refresh_button);
