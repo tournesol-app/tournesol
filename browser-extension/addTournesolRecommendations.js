@@ -58,10 +58,12 @@ const getTournesolComponent = (data) => {
       lang_option = document.createElement('a');
       lang_option.className = 'language_option';
       lang_option.href = '#';
+      lang_option.setAttribute('role', 'button');
       lang_option.append(lang);
-      lang_option.onclick = () => {
+      lang_option.onclick = (event) => {
+        event.preventDefault();
         localStorage.setItem('tournesol_extension_config_language', lang);
-        window.location.reload();
+        loadRecommandations();
       };
       return lang_option;
     };
@@ -177,7 +179,7 @@ function displayRecommendations() {
     // Verify that Tournesol's container has not yet been rendered
     old_container = document.getElementById('tournesol_container');
     if (old_container) old_container.remove();
-
+    
     // Generate component to display on Youtube home page
     tournesol_component = getTournesolComponent(videos)
     
