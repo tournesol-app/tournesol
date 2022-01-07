@@ -107,6 +107,7 @@ const getTournesolComponent = (data) => {
     expand_button.setAttribute('width', '24');
     expand_button.className = "icon";
     expand_button.onclick = () => {
+      expand_button.className = 'icon-disabled';
       if(videoNumber == defaultVideoNumber){
         videoNumber *= rowsWhenExpanded;
       }else{
