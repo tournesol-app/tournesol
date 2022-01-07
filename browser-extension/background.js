@@ -60,7 +60,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const recent_sub = getRandomSubarray(recent, request.number - 1);
       const old_sub = getRandomSubarray(old, request.number - recent_sub.length);
       const videos = getRandomSubarray([...old_sub, ...recent_sub], request.number);
-      return { data: videos };
+      return { data: videos, loadVideos:request.loadVideos, loadAdditionalVideos:request.loadAdditionalVideos };
     }
     process().then(sendResponse);
     return true;

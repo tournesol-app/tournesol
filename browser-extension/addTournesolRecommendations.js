@@ -5,9 +5,11 @@
 
 const defaultVideoNumber = 4;
 const rowsWhenExpanded = 3;
-let videoNumber = defaultVideoNumber;
+const totalVideoNumber = defaultVideoNumber * rowsWhenExpanded;
+let isExpanded = false;
 
 let videos = [];
+let additionalVideos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
 
@@ -33,7 +35,7 @@ const getParentComponent = () => {
   }
 }
 
-const getTournesolComponent = (data) => {
+const getTournesolComponent = () => {
     // Create new container
     tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -92,28 +94,29 @@ const getTournesolComponent = (data) => {
     refresh_button.className = 'icon';
     refresh_button.onclick = () => {
       refresh_button.className = 'icon-disabled';
-      loadRecommandations();
+      loadRecommandations(loadVideos = true, loadAdditionalVideos = isExpanded);
     };
     inline_div.append(refresh_button);
     // Expand button
     expand_button = document.createElement('img');
     expand_button.setAttribute('id', 'expand_button');
     // A new button is created on each video loading, the image must be loaded accordingly
-    if(videoNumber == defaultVideoNumber){
-      expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Expand-Arrow-icon.png'));
-    }else{
+    if(isExpanded){
       expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Retract-Arrow-icon.png'));
+    }else{
+      expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Expand-Arrow-icon.png'));
     }
     expand_button.setAttribute('width', '24');
     expand_button.className = "icon";
     expand_button.onclick = () => {
       expand_button.className = 'icon-disabled';
-      if(videoNumber == defaultVideoNumber){
-        videoNumber *= rowsWhenExpanded;
-      }else{
-        videoNumber = defaultVideoNumber;
+      if(!areRecommandationsLoading && !isExpanded){
+        isExpanded = true;
+        loadRecommandations(loadVideos = false, loadAdditionalVideos = true);
+      }else if(isExpanded){
+        isExpanded = false;
+        displayRecommendations();
       }
-      loadRecommandations();
     };
     inline_div.append(expand_button);
 
@@ -190,7 +193,11 @@ const getTournesolComponent = (data) => {
       return video_box;
     }
 
-    data.forEach((video) => tournesol_container.append(make_video_box(video)));
+    videos.forEach((video) => tournesol_container.append(make_video_box(video)));
+    if(isExpanded){
+      additionalVideos.forEach((video) => tournesol_container.append(make_video_box(video)));
+    }
+    
     return tournesol_container
 }
 
@@ -220,7 +227,7 @@ function displayRecommendations() {
     if (old_container) old_container.remove();
     
     // Generate component to display on Youtube home page
-    tournesol_component = getTournesolComponent(videos);
+    tournesol_component = getTournesolComponent();
     
     container.insertBefore(tournesol_component, container.children[1]);
   }, 300);
@@ -234,15 +241,23 @@ function process(){
   }
 }
 
-function handleResponse({ data: videosReponse }){
+function handleResponse({ data: videosReponse, loadVideos: loadVideos, loadAdditionalVideos: loadAdditionalVideos }){
   areRecommandationsLoading = false;
-  videos = videosReponse;
+  if(loadVideos && loadAdditionalVideos){
+    videos = videosReponse.slice(0,4);
+    additionalVideos = videosReponse.slice(4);
+  }else if(loadVideos){
+    videos = videosReponse;
+  }else if(loadAdditionalVideos){
+    additionalVideos = videosReponse;
+  }
+  
   if(isPageLoaded){
     displayRecommendations();
   }
 }
 
-function loadRecommandations() {
+function loadRecommandations(loadVideos = true, loadAdditionalVideos = false) {
   // Only enable on youtube.com/
   if (location.pathname != '/') return;
 
@@ -256,9 +271,14 @@ function loadRecommandations() {
   const language =
     localStorage.getItem('tournesol_extension_config_language') || 'en';
 
+  const videoNumber = 
+    (loadVideos ? defaultVideoNumber : 0) + (loadAdditionalVideos ? defaultVideoNumber * (rowsWhenExpanded - 1) : 0);
+  
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
     language: language,
-    number: videoNumber
+    number: videoNumber,
+    loadVideos: loadVideos,
+    loadAdditionalVideos: loadAdditionalVideos
   }, handleResponse);
 }
