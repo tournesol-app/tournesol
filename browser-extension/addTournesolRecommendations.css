@@ -55,8 +55,8 @@
 }
 
 .icon {
-  -webkit-filter: opacity(50%);
-  filter: opacity(50%);
+  -webkit-filter: opacity(75%);
+  filter: opacity(75%);
   width: 24;
   height: 24;
   border-radius: 12px;
@@ -74,7 +74,7 @@
   transition: all 0.1s ease;
 }
 
-.icon:active {
+.icon :active {
   -webkit-filter: opacity(100%);
   filter: opacity(100%);
   background: #bdbcb2;
@@ -84,6 +84,16 @@
   -o-transition: all 0.1s ease;
   -ms-transition: all 0.1s ease;
   transition: all 0.1s ease;
+}
+
+.icon-disabled {
+  -webkit-filter: opacity(25%);
+  filter: opacity(25%);
+  width: 24;
+  height: 24;
+  border-radius: 12px;
+  color: #f8f5e8;
+  background: #bdbcb2;
 }
 
 .video_box {
