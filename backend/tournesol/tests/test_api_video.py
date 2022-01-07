@@ -9,8 +9,8 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.utils.video_language import compute_video_language
-from tournesol.factories.video import VideoFactory
-from ..models import Tag, Video, VideoCriteriaScore
+from tournesol.factories.video import VideoFactory, VideoCriteriaScoreFactory
+from ..models import Tag, Video
 
 
 class VideoApi(TestCase):
@@ -42,18 +42,10 @@ class VideoApi(TestCase):
             uploader="uploader3",
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
-        VideoCriteriaScore.objects.create(
-            video=self.video_1, criteria="reliability", score=0.1
-        )
-        VideoCriteriaScore.objects.create(
-            video=self.video_2, criteria="reliability", score=0.2
-        )
-        VideoCriteriaScore.objects.create(
-            video=self.video_3, criteria="importance", score=0.3
-        )
-        VideoCriteriaScore.objects.create(
-            video=self.video_4, criteria="importance", score=0.4
-        )
+        VideoCriteriaScoreFactory(video=self.video_1, criteria="reliability", score=0.1)
+        VideoCriteriaScoreFactory(video=self.video_2, criteria="reliability", score=0.2)
+        VideoCriteriaScoreFactory(video=self.video_3, criteria="importance", score=0.3)
+        VideoCriteriaScoreFactory(video=self.video_4, criteria="importance", score=0.4)
 
     def test_anonymous_can_list(self):
         """
@@ -280,9 +272,9 @@ class VideoApi(TestCase):
         video1 = VideoFactory(language="fr")
         video2 = VideoFactory(language="en")
         video3 = VideoFactory(language="en")
-        VideoCriteriaScore.objects.create(video=video1, criteria="engaging", score=1)
-        VideoCriteriaScore.objects.create(video=video2, criteria="engaging", score=1)
-        VideoCriteriaScore.objects.create(video=video3, criteria="engaging", score=1)
+        VideoCriteriaScoreFactory(video=video1)
+        VideoCriteriaScoreFactory(video=video2)
+        VideoCriteriaScoreFactory(video=video3)
 
         resp = client.get("/video/?language=")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)

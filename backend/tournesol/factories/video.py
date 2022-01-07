@@ -18,3 +18,13 @@ class VideoFactory(factory.django.DjangoModelFactory):
     language = 'aa'
     uploader = factory.Sequence(lambda n: 'Uploader %s' % n)
     publication_date = factory.LazyFunction(datetime.datetime.now)
+
+
+class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = video_models.VideoCriteriaScore
+
+    video = factory.SubFactory(VideoFactory)
+    criteria = "better_habits"
+    score = 1
