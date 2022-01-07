@@ -4,6 +4,7 @@ import factory
 
 from tournesol.models import video as video_models
 from tournesol.utils import video_id
+from core.factories.user import UserFactory
 
 
 class VideoFactory(factory.django.DjangoModelFactory):
@@ -28,3 +29,12 @@ class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
     video = factory.SubFactory(VideoFactory)
     criteria = "better_habits"
     score = 1
+
+
+class VideoRateLaterFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = video_models.VideoRateLater
+
+    video = factory.SubFactory(VideoFactory)
+    user = factory.SubFactory(UserFactory)

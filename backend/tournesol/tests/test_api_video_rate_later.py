@@ -5,6 +5,8 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Video, VideoRateLater
+from tournesol.factories.video import VideoFactory, VideoRateLaterFactory
+from core.factories.user import UserFactory
 
 
 class VideoRateLaterApi(TestCase):
@@ -34,19 +36,14 @@ class VideoRateLaterApi(TestCase):
         At least two users are required, each of them having a distinct rate
         later list.
         """
-        user1 = User.objects.create(username=self._user, email="user1@test")
-        user2 = User.objects.create(username=self._other, email="user2@test")
+        user1 = UserFactory(username=self._user)
+        user2 = UserFactory(username=self._other)
 
-        video1 = Video.objects.create(
-            video_id="test_video_id_1", name=self._users_video
-        )
+        video1 = VideoFactory(name=self._users_video)
+        video2 = VideoFactory(name=self._others_video)
 
-        video2 = Video.objects.create(
-            video_id="test_video_id_2", name=self._others_video
-        )
-
-        VideoRateLater.objects.create(user=user1, video=video1)
-        VideoRateLater.objects.create(user=user2, video=video2)
+        VideoRateLaterFactory(user=user1, video=video1)
+        VideoRateLaterFactory(user=user2, video=video2)
 
     def test_anonymous_cant_list(self):
         """
@@ -227,4 +224,3 @@ class VideoRateLaterApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(user.videoratelaters.count(), 0)
-
