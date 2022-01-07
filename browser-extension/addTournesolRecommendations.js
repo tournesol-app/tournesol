@@ -105,6 +105,7 @@ const getTournesolComponent = (data) => {
       expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Retract-Arrow-icon.png'));
     }
     expand_button.setAttribute('width', '24');
+    expand_button.className = "icon";
     expand_button.onclick = () => {
       if(videoNumber == defaultVideoNumber){
         videoNumber *= rowsWhenExpanded;
