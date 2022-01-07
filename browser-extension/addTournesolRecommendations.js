@@ -3,6 +3,10 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
+const defaultVideoNumber = 4;
+const rowsWhenExpanded = 3;
+let videoNumber = defaultVideoNumber;
+
 let videos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
@@ -91,6 +95,25 @@ const getTournesolComponent = (data) => {
       loadRecommandations();
     };
     inline_div.append(refresh_button);
+    // Expand button
+    expand_button = document.createElement('img');
+    expand_button.setAttribute('id', 'expand_button');
+    // A new button is created on each video loading, the image must be loaded accordingly
+    if(videoNumber == defaultVideoNumber){
+      expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Expand-Arrow-icon.png'));
+    }else{
+      expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Retract-Arrow-icon.png'));
+    }
+    expand_button.setAttribute('width', '24');
+    expand_button.onclick = () => {
+      if(videoNumber == defaultVideoNumber){
+        videoNumber *= rowsWhenExpanded;
+      }else{
+        videoNumber = defaultVideoNumber;
+      }
+      loadRecommandations();
+    };
+    inline_div.append(expand_button);
 
     tournesol_container.append(inline_div);
 
@@ -195,7 +218,7 @@ function displayRecommendations() {
     if (old_container) old_container.remove();
     
     // Generate component to display on Youtube home page
-    tournesol_component = getTournesolComponent(videos)
+    tournesol_component = getTournesolComponent(videos);
     
     container.insertBefore(tournesol_component, container.children[1]);
   }, 300);
@@ -233,6 +256,7 @@ function loadRecommandations() {
 
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
-    language,
+    language: language,
+    number: videoNumber
   }, handleResponse);
 }

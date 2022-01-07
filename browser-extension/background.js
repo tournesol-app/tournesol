@@ -57,9 +57,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const threeWeeksAgo = getDateThreeWeeksAgo()
       const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
       const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
-      const recent_sub = getRandomSubarray(recent, 3);
-      const old_sub = getRandomSubarray(old, 4 - recent_sub.length);
-      const videos = getRandomSubarray([...old_sub, ...recent_sub], 4);
+      const recent_sub = getRandomSubarray(recent, request.number - 1);
+      const old_sub = getRandomSubarray(old, request.number - recent_sub.length);
+      const videos = getRandomSubarray([...old_sub, ...recent_sub], request.number);
       return { data: videos };
     }
     process().then(sendResponse);
