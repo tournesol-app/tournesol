@@ -1,8 +1,9 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import { Grid, Container, Theme, Tooltip, Fab, Box } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Compare as CompareIcon } from '@mui/icons-material';
+
 import type { Comparison } from 'src/services/openapi';
 import { VideoCardFromId } from '../videos/VideoCard';
 
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const { video_a, video_b } = comparison;
   return (
@@ -44,7 +46,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
             width: 0,
           }}
         />
-        <Tooltip title="Compare now" placement="top">
+        <Tooltip title={`${t('comparisons.goToComparison')}`} placement="top">
           <Fab
             component="a"
             href={`/comparison/?videoA=${video_a.video_id}&videoB=${video_b.video_id}`}

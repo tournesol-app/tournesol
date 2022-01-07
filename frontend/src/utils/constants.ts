@@ -1,25 +1,18 @@
-export const mainCriteriaNames: string[][] = [
-  ['reliability', 'Reliable & not misleading'],
-  ['pedagogy', 'Clear & pedagogical'],
-  ['importance', 'Important and actionable'],
-  ['layman_friendly', 'Layman-friendly'],
-  ['entertaining_relaxing', 'Entertaining and relaxing'],
-  ['engaging', 'Engaging & thought-provoking'],
-  ['diversity_inclusion', 'Diversity & inclusion'],
-  ['better_habits', 'Encourages better habits'],
-  ['backfire_risk', 'Resilience to backfiring risks'],
+import { TFunction } from 'react-i18next';
+
+export const mainCriterias = [
+  'reliability',
+  'pedagogy',
+  'importance',
+  'layman_friendly',
+  'entertaining_relaxing',
+  'engaging',
+  'diversity_inclusion',
+  'better_habits',
+  'backfire_risk',
 ];
 
-export const mainCriteriaNamesObj: { [c: string]: string } =
-  Object.fromEntries(mainCriteriaNames);
-
-export const allCriteriaNames: string[][] = [
-  ['largely_recommended', 'Should be largely recommended'],
-  ...mainCriteriaNames,
-];
-
-export const allCriteriaNamesObj: { [c: string]: string } =
-  Object.fromEntries(allCriteriaNames);
+export const allCriterias = ['largely_recommended', ...mainCriterias];
 
 export const optionalCriterias: { [c: string]: boolean } = {
   largely_recommended: false,
@@ -32,4 +25,20 @@ export const optionalCriterias: { [c: string]: boolean } = {
   diversity_inclusion: true,
   better_habits: true,
   backfire_risk: true,
+};
+
+export const getCriteriaName = (t: TFunction, criteria: string) => {
+  const names: Record<string, () => string> = {
+    largely_recommended: () => t('criteria.shouldBeLargelyRecommended'),
+    reliability: () => t('criteria.reliableAndNotMisleading'),
+    pedagogy: () => t('criteria.clearAndPedagogical'),
+    importance: () => t('criteria.importantAndActionable'),
+    layman_friendly: () => t('criteria.laymanFriendly'),
+    entertaining_relaxing: () => t('criteria.entertainingAndRelaxing'),
+    engaging: () => t('criteria.engagingAndThoughtProvoking'),
+    diversity_inclusion: () => t('criteria.diversityAndInclusion'),
+    better_habits: () => t('criteria.encouragesBetterHabits'),
+    backfire_risk: () => t('criteria.resilienceToBackfiringRisks'),
+  };
+  return names[criteria]?.() ?? '';
 };

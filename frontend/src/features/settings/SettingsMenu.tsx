@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 
@@ -12,6 +12,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import Settings from '@mui/icons-material/Settings';
 
 export default function SettingsMenu() {
+  const { t } = useTranslation();
   const location = useLocation();
   return (
     <Paper>
@@ -24,7 +25,7 @@ export default function SettingsMenu() {
           <ListItemIcon>
             <AccountCircle />
           </ListItemIcon>
-          <ListItemText>Profile</ListItemText>
+          <ListItemText>{t('profile')}</ListItemText>
         </MenuItem>
         <MenuItem
           component={Link}
@@ -34,7 +35,7 @@ export default function SettingsMenu() {
           <ListItemIcon>
             <Settings />
           </ListItemIcon>
-          <ListItemText>Account</ListItemText>
+          <ListItemText>{t('settings.account')}</ListItemText>
         </MenuItem>
       </MenuList>
     </Paper>

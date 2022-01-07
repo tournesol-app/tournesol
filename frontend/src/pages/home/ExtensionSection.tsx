@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button, Box } from '@mui/material';
 
 const getWebBrowser = () => {
@@ -15,6 +15,7 @@ const getWebBrowser = () => {
 // browser is detected, then the user is shown that they
 // can use our extension on Firefox or Chrome.
 const ExtensionSection = () => {
+  const { t } = useTranslation();
   const [browser] = useState(getWebBrowser());
   return (
     <Box
@@ -24,13 +25,8 @@ const ExtensionSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">Use our extension!</Typography>
-      <Typography paragraph>
-        When using the extension, you will find videos recommended by
-        Tournesol&apos;s community directly on your Youtube home page. You can
-        also add a video in your rate later list or immediatly rate the video
-        with just a few clicks.
-      </Typography>
+      <Typography variant="h1">{t('home.useOurExtension')}</Typography>
+      <Typography paragraph>{t('home.webExtensionDescription')}</Typography>
       {browser !== 'other' ? (
         <Button
           color="primary"
@@ -43,12 +39,14 @@ const ExtensionSection = () => {
           }
           target="_blank"
         >
-          Get the extension
+          {t('home.getTheExtensionButton')}
         </Button>
       ) : (
         <Typography color="primary" paragraph>
-          The extension is not available on your webbrowser. You may use it on{' '}
-          <b>Firefox</b>, <b>Google Chrome</b> or <b>Chromium</b>.
+          <Trans t={t} i18nKey="home.extensionNotAvailableOnYourBrowser">
+            The extension is not available on your webbrowser. You may use it on{' '}
+            <b>Firefox</b>, <b>Google Chrome</b> or <b>Chromium</b>.
+          </Trans>
         </Typography>
       )}
     </Box>

@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { useLoginState } from 'src/hooks';
-import { displayErrors } from 'src/utils/api/response';
-import {
-  contactAdministrator,
-  showSuccessAlert,
-} from 'src/utils/notifications';
+import { useLoginState, useNotifications } from 'src/hooks';
 import { AccountsService, ApiError } from 'src/services/openapi';
 
 const ProfileForm = () => {
+  const { t } = useTranslation();
   const { updateUsername } = useLoginState();
-  const { enqueueSnackbar } = useSnackbar();
+  const { contactAdministrator, displayErrorsFrom, showSuccessAlert } =
+    useNotifications();
 
   const [username, setUsername] = useState('');
   const [disabled, setDisabled] = useState(false);
@@ -26,9 +23,8 @@ const ProfileForm = () => {
       const response = await AccountsService.accountsProfileRetrieve().catch(
         () => {
           contactAdministrator(
-            enqueueSnackbar,
             'error',
-            'Sorry, an error has occurred, cannot retrieve your profile.'
+            t('settings.errorOccurredWhenRetrievingProfile')
           );
         }
       );
@@ -39,7 +35,7 @@ const ProfileForm = () => {
     }
 
     retrieveProfile();
-  }, [updateUsername, enqueueSnackbar]);
+  }, [t, updateUsername, contactAdministrator]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -50,19 +46,15 @@ const ProfileForm = () => {
         username,
       },
     }).catch((reason: ApiError) => {
-      displayErrors(
-        enqueueSnackbar,
-        reason,
-        'Sorry, an error has occurred, cannot update the profile.'
-      );
+      displayErrorsFrom(reason, t('settings.errorOccurredWhenUpdatingProfile'));
     });
 
     // handle success and malformed success
     if (response) {
       if ('detail' in response) {
-        showSuccessAlert(enqueueSnackbar, response['detail']);
+        showSuccessAlert(response['detail']);
       } else {
-        showSuccessAlert(enqueueSnackbar, 'Profile changed successfully');
+        showSuccessAlert(t('settings.profileChangedSuccessfully'));
       }
 
       updateUsername(username);
@@ -78,7 +70,7 @@ const ProfileForm = () => {
           <TextField
             required
             fullWidth
-            label="Username"
+            label={t('username')}
             name="username"
             color="secondary"
             size="small"
@@ -89,9 +81,7 @@ const ProfileForm = () => {
             inputProps={{ 'data-testid': 'username' }}
           />
           <Typography variant="caption">
-            Your username will appear in the Tournesol&apos;s public database if
-            you choose to make any of your data on Tournesol public. You can
-            change it at any time.
+            {t('settings.captionUsernameWillAppearInPublicDatabase')}
           </Typography>
         </Grid>
         <Grid item>
@@ -102,7 +92,7 @@ const ProfileForm = () => {
             variant="contained"
             disabled={disabled}
           >
-            Update profile
+            {t('settings.updateProfile')}
           </Button>
         </Grid>
       </Grid>

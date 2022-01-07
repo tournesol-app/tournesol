@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -48,6 +49,7 @@ const CriteriaSlider = ({
   disabled: boolean;
   handleSliderChange: (criteria: string, value: number | undefined) => void;
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -80,7 +82,10 @@ const CriteriaSlider = ({
               target="_blank"
               rel="noreferrer"
             >
-              {criteria_name} {criteriaValue === undefined ? ' (skipped)' : ''}
+              {criteria_name}{' '}
+              {criteriaValue === undefined
+                ? `(${t('comparison.criteriaSkipped')})`
+                : ''}
             </a>
           </Typography>
           {(optionalCriterias[criteria] || criteriaValue == undefined) && (

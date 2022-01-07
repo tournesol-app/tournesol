@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Paper, Typography } from '@mui/material';
-
 import makeStyles from '@mui/styles/makeStyles';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface PaginationProps {
   limit: number;
@@ -26,9 +26,14 @@ const Pagination = ({
   limit,
   onOffsetChange,
   count,
-  itemType = 'videos',
+  itemType,
 }: PaginationProps) => {
+  const { t } = useTranslation();
   const classes = useStyles();
+
+  const firstShowing = offset + 1;
+  const lastShowing = Math.min(count, offset + limit);
+  const itemTypeText = itemType ?? t('pagination.videos');
 
   return (
     <Paper square variant="outlined" className={classes.paginationContainer}>
@@ -36,27 +41,37 @@ const Pagination = ({
         disabled={offset <= 0}
         variant="contained"
         color="primary"
+        size="small"
         id="id_rate_later_prev"
         onClick={() => {
           onOffsetChange(Math.max(offset - limit, 0));
         }}
       >
-        Previous {limit}
+        {'< '}
+        <Trans t={t} i18nKey="pagination.previousButton">
+          Previous {{ limit }}
+        </Trans>
       </Button>
       <Typography variant="body2" mx={2}>
-        Showing {itemType} {offset + 1} to {Math.min(count, offset + limit)}
-        {count && ` of ${count}`}
+        <Trans t={t} i18nKey="pagination.showingCounts">
+          Showing {{ itemTypeText }} {{ firstShowing }} to {{ lastShowing }} of{' '}
+          {{ total: count }}
+        </Trans>
       </Typography>
       <Button
         disabled={offset + limit >= count}
         variant="contained"
         color="primary"
+        size="small"
         id="id_rate_later_next"
         onClick={() => {
           onOffsetChange(Math.min(count, offset + limit));
         }}
       >
-        Next {limit}
+        <Trans t={t} i18nKey="pagination.nextButton">
+          Next {{ limit }}
+        </Trans>
+        {' >'}
       </Button>
     </Paper>
   );

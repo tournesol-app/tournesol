@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { Button, Grid } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
-import { useLoginState } from 'src/hooks';
+import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
-import { contactAdministratorLowSeverity } from '../../../../utils/notifications';
 
 const useStyles = makeStyles((theme) => ({
   AccountInfo: {
@@ -35,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LoggedInActions = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+  const { contactAdministratorLowSeverity } = useNotifications();
 
   const classes = useStyles();
   const { logout, loginState } = useLoginState();
@@ -43,10 +43,7 @@ const LoggedInActions = () => {
   const logoutProcess = async () => {
     if (loginState.refresh_token) {
       await revokeAccessToken(loginState.refresh_token).catch(() => {
-        contactAdministratorLowSeverity(
-          enqueueSnackbar,
-          'A non impacting error occurred during your logout.'
-        );
+        contactAdministratorLowSeverity(t('logoutNonImpactingError'));
       });
     }
     logout();
@@ -61,7 +58,7 @@ const LoggedInActions = () => {
         onClick={logoutProcess}
         className={classes.HeaderButton}
       >
-        Logout
+        {t('logoutButton')}
       </Button>
       <Button
         variant="text"
@@ -78,6 +75,7 @@ const LoggedInActions = () => {
 };
 
 const LoggedOutActions = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -90,7 +88,7 @@ const LoggedOutActions = () => {
         className={classes.HeaderButton}
         to="/login"
       >
-        Log in
+        {t('loginButton')}
       </Button>
       <Button
         component={Link}
@@ -99,7 +97,7 @@ const LoggedOutActions = () => {
         className={clsx(classes.HeaderButton, classes.JoinUsButton)}
         to="/signup"
       >
-        Join us
+        {t('joinUsButton')}
       </Button>
     </>
   );

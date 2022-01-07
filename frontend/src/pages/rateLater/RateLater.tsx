@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import { Card, Box, CardContent, CardActions } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -11,9 +11,7 @@ import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, LoaderWrapper, Pagination } from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
-import { showSuccessAlert } from '../../utils/notifications';
-import { useSnackbar } from 'notistack';
-import { displayErrors } from '../../utils/api/response';
+import { useNotifications } from 'src/hooks';
 
 const useStyles = makeStyles({
   rateLaterIntro: {
@@ -40,7 +38,8 @@ const useStyles = makeStyles({
 });
 
 const RateLaterPage = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
 
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(true);
@@ -77,22 +76,17 @@ const RateLaterPage = () => {
   const addToRateLater = async (video_id: string): Promise<boolean> => {
     const response = await addToRateLaterList({ video_id }).catch(
       (reason: ApiError) => {
-        displayErrors(
-          enqueueSnackbar,
-          reason,
-          'Sorry, an error has occurred, cannot add the video to your rate later list.',
-          [
-            {
-              status: 409,
-              variant: 'warning',
-              msg: 'This video is already in your rate later list.',
-            },
-          ]
-        );
+        displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
+          {
+            status: 409,
+            variant: 'warning',
+            msg: t('ratelater.videoAlreadyInList'),
+          },
+        ]);
       }
     );
     if (response) {
-      showSuccessAlert(enqueueSnackbar, 'Video added to your rate later list.');
+      showSuccessAlert(t('ratelater.videoAdded'));
       await loadList();
       return true;
     }
@@ -115,26 +109,28 @@ const RateLaterPage = () => {
       <Card className={classes.rateLaterIntro} elevation={4}>
         <CardContent>
           <Typography variant="h6">
-            Add videos to your rate-later list
+            {t('ratelater.addVideosToRateLaterList')}
           </Typography>
-          Copy-paste the id or the URL of a favorite video of yours:
-          <br />
-          You can search them in your{' '}
-          <a href="https://www.youtube.com/feed/history">
-            YouTube history page
-          </a>
-          , or your{' '}
-          <a href="https://www.youtube.com/playlist?list=LL">
-            liked video playlist
-          </a>
-          .<br />
-          Our{' '}
-          <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
-            Google chrome extension
-          </a>{' '}
-          can also help you import videos effortlessly.
-          <br />
-          You will then be able to rate the videos you imported.
+          <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
+            Copy-paste the id or the URL of a favorite video of yours.
+            <br />
+            You can search them in your{' '}
+            <a href="https://www.youtube.com/feed/history">
+              YouTube history page
+            </a>
+            , or your{' '}
+            <a href="https://www.youtube.com/playlist?list=LL">
+              liked video playlist
+            </a>
+            .<br />
+            Our{' '}
+            <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
+              browser extension
+            </a>{' '}
+            can also help you import videos effortlessly.
+            <br />
+            You will then be able to rate the videos you imported.
+          </Trans>
         </CardContent>
         <CardActions>
           <RateLaterAddForm addVideo={addToRateLater} />
@@ -144,7 +140,10 @@ const RateLaterPage = () => {
       <div className={classes.rateLaterContent} ref={videoListTopRef}>
         {videoCount !== null && (
           <Typography variant="subtitle1">
-            Your rate-later list now has <strong>{videoCount}</strong> video(s).
+            <Trans t={t} i18nKey="ratelater.listHasNbVideos" count={videoCount}>
+              Your rate-later list now has <strong>{{ videoCount }}</strong>{' '}
+              video(s).
+            </Trans>
           </Typography>
         )}
 

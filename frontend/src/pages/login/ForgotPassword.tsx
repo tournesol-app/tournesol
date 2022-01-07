@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import { Grid, Button, Typography, Box, Link } from '@mui/material';
 import {
@@ -7,24 +8,29 @@ import {
   Lines,
   FormTextField,
 } from 'src/components';
-import { showErrorAlert } from 'src/utils/notifications';
 import {
   AccountsService,
   ApiError,
   DefaultSendResetPasswordLink,
 } from 'src/services/openapi';
-import { useSnackbar } from 'notistack';
+import { useNotifications } from 'src/hooks';
 
-const ResetSuccess = () => (
-  <Typography>
-    Done!
-    <br />
-    If this user exists, an email will be sent with a reset link.
-  </Typography>
-);
+const ResetSuccess = () => {
+  const { t } = useTranslation();
+  return (
+    <Typography>
+      <Trans t={t} i18nKey="reset.ifUserExistsResetLinkWillBeSent">
+        Done!
+        <br />
+        If this user exists, an email will be sent with a reset link.
+      </Trans>
+    </Typography>
+  );
+};
 
 const ForgotPassword = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+  const { showErrorAlert } = useNotifications();
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -42,7 +48,7 @@ const ForgotPassword = () => {
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       }
     } finally {
       setIsLoading(false);
@@ -53,7 +59,7 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <ContentHeader title="Reset your password" />
+      <ContentHeader title={t('reset.resetYourPassword')} />
       <ContentBox maxWidth={success ? 'sm' : 'xs'}>
         {success ? (
           <ResetSuccess />
@@ -69,7 +75,7 @@ const ForgotPassword = () => {
                 {formError && (
                   <Grid item xs={12}>
                     <Typography color="error">
-                      Failed to send the reset link.
+                      {t('reset.failToSendResetLink')}
                       <br />
                       {formError?.non_field_errors && (
                         <Lines messages={formError.non_field_errors} />
@@ -80,7 +86,7 @@ const ForgotPassword = () => {
                 <Grid item xs={12}>
                   <FormTextField
                     name="login"
-                    label="Username"
+                    label={t('username')}
                     formError={formError}
                   />
                 </Grid>
@@ -92,7 +98,7 @@ const ForgotPassword = () => {
                     variant="contained"
                     disabled={isLoading}
                   >
-                    Send reset email
+                    {t('reset.sendResetEmailButton')}
                   </Button>
                 </Grid>
               </Grid>
@@ -104,7 +110,7 @@ const ForgotPassword = () => {
                 color="secondary"
                 underline="hover"
               >
-                Back to Log in
+                {t('reset.backToLogIn')}
               </Link>
             </Box>
           </>

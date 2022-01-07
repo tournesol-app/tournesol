@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-
+import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
-import { useSnackbar } from 'notistack';
-
-import { showErrorAlert } from '../../../utils/notifications';
 
 import type { ApiRequestOptions } from 'src/services/openapi/core/ApiRequestOptions';
 import { OpenAPI } from 'src/services/openapi';
+import { useNotifications } from 'src/hooks';
 
 // The method below replaces the auto-generated usersMeExportsAllRetrieve
 // from services/openapi/core/request.ts because it does
@@ -35,9 +33,10 @@ async function usersMeExportsAllRetrieveBlob(): Promise<Blob> {
 }
 
 const ExportAllDataForm = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert } = useNotifications();
 
   const downloadExport = async () => {
     const zipFileBlob = await usersMeExportsAllRetrieveBlob();
@@ -51,10 +50,7 @@ const ExportAllDataForm = () => {
     try {
       await downloadExport();
     } catch (error) {
-      showErrorAlert(
-        enqueueSnackbar,
-        'An error seems to have occurred. If this error persists, please contact us.'
-      );
+      showErrorAlert(t('settings.errorOccurredDuringExport'));
       setLoading(false);
     }
   };
@@ -62,9 +58,7 @@ const ExportAllDataForm = () => {
   return (
     <Grid container spacing={2} direction="column" alignItems="stretch">
       <Grid item md={6}>
-        <Typography>
-          Download all the comparisons that you have submitted to Tournesol
-        </Typography>
+        <Typography>{t('settings.downloadAllComparisons')}</Typography>
       </Grid>
       <Grid item md={6}>
         {loading ? (
@@ -78,7 +72,7 @@ const ExportAllDataForm = () => {
             color="secondary"
             variant="outlined"
           >
-            Download file
+            {t('settings.downloadFile')}
           </Button>
         ) : (
           <Button
@@ -88,7 +82,7 @@ const ExportAllDataForm = () => {
             variant="contained"
             onClick={prepareExport}
           >
-            Prepare export
+            {t('settings.prepareExport')}
           </Button>
         )}
       </Grid>

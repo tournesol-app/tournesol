@@ -1,11 +1,13 @@
 import React from 'react';
 
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Typography, Button, Box } from '@mui/material';
 
 // ContributeSection is a paragraph displayed on the HomePage
 // that helps users know how to contribute as users of Tournesol
 const ContributeSection = () => {
+  const { t } = useTranslation();
   return (
     <Box
       display="flex"
@@ -13,22 +15,15 @@ const ContributeSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">Contribute!</Typography>
-      <Typography paragraph>
-        Tournesol identifies high quality content from comparisons provided by
-        the community. To contribute, you must compare videos that you have
-        watched. First copy paste two links to videos, then tell us which video
-        you think should be largely recommended. If you want to you can also
-        compare the videos in more details based on the multiple comparison
-        criterias.
-      </Typography>
+      <Typography variant="h1">{t('home.contributeTitle')}</Typography>
+      <Typography paragraph>{t('home.contributeDetail')}</Typography>
       <Button
         color="primary"
         variant="contained"
         component={Link}
         to="/comparison"
       >
-        Compare videos now
+        {t('home.compareButton')}
       </Button>
     </Box>
   );

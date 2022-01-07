@@ -1,17 +1,17 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import { IconButton, Tooltip } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { showSuccessAlert, showInfoAlert } from 'src/utils/notifications';
-import { useSnackbar } from 'notistack';
 
 import { Video, UsersService } from 'src/services/openapi';
+import { useNotifications } from 'src/hooks';
 
 export const CompareNowAction = ({ videoId }: { videoId: string }) => {
+  const { t } = useTranslation();
   return (
-    <Tooltip title="Compare now" placement="left">
+    <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
         size="medium"
         href={`/comparison/?videoA=${videoId}`}
@@ -24,28 +24,22 @@ export const CompareNowAction = ({ videoId }: { videoId: string }) => {
 };
 
 export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
-  const video_id = videoId;
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+  const { showSuccessAlert, showInfoAlert } = useNotifications();
   const handleCreation = async () => {
     try {
       await UsersService.usersMeVideoRateLaterCreate({
         requestBody: {
-          video: { video_id } as Video,
+          video: { video_id: videoId } as Video,
         },
       });
-      showSuccessAlert(
-        enqueueSnackbar,
-        'The video has been added to your rate later list.'
-      );
+      showSuccessAlert(t('actions.videoAddedToRateLaterList'));
     } catch (error) {
-      showInfoAlert(
-        enqueueSnackbar,
-        'The video is already in your rate later list.'
-      );
+      showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
     }
   };
   return (
-    <Tooltip title="Rate later" placement="left">
+    <Tooltip title={`${t('actions.rateLater')}`} placement="left">
       <IconButton
         size="medium"
         color="secondary"
@@ -60,18 +54,16 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
 
 export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ videoId }: { videoId: string }) => {
-    const { enqueueSnackbar } = useSnackbar();
+    const { t } = useTranslation();
+    const { showSuccessAlert } = useNotifications();
     return (
-      <Tooltip title="Remove" placement="left">
+      <Tooltip title={`${t('actions.remove')}`} placement="left">
         <IconButton
           size="medium"
           onClick={async () => {
             await UsersService.usersMeVideoRateLaterDestroy({ videoId });
             if (asyncCallback) await asyncCallback();
-            showSuccessAlert(
-              enqueueSnackbar,
-              'The video has been deleted from your rate later list.'
-            );
+            showSuccessAlert(t('actions.videoDeletedFromRateLaterList'));
           }}
           style={{ color: '#CDCABC' }}
         >

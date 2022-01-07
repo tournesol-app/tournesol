@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { useTranslation } from 'react-i18next';
 import {
   CircularProgress,
   Box,
@@ -10,16 +10,14 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { useSnackbar } from 'notistack';
-
-import { showErrorAlert } from '../../../utils/notifications';
 import { FormTextField } from 'src/components';
-
 import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
 import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/styles';
+import { useNotifications } from 'src/hooks';
 
 const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
+  const { t } = useTranslation();
   const theme = useTheme<Theme>();
   const statusColor = isTrusted
     ? theme.palette.success.dark
@@ -37,12 +35,15 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
         component="div"
         style={{ display: 'flex', alignItems: 'center' }}
       >
-        Email status:
+        {t('settings.emailStatus')}
+        {': '}
         <LensIcon
           style={{ fontSize: 16, color: statusColor, margin: '0 4px' }}
         />
         <Box color={statusColor} fontWeight="bold">
-          {isTrusted ? 'Trusted' : 'Non-trusted'}
+          {isTrusted
+            ? t('settings.emailTrusted')
+            : t('settings.emailNonTrusted')}
         </Box>
       </Typography>
 
@@ -54,7 +55,7 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
           style={{ fontSize: 13, color: '#777' }}
           startIcon={<HelpIcon />}
         >
-          Learn more about trusted domains
+          {t('settings.learnMoreAboutTrustedDomains')}
         </Button>
       </Box>
     </Box>
@@ -62,7 +63,8 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
 };
 
 const EmailAddressForm = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+  const { showErrorAlert } = useNotifications();
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -82,7 +84,7 @@ const EmailAddressForm = () => {
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       }
     } finally {
       setIsLoading(false);
@@ -96,7 +98,7 @@ const EmailAddressForm = () => {
         setProfileData(profile);
         setIsLoading(false);
       } catch (err) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       }
     };
     loadProfile();
@@ -109,8 +111,7 @@ const EmailAddressForm = () => {
     if (isSuccess) {
       return (
         <Typography>
-          ✅ A verification email has been sent to confirm your new email
-          address.
+          ✅ {t('settings.verificationEmailSentNewEmail')}
         </Typography>
       );
     }
@@ -127,7 +128,7 @@ const EmailAddressForm = () => {
               gap="8px"
             >
               <Typography>
-                Your current email address is{' '}
+                {t('settings.currentEmailAddressIs')}{' '}
                 <strong style={{ whiteSpace: 'nowrap' }}>
                   <code>{profileData.email}</code>
                 </strong>
@@ -139,7 +140,7 @@ const EmailAddressForm = () => {
             <FormTextField
               required
               fullWidth
-              label="New email address"
+              label={t('settings.newEmailAddress')}
               name="email"
               type="email"
               formError={formError}
@@ -151,7 +152,7 @@ const EmailAddressForm = () => {
               fullWidth
               variant="contained"
             >
-              Send verification email
+              {t('settings.sendVerificationEmail')}
             </Button>
           </form>
         </Grid>

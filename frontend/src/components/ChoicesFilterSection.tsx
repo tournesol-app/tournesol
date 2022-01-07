@@ -13,7 +13,7 @@ interface Props {
   title: string;
   value: string;
   choices: Record<string, string>;
-  multipleChoice: boolean;
+  multipleChoice?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -72,13 +72,14 @@ const ChoicesFilterSection = ({
                   onChange={handleChange}
                   name={choiceValue}
                   size="small"
-                  data-testid={title + ': ' + choiceLabel}
+                  data-testid={`checkbox-choice-${choiceValue}`}
                 />
               }
               label={
                 <Typography
                   variant="body2"
                   color={checked ? 'secondary' : 'textPrimary'}
+                  style={{ textTransform: 'capitalize' }}
                 >
                   {choiceLabel}
                 </Typography>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -16,9 +17,8 @@ import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
-import { showSuccessAlert } from 'src/utils/notifications';
-import { useSnackbar } from 'notistack';
 import { ContentHeader } from 'src/components';
+import { useNotifications } from 'src/hooks';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const ComparisonPage = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -51,7 +52,7 @@ const ComparisonPage = () => {
   const [initialComparison, setInitialComparison] = useState<Comparison | null>(
     null
   );
-  const { enqueueSnackbar } = useSnackbar();
+  const { showSuccessAlert } = useNotifications();
   const searchParams = new URLSearchParams(location.search);
   const videoA: string = searchParams.get('videoA') || '';
   const videoB: string = searchParams.get('videoB') || '';
@@ -129,15 +130,12 @@ const ComparisonPage = () => {
       // Refresh ratings statistics after the comparisons have been submitted
       setSubmitted(true);
     }
-    showSuccessAlert(
-      enqueueSnackbar,
-      'The comparison has been succesfully submitted.'
-    );
+    showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
   return (
     <>
-      <ContentHeader title="Submit a comparison" />
+      <ContentHeader title={t('comparison.submitAComparison')} />
       <div className={`${classes.root} ${classes.centering}`}>
         <Grid container className={classes.content}>
           <Grid item xs component={Card} className={classes.card}>
@@ -188,7 +186,7 @@ const ComparisonPage = () => {
               )
             ) : (
               <Typography paragraph>
-                Please, enter two URLs or IDs of Youtube videos to compare them.
+                {t('comparison.pleaseSelectTwoVideos')}
               </Typography>
             )}
           </Grid>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Grid, TextField, Button } from '@mui/material';
 import { extractVideoId } from 'src/utils/video';
 
@@ -8,6 +9,7 @@ interface FormProps {
 
 const RateLaterAddForm = ({ addVideo }: FormProps) => {
   const [formVideo, setFormVideo] = useState('');
+  const { t } = useTranslation();
 
   /**
    * The potential API errors raised by the function `addVideo` are not caught
@@ -35,7 +37,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
             autoFocus
             required
             fullWidth
-            placeholder="Video id or URL"
+            placeholder={t('ratelater.videoIdOrURL')}
             onChange={(e) => setFormVideo(e.target.value)}
             value={formVideo}
             variant="standard"
@@ -49,7 +51,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
             variant="contained"
             color="primary"
           >
-            Add to my rate later list
+            {t('ratelater.addToMyRateLaterList')}
           </Button>
         </Grid>
       </Grid>

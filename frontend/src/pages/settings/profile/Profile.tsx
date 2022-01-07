@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
@@ -8,9 +8,10 @@ import SettingsMenu from '../../../features/settings/SettingsMenu';
 import ProfileForm from '../../../features/settings/profile/ProfileForm';
 
 function ProfilePage() {
+  const { t } = useTranslation();
   return (
     <>
-      <ContentHeader title="Settings > Profile" />
+      <ContentHeader title={`${t('settings.title')} > ${t('profile')}`} />
       <Box m={4}>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={3}>
@@ -25,7 +26,7 @@ function ProfilePage() {
             sm={12}
             md={9}
           >
-            <SettingsSection title="Profile" xs={12}>
+            <SettingsSection title={t('profile')} xs={12}>
               <ProfileForm />
             </SettingsSection>
           </Grid>

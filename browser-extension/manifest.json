@@ -22,10 +22,18 @@
     "default_popup": "menu.html"  
   },
   "content_scripts": [
+    
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["addVideoStatistics.js", "addTournesolRecommendations.js", "addRateLaterButton.js"],
-      "css": ["addVideoStatistics.css", "addTournesolRecommendations.css", "addRateLaterButton.css"],
+      "js": ["addTournesolRecommendations.js"],
+      "css": ["addTournesolRecommendations.css"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["https://*.youtube.com/*"],
+      "js": ["addVideoStatistics.js", "addRateLaterButton.js"],
+      "css": ["addVideoStatistics.css", "addRateLaterButton.css"],
       "run_at": "document_end",
       "all_frames": true
     },

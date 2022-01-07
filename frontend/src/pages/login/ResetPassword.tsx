@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
-import { useSnackbar } from 'notistack';
 import { Grid, Button } from '@mui/material';
 import {
   AccountsService,
   ResetPassword as ResetPasswordData,
 } from 'src/services/openapi';
 import { ContentHeader, ContentBox, FormTextField } from 'src/components';
-import { useLoginState, useSearchParams } from 'src/hooks';
-import { showErrorAlert } from 'src/utils/notifications';
+import { useLoginState, useNotifications, useSearchParams } from 'src/hooks';
 
 function ResetPassword() {
+  const { t } = useTranslation();
   const history = useHistory();
   const searchParams = useSearchParams();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert, showSuccessAlert } = useNotifications();
   const [formError, setFormError] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
@@ -36,16 +36,13 @@ function ResetPassword() {
         requestBody: resetPasswordData,
       });
       logout();
-      enqueueSnackbar(
-        'Your password has been modified successfully. You can now log in to Tournesol.',
-        { variant: 'success' }
-      );
+      showSuccessAlert(t('reset.passwordModifiedSuccessfully'));
       history.replace('/login');
     } catch (err) {
       if (err?.status !== 400) {
-        showErrorAlert(enqueueSnackbar, err?.message || 'Server error');
+        showErrorAlert(err?.message || 'Server error');
       } else if (err.body?.detail) {
-        showErrorAlert(enqueueSnackbar, err.body.detail);
+        showErrorAlert(err.body.detail);
       } else {
         setFormError(err.body || {});
       }
@@ -59,7 +56,7 @@ function ResetPassword() {
 
   return (
     <>
-      <ContentHeader title="Reset your password" />
+      <ContentHeader title={t('reset.resetYourPassword')} />
       <ContentBox maxWidth="xs">
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3} direction="column" alignItems="stretch">
@@ -67,7 +64,7 @@ function ResetPassword() {
               <FormTextField
                 type="password"
                 name="password"
-                label="New password"
+                label={t('reset.newPassword')}
                 onChange={(e) => setPassword(e.target.value)}
                 formError={formError}
               />
@@ -76,11 +73,11 @@ function ResetPassword() {
               <FormTextField
                 type="password"
                 name="confirm_password"
-                label="Confirm your new password"
+                label={t('reset.confirmNewPassword')}
                 error={confirmPassword !== '' && !confirmPasswordIsValid}
                 helperText={
                   confirmPassword !== '' && !confirmPasswordIsValid
-                    ? 'Passwords do not match'
+                    ? t('reset.passwordsDoNotMatch')
                     : undefined
                 }
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -94,7 +91,7 @@ function ResetPassword() {
                 variant="contained"
                 disabled={isLoading || !confirmPasswordIsValid}
               >
-                Reset password
+                {t('reset.resetPasswordButton')}
               </Button>
             </Grid>
           </Grid>

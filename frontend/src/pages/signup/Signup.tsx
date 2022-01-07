@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Grid, Button, Typography, Checkbox } from '@mui/material';
 import {
   Alert,
@@ -10,14 +11,20 @@ import {
 import { AccountsService, RegisterUser, ApiError } from 'src/services/openapi';
 import { Link } from 'react-router-dom';
 
-const SignupSuccess = ({ email }: { email: string }) => (
-  <Typography>
-    Success!
-    <br />A verification link has been sent to <code>{email}</code> .
-  </Typography>
-);
+const SignupSuccess = ({ email }: { email: string }) => {
+  const { t } = useTranslation();
+  return (
+    <Typography>
+      <Trans t={t} i18nKey="signup.successMessage">
+        Success!
+        <br />A verification link has been sent to <code>{{ email }}</code> .
+      </Trans>
+    </Typography>
+  );
+};
 
 const Signup = () => {
+  const { t } = useTranslation();
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(
     null
@@ -48,7 +55,7 @@ const Signup = () => {
 
   return (
     <>
-      <ContentHeader title="Account creation" />
+      <ContentHeader title={t('signup.title')} />
       <ContentBox maxWidth="xs">
         {successEmailAddress !== null ? (
           <SignupSuccess email={successEmailAddress} />
@@ -58,7 +65,7 @@ const Signup = () => {
               {formError && (
                 <Grid item xs={12}>
                   <Typography color="error">
-                    Account creation failed.
+                    {t('signup.accountCreationFailed')}
                     <br />
                     {formError?.non_field_errors && (
                       <Lines messages={formError.non_field_errors} />
@@ -69,21 +76,21 @@ const Signup = () => {
               <Grid item xs={12}>
                 <FormTextField
                   name="email"
-                  label="Email address"
+                  label={t('emailAddress')}
                   formError={formError}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormTextField
                   name="username"
-                  label="Username"
+                  label={t('username')}
                   formError={formError}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormTextField
                   name="password"
-                  label="Password"
+                  label={t('password')}
                   type="password"
                   formError={formError}
                 />
@@ -91,7 +98,7 @@ const Signup = () => {
               <Grid item xs={12}>
                 <FormTextField
                   name="password_confirm"
-                  label="Confirm your password"
+                  label={t('confirmYourPassword')}
                   type="password"
                   formError={formError}
                 />
@@ -102,10 +109,12 @@ const Signup = () => {
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
                 />
                 <span>
-                  I have read and agree with the{' '}
-                  <Link to="/about/privacy_policy" target="_blank">
-                    privacy policy
-                  </Link>
+                  <Trans t={t} i18nKey="signup.iAgreeWithThePrivacyPolicy">
+                    I have read and agree with the{' '}
+                    <Link to="/about/privacy_policy" target="_blank">
+                      privacy policy
+                    </Link>
+                  </Trans>
                 </span>
               </Grid>
               <Grid item xs={12}>
@@ -116,7 +125,7 @@ const Signup = () => {
                   disabled={!acceptPolicy || isLoading}
                   variant="contained"
                 >
-                  Sign up
+                  {t('signUpButton')}
                 </Button>
               </Grid>
             </Grid>

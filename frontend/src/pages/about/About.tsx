@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation, Trans } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link } from '@mui/material';
 
@@ -85,11 +85,12 @@ const ContentBox = ({
 };
 
 const AboutPage = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
     <>
-      <ContentHeader title="About" />
+      <ContentHeader title={t('about.title')} />
       <Grid
         container
         className={classes.root}
@@ -97,59 +98,61 @@ const AboutPage = () => {
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
-            <Typography variant="h1">What is Tournesol?</Typography>
+            <Typography variant="h1">{t('about.whatIsTournesol')}</Typography>
             <Typography paragraph>
-              Tournesol is an open source platform which aims to collaboratively
-              identify top videos of public utility by eliciting
-              contributors&apos; judgements on content quality. We hope to
-              contribute to making today&apos;s and tomorrow&apos;s large-scale
-              algorithms robustly beneficial for all of humanity. Find out more
-              with our{' '}
-              <a
-                href="https://arxiv.org/abs/2107.07334"
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: 'white' }}
-              >
-                white paper
-              </a>
-              , our{' '}
-              <a
-                href="https://wiki.staging.tournesol.app/wiki/Main_Page"
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: 'white' }}
-              >
-                wiki
-              </a>
-              , our{' '}
-              <a
-                href="https://github.com/tournesol-app/tournesol"
-                target="_blank"
-                style={{ color: 'white' }}
-                rel="noreferrer"
-              >
-                GitHub
-              </a>
-              , our{' '}
-              <a
-                href="https://discord.gg/TvsFB8RNBV"
-                target="_blank"
-                style={{ color: 'white' }}
-                rel="noreferrer"
-              >
-                Discord
-              </a>
-              , or our{' '}
-              <a
-                href="https://www.linkedin.com/company/tournesol-app/"
-                target="_blank"
-                style={{ color: 'white' }}
-                rel="noreferrer"
-              >
-                LinkedIn page
-              </a>
-              .
+              <Trans t={t} i18nKey="about.introductionTournesol">
+                Tournesol is an open source platform which aims to
+                collaboratively identify top videos of public utility by
+                eliciting contributors&apos; judgements on content quality. We
+                hope to contribute to making today&apos;s and tomorrow&apos;s
+                large-scale algorithms robustly beneficial for all of humanity.
+                Find out more with our{' '}
+                <a
+                  href="https://arxiv.org/abs/2107.07334"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: 'white' }}
+                >
+                  white paper
+                </a>
+                , our{' '}
+                <a
+                  href="https://wiki.staging.tournesol.app/wiki/Main_Page"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: 'white' }}
+                >
+                  wiki
+                </a>
+                , our{' '}
+                <a
+                  href="https://github.com/tournesol-app/tournesol"
+                  target="_blank"
+                  style={{ color: 'white' }}
+                  rel="noreferrer"
+                >
+                  GitHub
+                </a>
+                , our{' '}
+                <a
+                  href="https://discord.gg/TvsFB8RNBV"
+                  target="_blank"
+                  style={{ color: 'white' }}
+                  rel="noreferrer"
+                >
+                  Discord
+                </a>
+                , or our{' '}
+                <a
+                  href="https://www.linkedin.com/company/tournesol-app/"
+                  target="_blank"
+                  style={{ color: 'white' }}
+                  rel="noreferrer"
+                >
+                  LinkedIn page
+                </a>
+                .
+              </Trans>
             </Typography>
           </ContentBox>
         </Grid>
@@ -158,26 +161,21 @@ const AboutPage = () => {
       <Grid container className={classes.root}>
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
-            <Typography variant="h4">
-              We seek to build the foundations of a robust and beneficial
-              algorithmic gouvernance of information at scale
-            </Typography>
+            <Typography variant="h4">{t('about.tournesolVision')}</Typography>
             <ul>
               <li>
                 <Typography paragraph className={classes.important}>
-                  Through raising awareness of the global information crisis
+                  {t('about.tournesolVisionRaisingAwareness')}
                 </Typography>
               </li>
               <li>
                 <Typography paragraph className={classes.important}>
-                  Through the development of a collaborative platform for
-                  evaluation and recommendation of online content
+                  {t('about.tournesolVisionCollaborativePlatform')}
                 </Typography>
               </li>
               <li>
                 <Typography paragraph className={classes.important}>
-                  Through research on ethics of algorithms relying on a large
-                  and reliable database of human judgements
+                  {t('about.tournesolVisionResearchOnEthicsOfAlgorithms')}
                 </Typography>
               </li>
             </ul>
@@ -192,13 +190,11 @@ const AboutPage = () => {
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
-            <Typography variant="h1">Who builds Tournesol?</Typography>
+            <Typography variant="h1">
+              {t('about.whoBuildsTournesol')}
+            </Typography>
             <Typography paragraph>
-              Tournesol seeks to be an extremely transparent project. All
-              contributions to the project are openly visible on our GitHub,
-              description of important concepts and Tournesol’s vision can be
-              found on our wiki, and discussions that guide the development of
-              Tournesol happen openly on our Discord.
+              {t('about.tournesolTransparency')}
             </Typography>
           </ContentBox>
         </Grid>
@@ -212,12 +208,11 @@ const AboutPage = () => {
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <img height="64px" src="/logos/Tournesol_Logo.png" />
-            <Typography variant="h4">Tournesol Association</Typography>
-            {/* TODO: Association logo */}
-
+            <Typography variant="h4">
+              {t('about.tournesolAssociation')}
+            </Typography>
             <Typography paragraph>
-              Tournesol is supported by the non-profit Tournesol association
-              based in Lausanne, Switzerland.
+              {t('about.tournesolAssociationDetail')}
             </Typography>
           </ContentBox>
         </Grid>
@@ -227,7 +222,7 @@ const AboutPage = () => {
             name="Lê Nguyên Hoang"
             image="/people/Le.jpeg"
             institution="IC School, EPFL"
-            role="President"
+            role={t('about.rolePresident')}
             title="Dr. in Mathematics"
             job="AI Researcher and Communicator"
           />
@@ -238,7 +233,7 @@ const AboutPage = () => {
             name="Louis Faucon"
             image="/people/Louis.jpeg"
             institution="MSCI, Inc."
-            role="Treasurer"
+            role={t('about.roleTreasurer')}
             title="Dr. in Computer Science"
             job="Software engineer"
           />
@@ -249,7 +244,7 @@ const AboutPage = () => {
             name="Aidan Jungo"
             image="/people/Aidan.jpg"
             institution="CFS Engineering SA"
-            role="Secretary"
+            role={t('about.roleSecretary')}
             title="Master of Science"
             job="Research Scientist"
           />
@@ -260,15 +255,11 @@ const AboutPage = () => {
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <img height="84px" src="/logos/EPFL_Logo.png" />
-            <Typography variant="h4">Partnership with EPFL</Typography>
+            <Typography variant="h4">
+              {t('about.partnershipWithEpfl')}
+            </Typography>
             <Typography paragraph>
-              Today, our main contributor is École Polytechique Fédérale de
-              Lausanne (EPFL). In particular, Adrien Matissart is a research
-              scientist from the Distributed Computing Laboratory of the School
-              of Computer and Communication Sciences who is fully dedicated to
-              the development of the Tournesol platform, while many researchers
-              from the Laboratory are designing and studying the Tournesol
-              algorithms.
+              {t('about.partenershipWithEpflDetail')}
             </Typography>
           </ContentBox>
         </Grid>
@@ -305,14 +296,11 @@ const AboutPage = () => {
                 src="/logos/Polyconseil_Logo.png"
                 style={{ maxWidth: '100%' }}
               />
-              <Typography variant="h4">Partnership with Polyconseil</Typography>
+              <Typography variant="h4">
+                {t('about.partnershipWithPolyconseil')}
+              </Typography>
               <Typography paragraph>
-                We are also supported by the technology and consulting company
-                Polyconseil, in the context of their #Tech4Good program. Since
-                August 2021, Polyconseil allocated a software engineering intern
-                one day per week to the technical development of Tournesol and
-                supported us on a monthly basis through organizational support
-                and UX/UI designs. We are very grateful for their help.
+                {t('about.partnershipWithPolyconseilDetail')}
               </Typography>
             </ContentBox>
           </Link>
@@ -330,15 +318,10 @@ const AboutPage = () => {
             <ContentBox className={classes.card}>
               <img height="64px" src="/logos/Kleis_Logo.svg" />
               <Typography variant="h4">
-                Partnership with Kleis Technology
+                {t('about.partnershipWithKleis')}
               </Typography>
               <Typography paragraph>
-                We received support from the technology and consulting company
-                Kleis to help us shape our organizational processes and adopt
-                efficient development practices. Our partnership with Kleis is
-                extremely structuring for the development of our vision for the
-                product and to bring perspective for foundational technical
-                choices.
+                {t('about.partnershipWithKleisDetail')}
               </Typography>
             </ContentBox>
           </Link>
@@ -349,18 +332,22 @@ const AboutPage = () => {
         <Grid item xs={12} md={6} className={classes.container}>
           <ContentBox>
             <img height="64px" src="/logos/Foss_Logo.png" />
-            <Typography variant="h4">Open Source Contributions</Typography>
+            <Typography variant="h4">
+              {t('about.openSourceContributions')}
+            </Typography>
             <Typography paragraph>
-              As Tournesol is an open source project, we have been lucky to
-              benefit from contributions by multiple volunteers. Find our
-              wonderful contributors on{' '}
-              <a
-                href="https://github.com/tournesol-app/tournesol/graphs/contributors"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Github Contributors
-              </a>
+              <Trans t={t} i18nKey="about.openSourceContributors">
+                As Tournesol is an open source project, we have been lucky to
+                benefit from contributions by multiple volunteers. Find our
+                wonderful contributors on{' '}
+                <a
+                  href="https://github.com/tournesol-app/tournesol/graphs/contributors"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Github Contributors
+                </a>
+              </Trans>
             </Typography>
           </ContentBox>
         </Grid>

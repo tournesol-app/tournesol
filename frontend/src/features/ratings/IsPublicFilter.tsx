@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChoicesFilterSection } from 'src/components';
 
 export const isPublicChoices = {
@@ -12,10 +13,16 @@ interface FilterProps {
 }
 
 function IsPublicFilter(props: FilterProps) {
+  const { t } = useTranslation();
+
+  const isPublicChoices = {
+    true: t('public'),
+    false: t('private'),
+  };
+
   return (
     <ChoicesFilterSection
-      title="Filter by visibility"
-      multipleChoice={false}
+      title={t('filter.filterByVisibility')}
       choices={isPublicChoices}
       {...props}
     ></ChoicesFilterSection>
