@@ -32,4 +32,4 @@ details.
 
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
 [tournesol-wiki]: https://wiki.tournesol.app/
-[tournesol-wiki-contribute]: https://wiki.tournesol.app/index.php/Contribute_to_Tournesol
+[tournesol-wiki-contribute]: https://wiki.tournesol.app/wiki/Contribute_to_Tournesol
