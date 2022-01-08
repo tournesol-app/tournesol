@@ -34,12 +34,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message == "addRateLater") {
     addRateLater(request.video_id).then(sendResponse);
     return true;
-  }
-  else if (request.message == "getVideoStatistics") {
+  } else if (request.message == "getVideoStatistics") {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
-  } 
-  else if (request.message == "getTournesolRecommendations") {
+  } else if (request.message == "getTournesolRecommendations") {
     const api_url = 'video/';
 
     const request_recommendations = async (options) => {
@@ -62,6 +60,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     process().then(sendResponse);
     return true;
+  } else if (request.message == "loadVideosToCompare"){
+    const api_url = 'users/me/video_rate_later/?limit=99&offset=0';
+    const request_recommendations = async () => {
+      const resp = await fetchTournesolApi(api_url, 'GET');
+      if (resp && resp.ok) {
+        const json = await resp.json();
+        return json.results
+      }
+      return []
+    };
+    request_recommendations().then(sendResponse);
   }
 });
 

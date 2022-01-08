@@ -8,6 +8,8 @@ document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
 else document.addEventListener('DOMContentLoaded', process);
 
+let videosToCompare = [];
+
 /* ********************************************************************* */
 
 function process() {
@@ -93,30 +95,16 @@ function process() {
 
     let rateNowButton = getRateButton('Rate Now');
     rateNowButton.setAttribute('id', 'tournesol-rate-now-button');
+    loadPopup(rateNowButton);
+    rateLaterButton.disabled = true;
     rateNowButton.onclick = async () => {
-      // const popup = document.createElement('object');
-      // popup.setAttribute("type", "text/html");
-      // popup.data = "ratePopup.html";
-      let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
-      let htmlPopup = await htmlPopupResponse.text();
-      rateNowButton.innerHTML += htmlPopup;
-      document.getElementById("right-video-img").setAttribute("src", chrome.runtime.getURL('images/imgplaceholderother.jpg'));
-      document.getElementById("left-video-img").setAttribute("src", chrome.runtime.getURL('images/imgplaceholderother.jpg'));
-      // rateNowButton.disabled = true;
-      // chrome.runtime.sendMessage(
-      //   {
-      //     message: 'addRateLater',
-      //     video_id: videoId
-      //   },
-      //   (data) => {
-      //     if (data.success) {
-      //       text_td_text.replaceWith(document.createTextNode('Done!'))
-      //     }
-      //     else {
-      //       rateNowButton.disabled = false;
-      //     }
-      //   }
-      // );
+      if(rateNowButton.disabled){
+        rateNowButton.disabled = false;
+        document.getElementById("popup-div").style.display = "none";
+        return;
+      }
+      document.getElementById("popup-div").style.display = "flex";
+      rateNowButton.disabled = true;
     }
 
     // Insert after like and dislike buttons
@@ -129,4 +117,31 @@ function process() {
     // rateNowButton.innerHTML += htmlPopup;
     // addJsOnPopup();
   }
+}
+
+async function loadPopup(rateNowButton){
+  let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
+  let htmlPopup = await htmlPopupResponse.text();
+  rateNowButton.innerHTML += htmlPopup;
+
+  chrome.runtime.sendMessage(
+    {
+      message: 'loadVideosToCompare'
+    },
+    (data) => {
+      if (data.success) {
+        videosToCompare = data.results;
+        console.log(videosToCompare);
+      } else {
+        alert("An error with the Tournesol API has occured");
+      }
+    }
+  );
+
+  
+  let thisVideoId =(new URL(location)).searchParams.get('v');
+  let thisVideoThumbnail = `https://i.ytimg.com/vi/${thisVideoId}/hqdefault.jpg`
+  
+  document.getElementById("right-video-img").setAttribute("src", chrome.runtime.getURL('images/imgplaceholderother.jpg'));
+  document.getElementById("left-video-img").setAttribute("src", thisVideoThumbnail);
 }
