@@ -1,7 +1,150 @@
-p {
-  color: red;
-  font-size: 40;
+#popup-div {
+  position: fixed;
+  background-color: white;
+  width: 50%;
+  height: 100px;
+  bottom: 5px;
+  left: 25%;
+  z-index: 1000;
+  display: flex;
+  border-radius: 4px;
+  border: 2px solid #847f6e;
+}
+
+.video-box {
+  width: 176px;
+  background-color: aqua;
+}
+
+.rate-box {
+  width: 200px;
+  flex-grow: 1;
+  background-color: white;
+  /* justify-content: center; */
+  /* position: relative; */
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+
+#slider-title {
+  display: inline-flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+}
+
+#right-video-img {
+  height: 100%;
   position: absolute;
+  right: 0;
   top: 0;
+}
+
+#left-video-img {
+  height: 100%;
+  position: absolute;
   left: 0;
+  top: 0;
+}
+/* .slidecontainer {
+  width: 90%;
+  position: absolute;
+  top: 30px;
+  left: 5%;
+} */
+
+.slidecontainer {
+  width: 90%;
+  margin-top: 10px;
+  display: inline-flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+}
+
+/* .submit-button {
+  position: absolute;
+  width: 80px;
+  top: 60px;
+  left: calc(50% - 40px);
+} */
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #04aa6d;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #04aa6d;
+  cursor: pointer;
+}
+
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+.submit-button {
+  display: inline-flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0px;
+  border: 0px;
+  margin: 0px;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  appearance: none;
+  text-decoration: none;
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  font-weight: 500;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  text-transform: uppercase;
+  min-width: 64px;
+  margin-top: 10px;
+  padding: 8px 22px;
+  border-radius: 4px;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(255, 200, 0);
+  box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px,
+    rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px;
+}
+
+.submit-button:hover {
+  text-decoration: none;
+  background-color: rgb(178, 140, 0);
+  box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px,
+    rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
 }

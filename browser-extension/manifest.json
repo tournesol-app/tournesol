@@ -45,6 +45,7 @@
   ],
   "web_accessible_resources": [
 	  "Logo128.png",
-    "ratePopup.html"
+    "ratePopup.html",
+    "images/*"
   ]
 }

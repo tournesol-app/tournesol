@@ -1,5 +1,3 @@
-import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
-
 chrome.contextMenus.removeAll(function (e, tab) {
   chrome.contextMenus.create({
     id: 'tournesol_add_rate_later',

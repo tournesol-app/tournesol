@@ -89,6 +89,7 @@ function process() {
     }
 
     // Rate now button
+    
 
     let rateNowButton = getRateButton('Rate Now');
     rateNowButton.setAttribute('id', 'tournesol-rate-now-button');
@@ -99,6 +100,8 @@ function process() {
       let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
       let htmlPopup = await htmlPopupResponse.text();
       rateNowButton.innerHTML += htmlPopup;
+      document.getElementById("right-video-img").setAttribute("src", chrome.runtime.getURL('images/imgplaceholderother.jpg'));
+      document.getElementById("left-video-img").setAttribute("src", chrome.runtime.getURL('images/imgplaceholderother.jpg'));
       // rateNowButton.disabled = true;
       // chrome.runtime.sendMessage(
       //   {
@@ -120,5 +123,10 @@ function process() {
     let div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
     div.insertBefore(rateLaterButton, div.children[2]);
     div.insertBefore(rateNowButton, div.children[2]);
+
+    // let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
+    // let htmlPopup = await htmlPopupResponse.text();
+    // rateNowButton.innerHTML += htmlPopup;
+    // addJsOnPopup();
   }
 }
