@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.views.decorators.cache import cache_page
 from django.utils import translation
+from django.views.decorators.cache import cache_page
 
 
 def cache_page_no_i18n(timeout: float):
