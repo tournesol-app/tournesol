@@ -46,7 +46,7 @@ def get_video_metadata(video_id, compute_language=True):
     except YoutubeNotConfiguredError:
         return {}
     except Exception:
-        logger.error()
+        logger.error("Failed to retrieve video metadata from Youtube", exc_info=True)
         return {}
 
     yt_items = yt_response.get("items", [])
