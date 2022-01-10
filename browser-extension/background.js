@@ -1,3 +1,5 @@
+import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
+
 chrome.contextMenus.removeAll(function (e, tab) {
   chrome.contextMenus.create({
     id: 'tournesol_add_rate_later',
@@ -62,7 +64,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   } else if (request.message == "loadVideosToCompare"){
     const api_url = 'users/me/video_rate_later/?limit=99&offset=0';
-    const request_recommendations = async () => {
+    const request_videos = async () => {
       const resp = await fetchTournesolApi(api_url, 'GET');
       if (resp && resp.ok) {
         const json = await resp.json();
@@ -70,7 +72,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       return []
     };
-    request_recommendations().then(sendResponse);
+    request_videos().then(sendResponse);
+    return true;
   }
 });
 

@@ -9,6 +9,7 @@ if (document.body) process();
 else document.addEventListener('DOMContentLoaded', process);
 
 let videosToCompare = [];
+let popupActive = false;
 
 /* ********************************************************************* */
 
@@ -96,15 +97,14 @@ function process() {
     let rateNowButton = getRateButton('Rate Now');
     rateNowButton.setAttribute('id', 'tournesol-rate-now-button');
     loadPopup(rateNowButton);
-    rateLaterButton.disabled = true;
     rateNowButton.onclick = async () => {
-      if(rateNowButton.disabled){
-        rateNowButton.disabled = false;
-        document.getElementById("popup-div").style.display = "none";
+      if(popupActive){
+        popupActive = false;
+        document.getElementById("popup-div").className = "hidden";
         return;
       }
-      document.getElementById("popup-div").style.display = "flex";
-      rateNowButton.disabled = true;
+      document.getElementById("popup-div").className = "visible";
+      popupActive = true;
     }
 
     // Insert after like and dislike buttons
@@ -119,6 +119,11 @@ function process() {
   }
 }
 
+function videoIdToImg(id){
+  // return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+  return `http://img.youtube.com/vi/${id}/mqdefault.jpg` 
+}
+
 async function loadPopup(rateNowButton){
   let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
   let htmlPopup = await htmlPopupResponse.text();
@@ -129,19 +134,16 @@ async function loadPopup(rateNowButton){
       message: 'loadVideosToCompare'
     },
     (data) => {
-      if (data.success) {
-        videosToCompare = data.results;
-        console.log(videosToCompare);
-      } else {
-        alert("An error with the Tournesol API has occured");
-      }
+      console.log(data);
+      videosToCompare = data;
+      const thisVideoThumbnail = videoIdToImg(videosToCompare[0].video.video_id);
+      document.getElementById("right-video-img").setAttribute("src", thisVideoThumbnail);
     }
   );
 
   
   let thisVideoId =(new URL(location)).searchParams.get('v');
-  let thisVideoThumbnail = `https://i.ytimg.com/vi/${thisVideoId}/hqdefault.jpg`
-  
-  document.getElementById("right-video-img").setAttribute("src", chrome.runtime.getURL('images/imgplaceholderother.jpg'));
+  let thisVideoThumbnail = videoIdToImg(thisVideoId);
   document.getElementById("left-video-img").setAttribute("src", thisVideoThumbnail);
+  
 }

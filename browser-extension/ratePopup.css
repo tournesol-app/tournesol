@@ -6,9 +6,18 @@
   bottom: 5px;
   left: 25%;
   z-index: 1000;
-  display: flex;
+  /* display: flex; */
   border-radius: 4px;
   border: 2px solid #847f6e;
+}
+
+.visible {
+  display: flex;
+}
+
+.hidden,
+.hidden * {
+  display: none;
 }
 
 .video-box {
