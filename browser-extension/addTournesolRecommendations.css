@@ -42,16 +42,16 @@
   top: 15px;
 }
 
-#refresh_button {
+#tournesol_refresh_button {
   float: right;
-  margin-top: 0px;
+  margin-top: 4px;
   margin-left: 12px;
-  margin-right: 12px;
+  margin-right: 16px;
 }
 
-#expand_button {
+#tournesol_expand_button {
   float: right;
-  margin-top: 0px;
+  margin-top: 4px;
   margin-left: 12px;
 }
 
@@ -60,18 +60,27 @@
   left: 0px;
 }
 
-.icon {
-  -webkit-filter: opacity(75%);
-  filter: opacity(75%);
-  width: 24;
-  height: 24;
-  border-radius: 12px;
-  color: #f8f5e8;
+.tournesol_simple_button {
+  fill: var(--yt-spec-text-secondary);
+  width: 20px;
+  height: 20px;
+  padding: 0px;
+  border-style: none;
+  background-color: transparent;
+  position: relative;
 }
 
-.icon:hover {
-  -webkit-filter: opacity(100%);
-  filter: opacity(100%);
+.tournesol_simple_button svg {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.tournesol_simple_button:hover svg {
+  fill: var(--yt-spec-text-primary);
 
   -webkit-transition: all 0.1s ease;
   -moz-transition: all 0.1s ease;
@@ -80,10 +89,9 @@
   transition: all 0.1s ease;
 }
 
-.icon :active {
-  -webkit-filter: opacity(100%);
-  filter: opacity(100%);
-  background: #bdbcb2;
+.tournesol_simple_button:active svg {
+  fill: var(--yt-spec-text-primary);
+  background: var(--yt-spec-brand-background-solid);
 
   -webkit-transition: all 0.1s ease;
   -moz-transition: all 0.1s ease;
@@ -92,14 +100,9 @@
   transition: all 0.1s ease;
 }
 
-.icon-disabled {
-  -webkit-filter: opacity(25%);
-  filter: opacity(25%);
-  width: 24;
-  height: 24;
-  border-radius: 12px;
-  color: #f8f5e8;
-  background: #bdbcb2;
+.tournesol_simple_button:disabled svg {
+  fill: var(--yt-spec-text-disabled);
+  background: var(--yt-spec-brand-background-solid);
 }
 
 .video_box {

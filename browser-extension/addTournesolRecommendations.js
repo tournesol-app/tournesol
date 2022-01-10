@@ -87,29 +87,34 @@ const getTournesolComponent = () => {
     inline_div.append(tournesol_link);
 
     // Refresh button
-    refresh_button = document.createElement('img');
-    refresh_button.setAttribute('id', 'refresh_button');
-    refresh_button.setAttribute('src', chrome.runtime.getURL('images/Refresh_icon.png'));
-    refresh_button.setAttribute('width', '24');
-    refresh_button.className = 'icon';
+    refresh_button = document.createElement('button');
+    refresh_button.setAttribute('id', 'tournesol_refresh_button');
+    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
+      .then(r => r.text())
+      .then(svg => refresh_button.innerHTML = svg);
+
+    refresh_button.className = 'tournesol_simple_button';
     refresh_button.onclick = () => {
-      refresh_button.className = 'icon-disabled';
+      refresh_button.disabled = true;
       loadRecommandations(loadVideos = true, loadAdditionalVideos = isExpanded);
     };
     inline_div.append(refresh_button);
     // Expand button
-    expand_button = document.createElement('img');
-    expand_button.setAttribute('id', 'expand_button');
+    expand_button = document.createElement('button');
+    expand_button.setAttribute('id', 'tournesol_expand_button');
     // A new button is created on each video loading, the image must be loaded accordingly
     if(isExpanded){
-      expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Retract-Arrow-icon.png'));
+      fetch(chrome.runtime.getURL('images/chevron-down.svg'))
+        .then(r => r.text())
+        .then(svg => expand_button.innerHTML = svg);
     }else{
-      expand_button.setAttribute('src', chrome.runtime.getURL('images/Arrows-Expand-Arrow-icon.png'));
+      fetch(chrome.runtime.getURL('images/chevron-up.svg'))
+        .then(r => r.text())
+        .then(svg => expand_button.innerHTML = svg);
     }
-    expand_button.setAttribute('width', '24');
-    expand_button.className = "icon";
+    expand_button.className = "tournesol_simple_button";
     expand_button.onclick = () => {
-      expand_button.className = 'icon-disabled';
+      expand_button.disabled = true;
       if(!areRecommandationsLoading && !isExpanded){
         isExpanded = true;
         loadRecommandations(loadVideos = false, loadAdditionalVideos = true);
