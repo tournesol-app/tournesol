@@ -19,8 +19,10 @@ from drf_spectacular.types import OpenApiTypes
 from ..serializers import VideoSerializerWithCriteria, VideoSerializer
 from ..models import Video
 from tournesol.throttling import (
-    PostScopeRateThrottle,
+    BurstAnonRateThrottle,
     BurstUserRateThrottle,
+    PostScopeRateThrottle,
+    SustainedAnonRateThrottle,
     SustainedUserRateThrottle
 )
 from tournesol.utils.api_youtube import youtube_video_details
@@ -77,7 +79,9 @@ class VideoViewSet(mixins.CreateModelMixin,
 
     throttle_classes = [
         PostScopeRateThrottle,
+        BurstAnonRateThrottle,
         BurstUserRateThrottle,
+        SustainedAnonRateThrottle,
         SustainedUserRateThrottle
     ]
     throttle_scope = "api_video_post"
