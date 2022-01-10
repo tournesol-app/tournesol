@@ -110,7 +110,7 @@ the help of the Git pre-commit hook?**
 
 We try to use the [pre-commit][pre-commit] framework, but unfortunately it's
 not adapted to work smoothly within our mono-repository
-configuration [[faq-1]][faq-1].
+configuration [[faq-1][faq-1]].
 
 Each time we found a solution a new issue appeared. In the end it requires
 much more efforts to be configured and used rather than simply running the
