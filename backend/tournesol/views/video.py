@@ -1,7 +1,6 @@
 """
 API endpoint to manipulate videos
 """
-from datetime import timedelta
 import re
 
 from django.utils import timezone, dateparse
@@ -26,7 +25,6 @@ from tournesol.throttling import (
     SustainedUserRateThrottle
 )
 from tournesol.utils.api_youtube import get_video_metadata, VideoNotFound
-from tournesol.utils.video_language import compute_video_language
 
 
 @extend_schema_view(

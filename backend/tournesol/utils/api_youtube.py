@@ -1,5 +1,4 @@
 import logging
-from time import time
 from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_duration
