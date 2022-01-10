@@ -235,14 +235,37 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ),
-    # custom exception handling
     "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+        "tournesol.throttling.BurstAnonRateThrottle",
+        "tournesol.throttling.BurstUserRateThrottle",
+        "tournesol.throttling.SustainedAnonRateThrottle",
+        "tournesol.throttling.SustainedUserRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "10000/hour", "user": "1000000/hour"},
-}
+    "DEFAULT_THROTTLE_RATES": {
+        # TOFIX
+        #
+        # `user_burst` has been temporarily set to 1200 because the front end
+        # currently makes 1 request per video in its /comparisons/ page. The
+        # authenticated users are able to make up to 21 requests for each
+        # click on the pagintion buttons, exceeding quickly the 120 limit.
+        #
+        # one option is to refactor the GET /users/me/comparisons/ view to
+        # include the video metadata in the response, allowing the users to
+        # get all comparisons + videos information in only one request
 
+        # default rates applied to all requests
+        "anon_burst": "120/min",
+        "user_burst": "1200/min",
+        "anon_sustained": "3600/hour",
+        "user_sustained": "3600/hour",
+
+        # specific rates for specific parts of the API
+        "api_video_post": "50/min",
+        "api_users_me_export": "10/min",
+        "api_export_comparisons": "10/min",
+    },
+}
 
 # Maximal value for a rating (0-100)
 # 0 means left video is best, 100 means right video is best

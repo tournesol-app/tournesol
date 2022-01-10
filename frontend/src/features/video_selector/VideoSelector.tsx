@@ -7,17 +7,24 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 
-import { extractVideoId, isVideoIdValid } from 'src/utils/video';
-import { getVideoForComparison } from 'src/utils/video';
-import VideoCard, { EmptyVideoCard } from '../videos/VideoCard';
+import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
+import VideoCard, { EmptyVideoCard } from 'src/features/videos/VideoCard';
+
+import { useNotifications } from 'src/hooks';
+
+import { ActionList } from 'src/utils/types';
+import {
+  ensureVideoExistsOrCreate,
+  extractVideoId,
+  getVideoForComparison,
+  isVideoIdValid,
+} from 'src/utils/video';
 import {
   UsersService,
   ContributorRating,
   ContributorRatingCreate,
+  ApiError,
 } from 'src/services/openapi';
-import { UserRatingPublicToggle } from '../videos/PublicStatusAction';
-import { ensureVideoExistsOrCreate } from 'src/utils/video';
-import { ActionList } from 'src/utils/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -54,8 +61,10 @@ const VideoSelector = ({
   otherVideo,
   submitted = false,
 }: Props) => {
-  const { videoId, rating } = value;
   const { t } = useTranslation();
+  const { displayErrorsFrom } = useNotifications();
+
+  const { videoId, rating } = value;
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
 
@@ -70,8 +79,13 @@ const VideoSelector = ({
       });
     } catch (err) {
       if (err?.status === 404) {
+        await ensureVideoExistsOrCreate(videoId).catch((reason: ApiError) => {
+          displayErrorsFrom(reason);
+          setLoading(false);
+          return;
+        });
+
         try {
-          await ensureVideoExistsOrCreate(videoId);
           const contributorRating =
             await UsersService.usersMeContributorRatingsCreate({
               requestBody: {
@@ -91,7 +105,7 @@ const VideoSelector = ({
       }
     }
     setLoading(false);
-  }, [videoId, onChange]);
+  }, [videoId, onChange, displayErrorsFrom]);
 
   useEffect(() => {
     if (isVideoIdValid(videoId) && rating == null) {

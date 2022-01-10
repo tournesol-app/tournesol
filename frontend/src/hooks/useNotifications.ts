@@ -79,6 +79,16 @@ export const useNotifications = () => {
     [enqueueSnackbar]
   );
 
+  const showTooManyRequests = useCallback(
+    (message?: string) => {
+      if (!message) {
+        message = t('notifications.youTemporarilyMadeTooManyRequests.');
+      }
+      enqueueSnackbar(message, { variant: 'info' });
+    },
+    [enqueueSnackbar, t]
+  );
+
   /**
    * Display all errors contained in an `ApiError` object.
    *
@@ -155,6 +165,7 @@ export const useNotifications = () => {
     showInfoAlert,
     showSuccessAlert,
     showErrorAlert,
+    showTooManyRequests,
     contactAdministrator,
     contactAdministratorLowSeverity,
     displayErrorsFrom,

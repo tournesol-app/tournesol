@@ -71,6 +71,7 @@ def write_public_comparisons_file(request, write_target):
 
 class ExportComparisonsView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_scope = "api_users_me_export"
 
     @extend_schema(
         description="Download current user data in .zip file",
@@ -85,6 +86,7 @@ class ExportComparisonsView(APIView):
 
 class ExportPublicComparisonsView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "api_export_comparisons"
 
     @method_decorator(cache_page_no_i18n(60*10))  # 10 minutes cache
     @extend_schema(
@@ -99,6 +101,7 @@ class ExportPublicComparisonsView(APIView):
 
 
 class ExportAllView(APIView):
+    throttle_scope = "api_users_me_export"
 
     @extend_schema(
         description="Download current user data in .zip file",
