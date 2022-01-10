@@ -72,8 +72,3 @@ Used to generate OpenAPI documentation exposed by Swagger UI
 https://github.com/Mimino666/langdetect
 
 Use to detect language from video titles and descptions
-
-### isodate
-https://github.com/gweis/isodate
-
-Use to convert date with ISO format from youtube API to timedelta in our bdd
