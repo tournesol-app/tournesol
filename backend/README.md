@@ -6,8 +6,8 @@ The API of the Tournesol application, made with Python and Django.
 
 ### Automatic installation (recommended)
 
-Use the procedure in the `dev-env`'s README.md to automatically set up a fully
-functional environment with Docker.
+Use the procedure in the `dev-env`'s [README.md][dev-env-readme] to
+automatically set up a fully functional environment with Docker.
 
 ### Manual installation
 
@@ -32,32 +32,22 @@ a Django application; and how to install and configure a PostgreSQL server.
 
 - Run the server `python manage.py runserver`
 
-### Install the development tools
+#### Install the development tools
 
 The development tools contain the requirements to run the tests and the code
 quality checks.
 
-If you have installed the back end with Docker, you will need to create a
-virtual environment before running the following command.
-
-First install the extra requirements in your virtual environment.
+These tools are already included in the `dev-env`.
 
 ```python
 pip install -r tests/requirements.txt
-```
-
-Then install the pre-commit hooks to trigger the code quality checks before
-each commit.
-
-```bash
-pre-commit install
 ```
 
 ## Dependencies
 
 Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` depend on [expect](https://core.tcl-lang.org/expect/index) for superuser unattended creation.
 
-# Setup Google Api Key
+## Setup Google Api Key
 
 * Go to https://console.cloud.google.com/apis/ and create a new project named `tournesol`
 
@@ -67,13 +57,13 @@ Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` de
 
 * Then go to https://console.cloud.google.com/apis/credentials/consent, and add a user test (typicaly your gmail account)
 
-# Testing
+## Testing
 
 In order to ease your testing and debug time, use pytest : `pytest`
 Moreover, you can run the following command to have a complete recap in a html document for each test:
 `pytest --html=report.html --self-contained-html`
 
-# Code Quality
+## Code Quality
 
 We use several tools to keep the code quality as good, readable and maintainable
 as possible:
@@ -81,5 +71,56 @@ as possible:
 - `pylint` static code analyzer which looks for errors
 - `flake8` a wrapper around three popular tools for style enforcement
 
-All of them will be automatically triggered as pre-commit hooks if you
-installed the development dependencies from `tests/requirements.txt.`
+All of them should be automatically triggered by the continuous
+integration system.
+
+You can run them locally before creating a new commit, by running the
+following commands.
+
+**manual installation**
+
+The commands should be run from the root of the Git repository. 
+
+```shell
+# check file by file
+isort file1.py file2.py
+pylint --rcfile=backend/.pylintrc file1.py file2.py
+flake8 --config=backend/.flake8 file1.py file2.py
+
+# check the whole git index (i.e. all files added with git add)
+git diff --name-only --cached | xargs -r isort
+git diff --name-only --cached | xargs -r pylint --rcfile=backend/.pylintrc
+git diff --name-only --cached | xargs -r flake8 --config=backend/.flake8 
+```
+
+**automatic installtion with Docker**
+
+The commands should be run from the backend sub-folder.
+
+```shell
+docker exec tournesol-dev-api isort file1.py file2.py
+docker exec tournesol-dev-api pylint --rcfile=.pylintrc file1.py file2.py
+docker exec tournesol-dev-api flake8 --config=.flake8 file1.py file2.py
+```
+
+## F.A.Q.
+
+**Why are the code quality tools not automatically triggered locally with
+the help of the Git pre-commit hook?**
+
+We try to use the [pre-commit][pre-commit] framework, but unfortunately it's
+not adapted to work smoothly within our mono-repository
+configuration [[faq-1]][faq-1].
+
+Each time we found a solution a new issue appeared. In the end it requires
+much more efforts to be configured and used rather than simply running the
+code quality checks manually.
+
+As we do not want to make the developers to have complex and error-prone local
+setups, we decided to add the code quality checks only in the CI for now.
+
+[dev-env-readme]: https://github.com/tournesol-app/tournesol/blob/main/dev-env/README.md
+
+[faq-1]: https://github.com/pre-commit/pre-commit/issues/466#issuecomment-531583187
+
+[pre-commit]: https://pre-commit.com/
