@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import ContentHeader from 'src/components/ContentHeader';
+import Pagination from 'src/components/Pagination';
+import ComparisonList from 'src/features/comparisons/ComparisonList';
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
-import ComparisonList from 'src/features/comparisons/ComparisonList';
-import Pagination from 'src/components/Pagination';
 
 function ComparisonsPage() {
   const { t } = useTranslation();
@@ -33,25 +34,28 @@ function ComparisonsPage() {
   }, [offset]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'column',
-        paddingBottom: 16,
-        paddingTop: 16,
-        gap: 16,
-      }}
-    >
-      <Pagination
-        offset={offset}
-        count={count}
-        onOffsetChange={handleOffsetChange}
-        limit={limit}
-        itemType={t('pagination.comparisons')}
-      />
-      <ComparisonList comparisons={comparisons} />
-    </div>
+    <>
+      <ContentHeader title={t('myComparisonsPage.title')} />
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+          paddingBottom: 16,
+          paddingTop: 16,
+          gap: 16,
+        }}
+      >
+        <Pagination
+          offset={offset}
+          count={count}
+          onOffsetChange={handleOffsetChange}
+          limit={limit}
+          itemType={t('pagination.comparisons')}
+        />
+        <ComparisonList comparisons={comparisons} />
+      </div>
+    </>
   );
 }
 

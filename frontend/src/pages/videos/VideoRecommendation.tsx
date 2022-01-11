@@ -8,7 +8,7 @@ import Pagination from 'src/components/Pagination';
 import VideoList from 'src/features/videos/VideoList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
-import { ContentBox } from 'src/components';
+import { ContentBox, ContentHeader } from 'src/components';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import { scrollToTop } from 'src/utils/ui';
 
@@ -43,27 +43,30 @@ function VideoRecommendationPage() {
   }, [location.search]);
 
   return (
-    <ContentBox noMinPadding maxWidth="lg">
-      <Box px={{ xs: 2, sm: 0 }}>
-        <SearchFilter />
-      </Box>
-      <LoaderWrapper isLoading={isLoading}>
-        <VideoList
-          videos={videos.results || []}
-          emptyMessage={
-            isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
-          }
-        />
-      </LoaderWrapper>
-      {!isLoading && videoCount > 0 && (
-        <Pagination
-          offset={offset}
-          count={videoCount}
-          onOffsetChange={handleOffsetChange}
-          limit={limit}
-        />
-      )}
-    </ContentBox>
+    <>
+      <ContentHeader title={t('recommendationsPage.title')} />
+      <ContentBox noMinPadding maxWidth="lg">
+        <Box px={{ xs: 2, sm: 0 }}>
+          <SearchFilter />
+        </Box>
+        <LoaderWrapper isLoading={isLoading}>
+          <VideoList
+            videos={videos.results || []}
+            emptyMessage={
+              isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
+            }
+          />
+        </LoaderWrapper>
+        {!isLoading && videoCount > 0 && (
+          <Pagination
+            offset={offset}
+            count={videoCount}
+            onOffsetChange={handleOffsetChange}
+            limit={limit}
+          />
+        )}
+      </ContentBox>
+    </>
   );
 }
 

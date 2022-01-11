@@ -197,6 +197,9 @@
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "clickToDownload": "Click to Download",
+  "recommendations": {
+    "title": "Recommendations"
+  },
   "home": {
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
@@ -235,6 +238,9 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
+  },
+  "recommendationsPage": {
+    "title": "recommendations"
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {
