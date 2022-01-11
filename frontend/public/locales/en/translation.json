@@ -198,7 +198,7 @@
   },
   "clickToDownload": "Click to Download",
   "myComparisonsPage": {
-    "contentHeader": "My comparisons"
+    "title": "My comparisons"
   },
   "home": {
     "contributeTitle": "Contribute!",
@@ -225,7 +225,7 @@
     "resetPasswordButton": "Reset password"
   },
   "myRateLaterListPage": {
-    "contentHeader": "My rate-later list"
+    "title": "My rate-later list"
   },
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
@@ -243,10 +243,10 @@
     "verificationFailed": "Verification failed"
   },
   "myRatedVideosPage": {
-    "contentHeader": "My rated videos"
+    "title": "My rated videos"
   },
   "recommendationsPage": {
-    "contentHeader": "Recommendations"
+    "title": "Recommendations"
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {

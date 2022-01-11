@@ -34,7 +34,7 @@ function ComparisonsPage() {
 
   return (
     <>
-      <ContentHeader title={t('myComparisonsPage.contentHeader')} />
+      <ContentHeader title={t('myComparisonsPage.title')} />
       <div
         style={{
           display: 'flex',
