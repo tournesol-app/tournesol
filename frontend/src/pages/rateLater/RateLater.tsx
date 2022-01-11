@@ -9,7 +9,12 @@ import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { ApiError, VideoRateLater } from 'src/services/openapi';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
-import { ContentBox, ContentHeader, LoaderWrapper, Pagination } from 'src/components';
+import {
+  ContentBox,
+  ContentHeader,
+  LoaderWrapper,
+  Pagination,
+} from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
 import { useNotifications } from 'src/hooks';
 
@@ -142,7 +147,11 @@ const RateLaterPage = () => {
         <div className={classes.rateLaterContent} ref={videoListTopRef}>
           {videoCount !== null && (
             <Typography variant="subtitle1">
-              <Trans t={t} i18nKey="ratelater.listHasNbVideos" count={videoCount}>
+              <Trans
+                t={t}
+                i18nKey="ratelater.listHasNbVideos"
+                count={videoCount}
+              >
                 Your rate-later list now has <strong>{{ videoCount }}</strong>{' '}
                 video(s).
               </Trans>
