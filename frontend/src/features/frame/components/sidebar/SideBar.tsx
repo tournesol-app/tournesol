@@ -10,6 +10,7 @@ import {
   List,
   Theme,
   Divider,
+  Tooltip,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -177,14 +178,20 @@ const SideBar = () => {
                 },
               }}
             >
-              <ListItemIcon>
-                <IconComponent
-                  className={clsx({
-                    [classes.listItemIcon]: !selected,
-                    [classes.listItemIconSelected]: selected,
-                  })}
-                />
-              </ListItemIcon>
+              <Tooltip
+                title={drawerOpen === true ? '' : displayText}
+                placement="right"
+                arrow
+              >
+                <ListItemIcon>
+                  <IconComponent
+                    className={clsx({
+                      [classes.listItemIcon]: !selected,
+                      [classes.listItemIconSelected]: selected,
+                    })}
+                  />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText
                 primary={displayText}
                 primaryTypographyProps={{ className: classes.listItemText }}

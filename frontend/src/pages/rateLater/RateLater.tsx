@@ -9,7 +9,12 @@ import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { ApiError, VideoRateLater } from 'src/services/openapi';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
-import { ContentBox, LoaderWrapper, Pagination } from 'src/components';
+import {
+  ContentBox,
+  ContentHeader,
+  LoaderWrapper,
+  Pagination,
+} from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
 import { useNotifications } from 'src/hooks';
 
@@ -105,69 +110,76 @@ const RateLaterPage = () => {
   const videos = rateLaterList.map((r) => r.video);
 
   return (
-    <ContentBox noMinPadding maxWidth="md">
-      <Card className={classes.rateLaterIntro} elevation={4}>
-        <CardContent>
-          <Typography variant="h6">
-            {t('ratelater.addVideosToRateLaterList')}
-          </Typography>
-          <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
-            Copy-paste the id or the URL of a favorite video of yours.
-            <br />
-            You can search them in your{' '}
-            <a href="https://www.youtube.com/feed/history">
-              YouTube history page
-            </a>
-            , or your{' '}
-            <a href="https://www.youtube.com/playlist?list=LL">
-              liked video playlist
-            </a>
-            .<br />
-            Our{' '}
-            <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
-              browser extension
-            </a>{' '}
-            can also help you import videos effortlessly.
-            <br />
-            You will then be able to rate the videos you imported.
-          </Trans>
-        </CardContent>
-        <CardActions>
-          <RateLaterAddForm addVideo={addToRateLater} />
-        </CardActions>
-      </Card>
-
-      <div className={classes.rateLaterContent} ref={videoListTopRef}>
-        {videoCount !== null && (
-          <Typography variant="subtitle1">
-            <Trans t={t} i18nKey="ratelater.listHasNbVideos" count={videoCount}>
-              Your rate-later list now has <strong>{{ videoCount }}</strong>{' '}
-              video(s).
+    <>
+      <ContentHeader title={t('myRateLaterListPage.title')} />
+      <ContentBox noMinPadding maxWidth="md">
+        <Card className={classes.rateLaterIntro} elevation={4}>
+          <CardContent>
+            <Typography variant="h6">
+              {t('ratelater.addVideosToRateLaterList')}
+            </Typography>
+            <Trans t={t} i18nKey="ratelater.rateLaterFormIntroduction">
+              Copy-paste the id or the URL of a favorite video of yours.
+              <br />
+              You can search them in your{' '}
+              <a href="https://www.youtube.com/feed/history">
+                YouTube history page
+              </a>
+              , or your{' '}
+              <a href="https://www.youtube.com/playlist?list=LL">
+                liked video playlist
+              </a>
+              .<br />
+              Our{' '}
+              <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
+                browser extension
+              </a>{' '}
+              can also help you import videos effortlessly.
+              <br />
+              You will then be able to rate the videos you imported.
             </Trans>
-          </Typography>
-        )}
+          </CardContent>
+          <CardActions>
+            <RateLaterAddForm addVideo={addToRateLater} />
+          </CardActions>
+        </Card>
 
-        {!!videoCount && (
-          <div className={classes.stickyPagination}>
-            <Pagination
-              offset={offset}
-              count={videoCount}
-              onOffsetChange={onOffsetChange}
-              limit={limit}
-            />
-          </div>
-        )}
+        <div className={classes.rateLaterContent} ref={videoListTopRef}>
+          {videoCount !== null && (
+            <Typography variant="subtitle1">
+              <Trans
+                t={t}
+                i18nKey="ratelater.listHasNbVideos"
+                count={videoCount}
+              >
+                Your rate-later list now has <strong>{{ videoCount }}</strong>{' '}
+                video(s).
+              </Trans>
+            </Typography>
+          )}
 
-        <Box width="100%" textAlign="center">
-          <LoaderWrapper isLoading={isLoading}>
-            <VideoList
-              videos={videos}
-              actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
-            />
-          </LoaderWrapper>
-        </Box>
-      </div>
-    </ContentBox>
+          {!!videoCount && (
+            <div className={classes.stickyPagination}>
+              <Pagination
+                offset={offset}
+                count={videoCount}
+                onOffsetChange={onOffsetChange}
+                limit={limit}
+              />
+            </div>
+          )}
+
+          <Box width="100%" textAlign="center">
+            <LoaderWrapper isLoading={isLoading}>
+              <VideoList
+                videos={videos}
+                actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
+              />
+            </LoaderWrapper>
+          </Box>
+        </div>
+      </ContentBox>
+    </>
   );
 };
 
