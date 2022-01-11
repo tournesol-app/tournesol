@@ -76,7 +76,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         null=True,
         help_text="Timestamp the metadata was uploaded",
     )
-    views = models.IntegerField(null=True, help_text="Number of views", blank=True)
+    views = models.BigIntegerField(null=True, help_text="Number of views", blank=True)
     uploader = models.CharField(
         max_length=1000,
         null=True,
