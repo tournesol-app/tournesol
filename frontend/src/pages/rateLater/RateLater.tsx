@@ -111,7 +111,7 @@ const RateLaterPage = () => {
 
   return (
     <>
-      <ContentHeader title={t('contentHeader.myRateLaterList')} />
+      <ContentHeader title={t('myRateLaterListPage.contentHeader')} />
       <ContentBox noMinPadding maxWidth="md">
         <Card className={classes.rateLaterIntro} elevation={4}>
           <CardContent>

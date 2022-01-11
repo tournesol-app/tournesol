@@ -197,11 +197,8 @@
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "clickToDownload": "Click to Download",
-  "contentHeader": {
-    "myComparisons": "My comparisons",
-    "myRateLaterList": "My rate-later list",
-    "myRatedVideos": "My rated videos",
-    "recommendations": "Recommendations"
+  "myComparisonsPage": {
+    "contentHeader": "My comparisons"
   },
   "home": {
     "contributeTitle": "Contribute!",
@@ -227,6 +224,9 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "resetPasswordButton": "Reset password"
   },
+  "myRateLaterListPage": {
+    "contentHeader": "My rate-later list"
+  },
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",
@@ -241,6 +241,12 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
+  },
+  "myRatedVideosPage": {
+    "contentHeader": "My rated videos"
+  },
+  "recommendationsPage": {
+    "contentHeader": "Recommendations"
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {

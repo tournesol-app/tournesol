@@ -44,7 +44,7 @@ function VideoRecommendationPage() {
 
   return (
     <>
-      <ContentHeader title={t('contentHeader.recommendations')} />
+      <ContentHeader title={t('recommendationsPage.contentHeader')} />
       <ContentBox noMinPadding maxWidth="lg">
         <Box px={{ xs: 2, sm: 0 }}>
           <SearchFilter />
