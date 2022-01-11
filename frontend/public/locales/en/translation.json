@@ -197,8 +197,8 @@
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "clickToDownload": "Click to Download",
-  "recommendations": {
-    "title": "Recommendations"
+  "myComparisonsPage": {
+    "title": "My comparisons"
   },
   "home": {
     "contributeTitle": "Contribute!",
@@ -239,8 +239,11 @@
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
   },
+  "myRatedVideosPage": {
+    "title": "My rated videos"
+  },
   "recommendationsPage": {
-    "title": "recommendations"
+    "title": "Recommendations"
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {
