@@ -19,6 +19,7 @@ on [Discord][tournesol-discord-join].
 - [browser-extension](./browser-extension) is a JavaScript extension for
   Google Chrome and Mozilla Firefox
 - [tests](./tests) contains end-to-end tests for Tournesol
+- [onboarding](./ONBOARDING.md) guide for newcomers in the project
 
 ## Set-up
 
