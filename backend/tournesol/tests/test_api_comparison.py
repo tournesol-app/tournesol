@@ -1,9 +1,12 @@
 from copy import deepcopy
 import datetime
+from time import time
+from unittest.mock import patch
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -614,3 +617,59 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(video6.rating_n_ratings, 2)
         self.assertEqual(video7.rating_n_contributors, 1)
         self.assertEqual(video7.rating_n_ratings, 1)
+
+    @patch("tournesol.utils.api_youtube.get_video_metadata")
+    def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
+        mock_get_video_metadata.return_value = {}
+        client = APIClient()
+        user = User.objects.get(username=self._user2)
+        client.force_authenticate(user=user)
+
+        video01, video02, video03 = self.videos[:3]
+        video01.last_metadata_request_at = None
+        video01.save()
+        video02.last_metadata_request_at = timezone.now() - datetime.timedelta(days=7)
+        video02.save()
+        video03.last_metadata_request_at = timezone.now()
+        video03.save()
+
+        data = {
+            "video_a": {
+                "video_id": self._video_id_01
+            },
+            "video_b": {
+                "video_id": self._video_id_02
+            },
+            "criteria_scores": [
+                {
+                    "criteria": "largely_recommended",
+                    "score": 10,
+                    "weight": 10
+                }
+            ],
+        }
+        response = client.post("/users/me/comparisons/", data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
+
+        data = {
+            "video_a": {
+                "video_id": self._video_id_01
+            },
+            "video_b": {
+                "video_id": self._video_id_03
+            },
+            "criteria_scores": [
+                {
+                    "criteria": "largely_recommended",
+                    "score": 10,
+                    "weight": 10
+                }
+            ],
+        }
+
+        response = client.post("/users/me/comparisons/", data, format="json")
+        self.assertEqual(response.status_code, 201)
+        # Video01 has been refreshed and video03 was already up-to-date.
+        # No additional call to youtube API should be visible.
+        self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)

@@ -2,7 +2,6 @@
 API endpoint to manipulate videos
 """
 import re
-import isodate
 
 from django.utils import timezone, dateparse
 from django.db.models import Q, Case, When, Sum, F
@@ -25,8 +24,7 @@ from tournesol.throttling import (
     SustainedAnonRateThrottle,
     SustainedUserRateThrottle
 )
-from tournesol.utils.api_youtube import youtube_video_details
-from tournesol.utils.video_language import compute_video_language
+from tournesol.utils.api_youtube import get_video_metadata, VideoNotFound
 
 
 @extend_schema_view(
@@ -170,32 +168,7 @@ class VideoViewSet(mixins.CreateModelMixin,
     def perform_create(self, serializer):
         video_id = serializer.validated_data["video_id"]
         try:
-            yt_response = youtube_video_details(video_id)
-            yt_items = yt_response.get("items", [])
-            if len(yt_items) == 0:
-                raise NotFound("The video has not been found. `video_id` may be incorrect.")
-            yt_info = yt_items[0]
-            title = yt_info["snippet"]["title"]
-            nb_views = yt_info.get("statistics", {}).get("viewCount")
-            published_date = str(yt_info["snippet"]["publishedAt"])
-            published_date = published_date.split("T")[0]
-            # we could truncate description to spare some space
-            description = str(yt_info["snippet"]["description"])
-            uploader = yt_info["snippet"]["channelTitle"]
-            language = compute_video_language(uploader, title, description)
-            #  if video has no tags, te field doesn't appear on response
-            tags = yt_info["snippet"].get("tags", [])
-            duration = isodate.parse_duration(yt_info["contentDetails"]["duration"])
-            extra_data = {
-                "name": title,
-                "description": description,
-                "publication_date": published_date,
-                "views": nb_views,
-                "uploader": uploader,
-                "language": language,
-                "tags": tags,
-                "duration": duration,
-            }
-        except AssertionError:
-            extra_data = {"tags": []}
+            extra_data = get_video_metadata(video_id)
+        except VideoNotFound:
+            raise NotFound("The video has not been found. `video_id` may be incorrect.")
         serializer.save(**extra_data)

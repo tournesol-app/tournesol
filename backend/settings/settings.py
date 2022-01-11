@@ -337,3 +337,5 @@ CACHES = {
         'LOCATION': 'default_cache_table',
     }
 }
+
+VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600 # 2 days

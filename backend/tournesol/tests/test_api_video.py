@@ -1,7 +1,5 @@
-from datetime import date
+from datetime import date, timedelta
 from unittest.mock import patch
-
-import isodate
 
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
@@ -435,7 +433,7 @@ class VideoApi(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             Video.objects.get(video_id=id_too_small)
 
-    @patch("tournesol.views.video.youtube_video_details")
+    @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
         """
         An authenticated user can add a new video, with a YouTube API key
@@ -503,9 +501,9 @@ class VideoApi(TestCase):
         self.assertEqual(response.json()["name"], "Video title")
         self.assertIn(tournesol_tag, video.tags.all())
         self.assertEqual(response.json()["duration"], 1263)
-        self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
+        self.assertEqual(video.duration, timedelta(minutes=21, seconds=3))
 
-    @patch("tournesol.views.video.youtube_video_details")
+    @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_no_statistics(self, mock_youtube):
         """
         An authenticated user can add a new video, even if the YouTube API
@@ -565,7 +563,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.json()["name"], "Video title")
         self.assertEqual(video.views, None)
 
-    @patch("tournesol.views.video.youtube_video_details")
+    @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
         """
         An authenticated user can't add a new video, if the YouTube API
