@@ -64,10 +64,12 @@
   fill: var(--yt-spec-text-secondary);
   width: 20px;
   height: 20px;
+  border-radius: 10px;
   padding: 0px;
   border-style: none;
   background-color: transparent;
   position: relative;
+  cursor: pointer;
 }
 
 .tournesol_simple_button svg {
@@ -76,7 +78,6 @@
   top: 0px;
   width: 20px;
   height: 20px;
-  border-radius: 10px;
 }
 
 .tournesol_simple_button:hover svg {
@@ -91,6 +92,15 @@
 
 .tournesol_simple_button:active svg {
   fill: var(--yt-spec-text-primary);
+
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.tournesol_simple_button:active {
   background: var(--yt-spec-brand-background-solid);
 
   -webkit-transition: all 0.1s ease;
@@ -102,6 +112,9 @@
 
 .tournesol_simple_button:disabled svg {
   fill: var(--yt-spec-text-disabled);
+}
+
+.tournesol_simple_button:disabled {
   background: var(--yt-spec-brand-background-solid);
 }
 
