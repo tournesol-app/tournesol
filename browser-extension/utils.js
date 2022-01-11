@@ -48,7 +48,7 @@ export const fetchTournesolApi = async (url, method, data) => {
 
 export const addRateLater = async (video_id) => {
   const addVideoResponse = await fetchTournesolApi('video/', 'POST', {video_id: video_id});
-  if(!addVideoResponse || addVideoResponse.status === 409){
+  if(!addVideoResponse || addVideoResponse.status === 401){
     return {
       success: false,
       message: 'Failed.'
