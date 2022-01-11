@@ -119,7 +119,7 @@ const VideoRatingsPage = () => {
         onChange: onRatingChange,
       }}
     >
-      <ContentHeader title={t('myRatedVideosPage.title')} />
+      <ContentHeader title={t('contentHeader.myRatedVideos')} />
       <ContentBox noMinPadding maxWidth="md">
         <Box px={{ xs: 2, sm: 0 }}>
           <RatingsFilter />

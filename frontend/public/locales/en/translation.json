@@ -197,8 +197,11 @@
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "clickToDownload": "Click to Download",
-  "myComparisonsPage": {
-    "title": "My comparisons"
+  "contentHeader": {
+    "myComparisons": "My comparisons",
+    "myRateLaterList": "My rate-later list",
+    "myRatedVideos": "My rated videos",
+    "recommendations": "Recommendations"
   },
   "home": {
     "contributeTitle": "Contribute!",
@@ -238,12 +241,6 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
-  },
-  "myRatedVideosPage": {
-    "title": "My rated videos"
-  },
-  "recommendationsPage": {
-    "title": "Recommendations"
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {
