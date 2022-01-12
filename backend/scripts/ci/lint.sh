@@ -9,7 +9,7 @@ set -uxo pipefail
 pylint --rcfile=.pylintrc core tournesol
 chk1=$?
 
-flake8 --config=.flake8 core tournesol
+flake8 --config=.flake8
 chk2=$?
 
 exit $chk1 && $chk2
