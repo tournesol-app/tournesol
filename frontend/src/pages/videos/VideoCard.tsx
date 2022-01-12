@@ -36,7 +36,7 @@ function VideoCardPage() {
         data: Object.fromEntries(
           video.criteria_scores.map((criteria) => [
             criteria.criteria,
-            criteria.score,
+            Math.max(0, Math.min(criteria.score as number, 1)),
           ])
         ),
         meta: { color: 'purple' },
