@@ -108,10 +108,10 @@
     "emailTrusted": "Fiable",
     "emailNonTrusted": "Non-fiable",
     "learnMoreAboutTrustedDomains": "A propos des domaines fiables",
-    "verificationEmailSentNewEmail": "Un email de vérification a été envoyé pour confirmer votre nouvelle adresse.",
+    "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
     "currentEmailAddressIs": "Votre adresse actuelle est",
     "newEmailAddress": "Nouvelle adresse mail",
-    "sendVerificationEmail": "Envoyer un email de confirmation",
+    "sendVerificationEmail": "Envoyer un courriel de confirmation",
     "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
     "downloadFile": "Télécahrger le fichier",
     "prepareExport": "Préparer l'export",
@@ -217,7 +217,7 @@
     "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de <3>manière collaborative</3>, en s'appuyant sur les jugements de tous ses contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et demain <6>robustement bénéfique</6>, à grande échelle, pour toute l'humanité."
   },
   "reset": {
-    "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
+    "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'utilisateur existe, un courriel avec un lien de réinitialisation sera envoyé.",
     "resetYourPassword": "",
     "failToSendResetLink": "",
     "sendResetEmailButton": "",
@@ -232,19 +232,19 @@
     "title": ""
   },
   "signup": {
-    "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
-    "title": "Account creation",
-    "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithThePrivacyPolicy": "I have read and agree with the <2>privacy policy</2>"
+    "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
+    "title": "Inscription",
+    "accountCreationFailed": "Création du compte échouée.",
+    "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>"
   },
-  "emailAddress": "Email address",
-  "confirmYourPassword": "Confirm your password",
-  "signUpButton": "Sign up",
+  "emailAddress": "Adresse mail",
+  "confirmYourPassword": "Confirmez votre mot de passe",
+  "signUpButton": "S'inscrire",
   "verify": {
-    "verifyRegistration": "Verify registration",
-    "yourAccountIsNowVerified": "Your account is now verified.",
-    "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
-    "verificationFailed": "Verification failed"
+    "verifyRegistration": "Vérifier l'inscription",
+    "yourAccountIsNowVerified": "Votre compte est maintenant vérifié.",
+    "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse mail est maintenant vérifiée.",
+    "verificationFailed": "Vérification échouée"
   },
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
