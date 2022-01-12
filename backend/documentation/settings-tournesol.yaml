@@ -83,3 +83,7 @@ OIDC_RSA_PRIVATE_KEY: |
     DKjJVdi7rR3AhYtXzoKx3aTLhe+R9LgL0MTkUpYFUM8IrQYuKlwQYIupJJdVVd9m
     sLthP2MuAwh4023RZrBLy2rNd2pmqtIYvH7vj98rgQmkTirGr0zFEHb4uEA=
     -----END RSA PRIVATE KEY-----
+
+# YouTube API is used to fetch metadata about videos (title, description,
+# stats, etc.). Optional in development environments.
+YOUTUBE_API_KEY:
