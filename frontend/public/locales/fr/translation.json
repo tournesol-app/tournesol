@@ -58,12 +58,13 @@
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
     "addToMyRateLaterList": "Ajouter à ma liste",
-    "videoAdded": "Vidéo bien ajoutée à votre liste.",
     "errorOccurredCannotAddVideo": "Désolé, une erreur est survenue. Impossible d'ajouter la vidéo à votre liste.",
     "videoAlreadyInList": "La video est déjà dans votre liste.",
+    "videoAdded": "Vidéo bien ajoutée à votre liste.",
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
     "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent ensuite être comparées.",
     "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
+    "listHasNbVideos_many": "Your rate-later list now has <1>{{videoCount}}</1> video(s).",
     "listHasNbVideos_other": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos."
   },
   "public": "publique",
@@ -111,7 +112,6 @@
     "currentEmailAddressIs": "Votre adresse actuelle est",
     "newEmailAddress": "Nouvelle adresse mail",
     "sendVerificationEmail": "Envoyer un email de confirmation",
-    "errorOccurredDuringExport": "Une erreur est survenue. Si le problème persiste, contactez-nous s'il vous plaît.",
     "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
     "downloadFile": "Télécahrger le fichier",
     "prepareExport": "Préparer l'export",
@@ -141,6 +141,7 @@
   },
   "video": {
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
+    "nComparisonsByYou_many": "{{count}} comparison by you",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cette vidéo sont actuellement publiques. Les comparaisons apparaissent dans les données publiques associées à votre profil seulement lorsque les deux vidéos d'une comparaison sont marquées comme publiques.",
@@ -148,8 +149,10 @@
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
     "nbComparisonsBy_one": "{{count}} comparaison par",
+    "nbComparisonsBy_many": "{{count}} comparisons by",
     "nbComparisonsBy_other": "{{count}} comparaisons par",
     "nbContributors_one": "{{count}} contributeur",
+    "nbContributors_many": "{{count}} contributors",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
     "criteriaRatedLow": "Noté faiblement :",
@@ -198,6 +201,9 @@
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "clickToDownload": "Click to Download",
+  "myComparisonsPage": {
+    "title": ""
+  },
   "home": {
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided bythe community. To contribute, you must compare videos that you havewatched. First copy paste two links to videos, then tell us which videoyou think should be largely recommended. If you want to you can alsocompare the videos in more details based on the multiple comparisoncriterias.",
@@ -209,6 +215,21 @@
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
     "whatIsTournesol": "What is Tournesol?",
     "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which aims to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+  },
+  "reset": {
+    "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
+    "resetYourPassword": "",
+    "failToSendResetLink": "",
+    "sendResetEmailButton": "",
+    "backToLogIn": "",
+    "passwordModifiedSuccessfully": "",
+    "newPassword": "",
+    "confirmNewPassword": "",
+    "passwordsDoNotMatch": "",
+    "resetPasswordButton": ""
+  },
+  "myRateLaterListPage": {
+    "title": ""
   },
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
@@ -224,6 +245,12 @@
     "yourAccountIsNowVerified": "Your account is now verified.",
     "yourNewEmailAddressIsNowVerified": "Your new email address is now verified.",
     "verificationFailed": "Verification failed"
+  },
+  "myRatedVideosPage": {
+    "title": ""
+  },
+  "recommendationsPage": {
+    "title": ""
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {

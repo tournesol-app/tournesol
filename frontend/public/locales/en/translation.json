@@ -58,9 +58,9 @@
   "ratelater": {
     "videoIdOrURL": "Video id or URL",
     "addToMyRateLaterList": "Add to my rate later list",
-    "videoAdded": "Video added to your Rate Later list!",
     "errorOccurredCannotAddVideo": "Sorry, an error has occurred. Cannot add the video to your rate later list.",
     "videoAlreadyInList": "The video is already in your Rate Later list.",
+    "videoAdded": "Video added to your Rate Later list!",
     "addVideosToRateLaterList": "Add videos to your rate-later list",
     "rateLaterFormIntroduction": "Copy-paste the id or the URL of a favorite video of yours.<1></1>You can search them in your <4>YouTube history page</4>, or your <7>liked video playlist</7>.<9></9>Our <12>browser extension</12> can also help you import videos effortlessly.<15></15>You will then be able to rate the videos you imported.",
     "listHasNbVideos_one": "Your rate-later list now has <1>{{videoCount}}</1> video.",
