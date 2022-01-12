@@ -43,7 +43,7 @@ jobs:
         run: flake8 --config=.flake8 core tournesol
 
       - name: Run pylint
-        run: pylint --ignore=migrations core tournesol
+        run: pylint --rcfile=.pylintrc core tournesol
 
       - name: Run pytest
         run: pytest
