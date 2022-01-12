@@ -168,7 +168,7 @@
   "about": {
     "title": "A propos",
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "introductionTournesol": "Tournesol est une plateforme libre et open source dont le but est d'identifier, de manière collaborative en s'appuyant sur les jugements de tous ses contributeurs, les vidéos d'utilité publique de grandes qualités. Nous espérons rendre les algorithmes d'aujourd'hui et demain robustement bénéfique, à grande échelle, pour toute l'humanité. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
+    "introductionTournesol": "Tournesol est une plateforme libre et open source dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur les jugements de tous ses contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et demain robustement bénéfique, à grande échelle, pour toute l'humanité. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
     "tournesolVision": "Nous souhaitons constuire les fondations d'une gouvernance algorithmique de l'information robuste et bénéfique à l'échelle",
     "tournesolVisionRaisingAwareness": "A travers l'éveil des consciences à propos de la crise globale de l'information",
     "tournesolVisionCollaborativePlatform": "A travers le développement d'une plateform collaborative pour l'évaluation et la recommandation de contenu en ligne",
@@ -200,21 +200,21 @@
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
-  "clickToDownload": "Click to Download",
+  "clickToDownload": "Cliquer pour télécharger",
   "myComparisonsPage": {
-    "title": ""
+    "title": "Mes comparaisons"
   },
   "home": {
-    "contributeTitle": "Contribute!",
-    "contributeDetail": "Tournesol identifies high quality content from comparisons provided bythe community. To contribute, you must compare videos that you havewatched. First copy paste two links to videos, then tell us which videoyou think should be largely recommended. If you want to you can alsocompare the videos in more details based on the multiple comparisoncriterias.",
-    "compareButton": "Compare videos now",
+    "contributeTitle": "Contribuer !",
+    "contributeDetail": "Tournesol identifie les contenus de qualité à partir des comparaisons faites par la communauté. Pour participer, vous devez comparer des vidéos que vous avez déjà regardées. Premièrement, copiez et collez les liens de deux vidéos, puis dites nos laquelle d'après vous devrait être très largement recommandée. Si vous le souhaitez, vous pouvez comparer les vidéos plus en détail en donnant votre avis sur plusieurs autres critères.",
+    "compareButton": "Commencer à comparer",
     "useOurExtension": "Use our extension!",
     "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your Youtube home page. You can also add a video in your rate later list or immediatly rate the video with just a few clicks.",
-    "getTheExtensionButton": "Get the extension",
-    "extensionNotAvailableOnYourBrowser": "The extension is not available on your webbrowser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
-    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "whatIsTournesol": "What is Tournesol?",
-    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which aims to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+    "getTheExtensionButton": "Obtenir l'extension",
+    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
+    "collaborativeContentRecommendations": "Recommandations de Contenu Collaboratives",
+    "whatIsTournesol": "Qu'est-ce que Tournesol ?",
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de <3>manière collaborative</3>, en s'appuyant sur les jugements de tous ses contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et demain <6>robustement bénéfique</6>, à grande échelle, pour toute l'humanité."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
@@ -247,19 +247,19 @@
     "verificationFailed": "Verification failed"
   },
   "myRatedVideosPage": {
-    "title": ""
+    "title": "Mes vidéos comparées"
   },
   "recommendationsPage": {
-    "title": ""
+    "title": "Recommandations"
   },
-  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
+  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critètes de recherche.",
   "actions": {
-    "compareNow": "Compare now",
-    "videoAddedToRateLaterList": "The video has been added to your rate later list.",
-    "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
-    "rateLater": "Rate later",
-    "remove": "Remove",
-    "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list."
+    "compareNow": "Comparer !",
+    "videoAddedToRateLaterList": "La vidéo a bien été ajoutée à votre liste.",
+    "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
+    "rateLater": "Comparer plus tard",
+    "remove": "Supprimer",
+    "videoDeletedFromRateLaterList": "La vidéo a bien été supprimée de votre liste."
   },
   "criteria": {
     "shouldBeLargelyRecommended": "Should be largely recommended",
