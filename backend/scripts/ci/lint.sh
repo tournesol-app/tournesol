@@ -12,4 +12,4 @@ chk1=$?
 flake8 --config=.flake8 ${@:-}
 chk2=$?
 
-exit $chk1 && $chk2
+! (( chk1 || chk2 ))
