@@ -25,6 +25,12 @@ DJANGO_OIDC_RSA_PRIVATE_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/django_
 export DJANGO_OIDC_RSA_PRIVATE_KEY
 
 YOUTUBE_API_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/^YOUTUBE_API_KEY: \(.*\)$/\1/p')"
+if [ -z "$YOUTUBE_API_KEY" ]
+# For migration purposes, the YOUTUBE_API_KEY needs to be fetched temporarily from "gunicorn.service".
+# To be removed after a new deployment has been applied on all environments.
+then
+    YOUTUBE_API_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/systemd/system/gunicorn.service | sed -n 's/^Environment="YOUTUBE_API_KEY=\(.*\)"/\1/p')"
+fi
 export YOUTUBE_API_KEY
 
 FRONTEND_OAUTH_CLIENT_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/frontend_oauth_client_id)"
