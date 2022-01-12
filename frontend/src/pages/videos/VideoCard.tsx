@@ -7,6 +7,8 @@ import { VideoCardFromId } from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import Container from '@mui/material/Container';
 
+import { mainCriteriaNamesObj } from 'src/utils/constants';
+
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
@@ -26,14 +28,8 @@ function VideoCardPage() {
   const shouldDisplayChart =
     video.criteria_scores && video.criteria_scores.length > 0;
 
-  const captions: any = shouldDisplayChart
-    ? Object.fromEntries(
-        video.criteria_scores.map((criteria) => [
-          criteria.criteria,
-          criteria.criteria,
-        ])
-      )
-    : null;
+  console.log(mainCriteriaNamesObj);
+  const captions: any = mainCriteriaNamesObj;
 
   const data: any = shouldDisplayChart
     ? {
