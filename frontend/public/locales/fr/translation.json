@@ -44,7 +44,7 @@
   "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
   "logoutButton": "Déconnexion",
   "loginButton": "Se connecter",
-  "joinUsButton": "Créer un compte",
+  "joinUsButton": "S'inscrire",
   "topbar": {
     "search": "Rechercher"
   },
