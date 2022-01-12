@@ -40,7 +40,7 @@ jobs:
           pip install -r ml/ml_requirements.txt
 
       - name: Python Code Quality Checks
-        run: ./scripts/ci/pcq-checks.sh
+        run: ./scripts/ci/lint.sh
 
       - name: Run pytest
         run: pytest
