@@ -39,11 +39,8 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r ml/ml_requirements.txt
 
-      - name: Run flake8
-        run: flake8 tournesol core --exclude=migrations,tests,dev,__init__.py --max-line-length 99
-
-      - name: Run pylint
-        run: pylint --ignore=migrations core tournesol
+      - name: Python Code Quality Checks
+        run: ./scripts/ci/lint.sh
 
       - name: Run pytest
         run: pytest
