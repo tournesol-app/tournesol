@@ -39,11 +39,8 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r ml/ml_requirements.txt
 
-      - name: Run flake8
-        run: flake8 --config=.flake8 core tournesol
-
-      - name: Run pylint
-        run: pylint --rcfile=.pylintrc core tournesol
+      - name: Python Code Quality Checks
+        run: ./scripts/ci/pcq-checks.sh
 
       - name: Run pytest
         run: pytest
