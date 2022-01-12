@@ -262,15 +262,15 @@
     "videoDeletedFromRateLaterList": "La vidéo a bien été supprimée de votre liste."
   },
   "criteria": {
-    "shouldBeLargelyRecommended": "Should be largely recommended",
-    "reliableAndNotMisleading": "Reliable & not misleading",
-    "clearAndPedagogical": "Clear & pedagogical",
-    "importantAndActionable": "Important and actionable",
-    "laymanFriendly": "Layman-friendly",
-    "entertainingAndRelaxing": "Entertaining and relaxing",
-    "engagingAndThoughtProvoking": "Engaging & thought-provoking",
-    "diversityAndInclusion": "Diversity & inclusion",
-    "encouragesBetterHabits": "Encourages better habits",
-    "resilienceToBackfiringRisks": "Resilience to backfiring risks"
+    "shouldBeLargelyRecommended": "Devrait être largement recommandée",
+    "reliableAndNotMisleading": "Fiable & non trompeuse",
+    "clearAndPedagogical": "Claire & pédagogique",
+    "importantAndActionable": "Importante & réalisable",
+    "laymanFriendly": "Accessible",
+    "entertainingAndRelaxing": "Divertissante & relaxante",
+    "engagingAndThoughtProvoking": "Engageante & suscite la réflexion",
+    "diversityAndInclusion": "Diversité & inclusion",
+    "encouragesBetterHabits": "Encourage de meilleures habitudes",
+    "resilienceToBackfiringRisks": "Résistante au retour de flamme"
   }
 }
