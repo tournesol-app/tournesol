@@ -40,7 +40,7 @@ jobs:
           pip install -r ml/ml_requirements.txt
 
       - name: Run flake8
-        run: flake8 tournesol core --exclude=migrations,tests,dev,__init__.py --max-line-length 99
+        run: flake8 --config=.flake8 core tournesol
 
       - name: Run pylint
         run: pylint --ignore=migrations core tournesol
