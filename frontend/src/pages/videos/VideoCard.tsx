@@ -21,49 +21,39 @@ const useStyles = makeStyles(() => ({
 function VideoCardPage() {
   const classes = useStyles();
   const { video_id } = useParams<{ video_id: string }>();
-  console.log(video_id);
   const video = useVideoMetadata(video_id);
-  console.log(video);
-  const captions: any = video.criteria_scores
-    ? video.criteria_scores.length > 0
-      ? Object.fromEntries(
-          video.criteria_scores.map((criteria) => [
-            criteria.criteria,
-            criteria.criteria,
-          ])
-        )
-      : {
-          d: 'd',
-        }
+
+  const shouldDisplayChart =
+    video.criteria_scores && video.criteria_scores.length > 0;
+
+  const captions: any = shouldDisplayChart
+    ? Object.fromEntries(
+        video.criteria_scores.map((criteria) => [
+          criteria.criteria,
+          criteria.criteria,
+        ])
+      )
     : null;
 
-  const data: any = video.criteria_scores
-    ? video.criteria_scores.length > 0
-      ? {
-          data: Object.fromEntries(
-            video.criteria_scores.map((criteria) => [
-              criteria.criteria,
-              criteria.score,
-            ])
-          ),
-          meta: { color: 'purple' },
-        }
-      : {
-          data: {
-            d: 0,
-          },
-          meta: { color: 'blue' },
-        }
+  const data: any = shouldDisplayChart
+    ? {
+        data: Object.fromEntries(
+          video.criteria_scores.map((criteria) => [
+            criteria.criteria,
+            criteria.score,
+          ])
+        ),
+        meta: { color: 'purple' },
+      }
     : null;
-  console.log(captions);
-  console.log(video.criteria_scores);
+
   return (
     <div>
       <div className={classes.root}>
         <VideoCardFromId videoId={video_id} />
       </div>
       <Container maxWidth="sm">
-        {video.criteria_scores && (
+        {shouldDisplayChart && (
           <RadarChart captions={captions} data={[data]} size={550} />
         )}
       </Container>
