@@ -68,40 +68,24 @@ Moreover, you can run the following command to have a complete recap in a html d
 We use several tools to keep the code quality as good, readable and maintainable
 as possible:
 - `isort` automatically sorts import statements
-- `pylint` static code analyzer which looks for errors
-- `flake8` a wrapper around three popular tools for style enforcement
+- `pylint` performs a static analysis looking for errors
+- `flake8` enforces the code style by using three popular tools
 
-All of them should be automatically triggered by the continuous
-integration system.
+All of them should be automatically triggered by the continuous integration
+system using single script `scripts/ci/lint.sh`.
 
-You can run them locally before creating a new commit, by running the
-following commands.
-
-**manual installation**
-
-The commands should be run from the root of the Git repository. 
+You should also run this script them locally before creating a new commit.
+Note that the script must be run from the backend sub-folder. 
 
 ```shell
-# check file by file
-isort file1.py file2.py
-pylint --rcfile=backend/.pylintrc file1.py file2.py
-flake8 --config=backend/.flake8 file1.py file2.py
+# with a manually installed back end
+./scripts/ci/lint.sh
 
-# check the whole git index (i.e. all files added with git add)
-git diff --name-only --cached | xargs -r isort
-git diff --name-only --cached | xargs -r pylint --rcfile=backend/.pylintrc
-git diff --name-only --cached | xargs -r flake8 --config=backend/.flake8 
+# with an automatically installed back end with Docker
+docker exec tournesol-dev-api scripts/ci/lint.sh
 ```
 
-**automatic installtion with Docker**
-
-The commands should be run from the backend sub-folder.
-
-```shell
-docker exec tournesol-dev-api isort file1.py file2.py
-docker exec tournesol-dev-api pylint --rcfile=.pylintrc file1.py file2.py
-docker exec tournesol-dev-api flake8 --config=.flake8 file1.py file2.py
-```
+An output finishing by `+ exit 0` means all checks have been successful.
 
 ## F.A.Q.
 
