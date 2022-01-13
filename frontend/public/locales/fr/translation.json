@@ -208,8 +208,8 @@
     "contributeTitle": "Contribuer !",
     "contributeDetail": "Tournesol identifie les contenus de qualité à partir des comparaisons faites par la communauté. Pour participer, vous devez comparer des vidéos que vous avez déjà regardées. Premièrement, copiez et collez les liens de deux vidéos, puis dites nos laquelle d'après vous devrait être très largement recommandée. Si vous le souhaitez, vous pouvez comparer les vidéos plus en détail en donnant votre avis sur plusieurs autres critères.",
     "compareButton": "Commencer à comparer",
-    "useOurExtension": "Use our extension!",
-    "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your Youtube home page. You can also add a video in your rate later list or immediatly rate the video with just a few clicks.",
+    "useOurExtension": "Utilisez l'extension !",
+    "webExtensionDescription": "En utilisant l'extesion, vous verrez les vidéos recommandées par Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi ajouter des vidéos à votre liste à comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Obtenir l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Recommandations de Contenu Collaboratives",
@@ -217,19 +217,19 @@
     "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de <3>manière collaborative</3>, en s'appuyant sur les jugements de tous ses contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et demain <6>robustement bénéfique</6>, à grande échelle, pour toute l'humanité."
   },
   "reset": {
-    "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'utilisateur existe, un courriel avec un lien de réinitialisation sera envoyé.",
-    "resetYourPassword": "",
-    "failToSendResetLink": "",
-    "sendResetEmailButton": "",
-    "backToLogIn": "",
-    "passwordModifiedSuccessfully": "",
-    "newPassword": "",
-    "confirmNewPassword": "",
-    "passwordsDoNotMatch": "",
-    "resetPasswordButton": ""
+    "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
+    "resetYourPassword": "Réinitialisez votre mot de passe",
+    "failToSendResetLink": "L'envoie du courriel a échouée.",
+    "sendResetEmailButton": "Envoyer un courriel de réinitialisation",
+    "backToLogIn": "Retourner à la page de connexion",
+    "passwordModifiedSuccessfully": "Mot de passe bien modifié. Vous pouvez maintenant vous connecter.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmez votre nouveau mot de passe",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "resetPasswordButton": "Réinitialiser le mot de passe"
   },
   "myRateLaterListPage": {
-    "title": ""
+    "title": "Mes vidéos à comparer"
   },
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
