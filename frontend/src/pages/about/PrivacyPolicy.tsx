@@ -8,7 +8,9 @@ const PrivacyPolicyPage = () => {
   const { t } = useTranslation();
   return (
     <>
-      <ContentHeader title="About > Privacy Policy" />
+      <ContentHeader
+        title={`${t('menu.about')} > ${t('privacyPolicy.privacyPolicy')}`}
+      />
       <div
         style={{
           display: 'flex',
@@ -76,37 +78,27 @@ const PrivacyPolicyPage = () => {
           <Typography paragraph>
             {t('privacyPolicy.whereGoAggregateData')}
           </Typography>
-          <Typography variant="h5">Research purposes</Typography>
+          <Typography variant="h5">
+            {t('privacyPolicy.researchPurposes')}
+          </Typography>
           <Typography paragraph>
-            We believe that contributors’ data have an important scientific and
-            ethical value to help make recommendation systems more robustly
-            beneficial to humanity. This is why the data publicly provided by
-            contributors will be easily downloadable by any user. We hope that
-            this can stimulate academic and private research on more robustly
-            beneficial recommendation algorithms.
+            {t('privacyPolicy.researchPurposesParagraph')}
           </Typography>
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
-            How long Tournesol retains contributors’ data?
+            {t('privacyPolicy.howLongTournesolRetainsContributorsData')}
           </Typography>
           <Typography paragraph>
-            If a user makes a search or compares videos, their data will be
-            retained indefinitely, along with metadata. Tournesol does so to
-            fulfill its mission to identify the top quality content that
-            contributors want to see promoted at scale. All contributors can
-            see, edit, or delete the personal information provided in their
-            contributor page at any time (except they cannot change their
-            username). Website administrators can also see and edit that
-            information.
+            {t(
+              'privacyPolicy.howLongTournesolRetainsContributorsDataParagraph'
+            )}
           </Typography>
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
-            What rights contributors have over their data?
+            {t('privacyPolicy.whatRightsContributorsHaveOverTheirData')}
           </Typography>
           <Typography paragraph>
-            By going to their contributor page, contributors can download the
-            data they submitted to their platform. They can also request that
-            Tournesol erases any personal data Tournesol recorded about them.
-            This does not include the data that Tournesol is obliged to keep for
-            administrative, legal, or security purposes.
+            {t(
+              'privacyPolicy.whatRightsContributorsHaveOverTheirDataParagraph'
+            )}
           </Typography>
         </div>
       </div>

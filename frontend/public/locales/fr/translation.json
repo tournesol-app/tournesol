@@ -107,7 +107,7 @@
     "emailStatus": "Statut de l'adresse",
     "emailTrusted": "Fiable",
     "emailNonTrusted": "Non-fiable",
-    "learnMoreAboutTrustedDomains": "A propos des domaines fiables",
+    "learnMoreAboutTrustedDomains": "À propos des domaines fiables",
     "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
     "currentEmailAddressIs": "Votre adresse actuelle est",
     "newEmailAddress": "Nouvelle adresse e-mail",
@@ -166,7 +166,6 @@
     "youTemporarilyMadeTooManyRequests": "Désolé, vous avez momentanément fait trop de requêtes. Veuillez réessayer plus tard."
   },
   "about": {
-    "title": "A propos",
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
     "introductionTournesol": "Tournesol est une plateforme libre et open source dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfique à grande échelle, pour toute l'humanité. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
     "tournesolVision": "Nous souhaitons constuire les fondations d'une gouvernance algorithmique robuste et bénéfique à grande l'échelle pour l'information",
@@ -220,7 +219,13 @@
     "publicData": "",
     "whereGoPublicData": "",
     "aggregateData": "",
-    "whereGoAggregateData": ""
+    "whereGoAggregateData": "",
+    "researchPurposes": "",
+    "researchPurposesParagraph": "",
+    "howLongTournesolRetainsContributorsData": "",
+    "howLongTournesolRetainsContributorsDataParagraph": "",
+    "whatRightsContributorsHaveOverTheirData": "",
+    "whatRightsContributorsHaveOverTheirDataParagraph": ""
   },
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
