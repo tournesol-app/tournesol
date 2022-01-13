@@ -21,22 +21,18 @@ const LanguageSelector = () => {
       <MenuButton
         startIcon={<Language />}
         sx={{ width: '100%', px: 3 }}
-        menuContent={
-          <>
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <MenuItem
-                key={lang}
-                sx={{ minWidth: '200px' }}
-                onClick={() => i18n.changeLanguage(lang)}
-              >
-                <Box component="span" sx={{ textTransform: 'capitalize' }}>
-                  {getLanguageName(lang)}
-                </Box>
-                &nbsp;({lang})
-              </MenuItem>
-            ))}
-          </>
-        }
+        menuContent={SUPPORTED_LANGUAGES.map((lang) => (
+          <MenuItem
+            key={lang}
+            sx={{ minWidth: '200px' }}
+            onClick={() => i18n.changeLanguage(lang)}
+          >
+            <Box component="span" sx={{ textTransform: 'capitalize' }}>
+              {getLanguageName(lang)}
+            </Box>
+            &nbsp;({lang})
+          </MenuItem>
+        ))}
         menuProps={{
           anchorOrigin: {
             vertical: 'top',
