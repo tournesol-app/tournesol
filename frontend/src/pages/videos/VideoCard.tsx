@@ -5,7 +5,7 @@ import { VideoCardFromId } from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import Container from '@mui/material/Container';
 
-import { mainCriteriaNamesObj } from 'src/utils/constants';
+//import { mainCriteriaNamesObj } from 'src/utils/constants';
 import {
   Radar,
   RadarChart,
@@ -72,16 +72,18 @@ function VideoCardPage() {
       </div>
 
       {shouldDisplayChart && (
-        <RadarChart width={600} height={300} outerRadius="80%" data={data}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
-          <Radar
-            dataKey="score"
-            stroke="#8884d8"
-            fill="#8884d8"
-            fillOpacity={0.6}
-          />
-        </RadarChart>
+        <Container maxWidth="sm">
+          <RadarChart width={600} height={300} outerRadius="80%" data={data}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
+            <Radar
+              dataKey="score"
+              stroke="#8884d8"
+              fill="#8884d8"
+              fillOpacity={0.6}
+            />
+          </RadarChart>
+        </Container>
       )}
     </div>
   );
