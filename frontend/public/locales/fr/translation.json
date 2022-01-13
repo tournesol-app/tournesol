@@ -200,6 +200,22 @@
     "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
+  "privacyPolicy": {
+    "privacyPolicy": "",
+    "whatPersonalDataTournesolCollectAndWhy": "",
+    "ratings": "",
+    "whyTournesolCollectsRatings": "",
+    "search": "",
+    "whyTournesolCollectsSearchQueries": "",
+    "contributorProfile": "",
+    "whyTournesolCollectsContributorProfile": "",
+    "contactForm": "",
+    "thereIsNoContactForm": "",
+    "cookies": "",
+    "whyTournesolCollectscookies": "",
+    "embeddedContentFromOtherWebsites": "",
+    "whatDataCollectEmbeddedWebsites": ""
+  },
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
     "title": "Mes comparaisons"

@@ -2,8 +2,10 @@ import React from 'react';
 import { Typography } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
+import { useTranslation } from 'react-i18next';
 
 const PrivacyPolicyPage = () => {
+  const { t } = useTranslation();
   return (
     <>
       <ContentHeader title="About > Privacy Policy" />
@@ -23,63 +25,38 @@ const PrivacyPolicyPage = () => {
           }}
         >
           <Typography variant="h3" gutterBottom>
-            Privacy Policy
+            {t('privacyPolicy.privacyPolicy')}
           </Typography>
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
-            What personal data Tournesol collects and why?
+            {t('privacyPolicy.whatPersonalDataTournesolCollectAndWhy')}
           </Typography>
-          <Typography variant="h5">Ratings</Typography>
+          <Typography variant="h5">{t('privacyPolicy.ratings')}</Typography>
           <Typography paragraph>
-            Our mission is to elicit, infer and aggregate contributors’
-            judgments on the quality of online videos. To do so, Tournesol
-            collects the data provided by the contributors when they compare
-            pairs of content.
+            {t('privacyPolicy.whyTournesolCollectsRatings')}
           </Typography>
-          <Typography variant="h5">Search</Typography>
+          <Typography variant="h5">{t('privacyPolicy.search')}</Typography>
           <Typography paragraph>
-            Even if the contributor is not logged in, Tournesol collects the
-            parameters of their search queries in order to better understand
-            most users’ needs. We believe that such data can also have a
-            scientific and ethical value to help make recommendation systems
-            more robustly beneficial to humanity.
-          </Typography>
-          <Typography variant="h5">Contributor profile</Typography>
-          <Typography paragraph>
-            In order to distinguish different contributors’ expertise, Tournesol
-            asks contributors to certify their emails, to report their fields of
-            expertise and to link to their public profiles. We believe that such
-            data have an important scientific and ethical value and will help
-            make recommendation systems more robustly beneficial to humanity.
-          </Typography>
-          <Typography variant="h5">Contact form</Typography>
-          <Typography paragraph>
-            There is no contact form. If you need to contact us, please use the
-            following email: tournesol.application(at)gmail.com
-          </Typography>
-          <Typography variant="h5">Cookies</Typography>
-          <Typography paragraph>
-            If a contributor has an account and logs in Tournesol, Tournesol
-            will set a temporary cookie to determine if their browser accepts
-            cookies. This cookie contains no personal data and is discarded when
-            the contributor closes their browser. When the contributor logs in,
-            Tournesol will also set up several cookies to save their login
-            information and their screen display choices. Login cookies last for
-            two days, and screen options cookies last for a year. If the
-            contributor selects “Remember Me”, their login will persist for two
-            weeks. If they log out of their account, the login cookies will be
-            removed. Tournesol does not use cookies for tracking purposes.
+            {t('privacyPolicy.whyTournesolCollectsSearchQueries')}
           </Typography>
           <Typography variant="h5">
-            Embedded content from other websites
+            {t('privacyPolicy.contributorProfile')}
           </Typography>
           <Typography paragraph>
-            Tournesol embeds video content from YouTube. Embedded content from
-            other websites behaves in the exact same way as if the visitor had
-            visited the other website. These websites may collect data about the
-            users, use cookies, and embed additional third-party tracking. They
-            may monitor the users’ interaction with that embedded content,
-            including tracking their interaction with the embedded content if
-            they have an account and are logged in to that website
+            {t('privacyPolicy.whyTournesolCollectsContributorProfile')}
+          </Typography>
+          <Typography variant="h5">{t('privacyPolicy.contactForm')}</Typography>
+          <Typography paragraph>
+            {t('privacyPolicy.thereIsNoContactForm')}
+          </Typography>
+          <Typography variant="h5">{t('privacyPolicy.cookies')}</Typography>
+          <Typography paragraph>
+            {t('privacyPolicy.whyTournesolCollectscookies')}
+          </Typography>
+          <Typography variant="h5">
+            {t('privacyPolicy.embeddedContentFromOtherWebsites')}
+          </Typography>
+          <Typography paragraph>
+            {t('privacyPolicy.whatDataCollectEmbeddedWebsites')}
           </Typography>
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
             Who Tournesol shares users’ and contributors’ data with?
