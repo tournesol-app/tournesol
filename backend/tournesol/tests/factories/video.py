@@ -4,7 +4,7 @@ import factory
 
 from tournesol.models import video as video_models
 from tournesol.utils import video_id
-from core.factories.user import UserFactory
+from core.tests.factories.user import UserFactory
 
 
 class VideoFactory(factory.django.DjangoModelFactory):
