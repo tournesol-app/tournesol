@@ -76,21 +76,21 @@
     "neutral": "Neutre",
     "important": "Important",
     "crucial": "Crucial",
-    "criteria": "Critère",
+    "criteria": "Critères",
     "today": "Aujourd'hui",
     "thisWeek": "Cette semaine",
     "thisMonth": "Ce mois-ci",
     "thisYear": "Cette année",
-    "uploadDate": "Mise en ligne",
-    "language": "Langue",
+    "uploadDate": "Mises en ligne",
+    "language": "Langues",
     "uploader": "Chaîne"
   },
   "ratings": {
     "allRatingsMarkedPublic": "Toutes vos comparaisons sont maintenant publiques.",
     "allRatingsMarkedPrivate": "Toutes vos comparaisons sont maintenant privrées.",
     "updateVisibility": "Changer la visibilité",
-    "markAllAsPublic": "Tout noter comme <1>public</1>",
-    "markAllAsPrivate": "Tout noter comme <1>privé</1>",
+    "markAllAsPublic": "Tout marquer comme <1>public</1>",
+    "markAllAsPrivate": "Tout marquer comme <1>privé</1>",
     "noVideoCorrespondsToFilter": "Aucune vidéo de correspond à votre filtre.",
     "noVideoComparedYet": "Vous n'avez pas encore comparé de vidéo",
     "compareVideosButton": "Comparer des vidéos"
@@ -110,7 +110,7 @@
     "learnMoreAboutTrustedDomains": "A propos des domaines fiables",
     "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
     "currentEmailAddressIs": "Votre adresse actuelle est",
-    "newEmailAddress": "Nouvelle adresse mail",
+    "newEmailAddress": "Nouvelle adresse e-mail",
     "sendVerificationEmail": "Envoyer un courriel de confirmation",
     "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
     "downloadFile": "Télécahrger le fichier",
@@ -129,9 +129,9 @@
     "updateProfile": "Mettre à jour le profil",
     "account": "Compte",
     "title": "Paramêtres",
-    "changeEmailAddress": "Changer d'adresse mail",
+    "changeEmailAddress": "Changer d'adresse e-mail",
     "changePassword": "Changer de mot de passe",
-    "exportAllData": "Télécharger toutes vos données",
+    "exportAllData": "Télécharger vos données",
     "deleteAccount": "Supprimer votre compte"
   },
   "profile": "Profil",
@@ -144,7 +144,7 @@
     "nComparisonsByYou_many": "{{count}} comparison by you",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
-    "contributionsArePublicMessage": "Vos contributions impliquant cette vidéo sont actuellement publiques. Les comparaisons apparaissent dans les données publiques associées à votre profil seulement lorsque les deux vidéos d'une comparaison sont marquées comme publiques.",
+    "contributionsArePublicMessage": "Vos contributions impliquant cette vidéo sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux vidéos comme publiques.",
     "contributionsArePrivateMessage": "Vos contributions impliquant cette vidéo sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer le score agréré public des vidéos.",
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
@@ -168,7 +168,7 @@
   "about": {
     "title": "A propos",
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "introductionTournesol": "Tournesol est une plateforme libre et open source dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et demain robustement bénéfique à grande échelle, pour toute l'humanité. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
+    "introductionTournesol": "Tournesol est une plateforme libre et open source dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfique à grande échelle, pour toute l'humanité. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
     "tournesolVision": "Nous souhaitons constuire les fondations d'une gouvernance algorithmique robuste et bénéfique à grande l'échelle pour l'information",
     "tournesolVisionRaisingAwareness": "À travers la sensibilisation à la crise globale de l'information",
     "tournesolVisionCollaborativePlatform": "À travers le développement d'une plateforme collaborative pour l'évaluation et la recommandation de contenu en ligne",
@@ -196,9 +196,9 @@
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révèleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommendation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
     "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui compare des vidéos sur Tournesol. Nous comptons actuellement environ 2500 utilisateurs qui ont comparés 9000 fois plus de 3000 vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine fiables",
-    "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, par défaut, la plateforme assigne un droit de vote limité aux nouveaux comptes créés.",
-    "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important validant <2>une adresse mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
-    "trustedDomainsCurrentList": "Liste actuelle des domaines fiables"
+    "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
+    "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
+    "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
@@ -212,9 +212,9 @@
     "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
-    "collaborativeContentRecommendations": "Recommandations Collaboratives de Contenu",
+    "collaborativeContentRecommendations": "Recommandations Collaboratives de Contenus",
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grande qualité, de <3>manière collaborative</3>, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grande qualité, de <3>manière collaborative</3>, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -229,7 +229,7 @@
     "resetPasswordButton": "Réinitialiser le mot de passe"
   },
   "myRateLaterListPage": {
-    "title": "Mes vidéos à comparer"
+    "title": "À comparer plus tard"
   },
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
@@ -237,13 +237,13 @@
     "accountCreationFailed": "Création du compte échouée.",
     "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>"
   },
-  "emailAddress": "Adresse mail",
+  "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",
   "signUpButton": "S'inscrire",
   "verify": {
     "verifyRegistration": "Vérifier l'inscription",
     "yourAccountIsNowVerified": "Votre compte est maintenant vérifié.",
-    "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse mail est maintenant vérifiée.",
+    "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse e-mail est maintenant vérifiée.",
     "verificationFailed": "Vérification échouée"
   },
   "myRatedVideosPage": {
