@@ -552,6 +552,6 @@ class VideoApi(TestCase):
         self.assertEqual(resp.data["count"], 2)
 
     def test_video_views_stored_on_64bits(self):
-        Video.objects.filter(video_id=self._video_id_01).update(views=9_000_000_000)
-        video = Video.objects.get(video_id=self._video_id_01)
+        Video.objects.filter(video_id=self.video_1.video_id).update(views=9_000_000_000)
+        video = Video.objects.get(video_id=self.video_1.video_id)
         self.assertEqual(video.views, 9_000_000_000)

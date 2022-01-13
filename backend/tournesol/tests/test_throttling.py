@@ -90,7 +90,7 @@ class ThrottlingTestCase(TestCase):
         client.force_authenticate(user=user)
 
         # POST requests must be throttled
-        response = client.post("/video/", {"video_id": "videoid1abc"}, format="json")
+        response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = client.post("/video/", {"video_id": "videoid2abc"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
