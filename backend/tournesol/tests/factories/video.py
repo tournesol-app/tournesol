@@ -1,10 +1,15 @@
 import datetime
+import random
+import string
 
 import factory
 
 from tournesol.models import video as video_models
-from tournesol.utils import video_id
 from core.tests.factories.user import UserFactory
+
+
+def generate_youtube_id():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=11))
 
 
 class VideoFactory(factory.django.DjangoModelFactory):
@@ -12,7 +17,7 @@ class VideoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = video_models.Video
 
-    video_id = factory.LazyFunction(video_id.generate_youtube_id)
+    video_id = factory.LazyFunction(generate_youtube_id)
     name = factory.Sequence(lambda n: 'Video title %s' % n)
     description = factory.Sequence(lambda n: 'Video description %s' % n)
     duration = factory.LazyAttribute(lambda _: datetime.timedelta(seconds=60))
