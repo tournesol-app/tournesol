@@ -59,37 +59,22 @@ const PrivacyPolicyPage = () => {
             {t('privacyPolicy.whatDataCollectEmbeddedWebsites')}
           </Typography>
           <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
-            Who Tournesol shares users’ and contributors’ data with?
+            {t('privacyPolicy.whoTournesolSharesUsersNContributorsDataWith')}
           </Typography>
           <Typography paragraph>
-            Tournesol highly values the protection of users’ and contributors’
-            data. In particular, Tournesol knows that some of the contributors’
-            judgments may conflict with the agendas of some political leaders or
-            of their employer. We want contributors to express judgments without
-            the fear of any consequence for their personal life. This is why
-            Tournesol has the option of providing judgments privately or
-            anonymously. Privately provided raw judgments will not be shared
-            with any third party.
+            {t(
+              'privacyPolicy.whoTournesolSharesUsersNContributorsDataWithParagraph'
+            )}
           </Typography>
-          <Typography variant="h5">Public data</Typography>
+          <Typography variant="h5">{t('privacyPolicy.publicData')}</Typography>
           <Typography paragraph>
-            Contributors are encouraged, when possible, to compare videos
-            publicly. This will allow us to collect a public database, which,
-            hopefully, will stimulate research on more beneficial recommendation
-            algorithms. Private ratings, i.e. ratings for which at least one
-            video is rated privately by the contributor, will never be made
-            public, nor shared with third parties
+            {t('privacyPolicy.whereGoPublicData')}
           </Typography>
-          <Typography variant="h5">Aggregate data</Typography>
+          <Typography variant="h5">
+            {t('privacyPolicy.aggregateData')}
+          </Typography>
           <Typography paragraph>
-            Our algorithms combine contributors’ public and private data to
-            provide aggregate statistics, which are made public. This is
-            typically the case of the Tournesol scores given to different
-            videos. Tournesol also plans to release statistics about subsets of
-            contributors, e.g. to determine how pedagogical a physics video is
-            according to biologists. In any such case, we apply the principles
-            of differential privacy, by adding randomness to the actual
-            aggregation, in order to increase the privacy of your data.
+            {t('privacyPolicy.whereGoAggregateData')}
           </Typography>
           <Typography variant="h5">Research purposes</Typography>
           <Typography paragraph>
