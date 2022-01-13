@@ -60,7 +60,7 @@
     "addToMyRateLaterList": "Ajouter à ma liste",
     "errorOccurredCannotAddVideo": "Désolé, une erreur est survenue. Impossible d'ajouter la vidéo à votre liste.",
     "videoAlreadyInList": "La video est déjà dans votre liste.",
-    "videoAdded": "Vidéo bien ajoutée à votre liste.",
+    "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer.",
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
     "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent ensuite être comparées.",
     "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
@@ -255,11 +255,11 @@
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critètes de recherche.",
   "actions": {
     "compareNow": "Comparer !",
-    "videoAddedToRateLaterList": "La vidéo a bien été ajoutée à votre liste.",
+    "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer.",
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
     "remove": "Supprimer",
-    "videoDeletedFromRateLaterList": "La vidéo a bien été supprimée de votre liste."
+    "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer."
   },
   "criteria": {
     "shouldBeLargelyRecommended": "Devrait être largement recommandée",
