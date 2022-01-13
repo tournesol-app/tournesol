@@ -6,23 +6,7 @@ import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import Container from '@mui/material/Container';
 
 //import { mainCriteriaNamesObj } from 'src/utils/constants';
-import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-} from 'recharts';
-
-import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis } from 'recharts';
 
 const renderCustomAxisTick = ({ x, y, payload }: any) => {
   const path =
@@ -70,7 +54,6 @@ function VideoCardPage() {
       <div className={classes.root}>
         <VideoCardFromId videoId={video_id} />
       </div>
-
       {shouldDisplayChart && (
         <Container maxWidth="sm">
           <RadarChart width={600} height={300} outerRadius="80%" data={data}>
