@@ -315,7 +315,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Tournesol API',
 }
 
-YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "")
+YOUTUBE_API_KEY = server_settings.get("YOUTUBE_API_KEY", "")
 
 LOGGING = {
     'version': 1,
