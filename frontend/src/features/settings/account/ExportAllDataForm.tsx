@@ -44,7 +44,7 @@ const ExportAllDataForm = () => {
     const response = await usersMeExportsAllRetrieveBlob();
 
     if (response.ok === true) {
-      const zipFileBlob = response.blob();
+      const zipFileBlob = await response.blob();
       setDownloadUrl(window.URL.createObjectURL(zipFileBlob));
     } else {
       // avoid promises fulfilled by HTTP errors to be considered as successful
