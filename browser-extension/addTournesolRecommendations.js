@@ -96,7 +96,7 @@ const getTournesolComponent = () => {
     refresh_button.className = 'tournesol_simple_button';
     refresh_button.onclick = () => {
       refresh_button.disabled = true;
-      loadRecommandations(loadVideos = true, loadAdditionalVideos = isExpanded);
+      loadRecommandations();
     };
     inline_div.append(refresh_button);
     // Expand button
@@ -117,7 +117,7 @@ const getTournesolComponent = () => {
       expand_button.disabled = true;
       if(!areRecommandationsLoading && !isExpanded){
         isExpanded = true;
-        loadRecommandations(loadVideos = false, loadAdditionalVideos = true);
+        displayRecommendations();
       }else if(isExpanded){
         isExpanded = false;
         displayRecommendations();
@@ -248,21 +248,15 @@ function process(){
 
 function handleResponse({ data: videosReponse, loadVideos: loadVideos, loadAdditionalVideos: loadAdditionalVideos }){
   areRecommandationsLoading = false;
-  if(loadVideos && loadAdditionalVideos){
-    videos = videosReponse.slice(0,4);
-    additionalVideos = videosReponse.slice(4);
-  }else if(loadVideos){
-    videos = videosReponse;
-  }else if(loadAdditionalVideos){
-    additionalVideos = videosReponse;
-  }
+  videos = videosReponse.slice(0,4);
+  additionalVideos = videosReponse.slice(4);
   
   if(isPageLoaded){
     displayRecommendations();
   }
 }
 
-function loadRecommandations(loadVideos = true, loadAdditionalVideos = false) {
+function loadRecommandations() {
   // Only enable on youtube.com/
   if (location.pathname != '/') return;
 
@@ -279,7 +273,7 @@ function loadRecommandations(loadVideos = true, loadAdditionalVideos = false) {
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
     language: language,
-    videosNumber: loadVideos ? videosPerRow : 0,
-    additionalVideosNumber: loadAdditionalVideos ? videosPerRow * (rowsWhenExpanded - 1) : 0
+    videosNumber: videosPerRow,
+    additionalVideosNumber: videosPerRow * (rowsWhenExpanded - 1)
   }, handleResponse);
 }
