@@ -3,9 +3,9 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
-const defaultVideoNumber = 4;
+const videosPerRow = 4;
 const rowsWhenExpanded = 3;
-const totalVideoNumber = defaultVideoNumber * rowsWhenExpanded;
+const totalVideoNumber = videosPerRow * rowsWhenExpanded;
 let isExpanded = false;
 
 let videos = [];
@@ -104,11 +104,11 @@ const getTournesolComponent = () => {
     expand_button.setAttribute('id', 'tournesol_expand_button');
     // A new button is created on each video loading, the image must be loaded accordingly
     if(isExpanded){
-      fetch(chrome.runtime.getURL('images/chevron-down.svg'))
+      fetch(chrome.runtime.getURL('images/chevron-up.svg'))
         .then(r => r.text())
         .then(svg => expand_button.innerHTML = svg);
     }else{
-      fetch(chrome.runtime.getURL('images/chevron-up.svg'))
+      fetch(chrome.runtime.getURL('images/chevron-down.svg'))
         .then(r => r.text())
         .then(svg => expand_button.innerHTML = svg);
     }
@@ -275,15 +275,11 @@ function loadRecommandations(loadVideos = true, loadAdditionalVideos = false) {
    */
   const language =
     localStorage.getItem('tournesol_extension_config_language') || 'en';
-
-  const videoNumber = 
-    (loadVideos ? defaultVideoNumber : 0) + (loadAdditionalVideos ? defaultVideoNumber * (rowsWhenExpanded - 1) : 0);
   
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
     language: language,
-    number: videoNumber,
-    loadVideos: loadVideos,
-    loadAdditionalVideos: loadAdditionalVideos
+    videosNumber: loadVideos ? videosPerRow : 0,
+    additionalVideosNumber: loadAdditionalVideos ? videosPerRow * (rowsWhenExpanded - 1) : 0
   }, handleResponse);
 }

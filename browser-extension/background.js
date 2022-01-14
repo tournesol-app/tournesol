@@ -1,5 +1,14 @@
 import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
 
+const oversamplingRatioForRecentVideos = 2.5;
+const oversamplingRatioForOldVideos = 5;
+// Higher means videos recommended can come from further down the recommandation list
+// and returns videos that are more diverse on reload
+
+const recentVideoProportion = 0.75;
+const recentVideoProportionForAdditionalVideos = 0.5;
+
+
 chrome.contextMenus.removeAll(function (e, tab) {
   chrome.contextMenus.create({
     id: 'tournesol_add_rate_later',
@@ -53,14 +62,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return []
     };
 
+    const videoNumber = request.videosNumber + request.additionalVideosNumber;
+    const recentVideoToLoad = Math.round(request.videosNumber*oversamplingRatioForRecentVideos*recentVideoProportion);
+    const oldVideoToLoad = Math.round(request.videosNumber*oversamplingRatioForOldVideos*(1-recentVideoProportion));
+    const recentAdditionalVideoToLoad = 
+      Math.round(request.additionalVideosNumber*oversamplingRatioForRecentVideos*recentVideoProportionForAdditionalVideos);
+    const oldAdditionalVideoToLoad = 
+      Math.round(request.additionalVideosNumber*oversamplingRatioForOldVideos*(1-recentVideoProportionForAdditionalVideos));
+
     const process = async () => {
       const threeWeeksAgo = getDateThreeWeeksAgo()
-      const recent = await request_recommendations(`date_gte=${threeWeeksAgo}&language=${request.language}&limit=10`);
-      const old = await request_recommendations(`date_lte=${threeWeeksAgo}&language=${request.language}&limit=50`);
-      const recent_sub = getRandomSubarray(recent, request.number - 1);
-      const old_sub = getRandomSubarray(old, request.number - recent_sub.length);
-      const videos = getRandomSubarray([...old_sub, ...recent_sub], request.number);
-      return { data: videos, loadVideos:request.loadVideos, loadAdditionalVideos:request.loadAdditionalVideos };
+
+      // Only one request for both videos and additional videos
+      // That is why the responses are cut after that
+      const recent = await request_recommendations(
+        `date_gte=${threeWeeksAgo}&language=${request.language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
+      );
+      const old = await request_recommendations(
+        `date_lte=${threeWeeksAgo}&language=${request.language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
+      );
+      const videoRecent = recent.slice(0,recentVideoToLoad);
+      const videoOld = old.slice(0,oldVideoToLoad);
+      const additionalVideoRecent = recent.slice(recentVideoToLoad);
+      const additionalVideoOld = old.slice(oldVideoToLoad);
+
+      const numberOfRecentVideoToRespond = Math.round(request.videosNumber*recentVideoProportion);
+      const numberOfOldVideoToRespond = request.videosNumber - numberOfRecentVideoToRespond;
+      const numberOfRecentAdditionalVideoToRespond = Math.round(request.additionalVideosNumber*recentVideoProportionForAdditionalVideos);
+      const numberOfOldAdditionalVideoToRespond = request.additionalVideosNumber - numberOfRecentAdditionalVideoToRespond;
+
+      const recentVideos = getRandomSubarray(videoRecent, numberOfRecentVideoToRespond);
+      const oldVideos = getRandomSubarray(videoOld, numberOfOldVideoToRespond);
+      const videos = getRandomSubarray([...oldVideos, ...recentVideos], request.videosNumber);
+
+      const additionalRecentVideos = getRandomSubarray(additionalVideoRecent, numberOfRecentAdditionalVideoToRespond);
+      const additionalOldVideos = getRandomSubarray(additionalVideoOld, numberOfOldAdditionalVideoToRespond);
+      const additionalVideos = getRandomSubarray([...additionalRecentVideos, ...additionalOldVideos], request.additionalVideosNumber);
+
+      return { 
+        data: [...videos, ...additionalVideos], 
+        loadVideos:request.videosNumber > 0, 
+        loadAdditionalVideos:request.additionalVideosNumber > 0 
+      };
     }
     process().then(sendResponse);
     return true;
