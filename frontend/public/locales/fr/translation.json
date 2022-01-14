@@ -53,7 +53,7 @@
     "logInAction": "Connexion",
     "forgotYourPassword": "Mot de passe oublié ?"
   },
-  "username": "Identifiant",
+  "username": "Nom d'utilisateur",
   "password": "Mot de passe",
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
@@ -64,7 +64,7 @@
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
     "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent ensuite être comparées.",
     "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
-    "listHasNbVideos_many": "Your rate-later list now has <1>{{videoCount}}</1> video(s).",
+    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos.",
     "listHasNbVideos_other": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos."
   },
   "public": "publique",
@@ -113,7 +113,7 @@
     "newEmailAddress": "Nouvelle adresse e-mail",
     "sendVerificationEmail": "Envoyer un courriel de confirmation",
     "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
-    "downloadFile": "Télécahrger le fichier",
+    "downloadFile": "Télécharger le fichier",
     "prepareExport": "Préparer l'export",
     "errorOccurredDuringPasswordUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
     "passwordChangedSuccessfully": "Mot de passe bien mis à jour.",
@@ -128,7 +128,7 @@
     "captionUsernameWillAppearInPublicDatabase": "Votre identifiant apparaîtra dans les données publiques de Tournesol, si vous choisisssez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
     "updateProfile": "Mettre à jour le profil",
     "account": "Compte",
-    "title": "Paramêtres",
+    "title": "Paramètres",
     "changeEmailAddress": "Changer d'adresse e-mail",
     "changePassword": "Changer de mot de passe",
     "exportAllData": "Télécharger vos données",
@@ -141,7 +141,7 @@
   },
   "video": {
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
-    "nComparisonsByYou_many": "{{count}} comparison by you",
+    "nComparisonsByYou_many": "{{count}} comparaisons par vous",
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cette vidéo sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux vidéos comme publiques.",
@@ -149,10 +149,10 @@
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
     "nbComparisonsBy_one": "{{count}} comparaison par",
-    "nbComparisonsBy_many": "{{count}} comparisons by",
+    "nbComparisonsBy_many": "{{count}} comparaisons par",
     "nbComparisonsBy_other": "{{count}} comparaisons par",
     "nbContributors_one": "{{count}} contributeur",
-    "nbContributors_many": "{{count}} contributors",
+    "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
     "criteriaRatedLow": "Noté faiblement :",
@@ -233,20 +233,20 @@
   },
   "home": {
     "contributeTitle": "Participez !",
-    "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après-vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
+    "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
     "compareButton": "Commencer à comparer",
     "useOurExtension": "Utilisez l'extension !",
     "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
-    "collaborativeContentRecommendations": "Recommandations Collaboratives de Contenus",
+    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
     "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grande qualité, de <3>manière collaborative</3>, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
     "resetYourPassword": "Réinitialisez votre mot de passe",
-    "failToSendResetLink": "L'envoie du courriel a échouée.",
+    "failToSendResetLink": "L'envoi du courriel a échoué.",
     "sendResetEmailButton": "Envoyer un courriel de réinitialisation",
     "backToLogIn": "Retourner à la page de connexion",
     "passwordModifiedSuccessfully": "Mot de passe bien modifié. Vous pouvez maintenant vous connecter.",
@@ -271,7 +271,7 @@
     "verifyRegistration": "Vérifier l'inscription",
     "yourAccountIsNowVerified": "Votre compte est maintenant vérifié.",
     "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse e-mail est maintenant vérifiée.",
-    "verificationFailed": "Vérification échouée"
+    "verificationFailed": "La vérification a échoué"
   },
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
