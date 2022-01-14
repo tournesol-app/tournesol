@@ -138,3 +138,4 @@ export const getRandomSubarray = (arr, size) => {
 export const getVideoStatistics = (videoId) => {
   return fetchTournesolApi(`videos/?video_id=${videoId}`, 'GET', {});
 }
+

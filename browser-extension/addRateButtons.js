@@ -117,12 +117,6 @@ function process() {
     div.insertBefore(rateLaterButton, div.children[2]);
     div.insertBefore(rateNowButton, div.children[2]);
     div.insertBefore(popupholder, div.children[2]);
-
-
-    // let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
-    // let htmlPopup = await htmlPopupResponse.text();
-    // rateNowButton.innerHTML += htmlPopup;
-    // addJsOnPopup();
   }
 }
 
@@ -132,9 +126,17 @@ function videoIdToImg(id){
 }
 
 async function loadPopup(div){
+  // Load the popup and adds it to an adjacent html element
+  // (it doesn't matter since it is of fixed position)
   let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
   let htmlPopup = await htmlPopupResponse.text();
   div.innerHTML += htmlPopup;
+
+  // Hide the popup if the user clicks on anything except the popup itself and the rating buttons
+  onClickOutside(div, () => {
+    document.getElementById("tournesol-popup-div").className = "tournesol-popup-hidden";
+    popupActive = false;
+  })
 
   chrome.runtime.sendMessage(
     {
@@ -142,10 +144,11 @@ async function loadPopup(div){
     },
     (data) => {
       videosToCompare = data;
-      comparedVideoId = videosToCompare[0].video.video_id
+      const videoIndex = Math.floor(videosToCompare.length * Math.random());
+      comparedVideoId = videosToCompare[videoIndex].video.video_id;
       const thisVideoThumbnail = videoIdToImg(comparedVideoId);
       document.getElementById("right-video-img").setAttribute("src", thisVideoThumbnail);
-      document.getElementById("right-video-title").innerText = videosToCompare[0].video.name;
+      document.getElementById("right-video-title").innerText = videosToCompare[videoIndex].video.name;
     }
   );
 
@@ -160,6 +163,7 @@ async function loadPopup(div){
   let submitButton = document.getElementById("tournesol-submit-button");
   submitButton.onclick = () => {
     document.getElementById('tournesol-popup-div').className = "tournesol-popup-hidden";
+    popupActive = false;
 
     let rateNowButton = document.getElementById('tournesol-rate-now-button')
     rateNowButton.disabled = true;
@@ -178,4 +182,17 @@ async function loadPopup(div){
     );
   }
   
+}
+
+
+// Based on https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
+function onClickOutside(element, f) {
+  const isVisible = elem => !!elem && !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+
+  const outsideClickListener = event => {
+      if (!element.contains(event.target) && isVisible(element)) {
+        f();
+      }
+  };
+  document.addEventListener('click', outsideClickListener);
 }
