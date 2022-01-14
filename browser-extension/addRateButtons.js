@@ -133,11 +133,11 @@ async function loadPopup(div){
   div.innerHTML += htmlPopup;
 
   // Hide the popup if the user clicks on anything except the popup itself and the rating buttons
-  onClickOutside(div, () => {
+  let buttonsDiv = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
+  onClickOutside(buttonsDiv, () => {
     document.getElementById("tournesol-popup-div").className = "tournesol-popup-hidden";
     popupActive = false;
   })
-
   chrome.runtime.sendMessage(
     {
       message: 'loadVideosToCompare'
