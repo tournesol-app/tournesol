@@ -183,7 +183,7 @@ const SideBar = () => {
                 placement="right"
                 arrow
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: '40px' }}>
                   <IconComponent
                     className={clsx({
                       [classes.listItemIcon]: !selected,

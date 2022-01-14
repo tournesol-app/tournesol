@@ -2,13 +2,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
-import { Box, Theme } from '@mui/material';
+import { Box, Divider, Theme } from '@mui/material';
 
 import { handleWikiUrl } from 'src/utils/url';
 import { LanguageSelector } from 'src/components';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+  linksContainer: {
     padding: '8px',
     borderTop: '1px solid #e7e5db',
     display: 'flex',
@@ -36,8 +36,7 @@ const Footer = () => {
 
   return (
     <Box>
-      <LanguageSelector />
-      <div className={classes.root}>
+      <div className={classes.linksContainer}>
         <a
           className={classes.menuLink}
           href={handleWikiUrl(window.location.host)}
@@ -77,6 +76,8 @@ const Footer = () => {
           discord
         </a>
       </div>
+      <Divider />
+      <LanguageSelector />
     </Box>
   );
 };
