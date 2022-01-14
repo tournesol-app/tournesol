@@ -16,6 +16,8 @@ const getLanguageName = (code: string) => {
 
 const LanguageSelector = () => {
   const { i18n } = useTranslation();
+  const currentLanguage = i18n.resolvedLanguage;
+
   return (
     <Box color="neutral.main">
       <MenuButton
@@ -24,8 +26,17 @@ const LanguageSelector = () => {
         menuContent={SUPPORTED_LANGUAGES.map((lang) => (
           <MenuItem
             key={lang}
-            sx={{ minWidth: '200px' }}
+            sx={{
+              minWidth: '200px',
+              '&.Mui-selected': {
+                bgcolor: 'action.selected',
+              },
+              '&.Mui-selected:hover': {
+                bgcolor: 'action.selected',
+              },
+            }}
             onClick={() => i18n.changeLanguage(lang)}
+            selected={lang == currentLanguage}
           >
             <Box component="span" sx={{ textTransform: 'capitalize' }}>
               {getLanguageName(lang)}
@@ -50,7 +61,7 @@ const LanguageSelector = () => {
           fontWeight="bold"
           sx={{ textTransform: 'capitalize' }}
         >
-          {getLanguageName(i18n.resolvedLanguage)}
+          {getLanguageName(currentLanguage)}
         </Box>
       </MenuButton>
     </Box>
