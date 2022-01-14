@@ -35,7 +35,7 @@
   "menu": {
     "home": "Accueil",
     "recommendations": "Recommandations",
-    "compare": "Comparer !",
+    "compare": "Comparer des vidéos",
     "myComparisons": "Mes comparaisons",
     "myRatedVideos": "Vidéos comparées",
     "myRateLaterList": "À comparer plus tard",
@@ -289,15 +289,15 @@
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer."
   },
   "criteria": {
-    "shouldBeLargelyRecommended": "Devrait être largement recommandée",
-    "reliableAndNotMisleading": "Fiable & non trompeuse",
-    "clearAndPedagogical": "Claire & pédagogique",
-    "importantAndActionable": "Importante & réalisable",
-    "laymanFriendly": "Accessible",
-    "entertainingAndRelaxing": "Divertissante & relaxante",
-    "engagingAndThoughtProvoking": "Engageante & suscite la réflexion",
+    "shouldBeLargelyRecommended": "Devrait être largement recommandé",
+    "reliableAndNotMisleading": "Fiable & non trompeur",
+    "clearAndPedagogical": "Clair & pédagogique",
+    "importantAndActionable": "Important & actionnable",
+    "laymanFriendly": "Accessible aux non-spécialiste",
+    "entertainingAndRelaxing": "Divertissant & relaxant",
+    "engagingAndThoughtProvoking": "Stimulant & suscite la réflexion",
     "diversityAndInclusion": "Diversité & inclusion",
     "encouragesBetterHabits": "Encourage de meilleures habitudes",
-    "resilienceToBackfiringRisks": "Résistante au retour de flamme"
+    "resilienceToBackfiringRisks": "Résistant au retour de flamme"
   }
 }
