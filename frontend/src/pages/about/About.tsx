@@ -90,7 +90,7 @@ const AboutPage = () => {
 
   return (
     <>
-      <ContentHeader title={t('about.title')} />
+      <ContentHeader title={t('menu.about')} />
       <Grid
         container
         className={classes.root}

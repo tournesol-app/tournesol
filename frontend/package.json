@@ -82,7 +82,8 @@
   },
   "config": {
     "supported_languages": [
-      "en"
+      "en",
+      "fr"
     ]
   }
 }
