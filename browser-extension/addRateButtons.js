@@ -10,6 +10,7 @@ else document.addEventListener('DOMContentLoaded', process);
 
 let videosToCompare = [];
 let popupActive = false;
+let comparedVideoId = null;
 
 /* ********************************************************************* */
 
@@ -82,7 +83,7 @@ function process() {
         },
         (data) => {
           if (data.success) {
-            text_td_text.replaceWith(document.createTextNode('Done!'))
+            rateLaterButton.getElementsByTagName('td')[1].firstChild.replaceWith(document.createTextNode('Done!'))
           }
           else {
             rateLaterButton.disabled = false;
@@ -141,7 +142,8 @@ async function loadPopup(div){
     },
     (data) => {
       videosToCompare = data;
-      const thisVideoThumbnail = videoIdToImg(videosToCompare[0].video.video_id);
+      comparedVideoId = videosToCompare[0].video.video_id
+      const thisVideoThumbnail = videoIdToImg(comparedVideoId);
       document.getElementById("right-video-img").setAttribute("src", thisVideoThumbnail);
       document.getElementById("right-video-title").innerText = videosToCompare[0].video.name;
     }
@@ -155,6 +157,25 @@ async function loadPopup(div){
   let videoTitle = document.getElementById('info-contents').getElementsByTagName('h1')[0].children[0].innerText;
   document.getElementById("left-video-title").innerText = videoTitle;
 
-  // let submitButton = document.getElementById("left-video-title")
+  let submitButton = document.getElementById("tournesol-submit-button");
+  submitButton.onclick = () => {
+    document.getElementById('tournesol-popup-div').className = "tournesol-popup-hidden";
+
+    let rateNowButton = document.getElementById('tournesol-rate-now-button')
+    rateNowButton.disabled = true;
+    rateNowButton.getElementsByTagName('td')[1].firstChild.replaceWith(document.createTextNode('Done!'))
+
+    let score = document.getElementById('tournesol-rate-range').value;
+    
+    chrome.runtime.sendMessage(
+      {
+        message: 'compareVideos',
+        videoA: thisVideoId,
+        videoB: comparedVideoId,
+        score
+      },
+      (data) => {}
+    );
+  }
   
 }
