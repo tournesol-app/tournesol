@@ -1,7 +1,7 @@
-#popup-div {
+#tournesol-popup-div {
   position: fixed;
   background-color: white;
-  width: 50%;
+  width: 60%;
   height: 100px;
   bottom: 5px;
   left: 25%;
@@ -11,59 +11,71 @@
   border: 2px solid #847f6e;
 }
 
-.visible {
+.tournesol-popup-visible {
   display: flex;
 }
 
-.hidden,
-.hidden * {
+.tournesol-popup-hidden,
+.tournesol-popup-hidden * {
   display: none;
 }
 
-.video-box {
-  width: 176px;
-  background-color: aqua;
+.tournesol-video-box {
+  width: 350px;
+  background-color: white;
+  position: relative;
 }
 
-.rate-box {
+.tournesol-video-description-box {
+  width: calc(350px - 176px);
+  flex-grow: 1;
+  flex-direction: column;
+  display: flex;
+  align-items: left;
+}
+
+.tournesol-video-description-box h3 {
+  font-size: 16px;
+  text-align: center;
+}
+
+.tournesol-video-description-box p {
+  font-size: 14px;
+  text-align: center;
+}
+
+.tournesol-video-box img {
+  width: 176px;
+  background-color: gray;
+  height: 100%;
+}
+
+.tournesol-rate-box {
   width: 200px;
   flex-grow: 1;
   background-color: white;
-  /* justify-content: center; */
-  /* position: relative; */
   flex-direction: column;
   display: flex;
   align-items: center;
 }
 
-#slider-title {
+#tournesol-slider-title {
   display: inline-flex;
   -webkit-box-align: center;
   align-items: center;
   -webkit-box-pack: center;
+  font-size: 14px;
 }
 
-#right-video-img {
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-#left-video-img {
-  height: 100%;
-  position: absolute;
+.tournesol-aligned-left {
   left: 0;
-  top: 0;
-}
-/* .slidecontainer {
-  width: 90%;
   position: absolute;
-  top: 30px;
-  left: 5%;
-} */
-
-.slidecontainer {
+}
+.tournesol-aligned-right {
+  right: 0;
+  position: absolute;
+}
+.tournesol-slidecontainer {
   width: 90%;
   margin-top: 10px;
   display: inline-flex;
@@ -71,19 +83,11 @@
   align-items: center;
   -webkit-box-pack: center;
 }
-
-/* .submit-button {
-  position: absolute;
-  width: 80px;
-  top: 60px;
-  left: calc(50% - 40px);
-} */
-
-.slider {
+.tournesol-slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 15px;
-  border-radius: 5px;
+  height: 5px;
+  border-radius: 2px;
   background: #d3d3d3;
   outline: none;
   opacity: 0.7;
@@ -91,29 +95,29 @@
   transition: opacity 0.2s;
 }
 
-.slider::-webkit-slider-thumb {
+.tournesol-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #04aa6d;
+  background: #506ad4;
   cursor: pointer;
 }
 
-.slider::-moz-range-thumb {
+/* .tournesol-slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
   border-radius: 50%;
   background: #04aa6d;
   cursor: pointer;
-}
+} */
 
-.slider:hover {
+.tournesol-slider:hover {
   opacity: 1; /* Fully shown on mouse-over */
 }
 
-.submit-button {
+.tournesol-submit-button {
   display: inline-flex;
   -webkit-box-align: center;
   align-items: center;
@@ -134,7 +138,7 @@
     "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol";
   font-weight: 500;
-  font-size: 0.9375rem;
+  font-size: 14px;
   line-height: 1.75;
   text-transform: uppercase;
   min-width: 64px;
@@ -151,9 +155,16 @@
     rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px;
 }
 
-.submit-button:hover {
+.tournesol-submit-button:hover {
   text-decoration: none;
   background-color: rgb(178, 140, 0);
+  box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px,
+    rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
+}
+
+.tournesol-submit-button:active {
+  text-decoration: none;
+  background-color: #e0af00;
   box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px,
     rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
 }

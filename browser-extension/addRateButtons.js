@@ -96,21 +96,27 @@ function process() {
 
     let rateNowButton = getRateButton('Rate Now');
     rateNowButton.setAttribute('id', 'tournesol-rate-now-button');
-    loadPopup(rateNowButton);
     rateNowButton.onclick = async () => {
       if(popupActive){
         popupActive = false;
-        document.getElementById("popup-div").className = "hidden";
+        document.getElementById("tournesol-popup-div").className = "tournesol-popup-hidden";
         return;
       }
-      document.getElementById("popup-div").className = "visible";
+      document.getElementById("tournesol-popup-div").className = "tournesol-popup-visible";
       popupActive = true;
     }
+
+    
+    let popupholder = document.createElement("div");
+    popupholder.className = "tournesol-hidden";
+    loadPopup(popupholder);
 
     // Insert after like and dislike buttons
     let div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
     div.insertBefore(rateLaterButton, div.children[2]);
     div.insertBefore(rateNowButton, div.children[2]);
+    div.insertBefore(popupholder, div.children[2]);
+
 
     // let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
     // let htmlPopup = await htmlPopupResponse.text();
@@ -124,26 +130,31 @@ function videoIdToImg(id){
   return `http://img.youtube.com/vi/${id}/mqdefault.jpg` 
 }
 
-async function loadPopup(rateNowButton){
+async function loadPopup(div){
   let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
   let htmlPopup = await htmlPopupResponse.text();
-  rateNowButton.innerHTML += htmlPopup;
+  div.innerHTML += htmlPopup;
 
   chrome.runtime.sendMessage(
     {
       message: 'loadVideosToCompare'
     },
     (data) => {
-      console.log(data);
       videosToCompare = data;
       const thisVideoThumbnail = videoIdToImg(videosToCompare[0].video.video_id);
       document.getElementById("right-video-img").setAttribute("src", thisVideoThumbnail);
+      document.getElementById("right-video-title").innerText = videosToCompare[0].video.name;
     }
   );
 
   
-  let thisVideoId =(new URL(location)).searchParams.get('v');
+  let thisVideoId = (new URL(location)).searchParams.get('v');
   let thisVideoThumbnail = videoIdToImg(thisVideoId);
   document.getElementById("left-video-img").setAttribute("src", thisVideoThumbnail);
+
+  let videoTitle = document.getElementById('info-contents').getElementsByTagName('h1')[0].children[0].innerText;
+  document.getElementById("left-video-title").innerText = videoTitle;
+
+  // let submitButton = document.getElementById("left-video-title")
   
 }

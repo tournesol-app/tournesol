@@ -1,19 +1,25 @@
-<div id="popup-div" class="hidden">
-    <div class="video-box">
-        <p>This video</p>
-        <img id="left-video-img"/>
-    </div>
-    <div class="rate-box">
-        <p id="slider-title">Should be largely recommended</p>
-        <div class="slidecontainer">
-            <input type="range" min="1" max="10" value="5" class="slider" id="rateRange">
+<div id="tournesol-popup-div" class="tournesol-popup-hidden">
+    <div class="tournesol-video-box">
+        <div class="tournesol-video-description-box tournesol-aligned-left">
+            <h3>This video</h3>
+            <p id="left-video-title">A very very veryveryvery long title</p>
         </div>
-        <button class="submit-button">
+        <img class="tournesol-aligned-right" id="left-video-img"/>
+    </div>
+    <div class="tournesol-rate-box">
+        <p id="tournesol-slider-title">Should be largely recommended</p>
+        <div class="tournesol-slidecontainer">
+            <input type="range" min="0" max="20" value="10" class="tournesol-slider" id="tournesol-rate-range">
+        </div>
+        <button class="tournesol-submit-button">
             Submit
         </button>
     </div>
-    <div class="video-box">
-        <p>Other video</p>
-        <img id="right-video-img"/>
+    <div class="tournesol-video-box">
+        <div class="tournesol-video-description-box tournesol-aligned-right">
+            <h3>Another video</h3>
+            <p id="right-video-title">A very very veryveryvery long title</p>
+        </div>
+        <img class="tournesol-aligned-left" id="right-video-img"/>
     </div>
 </div>

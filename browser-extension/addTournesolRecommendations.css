@@ -68,7 +68,7 @@
   letter-spacing: var(--yt-link-letter-spacing, normal);
   white-space: normal;
   -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow: tournesol-popup-hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2;
   font-weight: 500;
