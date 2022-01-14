@@ -33,7 +33,7 @@
     {
       "matches": ["https://*.youtube.com/*"],
       "js": ["addVideoStatistics.js", "addRateButtons.js"],
-      "css": ["addVideoStatistics.css", "addRateButtons.css"],
+      "css": ["addVideoStatistics.css", "addRateButtons.css", "ratePopup.css"],
       "run_at": "document_end",
       "all_frames": true
     },
@@ -44,6 +44,7 @@
     }
   ],
   "web_accessible_resources": [
-	"Logo128.png"
+	  "Logo128.png",
+    "ratePopup.html"
   ]
 }

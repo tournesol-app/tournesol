@@ -92,22 +92,28 @@ function process() {
 
     let rateNowButton = getRateButton('Rate Now');
     rateNowButton.setAttribute('id', 'tournesol-rate-now-button');
-    rateNowButton.onclick = () => {
-      rateNowButton.disabled = true;
-      chrome.runtime.sendMessage(
-        {
-          message: 'addRateLater',
-          video_id: videoId
-        },
-        (data) => {
-          if (data.success) {
-            text_td_text.replaceWith(document.createTextNode('Done!'))
-          }
-          else {
-            rateNowButton.disabled = false;
-          }
-        }
-      );
+    rateNowButton.onclick = async () => {
+      // const popup = document.createElement('object');
+      // popup.setAttribute("type", "text/html");
+      // popup.data = "ratePopup.html";
+      let htmlPopupResponse = await fetch(chrome.runtime.getURL("ratePopup.html"));
+      let htmlPopup = await htmlPopupResponse.text();
+      rateNowButton.innerHTML += htmlPopup;
+      // rateNowButton.disabled = true;
+      // chrome.runtime.sendMessage(
+      //   {
+      //     message: 'addRateLater',
+      //     video_id: videoId
+      //   },
+      //   (data) => {
+      //     if (data.success) {
+      //       text_td_text.replaceWith(document.createTextNode('Done!'))
+      //     }
+      //     else {
+      //       rateNowButton.disabled = false;
+      //     }
+      //   }
+      // );
     }
 
     // Insert after like and dislike buttons
