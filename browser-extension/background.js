@@ -99,7 +99,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const additionalRecentVideos = getRandomSubarray(additionalVideoRecent, numberOfRecentAdditionalVideoToRespond);
       const additionalOldVideos = getRandomSubarray(additionalVideoOld, numberOfOldAdditionalVideoToRespond);
       const additionalVideos = getRandomSubarray([...additionalRecentVideos, ...additionalOldVideos], request.additionalVideosNumber);
-      alert(additionalVideoRecent.length + " " + recent.length+ " "+recentVideoToLoad + " nbreq "+ (recentVideoToLoad+recentAdditionalVideoToLoad)+" resp "+ recent.length);
+      
       return { 
         data: [...videos, ...additionalVideos], 
         loadVideos:request.videosNumber > 0, 
