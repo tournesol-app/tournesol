@@ -100,6 +100,7 @@ function process() {
     rateNowButton.onclick = async () => {
       if(popupActive){
         popupActive = false;
+        // Hide the popup and all its children
         document.getElementById("tournesol-popup-div").className = "tournesol-popup-hidden";
         return;
       }
@@ -121,7 +122,6 @@ function process() {
 }
 
 function videoIdToImg(id){
-  // return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
   return `http://img.youtube.com/vi/${id}/mqdefault.jpg` 
 }
 
