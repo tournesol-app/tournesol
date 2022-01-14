@@ -1,4 +1,4 @@
-import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
+import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube, addComparison} from  './utils.js'
 
 chrome.contextMenus.removeAll(function (e, tab) {
   chrome.contextMenus.create({
@@ -38,6 +38,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   } else if (request.message == "getVideoStatistics") {
     // getVideoStatistics(request.video_id).then(sendResponse);
+    return true;
+  }else if (request.message == "compareVideos") {
+    addComparison(request.videoA, request.videoB, request.score);
     return true;
   } else if (request.message == "getTournesolRecommendations") {
     const api_url = 'video/';

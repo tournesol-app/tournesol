@@ -75,6 +75,50 @@ export const addRateLater = async (video_id) => {
   }
 };
 
+export const addComparison = async (video_a, video_b, score) => {
+  const addVideoResponseA = await fetchTournesolApi('video/', 'POST', {video_id: video_a});
+  const addVideoResponseB = await fetchTournesolApi('video/', 'POST', {video_id: video_b});
+  if(!addVideoResponseA || !addVideoResponseB || addVideoResponseA.status === 401 || addVideoResponseB.status === 401){
+    return {
+      success: false,
+      message: 'Failed.'
+    }
+  }
+
+  const body = {
+    video_a: {
+      video_id: video_a
+    },
+    video_b: {
+      video_id: video_b
+    },
+    criteria_scores: [
+      {
+        criteria: "largely_recommended",
+        score
+      }
+    ]
+  }
+  const ratingStatusReponse = await fetchTournesolApi(`users/me/comparisons/`, 'POST', body);
+
+  if (ratingStatusReponse && ratingStatusReponse.ok) {
+    return {
+      success: true,
+      message: 'Done!'
+    }
+  }
+  if (ratingStatusReponse && ratingStatusReponse.status === 409) {
+    return {
+      success: true,
+      message: 'Already compared.'
+    }
+  }
+  return {
+    success: false,
+    message: 'Failed.'
+  }
+};
+
 /*
  ** Useful method to extract a subset from an array
  ** Copied from https://stackoverflow.com/questions/11935175/sampling-a-random-subset-from-an-array
