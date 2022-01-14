@@ -42,7 +42,7 @@
     "about": "À propos"
   },
   "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
-  "logoutButton": "Déconnexion",
+  "logoutButton": "Se déconnecter",
   "loginButton": "Se connecter",
   "joinUsButton": "S'inscrire",
   "topbar": {
