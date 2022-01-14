@@ -75,7 +75,7 @@ const Logo = () => {
   const dispatch = useAppDispatch();
 
   return (
-    <Grid item md={4} xs={4} className={classes.logo}>
+    <Grid item md={4} xs={3} className={classes.logo}>
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
         size="large"
