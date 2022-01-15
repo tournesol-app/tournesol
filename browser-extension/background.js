@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return []
     };
 
-    const videoNumber = request.videosNumber + request.additionalVideosNumber;
+    // Compute the number of videos to load in each category
     const recentVideoToLoad = Math.round(request.videosNumber*oversamplingRatioForRecentVideos*recentVideoProportion);
     const oldVideoToLoad = Math.round(request.videosNumber*oversamplingRatioForOldVideos*(1-recentVideoProportion));
     const recentAdditionalVideoToLoad = 
@@ -74,24 +74,35 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const threeWeeksAgo = getDateThreeWeeksAgo()
 
       // Only one request for both videos and additional videos
-      // That is why the responses are cut after that
       const recent = await request_recommendations(
         `date_gte=${threeWeeksAgo}&language=${request.language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
       );
       const old = await request_recommendations(
         `date_lte=${threeWeeksAgo}&language=${request.language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
       );
-
+      
+      // Cut the response into the part for the videos and the one for the additional videos
       const videoRecent = recent.slice(0,recentVideoToLoad);
       const videoOld = old.slice(0,oldVideoToLoad);
       const additionalVideoRecent = recent.slice(recentVideoToLoad);
       const additionalVideoOld = old.slice(oldVideoToLoad);
-
-      const numberOfRecentVideoToRespond = Math.round(request.videosNumber*recentVideoProportion);
+      
+      // Compute the actual number of videos from each category that will appear in the feed
+      // If there is not enough recent videos, use old ones of the same category instead
+      let numberOfRecentVideoToRespond = Math.round(request.videosNumber*recentVideoProportion);
+      if(numberOfRecentVideoToRespond > videoRecent.length){
+        numberOfRecentVideoToRespond = videoRecent.length;
+      }
       const numberOfOldVideoToRespond = request.videosNumber - numberOfRecentVideoToRespond;
-      const numberOfRecentAdditionalVideoToRespond = Math.round(request.additionalVideosNumber*recentVideoProportionForAdditionalVideos);
+
+      let numberOfRecentAdditionalVideoToRespond = Math.round(request.additionalVideosNumber*recentVideoProportionForAdditionalVideos);
+      if(numberOfRecentAdditionalVideoToRespond > additionalVideoRecent.length){
+        numberOfRecentAdditionalVideoToRespond = additionalVideoRecent.length;
+      }
       const numberOfOldAdditionalVideoToRespond = request.additionalVideosNumber - numberOfRecentAdditionalVideoToRespond;
 
+      // Select randomly which videos are selected, merge them, and shuffle them
+      // (separely for videos and additional videos)
       const recentVideos = getRandomSubarray(videoRecent, numberOfRecentVideoToRespond);
       const oldVideos = getRandomSubarray(videoOld, numberOfOldVideoToRespond);
       const videos = getRandomSubarray([...oldVideos, ...recentVideos], request.videosNumber);
