@@ -1,7 +1,7 @@
 import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
 
-const oversamplingRatioForRecentVideos = 2.5;
-const oversamplingRatioForOldVideos = 5;
+const oversamplingRatioForRecentVideos = 3;
+const oversamplingRatioForOldVideos = 50;
 // Higher means videos recommended can come from further down the recommandation list
 // and returns videos that are more diverse on reload
 
