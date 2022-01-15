@@ -103,7 +103,7 @@ const SideBar = () => {
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },
     {
-      targetUrl: '/recommendations',
+      targetUrl: '/recommendations?date=Month',
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
