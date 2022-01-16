@@ -103,15 +103,9 @@ const getTournesolComponent = () => {
     expand_button = document.createElement('button');
     expand_button.setAttribute('id', 'tournesol_expand_button');
     // A new button is created on each video loading, the image must be loaded accordingly
-    if(isExpanded){
-      fetch(chrome.runtime.getURL('images/chevron-up.svg'))
+      fetch(chrome.runtime.getURL(isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'))
         .then(r => r.text())
         .then(svg => expand_button.innerHTML = svg);
-    }else{
-      fetch(chrome.runtime.getURL('images/chevron-down.svg'))
-        .then(r => r.text())
-        .then(svg => expand_button.innerHTML = svg);
-    }
     expand_button.className = "tournesol_simple_button";
     expand_button.onclick = () => {
       expand_button.disabled = true;
