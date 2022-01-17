@@ -8,6 +8,7 @@ Create a new Python virtual environment, and install the requirements. Be sure t
 ```bash
 pip install -r requirements.txt
 ```
+## Run
 
 To run Sreamlit on a localhost:
 
