@@ -7,10 +7,6 @@ This section covers how to set up a production-like environment in a virtual mac
 
 This personal environment allows developppers to work on the Ansible deployment recipe and to test their modifications. If you want to work of the Tournesol application code, use the `dev-env` instead.
 
-There are 2 options, renting a server to a cloud provider, or creating a test VM for development:
-- Setting up a VM (development only). It is potentially safer, since it is free and not exposed to the internet. This may significantly slow your computer on runtime. A specific network configuration like port forwarding is also needed to communicate with the VM.
-- Renting a server in the cloud is closer to the production environment. Most cloud providers (Vultr, Digital Ocean, AWS...) offer free credit for new users, but it can get costly if you rent a powerful server and forget to stop it after use.
-
 
 ## Option 1: Installing a VM for Infrastructure Code Development
 
