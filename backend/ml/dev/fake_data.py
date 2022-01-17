@@ -1,8 +1,9 @@
-import random
-import numpy as np
-from math import exp, sinh
-import scipy.stats as st
 import logging
+import random
+from math import exp, sinh
+
+import numpy as np
+import scipy.stats as st
 
 
 # ----------- fake data generation ---------------

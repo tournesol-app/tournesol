@@ -3,9 +3,9 @@ import logging
 from django.core.management.base import BaseCommand
 
 from ml.core import TOURNESOL_DEV
-from .ml_train import fetch_data
 from ml.dev.experiments import run_experiment
 
+from .ml_train import fetch_data
 
 """
 Machine Learning command file for developpement

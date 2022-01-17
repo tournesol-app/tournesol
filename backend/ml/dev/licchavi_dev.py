@@ -1,8 +1,8 @@
 import logging
+
 import torch
 
 from ml.licchavi import Licchavi
-
 
 """ LicchaviDev(Licchavi) class used for experiments only
 
