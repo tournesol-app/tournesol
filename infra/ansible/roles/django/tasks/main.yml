@@ -3,6 +3,7 @@
     name:
       - python3.9
       - virtualenv
+      - gettext  # Required by django to compile messages
     install_recommends: no
     update_cache: yes
 
@@ -85,6 +86,7 @@
   become_user: gunicorn
   notify:
     - Migrate Django database
+    - Compile Django messages
     - Create database cache
     - Collect Django static assets
     - Restart Gunicorn

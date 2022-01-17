@@ -5,7 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import packageJson from '../package.json';
 
-const SUPPORTED_LANGUAGES = packageJson.config.supported_languages;
+export const SUPPORTED_LANGUAGES = packageJson.config.supported_languages;
 
 i18n
   // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
@@ -20,7 +20,7 @@ i18n
   // for all options read: https://www.i18next.com/overview/configuration-options
   .init({
     fallbackLng: 'en',
-    supportedLngs: SUPPORTED_LANGUAGES,
+    supportedLngs: SUPPORTED_LANGUAGES.map((l) => l.code),
     debug: false,
     returnEmptyString: false,
     interpolation: {

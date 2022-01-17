@@ -30,6 +30,12 @@ class VideoAdmin(admin.ModelAdmin):
     list_filter = (
         ('language', admin.AllValuesFieldListFilter),
     )
+    actions = ["update_metadata"]
+
+    @admin.action(description="Force metadata refresh of selected videos")
+    def update_metadata(self, request, queryset):
+        for video in queryset:
+            video.refresh_youtube_metadata(force=True)
 
 
 @admin.register(VideoCriteriaScore)

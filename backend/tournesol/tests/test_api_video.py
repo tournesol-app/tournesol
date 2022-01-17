@@ -1,7 +1,5 @@
-from datetime import date
+from datetime import date, timedelta
 from unittest.mock import patch
-
-import isodate
 
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
@@ -11,7 +9,8 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.utils.video_language import compute_video_language
-from ..models import Tag, Video, VideoCriteriaScore
+from tournesol.tests.factories.video import VideoFactory, VideoCriteriaScoreFactory
+from ..models import Tag, Video
 
 
 class VideoApi(TestCase):
@@ -21,52 +20,32 @@ class VideoApi(TestCase):
 
     _user = "username"
 
-    _video_id_01 = "video_id_01"
-    _video_id_02 = "video_id_02"
-    _video_id_03 = "video_id_03"
-    _video_id_04 = "video_id_04"
     _list_of_videos = []
 
     def setUp(self):
         User.objects.create(username=self._user, email="user@test")
 
-        video_1 = Video.objects.create(
-            video_id=self._video_id_01,
-            name=self._video_id_01,
+        self.video_1 = VideoFactory(
             publication_date=date(2021, 1, 1),
             uploader="uploader1",
         )
-        video_2 = Video.objects.create(
-            video_id=self._video_id_02,
-            name=self._video_id_02,
+        self.video_2 = VideoFactory(
             publication_date=date(2021, 1, 2),
             uploader="uploader2",
         )
-        video_3 = Video.objects.create(
-            video_id=self._video_id_03,
-            name=self._video_id_03,
+        self.video_3 = VideoFactory(
             publication_date=date(2021, 1, 3),
             uploader="uploader2",
         )
-        video_4 = Video.objects.create(
-            video_id=self._video_id_04,
-            name=self._video_id_04,
+        self.video_4 = VideoFactory(
             publication_date=date(2021, 1, 4),
             uploader="uploader3",
         )
-        self._list_of_videos = [video_1, video_2, video_3, video_4]
-        VideoCriteriaScore.objects.create(
-            video=video_1, criteria="reliability", score=0.1
-        )
-        VideoCriteriaScore.objects.create(
-            video=video_2, criteria="reliability", score=0.2
-        )
-        VideoCriteriaScore.objects.create(
-            video=video_3, criteria="importance", score=0.3
-        )
-        VideoCriteriaScore.objects.create(
-            video=video_4, criteria="importance", score=0.4
-        )
+        self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
+        VideoCriteriaScoreFactory(video=self.video_1, criteria="reliability", score=0.1)
+        VideoCriteriaScoreFactory(video=self.video_2, criteria="reliability", score=0.2)
+        VideoCriteriaScoreFactory(video=self.video_3, criteria="importance", score=0.3)
+        VideoCriteriaScoreFactory(video=self.video_4, criteria="importance", score=0.4)
 
     def test_anonymous_can_list(self):
         """
@@ -211,14 +190,14 @@ class VideoApi(TestCase):
         resp = client.get("/video/")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_04", "video_id_03", "video_id_02", "video_id_01"],
+            [self.video_4.video_id, self.video_3.video_id, self.video_2.video_id, self.video_1.video_id],
         )
 
         # Disable reliability
         resp = client.get("/video/?reliability=0")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_04", "video_id_03"],
+            [self.video_4.video_id, self.video_3.video_id],
         )
 
         # Disable both reliability and importance
@@ -229,20 +208,19 @@ class VideoApi(TestCase):
         resp = client.get("/video/?reliability=100&importance=10")
         self.assertEqual(
             [r["video_id"] for r in resp.json()["results"]],
-            ["video_id_02", "video_id_01", "video_id_04", "video_id_03"],
+            [self.video_2.video_id, self.video_1.video_id, self.video_4.video_id, self.video_3.video_id],
         )
 
     def test_anonymous_can_get_video(self):
         client = APIClient()
-        response = client.get("/video/video_id_01/")
+        response = client.get(f"/video/{self.video_1.video_id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["video_id"], "video_id_01")
+        self.assertEqual(response.json()["video_id"], self.video_1.video_id)
 
     def test_anonymous_can_get_video_with_score_zero(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
         client = APIClient()
-        video_null_score = "vid_score_0"
-        Video.objects.create(video_id=video_null_score)
+        VideoFactory(video_id="vid_score_0")
         response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], "vid_score_0")
@@ -253,28 +231,9 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_language_detection(self):
-        Video.objects.create(
-            uploader="Tournesol4All", language="fr", video_id="youtube1233"
-        )
-        Video.objects.create(
-            uploader="Tournesol4All", language="fr", video_id="youtube1234"
-        )
-        Video.objects.create(
-            uploader="Tournesol4All", language="fr", video_id="youtube1235"
-        )
-        Video.objects.create(
-            uploader="Tournesol4All", language="fr", video_id="youtube1236"
-        )
-        Video.objects.create(
-            uploader="Tournesol4All", language="fr", video_id="youtube1237"
-        )
+        VideoFactory.create_batch(5, uploader="Tournesol4All", language="fr")
         # Not enough videos to qualify for skipping language detection
-        Video.objects.create(
-            uploader="Sunflower4All", language="en", video_id="youtube1238"
-        )
-        Video.objects.create(
-            uploader="Sunflower4All", language="en", video_id="youtube1239"
-        )
+        VideoFactory.create_batch(2, uploader="Sunflower4All", language="en")
         test_details = [
             (
                 ["Tournesol4All", "I speak english", "I have not description"],
@@ -289,18 +248,16 @@ class VideoApi(TestCase):
 
     def test_cannot_get_existing_video_without_positive_score(self):
         client = APIClient()
-        video_null_score = "video_null_score"
-        Video.objects.create(video_id=video_null_score)
+        VideoFactory(video_id='video_null_score')
         response = client.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(self._list_of_videos))
 
     def test_cannot_get_video_with_particular_request(self):
         client = APIClient()
-        _video_id_05 = "video_id_05"
-        video = Video.objects.create(video_id=_video_id_05)
-        VideoCriteriaScore.objects.create(video=video, criteria="engaging", score=-1)
-        VideoCriteriaScore.objects.create(video=video, criteria="importance", score=1)
+        video = VideoFactory()
+        VideoCriteriaScoreFactory(video=video, criteria="engaging", score=-1)
+        VideoCriteriaScoreFactory(video=video, criteria="importance", score=1)
         good_response = client.get("/video/?importance=50&engaging=0")
         self.assertEqual(good_response.status_code, status.HTTP_200_OK)
         self.assertEqual(good_response.data["count"], len(self._list_of_videos) + 1)
@@ -312,12 +269,12 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # Add 1 video in French and 2 videos in English
-        video1 = Video.objects.create(language="fr", video_id="youtube1233")
-        video2 = Video.objects.create(language="en", video_id="youtube1238")
-        video3 = Video.objects.create(language="en", video_id="youtube1239")
-        VideoCriteriaScore.objects.create(video=video1, criteria="engaging", score=1)
-        VideoCriteriaScore.objects.create(video=video2, criteria="engaging", score=1)
-        VideoCriteriaScore.objects.create(video=video3, criteria="engaging", score=1)
+        video1 = VideoFactory(language="fr")
+        video2 = VideoFactory(language="en")
+        video3 = VideoFactory(language="en")
+        VideoCriteriaScoreFactory(video=video1)
+        VideoCriteriaScoreFactory(video=video2)
+        VideoCriteriaScoreFactory(video=video3)
 
         resp = client.get("/video/?language=")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -355,19 +312,17 @@ class VideoApi(TestCase):
         self.assertEqual(resp.data["count"], 3)
 
     def test_search_in_tags_should_not_affect_order(self):
-        video1 = Video.objects.get(video_id=self._video_id_01)
-        video1.tags.create(name="tag1")
-        video1.tags.create(name="tag2")
-        video1.tags.create(name="tag3")
-        video2 = Video.objects.get(video_id=self._video_id_02)
-        video2.tags.create(name="tag4")
+        self.video_1.tags.create(name="tag1")
+        self.video_1.tags.create(name="tag2")
+        self.video_1.tags.create(name="tag3")
+        self.video_2.tags.create(name="tag4")
 
         client = APIClient()
         resp = client.get("/video/?search=tag")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data["results"]), 2)
         # Video2 with higher score should remain listed as the top video
-        self.assertEqual(resp.data["results"][0]["video_id"], self._video_id_02)
+        self.assertEqual(resp.data["results"][0]["video_id"], self.video_2.video_id)
 
     def test_anonymous_cant_create(self):
         """
@@ -406,7 +361,7 @@ class VideoApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        Video.objects.create(video_id=new_video_id)
+        VideoFactory(video_id=new_video_id)
 
         response = client.post("/video/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -435,7 +390,7 @@ class VideoApi(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             Video.objects.get(video_id=id_too_small)
 
-    @patch("tournesol.views.video.youtube_video_details")
+    @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
         """
         An authenticated user can add a new video, with a YouTube API key
@@ -503,9 +458,9 @@ class VideoApi(TestCase):
         self.assertEqual(response.json()["name"], "Video title")
         self.assertIn(tournesol_tag, video.tags.all())
         self.assertEqual(response.json()["duration"], 1263)
-        self.assertEqual(video.duration, isodate.parse_duration("PT21M3S"))
+        self.assertEqual(video.duration, timedelta(minutes=21, seconds=3))
 
-    @patch("tournesol.views.video.youtube_video_details")
+    @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_no_statistics(self, mock_youtube):
         """
         An authenticated user can add a new video, even if the YouTube API
@@ -565,7 +520,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.json()["name"], "Video title")
         self.assertEqual(video.views, None)
 
-    @patch("tournesol.views.video.youtube_video_details")
+    @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
         """
         An authenticated user can't add a new video, if the YouTube API
@@ -595,3 +550,8 @@ class VideoApi(TestCase):
         resp = client.get("/video/?uploader=uploader2")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 2)
+
+    def test_video_views_stored_on_64bits(self):
+        Video.objects.filter(video_id=self.video_1.video_id).update(views=9_000_000_000)
+        video = Video.objects.get(video_id=self.video_1.video_id)
+        self.assertEqual(video.views, 9_000_000_000)

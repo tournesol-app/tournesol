@@ -4,18 +4,19 @@ Models for Tournesol's main functions related to videos
 
 import logging
 import numpy as np
+from datetime import timedelta
 
-
+from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.html import format_html
+from django.utils import timezone
 
 from languages.languages import LANGUAGES
 from tqdm.auto import tqdm
 
-from settings.settings import CRITERIAS
 from core.models import User
 from core.utils.models import (
     WithFeatures,
@@ -24,10 +25,11 @@ from core.utils.models import (
     query_and,
 )
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.models.comparisons import Comparison
 from tournesol.models.tags import Tag
 from tournesol.utils import VideoSearchEngine
 
-from tournesol.models.comparisons import Comparison
+CRITERIAS = settings.CRITERIAS
 
 
 class Video(models.Model, WithFeatures, WithEmbedding):
@@ -70,9 +72,11 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         null=True, help_text="Video publication date", blank=True
     )
     metadata_timestamp = models.DateTimeField(
-        blank=True, null=True, help_text="Timestamp the metadata was uploaded"
+        blank=True,
+        null=True,
+        help_text="Timestamp the metadata was uploaded",
     )
-    views = models.IntegerField(null=True, help_text="Number of views", blank=True)
+    views = models.BigIntegerField(null=True, help_text="Number of views", blank=True)
     uploader = models.CharField(
         max_length=1000,
         null=True,
@@ -83,19 +87,14 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     add_time = models.DateTimeField(
         null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
     )
-    last_download_time = models.DateTimeField(
+    last_metadata_request_at = models.DateTimeField(
         null=True,
         blank=True,
-        help_text="Last time download of metadata" " was attempted",
+        auto_now_add=True,
+        help_text="Last time fetch of metadata was attempted",
     )
     wrong_url = models.BooleanField(default=False, help_text="Is the URL incorrect")
     is_unlisted = models.BooleanField(default=False, help_text="Is the video unlisted")
-    download_attempts = models.IntegerField(
-        default=0, help_text="Number of times video" " was downloaded"
-    )
-    download_failed = models.BooleanField(
-        default=False, help_text="Was last download unsuccessful"
-    )
 
     tags = models.ManyToManyField(Tag, blank=True)
 
@@ -114,7 +113,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         null=False,
         default=0,
         help_text="Total number of pairwise comparisons for this video"
-                  "from certified contributors",
+        "from certified contributors",
     )
 
     rating_n_contributors = models.IntegerField(
@@ -127,10 +126,12 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         self.rating_n_ratings = Comparison.objects.filter(
             Q(video_1=self) | Q(video_2=self)
         ).count()
-        self.rating_n_contributors = Comparison.objects.filter(
-            Q(video_1=self) | Q(video_2=self)
-        ).distinct("user").count()
-        self.save(update_fields=['rating_n_ratings', 'rating_n_contributors'])
+        self.rating_n_contributors = (
+            Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
+            .distinct("user")
+            .count()
+        )
+        self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
     def get_pareto_optimal(self):
         """Compute pareto-optimality in sql. Runs in O(n^2) where n=num videos."""
@@ -249,6 +250,54 @@ class Video(models.Model, WithFeatures, WithEmbedding):
             video_objects, batch_size=200, fields=["pareto_optimal"]
         )
 
+    def refresh_youtube_metadata(self, force=False):
+        """
+        Fetch and update video metadata from Youtube API.
+
+        By default, the request will be executed only if the current metadata
+        are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
+        The request can be forced with `force=True`.
+        """
+        from tournesol.utils.api_youtube import get_video_metadata, VideoNotFound
+
+        if (
+            not force
+            and self.last_metadata_request_at is not None
+            and (
+                timezone.now() - self.last_metadata_request_at
+                < timedelta(seconds=settings.VIDEO_METADATA_EXPIRE_SECONDS)
+            )
+        ):
+            logging.debug(
+                "Not refreshing metadata for video %s. Last attempt is too recent at %s",
+                self.video_id,
+                self.last_metadata_request_at,
+            )
+            return
+
+        self.last_metadata_request_at = timezone.now()
+        self.save(update_fields=["last_metadata_request_at"])
+        try:
+            metadata = get_video_metadata(self.video_id, compute_language=False)
+        except VideoNotFound:
+            metadata = {}
+
+        if not metadata:
+            return
+
+        fields = [
+            "name",
+            "description",
+            "publication_date",
+            "uploader",
+            "views",
+            "duration",
+            "metadata_timestamp",
+        ]
+        for f in fields:
+            setattr(self, f, metadata[f])
+        self.save(update_fields=fields)
+
 
 class VideoCriteriaScore(models.Model):
     """Scores per criteria for Videos"""
@@ -284,7 +333,7 @@ class VideoCriteriaScore(models.Model):
         blank=False,
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
         help_text="Top quantile for all rated videos for aggregated scores"
-                  "for the given criteria. 0.0=best, 1.0=worst",
+        "for the given criteria. 0.0=best, 1.0=worst",
     )
 
     class Meta:

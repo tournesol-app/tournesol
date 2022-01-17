@@ -10,7 +10,7 @@ import type {
 import Pagination from 'src/components/Pagination';
 import VideoList from 'src/features/videos/VideoList';
 import { UsersService } from 'src/services/openapi';
-import { ContentBox, LoaderWrapper } from 'src/components';
+import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import {
   PublicStatusAction,
   RatingsContext,
@@ -50,6 +50,7 @@ const VideoRatingsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const history = useHistory();
+  const { t } = useTranslation();
   const searchParams = new URLSearchParams(location.search);
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
@@ -118,6 +119,7 @@ const VideoRatingsPage = () => {
         onChange: onRatingChange,
       }}
     >
+      <ContentHeader title={t('myRatedVideosPage.title')} />
       <ContentBox noMinPadding maxWidth="md">
         <Box px={{ xs: 2, sm: 0 }}>
           <RatingsFilter />

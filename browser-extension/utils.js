@@ -47,21 +47,23 @@ export const fetchTournesolApi = async (url, method, data) => {
 }
 
 export const addRateLater = async (video_id) => {
-  const resp = await fetchTournesolApi('video/', 'POST', {video_id: video_id})
-    .then(() =>
-      fetchTournesolApi(
-        'users/me/video_rate_later/',
-        'POST',
-        {video: {video_id: video_id}}
-      )
-    );
-  if (resp && resp.ok) {
+  const addVideoResponse = await fetchTournesolApi('video/', 'POST', {video_id: video_id});
+  if(!addVideoResponse || addVideoResponse.status === 401){
+    return {
+      success: false,
+      message: 'Failed.'
+    }
+  }
+
+  const ratingStatusReponse = 
+    await fetchTournesolApi('users/me/video_rate_later/', 'POST', {video: {video_id: video_id}});
+  if (ratingStatusReponse && ratingStatusReponse.ok) {
     return {
       success: true,
       message: 'Done!'
     }
   }
-  else if (resp && resp.status === 409) {
+  if (ratingStatusReponse && ratingStatusReponse.status === 409) {
     return {
       success: true,
       message: 'Already added.'

@@ -101,7 +101,9 @@ class ComparisonListApi(
             )
         comparison: Comparison = serializer.save()
         comparison.video_1.update_n_ratings()
+        comparison.video_1.refresh_youtube_metadata()
         comparison.video_2.update_n_ratings()
+        comparison.video_2.refresh_youtube_metadata()
         ContributorRating.objects.get_or_create(user=self.request.user, video=comparison.video_1)
         ContributorRating.objects.get_or_create(user=self.request.user, video=comparison.video_2)
 

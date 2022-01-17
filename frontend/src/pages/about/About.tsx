@@ -90,7 +90,7 @@ const AboutPage = () => {
 
   return (
     <>
-      <ContentHeader title={t('about.title')} />
+      <ContentHeader title={t('menu.about')} />
       <Grid
         container
         className={classes.root}
@@ -203,7 +203,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#FAF8F3' }}
+        sx={{ bgcolor: 'background.menu' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -279,7 +279,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#FAF8F3' }}
+        sx={{ bgcolor: 'background.menu' }}
       >
         <Grid item xs={12} md={6} className={classes.container}>
           <Link

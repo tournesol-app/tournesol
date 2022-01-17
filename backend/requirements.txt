@@ -6,17 +6,16 @@ django-filter==2.4.0
 django-language-field==0.0.3
 django-oauth-toolkit==1.5.0
 django-prometheus==2.1.0
-django-rest-registration==0.6.4
+django-rest-registration==0.7.0
 djangorestframework==3.12.4
 drf-spectacular==0.21.0
 fuzzysearch==0.7.3
 numpy==1.21.2
-Pillow==8.2.0
+Pillow==9.0.0
 psycopg2-binary==2.9.1
 PyYAML==5.4.1
 tqdm==4.62.1
 langdetect==1.0.8
-isodate==0.6.0
 
 #API Youtube data
 google-api-python-client==2.15.0

@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User, EmailDomain
-from tournesol.models import Comparison, Video, ComparisonCriteriaScore
+from core.tests.factories.user import UserFactory
 
 
 class UserDeletionTestCase(TestCase):
@@ -20,13 +20,12 @@ class UserDeletionTestCase(TestCase):
         Delete the current user
         """
         client = APIClient()
-        username = "test-user"
-        user = User.objects.create(username=username)
+        user = UserFactory()
         client.force_authenticate(user=user)
 
         response = client.delete("/users/me/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(User.objects.filter(username=username).exists())
+        self.assertFalse(User.objects.filter(username=user.username).exists())
 
 
 class UserRegistrationTest(TestCase):
@@ -78,8 +77,8 @@ class UserRegistrationTest(TestCase):
 
 class UserRegisterNewEmailTest(TestCase):
     def setUp(self) -> None:
-        self.user1 = User.objects.create_user(username="user1", email="user1@example.com")
-        self.user2 = User.objects.create_user(username="user2", email="user2@example.com")
+        self.user1 = UserFactory(email="user1@example.com")
+        self.user2 = UserFactory(email="user2@example.com")
         self.client = APIClient()
         self.client.force_authenticate(self.user1)
 
@@ -96,18 +95,19 @@ class UserRegisterNewEmailTest(TestCase):
         resp = self.client.post("/accounts/register-email/", data={
             "email": "user2@example.com"
         }, format="json")
-        self.assertContains(resp,
+        self.assertContains(
+            resp,
             text="email address already exists",
-            status_code=400
+            status_code=400,
         )
 
 
 class AccountProfileTest(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
-        self.user1 = User.objects.create_user(username="user1", email="user1@example.com")
+        self.user1 = UserFactory(username="user1", email="user1@example.com")
         EmailDomain.objects.filter(domain="@example.com").update(status=EmailDomain.STATUS_ACCEPTED)
-        self.user2 = User.objects.create_user(username="user2", email="user2@rejected.test")
+        self.user2 = UserFactory(username="user2", email="user2@rejected.test")
         EmailDomain.objects.filter(domain="@rejected.test").update(status=EmailDomain.STATUS_REJECTED)
 
     def test_user_profile(self):

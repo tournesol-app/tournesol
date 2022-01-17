@@ -108,7 +108,7 @@ const AccountInfo = () => {
   const classes = useStyles();
 
   return (
-    <Grid item md={4} xs={8} className={classes.AccountInfo}>
+    <Grid item md={4} xs={9} className={classes.AccountInfo}>
       {isLoggedIn ? <LoggedInActions /> : <LoggedOutActions />}
     </Grid>
   );
