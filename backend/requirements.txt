@@ -6,7 +6,7 @@ django-filter==2.4.0
 django-language-field==0.0.3
 django-oauth-toolkit==1.5.0
 django-prometheus==2.1.0
-django-rest-registration==0.6.4
+django-rest-registration==0.7.0
 djangorestframework==3.12.4
 drf-spectacular==0.21.0
 fuzzysearch==0.7.3

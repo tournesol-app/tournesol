@@ -88,6 +88,18 @@ REST_REGISTRATION = {
     'REGISTER_SERIALIZER_CLASS': 'core.serializers.user.RegisterUserSerializer',
     'PROFILE_SERIALIZER_CLASS': 'core.serializers.user.UserProfileSerializer',
     'VERIFICATION_FROM_EMAIL': 'noreply@tournesol.app',
+    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
+        'body': 'accounts/register/body.txt',
+        'subject': 'accounts/register/subject.txt'
+    },
+    'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
+        'body': 'accounts/register_email/body.txt',
+        'subject': 'accounts/register_email/subject.txt'
+    },
+    'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
+        'body': 'accounts/reset_password/body.txt',
+        'subject': 'accounts/reset_password/subject.txt'
+    }
 }
 
 EMAIL_BACKEND = server_settings.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
@@ -121,7 +133,9 @@ ROOT_URLCONF = "settings.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [
+            BASE_DIR / "core" / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -132,6 +146,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / "core" / "locale",
 ]
 
 WSGI_APPLICATION = "settings.wsgi.application"
