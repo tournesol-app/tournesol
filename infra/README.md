@@ -1,7 +1,11 @@
 
-## Environment choice
-This section covers how to set a production-like environment. 
-For most developments, it is better to use the containers instead (see the dev-env directory). The infrastructure environment provides additional services like reverse-proxy (nginx) and monitoring, but is also usually not necessary and less practical for backend and frontend development tasks.
+# Infrastructure
+
+## Installing in a VM for Infrastructure Code Development
+
+This section covers how to set up a production-like environment in a virtual machine.
+
+This personal environment allows developppers to work on the Ansible deployment recipe and to test their modifications. If you want to work of the Tournesol application code, use the `dev-env` instead.
 
 There are 2 options, renting a server to a cloud provider, or creating a test VM for development:
 - Setting up a VM (development only). It is potentially safer, since it is free and not exposed to the internet. This may significantly slow your computer on runtime. A specific network configuration like port forwarding is also needed to communicate with the VM.
