@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
-import Typography from '@mui/material/Typography';
+import { Typography, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
 
@@ -72,29 +72,38 @@ const DonatePage = () => {
           <Typography variant="h4" style={{ fontStyle: 'italic' }}>
             {t('about.donateHowTo')}
           </Typography>
-          <div className={classes.box}>
-            <img
-              src="/logos/UTip_Logo.png"
-              style={{ height: 42, position: 'absolute', top: 0, right: 6 }}
-            />
-            <Typography variant="h5" sx={{ marginBottom: 1 }}>
-              {t('about.donateWithUtipTitle')}
-            </Typography>
-            <Typography>
-              <Trans t={t} i18nKey="about.donateWithUtipDescription">
-                uTip is an online crowdfunding platform. Visit our{' '}
-                <a
-                  href="https://utip.io/tournesol"
-                  target="_blank"
-                  rel="noreferrer"
-                  className={classes.link}
-                >
-                  Utip page
-                </a>{' '}
-                to make a one-time or recurring donation
-              </Trans>
-            </Typography>
-          </div>
+          <Link
+            href="https://utip.io/tournesol"
+            rel="noopener"
+            target="_blank"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+          >
+            <div className={classes.box}>
+              <img
+                src="/logos/UTip_Logo.png"
+                style={{ height: 42, position: 'absolute', top: 0, right: 6 }}
+              />
+              <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                {t('about.donateWithUtipTitle')}
+              </Typography>
+              <Typography>
+                <Trans t={t} i18nKey="about.donateWithUtipDescription">
+                  uTip is an online crowdfunding platform. Visit our{' '}
+                  <a
+                    href="https://utip.io/tournesol"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={classes.link}
+                  >
+                    Utip page
+                  </a>{' '}
+                  to make a one-time or recurring donation
+                </Trans>
+              </Typography>
+            </div>
+          </Link>
           <div className={classes.box}>
             <Typography variant="h5" sx={{ marginBottom: 1 }}>
               {t('about.donateByDirectTransferEUR')}
