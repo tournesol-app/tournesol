@@ -1,0 +1,2 @@
+{% load i18n %}
+{% translate "Tournesol Password Reset" %}
