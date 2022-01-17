@@ -8,8 +8,8 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
 """
 
 import os
-import yaml
 
+import yaml
 from django.core.wsgi import get_wsgi_application
 
 server_settings = {}
