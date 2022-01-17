@@ -39,7 +39,7 @@ There are 2 options, renting a server to a cloud provider, or creating a test VM
   - login as root using your hypervisor interface, install `sudo` and add your user into the `sudo` group: `apt install sudo && gpasswd -a <username> sudo`
   - make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
   
-## Option 2: Using a cloud server
+If for any reason you're not able to set up a virtual machine on your computer - your hardware have missing virtualization capabilities, or is not powerful enough - you can still use a remote virtual machine from a Cloud provider. Some Cloud providers offer free credits for new users, but it can get costly if you rent a powerful server and forget to stop it after use. Note this installation method **is not supported** by the team and you might encouter unexpected issues. 
 
 - Choose a cloud provider (Vultr, Digital Ocean, AWS...). Most offer a free trial or free credit for new users.
 - Select a Debian server. 1 CPU cores and 2 GB of RAM should be sufficient, at least for development (to avoid fees, don't forget to close it after all your tests are done).
