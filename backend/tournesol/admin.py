@@ -5,12 +5,12 @@ Defines Tournesol's backend admin interface
 from django.contrib import admin
 
 from .models import (
-    Video,
-    VideoCriteriaScore,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
     Comparison,
     ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    Video,
+    VideoCriteriaScore,
 )
 
 

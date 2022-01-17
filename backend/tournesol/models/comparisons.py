@@ -2,27 +2,17 @@
 Models for Tournesol's main functions related to contributor's comparisons
 """
 
-import uuid
 import logging
-import numpy as np
-
-from django.db import models
-from django.db.models import (
-    ObjectDoesNotExist,
-    Q,
-    F,
-    Count,
-)
-from django.core.validators import MaxValueValidator, MinValueValidator
+import uuid
 
 import computed_property
+import numpy as np
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import Count, F, ObjectDoesNotExist, Q
 
 from core.models import User
-from core.utils.models import (
-    WithFeatures,
-    WithDynamicFields,
-    enum_list,
-)
+from core.utils.models import WithDynamicFields, WithFeatures, enum_list
 from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
 
 

@@ -4,12 +4,12 @@ from io import StringIO
 
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
+from drf_spectacular.utils import OpenApiTypes, extend_schema
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from drf_spectacular.utils import extend_schema, OpenApiTypes
 
-from tournesol.serializers import ComparisonSerializer
 from tournesol.models import Comparison, ContributorRating
+from tournesol.serializers import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 
 

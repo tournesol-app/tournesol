@@ -2,11 +2,14 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from tournesol.models import ContributorRating
-from tournesol.tests.factories.video import VideoFactory
-from tournesol.tests.factories.comparison import ComparisonFactory
 from core.tests.factories.user import UserFactory
-from tournesol.tests.factories.ratings import ContributorRatingFactory, ContributorRatingCriteriaScoreFactory
+from tournesol.models import ContributorRating
+from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
+from tournesol.tests.factories.video import VideoFactory
 
 
 class RatingApi(TestCase):

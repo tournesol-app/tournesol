@@ -1,9 +1,9 @@
 import factory
 import factory.fuzzy
 
+from core.tests.factories.user import UserFactory
 from tournesol.models import comparisons as comparison_models
 from tournesol.tests.factories.video import VideoFactory
-from core.tests.factories.user import UserFactory
 
 
 class ComparisonFactory(factory.django.DjangoModelFactory):

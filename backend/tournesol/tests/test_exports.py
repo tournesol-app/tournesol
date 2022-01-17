@@ -1,16 +1,16 @@
 import csv
 import io
 
-from django.test import TestCase
 from django.core.cache import cache
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore, ContributorRating
-from tournesol.tests.factories.video import VideoFactory
-from tournesol.tests.factories.comparison import ComparisonFactory, ComparisonCriteriaScoreFactory
 from core.tests.factories.user import UserFactory
+from tournesol.models import ComparisonCriteriaScore, ContributorRating
+from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
+from tournesol.tests.factories.video import VideoFactory
 
 
 class ExportTest(TestCase):

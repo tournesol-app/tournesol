@@ -2,11 +2,11 @@ from unittest.mock import patch
 
 from django.core.cache import cache
 from django.test import TestCase
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+
 
 class ThrottlingTestCase(TestCase):
     """

@@ -1,6 +1,8 @@
-from collections import Counter
-from langdetect import detect, lang_detect_exception, DetectorFactory
 import re
+from collections import Counter
+
+from langdetect import DetectorFactory, detect, lang_detect_exception
+
 from ..models import Video
 
 # Enforce consistent results with a constant seed,
