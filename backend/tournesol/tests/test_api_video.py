@@ -28,18 +28,22 @@ class VideoApi(TestCase):
         self.video_1 = VideoFactory(
             publication_date=date(2021, 1, 1),
             uploader="uploader1",
+            rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
             publication_date=date(2021, 1, 2),
             uploader="uploader2",
+            rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
             publication_date=date(2021, 1, 3),
             uploader="uploader2",
+            rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
             publication_date=date(2021, 1, 4),
             uploader="uploader3",
+            rating_n_contributors=5,
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
         VideoCriteriaScoreFactory(video=self.video_1, criteria="reliability", score=0.1)
@@ -255,7 +259,7 @@ class VideoApi(TestCase):
 
     def test_cannot_get_video_with_particular_request(self):
         client = APIClient()
-        video = VideoFactory()
+        video = VideoFactory(rating_n_contributors=2)
         VideoCriteriaScoreFactory(video=video, criteria="engaging", score=-1)
         VideoCriteriaScoreFactory(video=video, criteria="importance", score=1)
         good_response = client.get("/video/?importance=50&engaging=0")
@@ -269,9 +273,9 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # Add 1 video in French and 2 videos in English
-        video1 = VideoFactory(language="fr")
-        video2 = VideoFactory(language="en")
-        video3 = VideoFactory(language="en")
+        video1 = VideoFactory(language="fr", rating_n_contributors=2)
+        video2 = VideoFactory(language="en", rating_n_contributors=2)
+        video3 = VideoFactory(language="en", rating_n_contributors=2)
         VideoCriteriaScoreFactory(video=video1)
         VideoCriteriaScoreFactory(video=video2)
         VideoCriteriaScoreFactory(video=video3)

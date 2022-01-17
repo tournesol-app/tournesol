@@ -105,6 +105,10 @@ class VideoViewSet(mixins.CreateModelMixin,
         request = self.request
         queryset = self.queryset
 
+        queryset = queryset.filter(
+            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
+        )
+
         uploader = request.query_params.get('uploader')
         if uploader:
             queryset = queryset.filter(uploader=uploader)
