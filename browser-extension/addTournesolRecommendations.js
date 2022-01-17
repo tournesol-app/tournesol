@@ -3,8 +3,16 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
+const videosPerRow = 4;
+const rowsWhenExpanded = 3;
+const totalVideoNumber = videosPerRow * rowsWhenExpanded;
+let isExpanded = false;
+
 let videos = [];
-let areVideosLoaded = false;
+let additionalVideos = [];
+let isPageLoaded = false;
+let areRecommandationsLoading = false;
+
 loadRecommandations();
 
 document.addEventListener('yt-navigate-finish', process);
@@ -27,7 +35,7 @@ const getParentComponent = () => {
   }
 }
 
-const getTournesolComponent = (data) => {
+const getTournesolComponent = () => {
     // Create new container
     tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -77,6 +85,39 @@ const getTournesolComponent = (data) => {
     tournesol_link.href = 'https://tournesol.app';
     tournesol_link.append('learn more');
     inline_div.append(tournesol_link);
+
+    // Refresh button
+    refresh_button = document.createElement('button');
+    refresh_button.setAttribute('id', 'tournesol_refresh_button');
+    fetch(chrome.runtime.getURL('images/sync-alt.svg'))
+      .then(r => r.text())
+      .then(svg => refresh_button.innerHTML = svg);
+
+    refresh_button.className = 'tournesol_simple_button';
+    refresh_button.onclick = () => {
+      refresh_button.disabled = true;
+      loadRecommandations();
+    };
+    inline_div.append(refresh_button);
+    // Expand button
+    expand_button = document.createElement('button');
+    expand_button.setAttribute('id', 'tournesol_expand_button');
+    // A new button is created on each video loading, the image must be loaded accordingly
+      fetch(chrome.runtime.getURL(isExpanded ? 'images/chevron-up.svg' : 'images/chevron-down.svg'))
+        .then(r => r.text())
+        .then(svg => expand_button.innerHTML = svg);
+    expand_button.className = "tournesol_simple_button";
+    expand_button.onclick = () => {
+      expand_button.disabled = true;
+      if(!areRecommandationsLoading && !isExpanded){
+        isExpanded = true;
+        displayRecommendations();
+      }else if(isExpanded){
+        isExpanded = false;
+        displayRecommendations();
+      }
+    };
+    inline_div.append(expand_button);
 
     tournesol_container.append(inline_div);
 
@@ -151,7 +192,11 @@ const getTournesolComponent = (data) => {
       return video_box;
     }
 
-    data.forEach((video) => tournesol_container.append(make_video_box(video)));
+    videos.forEach((video) => tournesol_container.append(make_video_box(video)));
+    if(isExpanded){
+      additionalVideos.forEach((video) => tournesol_container.append(make_video_box(video)));
+    }
+    
     return tournesol_container
 }
 
@@ -181,7 +226,7 @@ function displayRecommendations() {
     if (old_container) old_container.remove();
     
     // Generate component to display on Youtube home page
-    tournesol_component = getTournesolComponent(videos)
+    tournesol_component = getTournesolComponent();
     
     container.insertBefore(tournesol_component, container.children[1]);
   }, 300);
@@ -189,15 +234,18 @@ function displayRecommendations() {
 
 
 function process(){
-  areVideosLoaded = true;
+  isPageLoaded = true;
   if(videos.length > 0){
     displayRecommendations();
   }
 }
 
-function handleResponse({ data: videosReponse }){
-  videos = videosReponse;
-  if(areVideosLoaded){
+function handleResponse({ data: videosReponse, loadVideos: loadVideos, loadAdditionalVideos: loadAdditionalVideos }){
+  areRecommandationsLoading = false;
+  videos = videosReponse.slice(0,4);
+  additionalVideos = videosReponse.slice(4);
+  
+  if(isPageLoaded){
     displayRecommendations();
   }
 }
@@ -206,15 +254,20 @@ function loadRecommandations() {
   // Only enable on youtube.com/
   if (location.pathname != '/') return;
 
+  if(areRecommandationsLoading) return;
+  
+  areRecommandationsLoading = true;
   /*
    ** Send message to background.js to get recommendations from the API of Tournesol.
    ** I put video amount here because we can get the value of --ytd-rich-grid-posts-per-row (css) to know how many videos we should retreive from api
    */
   const language =
     localStorage.getItem('tournesol_extension_config_language') || 'en';
-
+  
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
-    language,
+    language: language,
+    videosNumber: videosPerRow,
+    additionalVideosNumber: videosPerRow * (rowsWhenExpanded - 1)
   }, handleResponse);
 }

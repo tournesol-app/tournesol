@@ -19,7 +19,7 @@
 
 #tournesol_title {
   color: var(--yt-spec-text-primary);
-  font-family: 'Roboto', 'Arial', sans-serif;
+  font-family: "Roboto", "Arial", sans-serif;
   font-size: 22px;
   position: absolute;
   left: 32px;
@@ -28,23 +28,94 @@
 
 .language_option {
   color: var(--yt-spec-text-primary);
-  font-family: 'Roboto', 'Arial', sans-serif;
+  font-family: "Roboto", "Arial", sans-serif;
   float: right;
   margin-top: 3px;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 #tournesol_link {
   color: var(--yt-spec-text-primary);
-  font-family: 'Roboto', 'Arial', sans-serif;
+  font-family: "Roboto", "Arial", sans-serif;
   position: absolute;
   right: 0px;
   top: 15px;
 }
 
+#tournesol_refresh_button {
+  float: right;
+  margin-top: 4px;
+  margin-left: 12px;
+  margin-right: 24px;
+}
+
+#tournesol_expand_button {
+  float: right;
+  margin-top: 4px;
+  margin-left: 12px;
+}
+
 #tournesol_icon {
   position: absolute;
   left: 0px;
+}
+
+.tournesol_simple_button {
+  fill: var(--yt-spec-text-secondary);
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 0px;
+  border-style: none;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.tournesol_simple_button svg {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 20px;
+  height: 20px;
+}
+
+.tournesol_simple_button:hover svg {
+  fill: var(--yt-spec-text-primary);
+
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.tournesol_simple_button:active svg {
+  fill: var(--yt-spec-text-primary);
+
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.tournesol_simple_button:active {
+  background: var(--yt-spec-brand-background-solid);
+
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.tournesol_simple_button:disabled svg {
+  fill: var(--yt-spec-text-disabled);
+}
+
+.tournesol_simple_button:disabled {
+  background: var(--yt-spec-brand-background-solid);
 }
 
 .video_box {
@@ -64,7 +135,7 @@
 .video_title {
   color: var(--yt-spec-text-primary);
   margin-bottom: 6px;
-  font-family: 'Roboto', 'Arial', sans-serif;
+  font-family: "Roboto", "Arial", sans-serif;
   letter-spacing: var(--yt-link-letter-spacing, normal);
   white-space: normal;
   -webkit-box-orient: vertical;
@@ -94,7 +165,7 @@
 
 .video_text {
   color: var(--yt-endpoint-color, var(--yt-spec-text-secondary));
-  font-family: 'Roboto', 'Arial', sans-serif;
+  font-family: "Roboto", "Arial", sans-serif;
   word-break: break-word;
   font-size: 1.4rem;
   font-weight: 400;
