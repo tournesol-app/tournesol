@@ -15,6 +15,14 @@ This method requires more efforts to set up the environment, as it implies
 knowing how to: create a Python virtual environment; install and configure
 a Django application; and how to install and configure a PostgreSQL server.
 
+#### Required packages
+
+- `python` >= 3.9
+- `postgresql-13-server`
+- `gettext` >= 0.21
+
+#### Procedure
+
 - Create a postgres database.
 
 - Create a config file in /etc/django/settings-tournesol.yaml. You can find an example in documentation folder.
