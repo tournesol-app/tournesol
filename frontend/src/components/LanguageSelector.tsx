@@ -5,14 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from 'src/i18n';
 import MenuButton from './MenuButton';
 
-const getLanguageName = (code: string) => {
-  if (!Intl.DisplayNames) {
-    return code;
-  }
-  return new Intl.DisplayNames(code, {
-    type: 'language',
-  }).of(code);
-};
+const codeToLanguage = Object.fromEntries(
+  SUPPORTED_LANGUAGES.map((l) => [l.code, l])
+);
 
 const LanguageSelector = () => {
   const { i18n } = useTranslation();
@@ -23,9 +18,9 @@ const LanguageSelector = () => {
       <MenuButton
         startIcon={<Language />}
         sx={{ width: '100%', px: 3 }}
-        menuContent={SUPPORTED_LANGUAGES.map((lang) => (
+        menuContent={SUPPORTED_LANGUAGES.map(({ code, name }) => (
           <MenuItem
-            key={lang}
+            key={code}
             sx={{
               minWidth: '200px',
               '&.Mui-selected': {
@@ -35,13 +30,13 @@ const LanguageSelector = () => {
                 bgcolor: 'action.selected',
               },
             }}
-            onClick={() => i18n.changeLanguage(lang)}
-            selected={lang == currentLanguage}
+            onClick={() => i18n.changeLanguage(code)}
+            selected={code === currentLanguage}
           >
             <Box component="span" sx={{ textTransform: 'capitalize' }}>
-              {getLanguageName(lang)}
+              {name}
             </Box>
-            &nbsp;({lang})
+            &nbsp;({code})
           </MenuItem>
         ))}
         menuProps={{
@@ -61,7 +56,7 @@ const LanguageSelector = () => {
           fontWeight="bold"
           sx={{ textTransform: 'capitalize' }}
         >
-          {getLanguageName(currentLanguage)}
+          {codeToLanguage[currentLanguage]?.name ?? currentLanguage}
         </Box>
       </MenuButton>
     </Box>
