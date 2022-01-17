@@ -68,6 +68,9 @@ http {
         gzip_vary on; # Distinguish compressed and uncompressed cache
         gunzip on;    # Uncompress for clients that don't support compression
 
+        # Static pre-compressed files for better performances
+        gzip_static on;
+
         ##
         # Virtual Host Configs
         ##
