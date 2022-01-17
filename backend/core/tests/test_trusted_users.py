@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from core.models import User, EmailDomain
+from core.models import EmailDomain, User
 
 
 class TestTrustedUsers(TestCase):
