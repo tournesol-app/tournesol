@@ -82,8 +82,8 @@
   },
   "config": {
     "supported_languages": [
-      "en",
-      "fr"
+      {"code": "en", "name": "English"},
+      {"code": "fr", "name": "Français"}
     ]
   }
 }
