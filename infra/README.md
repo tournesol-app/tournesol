@@ -8,8 +8,6 @@ This section covers how to set up a production-like environment in a virtual mac
 This personal environment allows developppers to work on the Ansible deployment recipe and to test their modifications. If you want to work of the Tournesol application code, use the `dev-env` instead.
 
 
-## Option 1: Installing a VM for Infrastructure Code Development
-
 - Fetch the Debian Bullseye Image and verify it: `./base-image/fetch-debian-image.sh`
 
 - Create a VM using the installer from the previously downloaded ISO
