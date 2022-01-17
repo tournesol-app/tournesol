@@ -41,13 +41,6 @@ There are 2 options, renting a server to a cloud provider, or creating a test VM
   
 If for any reason you're not able to set up a virtual machine on your computer - your hardware have missing virtualization capabilities, or is not powerful enough - you can still use a remote virtual machine from a Cloud provider. Some Cloud providers offer free credits for new users, but it can get costly if you rent a powerful server and forget to stop it after use. Note this installation method **is not supported** by the team and you might encouter unexpected issues. 
 
-- Choose a cloud provider (Vultr, Digital Ocean, AWS...). Most offer a free trial or free credit for new users.
-- Select a Debian server. 1 CPU cores and 2 GB of RAM should be sufficient, at least for development (to avoid fees, don't forget to close it after all your tests are done).
-- connect to the server via ssh
-- install `sudo` if not present: `apt install sudo`
-- create your user: `sudo useradd <username>` and set its password: `sudo passwd <username>`
-- add your user to the `sudo` group: `gpasswd -a <username> sudo`
-
 
 ## Provisioning
 
