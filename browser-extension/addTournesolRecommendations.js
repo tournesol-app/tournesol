@@ -13,13 +13,13 @@ let additionalVideos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
 
-loadRecommandations();
+// If it is not a search, it is the mainpage recommandation
+let isSearch = false;
+let currentSearch = '';
 
-document.addEventListener('yt-navigate-finish', process);
-if (document.body) process();
-else document.addEventListener('DOMContentLoaded', process);
 
-const getParentComponent = () => {
+
+const getParentComponentMainPage = () => {
   try {
     // Get parent element for the boxes in youtube page
     contents = document
@@ -33,6 +33,26 @@ const getParentComponent = () => {
   } catch (error) {
     return;
   }
+}
+
+const getParentComponentSearchPage = () => {
+  try {
+    // Get parent element for the boxes in youtube page
+    contents = document
+      .getElementById('visibility-monitor')
+      .parentElement.children['content'].getElementsByTagName('ytd-page-manager')[0]
+      .getElementsByTagName('ytd-search')[0]
+      .getElementsByTagName('ytd-two-column-search-results-renderer')[0]
+      .children['primary'].getElementsByTagName('ytd-section-list-renderer')[0];
+    if (!contents || !contents.children[1]) return;
+    return contents
+  } catch (error) {
+    return;
+  }
+}
+
+const getSearchQuery = () => {
+  return new URL(location.href).searchParams.get('search_query');
 }
 
 const getTournesolComponent = () => {
@@ -202,9 +222,20 @@ const getTournesolComponent = () => {
 
 // This part creates video boxes from API's response JSON
 function displayRecommendations() {
-  if (!videos || videos.length === 0) {
+  const query = getSearchQuery();
+  if(query !== currentSearch){
+    currentSearch = query;
+    old_container = document.getElementById('tournesol_container');
+    if (old_container) old_container.remove();
+    loadRecommandations();
+    return;
+  }
+  isPageLoaded = true;
+  if (!videos || videos.length === 0 ) {
     return
   }
+  
+  
 
   // Timer will run until needed elements are generated
   var timer = window.setInterval(function () {
@@ -217,7 +248,8 @@ function displayRecommendations() {
      */
 
     // Get the container on Youtube home page in which we will insert Tournesol's component
-    const container = getParentComponent();
+    const container = (location.pathname == '/') ? getParentComponentMainPage() : getParentComponentSearchPage();
+    
     if (!container) return;
     window.clearInterval(timer);
 
@@ -234,13 +266,10 @@ function displayRecommendations() {
 
 
 function process(){
-  isPageLoaded = true;
-  if(videos.length > 0){
-    displayRecommendations();
-  }
+  displayRecommendations();
 }
 
-function handleResponse({ data: videosReponse, loadVideos: loadVideos, loadAdditionalVideos: loadAdditionalVideos }){
+function handleResponse({ data: videosReponse, loadVideos, loadAdditionalVideos}){
   areRecommandationsLoading = false;
   videos = videosReponse.slice(0,4);
   additionalVideos = videosReponse.slice(4);
@@ -252,7 +281,8 @@ function handleResponse({ data: videosReponse, loadVideos: loadVideos, loadAddit
 
 function loadRecommandations() {
   // Only enable on youtube.com/
-  if (location.pathname != '/') return;
+  let isSearch = location.pathname == '/results';
+  if (location.pathname != '/' && !isSearch) return;
 
   if(areRecommandationsLoading) return;
   
@@ -263,11 +293,31 @@ function loadRecommandations() {
    */
   const language =
     localStorage.getItem('tournesol_extension_config_language') || 'en';
-  
-  chrome.runtime.sendMessage({
-    message: 'getTournesolRecommendations',
-    language: language,
-    videosNumber: videosPerRow,
-    additionalVideosNumber: videosPerRow * (rowsWhenExpanded - 1)
-  }, handleResponse);
+  const videosNumber = videosPerRow;
+  const additionalVideosNumber = videosPerRow * (rowsWhenExpanded - 1);
+
+  if(isSearch){
+    const query = getSearchQuery();
+    currentSearch = query;
+    chrome.runtime.sendMessage({
+      message: 'getTournesolSearchRecommendations',
+      language,
+      videosNumber,
+      additionalVideosNumber,
+      query
+    }, handleResponse);
+  }else{
+    chrome.runtime.sendMessage({
+      message: 'getTournesolRecommendations',
+      language,
+      videosNumber,
+      additionalVideosNumber
+    }, handleResponse);
+  }
 }
+
+loadRecommandations();
+
+document.addEventListener('yt-navigate-finish', process);
+if (document.body) process();
+else document.addEventListener('DOMContentLoaded', process);
