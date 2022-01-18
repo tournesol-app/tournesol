@@ -16,6 +16,12 @@ export const alertUseOnLinkToYoutube = () => {
   alertOnCurrentTab('This must be used on a link to a youtube video')
 }
 
+export const alertTokenInvalid = () => {
+  alertOnCurrentTab(
+    'It seems you are logged in Tournesol, but your access token has expired.\\n\\n' +
+    'Please, log out and log in at https://tournesol.app to fix the issue.');
+}
+
 export const alertNotLoggedInOrError = () => {
   alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persists, please let us know by creating an issue on https://github.com/tournesol-app/tournesol')
 }
@@ -39,8 +45,16 @@ export const fetchTournesolApi = async (url, method, data) => {
     body["body"]= JSON.stringify(data)
   }
   return fetch(`https://api.tournesol.app/${url}`, body).then(r => {
-    if (r.status === 403 || r.status === 401) {
-      alertNotLoggedInOrError()
+    if (r.status === 401 || r.status === 403) {
+
+      // 401 Unauthorized with an access token means either
+      // - the token has been crafted
+      // - the token has expired
+      if (r.status === 401 && access_token) {
+        alertTokenInvalid();
+      } else {
+        alertNotLoggedInOrError();
+      }
     }
     return r;
   }).catch(console.error)
