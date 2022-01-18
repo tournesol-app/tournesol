@@ -2,12 +2,11 @@
 API endpoints to interact with the contributor's comparisons
 """
 
+from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
-from django.db import transaction
 from drf_spectacular.utils import extend_schema
-
-from rest_framework import generics, mixins, status, exceptions
+from rest_framework import exceptions, generics, mixins, status
 from rest_framework.response import Response
 
 from ..models import Comparison, ContributorRating

@@ -1,10 +1,11 @@
-import numpy as np
-import torch
 import random
 
+import numpy as np
+import torch
+
 from ml.data_utility import replace_dir
-from .plots import (plot_metrics, plot_density, plot_s_predict_gt,
-                    plot_loc_uncerts)
+
+from .plots import plot_density, plot_loc_uncerts, plot_metrics, plot_s_predict_gt
 
 """
 Visualisation methods, mainly for testing and debugging

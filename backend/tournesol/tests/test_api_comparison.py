@@ -1,20 +1,20 @@
-from copy import deepcopy
 import datetime
+from copy import deepcopy
 from unittest.mock import patch
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.tests.factories.video import VideoFactory
 from tournesol.tests.factories.comparison import ComparisonFactory
-from ..models import Video, Comparison
+from tournesol.tests.factories.video import VideoFactory
+
+from ..models import Comparison, Video
 
 
 class ComparisonApiTestCase(TestCase):

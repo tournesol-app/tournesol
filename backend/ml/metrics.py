@@ -1,10 +1,11 @@
-from torch.autograd.functional import hessian
-import torch
-from copy import deepcopy
 import logging
+from copy import deepcopy
 from statistics import median
 
-from .losses import round_loss, loss_fit_s_gen, loss_gen_reg, models_dist
+import torch
+from torch.autograd.functional import hessian
+
+from .losses import loss_fit_s_gen, loss_gen_reg, models_dist, round_loss
 
 """
 Metrics used for training monitoring in "licchavi.py"

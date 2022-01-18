@@ -6,10 +6,13 @@ set -uxo pipefail
 # return 0 if all checks return 0
 # 1 instead
 
-pylint --rcfile=.pylintrc ${@:-core tournesol}
+isort --settings-path .isort.cfg --check-only ${@:-core ml settings tournesol}
 chk1=$?
 
 flake8 --config=.flake8 ${@:-}
 chk2=$?
 
-! (( chk1 || chk2 ))
+pylint --rcfile=.pylintrc ${@:-core tournesol}
+chk3=$?
+
+! (( chk1 || chk2 || chk3 ))

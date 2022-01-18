@@ -8,8 +8,8 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 """
 
 import os
-import yaml
 
+import yaml
 from django.core.asgi import get_asgi_application
 
 # Get the local settings of the server

@@ -1,9 +1,9 @@
 import factory
 import factory.fuzzy
 
+from core.tests.factories.user import UserFactory
 from tournesol.models import ratings as ratings_models
 from tournesol.tests.factories.video import VideoFactory
-from core.tests.factories.user import UserFactory
 
 
 class ContributorRatingFactory(factory.django.DjangoModelFactory):

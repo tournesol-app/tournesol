@@ -2,17 +2,17 @@
 API endpoint to manipulate contributor ratings
 """
 
+from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Subquery, Func, OuterRef
-from rest_framework import generics, exceptions
-from rest_framework.response import Response
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from rest_framework import exceptions, generics
+from rest_framework.response import Response
 
-from ..models import ContributorRating, Comparison
+from ..models import Comparison, ContributorRating
 from ..serializers import (
-    ContributorRatingSerializer,
     ContributorRatingCreateSerializer,
+    ContributorRatingSerializer,
     ContributorRatingUpdateAllSerializer,
 )
 

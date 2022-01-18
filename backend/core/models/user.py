@@ -3,20 +3,21 @@ Defines Tournesol's User model and user preferences
 """
 
 import logging
-from django.db import models
-from django.db.models import Q, CheckConstraint, F, Func, Value
-from django.db.models.expressions import OuterRef, Exists
-from django.db.models.functions import Lower
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import CheckConstraint, F, Func, Q, Value
+from django.db.models.expressions import Exists, OuterRef
+from django.db.models.functions import Lower
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 
-from settings.settings import MAX_VALUE, CRITERIAS, CRITERIAS_DICT
+from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
 
 from ..utils.constants import featureIsEnabledByDeFault
-from ..utils.models import enum_list, WithDynamicFields, WithFeatures
+from ..utils.models import WithDynamicFields, WithFeatures, enum_list
 from ..utils.validators import validate_avatar
 
 logger = logging.getLogger(__name__)

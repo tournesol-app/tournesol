@@ -3,14 +3,13 @@ Utils methods for Tournesol's core app
 """
 
 import base64
+import logging
 import pickle
 from functools import reduce
-import logging
 
-from django.db.models import JSONField
-
-from computed_property.fields import ComputedField
 import numpy as np
+from computed_property.fields import ComputedField
+from django.db.models import JSONField
 
 from settings.settings import CRITERIAS
 

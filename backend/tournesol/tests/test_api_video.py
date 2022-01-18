@@ -8,8 +8,9 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
-from tournesol.tests.factories.video import VideoFactory, VideoCriteriaScoreFactory
+
 from ..models import Tag, Video
 
 

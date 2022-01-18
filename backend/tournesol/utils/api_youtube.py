@@ -1,8 +1,9 @@
 import logging
+
+import googleapiclient.discovery
 from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_duration
-import googleapiclient.discovery
 
 from tournesol.utils.video_language import compute_video_language
 

@@ -4,9 +4,9 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from core.tests.factories.user import UserFactory
 from tournesol.models import Video, VideoRateLater
 from tournesol.tests.factories.video import VideoFactory, VideoRateLaterFactory
-from core.tests.factories.user import UserFactory
 
 
 class VideoRateLaterApi(TestCase):

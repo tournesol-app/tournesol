@@ -1,16 +1,16 @@
 import logging
 
+from django.core.management.base import BaseCommand
+
+from ml.core import TOURNESOL_DEV, ml_run
+from settings.settings import CRITERIAS
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
-    VideoCriteriaScore,
     User,
+    VideoCriteriaScore,
 )
-from django.core.management.base import BaseCommand
-
-from settings.settings import CRITERIAS
-from ml.core import ml_run, TOURNESOL_DEV
 
 """
 Machine Learning main python file

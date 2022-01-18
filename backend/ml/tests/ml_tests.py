@@ -1,30 +1,29 @@
 import numpy as np
 import torch
 
+from ml.core import _set_licchavi, _train_predict, ml_run
 from ml.data_utility import (
-    rescale_rating,
-    get_all_vids,
-    get_mask,
-    reverse_idxs,
-    sort_by_first,
     expand_dic,
     expand_tens,
+    get_all_vids,
+    get_mask,
+    rescale_rating,
+    reverse_idxs,
+    sort_by_first,
 )
-from ml.handle_data import select_criteria, shape_data, distribute_data
-from ml.losses import _bbt_loss, _approx_bbt_loss, get_s_loss, models_dist, model_norm
+from ml.dev.fake_data import generate_data
+from ml.handle_data import distribute_data, select_criteria, shape_data
+from ml.licchavi import Licchavi, get_model, get_s
+from ml.losses import _approx_bbt_loss, _bbt_loss, get_s_loss, model_norm, models_dist
 from ml.metrics import (
-    extract_grad,
-    scalar_product,
     _random_signs,
-    get_uncertainty_glob,
     check_equilibrium_glob,
     check_equilibrium_loc,
+    extract_grad,
+    get_uncertainty_glob,
     get_uncertainty_loc,
+    scalar_product,
 )
-from ml.licchavi import Licchavi, get_model, get_s
-from ml.dev.fake_data import generate_data
-from ml.core import _set_licchavi, _train_predict, ml_run
-
 
 """
 Test module for ml

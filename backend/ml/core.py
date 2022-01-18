@@ -1,13 +1,18 @@
-import os
 import logging
+import os
 from time import time
+
 import gin
 
-from ml.licchavi import Licchavi
 from ml.handle_data import (
-    select_criteria, shape_data, distribute_data,
-    distribute_data_from_save, format_out_loc, format_out_glob)
-
+    distribute_data,
+    distribute_data_from_save,
+    format_out_glob,
+    format_out_loc,
+    select_criteria,
+    shape_data,
+)
+from ml.licchavi import Licchavi
 
 TOURNESOL_DEV = bool(int(os.environ.get("TOURNESOL_DEV", 0)))  # dev mode
 FOLDER_PATH = "ml/checkpoints/"

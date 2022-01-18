@@ -84,7 +84,9 @@ All of them should be automatically triggered by the continuous integration
 system using single script `scripts/ci/lint.sh`.
 
 You are encouraged to run this script locally before creating a new commit.
-Note that the script must be run from the root of the back end folder. 
+Note that the script must be run from the root of the back end folder.
+
+### Run the checks
 
 ```shell
 # with a manually installed back end
@@ -106,6 +108,18 @@ docker exec tournesol-dev-api scripts/ci/lint.sh core/apps.py core/models/
 
 An output finishing by `+ exit 0` means all checks have been successful,
 `+ exit 1` means at least one check has failed.
+
+### Automatically fix some errors
+
+Some tools, like `isort` are able to automatically fixes the target files.
+
+```shell
+# with a manually installed back end
+./scripts/ci/lint-fix.sh
+
+# with an automatically installed back end with Docker
+docker exec tournesol-dev-api scripts/ci/lint-fix.sh
+```
 
 ## F.A.Q.
 

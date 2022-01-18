@@ -1,22 +1,23 @@
-import torch
-from copy import deepcopy
-from time import time
 import logging
+from copy import deepcopy
 from logging import info as loginf
-import gin
+from time import time
 
-from .losses import model_norm, round_loss, predict, loss_fit_s_gen, loss_gen_reg
+import gin
+import torch
+
+from .data_utility import expand_tens, one_hot_vids
+from .dev.visualisation import disp_one_by_line
+from .losses import loss_fit_s_gen, loss_gen_reg, model_norm, predict, round_loss
 from .metrics import (
-    extract_grad,
-    get_uncertainty_loc,
-    get_uncertainty_glob,
     check_equilibrium_glob,
     check_equilibrium_loc,
+    extract_grad,
+    get_uncertainty_glob,
+    get_uncertainty_loc,
     scalar_product,
 )
-from .data_utility import expand_tens, one_hot_vids
 from .nodes import Node
-from .dev.visualisation import disp_one_by_line
 
 """
 Machine Learning algorithm, used in "core.py"

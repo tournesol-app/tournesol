@@ -1,9 +1,9 @@
 from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import BooleanField, EmailField
 from rest_framework.validators import UniqueValidator
-from rest_framework.serializers import EmailField, BooleanField
 from rest_registration.api.serializers import (
-    DefaultRegisterUserSerializer,
     DefaultRegisterEmailSerializer,
+    DefaultRegisterUserSerializer,
     DefaultUserProfileSerializer,
 )
 

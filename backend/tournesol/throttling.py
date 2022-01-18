@@ -1,8 +1,4 @@
-from rest_framework.throttling import (
-    AnonRateThrottle,
-    ScopedRateThrottle,
-    UserRateThrottle,
-)
+from rest_framework.throttling import AnonRateThrottle, ScopedRateThrottle, UserRateThrottle
 
 
 class BurstAnonRateThrottle(AnonRateThrottle):

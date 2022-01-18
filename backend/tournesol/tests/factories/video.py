@@ -4,8 +4,8 @@ import string
 
 import factory
 
-from tournesol.models import video as video_models
 from core.tests.factories.user import UserFactory
+from tournesol.models import video as video_models
 
 
 def generate_youtube_id():

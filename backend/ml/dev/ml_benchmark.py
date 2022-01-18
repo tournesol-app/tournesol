@@ -1,9 +1,11 @@
 import timeit
+
 import torch
 
-from ml.losses import _bbt_loss, _approx_bbt_loss, get_fit_loss, get_s_loss
-from .fake_data import generate_data
+from ml.losses import _approx_bbt_loss, _bbt_loss, get_fit_loss, get_s_loss
+
 from ..core import ml_run
+from .fake_data import generate_data
 
 """
 Module used for testing performances (speed)
