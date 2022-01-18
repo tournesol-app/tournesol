@@ -115,6 +115,17 @@ async function recommendationsLanguages() {
     "en";
 }
 
+const requestRecommendations = async (options) => {
+  const api_url = 'video/';
+
+  const resp = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET');
+  if (resp && resp.ok) {
+    const json = await resp.json();
+    return json.results
+  }
+  return []
+};
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   // Return the current access token in the chrome.storage.local.
@@ -167,13 +178,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
   if (request.message == "getTournesolSearchRecommendations") {
-    const URLparams = `search=${request.query}`;
-    const process = getRecommandations(URLparams, request,
-      {oversamplingRatioForRecentVideos,
-        oversamplingRatioForOldVideos,
-        recentVideoProportion,
-        recentVideoProportionForAdditionalVideos});
-    process.then(sendResponse);
+    const process = async () => {
+      const videos = await requestRecommendations(`search=${request.query}&language=${request.language}&limit=${request.videosNumber}`);
+      
+      return {
+        data: videos,
+        loadVideos:request.videosNumber > 0, 
+        loadAdditionalVideos:false };
+    }
+    process().then(sendResponse);
     return true;
   }
 });
@@ -183,20 +196,6 @@ async function getRecommandations(URLparams, request,
     oversamplingRatioForOldVideos,
     recentVideoProportion,
     recentVideoProportionForAdditionalVideos}){
-  
-  const api_url = 'video/';
-
-  const request_recommendations = async (options) => {
-    const resp = await fetchTournesolApi(`${api_url}${options ? '?' : ''}${options}`, 'GET');
-    if (resp && resp.ok) {
-      const json = await resp.json();
-      return json.results
-    }
-    return []
-  };
-
-  const language = await recommendationsLanguages();
-
   // Compute the number of videos to load in each category
   const recentVideoToLoad = Math.round(request.videosNumber*oversamplingRatioForRecentVideos*recentVideoProportion);
   const oldVideoToLoad = Math.round(request.videosNumber*oversamplingRatioForOldVideos*(1-recentVideoProportion));
@@ -206,10 +205,10 @@ async function getRecommandations(URLparams, request,
     Math.round(request.additionalVideosNumber*oversamplingRatioForOldVideos*(1-recentVideoProportionForAdditionalVideos));
   
   // Only one request for both videos and additional videos
-  const recent = await request_recommendations(
+  const recent = await requestRecommendations(
     `${URLparams}&language=${language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
   );
-  const old = await request_recommendations(
+  const old = await requestRecommendations(
     `${URLparams}&language=${language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
   );
   

@@ -262,8 +262,8 @@ function process(){
 
 function handleResponse({ data: videosReponse, loadVideos, loadAdditionalVideos}){
   areRecommandationsLoading = false;
-  videos = videosReponse.slice(0,4);
-  additionalVideos = videosReponse.slice(4);
+  videos = videosReponse.slice(0,videosPerRow);
+  additionalVideos = videosReponse.slice(videosPerRow);
   
   if(isPageLoaded){
     displayRecommendations();
@@ -297,8 +297,7 @@ function loadRecommandations() {
     chrome.runtime.sendMessage({
       message: 'getTournesolSearchRecommendations',
       videosNumber,
-      additionalVideosNumber,
-      currentSearch
+      query:currentSearch
     }, handleResponse);
   }else{
     chrome.runtime.sendMessage({
