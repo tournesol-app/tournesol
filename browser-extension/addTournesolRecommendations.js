@@ -57,6 +57,7 @@ const getSearchQuery = () => {
 }
 
 const getTournesolComponent = () => {
+  
     // Create new container
     tournesol_container = document.createElement('div');
     tournesol_container.id = 'tournesol_container';
@@ -138,7 +139,11 @@ const getTournesolComponent = () => {
         displayRecommendations();
       }
     };
-    inline_div.append(expand_button);
+
+    if(!isSearch){
+      inline_div.append(expand_button);
+    }
+      
 
     tournesol_container.append(inline_div);
 
@@ -223,9 +228,10 @@ const getTournesolComponent = () => {
 
 // This part creates video boxes from API's response JSON
 function displayRecommendations() {
-  let isSearch = location.pathname == '/results';
+  isSearch = location.pathname == '/results';
   if(isSearch){
     const query = getSearchQuery();
+    isExpanded = false;
     if(query !== currentSearch){
       currentSearch = query;
 
@@ -287,7 +293,8 @@ function handleResponse({ data: videosReponse, loadVideos, loadAdditionalVideos}
 
 function loadRecommandations() {
   // Only enable on youtube.com/
-  let isSearch = location.pathname == '/results';
+  isSearch = location.pathname == '/results';
+  
   if (location.pathname != '/' && !isSearch) return;
 
   if(areRecommandationsLoading) return;
