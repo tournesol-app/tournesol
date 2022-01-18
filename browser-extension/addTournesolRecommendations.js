@@ -13,6 +13,7 @@ let additionalVideos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
 
+const minQuerySize = 3;
 // If it is not a search, it is the mainpage recommandation
 let isSearch = false;
 let currentSearch = '';
@@ -222,20 +223,25 @@ const getTournesolComponent = () => {
 
 // This part creates video boxes from API's response JSON
 function displayRecommendations() {
-  const query = getSearchQuery();
-  if(query !== currentSearch){
-    currentSearch = query;
-    old_container = document.getElementById('tournesol_container');
-    if (old_container) old_container.remove();
-    loadRecommandations();
-    return;
+  let isSearch = location.pathname == '/results';
+  if(isSearch){
+    const query = getSearchQuery();
+    if(query !== currentSearch){
+      currentSearch = query;
+
+      // The old videos aren't relevant anymore
+      old_container = document.getElementById('tournesol_container');
+      if (old_container) old_container.remove();
+      // Load the new ones
+      loadRecommandations();
+      return;
+    }
   }
+  
   isPageLoaded = true;
   if (!videos || videos.length === 0 ) {
     return
   }
-  
-  
 
   // Timer will run until needed elements are generated
   var timer = window.setInterval(function () {
@@ -297,14 +303,20 @@ function loadRecommandations() {
   const additionalVideosNumber = videosPerRow * (rowsWhenExpanded - 1);
 
   if(isSearch){
-    const query = getSearchQuery();
-    currentSearch = query;
+    currentSearch = getSearchQuery();
+
+    // Don't make any recommandation request if the query is too short
+    if(currentSearch.length < minQuerySize){
+      areRecommandationsLoading = false;
+      return;
+    }
+
     chrome.runtime.sendMessage({
       message: 'getTournesolSearchRecommendations',
       language,
       videosNumber,
       additionalVideosNumber,
-      query
+      currentSearch
     }, handleResponse);
   }else{
     chrome.runtime.sendMessage({
