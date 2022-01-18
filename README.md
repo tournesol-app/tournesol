@@ -28,7 +28,7 @@ Please refer to the `dev-env` directory or the corresponding documents in
 
 ## Contribute
 
-See the following [document](./CONTRIBUTING.md) to contribute to the project
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 See the Wiki page [Contribute to Tournesol][tournesol-wiki-contribute] for
 details.
 
