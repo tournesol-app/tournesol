@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-17 11:26+0100\n"
+"POT-Creation-Date: 2022-01-18 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: core/models/user.py:27
+#: core/models/user.py:28
 msgid "email address"
 msgstr "adresse e-mail"
+
+#: core/serializers/user.py:18
+#, python-format
+msgid "'%(name)s' is a reserved username"
+msgstr "'%(name)s' est un nom d'utilisateur reservé"
+
+#: core/serializers/user.py:20
+msgid "'@' is not allowed in username"
+msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
 
 #: core/templates/accounts/register/body.txt:2
 msgid "Please verify your Tournesol account by clicking on this link:"
@@ -51,8 +60,7 @@ msgstr ""
 #: core/templates/accounts/register_email/body.txt:9
 #, python-format
 msgid "You can verify the email %(email)s by clicking on this link:"
-msgstr ""
-"Veuillez confirmer l'adresse e-mail %(email)s en cliquant sur ce lien:"
+msgstr "Veuillez confirmer l'adresse e-mail %(email)s en cliquant sur ce lien:"
 
 #: core/templates/accounts/register_email/subject.txt:3
 msgid "Your e-mail is already in use on Tournesol"
