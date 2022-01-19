@@ -29,7 +29,24 @@ const renderCustomAxisTick = ({ x, y, payload }: any) => {
       'M11.0749 7.2C11.6051 7.2 12.0349 6.77019 12.0349 6.24C12.0349 5.70981 11.6051 5.28 11.0749 5.28C10.5447 5.28 10.1149 5.70981 10.1149 6.24C10.1149 6.77019 10.5447 7.2 11.0749 7.2Z',
   };
   console.log(payload);
-  return <em> {payload.value} </em>;
+  return (
+    <svg
+      x={x - 12}
+      y={y - 12}
+      width="26"
+      height="28"
+      viewBox="0 0 26 28"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d={paths[payload.value]}
+        fill="#D37A80"
+      />
+    </svg>
+  );
 };
 
 const useStyles = makeStyles(() => ({
