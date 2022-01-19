@@ -1,6 +1,6 @@
-export const handleWikiUrl = (host: string) => {
-  if (host == 'localhost:3000') {
+export const getWikiBaseUrl = () => {
+  if (location.hostname === 'localhost') {
     return 'https://wiki.staging.tournesol.app';
   }
-  return `https://wiki.${host}`;
+  return `https://wiki.${location.host}`;
 };
