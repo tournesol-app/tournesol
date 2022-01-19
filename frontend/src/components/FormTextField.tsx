@@ -9,6 +9,7 @@ interface Props {
   onChange?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
+  helperText?: React.ReactNode;
   [propName: string]: unknown;
 }
 
@@ -17,6 +18,7 @@ const FormTextField = ({
   label,
   formError,
   onChange,
+  helperText,
   ...rest
 }: Props) => {
   const errorMessages = formError?.[name];
@@ -36,7 +38,7 @@ const FormTextField = ({
       size="small"
       variant="outlined"
       error={showError}
-      helperText={showError && <Lines messages={errorMessages} />}
+      helperText={showError ? <Lines messages={errorMessages} /> : helperText}
       onChange={(e) => {
         setShowError(false);
         if (onChange) {

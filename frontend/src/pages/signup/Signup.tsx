@@ -85,6 +85,9 @@ const Signup = () => {
                   name="username"
                   label={t('username')}
                   formError={formError}
+                  helperText={t(
+                    'settings.captionUsernameWillAppearInPublicDatabase'
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -103,8 +106,9 @@ const Signup = () => {
                   formError={formError}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} display="flex" alignItems="center">
                 <Checkbox
+                  color="secondary"
                   checked={acceptPolicy}
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
                 />
