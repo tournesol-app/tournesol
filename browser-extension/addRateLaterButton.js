@@ -68,20 +68,31 @@ function process() {
     // On click
     rateLaterButton.onclick = () => {
       rateLaterButton.disabled = true;
-      chrome.runtime.sendMessage(
-        {
-          message: 'addRateLater',
-          video_id: videoId
-        },
-        (data) => {
-          if (data.success) {
-            text_td_text.replaceWith(document.createTextNode('Done!'))
+
+      const resp = new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+          {
+            message: 'addRateLater',
+            video_id: videoId
+          },
+          (data) => {
+            if (data.success) {
+              text_td_text.replaceWith(document.createTextNode('Done!'))
+              resolve();
+            } else {
+              rateLaterButton.disabled = false;
+              reject();
+            }
           }
-          else {
-            rateLaterButton.disabled = false;
-          }
-        }
-      );
+        );
+
+      // TODO: handle the != cases
+      // - display login iframe for non-logged user ( 401 + empty access token )
+      // - open/close iframe for logged user w/ invalid token ( 401 + access token )
+      }).catch((reason) => {
+        const info = document.querySelector('div#info.ytd-miniplayer-toast');
+        info.appendChild(document.createElement('p'));
+      });
     }
 
     // Insert after like and dislike buttons

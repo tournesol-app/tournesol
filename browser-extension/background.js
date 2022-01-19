@@ -1,4 +1,9 @@
-import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
+import {
+  fetchTournesolApi,
+  getRandomSubarray,
+  addRateLater,
+  alertUseOnLinkToYoutube,
+} from './utils.js'
 
 const oversamplingRatioForRecentVideos = 3;
 const oversamplingRatioForOldVideos = 50;
