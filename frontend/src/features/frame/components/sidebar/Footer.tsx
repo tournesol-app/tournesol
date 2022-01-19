@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Divider, Theme } from '@mui/material';
 
-import { handleWikiUrl } from 'src/utils/url';
+import { getWikiBaseUrl } from 'src/utils/url';
 import { LanguageSelector } from 'src/components';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -39,7 +39,7 @@ const Footer = () => {
       <div className={classes.linksContainer}>
         <a
           className={classes.menuLink}
-          href={handleWikiUrl(window.location.host)}
+          href={getWikiBaseUrl()}
           target="_blank"
           rel="noreferrer"
         >

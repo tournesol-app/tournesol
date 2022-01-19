@@ -4,6 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
+import { getWikiBaseUrl } from 'src/utils/url';
 import PublicDownloadSection from './PublicDownloadSection';
 
 const useStyles = makeStyles(() => ({
@@ -117,7 +118,7 @@ const AboutPage = () => {
                 </a>
                 , our{' '}
                 <a
-                  href="https://wiki.staging.tournesol.app/wiki/Main_Page"
+                  href={getWikiBaseUrl()}
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: 'white' }}
