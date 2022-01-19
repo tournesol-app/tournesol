@@ -1,13 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button, Box } from '@mui/material';
-
-const getWebBrowser = () => {
-  if (navigator.userAgent.includes('Chrome/')) return 'chrome';
-  if (navigator.userAgent.includes('Chromium/')) return 'chromium';
-  if (navigator.userAgent.includes('Firefox/')) return 'firefox';
-  return 'other';
-};
+import { getWebExtensionUrl } from 'src/utils/extension';
 
 // ExtensionSection is a paragraph displayed on the HomePage
 // that automatically detects the user webbrowser to link
@@ -16,7 +10,7 @@ const getWebBrowser = () => {
 // can use our extension on Firefox or Chrome.
 const ExtensionSection = () => {
   const { t } = useTranslation();
-  const [browser] = useState(getWebBrowser());
+  const webExtensionUrl = getWebExtensionUrl();
   return (
     <Box
       display="flex"
@@ -27,16 +21,12 @@ const ExtensionSection = () => {
     >
       <Typography variant="h1">{t('home.useOurExtension')}</Typography>
       <Typography paragraph>{t('home.webExtensionDescription')}</Typography>
-      {browser !== 'other' ? (
+      {webExtensionUrl ? (
         <Button
           color="primary"
           variant="contained"
           component="a"
-          href={
-            browser == 'firefox'
-              ? 'https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/'
-              : 'https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla'
-          }
+          href={webExtensionUrl}
           target="_blank"
         >
           {t('home.getTheExtensionButton')}
