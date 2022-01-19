@@ -16,10 +16,14 @@ export const alertUseOnLinkToYoutube = () => {
   alertOnCurrentTab('This must be used on a link to a youtube video')
 }
 
-export const alertTokenInvalid = () => {
+export const alertInvalidAccessToken = () => {
   alertOnCurrentTab(
-    'It seems you are logged in Tournesol, but your access token has expired.\\n\\n' +
-    'Please, log out and log in at https://tournesol.app to fix the issue.');
+    'It seems you are logged in Tournesol, but your connection needs to be refreshed.\\n\\n' +
+    'Please follow these steps on https://tournesol.app:\\n' +
+    '- log out then log in\\n' +
+    '- press the refresh button of your browser\\n\\n' +
+    'Sorry for the inconvenience, we are working on a fix.'
+  );
 }
 
 export const alertNotLoggedInOrError = () => {
@@ -35,6 +39,7 @@ export const fetchTournesolApi = async (url, method, data) => {
   if (access_token){
     headers['Authorization']= `Bearer ${access_token}`
   }
+
   const body = {
     credentials: 'include',
     method: method,
@@ -51,7 +56,7 @@ export const fetchTournesolApi = async (url, method, data) => {
       // - the token has been crafted
       // - the token has expired
       if (r.status === 401 && access_token) {
-        alertTokenInvalid();
+        alertInvalidAccessToken();
       } else {
         alertNotLoggedInOrError();
       }
