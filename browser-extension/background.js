@@ -31,6 +31,35 @@ chrome.contextMenus.onClicked.addListener(function (e, tab) {
   }
 });
 
+/**
+ * TODO:
+ * - simplify the loop
+ * - check how chrome.webRequest.OnHeadersReceivedOptions behave on Firefox
+ */
+chrome.webRequest.onHeadersReceived.addListener(
+  function(info) {
+    let headers = info.responseHeaders;
+    for (let i=headers.length - 1; i >= 0; --i) {
+      let header = headers[i].name.toLowerCase();
+      if (header == 'x-frame-options' || header == 'frame-options') {
+        headers.splice(i, 1);
+      }
+    }
+    return { responseHeaders: headers };
+  }, {
+    urls: [
+      'https://tournesol.app/*', // XXX move this
+    ],
+    types: [ 'sub_frame' ]
+  }, [
+    'blocking',
+    'responseHeaders',
+    // Modern Chrome needs 'extraHeaders' to see and change this header,
+    // so the following code evaluates to 'extraHeaders' only in modern Chrome.
+    chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
+  ].filter(Boolean)
+);
+
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
   const format = (str) => str.length == 1 ? `0${str}` : str.length == 4 ? str.slice(2) : str
