@@ -91,15 +91,17 @@ function process() {
       // - open/close iframe for logged user w/ invalid token ( 401 + access token )
       }).catch((reason) => {
         // TODO: use a more robust selector
-        const info = document.querySelector('div#info.style-scope.ytd-watch-flexy');
+        if (!document.getElementById('x-tournesol-iframe')) {
+          const info = document.querySelector('div#info.style-scope.ytd-watch-flexy');
 
-        const iframe = document.createElement('iframe');
-        iframe.setAttribute('id', 'x-tournesol-iframe');
-        iframe.setAttribute('src', chrome.runtime.getURL('html/tournesol-iframe.html'));
+          const iframe = document.createElement('iframe');
+          iframe.setAttribute('id', 'x-tournesol-iframe');
+          iframe.setAttribute('src', chrome.runtime.getURL('html/tournesol-iframe.html'));
 
-        // TODO: move to CSS file
-        iframe.style = 'width:100%; height:490px;';
-        info.appendChild(iframe);
+          // TODO: move to CSS file
+          iframe.style = 'width:100%; height:490px;';
+          info.appendChild(iframe);
+        }
       });
     }
 
