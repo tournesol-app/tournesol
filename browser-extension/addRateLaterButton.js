@@ -10,6 +10,12 @@ else document.addEventListener('DOMContentLoaded', process);
 
 /* ********************************************************************* */
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.message === "closeTournesolIframe") {
+    document.getElementById("x-tournesol-iframe").remove();
+  }
+});
+
 function process() {
   // Get video id via URL
   var videoId = new URL(location.href).searchParams.get('v');

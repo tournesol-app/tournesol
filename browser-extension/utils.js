@@ -1,4 +1,4 @@
-async function getAccessToken() {
+export const getAccessToken = async () => {
   return new Promise((resolve) => {
     chrome.storage.local.get(['access_token'], items => {
       resolve(items.access_token)

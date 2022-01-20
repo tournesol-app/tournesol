@@ -2,7 +2,7 @@ import {
   fetchTournesolApi,
   getRandomSubarray,
   addRateLater,
-  alertUseOnLinkToYoutube,
+  alertUseOnLinkToYoutube, getAccessToken,
 } from './utils.js'
 
 const oversamplingRatioForRecentVideos = 3;
@@ -76,6 +76,22 @@ function getDateThreeWeeksAgo() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+  if (request.message === "extAccessTokenNeeded") {
+    getAccessToken().then(
+      (token) => sendResponse({access_token: token})
+    );
+    return true;
+  }
+
+  if (request.message === "accessTokenRefreshed") {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "closeTournesolIframe"});
+    });
+
+    return true;
+  }
+
   if (request.message == "addRateLater") {
     addRateLater(request.video_id).then(sendResponse);
     return true;
