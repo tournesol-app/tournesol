@@ -18,7 +18,7 @@ export const alertUseOnLinkToYoutube = () => {
 
 export const alertInvalidAccessToken = () => {
   alertOnCurrentTab(
-    'It seems you are logged in Tournesol, but your connection needs to be refreshed.\\n\\n' +
+    'It seems you are logged in on Tournesol, but your connection needs to be refreshed.\\n\\n' +
     'Please follow these steps on https://tournesol.app:\\n' +
     '- log out then log in\\n' +
     '- press the refresh button of your browser\\n\\n' +
