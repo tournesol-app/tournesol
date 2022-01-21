@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "es2016",
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["es2016", "dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,9 +16,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "downlevelIteration": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
