@@ -5,19 +5,19 @@ You can track progress of the project of the following [board](https://github.co
 
 Anyone can create ideas that seems relevant, by creating a new issue and placing it inside the column`Backlog and ideas`.
 
-Then the core-team will decide which issues have to be handled first and available issues are placed in the column `Ready`. One can assigned himself on one ticket after discussing with [Adrien][Adrien], [Romain][Romain]. or [Louis][Louis].
+Then the core-team will decide which issues have to be handled first and available issues are placed in the column `Ready`. One can assigned himself on one ticket after discussing with [maintainers][maintainers].
 
-When your work is in a stable state, you can open a PR from your branch to the `main` branch on Github. You can also ask [Adrien][Adrien] or [Romain][Romain] to review your PR even if the PR is in a draft state. They may give you feedbacks to continue on the same track or to change the architecture of your current work.
+When your work is in a stable state, you can open a PR from your branch to the `main` branch on Github. You can also ask [maintainers][maintainers] to review your PR even if the PR is in a draft state. They may give you feedbacks to continue on the same track or to change the architecture of your current work.
 
 Adding a description in the PR will greatly ease the review process. Please, take the time to describe the choices you've made, and to explain why. 
 
-When your PR is in its final state, ask [Adrien][Adrien], [Romain][Romain] and [Louis][Louis] to review it (at least). Merging is enabled only if someone has approved your PR.
+When your PR is in its final state, ask at least one of [maintainers][maintainers] to review it. Merging is enabled only if someone has approved your PR.
 
 One change on the backend must have one or more dedicated tests, to track desired and undesired behaviour of your feature.
 
 On the frontend, after doing some changes, tests are not compulsory but are welcomed.
 
-Creation of end-to-end test is not done on a weekly basis. If you want to add one, discuss about it with [Adrien][Adrien] and [Romain][Romain] to debate about the relevance of this test.
+Creation of end-to-end test is not done on a weekly basis. If you want to add one, discuss about it with [maintainers][maintainers] to debate about the relevance of this test.
 
 To keep track of progress, bugs of the project, join the [discord][tournesol-discord-join]
 
@@ -35,6 +35,4 @@ When the back end API is updated, the front end must re-generate its local clien
 - To correct the lint of frontend files, it is possible to activate plugin directly in your IDE. Otherwise the comamnd `yarn lint:fix` enables you to correct lint automatically.
 
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
-[Adrien]: https://github.com/amatissart
-[Romain]: https://github.com/GresilleSiffle
-[Louis]: https://github.com/lfaucon
+[maintainers]: https://github.com/orgs/tournesol-app/teams/maintainers
