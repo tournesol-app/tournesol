@@ -21,7 +21,19 @@ Creation of end-to-end test is not done on a weekly basis. If you want to add on
 
 To keep track of progress, bugs of the project, join the [discord][tournesol-discord-join]
 
-# Tips
+
+## Translation
+
+Tournesol is currently available in English and French. When submitting
+changes that involve new texts, please ensure that translation keys
+are defined and localized messages are updated, for English at least. Reviewers can help with the translation to French if necessary.
+
+On the frontend, translations are handled by `react-i18next`.
+* [This guide](https://react.i18next.com/guides/quick-start#translate-your-content) may be useful to learn how to integrate translated content into React components. 
+* To extract the new translation keys, use [`yarn i18n:parse`](./frontend/README.md#yarn-i18nparse)
+
+
+## Tips
 
 - One change on the backend must have a dedicated test (create a new test, or modify a existing one). The command `pytest` enables to lauch all tests.
 Moreover the command `pytest --html=report.html –self-contained-html` enables to create a clean html report document with details of logs for each test.
