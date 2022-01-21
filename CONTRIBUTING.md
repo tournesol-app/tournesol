@@ -17,7 +17,7 @@ One change on the backend must have one or more dedicated tests, to track desire
 
 On the frontend, after doing some changes, tests are not compulsory but are welcomed.
 
-Creation of end to end test is not done on a weekly basis. If you want to add one, discuss about it with [Adrien][Adrien] and [Romain][Romain]  to debate about the relevance of this test.
+Creation of end-to-end test is not done on a weekly basis. If you want to add one, discuss about it with [Adrien][Adrien] and [Romain][Romain] to debate about the relevance of this test.
 
 To keep track of progress, bugs of the project, join the [discord][tournesol-discord-join]
 
