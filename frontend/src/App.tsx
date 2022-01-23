@@ -17,7 +17,7 @@ import Frame from './features/frame/Frame';
 import ComparisonPage from './pages/comparisons/Comparison';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
-import VideoCardPage from './pages/videos/VideoCard';
+import VideoAnalysisPage from './pages/videos/VideoAnalysis';
 import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import VideoRatingsPage from './pages/videos/VideoRatings';
 import ForgotPassword from './pages/login/ForgotPassword';
@@ -69,7 +69,7 @@ function App() {
         </PublicRoute>
         {/* Videos and Comparisons routes */}
         <PublicRoute path="/video/:video_id">
-          <VideoCardPage />
+          <VideoAnalysisPage />
         </PublicRoute>
         <PublicRoute path="/recommendations">
           <VideoRecommendationPage />

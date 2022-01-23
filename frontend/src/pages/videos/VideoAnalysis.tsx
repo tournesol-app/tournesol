@@ -1,10 +1,11 @@
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { useParams } from 'react-router-dom';
-import { VideoCardFromId } from 'src/features/videos/VideoCard';
+import makeStyles from '@mui/styles/makeStyles';
+
+import Card from 'src/components/Card';
+import VideoCard from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
-import Container from '@mui/material/Container';
-import CriteriaRadarChart from 'src/components/Radarchart_CriteriaScore';
+import CriteriaRadarChart from 'src/components/CriteriaRadarChart';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -17,21 +18,19 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function VideoCardPage() {
+function VideoAnalysis() {
   const classes = useStyles();
   const { video_id } = useParams<{ video_id: string }>();
   const video = useVideoMetadata(video_id);
 
   return (
-    <div>
-      <div className={classes.root}>
-        <VideoCardFromId videoId={video_id} />
-      </div>
-      <Container maxWidth="sm">
-        {CriteriaRadarChart({ video: video })}
-      </Container>
+    <div className={classes.root}>
+      <VideoCard video={video} />
+      <Card sx={{ marginTop: 3 }}>
+        <CriteriaRadarChart video={video} />
+      </Card>
     </div>
   );
 }
 
-export default VideoCardPage;
+export default VideoAnalysis;
