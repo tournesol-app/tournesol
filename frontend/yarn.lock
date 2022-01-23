@@ -2157,13 +2157,6 @@
     "@types/history" "^4.7.11"
     "@types/react" "*"
 
-"@types/react-svg-radar-chart@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@types/react-svg-radar-chart/-/react-svg-radar-chart-1.2.3.tgz#a0532aee5b5dc616e0b6e76965fc41c791fc57fd"
-  integrity sha512-M1P7swGEJ9xB3YDNVlxUqeXCL3iqxj0ECpuMgoDWsFbD7O8PQGp3GshyI7TpbYNUFaa6cnKtZu+OiW+vOf5m4g==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-transition-group@^4.4.4":
   version "4.4.4"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.4.tgz#acd4cceaa2be6b757db61ed7b432e103242d163e"
