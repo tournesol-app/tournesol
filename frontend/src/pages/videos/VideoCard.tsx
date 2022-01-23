@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { VideoCardFromId } from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import Container from '@mui/material/Container';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis } from 'recharts';
 import CriteriaRadarChart from 'src/components/Radarchart_CriteriaScore';
 
 const useStyles = makeStyles(() => ({
@@ -28,7 +27,6 @@ function VideoCardPage() {
       <div className={classes.root}>
         <VideoCardFromId videoId={video_id} />
       </div>
-
       <Container maxWidth="sm">
         {CriteriaRadarChart({ video: video })}
       </Container>
