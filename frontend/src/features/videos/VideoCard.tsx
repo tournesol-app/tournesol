@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'italic',
     fontWeight: 'normal',
     fontSize: '0.9em',
-    color: '#A09B87',
+    color: theme.palette.neutral.main,
   },
   contributors: {
     fontFamily: 'Poppins',

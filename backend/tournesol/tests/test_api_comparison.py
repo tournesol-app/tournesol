@@ -1,18 +1,20 @@
-from copy import deepcopy
 import datetime
-from time import time
+from copy import deepcopy
 from unittest.mock import patch
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from ..models import Video, Comparison
+from core.tests.factories.user import UserFactory
+from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.video import VideoFactory
+
+from ..models import Comparison, Video
 
 
 class ComparisonApiTestCase(TestCase):
@@ -60,42 +62,42 @@ class ComparisonApiTestCase(TestCase):
 
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
-        user = User.objects.create(username=self._user, email="user@test")
-        user2 = User.objects.create(username=self._user2, email="user2@test")
-        other = User.objects.create(username=self._other, email="other@test")
+        user = UserFactory(username=self._user)
+        UserFactory(username=self._user2)
+        other = UserFactory(username=self._other)
         now = datetime.datetime.now()
 
-        self.videos = Video.objects.bulk_create([
-            Video(video_id=self._video_id_01, name=self._video_id_01),
-            Video(video_id=self._video_id_02, name=self._video_id_02),
-            Video(video_id=self._video_id_03, name=self._video_id_03),
-            Video(video_id=self._video_id_04, name=self._video_id_04)
-        ])
+        self.videos = [
+            VideoFactory(video_id=self._video_id_01),
+            VideoFactory(video_id=self._video_id_02),
+            VideoFactory(video_id=self._video_id_03),
+            VideoFactory(video_id=self._video_id_04)
+        ]
 
-        self.comparisons = Comparison.objects.bulk_create([
+        self.comparisons = [
             # "user" will have the comparisons: 01 / 02 and 01 / 04
-            Comparison(
+            ComparisonFactory(
                 user=user, video_1=self.videos[0], video_2=self.videos[1],
                 duration_ms=102,
                 datetime_lastedit=now,
             ),
-            Comparison(
+            ComparisonFactory(
                 user=user, video_1=self.videos[0], video_2=self.videos[3],
                 duration_ms=104,
                 datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             # "other" will have the comparisons: 03 / 02 and 03 / 04
-            Comparison(
+            ComparisonFactory(
                 user=other, video_1=self.videos[2], video_2=self.videos[1],
                 duration_ms=302,
                 datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
-            Comparison(
+            ComparisonFactory(
                 user=other, video_1=self.videos[2], video_2=self.videos[3],
                 duration_ms=304,
                 datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
-        ])
+        ]
 
     def _remove_optional_fields(self, comparison):
         comparison.pop("duration_ms", None)
@@ -332,8 +334,10 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         # the database must contain exactly one more comparison, not two
-        self.assertEqual(Comparison.objects.all().count(),
-                         initial_comparisons_nbr + 1)
+        self.assertEqual(
+            Comparison.objects.all().count(),
+            initial_comparisons_nbr + 1,
+        )
 
     def test_anonymous_cant_list(self):
         """
@@ -393,7 +397,7 @@ class ComparisonApiTestCase(TestCase):
         comparisons_made = Comparison.objects.filter(
             Q(video_1__video_id=self._video_id_02) |
             Q(video_2__video_id=self._video_id_02),
-            user=user
+            user=user,
         )
 
         client.force_authenticate(user=user)
@@ -474,7 +478,7 @@ class ComparisonApiTestCase(TestCase):
             Comparison.objects.get(
                 user=user,
                 video_1__video_id=self._video_id_02,
-                video_2__video_id=self._video_id_01
+                video_2__video_id=self._video_id_01,
             )
 
         response = client.get(
@@ -538,9 +542,9 @@ class ComparisonApiTestCase(TestCase):
 
         user = User.objects.get(username=self._user)
         client.force_authenticate(user=user)
-        Video.objects.create(video_id=self._video_id_05)
-        Video.objects.create(video_id=self._video_id_06)
-        Video.objects.create(video_id=self._video_id_07)
+        VideoFactory(video_id=self._video_id_05)
+        VideoFactory(video_id=self._video_id_06)
+        VideoFactory(video_id=self._video_id_07)
         data1 = {
             "video_a": {
                 "video_id": self._video_id_05

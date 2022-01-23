@@ -4,6 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
+import { getWikiBaseUrl } from 'src/utils/url';
 import PublicDownloadSection from './PublicDownloadSection';
 
 const useStyles = makeStyles(() => ({
@@ -90,7 +91,7 @@ const AboutPage = () => {
 
   return (
     <>
-      <ContentHeader title={t('about.title')} />
+      <ContentHeader title={t('menu.about')} />
       <Grid
         container
         className={classes.root}
@@ -117,7 +118,7 @@ const AboutPage = () => {
                 </a>
                 , our{' '}
                 <a
-                  href="https://wiki.staging.tournesol.app/wiki/Main_Page"
+                  href={getWikiBaseUrl()}
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: 'white' }}
@@ -203,7 +204,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#FAF8F3' }}
+        sx={{ bgcolor: 'background.menu' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -279,7 +280,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#FAF8F3' }}
+        sx={{ bgcolor: 'background.menu' }}
       >
         <Grid item xs={12} md={6} className={classes.container}>
           <Link

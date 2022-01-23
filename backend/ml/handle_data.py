@@ -1,17 +1,19 @@
-from ml.losses import round_loss
-import numpy as np
-import torch
 import logging
 
+import numpy as np
+import torch
+
+from ml.losses import round_loss
+
 from .data_utility import (
-    get_batch_r,
-    rescale_rating,
-    sort_by_first,
-    reverse_idxs,
-    get_mask,
-    get_all_vids,
     expand_dic,
+    get_all_vids,
+    get_batch_r,
+    get_mask,
     one_hot_vids,
+    rescale_rating,
+    reverse_idxs,
+    sort_by_first,
 )
 
 """

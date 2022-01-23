@@ -28,10 +28,13 @@ services:
     container_name: tournesol-dev-api
     environment:
       - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml
-    command: 
-        - bash
-        - -c
-        - "python manage.py migrate && python manage.py createcachetable && python manage.py runserver 0.0.0.0:8000"
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        python manage.py migrate
+        python manage.py createcachetable
+        django-admin compilemessages
+        python manage.py runserver 0.0.0.0:8000
     volumes:
       - ../backend:/backend
     ports:

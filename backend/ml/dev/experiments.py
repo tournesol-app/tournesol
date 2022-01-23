@@ -1,6 +1,6 @@
-from .licchavi_dev import LicchaviDev
-from .visualisation import seedall, disp_one_by_line, output_infos
 from .fake_data import generate_data
+from .licchavi_dev import LicchaviDev
+from .visualisation import disp_one_by_line, output_infos, seedall
 
 """
 Not used in production, for testing only

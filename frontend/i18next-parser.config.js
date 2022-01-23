@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const SUPPORTED_LANGUAGES = require('./package').config.supported_languages;
 
 module.exports = {
@@ -24,7 +26,7 @@ module.exports = {
   // Key separator used in your translation keys
   // If you want to use plain english keys, separators such as `.` and `:` will conflict. You might want to set `keySeparator: false` and `namespaceSeparator: false`. That way, `t('Status: Loading...')` will not think that there are a namespace and three separator dots for instance.
 
-  locales: SUPPORTED_LANGUAGES,
+  locales: SUPPORTED_LANGUAGES.map((l) => l.code),
   // An array of the locales in your applications
 
   namespaceSeparator: ':',

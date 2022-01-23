@@ -8275,6 +8275,11 @@ postcss@^8.2.15, postcss@^8.3.5, postcss@^8.4.4:
     picocolors "^1.0.0"
     source-map-js "^1.0.1"
 
+precompress@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/precompress/-/precompress-7.0.1.tgz#8b04e16faf9f08707ef66671569e4889a8eab44f"
+  integrity sha512-JQikeszeU8PLwF/fC1Buo8XDq2wewu8Vxt3kGiPNTzrB8ZtvnOaeizPsMhZwH+TShXvfms4b7fnLo9VURwv3aw==
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -10086,15 +10091,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.2.4:
+typescript@^4.2.4, typescript@~4.5.4:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
   integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
-
-typescript@~4.1.5:
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.6.tgz#1becd85d77567c3c741172339e93ce2e69932138"
-  integrity sha512-pxnwLxeb/Z5SP80JDRzVjh58KsM6jZHRAOtTpS7sXLS4ogXNKC9ANxHHZqLLeVHZN35jCtI4JdmLLbLiC1kBow==
 
 uglify-js@^3.1.4:
   version "3.14.5"

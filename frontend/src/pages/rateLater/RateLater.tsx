@@ -17,6 +17,7 @@ import {
 } from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
 import { useNotifications } from 'src/hooks';
+import { getWebExtensionUrl } from 'src/utils/extension';
 
 const useStyles = makeStyles({
   rateLaterIntro: {
@@ -131,7 +132,7 @@ const RateLaterPage = () => {
               </a>
               .<br />
               Our{' '}
-              <a href="https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla?hl=en">
+              <a href={getWebExtensionUrl() ?? getWebExtensionUrl('chrome')}>
                 browser extension
               </a>{' '}
               can also help you import videos effortlessly.

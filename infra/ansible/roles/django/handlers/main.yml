@@ -17,6 +17,14 @@
   become: true
   become_user: gunicorn
 
+- name: Compile Django messages
+  shell:
+    chdir: /srv/tournesol-backend
+    cmd: "source /srv/tournesol-backend/venv/bin/activate && django-admin compilemessages"
+    executable: /usr/bin/bash
+  become: true
+  become_user: gunicorn
+
 - name: Create database cache
   shell:
     cmd: "source /srv/tournesol-backend/venv/bin/activate && SETTINGS_FILE=/etc/tournesol/settings.yaml python /srv/tournesol-backend/manage.py createcachetable"

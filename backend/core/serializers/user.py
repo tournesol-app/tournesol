@@ -1,9 +1,10 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import BooleanField, EmailField
 from rest_framework.validators import UniqueValidator
-from rest_framework.serializers import EmailField, BooleanField
 from rest_registration.api.serializers import (
-    DefaultRegisterUserSerializer,
     DefaultRegisterEmailSerializer,
+    DefaultRegisterUserSerializer,
     DefaultUserProfileSerializer,
 )
 
@@ -12,11 +13,17 @@ from core.models.user import User
 RESERVED_USERNAMES = ["me"]
 
 
+def _validate_username(value):
+    if value in RESERVED_USERNAMES:
+        raise ValidationError(_("'%(name)s' is a reserved username") % {"name": value})
+    if value and "@" in value:
+        raise ValidationError(_("'@' is not allowed in username"))
+    return value
+
+
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
     def validate_username(self, value):
-        if value in RESERVED_USERNAMES:
-            raise ValidationError(f'"{value}" is a reserved username')
-        return value
+        return _validate_username(value)
 
 
 class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
@@ -36,3 +43,6 @@ class UserProfileSerializer(DefaultUserProfileSerializer):
         extra_fields = ('is_trusted',)
         self.Meta.fields += extra_fields
         self.Meta.read_only_fields += extra_fields
+
+    def validate_username(self, value):
+        return _validate_username(value)

@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   drawerPaper: {
     top: topBarHeight,
     height: `calc(100% - ${topBarHeight}px)`,
-    backgroundColor: '#FAF8F3',
+    backgroundColor: theme.palette.background.menu,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#CDCABC',
   },
   listItemIconSelected: {
-    color: '#806300',
+    color: theme.palette.neutral.dark,
   },
   listItemText: {
     fontWeight: 'bold',
@@ -103,7 +103,7 @@ const SideBar = () => {
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },
     {
-      targetUrl: '/recommendations',
+      targetUrl: '/recommendations?date=Month',
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
@@ -183,7 +183,7 @@ const SideBar = () => {
                 placement="right"
                 arrow
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: '40px' }}>
                   <IconComponent
                     className={clsx({
                       [classes.listItemIcon]: !selected,

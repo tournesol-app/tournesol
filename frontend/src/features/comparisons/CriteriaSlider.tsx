@@ -7,7 +7,7 @@ import Slider from '@mui/material/Slider';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 
-import { handleWikiUrl } from 'src/utils/url';
+import { getWikiBaseUrl } from 'src/utils/url';
 import { optionalCriterias } from 'src/utils/constants';
 
 const useStyles = makeStyles(() => ({
@@ -75,9 +75,7 @@ const CriteriaSlider = ({
           )}
           <Typography>
             <a
-              href={`${handleWikiUrl(
-                window.location.host
-              )}/wiki/Quality_criteria`}
+              href={`${getWikiBaseUrl()}/wiki/Quality_criteria`}
               id={`id_explanation_${criteria}`}
               target="_blank"
               rel="noreferrer"

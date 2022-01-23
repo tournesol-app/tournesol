@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.http import HttpResponseForbidden
-from django.urls import path, include
-from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
-
+from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_registration.api.urls import urlpatterns as original_registration_urlpatterns
+
 exclude_patterns = ["login", "logout"]
 filtered_registration_urls = [pattern for pattern in original_registration_urlpatterns if pattern.name not in exclude_patterns]
 

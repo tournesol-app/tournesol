@@ -28,12 +28,13 @@
     "recharts": "^2.1.8",
     "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
-    "typescript": "~4.1.5",
-    "web-vitals": "^2.1.0"
+    "typescript": "~4.5.4",
+    "web-vitals": "^2.1.0",
+    "precompress": "7.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && precompress -t gz -i json,js,css,xml,svg,html,ttf build",
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
     "update-schema": "wget -O scripts/openapi.yaml \"${REACT_APP_API_URL:-http://localhost:8000}/schema/\"",
@@ -84,7 +85,8 @@
   },
   "config": {
     "supported_languages": [
-      "en"
+      {"code": "en", "name": "English"},
+      {"code": "fr", "name": "Français"}
     ]
   }
 }

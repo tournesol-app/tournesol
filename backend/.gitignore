@@ -1,4 +1,5 @@
 **__pycache__/
+*.mo
 .DS_Store
 global_scores.json 
 local_scores.json 

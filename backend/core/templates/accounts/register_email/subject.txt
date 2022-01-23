@@ -1,0 +1,6 @@
+{% load i18n %}
+{% if email_already_used %}
+{% translate "Your e-mail is already in use on Tournesol" %}
+{% else %}
+{% translate "Please verify new e-mail on Tournesol" %}
+{% endif %}

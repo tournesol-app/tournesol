@@ -1,5 +1,19 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
+declare module '@mui/material/styles/createPalette' {
+  interface Palette {
+    neutral: Palette['primary'];
+  }
+
+  interface PaletteOptions {
+    neutral: PaletteOptions['primary'];
+  }
+
+  interface TypeBackground {
+    menu: string;
+  }
+}
+
 export const theme = responsiveFontSizes(
   createTheme({
     palette: {
@@ -9,9 +23,16 @@ export const theme = responsiveFontSizes(
       secondary: {
         main: '#506AD4',
       },
+      neutral: {
+        main: '#A09B87',
+        dark: '#806300',
+      },
       text: {
         primary: '#1d1a14',
         secondary: '#4a473e',
+      },
+      background: {
+        menu: '#FAF8F3',
       },
     },
     typography: {

@@ -3,17 +3,19 @@ Defines Admin interface for Tournesol's core app
 """
 
 from typing import List, Tuple
+
 from django.contrib import admin
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.db.models.query import QuerySet
+
 from .models import (
-    User,
-    UserPreference,
     Degree,
+    EmailDomain,
     Expertise,
     ExpertiseKeyword,
-    EmailDomain,
+    User,
+    UserPreference,
     VerifiableEmail,
 )
 

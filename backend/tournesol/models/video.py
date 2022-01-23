@@ -3,28 +3,21 @@ Models for Tournesol's main functions related to videos
 """
 
 import logging
-import numpy as np
 from datetime import timedelta
 
+import numpy as np
 from django.conf import settings
-from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.html import format_html
 from django.utils import timezone
-
+from django.utils.html import format_html
 from languages.languages import LANGUAGES
 from tqdm.auto import tqdm
 
 from core.models import User
-from core.utils.models import (
-    WithFeatures,
-    WithEmbedding,
-    query_or,
-    query_and,
-)
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from core.utils.models import WithEmbedding, WithFeatures, query_and, query_or
 from tournesol.models.comparisons import Comparison
 from tournesol.models.tags import Tag
 from tournesol.utils import VideoSearchEngine
@@ -258,7 +251,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
         The request can be forced with `force=True`.
         """
-        from tournesol.utils.api_youtube import get_video_metadata, VideoNotFound
+        from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
         if (
             not force

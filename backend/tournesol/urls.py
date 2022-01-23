@@ -8,17 +8,16 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
-from .views.exports import ExportComparisonsView, ExportAllView, ExportPublicComparisonsView
-from .views.video import VideoViewSet
-from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
-from .views.user import CurrentUserView
+from .views.email_domains import EmailDomainsList
+from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
 from .views.ratings import (
-    ContributorRatingList,
     ContributorRatingDetail,
+    ContributorRatingList,
     ContributorRatingUpdateAll,
 )
-from .views.email_domains import EmailDomainsList
-
+from .views.user import CurrentUserView
+from .views.video import VideoViewSet
+from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 
 router = routers.DefaultRouter()
 router.register(r'video', VideoViewSet)

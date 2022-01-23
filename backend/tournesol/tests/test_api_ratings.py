@@ -2,8 +2,14 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import User
-from tournesol.models import Comparison, Video, ContributorRating, ContributorRatingCriteriaScore
+from core.tests.factories.user import UserFactory
+from tournesol.models import ContributorRating
+from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
+from tournesol.tests.factories.video import VideoFactory
 
 
 class RatingApi(TestCase):
@@ -11,21 +17,19 @@ class RatingApi(TestCase):
     TestCase of the Rating API.
 
     """
-    _user = "user_with_one_video"
-    _other_user = "random_user"
 
     def setUp(self):
-        self.user1 = User.objects.create(username=self._user, email="user1@test")
-        self.user2 = User.objects.create(username=self._other_user, email="user2@test")
-        video1 = Video.objects.create(video_id='4g4XLGFTDG8')
-        video2 = Video.objects.create(video_id='4g4XLGFTDG9')
-        video3 = Video.objects.create(video_id='video-id-03')
-        Comparison.objects.create(video_1=video1, video_2=video2, user=self.user1)
-        Comparison.objects.create(video_1=video1, video_2=video2, user=self.user2)
-        ContributorRating.objects.create(video=video1, user=self.user1, is_public=False)
-        ContributorRating.objects.create(video=video2, user=self.user1, is_public=False)
-        ContributorRating.objects.create(video=video1, user=self.user2, is_public=False)
-        ContributorRating.objects.create(video=video2, user=self.user2, is_public=True)
+        self.user1 = UserFactory()
+        self.user2 = UserFactory()
+        self.video1 = VideoFactory()
+        self.video2 = VideoFactory()
+        self.video3 = VideoFactory()
+        ComparisonFactory(video_1=self.video1, video_2=self.video2, user=self.user1)
+        ComparisonFactory(video_1=self.video1, video_2=self.video2, user=self.user2)
+        ContributorRatingFactory(video=self.video1, user=self.user1)
+        ContributorRatingFactory(video=self.video2, user=self.user1)
+        ContributorRatingFactory(video=self.video1, user=self.user2)
+        ContributorRatingFactory(video=self.video2, user=self.user2, is_public=True)
 
     def test_anonymous_cant_list(self):
         factory = APIClient()
@@ -45,7 +49,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rating = response.data["results"][0]
-        self.assertEqual(rating["video"]["video_id"], "4g4XLGFTDG9")
+        self.assertEqual(rating["video"]["video_id"], self.video2.video_id)
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
 
@@ -65,13 +69,13 @@ class RatingApi(TestCase):
         response = factory.post(
             "/users/me/contributor_ratings/",
             {
-                'video_id': 'video-id-03',
+                'video_id': self.video3.video_id,
                 'is_public': True
             },
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["video"]["video_id"], "video-id-03")
+        self.assertEqual(response.data["video"]["video_id"], self.video3.video_id)
         self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
 
@@ -79,7 +83,7 @@ class RatingApi(TestCase):
         response = factory.post(
             "/users/me/contributor_ratings/",
             {
-                'video_id': 'video-id-03',
+                'video_id': self.video3.video_id,
                 'is_public': True
             },
             format="json"
@@ -99,9 +103,9 @@ class RatingApi(TestCase):
         factory = APIClient()
         user = self.user1
         factory.force_authenticate(user=user)
-        video = Video.objects.create(video_id='6QDWbKnwRcc')
-        rating = ContributorRating.objects.create(video=video, user=user)
-        ContributorRatingCriteriaScore.objects.create(
+        video = VideoFactory()
+        rating = ContributorRatingFactory(video=video, user=user)
+        ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
             criteria="test-criteria",
             score=1,
@@ -109,11 +113,11 @@ class RatingApi(TestCase):
         )
 
         response = factory.get(
-            "/users/me/contributor_ratings/6QDWbKnwRcc/",
+            f"/users/me/contributor_ratings/{video.video_id}/",
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["video"]["video_id"], '6QDWbKnwRcc')
+        self.assertEqual(response.data["video"]["video_id"], video.video_id)
         self.assertEqual(response.data["is_public"], False)
         self.assertEqual(response.data["criteria_scores"], [{
             "criteria": "test-criteria",
@@ -132,7 +136,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["count"], 1)
-        self.assertEqual(response.json()["results"][0]["video"]["video_id"], "4g4XLGFTDG8")
+        self.assertEqual(response.json()["results"][0]["video"]["video_id"], self.video1.video_id)
 
         response = client.get(
             "/users/me/contributor_ratings/?is_public=true",
@@ -140,16 +144,16 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["count"], 1)
-        self.assertEqual(response.json()["results"][0]["video"]["video_id"], "4g4XLGFTDG9")
+        self.assertEqual(response.json()["results"][0]["video"]["video_id"], self.video2.video_id)
 
     def test_patch_rating_is_public(self):
         client = APIClient()
         client.force_authenticate(self.user1)
-        rating = ContributorRating.objects.get(user=self.user1, video__video_id="4g4XLGFTDG8")
+        rating = ContributorRating.objects.get(user=self.user1, video=self.video1)
 
         self.assertEqual(rating.is_public, False)
         response = client.patch(
-            "/users/me/contributor_ratings/4g4XLGFTDG8/",
+            f"/users/me/contributor_ratings/{self.video1.video_id}/",
             data={"is_public": True},
             format="json"
         )
