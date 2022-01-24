@@ -17,7 +17,6 @@ import Frame from './features/frame/Frame';
 import ComparisonPage from './pages/comparisons/Comparison';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
-import VideoAnalysisPage from './pages/videos/VideoAnalysis';
 import VideoRecommendationPage from './pages/videos/VideoRecommendation';
 import VideoRatingsPage from './pages/videos/VideoRatings';
 import ForgotPassword from './pages/login/ForgotPassword';
@@ -28,6 +27,14 @@ import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
+
+// The Analysis Page uses recharts which is a rather big library,
+// thus we choose to load it lazily.
+// See https://reactjs.org/docs/code-splitting.html#route-based-code-splitting
+// for more details.
+const VideoAnalysisPage = React.lazy(
+  () => import('./pages/videos/VideoAnalysis')
+);
 
 const API_URL = process.env.REACT_APP_API_URL;
 
