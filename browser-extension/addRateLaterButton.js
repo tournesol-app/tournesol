@@ -93,19 +93,17 @@ function process() {
         );
 
       // TODO: handle the != cases
-      // - display login iframe for non-logged user ( 401 + empty access token )
       // - open/close iframe for logged user w/ invalid token ( 401 + access token )
       }).catch((reason) => {
-        // TODO: use a more robust selector
         if (!document.getElementById('x-tournesol-iframe')) {
-          const info = document.querySelector('div#info.style-scope.ytd-watch-flexy');
+          // There are several 'div#info' elements in the video page. As a
+          // consequence the following selector use an extra CSS class to find
+          // the correct element in the DOM.
+          const info = document.querySelector('div#info.ytd-watch-flexy');
 
           const iframe = document.createElement('iframe');
           iframe.setAttribute('id', 'x-tournesol-iframe');
           iframe.setAttribute('src', chrome.runtime.getURL('html/tournesol-iframe.html'));
-
-          // TODO: move to CSS file
-          iframe.style = 'width:100%; height:490px;';
           info.appendChild(iframe);
         }
       });
