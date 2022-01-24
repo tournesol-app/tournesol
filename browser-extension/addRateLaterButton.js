@@ -7,6 +7,8 @@
 const TOURNESOL_IFRAME_ID = 'x-tournesol-iframe';
 const TOURNESOL_IFRAME_PARENT_SELECTOR = 'div#info.ytd-watch-flexy';
 
+const TOURNESOL_IFRAME_VISIBLE_STATE = 'initial';
+
 // Youtube doesnt completely load a video page, so content script doesn't
 // launch correctly without these events.
 
@@ -24,8 +26,14 @@ else document.addEventListener('DOMContentLoaded', process);
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === "hideTournesolIframe") {
     const iframe = document.getElementById(TOURNESOL_IFRAME_ID);
+
     if (iframe) {
+      const previousState = iframe.style.display;
       iframe.style.display = 'none';
+
+      if (previousState === TOURNESOL_IFRAME_VISIBLE_STATE) {
+        window.scroll(0, 0);
+      }
     }
   }
 });
@@ -112,7 +120,9 @@ function process() {
 
       }).catch((reason) => {
         const iframe = document.getElementById(TOURNESOL_IFRAME_ID);
-        iframe.style.display = 'initial';
+        const parent = document.querySelector(TOURNESOL_IFRAME_PARENT_SELECTOR);
+        iframe.style.display = TOURNESOL_IFRAME_VISIBLE_STATE;
+        parent.scrollIntoView({behavior:"smooth"});
       });
     }
 
@@ -141,8 +151,8 @@ function process() {
 
     window.clearInterval(iframeTimer);
 
-    const parent = document.querySelector(TOURNESOL_IFRAME_PARENT_SELECTOR);
     const iframe = document.createElement('iframe');
+    const parent = document.querySelector(TOURNESOL_IFRAME_PARENT_SELECTOR);
 
     iframe.setAttribute('id', TOURNESOL_IFRAME_ID);
     iframe.setAttribute('src', chrome.runtime.getURL(
