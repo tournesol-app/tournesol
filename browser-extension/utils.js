@@ -26,10 +26,6 @@ export const alertInvalidAccessToken = () => {
   );
 }
 
-export const alertNotLoggedInOrError = () => {
-  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persists, please let us know by creating an issue on https://github.com/tournesol-app/tournesol')
-}
-
 export const fetchTournesolApi = async (url, method, data) => {
   const headers = {
     Accept: 'application/json',
@@ -53,12 +49,10 @@ export const fetchTournesolApi = async (url, method, data) => {
     if (r.status === 401 || r.status === 403) {
 
       // 401 Unauthorized with an access token means either
-      // - the token has been crafted
       // - the token has expired
+      // - the token has been crafted
       if (r.status === 401 && access_token) {
         alertInvalidAccessToken();
-      } else {
-        alertNotLoggedInOrError();
       }
     }
     return r;
