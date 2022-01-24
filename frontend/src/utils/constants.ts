@@ -44,3 +44,18 @@ export const getCriteriaName = (t: TFunction, criteria: string) => {
 };
 
 export const YOUTUBE_POLL_NAME = 'videos';
+
+export const recommendationFilters = {
+  date: 'date',
+  language: 'language',
+  uploader: 'uploader',
+  reliability: 'reliability',
+  pedagogy: 'pedagogy',
+  importance: 'importance',
+  layman_friendly: 'layman_friendly',
+  entertaining_relaxing: 'entertaining_relaxing',
+  engaging: 'engaging',
+  diversity_inclusion: 'diversity_inclusion',
+  better_habits: 'better_habits',
+  backfire_risk: 'backfire_risk',
+};
