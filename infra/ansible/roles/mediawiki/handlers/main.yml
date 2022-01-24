@@ -40,7 +40,7 @@
 
 - name: Create OIDC application in Django database
   shell:
-    cmd: now=$(date -I) && psql -d tournesol <<< "insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('{{mediawiki_oidc_client_id}}', '{{mediawiki_scheme}}://{{mediawiki_domain_name}}/wiki/Special:PluggableAuthLogin', 'confidential', 'authorization-code', '{{mediawiki_oidc_client_secret}}','MediaWiki', true, 'RS256', '$now', '$now');"
+    cmd: now=$(date -I) && psql -d tournesol <<< "insert into oauth2_provider_application (client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, skip_authorization, algorithm, created, updated) values ('{{mediawiki_oidc_client_id}}', '{{mediawiki_scheme}}://{{mediawiki_domain_name}}/wiki/Special:OAuth2Client/callback', 'confidential', 'authorization-code', '{{mediawiki_oidc_client_secret}}','MediaWiki', true, '', '$now', '$now');"
     executable: /usr/bin/bash
   become: yes
   become_user: postgres
@@ -51,6 +51,16 @@
     chdir: /var/lib/mediawiki
   # become: yes
   # become_user: www-data
+
+- name: Get Mediawiki OAuth2Client extension submodules
+  command:
+    cmd: "git submodule update --init"
+    chdir: /var/lib/mediawiki/extensions/MW-OAuth2Client
+
+- name: Run Composer for Mediawiki OAuth2Client extension
+  command:
+    cmd: "composer update"
+    chdir: /var/lib/mediawiki/extensions/MW-OAuth2Client/vendors/oauth2-client
 
 - name: Update Mediawiki database
   command: "php /var/lib/mediawiki/maintenance/update.php"

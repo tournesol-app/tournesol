@@ -129,6 +129,17 @@
       checksum: sha256:https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-2021.07.tar.bz2.sha256sum
       name: MediaWikiLanguageExtensionBundle-2021.07.tar.bz2
 
+- name: Download Mediawiki OAuth2Client extension
+  git:
+    repo: "https://github.com/Schine/MW-OAuth2Client.git"
+    dest: "/var/lib/mediawiki/extensions/MW-OAuth2Client"
+    version: v0.4
+  notify:
+    - Get Mediawiki OAuth2Client extension submodules
+    - Run Composer for Mediawiki OAuth2Client extension
+    - Update Mediawiki database
+    - Reload Nginx
+
 - name: Download Mediawiki extensions
   unarchive:
     remote_src: yes

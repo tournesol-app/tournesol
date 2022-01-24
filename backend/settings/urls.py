@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseForbidden
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
@@ -23,6 +25,7 @@ exclude_patterns = ["login", "logout"]
 filtered_registration_urls = [pattern for pattern in original_registration_urlpatterns if pattern.name not in exclude_patterns]
 
 urlpatterns = [
+    path('login/', auth_views.LoginView.as_view(authentication_form=AuthenticationForm), name='login'),
     path('accounts/', include(filtered_registration_urls)),
     path("admin/", admin.site.urls),
     path("monitoring/", include("django_prometheus.urls")),
