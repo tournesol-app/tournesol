@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       iframe.style.display = 'none';
 
       if (previousState === TOURNESOL_IFRAME_VISIBLE_STATE) {
-        window.scroll(0, 0);
+        window.scroll({top: 0, left: 0, behavior: "smooth"});
       }
     }
   }
@@ -122,7 +122,7 @@ function process() {
         const iframe = document.getElementById(TOURNESOL_IFRAME_ID);
         const parent = document.querySelector(TOURNESOL_IFRAME_PARENT_SELECTOR);
         iframe.style.display = TOURNESOL_IFRAME_VISIBLE_STATE;
-        parent.scrollIntoView({behavior:"smooth"});
+        parent.scrollIntoView({behavior: "smooth"});
       });
     }
 
