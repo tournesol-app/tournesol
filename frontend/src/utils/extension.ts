@@ -1,4 +1,4 @@
-const getWebBrowser = () => {
+export const getWebBrowser = () => {
   if (navigator.userAgent.includes('Chrome/')) return 'chrome';
   if (navigator.userAgent.includes('Chromium/')) return 'chromium';
   if (navigator.userAgent.includes('Firefox/')) return 'firefox';
