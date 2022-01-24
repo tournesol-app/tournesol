@@ -84,9 +84,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
+  // Automatically hide the Tournesol iframe after the access token has been
+  // refreshed.
   if (request.message === "accessTokenRefreshed") {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {message: "closeTournesolIframe"});
+      chrome.tabs.sendMessage(tabs[0].id, {message: "hideTournesolIframe"});
     });
 
     return true;

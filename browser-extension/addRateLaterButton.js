@@ -22,7 +22,7 @@ else document.addEventListener('DOMContentLoaded', process);
 /* ********************************************************************* */
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.message === "closeTournesolIframe") {
+  if (request.message === "hideTournesolIframe") {
     const iframe = document.getElementById(TOURNESOL_IFRAME_ID);
     if (iframe) {
       iframe.style.display = 'none';

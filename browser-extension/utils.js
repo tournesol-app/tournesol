@@ -22,7 +22,7 @@ export const alertInvalidAccessToken = () => {
     'Please follow these steps on https://tournesol.app:\\n' +
     '- log out then log in\\n' +
     '- press the refresh button of your browser\\n\\n' +
-    'Sorry for the inconvenience, we are working on a fix.'
+    'Sorry for the inconvenience.'
   );
 }
 
