@@ -22,6 +22,8 @@ img#tournesol-button-image {
 }
 
 iframe#x-tournesol-iframe {
+  display: none;
+
   width: 100%;
   height: 490px;
 }
