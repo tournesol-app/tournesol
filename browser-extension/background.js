@@ -1,8 +1,9 @@
 import {
-  fetchTournesolApi,
-  getRandomSubarray,
   addRateLater,
-  alertUseOnLinkToYoutube, getAccessToken,
+  alertUseOnLinkToYoutube,
+  fetchTournesolApi,
+  getAccessToken,
+  getRandomSubarray
 } from './utils.js'
 
 const oversamplingRatioForRecentVideos = 3;
@@ -32,9 +33,9 @@ chrome.contextMenus.onClicked.addListener(function (e, tab) {
 });
 
 /**
- * TODO:
- * - simplify the loop
- * - check how chrome.webRequest.OnHeadersReceivedOptions behave on Firefox
+ * Remove the X-FRAME-OPTIONS and FRAME-OPTIONS headers included in the
+ * Tournesol application HTTP answers. It allows the extension to display
+ * the application in an iframe without enabling all website to do the same.
  */
 chrome.webRequest.onHeadersReceived.addListener(
   function(info) {
@@ -48,7 +49,7 @@ chrome.webRequest.onHeadersReceived.addListener(
     return { responseHeaders: headers };
   }, {
     urls: [
-      'https://tournesol.app/*', // XXX move this
+      'https://tournesol.app/*',
     ],
     types: [ 'sub_frame' ]
   }, [
@@ -77,6 +78,7 @@ function getDateThreeWeeksAgo() {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
+  // Return the current access token in the chrome.storage.local.
   if (request.message === "extAccessTokenNeeded") {
     getAccessToken().then(
       (token) => sendResponse({access_token: token})
