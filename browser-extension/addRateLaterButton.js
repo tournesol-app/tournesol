@@ -21,7 +21,7 @@ if (document.body) {
 }
 
 function addRateLaterButton() {
-  var videoId = new URL(location.href).searchParams.get('v');
+  const videoId = new URL(location.href).searchParams.get('v');
 
   // Only enable on youtube.com/watch?v=* pages
   if (!location.pathname.startsWith('/watch') || !videoId) return;
@@ -57,13 +57,13 @@ function addRateLaterButton() {
     window.clearInterval(timer);
 
     // Create Button
-    var rateLaterButton = document.createElement('button');
+    const rateLaterButton = document.createElement('button');
     rateLaterButton.setAttribute('id', 'tournesol-rate-button');
 
     // Image td for better vertical alignment
-    var img_td = document.createElement('td');
+    const img_td = document.createElement('td');
     img_td.setAttribute('valign', 'middle');
-    var image = document.createElement('img');
+    const image = document.createElement('img');
     image.setAttribute('id', 'tournesol-button-image');
     image.setAttribute('src', chrome.runtime.getURL('Logo128.png'));
     image.setAttribute('width', '20');
@@ -71,7 +71,7 @@ function addRateLaterButton() {
     rateLaterButton.append(img_td);
 
     // Text td for better vertical alignment
-    var text_td = document.createElement('td');
+    const text_td = document.createElement('td');
     text_td.setAttribute('valign', 'middle');
     text_td_text = document.createTextNode('Rate Later')
     text_td.append(text_td_text);
@@ -115,7 +115,9 @@ function addRateLaterButton() {
     }
 
     // Insert after like and dislike buttons
-    var div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
+    const div = document.getElementById(
+      'menu-container'
+    ).children['menu'].children[0].children['top-level-buttons-computed'];
     div.insertBefore(rateLaterButton, div.children[2]);
   }
 }
