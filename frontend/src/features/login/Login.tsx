@@ -17,6 +17,7 @@ const Login = () => {
   const { showErrorAlert } = useNotifications();
   const login: LoginState = useAppSelector(selectLogin);
   const dispatch = useAppDispatch();
+  const [formIsDirty, setFormIsDirty] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [validToken, setValidToken] = useState(hasValidToken(login));
@@ -36,6 +37,7 @@ const Login = () => {
   }, [login, validToken]);
 
   const handleSubmit = async (event: React.FormEvent) => {
+    setFormIsDirty(true);
     event.preventDefault();
     const result: unknown = await dispatch(
       getTokenAsync({ username: username, password: password })
@@ -92,7 +94,7 @@ const Login = () => {
                 color="secondary"
                 fullWidth
                 variant="contained"
-                disabled={login.status == 'loading'}
+                disabled={formIsDirty && login.status === 'loading'}
               >
                 {t('login.logInAction')}
               </Button>
