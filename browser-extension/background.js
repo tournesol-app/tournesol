@@ -39,13 +39,9 @@ chrome.contextMenus.onClicked.addListener(function (e, tab) {
  */
 chrome.webRequest.onHeadersReceived.addListener(
   function(info) {
-    let headers = info.responseHeaders;
-    for (let i=headers.length - 1; i >= 0; --i) {
-      let header = headers[i].name.toLowerCase();
-      if (header == 'x-frame-options' || header == 'frame-options') {
-        headers.splice(i, 1);
-      }
-    }
+    const headers = info.responseHeaders.filter(
+      h => !['x-frame-options', 'frame-options'].includes(h.name.toLowerCase())
+    )
     return { responseHeaders: headers };
   }, {
     urls: [
