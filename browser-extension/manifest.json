@@ -42,7 +42,12 @@
     },
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["addVideoStatistics.js", "addRateLaterButton.js"],
+      "js": [
+        "config/const.js",
+        "addVideoStatistics.js",
+        "addTournesolIframe.js",
+        "addRateLaterButton.js"
+      ],
       "css": ["addVideoStatistics.css", "addRateLaterButton.css"],
       "run_at": "document_end",
       "all_frames": true
