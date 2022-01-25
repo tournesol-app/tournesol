@@ -48,7 +48,11 @@
         "addTournesolIframe.js",
         "addRateLaterButton.js"
       ],
-      "css": ["addVideoStatistics.css", "addRateLaterButton.css"],
+      "css": [
+        "addVideoStatistics.css",
+        "addTournesolIframe.css",
+        "addRateLaterButton.css"
+      ],
       "run_at": "document_end",
       "all_frames": true
     },
