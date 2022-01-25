@@ -11,6 +11,10 @@ CORS_ALLOWED_ORIGINS:
     - "chrome-extension://{{chrome_extension_id}}"
 CORS_ALLOW_CREDENTIALS: true
 
+CSRF_COOKIE_SAMESITE: None
+CSRF_TRUSTED_ORIGINS:
+    - "{{frontend_scheme}}://{{domain_name}}"
+
 MAIN_URL: {{django_main_url}}/
 
 DATABASE_NAME: {{django_database_name}}

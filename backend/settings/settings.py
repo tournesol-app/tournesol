@@ -237,6 +237,9 @@ LOGIN_URL = server_settings.get('LOGIN_URL', '')
 CORS_ALLOWED_ORIGINS = server_settings.get("CORS_ALLOWED_ORIGINS", [])
 CORS_ALLOW_CREDENTIALS = server_settings.get("CORS_ALLOW_CREDENTIALS", False)
 
+CSRF_COOKIE_SAMESITE = server_settings.get("CSRF_COOKIE_SAMESITE", 'Lax')
+CSRF_TRUSTED_ORIGINS = server_settings.get("CSRF_TRUSTED_ORIGINS", [])
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
