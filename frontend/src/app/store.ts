@@ -1,6 +1,7 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import drawerOpenReducer from '../features/frame/drawerOpenSlice';
 import loginReducer from '../features/login/loginSlice';
+import wikiLoginReducer from '../features/login/wikiLoginSlice';
 import { combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -12,6 +13,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   drawerOpen: drawerOpenReducer,
   token: loginReducer,
+  wikiLogin: wikiLoginReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

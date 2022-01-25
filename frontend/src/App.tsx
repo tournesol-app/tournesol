@@ -28,6 +28,7 @@ import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
 import { LoginState } from './features/login/LoginState.model';
+import WikiLogin from './features/login/WikiLogin';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -114,6 +115,9 @@ function App() {
         </PublicRoute>
         <PublicRoute path="/reset-password">
           <ResetPassword />
+        </PublicRoute>
+        <PublicRoute path="/wiki-login">
+          <WikiLogin />
         </PublicRoute>
         {/* Home page */}
         <PublicRoute path="/">
