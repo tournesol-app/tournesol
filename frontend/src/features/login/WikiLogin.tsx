@@ -22,7 +22,10 @@ const Login = () => {
   useEffect(() => {
     if (login.status == 'idle' && login.logged && !code) {
       console.log('logged in, fetching code');
-      fetchAuthorization().then((res) => setCode(res.data));
+      fetchAuthorization().then((res) => {
+        console.log(res.data);
+        setCode(res.data);
+      });
     }
   }, [login, code]);
 
