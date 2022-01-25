@@ -47,7 +47,7 @@
 
 - name: Populate Django DB from Public Dataset
   shell:
-    cmd: cd /tmp && tar xvf /srv/tournesol-backend/scripts/dataset-import/dump-for-migrations-core-0004-tournesol-0007.sql.tgz && psql -1 -d tournesol < dump.sql && rm dump.sql
+    cmd: cd /tmp && tar xvf /home/git/tournesol/dev-env/dump-for-dev-env.sql.tgz && psql -1 -d tournesol < dump.sql && rm dump.sql
     executable: /usr/bin/bash
   become: yes
   become_user: postgres
