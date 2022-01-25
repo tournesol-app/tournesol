@@ -26,7 +26,7 @@ class CustomOAuth2Validator(OAuth2Validator):
     def validate_user(self, username, password, client, request, *args, **kwargs):
         user_found = super().validate_user(username, password, client, request, *args, **kwargs)
 
-        # Support authentication with email as username
+        # Support authentication with email used as username
         if not user_found and username and "@" in username:
             try:
                 user = get_user_model().objects.get(email=username)
