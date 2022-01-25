@@ -16,6 +16,7 @@
       - ca-certificates
       - curl
       - wget
+      - rsync
       - man-db
       - htop
       - net-tools
