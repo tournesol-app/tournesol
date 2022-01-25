@@ -63,7 +63,7 @@
     "logInAction": "Connexion",
     "forgotYourPassword": "Mot de passe oublié ?"
   },
-  "username": "Nom d'utilisateur",
+  "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
@@ -144,6 +144,7 @@
     "exportAllData": "Télécharger vos données",
     "deleteAccount": "Supprimer votre compte"
   },
+  "username": "Nom d'utilisateur",
   "profile": "Profil",
   "videoSelector": {
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",

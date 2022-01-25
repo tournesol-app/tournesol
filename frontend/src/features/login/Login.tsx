@@ -64,7 +64,7 @@ const Login = () => {
               <TextField
                 required
                 fullWidth
-                label={t('username')}
+                label={t('usernameOrEmail')}
                 name="username"
                 color="secondary"
                 size="small"

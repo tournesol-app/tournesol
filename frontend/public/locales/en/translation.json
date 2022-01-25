@@ -63,7 +63,7 @@
     "logInAction": "Log In",
     "forgotYourPassword": "Forgot your password?"
   },
-  "username": "Username",
+  "usernameOrEmail": "Username or Email address",
   "password": "Password",
   "ratelater": {
     "videoIdOrURL": "Video id or URL",
@@ -143,6 +143,7 @@
     "exportAllData": "Export all data",
     "deleteAccount": "Delete account"
   },
+  "username": "Username",
   "profile": "Profile",
   "videoSelector": {
     "pasteUrlOrVideoId": "Paste URL or Video ID",

@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
+    # Fields used by django-rest-registation to find a user.
+    # Used by reset password mechanism.
+    LOGIN_FIELDS = ("username", "email")
 
     email = models.EmailField(_('email address'), unique=True)
     is_demo = models.BooleanField(default=False, help_text="Is a demo account?")
