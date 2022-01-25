@@ -1,0 +1,39 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+.main {
+    width: 100%;
+}
+
+.actions {
+    height: 22px;
+    margin: 8px 0;
+
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.actions button.action {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.actions button.action img {
+    width: 20px;
+    /* match the Tournesol primary color rgb(255, 200, 0) */
+    filter: invert(84%) sepia(42%) saturate(3555%) hue-rotate(360deg) brightness(104%) contrast(102%);
+}
+
+iframe#x-tournesol-iframe-inner {
+    width: 100%;
+    height: 490px;
+    margin: 0;
+    border: none;
+}
