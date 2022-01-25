@@ -18,3 +18,10 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Force english as navigator language during e2e tests
+Cypress.on('window:before:load', window => {
+  Object.defineProperty(window.navigator, 'language', { value: 'en' });
+  Object.defineProperty(window.navigator, 'languages', { value: ['en'] });
+  Object.defineProperty(window.navigator, 'accept_languages', { value: ['en'] });
+});

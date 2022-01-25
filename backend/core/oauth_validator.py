@@ -25,9 +25,8 @@ class CustomOAuth2Validator(OAuth2Validator):
 
     def validate_user(self, username, password, client, request, *args, **kwargs):
         user_found = super().validate_user(username, password, client, request, *args, **kwargs)
-        if user_found:
-            return user_found
-        # support authentication with email as username
+
+        # Support authentication with email as username
         if not user_found and username and "@" in username:
             try:
                 user = get_user_model().objects.get(email=username)
@@ -35,7 +34,10 @@ class CustomOAuth2Validator(OAuth2Validator):
                 return False
             return super().validate_user(user.username, password, client, request, *args, **kwargs)
 
+        return user_found
+
     def save_bearer_token(self, token, request, *args, **kwargs):
+        # Add 'username' field in token response
         if request.user.is_authenticated:
             token["username"] = request.user.username
         return super().save_bearer_token(token, request, *args, **kwargs)
