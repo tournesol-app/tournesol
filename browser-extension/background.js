@@ -1,4 +1,10 @@
-import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
+import {
+  addRateLater,
+  alertUseOnLinkToYoutube,
+  fetchTournesolApi,
+  getAccessToken,
+  getRandomSubarray
+} from './utils.js'
 
 const oversamplingRatioForRecentVideos = 3;
 const oversamplingRatioForOldVideos = 50;
@@ -26,6 +32,31 @@ chrome.contextMenus.onClicked.addListener(function (e, tab) {
   }
 });
 
+/**
+ * Remove the X-FRAME-OPTIONS and FRAME-OPTIONS headers included in the
+ * Tournesol application HTTP answers. It allows the extension to display
+ * the application in an iframe without enabling all website to do the same.
+ */
+chrome.webRequest.onHeadersReceived.addListener(
+  function(info) {
+    const headers = info.responseHeaders.filter(
+      h => !['x-frame-options', 'frame-options'].includes(h.name.toLowerCase())
+    )
+    return { responseHeaders: headers };
+  }, {
+    urls: [
+      'https://tournesol.app/*',
+    ],
+    types: [ 'sub_frame' ]
+  }, [
+    'blocking',
+    'responseHeaders',
+    // Modern Chrome needs 'extraHeaders' to see and change this header,
+    // so the following code evaluates to 'extraHeaders' only in modern Chrome.
+    chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
+  ].filter(Boolean)
+);
+
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
   const format = (str) => str.length == 1 ? `0${str}` : str.length == 4 ? str.slice(2) : str
@@ -42,6 +73,25 @@ function getDateThreeWeeksAgo() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+  // Return the current access token in the chrome.storage.local.
+  if (request.message === "extAccessTokenNeeded") {
+    getAccessToken().then(
+      (token) => sendResponse({access_token: token})
+    );
+    return true;
+  }
+
+  // Automatically hide the extension modal containing the login iframe after
+  // the access token has been refreshed.
+  if (request.message === "accessTokenRefreshed") {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "hideExtensionModal"});
+    });
+
+    return true;
+  }
+
   if (request.message == "addRateLater") {
     addRateLater(request.video_id).then(sendResponse);
     return true;

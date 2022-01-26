@@ -1,4 +1,4 @@
-async function getAccessToken() {
+export const getAccessToken = async () => {
   return new Promise((resolve) => {
     chrome.storage.local.get(['access_token'], items => {
       resolve(items.access_token)
@@ -18,16 +18,9 @@ export const alertUseOnLinkToYoutube = () => {
 
 export const alertInvalidAccessToken = () => {
   alertOnCurrentTab(
-    'It seems you are logged in on Tournesol, but your connection needs to be refreshed.\\n\\n' +
-    'Please follow these steps on https://tournesol.app:\\n' +
-    '- log out then log in\\n' +
-    '- press the refresh button of your browser\\n\\n' +
-    'Sorry for the inconvenience, we are working on a fix.'
+    'Your connection to Tournesol needs to be refreshed.\\n\\n' +
+    'Please log in using the form below.'
   );
-}
-
-export const alertNotLoggedInOrError = () => {
-  alertOnCurrentTab('Make sure you are logged in on https://tournesol.app/. If you are logged in and this error persists, please let us know by creating an issue on https://github.com/tournesol-app/tournesol')
 }
 
 export const fetchTournesolApi = async (url, method, data) => {
@@ -53,12 +46,10 @@ export const fetchTournesolApi = async (url, method, data) => {
     if (r.status === 401 || r.status === 403) {
 
       // 401 Unauthorized with an access token means either
-      // - the token has been crafted
       // - the token has expired
+      // - the token has been crafted
       if (r.status === 401 && access_token) {
         alertInvalidAccessToken();
-      } else {
-        alertNotLoggedInOrError();
       }
     }
     return r;

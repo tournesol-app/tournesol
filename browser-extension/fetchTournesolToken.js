@@ -1,8 +1,35 @@
+/**
+ * Save the access token from the Tournesol localStorage to the extension
+ * local storage.
+ *
+ * Send message `accessTokenRefreshed` when:
+ *  - a Tournesol's access token is found
+ *  - a Tournesol's access token is != than the one currently store in the
+ *    extension local storage
+ */
 function updateAccessToken() {
-  const raw_state = JSON.parse(localStorage.getItem('persist:root')) || {};
-  const token = JSON.parse(raw_state.token) || {};
-  const access_token = token.access_token
-  chrome.storage.local.set({access_token: access_token || null});
+  const rawState = JSON.parse(localStorage.getItem('persist:root')) || {};
+  const token = JSON.parse(rawState.token) || {};
+  const tournesolAccessToken = token.access_token
+
+  chrome.runtime.sendMessage(
+    // Ask for the current extension's access token
+    {message: "extAccessTokenNeeded"},
+    (resp) => {
+      if (resp.access_token !== tournesolAccessToken) {
+        chrome.storage.local.set({access_token: tournesolAccessToken || null});
+
+        // Inform the background script that a new Tournesol's access token is
+        // available. It allows the extension to not display the Tournesol log
+        // in form, when only a token refresh is needed.
+        if (tournesolAccessToken) {
+          chrome.runtime.sendMessage({
+            message: 'accessTokenRefreshed',
+          });
+        }
+      }
+    }
+  )
 }
 
 updateAccessToken();
