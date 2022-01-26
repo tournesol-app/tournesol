@@ -19,6 +19,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    font-family: system-ui, Arial, sans-serif;
 }
 
 .heading h2 {
