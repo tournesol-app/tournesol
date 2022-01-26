@@ -1,6 +1,15 @@
 name: Backend lint and tests
 
-on: [push, pull_request]
+on:
+  # Run tests only when 'backend' or CI config has changed
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
 
 defaults:
   run:
@@ -12,7 +21,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12.2
+        image: postgres:13
         env:
           POSTGRES_USER: postgres
           POSTGRES_DB: tournesol
