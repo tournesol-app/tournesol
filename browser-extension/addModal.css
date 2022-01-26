@@ -1,0 +1,24 @@
+#x-tournesol-modal {
+    top: 0;
+    left: 0;
+    position: fixed;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 99;
+    display: none;
+
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+iframe#x-tournesol-iframe-login {
+    width: 66%;
+    height: 528px;
+    border: none;
+}

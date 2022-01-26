@@ -45,12 +45,12 @@
       "js": [
         "config/const.js",
         "addVideoStatistics.js",
-        "addTournesolIframe.js",
+        "addModal.js",
         "addRateLaterButton.js"
       ],
       "css": [
         "addVideoStatistics.css",
-        "addTournesolIframe.css",
+        "addModal.css",
         "addRateLaterButton.css"
       ],
       "run_at": "document_end",
