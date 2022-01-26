@@ -10,6 +10,7 @@ from rest_framework import routers
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.email_domains import EmailDomainsList
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.stats import StatisticsView
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -93,5 +94,12 @@ urlpatterns = [
         "domains/",
         EmailDomainsList.as_view(),
         name="email_domains_list"
-    )
+    ),
+    # Statistics API
+    path(
+        "stats/",
+        StatisticsView.as_view(),
+        name="statistics_detail"
+     ),
+        
 ]
