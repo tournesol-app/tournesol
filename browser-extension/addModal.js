@@ -78,5 +78,16 @@ function addTournesolModal() {
         expectedModal.style.display = 'none';
       }
     }
+
+    // hide the modal when the escape key is pressed
+    document.onkeydown = function(event) {
+      const expectedModal = document.getElementById(EXT_MODAL_ID);
+      const currentDisplay = expectedModal.style.display;
+
+      if ((event.key === 'Escape' || event.code === 'Escape')
+          && currentDisplay !== 'none') {
+        expectedModal.style.display = 'none';
+      }
+    }
   }
 };
