@@ -29,7 +29,7 @@
       "64": "Logo64.png"
     },
     "default_title": "Tournesol actions",
-    "default_popup": "menu.html"  
+    "default_popup": "browserAction/menu.html"
   },
   "content_scripts": [
     
