@@ -23,6 +23,7 @@ body {
     border: none;
     background: none;
     cursor: pointer;
+    opacity: 1;
 }
 
 .actions button.action img {
