@@ -12,7 +12,6 @@ body {
 }
 
 .heading {
-    height: 22px;
     margin: 8px 0;
 
     color: rgb(255, 200, 0);
@@ -24,6 +23,7 @@ body {
 
 .heading h2 {
     margin: 0;
+    font-size: 18px;
 }
 
 iframe#x-tournesol-iframe-inner {
