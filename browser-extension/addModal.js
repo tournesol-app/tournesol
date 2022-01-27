@@ -1,5 +1,6 @@
 /**
- * Create a modal including a Tournesol login iframe.
+ * Create and add a hidden modal in the DOM, by default including a Tournesol
+ * login iframe.
  *
  * This content script is meant to be run on each YouTube video page.
  *
@@ -12,25 +13,33 @@
  *
  * This part is called on connection for the first time on youtube.com/*
  */
-document.addEventListener('yt-navigate-finish', addTournesolModal);
+document.addEventListener('yt-navigate-finish', initTournesolModal);
 
 if (document.body) {
-  addTournesolModal();
+  initTournesolModal();
 } else {
-  document.addEventListener('DOMContentLoaded', addTournesolModal);
+  document.addEventListener('DOMContentLoaded', initTournesolModal);
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.message === "hideExtensionModal") {
-    const modal = document.getElementById(EXT_MODAL_ID);
+  if (request.message === "hideModal") {
+    const hidden = hideModal();
+    sendResponse({success: hidden});
+    return;
+  }
 
-    if (modal) {
-      modal.style.display = 'none';
+  if (request.message === "displayModal") {
+    const displayed = displayModal();
+
+    if (displayed) {
+      sendResponse({success: true});
+    } else {
+      sendResponse({success: false, message: "modal not found in DOM"});
     }
   }
 });
 
-function addTournesolModal() {
+function initTournesolModal() {
   const videoId = new URL(location.href).searchParams.get('v');
 
   // Only enable this script on youtube.com/watch?v=* pages
@@ -75,7 +84,7 @@ function addTournesolModal() {
     document.onclick = function(event) {
       const expectedModal = document.getElementById(EXT_MODAL_ID);
       if (event.target === expectedModal) {
-        expectedModal.style.display = 'none';
+        expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
       }
     }
 
@@ -85,9 +94,49 @@ function addTournesolModal() {
       const currentDisplay = expectedModal.style.display;
 
       if ((event.key === 'Escape' || event.code === 'Escape')
-          && currentDisplay !== 'none') {
-        expectedModal.style.display = 'none';
+          && currentDisplay !== EXT_MODAL_INVISIBLE_STATE) {
+        expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
       }
     }
   }
 };
+
+
+/**
+ * Single entry point to display the extension modal.
+ */
+function displayModal() {
+  const modal = document.getElementById(EXT_MODAL_ID);
+  const iframe = document.getElementById(IFRAME_TOURNESOL_LOGIN_ID);
+
+  if (!modal) {
+    return false;
+  }
+
+  const display = function display() {
+    modal.style.display = EXT_MODAL_VISIBLE_STATE;
+    iframe.removeEventListener('load', displayModal);
+  }
+
+  // prevent visual blink while refreshing the iframe
+  iframe.addEventListener('load', display);
+
+  // This manual iframe refresh allows to trigger an access token
+  // refresh (see the content scripts configuration in manifest.json).
+  // This operation is mandatory here as it allows to dismiss any
+  // outdated token in the chrome.storage.local. Using the iframe
+  // without discarding a local outdated token, will erroneously display
+  // the Tournesol home page, instead of the login form.
+  iframe.src = iframe.src;
+  return true;
+}
+
+function hideModal() {
+  const modal = document.getElementById(EXT_MODAL_ID);
+  if (!modal) {
+    return false;
+  }
+
+  modal.style.display = EXT_MODAL_INVISIBLE_STATE;
+  return true;
+}
