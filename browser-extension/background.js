@@ -86,12 +86,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // the access token has been refreshed.
   if (request.message === "accessTokenRefreshed") {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {message: "hideExtensionModal"});
+      chrome.tabs.sendMessage(tabs[0].id, {message: "hideModal"});
     });
 
     return true;
   }
 
+  // Forward the need to the proper content script.
   if (request.message === "displayModal") {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function (response) {

@@ -22,12 +22,9 @@ if (document.body) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.message === "hideExtensionModal") {
-    const modal = document.getElementById(EXT_MODAL_ID);
-
-    if (modal) {
-      modal.style.display = 'none';
-    }
+  if (request.message === "hideModal") {
+    const hidden = hideModal();
+    sendResponse({success: hidden});
     return;
   }
 
@@ -87,7 +84,7 @@ function initTournesolModal() {
     document.onclick = function(event) {
       const expectedModal = document.getElementById(EXT_MODAL_ID);
       if (event.target === expectedModal) {
-        expectedModal.style.display = 'none';
+        expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
       }
     }
 
@@ -97,8 +94,8 @@ function initTournesolModal() {
       const currentDisplay = expectedModal.style.display;
 
       if ((event.key === 'Escape' || event.code === 'Escape')
-          && currentDisplay !== 'none') {
-        expectedModal.style.display = 'none';
+          && currentDisplay !== EXT_MODAL_INVISIBLE_STATE) {
+        expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
       }
     }
   }
@@ -131,5 +128,15 @@ function displayModal() {
   // without discarding a local outdated token, will erroneously display
   // the Tournesol home page, instead of the login form.
   iframe.src = iframe.src;
+  return true;
+}
+
+function hideModal() {
+  const modal = document.getElementById(EXT_MODAL_ID);
+  if (!modal) {
+    return false;
+  }
+
+  modal.style.display = EXT_MODAL_INVISIBLE_STATE;
   return true;
 }
