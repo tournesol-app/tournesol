@@ -35,16 +35,16 @@ function rate_later(e) {
   get_current_tab_video_id().then(async (videoId) => {
     button.disabled = true;
     const { success, message } = await addRateLater(videoId);
+
     if (success) {
       button.setAttribute('data-success', message);
-    }
-    else {
+    } else {
 
       // ask the content script to display the modal containing the login iframe
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function(response) {
           if (!response.success) {
-            button.setAttribute('data-error', 'Failed');
+            button.setAttribute('data-error', 'Failed.');
           }
         });
       });
