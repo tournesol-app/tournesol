@@ -19,4 +19,7 @@ featureIsEnabledByDeFault = {
 YOUTUBE_VIDEO_ID_REGEX_SYMBOL = "[A-Za-z0-9-_]"
 
 # The whole video ID
-YOUTUBE_VIDEO_ID_REGEX = rf"^{YOUTUBE_VIDEO_ID_REGEX_SYMBOL}"+"{11}$"
+YOUTUBE_VIDEO_ID_REGEX = rf"^{YOUTUBE_VIDEO_ID_REGEX_SYMBOL}" + "{11}$"
+
+# twitter tweet id regex
+TWITTER_TWEET_ID_ID_REGEX = rf"^[0-9]{19}$"
