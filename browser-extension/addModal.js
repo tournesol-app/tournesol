@@ -113,13 +113,13 @@ function displayModal() {
     return false;
   }
 
-  const displayModal = function displayModal() {
+  const display = function display() {
     modal.style.display = EXT_MODAL_VISIBLE_STATE;
     iframe.removeEventListener('load', displayModal);
   }
 
   // prevent visual blink while refreshing the iframe
-  iframe.addEventListener('load', displayModal);
+  iframe.addEventListener('load', display);
 
   // This manual iframe refresh allows to trigger an access token
   // refresh (see the content scripts configuration in manifest.json).
