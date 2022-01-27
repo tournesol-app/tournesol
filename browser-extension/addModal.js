@@ -27,6 +27,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (modal) {
       modal.style.display = 'none';
     }
+    return;
+  }
+
+  if (request.message === "displayModal") {
+    const modal = document.getElementById(EXT_MODAL_ID);
+    modal.style.display = EXT_MODAL_VISIBLE_STATE;
+    if (modal) {
+      sendResponse({success: true});
+    } else {
+      sendResponse({success: false, message: "modal not found in DOM"});
+    }
   }
 });
 

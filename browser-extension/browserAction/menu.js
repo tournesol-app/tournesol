@@ -39,7 +39,16 @@ function rate_later(e) {
       button.setAttribute('data-success', message);
     }
     else {
-      button.setAttribute('data-error', message);
+
+      // ask the content script to display the modal containing the login iframe
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function(response) {
+          if (!response.success) {
+            button.setAttribute('data-error', 'Failed');
+          }
+        });
+      });
+
     }
   },
     err => {
