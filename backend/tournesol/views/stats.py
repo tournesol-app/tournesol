@@ -5,10 +5,9 @@ API endpoints to show public statistics
 from datetime import datetime, timedelta
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import exceptions, generics, status
+from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from core.models import User
 
@@ -17,6 +16,9 @@ from ..serializers import StatisticsSerializer
 
 
 class Statistics:
+    """
+        Representation of a Statistics
+    """
     def add_user_statistics(self, user_count, last_month_user_count):
         self.user_count = user_count
         self.last_month_user_count = last_month_user_count
@@ -36,6 +38,9 @@ class Statistics:
     )
 )
 class StatisticsView(generics.GenericAPIView):
+    """
+        API view for retrieving statistics
+    """
     permission_classes = [AllowAny]
 
     serializer_class = StatisticsSerializer
