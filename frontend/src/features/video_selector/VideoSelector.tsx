@@ -10,11 +10,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import VideoCard, { EmptyVideoCard } from 'src/features/videos/VideoCard';
 
-import { useNotifications } from 'src/hooks';
-
 import { ActionList } from 'src/utils/types';
 import {
-  ensureVideoExistsOrCreate,
   extractVideoId,
   getVideoForComparison,
   isVideoIdValid,
@@ -23,7 +20,6 @@ import {
   UsersService,
   ContributorRating,
   ContributorRatingCreate,
-  ApiError,
 } from 'src/services/openapi';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -62,7 +58,6 @@ const VideoSelector = ({
   submitted = false,
 }: Props) => {
   const { t } = useTranslation();
-  const { displayErrorsFrom } = useNotifications();
 
   const { videoId, rating } = value;
   const classes = useStyles();
@@ -79,12 +74,6 @@ const VideoSelector = ({
       });
     } catch (err) {
       if (err?.status === 404) {
-        await ensureVideoExistsOrCreate(videoId).catch((reason: ApiError) => {
-          displayErrorsFrom(reason);
-          setLoading(false);
-          return;
-        });
-
         try {
           const contributorRating =
             await UsersService.usersMeContributorRatingsCreate({
@@ -105,7 +94,7 @@ const VideoSelector = ({
       }
     }
     setLoading(false);
-  }, [videoId, onChange, displayErrorsFrom]);
+  }, [videoId, onChange]);
 
   useEffect(() => {
     if (isVideoIdValid(videoId) && rating == null) {
