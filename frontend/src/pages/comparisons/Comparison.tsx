@@ -12,7 +12,7 @@ import {
   Theme,
 } from '@mui/material';
 
-import { UsersService, Comparison } from 'src/services/openapi';
+import { UsersService, ComparisonRequest } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/Comparison';
 import VideoSelector, {
   VideoSelectorValue,
@@ -49,9 +49,8 @@ const ComparisonPage = () => {
   const history = useHistory();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-  const [initialComparison, setInitialComparison] = useState<Comparison | null>(
-    null
-  );
+  const [initialComparison, setInitialComparison] =
+    useState<ComparisonRequest | null>(null);
   const { showSuccessAlert } = useNotifications();
   const searchParams = new URLSearchParams(location.search);
   const videoA: string = searchParams.get('videoA') || '';
@@ -116,7 +115,7 @@ const ComparisonPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoA, videoB]);
 
-  const onSubmitComparison = async (c: Comparison) => {
+  const onSubmitComparison = async (c: ComparisonRequest) => {
     if (initialComparison) {
       const { video_a, video_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate({

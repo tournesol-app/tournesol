@@ -13,13 +13,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangePassword'
+              $ref: '#/components/schemas/ChangePasswordRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ChangePassword'
+              $ref: '#/components/schemas/ChangePasswordRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ChangePassword'
+              $ref: '#/components/schemas/ChangePasswordRequest'
         required: true
       security:
       - oauth2:
@@ -56,13 +56,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/UserProfileRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/UserProfileRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/UserProfileRequest'
         required: true
       security:
       - oauth2:
@@ -83,13 +83,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/UserProfileRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/UserProfileRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/UserProfileRequest'
         required: true
       security:
       - oauth2:
@@ -110,13 +110,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedUserProfile'
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedUserProfile'
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedUserProfile'
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
       security:
       - oauth2:
         - read write groups
@@ -137,13 +137,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterUser'
+              $ref: '#/components/schemas/RegisterUserRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RegisterUser'
+              $ref: '#/components/schemas/RegisterUserRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RegisterUser'
+              $ref: '#/components/schemas/RegisterUserRequest'
         required: true
       security:
       - oauth2:
@@ -166,13 +166,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterEmail'
+              $ref: '#/components/schemas/RegisterEmailRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RegisterEmail'
+              $ref: '#/components/schemas/RegisterEmailRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RegisterEmail'
+              $ref: '#/components/schemas/RegisterEmailRequest'
         required: true
       security:
       - oauth2:
@@ -194,13 +194,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPassword'
+              $ref: '#/components/schemas/ResetPasswordRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResetPassword'
+              $ref: '#/components/schemas/ResetPasswordRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResetPassword'
+              $ref: '#/components/schemas/ResetPasswordRequest'
         required: true
       security:
       - oauth2:
@@ -223,13 +223,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DefaultSendResetPasswordLink'
+              $ref: '#/components/schemas/DefaultSendResetPasswordLinkRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DefaultSendResetPasswordLink'
+              $ref: '#/components/schemas/DefaultSendResetPasswordLinkRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/DefaultSendResetPasswordLink'
+              $ref: '#/components/schemas/DefaultSendResetPasswordLinkRequest'
         required: true
       security:
       - oauth2:
@@ -252,13 +252,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyEmail'
+              $ref: '#/components/schemas/VerifyEmailRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/VerifyEmail'
+              $ref: '#/components/schemas/VerifyEmailRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/VerifyEmail'
+              $ref: '#/components/schemas/VerifyEmailRequest'
         required: true
       security:
       - oauth2:
@@ -281,13 +281,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyRegistration'
+              $ref: '#/components/schemas/VerifyRegistrationRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/VerifyRegistration'
+              $ref: '#/components/schemas/VerifyRegistrationRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/VerifyRegistration'
+              $ref: '#/components/schemas/VerifyRegistrationRequest'
         required: true
       security:
       - oauth2:
@@ -544,13 +544,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comparison'
+              $ref: '#/components/schemas/ComparisonRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Comparison'
+              $ref: '#/components/schemas/ComparisonRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Comparison'
+              $ref: '#/components/schemas/ComparisonRequest'
         required: true
       security:
       - oauth2:
@@ -609,13 +609,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ComparisonUpdate'
+              $ref: '#/components/schemas/ComparisonUpdateRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ComparisonUpdate'
+              $ref: '#/components/schemas/ComparisonUpdateRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ComparisonUpdate'
+              $ref: '#/components/schemas/ComparisonUpdateRequest'
         required: true
       security:
       - oauth2:
@@ -727,13 +727,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContributorRatingCreate'
+              $ref: '#/components/schemas/ContributorRatingCreateRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ContributorRatingCreate'
+              $ref: '#/components/schemas/ContributorRatingCreateRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ContributorRatingCreate'
+              $ref: '#/components/schemas/ContributorRatingCreateRequest'
         required: true
       security:
       - oauth2:
@@ -784,13 +784,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContributorRating'
+              $ref: '#/components/schemas/ContributorRatingRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ContributorRating'
+              $ref: '#/components/schemas/ContributorRatingRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ContributorRating'
+              $ref: '#/components/schemas/ContributorRatingRequest'
       security:
       - oauth2:
         - read write groups
@@ -817,13 +817,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedContributorRating'
+              $ref: '#/components/schemas/PatchedContributorRatingRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedContributorRating'
+              $ref: '#/components/schemas/PatchedContributorRatingRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedContributorRating'
+              $ref: '#/components/schemas/PatchedContributorRatingRequest'
       security:
       - oauth2:
         - read write groups
@@ -844,13 +844,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedContributorRatingUpdateAll'
+              $ref: '#/components/schemas/PatchedContributorRatingUpdateAllRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedContributorRatingUpdateAll'
+              $ref: '#/components/schemas/PatchedContributorRatingUpdateAllRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedContributorRatingUpdateAll'
+              $ref: '#/components/schemas/PatchedContributorRatingUpdateAllRequest'
       security:
       - oauth2:
         - read write groups
@@ -898,7 +898,8 @@ paths:
   /users/me/video_rate_later/:
     get:
       operationId: users_me_video_rate_later_list
-      description: API call to return list of rate_later videos
+      description: List all videos of a user's rate later list, or add a video to
+        the list.
       parameters:
       - name: limit
         required: false
@@ -926,20 +927,21 @@ paths:
           description: ''
     post:
       operationId: users_me_video_rate_later_create
-      description: Add an existing video to a user's rate later list.
+      description: List all videos of a user's rate later list, or add a video to
+        the list.
       tags:
       - users
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VideoRateLater'
+              $ref: '#/components/schemas/VideoRateLaterRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/VideoRateLater'
+              $ref: '#/components/schemas/VideoRateLaterRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/VideoRateLater'
+              $ref: '#/components/schemas/VideoRateLaterRequest'
         required: true
       security:
       - oauth2:
@@ -951,8 +953,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/VideoRateLater'
           description: ''
-        '404':
-          description: 'Not Found: the video doesn''t exist in the database.'
         '409':
           description: 'Conflict: the video is already in the rate later list, or
             there is an other error with the database query.'
@@ -1113,13 +1113,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Video'
+              $ref: '#/components/schemas/VideoRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Video'
+              $ref: '#/components/schemas/VideoRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Video'
+              $ref: '#/components/schemas/VideoRequest'
         required: true
       security:
       - oauth2:
@@ -1167,9 +1167,22 @@ components:
           type: string
         password:
           type: string
+      required:
+      - old_password
+      - password
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
         password_confirm:
           type: string
           writeOnly: true
+          minLength: 1
       required:
       - old_password
       - password
@@ -1185,9 +1198,9 @@ components:
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
         video_a:
-          $ref: '#/components/schemas/VideoReadOnly'
+          $ref: '#/components/schemas/RelatedVideo'
         video_b:
-          $ref: '#/components/schemas/VideoReadOnly'
+          $ref: '#/components/schemas/RelatedVideo'
         criteria_scores:
           type: array
           items:
@@ -1221,6 +1234,54 @@ components:
       required:
       - criteria
       - score
+    ComparisonCriteriaScoreRequest:
+      type: object
+      properties:
+        criteria:
+          type: string
+          minLength: 1
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          maximum: 10.0
+          minimum: -10.0
+          description: Score for the given comparison
+        weight:
+          type: number
+          format: float
+          description: Weight of the comparison
+      required:
+      - criteria
+      - score
+    ComparisonRequest:
+      type: object
+      description: |-
+        A comparison serializer used for the operations create, retrieve and list.
+
+        Given the context determined by the view, it will represent the comparison
+        in the reverse order.
+
+        Use `ComparisonUpdateSerializer` for the update operation.
+      properties:
+        video_a:
+          $ref: '#/components/schemas/RelatedVideoRequest'
+        video_b:
+          $ref: '#/components/schemas/RelatedVideoRequest'
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComparisonCriteriaScoreRequest'
+        duration_ms:
+          type: number
+          format: float
+          nullable: true
+          description: Time it took to rate the videos (in milliseconds)
+      required:
+      - criteria_scores
+      - video_a
+      - video_b
     ComparisonUpdate:
       type: object
       description: |-
@@ -1240,6 +1301,37 @@ components:
           format: float
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
+        video_a:
+          allOf:
+          - $ref: '#/components/schemas/Video'
+          readOnly: true
+        video_b:
+          allOf:
+          - $ref: '#/components/schemas/Video'
+          readOnly: true
+      required:
+      - criteria_scores
+      - video_a
+      - video_b
+    ComparisonUpdateRequest:
+      type: object
+      description: |-
+        A comparison serializer used only for updates.
+
+        Given the context determined by the view, it will represent or save the
+        comparison in the reverse order.
+
+        Use `ComparisonSerializer` for all other operations.
+      properties:
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComparisonCriteriaScoreRequest'
+        duration_ms:
+          type: number
+          format: float
+          nullable: true
+          description: Time it took to rate the videos (in milliseconds)
       required:
       - criteria_scores
     ContributorCriteriaScore:
@@ -1247,6 +1339,24 @@ components:
       properties:
         criteria:
           type: string
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          description: Score for the given criteria
+        uncertainty:
+          type: number
+          format: float
+          description: Uncertainty about the video's score for the given criteria
+      required:
+      - criteria
+    ContributorCriteriaScoreRequest:
+      type: object
+      properties:
+        criteria:
+          type: string
+          minLength: 1
           description: Name of the criteria
           maxLength: 32
         score:
@@ -1286,10 +1396,6 @@ components:
     ContributorRatingCreate:
       type: object
       properties:
-        video_id:
-          type: string
-          writeOnly: true
-          pattern: ^[A-Za-z0-9-_]{11}$
         is_public:
           type: boolean
           description: Should the rating be public?
@@ -1311,7 +1417,25 @@ components:
       - criteria_scores
       - n_comparisons
       - video
+    ContributorRatingCreateRequest:
+      type: object
+      properties:
+        video_id:
+          type: string
+          writeOnly: true
+          minLength: 1
+          pattern: ^[A-Za-z0-9-_]{11}$
+        is_public:
+          type: boolean
+          description: Should the rating be public?
+      required:
       - video_id
+    ContributorRatingRequest:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          description: Should the rating be public?
     ContributorRatingUpdateAll:
       type: object
       properties:
@@ -1329,6 +1453,19 @@ components:
       properties:
         login:
           type: string
+      required:
+      - login
+    DefaultSendResetPasswordLinkRequest:
+      type: object
+      description: |-
+        Default serializer used for sending reset password link.
+
+        It will use :ref:`send-reset-password-link-serializer-use-email-setting`
+        setting.
+      properties:
+        login:
+          type: string
+          minLength: 1
       required:
       - login
     DegreeOfPoliticalEngagementEnum:
@@ -9846,32 +9983,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VideoSerializerWithCriteria'
-    PatchedContributorRating:
+    PatchedContributorRatingRequest:
       type: object
       properties:
-        video:
-          allOf:
-          - $ref: '#/components/schemas/Video'
-          readOnly: true
         is_public:
           type: boolean
           description: Should the rating be public?
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
-          readOnly: true
-        n_comparisons:
-          type: integer
-          readOnly: true
-          description: Number of comparisons submitted by the current user about the
-            current video
-    PatchedContributorRatingUpdateAll:
+    PatchedContributorRatingUpdateAllRequest:
       type: object
       properties:
         is_public:
           type: boolean
-    PatchedUserProfile:
+    PatchedUserProfileRequest:
       type: object
       description: |-
         Default serializer used for user profile. It will use these:
@@ -9883,20 +10006,13 @@ components:
 
         to automagically generate the required serializer fields.
       properties:
-        id:
-          type: integer
-          readOnly: true
         username:
           type: string
+          minLength: 1
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
-        email:
-          type: string
-          format: email
-          readOnly: true
-          title: Email address
         is_demo:
           type: boolean
           description: Is a demo account?
@@ -10009,7 +10125,7 @@ components:
           maxLength: 500
         avatar:
           type: string
-          format: uri
+          format: binary
           nullable: true
           description: Your profile picture.
         is_trusted:
@@ -10047,6 +10163,16 @@ components:
         email:
           type: string
           format: email
+      required:
+      - email
+    RegisterEmailRequest:
+      type: object
+      description: Default serializer used for e-mail registration (e-mail change).
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
       required:
       - email
     RegisterUser:
@@ -10192,15 +10318,242 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        password_confirm:
-          type: string
-          writeOnly: true
       required:
       - email
       - id
       - password
+      - username
+    RegisterUserRequest:
+      type: object
+      description: |-
+        Default serializer used for user registration. It will use these:
+
+        * User fields
+        * :ref:`user-hidden-fields-setting` setting
+        * :ref:`user-public-fields-setting` setting
+
+        to automagically generate the required serializer fields.
+      properties:
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Email address
+          maxLength: 254
+        is_demo:
+          type: boolean
+          description: Is a demo account?
+        first_name:
+          type: string
+          nullable: true
+          description: First name
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          description: Last name
+          maxLength: 100
+        title:
+          type: string
+          nullable: true
+          description: Your position
+        bio:
+          type: string
+          nullable: true
+          description: Self-description (degree, biography, ...)
+        comment_anonymously:
+          type: boolean
+          description: Comment anonymously by-default
+        show_online_presence:
+          type: boolean
+          description: Show my online presence on Tournesol
+        show_my_profile:
+          type: boolean
+          description: Show my profile on Tournesol
+        birth_year:
+          type: integer
+          maximum: 2100
+          minimum: 1900
+          nullable: true
+          description: Year of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: Your gender
+        nationality:
+          allOf:
+          - $ref: '#/components/schemas/NationalityEnum'
+          description: Your country of nationality
+        residence:
+          allOf:
+          - $ref: '#/components/schemas/ResidenceEnum'
+          description: Your country of residence
+        race:
+          allOf:
+          - $ref: '#/components/schemas/RaceEnum'
+          description: Your ethnicity
+        political_affiliation:
+          allOf:
+          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
+          description: Your political preference
+        religion:
+          allOf:
+          - $ref: '#/components/schemas/ReligionEnum'
+          description: Your religion
+        degree_of_political_engagement:
+          allOf:
+          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
+          description: Your degree of political engagement
+        moral_philosophy:
+          allOf:
+          - $ref: '#/components/schemas/MoralPhilosophyEnum'
+          description: Your preferred moral philosophy
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: Your website URL
+          maxLength: 500
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          description: Your LinkedIn URL
+          maxLength: 500
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Youtube channel URL
+          maxLength: 500
+        google_scholar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Google Scholar URL
+          maxLength: 500
+        orcid:
+          type: string
+          format: uri
+          nullable: true
+          description: Your ORCID URL
+          maxLength: 500
+        researchgate:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Researchgate profile URL
+          maxLength: 500
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Twitter URL
+          maxLength: 500
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          description: Your profile picture.
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
       - password_confirm
       - username
+    RelatedVideo:
+      type: object
+      description: |-
+        A video serializer that will create the Video object on validation
+        if it does not exist in the database yet.
+
+        Used by ModelSerializer(s) having one or more nested relations with Video,
+        and having the constraint to ensure that video instances exist before
+        they can be saved properly.
+      properties:
+        video_id:
+          type: string
+          pattern: ^[A-Za-z0-9-_]{11}$
+        name:
+          type: string
+          readOnly: true
+          description: Video Title
+        description:
+          type: string
+          readOnly: true
+          description: Video Description from the web page
+        publication_date:
+          type: string
+          format: date
+          readOnly: true
+          description: Video publication date
+        views:
+          type: integer
+          readOnly: true
+          description: Number of views
+        uploader:
+          type: string
+          readOnly: true
+          description: Name of the channel (uploader)
+        language:
+          allOf:
+          - $ref: '#/components/schemas/LanguageEnum'
+          readOnly: true
+          description: Language of the video
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this videofrom certified
+            contributors
+        rating_n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the video
+        duration:
+          type: integer
+          nullable: true
+          readOnly: true
+      required:
+      - description
+      - duration
+      - language
+      - name
+      - publication_date
+      - rating_n_contributors
+      - rating_n_ratings
+      - uploader
+      - video_id
+      - views
+    RelatedVideoRequest:
+      type: object
+      description: |-
+        A video serializer that will create the Video object on validation
+        if it does not exist in the database yet.
+
+        Used by ModelSerializer(s) having one or more nested relations with Video,
+        and having the constraint to ensure that video instances exist before
+        they can be saved properly.
+      properties:
+        video_id:
+          type: string
+          minLength: 1
+          pattern: ^[A-Za-z0-9-_]{11}$
+      required:
+      - video_id
     ReligionEnum:
       enum:
       - Not Specified
@@ -10224,6 +10577,25 @@ components:
           type: string
         password:
           type: string
+      required:
+      - password
+      - signature
+      - timestamp
+      - user_id
+    ResetPasswordRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          minLength: 1
+        timestamp:
+          type: integer
+        signature:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
       required:
       - password
       - signature
@@ -10636,6 +11008,145 @@ components:
       - id
       - is_trusted
       - username
+    UserProfileRequest:
+      type: object
+      description: |-
+        Default serializer used for user profile. It will use these:
+
+        * User fields
+        * :ref:`user-hidden-fields-setting` setting
+        * :ref:`user-public-fields-setting` setting
+        * :ref:`user-editable-fields-setting` setting
+
+        to automagically generate the required serializer fields.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        is_demo:
+          type: boolean
+          description: Is a demo account?
+        first_name:
+          type: string
+          nullable: true
+          description: First name
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          description: Last name
+          maxLength: 100
+        title:
+          type: string
+          nullable: true
+          description: Your position
+        bio:
+          type: string
+          nullable: true
+          description: Self-description (degree, biography, ...)
+        comment_anonymously:
+          type: boolean
+          description: Comment anonymously by-default
+        show_online_presence:
+          type: boolean
+          description: Show my online presence on Tournesol
+        show_my_profile:
+          type: boolean
+          description: Show my profile on Tournesol
+        birth_year:
+          type: integer
+          maximum: 2100
+          minimum: 1900
+          nullable: true
+          description: Year of birth
+        gender:
+          allOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          description: Your gender
+        nationality:
+          allOf:
+          - $ref: '#/components/schemas/NationalityEnum'
+          description: Your country of nationality
+        residence:
+          allOf:
+          - $ref: '#/components/schemas/ResidenceEnum'
+          description: Your country of residence
+        race:
+          allOf:
+          - $ref: '#/components/schemas/RaceEnum'
+          description: Your ethnicity
+        political_affiliation:
+          allOf:
+          - $ref: '#/components/schemas/PoliticalAffiliationEnum'
+          description: Your political preference
+        religion:
+          allOf:
+          - $ref: '#/components/schemas/ReligionEnum'
+          description: Your religion
+        degree_of_political_engagement:
+          allOf:
+          - $ref: '#/components/schemas/DegreeOfPoliticalEngagementEnum'
+          description: Your degree of political engagement
+        moral_philosophy:
+          allOf:
+          - $ref: '#/components/schemas/MoralPhilosophyEnum'
+          description: Your preferred moral philosophy
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: Your website URL
+          maxLength: 500
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          description: Your LinkedIn URL
+          maxLength: 500
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Youtube channel URL
+          maxLength: 500
+        google_scholar:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Google Scholar URL
+          maxLength: 500
+        orcid:
+          type: string
+          format: uri
+          nullable: true
+          description: Your ORCID URL
+          maxLength: 500
+        researchgate:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Researchgate profile URL
+          maxLength: 500
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          description: Your Twitter URL
+          maxLength: 500
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+          description: Your profile picture.
+        is_trusted:
+          type: boolean
+      required:
+      - is_trusted
+      - username
     VerifyEmail:
       type: object
       properties:
@@ -10653,6 +11164,26 @@ components:
       - signature
       - timestamp
       - user_id
+    VerifyEmailRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+        timestamp:
+          type: integer
+        signature:
+          type: string
+          minLength: 1
+      required:
+      - email
+      - signature
+      - timestamp
+      - user_id
     VerifyRegistration:
       type: object
       properties:
@@ -10662,6 +11193,21 @@ components:
           type: integer
         signature:
           type: string
+      required:
+      - signature
+      - timestamp
+      - user_id
+    VerifyRegistrationRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          minLength: 1
+        timestamp:
+          type: integer
+        signature:
+          type: string
+          minLength: 1
       required:
       - signature
       - timestamp
@@ -10752,22 +11298,24 @@ components:
       type: object
       properties:
         video:
-          $ref: '#/components/schemas/Video'
+          $ref: '#/components/schemas/RelatedVideo'
       required:
       - video
-    VideoReadOnly:
+    VideoRateLaterRequest:
       type: object
-      description: |-
-        A video serializer without all the Video model auto-validations.
-
-        Used by ModelSerializer(s) having one or more nested relations with Video,
-        and having the constraint of not creating new videos in database when
-        creating new objects.
-
-        ex: adding a new Comparison shouldn't create new Video in the database
+      properties:
+        video:
+          $ref: '#/components/schemas/RelatedVideoRequest'
+      required:
+      - video
+    VideoRequest:
+      type: object
       properties:
         video_id:
           type: string
+          minLength: 1
+          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
+          pattern: ^[A-Za-z0-9-_]{11}$
           maxLength: 20
       required:
       - video_id

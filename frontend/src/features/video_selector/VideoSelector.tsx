@@ -16,11 +16,7 @@ import {
   getVideoForComparison,
   isVideoIdValid,
 } from 'src/utils/video';
-import {
-  UsersService,
-  ContributorRating,
-  ContributorRatingCreate,
-} from 'src/services/openapi';
+import { UsersService, ContributorRating } from 'src/services/openapi';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -80,7 +76,7 @@ const VideoSelector = ({
               requestBody: {
                 video_id: videoId,
                 is_public: true,
-              } as ContributorRatingCreate,
+              },
             });
           onChange({
             videoId,
