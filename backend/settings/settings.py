@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_prometheus",
     "core",
+    "tournesol",
     "twitterbot",
     "ml",
     "oauth2_provider",
