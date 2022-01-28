@@ -2,13 +2,13 @@
  * Create and add a hidden modal in the DOM, by default including a Tournesol
  * login iframe.
  *
- * This content script is meant to be run on each YouTube video page.
+ * This content script is meant to be run on each YouTube page.
  *
  * @require config/const.js
  */
 
 /**
- * Youtube doesnt completely load a video page, so content script doesn't
+ * Youtube doesnt completely load a page, so content script doesn't
  * launch correctly without these events.
  *
  * This part is called on connection for the first time on youtube.com/*
@@ -40,11 +40,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function initTournesolModal() {
-  const videoId = new URL(location.href).searchParams.get('v');
-
-  // Only enable this script on youtube.com/watch?v=* pages
-  if (!location.pathname.startsWith('/watch') || !videoId) return;
-
   // Timers will run until needed elements are generated
   const iframeTimer = window.setInterval(createTournesolModal, 300);
 
@@ -52,10 +47,10 @@ function initTournesolModal() {
    * Create the extension modal, including a default iframe to the Tournesol
    * application.
    *
-   * Adding an hidden iframe in each YouTube video page allows to silently
-   * trigger a token refresh in the background. This makes the already logged
-   * users able to use the extension features seamlessly, without requiring to
-   * visit the Tournesol application site to trigger a token refresh.
+   * Adding an hidden iframe in each YouTube page allows to silently trigger
+   * a token refresh in the background. This makes the already logged users
+   * able to use the extension features seamlessly, without requiring to visit
+   * the Tournesol application site to trigger a token refresh.
    */
   function createTournesolModal() {
     // don't do anything if the required parent is not available
@@ -100,7 +95,6 @@ function initTournesolModal() {
     }
   }
 };
-
 
 /**
  * Single entry point to display the extension modal.
