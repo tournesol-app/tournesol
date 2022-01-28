@@ -62,7 +62,6 @@ const PasswordForm = () => {
             label={t('settings.oldPassword')}
             name="old_password"
             color="secondary"
-            size="small"
             type="password"
             variant="outlined"
             value={oldPassword}
@@ -77,7 +76,6 @@ const PasswordForm = () => {
             label={t('settings.newPassword')}
             name="password"
             color="secondary"
-            size="small"
             type="password"
             variant="outlined"
             value={password}
@@ -92,7 +90,6 @@ const PasswordForm = () => {
             label={t('settings.confirmNewPassword')}
             name="password_confirm"
             color="secondary"
-            size="small"
             type="password"
             variant="outlined"
             value={passwordConfirm}

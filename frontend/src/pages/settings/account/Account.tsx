@@ -25,7 +25,7 @@ export const AccountPage = () => {
       />
       <Box m={4}>
         <Grid container spacing={4}>
-          <Grid item sm={12} md={4} lg={3} xl={2}>
+          <Grid item xs={12} sm={12} md={3} lg={3} xl={2}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -33,16 +33,18 @@ export const AccountPage = () => {
             item
             direction="column"
             alignItems="stretch"
+            xs={12}
             sm={12}
-            md={8}
+            md={9}
             lg={9}
             xl={10}
             spacing={3}
           >
             <SettingsSection
               title={t('settings.changeEmailAddress')}
+              xs={12}
               sm={12}
-              md={8}
+              md={9}
               lg={9}
               xl={10}
             >
@@ -50,8 +52,9 @@ export const AccountPage = () => {
             </SettingsSection>
             <SettingsSection
               title={t('settings.changePassword')}
+              xs={12}
               sm={12}
-              md={8}
+              md={9}
               lg={9}
               xl={10}
             >
@@ -60,8 +63,9 @@ export const AccountPage = () => {
             <Box marginTop={8} />
             <SettingsSection
               title={t('settings.exportAllData')}
+              xs={12}
               sm={12}
-              md={8}
+              md={9}
               lg={9}
               xl={10}
             >
@@ -73,8 +77,9 @@ export const AccountPage = () => {
                   {t('settings.deleteAccount')}
                 </Typography>
               }
+              xs={12}
               sm={12}
-              md={8}
+              md={9}
               lg={9}
               xl={10}
             >
