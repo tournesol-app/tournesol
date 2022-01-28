@@ -1,11 +1,12 @@
 
 from datetime import datetime, timedelta
 
-from core.models import User
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
+
+from core.models import User
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 

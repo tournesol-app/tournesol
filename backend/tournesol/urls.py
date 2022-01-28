@@ -7,13 +7,14 @@ Defines Tournesol's backend API routes
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (ComparisonDetailApi, ComparisonListApi,
-                    ComparisonListFilteredApi)
+from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.email_domains import EmailDomainsList
-from .views.exports import (ExportAllView, ExportComparisonsView,
-                            ExportPublicComparisonsView)
-from .views.ratings import (ContributorRatingDetail, ContributorRatingList,
-                            ContributorRatingUpdateAll)
+from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.ratings import (
+    ContributorRatingDetail,
+    ContributorRatingList,
+    ContributorRatingUpdateAll,
+)
 from .views.stats import StatisticsView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
@@ -99,6 +100,5 @@ urlpatterns = [
         "stats/",
         StatisticsView.as_view(),
         name="statistics_detail"
-     ),
-        
+     )
 ]

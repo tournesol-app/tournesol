@@ -4,12 +4,13 @@ API endpoints to show public statistics
 
 from datetime import datetime, timedelta
 
-from core.models import User
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import exceptions, generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from core.models import User
 
 from ..models import Comparison, Video
 from ..serializers import StatisticsSerializer
