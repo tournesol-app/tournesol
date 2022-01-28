@@ -2,8 +2,9 @@
 API endpoints to show public statistics
 """
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
@@ -50,15 +51,15 @@ class StatisticsView(generics.GenericAPIView):
         # Query definition
         user_count = User.objects.all().count()
         last_month_user_count = User.objects.filter(
-                date_joined__gte=datetime.today() - timedelta(days=self._days_delta)
+                date_joined__gte=timezone.now() - timedelta(days=self._days_delta)
             ).count()
         video_count = Video.objects.all().count()
         last_month_video_count = Video.objects.filter(
-                publication_date__gte=datetime.today() - timedelta(days=self._days_delta)
+                publication_date__gte=timezone.now() - timedelta(days=self._days_delta)
             ).count()
         comparison_count = Comparison.objects.all().count()
         last_month_comparison_count = Comparison.objects.filter(
-                datetime_lastedit__gte=datetime.today() - timedelta(days=self._days_delta)
+                datetime_lastedit__gte=timezone.now() - timedelta(days=self._days_delta)
             ).count()
 
         statistics = Statistics()
