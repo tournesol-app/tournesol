@@ -1,16 +1,15 @@
 
 from datetime import datetime, timedelta
 
+from core.models import User
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from core.models import User
-from tournesol.tests.factories.video import VideoFactory
 from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.video import VideoFactory
 
-from ..models import Video, Comparison
+from ..models import Comparison, Video
 
 
 class StatisticsAPI(TestCase):
@@ -126,4 +125,3 @@ class StatisticsAPI(TestCase):
         print(self._list_of_comparisons)
         self.assertEqual(comparison_count, len(self._list_of_comparisons))
         self.assertEqual(last_month_comparison_count, 2)
-

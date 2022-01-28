@@ -4,27 +4,20 @@ Serializer used by Tournesol's API
 
 from typing import Optional
 
+from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import BooleanField, RegexField, SerializerMethodField, IntegerField
+from rest_framework.fields import (BooleanField, IntegerField, RegexField,
+                                   SerializerMethodField)
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
-
-from .models import (
-    Comparison,
-    ComparisonCriteriaScore,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    Tag,
-    Video,
-    VideoCriteriaScore,
-    VideoRateLater,
-)
+from .models import (Comparison, ComparisonCriteriaScore, ContributorRating,
+                     ContributorRatingCriteriaScore, Tag, Video,
+                     VideoCriteriaScore, VideoRateLater)
 
 
 class VideoSerializer(ModelSerializer):
@@ -333,4 +326,3 @@ class StatisticsSerializer(Serializer):
     last_month_video_count = IntegerField()
     comparison_count = IntegerField()
     last_month_comparison_count = IntegerField()
-
