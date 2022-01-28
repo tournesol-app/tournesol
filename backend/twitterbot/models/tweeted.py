@@ -3,8 +3,8 @@ Models for Tournesol twitter bot already tweeted videos
 """
 
 from django.db import models
-from tournesol.models import Video
 
+from tournesol.models import Video
 
 BOT_NAME = [
     ("EN", "@TournesolBot"),
@@ -25,7 +25,7 @@ class TweetedVideo(models.Model):
     tweet_id = models.CharField(
         null=False,
         max_length=22,
-        help_text=f"Tweet ID from Twitter URL",
+        help_text="Tweet ID from Twitter URL",
     )
 
     datetime_tweet = models.DateTimeField(
