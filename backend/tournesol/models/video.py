@@ -291,6 +291,21 @@ class Video(models.Model, WithFeatures, WithEmbedding):
             setattr(self, f, metadata[f])
         self.save(update_fields=fields)
 
+    @classmethod
+    def create_from_video_id(cls, video_id):
+        from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
+        try:
+            extra_data = get_video_metadata(video_id)
+        except VideoNotFound:
+            raise
+        tags = extra_data.pop('tags', [])
+        video = cls.objects.create(video_id=video_id, **extra_data)
+        for tag_name in tags:
+            #  The return object is a tuple having first an instance of Tag, and secondly a bool
+            tag, _ = Tag.objects.get_or_create(name=tag_name)
+            video.tags.add(tag)
+        return video
+
 
 class VideoCriteriaScore(models.Model):
     """Scores per criteria for Videos"""

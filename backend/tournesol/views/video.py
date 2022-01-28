@@ -9,7 +9,7 @@ from django.utils import dateparse, timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
@@ -21,7 +21,6 @@ from tournesol.throttling import (
     SustainedAnonRateThrottle,
     SustainedUserRateThrottle,
 )
-from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
 from ..models import Video
 from ..serializers import VideoSerializer, VideoSerializerWithCriteria
@@ -168,11 +167,3 @@ class VideoViewSet(mixins.CreateModelMixin,
         if self.action in ("retrieve", "list"):
             return VideoSerializerWithCriteria
         return VideoSerializer
-
-    def perform_create(self, serializer):
-        video_id = serializer.validated_data["video_id"]
-        try:
-            extra_data = get_video_metadata(video_id)
-        except VideoNotFound:
-            raise NotFound("The video has not been found. `video_id` may be incorrect.")
-        serializer.save(**extra_data)
