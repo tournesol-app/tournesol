@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { FormTextField } from 'src/components';
+import TextField from '@mui/material/TextField';
 import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
 import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/styles';
@@ -119,7 +119,7 @@ const EmailAddressForm = () => {
       <Grid container spacing={2} direction="column" alignItems="stretch">
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
-        <Grid item md={6} style={{ display: isLoading ? 'none' : undefined }}>
+        <Grid item style={{ display: isLoading ? 'none' : undefined }}>
           {profileData && (
             <Box
               marginBottom={2}
@@ -137,13 +137,13 @@ const EmailAddressForm = () => {
             </Box>
           )}
           <form onSubmit={handleSubmit}>
-            <FormTextField
+            <TextField
               required
               fullWidth
               label={t('settings.newEmailAddress')}
               name="email"
               type="email"
-              formError={formError}
+              error={formError}
               style={{ marginBottom: 16 }}
             />
             <Button
