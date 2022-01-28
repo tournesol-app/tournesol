@@ -49,13 +49,19 @@ class StatisticsView(generics.GenericAPIView):
 
     def get(self, request):
         # Query definition
-        user_count = User.objects.all().count()
+        user_count = User.objects.filter(
+            is_active=True
+        ).count()
         last_month_user_count = User.objects.filter(
+                is_active=True,
                 date_joined__gte=timezone.now() - timedelta(days=self._days_delta)
             ).count()
-        video_count = Video.objects.all().count()
+        video_count = Video.objects.filter(
+            rating_n_ratings__gt=0
+        ).count()
         last_month_video_count = Video.objects.filter(
-                publication_date__gte=timezone.now() - timedelta(days=self._days_delta)
+                add_time__gte=timezone.now() - timedelta(days=self._days_delta),
+                rating_n_ratings__gt=0
             ).count()
         comparison_count = Comparison.objects.all().count()
         last_month_comparison_count = Comparison.objects.filter(

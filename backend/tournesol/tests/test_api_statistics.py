@@ -33,20 +33,22 @@ class StatisticsAPI(TestCase):
         self._list_of_users = [user_1, user_2]
 
         video_1 = VideoFactory(
-            publication_date=timezone.now() - timedelta(days=5),
             uploader="uploader1",
-            rating_n_contributors=2,
+            rating_n_ratings=2,
         )
         video_2 = VideoFactory(
-            publication_date=timezone.now() - timedelta(days=30),
             uploader="uploader2",
-            rating_n_contributors=3,
+            rating_n_ratings=3,
         )
         video_3 = VideoFactory(
-            publication_date=timezone.now() - timedelta(days=60),
             uploader="uploader2",
-            rating_n_contributors=4,
+            rating_n_ratings=4,
         )
+        
+        Video.objects.filter(pk=video_1.pk).update(add_time=timezone.now() - timedelta(days=5))
+        Video.objects.filter(pk=video_2.pk).update(add_time=timezone.now() - timedelta(days=29))
+        Video.objects.filter(pk=video_3.pk).update(add_time=timezone.now() - timedelta(days=60))
+
         self._list_of_videos = [video_1, video_2, video_3]
 
         comparison_1 = ComparisonFactory(
