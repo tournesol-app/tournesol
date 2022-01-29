@@ -30,6 +30,37 @@ const convertDurationToClockDuration = (duration) => {
   return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
 };
 
+
+const calculateScore= (video) => {
+  let total_score=0
+  let max_score = -Infinity;
+  let min_score = Infinity;
+  let max_criteria = '';
+  let min_criteria = '';
+  if ('criteria_scores' in video) {
+    video.criteria_scores?.forEach((criteria) => {
+      total_score += criteria.score != undefined ? 10 * criteria.score : 0;
+      if (
+        criteria.score != undefined &&
+        criteria.score > max_score &&
+        criteria.criteria != 'largely_recommended'
+      ) {
+        max_score = criteria.score;
+        max_criteria = criteria.criteria;
+      }
+      if (
+        criteria.score != undefined &&
+        criteria.score < min_score &&
+        criteria.criteria != 'largely_recommended'
+      ) {
+        min_score = criteria.score;
+        min_criteria = criteria.criteria;
+      }
+    });
+  }
+  return total_score
+}
+
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
@@ -182,9 +213,7 @@ const getTournesolComponent = () => {
        video_score.className = 'video_text';
        video_score.append(
          'Rated ' +
-           Number(video.criteria_scores[video.criteria_scores.findIndex(element=>{
-           return  element.criteria==='largely_recommended'? true:false
-           })].score) +
+           calculateScore(video).toFixed(0) +
            ' points by ' +
            video.rating_n_contributors +
            ' contributors',
