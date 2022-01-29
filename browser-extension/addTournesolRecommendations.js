@@ -19,6 +19,17 @@ document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
 else document.addEventListener('DOMContentLoaded', process);
 
+
+const convertDurationToClockDuration = (duration) => {
+  const roundToTwoDigits = (number) => {
+    return number < 10 ? `0${number}` : `${number}`;
+  };
+  const hours = Math.floor(duration / 3600);
+  const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
+  const seconds = roundToTwoDigits(duration % 60);
+  return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
+};
+
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
@@ -143,19 +154,8 @@ const getTournesolComponent = () => {
        video_duration.setAttribute('class', 'time_span');
 
       // Convert SECONDS to hh:mm:ss or mm:ss format depending on the duration
-      if (video.duration<3600) {
-      var formatted_video_duration = new Date(video.duration * 1000).toISOString().substring(14, 19)
-      } else {
-        var formatted_video_duration = new Date(video.duration * 1000).toISOString().substring(11, 19)
-      }
       
-      //var formatted_video_duration = video.duration;
-       
-      // if (formatted_video_duration.startsWith('00:'))
-      //   formatted_video_duration = formatted_video_duration.substring(
-      //     3,
-      //     formatted_video_duration.length,
-      //   );
+        var formatted_video_duration = convertDurationToClockDuration(video.duration);
 
        video_duration.append(document.createTextNode(formatted_video_duration));
        thumb_div.append(video_duration);
@@ -176,16 +176,16 @@ const getTournesolComponent = () => {
       video_uploader.append(video.uploader);
       details_div.append(video_uploader);
 
-       
+
+
        const video_score = document.createElement('p');
        video_score.className = 'video_text';
-       console.log(video)
        video_score.append(
          'Rated ' +
-           Number(video.rating_n_ratings).toFixed(0) +
+           Number(video.criteria_scores[0].score) +
            ' points by ' +
            video.rating_n_contributors +
-           ' users',
+           ' contributors',
        );
        details_div.append(video_score);
 
