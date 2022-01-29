@@ -182,7 +182,9 @@ const getTournesolComponent = () => {
        video_score.className = 'video_text';
        video_score.append(
          'Rated ' +
-           Number(video.criteria_scores[0].score) +
+           Number(video.criteria_scores[video.criteria_scores.findIndex(element=>{
+           return  element.criteria==='largely_recommended'? true:false
+           })].score) +
            ' points by ' +
            video.rating_n_contributors +
            ' contributors',
