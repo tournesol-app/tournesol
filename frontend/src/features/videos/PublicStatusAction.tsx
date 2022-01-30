@@ -40,9 +40,11 @@ export const UserRatingPublicToggle = ({
     <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
       <Typography variant="caption" style={{ fontSize: '11px' }}>
         {nComparisons > 0 ? (
-          <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
-            {{ count: nComparisons }} comparison by you
-          </Trans>
+          <a href={`/comparisons/?video=${videoId}`}>
+            <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
+              {{ count: nComparisons }} comparison by you
+            </Trans>
+          </a>
         ) : (
           t('video.notYetComparedByYou')
         )}
