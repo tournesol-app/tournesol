@@ -41,7 +41,7 @@ See the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
 ### Contributors
 
-The code source of the project exists thanks
+The code source of the project exists thanks to
 [all people who generously took the time to contribute][tournesol-github-contributors].
 
 Thank you very much!
