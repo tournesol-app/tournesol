@@ -20,7 +20,7 @@ See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
 ## Creative Commons Zero v1.0 Universal
 
-![CC0 Universal logo](./docs/logos/cc-zero.png)
+![CC0 Universal logo](https://mirrors.creativecommons.org/presskit/buttons/80x15/png/cc-zero.png)
 
 The following documentations are works dedicated to the public domain, as
 stated by the license Creative Commons Zero v1.0 Universal. 
