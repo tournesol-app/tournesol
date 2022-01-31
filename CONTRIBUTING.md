@@ -1,5 +1,11 @@
 # Contributing to Tournesol
 
+ - [The development process / Asking for review](#the-development-process--asking-for-review)
+ - [Development guidelines](#development-guidelines)
+   - [Back end](#back-end)
+   - [Front end](#front-end)
+ - [Translation](#translation)
+
 ## The development process / Asking for review
 
 You can track progress of the code development in the dedicated
