@@ -28,14 +28,24 @@ See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
 ![CC0 Universal logo](https://mirrors.creativecommons.org/presskit/buttons/80x15/png/cc-zero.png)
 
-The following documentations are works dedicated to the public domain, as
-stated by the license Creative Commons Zero v1.0 Universal. 
+The following works are dedicated to the public domain, as stated by the
+license Creative Commons Zero v1.0 Universal.
 
 - [docs/architecture-decision-log](./docs/architecture-decision-log/LICENSE.md)
 
 
 See the [human-readable disclaimer][cc0-1.0-disclaimer], or the
 [full legal code][cc0-1.0-full-legalcode] for more information.
+
+## Open Data Commons Attribution License (ODC-By) v1.0
+
+The following databases use the Open Data Commons Attribution License (ODC-By)
+v1.0.
+
+- [Tournesol Public Database](https://api.tournesol.app/exports/comparisons/)
+
+See the [human-readable disclaimer][odc-by-1.0-disclaimer], or the
+[full legal code][odc-by-1.0-fulllegalcode] for more information.
 
 [gnu-agpl-3.0]: https://www.gnu.org/licenses/agpl-3.0.en.html
 [gnu-freesoftware]: https://www.gnu.org/philosophy/free-sw.en.html
@@ -44,3 +54,6 @@ See the [human-readable disclaimer][cc0-1.0-disclaimer], or the
 [cc0-1.0-full-legalcode]: https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
 [cc-freeculturalworks]: https://creativecommons.org/share-your-work/public-domain/freeworks/
+
+[odc-by-1.0-disclaimer]: https://opendatacommons.org/licenses/by/summary/
+[odc-by-1.0-fulllegalcode]: https://opendatacommons.org/licenses/by/1-0/
