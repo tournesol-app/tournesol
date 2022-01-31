@@ -13,9 +13,6 @@ const EXT_MODAL_ID = 'x-tournesol-modal';
 const EXT_MODAL_VISIBLE_STATE = 'flex';
 // the value of the CSS property display used to make the modal invisible
 const EXT_MODAL_INVISIBLE_STATE = 'none';
-// CSS selector identifying the element in the YT page the Tournesol modal
-// will wait for before being added to the DOM
-const EXT_MODAL_WAIT_FOR = 'div#info.ytd-watch-flexy';
 
 // unique HTML id of the Tournesol login iframe
 const IFRAME_TOURNESOL_LOGIN_ID = 'x-tournesol-iframe-login';
