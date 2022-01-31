@@ -1,7 +1,13 @@
 # Licenses
 
 In order to share knowledge and creativity efficiently, the Tournesol project
-has chosen to distribute its software under the terms of different licenses.
+has chosen to distribute its software and its other productions under the
+terms of different licenses.
+
+We pledge to respect users freedom by using
+[Free/Libre licenses][gnu-freesoftware] for our software. When using Creative
+Commons licenses, we seek to use licenses
+[approved for Free Cultural Works][cc-freeculturalworks] as much as possible.
 
 ## GNU Affero General Public License v3.0 or later
 
@@ -32,5 +38,9 @@ See the [human-readable disclaimer][cc0-1.0-disclaimer], or the
 [full legal code][cc0-1.0-full-legalcode] for more information.
 
 [gnu-agpl-3.0]: https://www.gnu.org/licenses/agpl-3.0.en.html
+[gnu-freesoftware]: https://www.gnu.org/philosophy/free-sw.en.html
+
 [cc0-1.0-disclaimer]: https://creativecommons.org/publicdomain/zero/1.0/
 [cc0-1.0-full-legalcode]: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+[cc-freeculturalworks]: https://creativecommons.org/share-your-work/public-domain/freeworks/

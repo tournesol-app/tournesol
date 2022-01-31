@@ -33,3 +33,10 @@ See the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
 [tournesol-wiki]: https://wiki.tournesol.app/
 [tournesol-wiki-contribute]: https://wiki.tournesol.app/wiki/Contribute_to_Tournesol
+
+## Licenses
+
+The Tournesol project has chosen to distribute its software and its other
+productions under the terms of different licenses.
+
+See the [LICENSE.md](./LICENSE.md) file for the exhaustive list.
