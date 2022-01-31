@@ -53,9 +53,6 @@ function initTournesolModal() {
    * the Tournesol application site to trigger a token refresh.
    */
   function createTournesolModal() {
-    // don't do anything if the required parent is not available
-    if (!document.querySelector(EXT_MODAL_WAIT_FOR)) return;
-
     // don't do anything if the modal is already in the DOM
     if (document.getElementById(EXT_MODAL_ID)) {
       window.clearInterval(iframeTimer);
