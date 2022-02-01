@@ -1,4 +1,4 @@
-import { VideoService, UsersService, Video } from 'src/services/openapi';
+import { VideoService, UsersService } from 'src/services/openapi';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -13,29 +13,6 @@ export function extractVideoId(idOrUrl: string) {
 
 export function isVideoIdValid(videoId: string) {
   return !!videoId.match(/^[A-Za-z0-9-_]{11}$/);
-}
-
-export async function ensureVideoExistsOrCreate(video_id: string) {
-  // FIXME: should the video be created automatically?
-  // And if so, shouldn't the backend be responsible for it?
-  // It's currently impractical to check if the API error
-  // is blocking or not.
-  // To address in https://github.com/tournesol-app/tournesol/issues/202
-  try {
-    await VideoService.videoCreate({ requestBody: { video_id } as Video });
-  } catch (err) {
-    if (
-      err.status === 400 &&
-      (err.body?.video_id?.[0]?.includes('already exists') ||
-        err.body?.video_id?.[0]?.includes('existe déjà'))
-    ) {
-      console.debug(
-        'Video already exists in the database: API error can be ignored'
-      );
-    } else {
-      throw err;
-    }
-  }
 }
 
 function pick(arr: string[]): string | null {

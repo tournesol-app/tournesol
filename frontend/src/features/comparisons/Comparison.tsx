@@ -6,7 +6,10 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import { Info as InfoIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
-import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
+import type {
+  ComparisonRequest,
+  ComparisonCriteriaScore,
+} from 'src/services/openapi';
 import {
   allCriterias,
   optionalCriterias,
@@ -41,15 +44,15 @@ const ComparisonComponent = ({
   videoB,
   isComparisonPublic,
 }: {
-  submit: (c: Comparison) => Promise<void>;
-  initialComparison: Comparison | null;
+  submit: (c: ComparisonRequest) => Promise<void>;
+  initialComparison: ComparisonRequest | null;
   videoA: string;
   videoB: string;
   isComparisonPublic?: boolean;
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const castToComparison = (c: Comparison | null): Comparison => {
+  const castToComparison = (c: ComparisonRequest | null): ComparisonRequest => {
     return c
       ? c
       : {
@@ -60,7 +63,7 @@ const ComparisonComponent = ({
             .map((criteria) => ({ criteria, score: 0 })),
         };
   };
-  const [comparison, setComparison] = useState<Comparison>(
+  const [comparison, setComparison] = useState<ComparisonRequest>(
     castToComparison(initialComparison)
   );
   const [submitted, setSubmitted] = useState(false);

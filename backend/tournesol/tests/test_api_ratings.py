@@ -53,12 +53,22 @@ class RatingApi(TestCase):
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
 
-    def test_authenticated_cant_create_rating_about_non_existing_video(self):
+    def test_authenticated_can_create_rating_about_non_existing_video(self):
         factory = APIClient()
         factory.force_authenticate(user=self.user1)
         response = factory.post(
             "/users/me/contributor_ratings/",
             {'video_id': 'NeADlWSDFAQ'},
+            format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_authenticated_cant_create_rating_about_invalid_id(self):
+        factory = APIClient()
+        factory.force_authenticate(user=self.user1)
+        response = factory.post(
+            "/users/me/contributor_ratings/",
+            {'video_id': 'invalid'},
             format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -74,7 +84,7 @@ class RatingApi(TestCase):
             },
             format="json"
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(response.data["video"]["video_id"], self.video3.video_id)
         self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
