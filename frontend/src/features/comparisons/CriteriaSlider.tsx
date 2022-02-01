@@ -56,7 +56,7 @@ const CriteriaSlider = ({
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const computeMedian = function computeMedian(
+  const computeMedian = function (
     min: number,
     max: number,
     step: number
