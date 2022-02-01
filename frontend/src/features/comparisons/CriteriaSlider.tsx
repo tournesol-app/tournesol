@@ -10,6 +10,10 @@ import Checkbox from '@mui/material/Checkbox';
 import { getWikiBaseUrl } from 'src/utils/url';
 import { optionalCriterias } from 'src/utils/constants';
 
+const SLIDER_MIN_STEP = -10;
+const SLIDER_MAX_STEP = 10;
+const SLIDER_STEP = 1;
+
 const useStyles = makeStyles(() => ({
   criteriaContainer: {
     display: 'flex',
@@ -51,6 +55,20 @@ const CriteriaSlider = ({
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+
+  const computeMedian = function computeMedian(
+    min: number,
+    max: number,
+    step: number
+  ): number {
+    return (max - min) / (2 * step);
+  };
+
+  const neutralPos = computeMedian(
+    SLIDER_MIN_STEP,
+    SLIDER_MAX_STEP,
+    SLIDER_STEP
+  );
 
   return (
     <div
@@ -102,12 +120,17 @@ const CriteriaSlider = ({
       </div>
       <div className={classes.sliderContainer}>
         <Slider
+          sx={{
+            [`& span[data-index="${neutralPos}"].MuiSlider-mark`]: {
+              height: '12px',
+            },
+          }}
           id={`slider_expert_${criteria}`}
           aria-label="custom thumb label"
           color="secondary"
-          min={-10}
-          step={1}
-          max={10}
+          min={SLIDER_MIN_STEP}
+          max={SLIDER_MAX_STEP}
+          step={SLIDER_STEP}
           marks
           value={criteriaValue || 0}
           className={classes.slider}
