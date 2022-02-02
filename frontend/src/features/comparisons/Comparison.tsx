@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme: Theme) => ({
  *
  * Containing two video selectors and the criteria sliders. Note that it
  * currently uses the `useLocation` hook to update the URL parameters when
- * a video ID is changed. Adding this component into a page will also these
- * new video ID in the URL parameters.
+ * a video ID is changed. Adding this component into a page will also add
+ * these new video ID in the URL parameters.
  */
 const Comparison = () => {
   const classes = useStyles();
