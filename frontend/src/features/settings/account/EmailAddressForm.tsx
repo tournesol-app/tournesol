@@ -143,7 +143,7 @@ const EmailAddressForm = () => {
               label={t('settings.newEmailAddress')}
               name="email"
               type="email"
-              error={formError}
+              formError={formError}
               style={{ marginBottom: 16 }}
             />
             <Button

@@ -92,8 +92,8 @@ const PasswordForm = () => {
             label={t('settings.confirmNewPassword')}
             name="password_confirm"
             color="secondary"
-            type="password"
             size="small"
+            type="password"
             variant="outlined"
             value={passwordConfirm}
             helperText={
