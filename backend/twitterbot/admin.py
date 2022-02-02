@@ -5,15 +5,18 @@ Defines Tournesol twitter bot backend admin interface
 from django.contrib import admin
 from django.utils.html import format_html
 
-from twitterbot.models.tweeted import TweetedVideo
+from .models.tweeted import TweetedVideo
 
 
 @admin.register(TweetedVideo)
 class TwitterBotAdmin(admin.ModelAdmin):
     """Twitter Bot Admin class"""
 
+    raw_id_fields = ("video",)
+    readonly_fields = ("datetime_tweet",)
+
     list_display = (
-        "get_video_id",
+        "video",
         "get_video_name",
         "get_video_uploader",
         "tweet_id",
@@ -24,29 +27,25 @@ class TwitterBotAdmin(admin.ModelAdmin):
     search_fields = ("get_video_name", "get_video_uploader")
     list_filter = ["bot_name"]
 
-    # pylint: disable=R0201
-    @admin.display(ordering="video__id", description="Video ID")
-    def get_video_id(self, obj):
-        """Returns video ID"""
-
-        return obj.video.video_id
-
+    @staticmethod
     @admin.display(ordering="video__name", description="Video name")
-    def get_video_name(self, obj):
+    def get_video_name(obj):
         """Returns video name"""
 
         return obj.video.name
 
+    @staticmethod
     @admin.display(ordering="video__uploader", description="Video uploader")
-    def get_video_uploader(self, obj):
+    def get_video_uploader(obj):
         """Returns video uploader"""
 
         return obj.video.uploader
 
+    @staticmethod
     @admin.display(
         ordering="video__link_to_youtube", description="Video link to Youtube"
     )
-    def get_video_link(self, obj):
+    def get_video_link(obj):
         """Returns video link to Youtube"""
 
         return format_html(
