@@ -2,13 +2,21 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import ReplayIcon from '@mui/icons-material/Replay';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import { AutoFixHigh as MagicWandIcon } from '@mui/icons-material';
+import {
+  IconButton,
+  TextField,
+  Tooltip,
+  Box,
+  Typography,
+  Autocomplete,
+} from '@mui/material';
 
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
-import VideoCard, { EmptyVideoCard } from 'src/features/videos/VideoCard';
+import VideoCard, {
+  EmptyVideoCard,
+  VideoCardFromId,
+} from 'src/features/videos/VideoCard';
 
 import { ActionList } from 'src/utils/types';
 import {
@@ -40,6 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+  title: string;
   value: VideoSelectorValue;
   onChange: (newValue: VideoSelectorValue) => void;
   otherVideo: string | null;
@@ -52,6 +61,7 @@ export interface VideoSelectorValue {
 }
 
 const VideoSelector = ({
+  title,
   value,
   onChange,
   otherVideo,
@@ -167,28 +177,52 @@ const VideoSelector = ({
 
   return (
     <div className={classes.root}>
-      <div className={classes.controls}>
-        <TextField
-          InputProps={{ classes: { input: classes.input } }}
-          placeholder={t('videoSelector.pasteUrlOrVideoId')}
-          sx={{ flex: 1 }}
-          value={videoId || ''}
-          onChange={handleChange}
-          variant="standard"
-        />
+      <Box m={0.5} display="flex" flexDirection="row" alignItems="center">
+        <Typography variant="h5" color="text.secondary" flexGrow={1}>
+          {title}
+        </Typography>
         <Tooltip
           title={`${t('videoSelector.newVideo')}`}
           aria-label="new_video"
         >
-          <IconButton
-            aria-label="new_video"
-            data-testid="new-video"
-            onClick={loadNewVideo}
-            size="large"
-          >
-            <ReplayIcon />
+          <IconButton aria-label="new_video" onClick={loadNewVideo}>
+            <MagicWandIcon />
           </IconButton>
         </Tooltip>
+      </Box>
+      <div className={classes.controls}>
+        <Autocomplete
+          freeSolo
+          openOnFocus
+          isOptionEqualToValue={(option, value) =>
+            option.videoId === value.videoId
+          }
+          filterOptions={(x) => x}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              InputProps={{ classes: { input: classes.input } }}
+              placeholder={t('videoSelector.pasteUrlOrVideoId')}
+              style={{ flex: 1 }}
+              // value={videoId || ''}
+              onChange={handleChange}
+              variant="standard"
+            />
+          )}
+          getOptionLabel={(option) => option.videoId}
+          options={[
+            {
+              videoId: 'abcde',
+            },
+            { videoId: '1223' },
+          ]}
+          renderOption={(props, option) => (
+            <li {...props}>
+              {videoId}
+              {/* <VideoCardFromId videoId={option.videoId} /> */}
+            </li>
+          )}
+        />
       </div>
       {rating ? (
         <VideoCard
