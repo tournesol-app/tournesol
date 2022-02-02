@@ -7,8 +7,8 @@ from django.db import models
 from tournesol.models import Video
 
 BOT_NAME = [
-    ("EN", "@TournesolBot"),
-    ("FR", "@TournesolBotFR"),
+    ("@TournesolBot", "@TournesolBot"),
+    ("@TournesolBotFR", "@TournesolBotFR"),
 ]
 
 
@@ -38,7 +38,7 @@ class TweetedVideo(models.Model):
     bot_name = models.CharField(
         null=True,
         blank=True,
-        max_length=10,
+        max_length=200,
         help_text="Name of the twitter bot",
         choices=BOT_NAME,
     )
