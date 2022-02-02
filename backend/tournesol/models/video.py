@@ -115,6 +115,9 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         help_text="Total number of certified contributors who rated the video",
     )
 
+    # TODO : Delete this bind, this is a test to bind to a non model field
+    total_score = 0;
+
     def update_n_ratings(self):
         self.rating_n_ratings = Comparison.objects.filter(
             Q(video_1=self) | Q(video_2=self)
@@ -431,3 +434,11 @@ class VideoSelectorSkips(models.Model):
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"
+
+
+class VideoSafe():
+    is_safe = False
+    cause = ""
+
+    def __str__(self):
+        return f"{self.is_safe}:{self.cause}"

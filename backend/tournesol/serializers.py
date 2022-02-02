@@ -44,6 +44,7 @@ class VideoSerializer(ModelSerializer):
             "rating_n_ratings",
             "rating_n_contributors",
             "duration",
+            "total_score"
         ]
         read_only_fields = [
             "name",
@@ -54,7 +55,7 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
-            "duration",
+            "duration"
         ]
 
     def create(self, validated_data):

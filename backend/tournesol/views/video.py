@@ -55,6 +55,11 @@ from ..serializers import VideoSerializer, VideoSerializerWithCriteria
                 "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
                 "or legacy: `dd-mm-yy-hh-mm-ss`."
             ),
+            OpenApiParameter(
+                "unsafe",
+                OpenApiTypes.BOOL,
+                description="Return videos mark as unsafe"
+            ),
             *[
                 OpenApiParameter(
                     crit,
@@ -154,13 +159,18 @@ class VideoViewSet(mixins.CreateModelMixin,
             for crit in settings.CRITERIAS
         ]
         criteria_weight = Case(*criteria_cases, default=0)
-        queryset = (
-            queryset.annotate(
-                total_score=Sum(F("criteria_scores__score") * criteria_weight)
-            )
-            .filter(total_score__gt=0)
-            .order_by("-total_score")
-        )
+
+        unsafe = request.query_params.get('unsafe')
+        show_unsafe = False
+        if unsafe:
+            show_unsafe = unsafe
+        
+        queryset = queryset.annotate(total_score=Sum(F("criteria_scores__score") * criteria_weight))
+
+        if show_unsafe == True:
+            queryset = queryset.order_by("-total_score");
+        else:
+            queryset = queryset.filter(total_score__gt=0).order_by("-total_score");
         return queryset.prefetch_related("criteria_scores")
 
     def get_serializer_class(self):
