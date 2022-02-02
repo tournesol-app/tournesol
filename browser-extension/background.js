@@ -1,5 +1,6 @@
 import {
   addRateLater,
+  alertOnCurrentTab,
   alertUseOnLinkToYoutube,
   fetchTournesolApi,
   getAccessToken,
@@ -14,23 +15,41 @@ const oversamplingRatioForOldVideos = 50;
 const recentVideoProportion = 0.75;
 const recentVideoProportionForAdditionalVideos = 0.5;
 
-
-chrome.contextMenus.removeAll(function (e, tab) {
-  chrome.contextMenus.create({
-    id: 'tournesol_add_rate_later',
-    title: 'Rate later on Tournesol',
-    contexts: ['link'],
+/**
+ * Build the extension context menu.
+ *
+ * TODO: could be moved in its own `contextMenus` folder, imported and
+ *       executed here. Investigate if it's possible.
+ */
+const createContextMenu = function createContextMenu() {
+  chrome.contextMenus.removeAll(function() {
+    chrome.contextMenus.create({
+      id: 'tournesol_add_rate_later',
+      title: 'Rate later on Tournesol',
+      contexts: ['link'],
+    });
   });
-});
 
-chrome.contextMenus.onClicked.addListener(function (e, tab) {
-  var videoId = new URL(e.linkUrl).searchParams.get('v');
-  if (!videoId) {
-    alertUseOnLinkToYoutube()
-  } else {
-    addRateLater(videoId)
-  }
-});
+  chrome.contextMenus.onClicked.addListener(function (e, tab) {
+    var videoId = new URL(e.linkUrl).searchParams.get('v');
+    if (!videoId) {
+      alertUseOnLinkToYoutube()
+    } else {
+      addRateLater(videoId).then((response) => {
+        if (!response.success) {
+          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function (response) {
+              if (!response.success) {
+                alertOnCurrentTab('Sorry, an error occured while opening the Tournesol login form.');
+              }
+            });
+          });
+        }
+      });
+    }
+  });
+}
+createContextMenu();
 
 /**
  * Remove the X-FRAME-OPTIONS and FRAME-OPTIONS headers included in the
@@ -86,9 +105,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // the access token has been refreshed.
   if (request.message === "accessTokenRefreshed") {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {message: "hideExtensionModal"});
+      chrome.tabs.sendMessage(tabs[0].id, {message: "hideModal"});
     });
 
+    return true;
+  }
+
+  // Forward the need to the proper content script.
+  if (request.message === "displayModal") {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function (response) {
+        sendResponse(response);
+      });
+    });
     return true;
   }
 

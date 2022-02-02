@@ -157,6 +157,8 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(
             reverse("tournesol:comparisons_me_list"), data, format="json",
         )
+        # check the authorization
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
 
         comparison = Comparison.objects.select_related("user", "video_1", "video_2").get(
             user=user,
@@ -164,9 +166,6 @@ class ComparisonApiTestCase(TestCase):
             video_2__video_id=data["video_b"]["video_id"],
         )
         comparisons_nbr = Comparison.objects.filter(user=user).count()
-
-        # check the authorization
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # check the database integrity
         self.assertEqual(comparisons_nbr,

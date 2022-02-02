@@ -127,7 +127,25 @@ class VideoRateLaterApi(TestCase):
             data,
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+
+    def test_authenticated_can_create_with_new_video_id(self):
+        """
+        An authenticated user can add in its own rate later list a video
+        that does not exist yet in the database.
+        """
+        client = APIClient()
+
+        user = User.objects.get(username=self._user)
+        data = {"video": {"video_id": "newvideo001"}}
+
+        client.force_authenticate(user=user)
+        response = client.post(
+            "/users/me/video_rate_later/",
+            data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_authenticated_cant_create_twice(self):
         """

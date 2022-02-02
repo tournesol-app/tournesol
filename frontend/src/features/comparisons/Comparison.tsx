@@ -1,203 +1,200 @@
-import React, { useState, useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import { Box, Button, Collapse, Typography } from '@mui/material';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import { Info as InfoIcon } from '@mui/icons-material';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import type { Comparison, ComparisonCriteriaScore } from 'src/services/openapi';
+import makeStyles from '@mui/styles/makeStyles';
 import {
-  allCriterias,
-  optionalCriterias,
-  getCriteriaName,
-} from 'src/utils/constants';
+  CircularProgress,
+  Grid,
+  Typography,
+  Card,
+  Box,
+  Theme,
+} from '@mui/material';
 
-import CriteriaSlider from './CriteriaSlider';
+import { useNotifications } from 'src/hooks';
+import { UsersService, ComparisonRequest } from 'src/services/openapi';
+import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
+import VideoSelector, {
+  VideoSelectorValue,
+} from 'src/features/video_selector/VideoSelector';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    width: '100%',
+const useStyles = makeStyles((theme: Theme) => ({
+  centering: {
     display: 'flex',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  centered: {
-    paddingBottom: '32px',
-    width: '880px',
-    flex: '0 0 auto',
-    maxWidth: '100%',
-
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
+    flexDirection: 'column',
+    paddingTop: 16,
+  },
+  content: {
+    maxWidth: '880px',
+    gap: '8px',
+  },
+  card: {
+    alignSelf: 'start',
+  },
+  cardTitle: {
+    color: theme.palette.text.secondary,
   },
 }));
 
-const ComparisonComponent = ({
-  submit,
-  initialComparison,
-  videoA,
-  videoB,
-  isComparisonPublic,
-}: {
-  submit: (c: Comparison) => Promise<void>;
-  initialComparison: Comparison | null;
-  videoA: string;
-  videoB: string;
-  isComparisonPublic?: boolean;
-}) => {
-  const { t } = useTranslation();
+/**
+ * The comparison UI.
+ *
+ * Containing two video selectors and the criteria sliders. Note that it
+ * currently uses the `useLocation` hook to update the URL parameters when
+ * a video ID is changed. Adding this component into a page will also add
+ * these new video ID in the URL parameters.
+ */
+const Comparison = () => {
   const classes = useStyles();
-  const castToComparison = (c: Comparison | null): Comparison => {
-    return c
-      ? c
-      : {
-          video_a: { video_id: videoA },
-          video_b: { video_id: videoB },
-          criteria_scores: allCriterias
-            .filter((c) => !optionalCriterias[c])
-            .map((criteria) => ({ criteria, score: 0 })),
-        };
-  };
-  const [comparison, setComparison] = useState<Comparison>(
-    castToComparison(initialComparison)
-  );
-  const [submitted, setSubmitted] = useState(false);
 
-  type criteriaValuesType = { [s: string]: number | undefined };
-  const criteriaValues: criteriaValuesType = {};
-  comparison.criteria_scores.forEach((cs: ComparisonCriteriaScore) => {
-    criteriaValues[cs.criteria] = cs.score || 0;
+  const { t } = useTranslation();
+  const history = useHistory();
+  const location = useLocation();
+  const { showSuccessAlert } = useNotifications();
+
+  const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialComparison, setInitialComparison] =
+    useState<ComparisonRequest | null>(null);
+
+  const searchParams = new URLSearchParams(location.search);
+  const videoA: string = searchParams.get('videoA') || '';
+  const videoB: string = searchParams.get('videoB') || '';
+
+  const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
+    videoId: videoA,
+    rating: null,
+  });
+  const [selectorB, setSelectorB] = useState<VideoSelectorValue>({
+    videoId: videoB,
+    rating: null,
   });
 
-  useEffect(
-    () => setComparison(castToComparison(initialComparison)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [initialComparison]
+  const onChange = useCallback(
+    (videoKey: string) => (newValue: VideoSelectorValue) => {
+      const searchParams = new URLSearchParams(location.search);
+      const videoId = newValue.videoId;
+      if (searchParams.get(videoKey) !== videoId) {
+        searchParams.delete(videoKey);
+        if (videoId) {
+          searchParams.append(videoKey, videoId);
+        }
+        history.push('?' + searchParams.toString());
+      }
+      if (videoKey === 'videoA') {
+        setSelectorA(newValue);
+      } else if (videoKey === 'videoB') {
+        setSelectorB(newValue);
+      }
+      setSubmitted(false);
+    },
+    [history, location.search]
   );
+  const onChangeA = useMemo(() => onChange('videoA'), [onChange]);
+  const onChangeB = useMemo(() => onChange('videoB'), [onChange]);
 
-  const submitComparison = async () => {
-    await submit(comparison);
-    setSubmitted(true);
-  };
-
-  const handleSliderChange = (criteria: string, score: number | undefined) => {
-    const cs = comparison.criteria_scores.find((c) => c.criteria === criteria);
-    if (score === undefined) {
-      comparison.criteria_scores = comparison.criteria_scores.filter(
-        (c) => c.criteria !== criteria
-      );
-    } else if (cs) {
-      if (cs.score == score) return;
-      cs.score = score;
-    } else {
-      comparison.criteria_scores.push({ criteria, score, weight: 1 });
+  useEffect(() => {
+    setIsLoading(true);
+    setInitialComparison(null);
+    if (selectorA.videoId !== videoA) {
+      setSelectorA({ videoId: videoA, rating: null });
     }
-    setComparison({ ...comparison }); // this is only here to refresh the state
+    if (selectorB.videoId !== videoB) {
+      setSelectorB({ videoId: videoB, rating: null });
+    }
+    if (videoA && videoB)
+      UsersService.usersMeComparisonsRetrieve({
+        videoIdA: videoA,
+        videoIdB: videoB,
+      })
+        .then((comparison) => {
+          setInitialComparison(comparison);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setInitialComparison(null);
+          setIsLoading(false);
+        });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoA, videoB]);
+
+  const onSubmitComparison = async (c: ComparisonRequest) => {
+    if (initialComparison) {
+      const { video_a, video_b, criteria_scores, duration_ms } = c;
+      await UsersService.usersMeComparisonsUpdate({
+        videoIdA: video_a.video_id,
+        videoIdB: video_b.video_id,
+        requestBody: { criteria_scores, duration_ms },
+      });
+    } else {
+      await UsersService.usersMeComparisonsCreate({ requestBody: c });
+      setInitialComparison(c);
+      // Refresh ratings statistics after the comparisons have been submitted
+      setSubmitted(true);
+    }
+    showSuccessAlert(t('comparison.successfullySubmitted'));
   };
-
-  const showOptionalCriterias = comparison.criteria_scores.some(
-    ({ criteria }) => optionalCriterias[criteria]
-  );
-
-  const handleCollapseCriterias = () => {
-    const optionalCriteriasKeys = allCriterias.filter(
-      (criteria) => optionalCriterias[criteria]
-    );
-    optionalCriteriasKeys.forEach((criteria) =>
-      handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
-    );
-  };
-
-  if (videoA == videoB) {
-    return (
-      <div className={classes.root}>
-        <Typography paragraph style={{ textAlign: 'center' }}>
-          {t('comparison.videosAreSimilar')}
-          {' 🌻'}
-        </Typography>
-      </div>
-    );
-  }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.centered}>
-        {allCriterias
-          .filter((c) => !optionalCriterias[c])
-          .map((criteria) => (
-            <CriteriaSlider
-              key={criteria}
-              criteria={criteria}
-              criteria_name={getCriteriaName(t, criteria)}
-              criteriaValue={criteriaValues[criteria]}
-              disabled={submitted}
-              handleSliderChange={handleSliderChange}
+    <Grid container className={classes.content}>
+      <Grid item xs component={Card} className={classes.card}>
+        <Box m={0.5}>
+          <Typography variant="h5" className={classes.cardTitle}>
+            Video 1
+          </Typography>
+        </Box>
+        <VideoSelector
+          value={selectorA}
+          onChange={onChangeA}
+          otherVideo={videoB}
+          submitted={submitted}
+        />
+      </Grid>
+      <Grid item xs component={Card} className={classes.card}>
+        <Box m={0.5}>
+          <Typography variant="h5" className={classes.cardTitle}>
+            Video 2
+          </Typography>
+        </Box>
+        <VideoSelector
+          value={selectorB}
+          onChange={onChangeB}
+          otherVideo={videoA}
+          submitted={submitted}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        className={classes.centering}
+        style={{ marginTop: '16px' }}
+      >
+        {selectorA.rating && selectorB.rating ? (
+          isLoading ? (
+            <CircularProgress />
+          ) : (
+            <ComparisonSliders
+              submit={onSubmitComparison}
+              initialComparison={initialComparison}
+              videoA={videoA}
+              videoB={videoB}
+              isComparisonPublic={
+                selectorA.rating.is_public && selectorB.rating.is_public
+              }
             />
-          ))}
-        <Button
-          onClick={handleCollapseCriterias}
-          startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
-          size="small"
-          color="secondary"
-          style={{ marginBottom: 8, color: showOptionalCriterias ? 'red' : '' }}
-        >
-          {showOptionalCriterias
-            ? t('comparison.removeOptionalCriterias')
-            : t('comparison.addOptionalCriterias')}
-        </Button>
-        <Collapse
-          in={showOptionalCriterias}
-          timeout="auto"
-          style={{ width: '100%' }}
-        >
-          {allCriterias
-            .filter((c) => optionalCriterias[c])
-            .map((criteria) => (
-              <CriteriaSlider
-                key={criteria}
-                criteria={criteria}
-                criteria_name={getCriteriaName(t, criteria)}
-                criteriaValue={criteriaValues[criteria]}
-                disabled={submitted}
-                handleSliderChange={handleSliderChange}
-              />
-            ))}
-        </Collapse>
-        {submitted && (
-          <div id="id_submitted_text_info">
-            <Typography>{t('comparison.changeOneVideo')}</Typography>
-          </div>
+          )
+        ) : (
+          <Typography paragraph>
+            {t('comparison.pleaseSelectTwoVideos')}
+          </Typography>
         )}
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          id="expert_submit_btn"
-          onClick={submitted ? () => setSubmitted(false) : submitComparison}
-        >
-          {submitted ? t('comparison.editComparison') : t('submit')}
-        </Button>
-        {isComparisonPublic && (
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="8px"
-            m={2}
-            color="text.hint"
-          >
-            <InfoIcon fontSize="small" color="inherit" />
-            <Typography variant="caption" color="textSecondary">
-              {initialComparison
-                ? t('comparison.comparisonInPublicDataset')
-                : t('comparison.comparisonInPublicDatasetAfterSubmission')}
-            </Typography>
-          </Box>
-        )}
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   );
 };
 
-export default ComparisonComponent;
+export default Comparison;

@@ -99,24 +99,7 @@ function addRateLaterButton() {
         );
 
       }).catch((reason) => {
-        const iframe = document.getElementById(IFRAME_TOURNESOL_LOGIN_ID);
-
-        const displayModal = function displayModal() {
-          const modal = document.getElementById(EXT_MODAL_ID);
-          modal.style.display = EXT_MODAL_VISIBLE_STATE;
-          iframe.removeEventListener('load', displayModal);
-        }
-
-        // prevent visual blink while refreshing the iframe
-        iframe.addEventListener('load', displayModal);
-
-        // This manual iframe refresh allows to trigger an access token
-        // refresh (see the content scripts configuration in manifest.json).
-        // This operation is mandatory here as it allows to dismiss any
-        // outdated token in the chrome.storage.local. Using the iframe
-        // without discarding a local outdated token, will erroneously display
-        // the Tournesol home page, instead of the login form.
-        iframe.src = iframe.src;
+        chrome.runtime.sendMessage({message: "displayModal"});
       });
     }
 
