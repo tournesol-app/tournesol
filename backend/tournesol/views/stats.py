@@ -35,7 +35,7 @@ class Statistics:
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve statistics"
+        description="Retrieve statistics."
     )
 )
 class StatisticsView(generics.GenericAPIView):

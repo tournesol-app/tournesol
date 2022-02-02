@@ -1,4 +1,3 @@
-
 from datetime import timedelta
 
 from django.test import TestCase
@@ -69,11 +68,10 @@ class StatisticsAPI(TestCase):
         Comparison.objects.filter(pk=comparison_3.pk).update(datetime_lastedit=timezone.now() - timedelta(days=60))
             
         self._list_of_comparisons = [comparison_1, comparison_2, comparison_3]
-       
 
-    def test_video_count_is_right(self):
+    def test_video_stats(self):
         """
-        Test if the number of video is right
+        An anonymous user can get statistics about videos.
         """
 
         client = APIClient()
@@ -91,9 +89,9 @@ class StatisticsAPI(TestCase):
         self.assertEqual(video_count, len(self._list_of_videos))
         self.assertEqual(last_month_video_count, 2)
 
-    def test_user_count_is_right(self):
+    def test_user_stats(self):
         """
-        Test if the number of user is right
+        An anonymous user can get statistics about users.
         """
 
         client = APIClient()
@@ -111,9 +109,9 @@ class StatisticsAPI(TestCase):
         self.assertEqual(user_count, len(self._list_of_users))
         self.assertEqual(last_month_user_count, 1)
 
-    def test_video_comparison_is_right(self):
+    def test_comparison_stats(self):
         """
-        Test if the number of comparison is right
+        An anonymous user can get statistics about comparisons.
         """
 
         client = APIClient()
