@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
-import TextField from '@mui/material/TextField';
+import { FormTextField } from 'src/components';
 import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
 import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/styles';
@@ -137,7 +137,7 @@ const EmailAddressForm = () => {
             </Box>
           )}
           <form onSubmit={handleSubmit}>
-            <TextField
+            <FormTextField
               required
               fullWidth
               label={t('settings.newEmailAddress')}

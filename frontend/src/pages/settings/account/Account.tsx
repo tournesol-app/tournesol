@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 export const AccountPage = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const breakP = { xs: 12, sm: 12, md: 9, lg: 9, xl: 10 };
   return (
     <>
       <ContentHeader
@@ -33,42 +34,20 @@ export const AccountPage = () => {
             item
             direction="column"
             alignItems="stretch"
-            xs={12}
-            sm={12}
-            md={9}
-            lg={9}
-            xl={10}
             spacing={3}
+            {...breakP}
           >
             <SettingsSection
               title={t('settings.changeEmailAddress')}
-              xs={12}
-              sm={12}
-              md={9}
-              lg={9}
-              xl={10}
+              {...breakP}
             >
               <EmailAddressForm />
             </SettingsSection>
-            <SettingsSection
-              title={t('settings.changePassword')}
-              xs={12}
-              sm={12}
-              md={9}
-              lg={9}
-              xl={10}
-            >
+            <SettingsSection title={t('settings.changePassword')} {...breakP}>
               <PasswordForm />
             </SettingsSection>
             <Box marginTop={8} />
-            <SettingsSection
-              title={t('settings.exportAllData')}
-              xs={12}
-              sm={12}
-              md={9}
-              lg={9}
-              xl={10}
-            >
+            <SettingsSection title={t('settings.exportAllData')} {...breakP}>
               <ExportAllDataForm />
             </SettingsSection>
             <SettingsSection
@@ -77,11 +56,7 @@ export const AccountPage = () => {
                   {t('settings.deleteAccount')}
                 </Typography>
               }
-              xs={12}
-              sm={12}
-              md={9}
-              lg={9}
-              xl={10}
+              {...breakP}
             >
               <DeleteAccountForm />
             </SettingsSection>
