@@ -24,7 +24,7 @@ class TwitterBotAdmin(admin.ModelAdmin):
         "bot_name",
         "get_video_link",
     )
-    search_fields = ("get_video_name", "get_video_uploader")
+    search_fields = ("video__video_id", "video__name", "video__uploader")
     list_filter = ["bot_name"]
 
     @staticmethod
