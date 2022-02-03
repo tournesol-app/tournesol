@@ -1,5 +1,5 @@
 """
-Entity and closed related models.
+Entity and closely related models.
 """
 
 import logging
@@ -44,13 +44,11 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
         unique=True,
         max_length=144,
         help_text="A unique identifier, build with a namespace and an external id.",
-        null=True
     )
 
     type = models.CharField(
         max_length=32,
         choices=ENTITY_TYPE,
-        null=True
     )
 
     metadata = models.JSONField(
