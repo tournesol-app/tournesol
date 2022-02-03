@@ -11,10 +11,7 @@ export const getTokenAsync = createAsyncThunk(
   'login/fetchToken',
   async ({ username, password }: { username: string; password: string }) => {
     const response = await fetchToken({ username, password });
-    return {
-      username: username,
-      ...(await response.data),
-    };
+    return response.data;
   }
 );
 

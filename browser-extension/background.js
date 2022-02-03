@@ -1,4 +1,11 @@
-import {fetchTournesolApi, getRandomSubarray, addRateLater, alertUseOnLinkToYoutube} from  './utils.js'
+import {
+  addRateLater,
+  alertOnCurrentTab,
+  alertUseOnLinkToYoutube,
+  fetchTournesolApi,
+  getAccessToken,
+  getRandomSubarray
+} from './utils.js'
 
 const oversamplingRatioForRecentVideos = 3;
 const oversamplingRatioForOldVideos = 50;
@@ -8,23 +15,66 @@ const oversamplingRatioForOldVideos = 50;
 const recentVideoProportion = 0.75;
 const recentVideoProportionForAdditionalVideos = 0.5;
 
-
-chrome.contextMenus.removeAll(function (e, tab) {
-  chrome.contextMenus.create({
-    id: 'tournesol_add_rate_later',
-    title: 'Rate later on Tournesol',
-    contexts: ['link'],
+/**
+ * Build the extension context menu.
+ *
+ * TODO: could be moved in its own `contextMenus` folder, imported and
+ *       executed here. Investigate if it's possible.
+ */
+const createContextMenu = function createContextMenu() {
+  chrome.contextMenus.removeAll(function() {
+    chrome.contextMenus.create({
+      id: 'tournesol_add_rate_later',
+      title: 'Rate later on Tournesol',
+      contexts: ['link'],
+    });
   });
-});
 
-chrome.contextMenus.onClicked.addListener(function (e, tab) {
-  var videoId = new URL(e.linkUrl).searchParams.get('v');
-  if (!videoId) {
-    alertUseOnLinkToYoutube()
-  } else {
-    addRateLater(videoId)
-  }
-});
+  chrome.contextMenus.onClicked.addListener(function (e, tab) {
+    var videoId = new URL(e.linkUrl).searchParams.get('v');
+    if (!videoId) {
+      alertUseOnLinkToYoutube()
+    } else {
+      addRateLater(videoId).then((response) => {
+        if (!response.success) {
+          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function (response) {
+              if (!response.success) {
+                alertOnCurrentTab('Sorry, an error occured while opening the Tournesol login form.');
+              }
+            });
+          });
+        }
+      });
+    }
+  });
+}
+createContextMenu();
+
+/**
+ * Remove the X-FRAME-OPTIONS and FRAME-OPTIONS headers included in the
+ * Tournesol application HTTP answers. It allows the extension to display
+ * the application in an iframe without enabling all website to do the same.
+ */
+chrome.webRequest.onHeadersReceived.addListener(
+  function(info) {
+    const headers = info.responseHeaders.filter(
+      h => !['x-frame-options', 'frame-options'].includes(h.name.toLowerCase())
+    )
+    return { responseHeaders: headers };
+  }, {
+    urls: [
+      'https://tournesol.app/*',
+    ],
+    types: [ 'sub_frame' ]
+  }, [
+    'blocking',
+    'responseHeaders',
+    // Modern Chrome needs 'extraHeaders' to see and change this header,
+    // so the following code evaluates to 'extraHeaders' only in modern Chrome.
+    chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
+  ].filter(Boolean)
+);
 
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
@@ -42,6 +92,35 @@ function getDateThreeWeeksAgo() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+  // Return the current access token in the chrome.storage.local.
+  if (request.message === "extAccessTokenNeeded") {
+    getAccessToken().then(
+      (token) => sendResponse({access_token: token})
+    );
+    return true;
+  }
+
+  // Automatically hide the extension modal containing the login iframe after
+  // the access token has been refreshed.
+  if (request.message === "accessTokenRefreshed") {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "hideModal"});
+    });
+
+    return true;
+  }
+
+  // Forward the need to the proper content script.
+  if (request.message === "displayModal") {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "displayModal"}, function (response) {
+        sendResponse(response);
+      });
+    });
+    return true;
+  }
+
   if (request.message == "addRateLater") {
     addRateLater(request.video_id).then(sendResponse);
     return true;

@@ -1,8 +1,18 @@
 {
   "name": "Tournesol Extension",
-  "version": "2.0.5",
+  "version": "2.1.1",
   "description": "Open Tournesol directly from Youtube",
-  "permissions": ["storage", "https://tournesol.app/", "https://api.tournesol.app/", "https://www.youtube.com/", "contextMenus", "activeTab", "webNavigation"],
+  "permissions": [
+    "https://tournesol.app/",
+    "https://api.tournesol.app/",
+    "https://www.youtube.com/",
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "webNavigation",
+    "webRequest",
+    "webRequestBlocking"
+  ],
   "manifest_version": 2,
   "icons": {
     "64": "Logo64.png",
@@ -19,7 +29,7 @@
       "64": "Logo64.png"
     },
     "default_title": "Tournesol actions",
-    "default_popup": "menu.html"  
+    "default_popup": "browserAction/menu.html"
   },
   "content_scripts": [
     
@@ -32,19 +42,30 @@
     },
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["addVideoStatistics.js", "addRateLaterButton.js"],
-      "css": ["addVideoStatistics.css", "addRateLaterButton.css"],
+      "js": [
+        "config/const.js",
+        "addVideoStatistics.js",
+        "addModal.js",
+        "addRateLaterButton.js"
+      ],
+      "css": [
+        "addVideoStatistics.css",
+        "addModal.css",
+        "addRateLaterButton.css"
+      ],
       "run_at": "document_end",
       "all_frames": true
     },
     {
       "matches": ["https://tournesol.app/*"],
       "js": ["fetchTournesolToken.js"],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": true
     }
   ],
   "web_accessible_resources": [
-	  "Logo128.png",
+	"Logo128.png",
+    "html/*",
     "images/*"
   ]
 }

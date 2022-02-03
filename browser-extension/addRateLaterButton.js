@@ -1,25 +1,37 @@
-// Youtube doesnt completely load a video page, so content script doesn't lauch correctly without these events
+/**
+ * Create the Rate Later button.
+ *
+ * This content script is meant to be run on each YouTube video page.
+ *
+ * @require config/const.js
+ */
 
-// This part is called on connection for the first time on youtube.com/*
-/* ********************************************************************* */
+/**
+ * Youtube doesnt completely load a video page, so content script doesn't
+ * launch correctly without these events.
+ *
+ * This part is called on connection for the first time on youtube.com/*
+ */
+document.addEventListener('yt-navigate-finish', addRateLaterButton);
 
-document.addEventListener('yt-navigate-finish', process);
+if (document.body) {
+  addRateLaterButton();
+} else {
+  document.addEventListener('DOMContentLoaded', addRateLaterButton);
+}
 
-if (document.body) process();
-else document.addEventListener('DOMContentLoaded', process);
-
-/* ********************************************************************* */
-
-function process() {
-  // Get video id via URL
-  var videoId = new URL(location.href).searchParams.get('v');
+function addRateLaterButton() {
+  const videoId = new URL(location.href).searchParams.get('v');
 
   // Only enable on youtube.com/watch?v=* pages
   if (!location.pathname.startsWith('/watch') || !videoId) return;
 
-  // Timer will run until needed elements are generated
-  var timer = window.setInterval(createButtonIsReady, 300);
+  // Timers will run until needed elements are generated
+  const timer = window.setInterval(createButtonIsReady, 300);
 
+  /**
+   * Create the Rate Later button.
+   */
   function createButtonIsReady() {
     /*
      ** Wait for needed elements to be generated
@@ -45,13 +57,13 @@ function process() {
     window.clearInterval(timer);
 
     // Create Button
-    var rateLaterButton = document.createElement('button');
+    const rateLaterButton = document.createElement('button');
     rateLaterButton.setAttribute('id', 'tournesol-rate-button');
 
     // Image td for better vertical alignment
-    var img_td = document.createElement('td');
+    const img_td = document.createElement('td');
     img_td.setAttribute('valign', 'middle');
-    var image = document.createElement('img');
+    const image = document.createElement('img');
     image.setAttribute('id', 'tournesol-button-image');
     image.setAttribute('src', chrome.runtime.getURL('Logo128.png'));
     image.setAttribute('width', '20');
@@ -59,7 +71,7 @@ function process() {
     rateLaterButton.append(img_td);
 
     // Text td for better vertical alignment
-    var text_td = document.createElement('td');
+    const text_td = document.createElement('td');
     text_td.setAttribute('valign', 'middle');
     text_td_text = document.createTextNode('Rate Later')
     text_td.append(text_td_text);
@@ -68,24 +80,33 @@ function process() {
     // On click
     rateLaterButton.onclick = () => {
       rateLaterButton.disabled = true;
-      chrome.runtime.sendMessage(
-        {
-          message: 'addRateLater',
-          video_id: videoId
-        },
-        (data) => {
-          if (data.success) {
-            text_td_text.replaceWith(document.createTextNode('Done!'))
+
+      const resp = new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+          {
+            message: 'addRateLater',
+            video_id: videoId
+          },
+          (data) => {
+            if (data.success) {
+              text_td_text.replaceWith(document.createTextNode('Done!'))
+              resolve();
+            } else {
+              rateLaterButton.disabled = false;
+              reject();
+            }
           }
-          else {
-            rateLaterButton.disabled = false;
-          }
-        }
-      );
+        );
+
+      }).catch((reason) => {
+        chrome.runtime.sendMessage({message: "displayModal"});
+      });
     }
 
     // Insert after like and dislike buttons
-    var div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
+    const div = document.getElementById(
+      'menu-container'
+    ).children['menu'].children[0].children['top-level-buttons-computed'];
     div.insertBefore(rateLaterButton, div.children[2]);
   }
 }

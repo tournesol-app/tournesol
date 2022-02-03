@@ -15,6 +15,7 @@ from .views.ratings import (
     ContributorRatingList,
     ContributorRatingUpdateAll,
 )
+from .views.stats import StatisticsView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
@@ -93,5 +94,11 @@ urlpatterns = [
         "domains/",
         EmailDomainsList.as_view(),
         name="email_domains_list"
-    )
+    ),
+    # Statistics API
+    path(
+        "stats/",
+        StatisticsView.as_view(),
+        name="statistics_detail"
+     )
 ]

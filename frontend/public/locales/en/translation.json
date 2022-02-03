@@ -41,6 +41,16 @@
     "myRateLaterList": "My rate later list",
     "about": "About"
   },
+  "frame": {
+    "onChromeOrDerivatives": "On Chrome, Chromium, or derivatives",
+    "addWebsiteToChromeExceptions": "On the settings page related to Cookies and other site data (<1>{{page}}</1>), add <4>{{host}}</4> to the list of <7>\"Sites that can always use cookies\"</7>.",
+    "findMoreDetailsOnPage": "Find more details on <2>this page</2>.",
+    "onFirefox": "On Firefox",
+    "addWebsiteToFirefoxExceptions": "On the settings page about Browser Privacy (<1>{{page}}</1>), in the section about <3>Cookies and site data</3>, click on <6>Manage Exceptions</6>.<8></8>Then, add <10>{{host}}</10> to the list of websites that are always allowed to use cookies and site data.",
+    "tournesolInFrameIsCurrentlyBlocked": "Tournesol integration is blocked on this website",
+    "thirdPartyStorageIsBlockedAddException": "It seems that using third-party storage is blocked on your browser. In order to access all features provided by the Tournesol web extension, including the integration with YouTube, you can simply add an exception about the website <1>{{host}}</1> in your browser settings, by following the instructions below.",
+    "storageErrorReloadPageAfterApplyingChanges": "After applying these changes, please reload this page."
+  },
   "logoutNonImpactingError": "A non impacting error occurred during your logout.",
   "logoutButton": "Logout",
   "loginButton": "Log in",
@@ -53,7 +63,7 @@
     "logInAction": "Log In",
     "forgotYourPassword": "Forgot your password?"
   },
-  "username": "Username",
+  "usernameOrEmail": "Username or Email address",
   "password": "Password",
   "ratelater": {
     "videoIdOrURL": "Video id or URL",
@@ -133,6 +143,7 @@
     "exportAllData": "Export all data",
     "deleteAccount": "Delete account"
   },
+  "username": "Username",
   "profile": "Profile",
   "videoSelector": {
     "pasteUrlOrVideoId": "Paste URL or Video ID",
@@ -187,8 +198,8 @@
     "donateHowTo": "How to make a donation?",
     "donateWithUtipTitle": "With uTip",
     "donateWithUtipDescription": "uTip is an online crowdfunding platform. Visit our <2>uTip page</2> to make a one-time or recurring donation.",
-    "donateByDirectTransferCHF": "By direct transfer in Swiss Francs (CHF)",
     "donateByDirectTransferEUR": "By direct transfer in Euros (EUR)",
+    "donateByDirectTransferCHF": "By direct transfer in Swiss Francs (CHF)",
     "donateByPaypal": "By PayPal",
     "publicDatabase": "Public Database",
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
@@ -216,7 +227,7 @@
     "whoTournesolSharesUsersNContributorsDataWith": "Who Tournesol shares users' and contributors' data with?",
     "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol highly values the protection of users' and contributors' data. In particular, Tournesol knows that some of the contributors' judgments may conflict with the agendas of some political leaders or of their employer. We want contributors to express judgments without the fear of any consequence for their personal life. This is why Tournesol has the option of providing judgments privately or anonymously. Privately provided raw judgments will not be shared with any third party.",
     "publicData": "Public data",
-    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties.",
+    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties.",
     "aggregateData": "Aggregate data",
     "whereGoAggregateData": "Our algorithms combine contributors’ public and private data to provide aggregate statistics, which are made public. This is typically the case of the Tournesol scores given to different videos. Tournesol also plans to release statistics about subsets of contributors, e.g. to determine how pedagogical a physics video is according to biologists. In any such case, we apply the principles of differential privacy, by adding randomness to the actual aggregation, in order to increase the privacy of your data.",
     "researchPurposes": "Research purposes",
@@ -261,7 +272,7 @@
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",
     "accountCreationFailed": "Account creation failed.",
-    "iAgreeWithThePrivacyPolicy": "I have read and agree with the <2>privacy policy</2>"
+    "iAgreeWithThePrivacyPolicy": "I have read and agree with the <2>privacy policy</2>."
   },
   "emailAddress": "Email address",
   "confirmYourPassword": "Confirm your password",

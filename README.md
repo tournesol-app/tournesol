@@ -5,6 +5,15 @@ This repository hosts the free and open source code of the Tournesol platform.
 Learn more about the project on our [Wiki][tournesol-wiki], or meet our community
 on [Discord][tournesol-discord-join].
 
+---
+
+**Table of Content**
+
+ - [Structure of the repository](#structure-of-the-repository)
+ - [Set-up](#set-up)
+ - [Contributing](#contributing)
+ - [Licenses](#licenses)
+
 ## Structure of the repository
 
 - [analytics](./analytics) contains tools to analyse Tournesol data
@@ -26,11 +35,27 @@ on [Discord][tournesol-discord-join].
 Please refer to the `dev-env` directory or the corresponding documents in
 `frontend` and `backend` directories.
 
-## Contribute
+## Contributing
 
-See the Wiki page [Contribute to Tournesol][tournesol-wiki-contribute] for
-details.
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
+
+### Contributors
+
+The code source of the project exists thanks to
+[all people who generously took the time to contribute][tournesol-github-contributors].
+
+Thank you very much!
+
+## Licenses
+
+The Tournesol project has chosen to distribute its software and its other
+productions under the terms of different licenses.
+
+See the [LICENSE.md](./LICENSE.md) file for the exhaustive list.
 
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
+
 [tournesol-wiki]: https://wiki.tournesol.app/
 [tournesol-wiki-contribute]: https://wiki.tournesol.app/wiki/Contribute_to_Tournesol
+
+[tournesol-github-contributors]: https://github.com/tournesol-app/tournesol/graphs/contributors

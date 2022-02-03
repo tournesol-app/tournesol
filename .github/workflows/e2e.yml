@@ -33,7 +33,12 @@ jobs:
           working-directory: tests
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
-        
+
+      - name: Print dev-env logs
+        if: failure()
+        working-directory: ./dev-env
+        run: docker-compose logs -t --tail=300
+
       - uses: actions/upload-artifact@v1
         if: failure()
         with:

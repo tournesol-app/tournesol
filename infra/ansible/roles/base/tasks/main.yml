@@ -29,5 +29,6 @@
       - unzip
       - gpg
       - gpg-agent
+      - rsync
     install_recommends: no
     update_cache: yes

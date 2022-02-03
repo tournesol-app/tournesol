@@ -4,23 +4,24 @@ Serializer used by Tournesol's API
 
 from typing import Optional
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import ObjectDoesNotExist, Q
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from rest_framework.fields import BooleanField, RegexField, SerializerMethodField
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.fields import BooleanField, IntegerField, RegexField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.errors import ConflictError
+from tournesol.utils.api_youtube import VideoNotFound
 
 from .models import (
     Comparison,
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
-    Tag,
     Video,
     VideoCriteriaScore,
     VideoRateLater,
@@ -56,14 +57,11 @@ class VideoSerializer(ModelSerializer):
             "duration",
         ]
 
-    def save(self, **kwargs):
-        tags = kwargs.pop('tags', [])
-        video = super().save(**kwargs)
-        for tag_name in tags:
-            #  The return object is a tuple having first an instance of Tag, and secondly a bool
-            tag = Tag.objects.get_or_create(name=tag_name)
-            video.tags.add(tag[0].id)
-        return video
+    def create(self, validated_data):
+        try:
+            return Video.create_from_video_id(validated_data["video_id"])
+        except VideoNotFound:
+            raise NotFound("The video has not been found. `video_id` may be incorrect.")
 
     # Convert duration to seconds to facilitate use of Humanize package
     def get_duration(self, obj) -> Optional[int]:
@@ -72,29 +70,26 @@ class VideoSerializer(ModelSerializer):
         return None
 
 
-class VideoReadOnlySerializer(Serializer):
+class RelatedVideoSerializer(VideoSerializer):
     """
-    A video serializer without all the Video model auto-validations.
+    A video serializer that will create the Video object on validation
+    if it does not exist in the database yet.
 
     Used by ModelSerializer(s) having one or more nested relations with Video,
-    and having the constraint of not creating new videos in database when
-    creating new objects.
-
-    ex: adding a new Comparison shouldn't create new Video in the database
+    and having the constraint to ensure that video instances exist before
+    they can be saved properly.
     """
 
-    video_id = serializers.CharField(max_length=20)
-
-    class Meta:
-        fields = ["video_id"]
+    video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX)
 
     def validate_video_id(self, value):
         try:
             Video.objects.get(video_id=value)
         except ObjectDoesNotExist:
-            raise serializers.ValidationError(
-                "The video with id '{}' does not exist.".format(value)
-            )
+            try:
+                Video.create_from_video_id(value)
+            except VideoNotFound:
+                raise ValidationError("The video has not been found. `video_id` may be incorrect.")
         return value
 
 
@@ -119,11 +114,20 @@ class VideoSerializerWithCriteria(VideoSerializer):
 
 
 class VideoRateLaterSerializer(ModelSerializer):
-    video = VideoSerializer()
+    video = RelatedVideoSerializer()
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = VideoRateLater
-        fields = ["video"]
+        fields = ["user", "video"]
+
+    def create(self, validated_data):
+        video_id = validated_data.pop("video")["video_id"]
+        video = Video.objects.get(video_id=video_id)
+        try:
+            return super().create({"video": video, **validated_data})
+        except IntegrityError:
+            raise ConflictError
 
 
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
@@ -151,8 +155,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
     Use `ComparisonUpdateSerializer` for the update operation.
     """
 
-    video_a = VideoReadOnlySerializer(source="video_1")
-    video_b = VideoReadOnlySerializer(source="video_2")
+    video_a = RelatedVideoSerializer(source="video_1")
+    video_b = RelatedVideoSerializer(source="video_2")
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -177,24 +181,21 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        video_id_1 = validated_data.get("video_1").get("video_id")
-        video_id_2 = validated_data.get("video_2").get("video_id")
-        # the validation performed by the VideoReadOnlySerializer guarantees
-        # that the video submitted exist in the database
+        video_id_1 = validated_data.pop("video_1").get("video_id")
+        video_id_2 = validated_data.pop("video_2").get("video_id")
+        # the validation performed by the RelatedVideoSerializer guarantees
+        # that the videos submitted exist in the database
         video_1 = Video.objects.get(video_id=video_id_1)
         video_2 = Video.objects.get(video_id=video_id_2)
-
-        # get default values directly from the model
-        default_duration_ms = Comparison._meta.get_field("duration_ms").get_default()
+        criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
             video_1=video_1,
             video_2=video_2,
-            user=validated_data.get("user"),
-            duration_ms=validated_data.get("duration_ms", default_duration_ms),
+            **validated_data,
         )
 
-        for criteria_score in validated_data.pop("criteria_scores"):
+        for criteria_score in criteria_scores:
             ComparisonCriteriaScore.objects.create(
                 comparison=comparison, **criteria_score
             )
@@ -213,10 +214,12 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     """
 
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
+    video_a = VideoSerializer(source="video_1", read_only=True)
+    video_b = VideoSerializer(source="video_2", read_only=True)
 
     class Meta:
         model = Comparison
-        fields = ["criteria_scores", "duration_ms"]
+        fields = ["criteria_scores", "duration_ms", "video_a", "video_b"]
 
     def to_representation(self, instance):
         """
@@ -227,10 +230,6 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         consistent across all comparison serializers.
         """
         ret = super(ComparisonUpdateSerializer, self).to_representation(instance)
-
-        video_1_repr = VideoReadOnlySerializer().to_representation(instance.video_1)
-        video_2_repr = VideoReadOnlySerializer().to_representation(instance.video_2)
-        ret["video_a"], ret["video_b"] = video_1_repr, video_2_repr
 
         if self.context.get("reverse", False):
             ret["video_a"], ret["video_b"] = ret["video_b"], ret["video_a"]
@@ -305,18 +304,15 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
 
     def validate(self, attrs):
         video_id = attrs.pop("video_id")
-        try:
-            video = Video.objects.get(video_id=video_id)
-        except Video.DoesNotExist:
-            raise ValidationError(f"Video with video_id '{video_id}' does not exist")
-
+        video_serializer = RelatedVideoSerializer(data={"video_id": video_id})
+        video_serializer.is_valid(raise_exception=True)
+        video = Video.objects.get(video_id=video_id)
         user = self.context["request"].user
         if user.contributorvideoratings.filter(video=video).exists():
             raise ValidationError(
                 "A ContributorRating already exists for this (user, video)",
                 code='unique',
             )
-
         attrs["video"] = video
         attrs["user"] = user
         return attrs
@@ -324,3 +320,12 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
 
 class ContributorRatingUpdateAllSerializer(Serializer):
     is_public = BooleanField()
+
+
+class StatisticsSerializer(Serializer):
+    user_count = IntegerField()
+    last_month_user_count = IntegerField()
+    video_count = IntegerField()
+    last_month_video_count = IntegerField()
+    comparison_count = IntegerField()
+    last_month_comparison_count = IntegerField()

@@ -310,6 +310,9 @@ CRITERIAS = list(CRITERIAS_DICT.keys())
 MAX_FEATURE_WEIGHT = 8
 
 SPECTACULAR_SETTINGS = {
+    # Split data components into 2 distinct schemas for request and response.
+    # It helps with the support of "read_only" fields by code generators.
+    'COMPONENT_SPLIT_REQUEST': True,
     'SORT_OPERATION_PARAMETERS': False,
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,

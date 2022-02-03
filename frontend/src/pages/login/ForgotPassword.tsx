@@ -86,7 +86,7 @@ const ForgotPassword = () => {
                 <Grid item xs={12}>
                   <FormTextField
                     name="login"
-                    label={t('username')}
+                    label={t('usernameOrEmail')}
                     formError={formError}
                   />
                 </Grid>

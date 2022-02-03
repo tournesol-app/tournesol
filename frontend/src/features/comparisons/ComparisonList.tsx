@@ -5,7 +5,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Compare as CompareIcon } from '@mui/icons-material';
 
 import type { Comparison } from 'src/services/openapi';
-import { VideoCardFromId } from '../videos/VideoCard';
+import VideoCard from '../videos/VideoCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
   content: {
@@ -36,7 +36,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { video_a, video_b } = comparison;
   return (
     <Box className={classes.comparisonContainer}>
-      <VideoCardFromId compact videoId={video_a.video_id} />
+      <VideoCard compact video={video_a} />
       <Box className={classes.centering} style={{ position: 'relative' }}>
         <div
           style={{
@@ -57,7 +57,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <VideoCardFromId compact videoId={video_b.video_id} />
+      <VideoCard compact video={video_b} />
     </Box>
   );
 };

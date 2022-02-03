@@ -8,7 +8,11 @@ import {
   Lines,
   FormTextField,
 } from 'src/components';
-import { AccountsService, RegisterUser, ApiError } from 'src/services/openapi';
+import {
+  AccountsService,
+  ApiError,
+  RegisterUserRequest,
+} from 'src/services/openapi';
 import { Link } from 'react-router-dom';
 
 const SignupSuccess = ({ email }: { email: string }) => {
@@ -40,7 +44,7 @@ const Signup = () => {
     const formObject: unknown = Object.fromEntries(formData);
     try {
       const createdUser = await AccountsService.accountsRegisterCreate({
-        requestBody: formObject as RegisterUser,
+        requestBody: formObject as RegisterUserRequest,
       });
       setSuccessEmailAddress(createdUser.email || '');
     } catch (err) {
@@ -85,6 +89,9 @@ const Signup = () => {
                   name="username"
                   label={t('username')}
                   formError={formError}
+                  helperText={t(
+                    'settings.captionUsernameWillAppearInPublicDatabase'
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -103,8 +110,9 @@ const Signup = () => {
                   formError={formError}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} display="flex" alignItems="center">
                 <Checkbox
+                  color="secondary"
                   checked={acceptPolicy}
                   onClick={() => setAcceptPolicy(!acceptPolicy)}
                 />

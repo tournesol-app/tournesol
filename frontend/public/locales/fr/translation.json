@@ -41,6 +41,16 @@
     "myRateLaterList": "À comparer plus tard",
     "about": "À propos"
   },
+  "frame": {
+    "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",
+    "addWebsiteToChromeExceptions": "Sur la page de paramètres concernant les Cookies et autres données des sites (<1>{{page}}</1>), ajoutez <4>{{host}}</4> à la liste des <7>\"Sites autorisés à utiliser des cookies\"</7>.",
+    "findMoreDetailsOnPage": "Plus de détails sur <2>cette page</2>.",
+    "onFirefox": "Sur Firefox",
+    "addWebsiteToFirefoxExceptions": "Sur la page de paramètres Vie Privée et sécurité (<1>{{page}}</1>), dans la section concernant les <3>Cookies et données de sites</3>, cliquez sur <6>Gérer les exceptions</6>.<8></8>Ajoutez alors <10>{{host}}</10> à la liste des sites web qui sont toujours autorisés à utiliser des cookies ou des données de site.",
+    "tournesolInFrameIsCurrentlyBlocked": "L'intégration de Tournesol est bloquée sur ce site",
+    "thirdPartyStorageIsBlockedAddException": "Il semble que l'utilisation d'un stockage intersite est bloquée sur votre navigateur. Afin d'accéder à l'ensemble des fonctionnalités de l'extension Tournesol, y compris l'intégration avec YouTube, vous pouvez simplement ajouter une exception concernant le site <1>{{host}}</1> dans les paramètres de votre navigateur en suivant les instructions ci-dessous.",
+    "storageErrorReloadPageAfterApplyingChanges": "Après avoir appliqué ces changements, veuillez rafraîchir cette page."
+  },
   "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
   "logoutButton": "Se déconnecter",
   "loginButton": "Se connecter",
@@ -53,7 +63,7 @@
     "logInAction": "Connexion",
     "forgotYourPassword": "Mot de passe oublié ?"
   },
-  "username": "Nom d'utilisateur",
+  "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
@@ -125,7 +135,7 @@
     "errorOccurredWhenRetrievingProfile": "Désolé, une erreur est survenue, impossible de récupérer votre profil.",
     "errorOccurredWhenUpdatingProfile": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
     "profileChangedSuccessfully": "Profil bien mis à jour.",
-    "captionUsernameWillAppearInPublicDatabase": "Votre identifiant apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
+    "captionUsernameWillAppearInPublicDatabase": "Votre nom d'utilisateur apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
     "updateProfile": "Mettre à jour le profil",
     "account": "Compte",
     "title": "Paramètres",
@@ -134,6 +144,7 @@
     "exportAllData": "Télécharger vos données",
     "deleteAccount": "Supprimer votre compte"
   },
+  "username": "Nom d'utilisateur",
   "profile": "Profil",
   "videoSelector": {
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
@@ -191,8 +202,8 @@
     "donateHowTo": "Comment faire un don ?",
     "donateWithUtipTitle": "Avec uTip",
     "donateWithUtipDescription": "uTip est une plateforme de financement participatif. Visitez notre <2>page uTip</2> pour faire un don unique ou recurrent.",
-    "donateByDirectTransferCHF": "Par virement direct en Franc Suisses (CHF)",
     "donateByDirectTransferEUR": "Par virement direct en Euros (EUR)",
+    "donateByDirectTransferCHF": "Par virement direct en Franc Suisses (CHF)",
     "donateByPaypal": "Par PayPal",
     "publicDatabase": "Base de données publique",
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
@@ -220,7 +231,7 @@
     "whoTournesolSharesUsersNContributorsDataWith": "Avec qui Tournesol partage-t-il les données des utilisateurs et des contributeurs ?",
     "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol accorde beaucoup d'importance à la protection des données de ses utilisateurs et contributeurs. En particulier, Tournesol sait que les jugements des contributeurs peuvent entrer en conflit avec les opinions de leaders politiques et d'employeurs. Nous souhaitons que des contributeurs puissent exprimer leurs jugements sans craindre de conséquences sur leur vie personnelle. C'est pourquoi Tournesol offre la possibilité de soumettre des jugements de manière privée ou anonyme. Ces jugements privés ne sont partagés avec aucune tierce partie.",
     "publicData": "Données publiques",
-    "whereGoPublicData": "Les contributeurs sont encouragés, si possible, à comparer des vidéos publiquement. Cela nous permettra de constituer une base de données publique, qui, nous l'espérons, stimulera la recherche menée sur des algorithmes de recommandations plus bénéfiques. Les jugements privés, c'est-à-dire les comparaisons pour lesquelles au moins l'une des vidéos est évaluée en privé par le contributeur, ne sont jamais rendues publiques, et ne sont partagées avec aucune tierce partie.",
+    "whereGoPublicData": "Les contributeurs sont encouragés, si possible, à comparer des vidéos publiquement. Cela nous permettra de constituer une base de données publique, qui, nous l'espérons, stimulera la recherche menée sur des algorithmes de recommandations plus bénéfiques. Cette base de données comprend le detail des contributions publiques, associées aux noms d'utilisateur des contributeurs qui les ont transmises. Les jugements privés, c'est-à-dire les comparaisons pour lesquelles au moins l'une des vidéos est évaluée en privé par le contributeur, ne sont jamais rendues publiques, et ne sont partagées avec aucune tierce partie.",
     "aggregateData": "Données aggrégées",
     "whereGoAggregateData": "Nos algorithmes combinent les contributions publiques et privées pour produire des statistiques agrégées, qui sont rendues publiques. Cela est notamment le cas des scores Tournesol associés aux différentes vidéos. Tournesol prévoit également de mettre à disposition des statistiques sur des sous-ensembles de contributeurs, pour par exemple déterminer dans quelle mesure une vidéo traitant de physique est considérée comme pédagogique pour les biologistes. Dans ce cas de figure, nous appliquons les principes de confidentialité différentielle, en ajoutant un degré d'aléa au résultat agrégé, de façon à renforcer le caractère privé de ces données.",
     "researchPurposes": "Objectifs de recherche",
@@ -265,7 +276,7 @@
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",
     "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>"
+    "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>."
   },
   "emailAddress": "Adresse e-mail",
   "confirmYourPassword": "Confirmez votre mot de passe",
