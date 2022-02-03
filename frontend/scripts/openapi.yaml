@@ -490,6 +490,23 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /stats/:
+    get:
+      operationId: stats_retrieve
+      description: Retrieve statistics.
+      tags:
+      - stats
+      security:
+      - oauth2:
+        - read write groups
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statistics'
+          description: ''
   /users/me/:
     delete:
       operationId: users_me_destroy
@@ -10854,6 +10871,28 @@ components:
       - Zambia
       - Zimbabwe
       type: string
+    Statistics:
+      type: object
+      properties:
+        user_count:
+          type: integer
+        last_month_user_count:
+          type: integer
+        video_count:
+          type: integer
+        last_month_video_count:
+          type: integer
+        comparison_count:
+          type: integer
+        last_month_comparison_count:
+          type: integer
+      required:
+      - comparison_count
+      - last_month_comparison_count
+      - last_month_user_count
+      - last_month_video_count
+      - user_count
+      - video_count
     StatusEnum:
       enum:
       - RJ
