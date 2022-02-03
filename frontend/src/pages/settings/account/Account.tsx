@@ -18,7 +18,9 @@ const useStyles = makeStyles((theme) => ({
 export const AccountPage = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  // sectionBreakP can be changed independently of breakP
   const breakP = { xs: 12, sm: 12, md: 9, lg: 9, xl: 10 };
+  const sectionBreakP = breakP;
   return (
     <>
       <ContentHeader
@@ -39,15 +41,21 @@ export const AccountPage = () => {
           >
             <SettingsSection
               title={t('settings.changeEmailAddress')}
-              {...breakP}
+              {...sectionBreakP}
             >
               <EmailAddressForm />
             </SettingsSection>
-            <SettingsSection title={t('settings.changePassword')} {...breakP}>
+            <SettingsSection
+              title={t('settings.changePassword')}
+              {...sectionBreakP}
+            >
               <PasswordForm />
             </SettingsSection>
             <Box marginTop={8} />
-            <SettingsSection title={t('settings.exportAllData')} {...breakP}>
+            <SettingsSection
+              title={t('settings.exportAllData')}
+              {...sectionBreakP}
+            >
               <ExportAllDataForm />
             </SettingsSection>
             <SettingsSection
@@ -56,7 +64,7 @@ export const AccountPage = () => {
                   {t('settings.deleteAccount')}
                 </Typography>
               }
-              {...breakP}
+              {...sectionBreakP}
             >
               <DeleteAccountForm />
             </SettingsSection>
