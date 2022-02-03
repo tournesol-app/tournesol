@@ -1,5 +1,5 @@
 """
-Models for Tournesol's main functions related to videos
+Entity and closed related models.
 """
 
 import logging
@@ -26,8 +26,13 @@ LANGUAGES = settings.LANGUAGES
 
 
 class Entity(models.Model, WithFeatures, WithEmbedding):
-    """One video."""
+    """
+    A generic entity that can be compared with another one.
 
+    The current model still contains fields from the previous `Video` model.
+    These fields are kept as-is for now to ease the refactor of the Tournesol
+    app, and will be replaced in the future by the `metadata` JSON field.
+    """
     video_id_regex = RegexValidator(
         YOUTUBE_VIDEO_ID_REGEX, f"Video ID must match {YOUTUBE_VIDEO_ID_REGEX}"
     )
