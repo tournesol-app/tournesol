@@ -18,19 +18,30 @@ function ComparisonsPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
+  const filteredVideo = String(searchParams.get('video') || '');
   const limit = 20;
 
   function handleOffsetChange(newOffset: number) {
-    history.push(`/comparisons/?offset=${newOffset}`);
+    searchParams.set('offset', newOffset.toString());
+    history.push({ search: searchParams.toString() });
   }
 
   useEffect(() => {
-    UsersService.usersMeComparisonsList({ limit, offset }).then((data) => {
-      setComparisons(data.results);
-      setCount(data.count || 0);
-    });
+    const process = async () => {
+      const comparisonsRequest = await (filteredVideo
+        ? UsersService.usersMeComparisonsListFiltered({
+            videoId: filteredVideo,
+            limit,
+            offset,
+          })
+        : UsersService.usersMeComparisonsList({ limit, offset }));
+      setComparisons(comparisonsRequest.results);
+      setCount(comparisonsRequest.count || 0);
+    };
+    process();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [offset]);
+  }, [location.search]);
 
   return (
     <>

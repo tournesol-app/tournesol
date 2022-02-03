@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Tooltip, Typography, Box, Switch } from '@mui/material';
-
+import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 
 const setPublicStatus = async (videoId: string, isPublic: boolean) => {
@@ -40,9 +40,15 @@ export const UserRatingPublicToggle = ({
     <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
       <Typography variant="caption" style={{ fontSize: '11px' }}>
         {nComparisons > 0 ? (
-          <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
-            {{ count: nComparisons }} comparison by you
-          </Trans>
+          <Link
+            color="inherit"
+            component={RouterLink}
+            to={`/comparisons/?video=${videoId}`}
+          >
+            <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
+              {{ count: nComparisons }} comparison by you
+            </Trans>
+          </Link>
         ) : (
           t('video.notYetComparedByYou')
         )}
