@@ -350,8 +350,14 @@ class VideoApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
+        new_video = Entity.objects.get(video_id="NeADlWSDFAQ")
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
+
+        # ensure newly created entities are considered videos from YT
+        self.assertEqual(new_video.uid, '{}:{}'.format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ"))
+        self.assertEqual(new_video.type, Entity.TYPE_VIDEO)
 
     def test_authenticated_cant_create_twice(self):
         """
