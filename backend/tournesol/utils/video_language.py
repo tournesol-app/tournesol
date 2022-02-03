@@ -3,7 +3,7 @@ from collections import Counter
 
 from langdetect import DetectorFactory, detect, lang_detect_exception
 
-from ..models import Video
+from ..models import Entity
 
 # Enforce consistent results with a constant seed,
 # as the language detection algorithm is non-deterministic.
@@ -32,7 +32,7 @@ def languages_detection(title, description):
 def compute_video_language(uploader, title, description):
 
     # Get language(s) from other videos of the same uploader
-    lang_list = Video.objects.filter(uploader=uploader).values_list("language")
+    lang_list = Entity.objects.filter(uploader=uploader).values_list("language")
 
     if lang_list:
         main_uploader_lang, main_uploader_lang_cnt = Counter(lang_list).most_common()[0]

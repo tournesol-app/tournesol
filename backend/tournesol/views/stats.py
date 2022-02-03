@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from core.models import User
 
-from ..models import Comparison, Video
+from ..models import Comparison, Entity
 from ..serializers import StatisticsSerializer
 
 
@@ -56,10 +56,10 @@ class StatisticsView(generics.GenericAPIView):
                 is_active=True,
                 date_joined__gte=timezone.now() - timedelta(days=self._days_delta)
             ).count()
-        video_count = Video.objects.filter(
+        video_count = Entity.objects.filter(
             rating_n_ratings__gt=0
         ).count()
-        last_month_video_count = Video.objects.filter(
+        last_month_video_count = Entity.objects.filter(
                 add_time__gte=timezone.now() - timedelta(days=self._days_delta),
                 rating_n_ratings__gt=0
             ).count()

@@ -76,7 +76,7 @@ def fetch_data():
 
 def save_data(video_scores, contributor_rating_scores):
     """
-    Saves in the scores for Videos and ContributorRatings
+    Saves in the scores for Entities and ContributorRatings
     """
     VideoCriteriaScore.objects.all().delete()
     VideoCriteriaScore.objects.bulk_create(

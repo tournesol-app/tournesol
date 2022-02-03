@@ -34,13 +34,13 @@ class Comparison(models.Model):
         help_text="Contributor (user) who left the rating",
     )
     video_1 = models.ForeignKey(
-        'Video',
+        'Entity',
         on_delete=models.CASCADE,
         related_name="comparisons_video_1",
         help_text="Left video to compare",
     )
     video_2 = models.ForeignKey(
-        'Video',
+        'Entity',
         on_delete=models.CASCADE,
         related_name="comparisons_video_2",
         help_text="Right video to compare",
@@ -118,7 +118,7 @@ class Comparison(models.Model):
         #     function = "Exp"
 
         # # annotating with number of comparisons
-        # videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
+        # videos = Entity.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
         # score_exp_annotate = Exp(
         #     -Value(rated_count, FloatField()) * F("_num_comparisons"), output_field=FloatField()
         # )
@@ -138,14 +138,14 @@ class Comparison(models.Model):
         # ids, scores = zip(*videos.values_list("id", "_score_exp_div"))
         # random_video_id = np.random.choice(ids, p=scores)
 
-        # return Video.objects.get(id=random_video_id)
+        # return Entity.objects.get(id=random_video_id)
 
         return None
 
     @staticmethod
     def sample_rated_video(username):
         """Get an already rated video, or a random one."""
-        from .video import Video
+        from .entity import Entity
 
         # annotation: number of comparisons for the video by username
         annotate_num_comparisons = Count(
@@ -157,19 +157,19 @@ class Comparison(models.Model):
         )
 
         # annotating with number of comparisons
-        videos = Video.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
+        videos = Entity.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
 
         # only selecting those already rated.
         videos = videos.filter(_num_comparisons__gt=0)
 
         if not videos.count():
             logging.warning("No rated videos, returning a random one")
-            videos = Video.objects.all()
+            videos = Entity.objects.all()
 
         # selecting a random ID
         random_id = np.random.choice([x[0] for x in videos.values_list("id")])
 
-        return Video.objects.get(id=random_id)
+        return Entity.objects.get(id=random_id)
 
     @staticmethod
     def sample_video(username, only_rated=False):
@@ -228,14 +228,14 @@ class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
     )
 
     video_left = models.ForeignKey(
-        to='Video',
+        to='Entity',
         on_delete=models.CASCADE,
         help_text="Left video",
         related_name="slider_left",
         null=True,
     )
     video_right = models.ForeignKey(
-        to='Video',
+        to='Entity',
         on_delete=models.CASCADE,
         help_text="Right video",
         related_name="slider_right",

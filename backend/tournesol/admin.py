@@ -9,12 +9,12 @@ from .models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
-    Video,
+    Entity,
     VideoCriteriaScore,
 )
 
 
-@admin.register(Video)
+@admin.register(Entity)
 class VideoAdmin(admin.ModelAdmin):
     list_display = (
         'video_id',
