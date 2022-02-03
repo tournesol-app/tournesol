@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
 export const AccountPage = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  // sectionBreakP can be changed independently of breakP
+  const breakP = { xs: 12, sm: 12, md: 9, lg: 9, xl: 10 };
+  const sectionBreakP = breakP;
   return (
     <>
       <ContentHeader
@@ -25,7 +28,7 @@ export const AccountPage = () => {
       />
       <Box m={4}>
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={3}>
+          <Grid item xs={12} sm={12} md={3} lg={3} xl={2}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -33,23 +36,26 @@ export const AccountPage = () => {
             item
             direction="column"
             alignItems="stretch"
-            xs={12}
-            sm={12}
-            md={9}
             spacing={3}
+            {...breakP}
           >
-            <SettingsSection title={t('settings.changeEmailAddress')} xs={12}>
+            <SettingsSection
+              title={t('settings.changeEmailAddress')}
+              {...sectionBreakP}
+            >
               <EmailAddressForm />
             </SettingsSection>
             <SettingsSection
               title={t('settings.changePassword')}
-              xs={12}
-              md={6}
+              {...sectionBreakP}
             >
               <PasswordForm />
             </SettingsSection>
             <Box marginTop={8} />
-            <SettingsSection title={t('settings.exportAllData')} xs={12}>
+            <SettingsSection
+              title={t('settings.exportAllData')}
+              {...sectionBreakP}
+            >
               <ExportAllDataForm />
             </SettingsSection>
             <SettingsSection
@@ -58,7 +64,7 @@ export const AccountPage = () => {
                   {t('settings.deleteAccount')}
                 </Typography>
               }
-              md={6}
+              {...sectionBreakP}
             >
               <DeleteAccountForm />
             </SettingsSection>

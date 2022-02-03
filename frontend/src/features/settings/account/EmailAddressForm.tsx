@@ -119,7 +119,7 @@ const EmailAddressForm = () => {
       <Grid container spacing={2} direction="column" alignItems="stretch">
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
-        <Grid item md={6} style={{ display: isLoading ? 'none' : undefined }}>
+        <Grid item style={{ display: isLoading ? 'none' : undefined }}>
           {profileData && (
             <Box
               marginBottom={2}
