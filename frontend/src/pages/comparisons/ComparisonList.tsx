@@ -27,19 +27,18 @@ function ComparisonsPage() {
   }
 
   useEffect(() => {
-    searchParams.get('video')
-      ? UsersService.usersMeComparisonsListFiltered({
-          videoId: filteredVideo,
-          limit: limit,
-          offset: offset,
-        }).then((data) => {
-          setComparisons(data.results);
-          setCount(data.count || 0);
-        })
-      : UsersService.usersMeComparisonsList({ limit, offset }).then((data) => {
-          setComparisons(data.results);
-          setCount(data.count || 0);
-        });
+    const process = async () => {
+      const comparisonsRequest = await (filteredVideo
+        ? UsersService.usersMeComparisonsListFiltered({
+            videoId: filteredVideo,
+            limit,
+            offset,
+          })
+        : UsersService.usersMeComparisonsList({ limit, offset }));
+      setComparisons(comparisonsRequest.results);
+      setCount(comparisonsRequest.count || 0);
+    };
+    process();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
