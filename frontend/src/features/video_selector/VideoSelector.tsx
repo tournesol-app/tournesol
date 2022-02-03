@@ -30,6 +30,8 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { videoFromRelatedEntity } from '../../utils/entity';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
+import SelectorListbox from './SelectorListbox';
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
@@ -150,7 +152,6 @@ const VideoSelector = ({
   const handleChange = (e: unknown, value: string) => {
     const videoIdFromValue = extractVideoId(value);
     if (videoIdFromValue) {
-      // inputRef.current?.blur();
       setOpen(false);
     }
     const newVideoId = videoIdFromValue
@@ -238,6 +239,7 @@ const VideoSelector = ({
           value={{ video_id: videoId }}
           onInputChange={handleChange}
           filterOptions={(x) => x}
+          ListboxComponent={SelectorListbox}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -247,12 +249,6 @@ const VideoSelector = ({
           )}
           getOptionLabel={(option) => option.video_id}
           options={options}
-          // options={[
-          //   {
-          //     videoId: 'abcde',
-          //   },
-          //   { videoId: '1223' },
-          // ]}
           renderOption={(props, option) => (
             <li {...props}>
               <VideoCardFromId videoId={option.video_id} />
