@@ -10,7 +10,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.fields import BooleanField, RegexField, SerializerMethodField
+from rest_framework.fields import BooleanField, IntegerField, RegexField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
@@ -320,3 +320,12 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
 
 class ContributorRatingUpdateAllSerializer(Serializer):
     is_public = BooleanField()
+
+
+class StatisticsSerializer(Serializer):
+    user_count = IntegerField()
+    last_month_user_count = IntegerField()
+    video_count = IntegerField()
+    last_month_video_count = IntegerField()
+    comparison_count = IntegerField()
+    last_month_comparison_count = IntegerField()
