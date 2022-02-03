@@ -43,8 +43,7 @@ class VideoSerializer(ModelSerializer):
             "language",
             "rating_n_ratings",
             "rating_n_contributors",
-            "duration",
-            "total_score"
+            "duration"
         ]
         read_only_fields = [
             "name",
