@@ -73,6 +73,29 @@ const VideoSelector = ({
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const { name: pollName } = useCurrentPoll();
+  const [open, setOpen] = React.useState(false);
+  const [options, setOptions] = React.useState<VideoRequest[]>([]);
+  const optionsLoading = open && options.length === 0;
+
+  React.useEffect(() => {
+    let active = true;
+
+    if (!optionsLoading) {
+      return undefined;
+    }
+
+    (async () => {
+      const response = await VideoService.videoList({ limit: 10 });
+
+      if (active) {
+        setOptions(response.results ?? []);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [optionsLoading]);
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -124,11 +147,15 @@ const VideoSelector = ({
     }
   }, [loadRating, submitted]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const videoIdFromValue = extractVideoId(e.target.value);
+  const handleChange = (e: unknown, value: string) => {
+    const videoIdFromValue = extractVideoId(value);
+    if (videoIdFromValue) {
+      // inputRef.current?.blur();
+      setOpen(false);
+    }
     const newVideoId = videoIdFromValue
       ? videoIdFromValue
-      : e.target.value.replace(/[^A-Za-z0-9-_]/g, '').substring(0, 11);
+      : value.replace(/[^A-Za-z0-9-_]/g, '').substring(0, 11);
     onChange({
       videoId: newVideoId,
       rating: null,
@@ -192,34 +219,43 @@ const VideoSelector = ({
       </Box>
       <div className={classes.controls}>
         <Autocomplete
-          freeSolo
           openOnFocus
+          selectOnFocus
+          freeSolo
+          forcePopupIcon
+          disableClearable
+          sx={{ flex: 1 }}
+          open={open}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          onClose={() => {
+            setOpen(false);
+          }}
           isOptionEqualToValue={(option, value) =>
-            option.videoId === value.videoId
+            option.video_id === value.video_id
           }
+          value={{ video_id: videoId }}
+          onInputChange={handleChange}
           filterOptions={(x) => x}
           renderInput={(params) => (
             <TextField
               {...params}
-              InputProps={{ classes: { input: classes.input } }}
               placeholder={t('videoSelector.pasteUrlOrVideoId')}
-              style={{ flex: 1 }}
-              // value={videoId || ''}
-              onChange={handleChange}
               variant="standard"
             />
           )}
-          getOptionLabel={(option) => option.videoId}
-          options={[
-            {
-              videoId: 'abcde',
-            },
-            { videoId: '1223' },
-          ]}
+          getOptionLabel={(option) => option.video_id}
+          options={options}
+          // options={[
+          //   {
+          //     videoId: 'abcde',
+          //   },
+          //   { videoId: '1223' },
+          // ]}
           renderOption={(props, option) => (
             <li {...props}>
-              {videoId}
-              {/* <VideoCardFromId videoId={option.videoId} /> */}
+              <VideoCardFromId videoId={option.video_id} />
             </li>
           )}
         />
