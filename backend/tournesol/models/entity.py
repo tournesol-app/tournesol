@@ -33,6 +33,30 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
     These fields are kept as-is for now to ease the refactor of the Tournesol
     app, and will be replaced in the future by the `metadata` JSON field.
     """
+    UID_YT_NAMESPACE = 'yt'
+
+    TYPE_VIDEO = 'video'
+    ENTITY_TYPE = [
+        (TYPE_VIDEO, 'Video'),
+    ]
+
+    uid = models.CharField(
+        unique=True,
+        max_length=144,
+        help_text="A unique identifier, build with a namespace and an external id.",
+        null=True
+    )
+
+    type = models.CharField(
+        max_length=32,
+        choices=ENTITY_TYPE,
+        null=True
+    )
+
+    metadata = models.JSONField(
+        default=dict
+    )
+
     # TODO: specific to YouTube entities, move it somewhere else
     video_id_regex = RegexValidator(
         YOUTUBE_VIDEO_ID_REGEX, f"Video ID must match {YOUTUBE_VIDEO_ID_REGEX}"
@@ -48,6 +72,7 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
 
     # TODO: specific, will be moved to the metadata
     name = models.CharField(max_length=1000, help_text="Video Title", blank=True)
+    # TODO: specific, will be moved to the metadata
     description = models.TextField(
         null=True, help_text="Video Description from the web page", blank=True
     )
@@ -56,11 +81,13 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
     caption_text = models.TextField(
         null=True, help_text="Processed video caption (subtitle) text", blank=True
     )
+    # XXX: could be deleted, always null in prod
     embedding = models.BinaryField(
         null=True,
         help_text="NumPy array with BERT embedding for caption_text, shape("
         "EMBEDDING_LEN,)",
     )
+    # XXX: could be deleted, sometimes null sometimes empty in prod
     info = models.TextField(
         null=True, blank=True, help_text="Additional information (json)"
     )
@@ -116,6 +143,7 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
     # should be computed after every ml_train command (see the devops script)
     # SEE also: {feature}_quantile fields (defined below)
 
+    # XXX is that used?
     pareto_optimal = models.BooleanField(
         null=False,
         default=False,
@@ -327,6 +355,11 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
             tag, _ = Tag.objects.get_or_create(name=tag_name)
             video.tags.add(tag)
         return video
+
+    def save(self, *args, **kwargs):
+        self.uid = '{}:{}'.format(Entity.UID_YT_NAMESPACE, self.video_id)
+        self.type = Entity.TYPE_VIDEO
+        super().save(*args, **kwargs)
 
 
 class EntityCriteriaScore(models.Model):
