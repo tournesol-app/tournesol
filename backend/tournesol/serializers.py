@@ -22,7 +22,7 @@ from .models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
-    Video,
+    Entity,
     VideoCriteriaScore,
     VideoRateLater,
 )
@@ -32,7 +32,7 @@ class VideoSerializer(ModelSerializer):
     duration = serializers.SerializerMethodField()
 
     class Meta:
-        model = Video
+        model = Entity
         fields = [
             "video_id",
             "name",
@@ -59,7 +59,7 @@ class VideoSerializer(ModelSerializer):
 
     def create(self, validated_data):
         try:
-            return Video.create_from_video_id(validated_data["video_id"])
+            return Entity.create_from_video_id(validated_data["video_id"])
         except VideoNotFound:
             raise NotFound("The video has not been found. `video_id` may be incorrect.")
 
@@ -72,10 +72,10 @@ class VideoSerializer(ModelSerializer):
 
 class RelatedVideoSerializer(VideoSerializer):
     """
-    A video serializer that will create the Video object on validation
+    A video serializer that will create the Entity object on validation
     if it does not exist in the database yet.
 
-    Used by ModelSerializer(s) having one or more nested relations with Video,
+    Used by ModelSerializer(s) having one or more nested relations with Entity,
     and having the constraint to ensure that video instances exist before
     they can be saved properly.
     """
@@ -84,10 +84,10 @@ class RelatedVideoSerializer(VideoSerializer):
 
     def validate_video_id(self, value):
         try:
-            Video.objects.get(video_id=value)
+            Entity.objects.get(video_id=value)
         except ObjectDoesNotExist:
             try:
-                Video.create_from_video_id(value)
+                Entity.create_from_video_id(value)
             except VideoNotFound:
                 raise ValidationError("The video has not been found. `video_id` may be incorrect.")
         return value
@@ -123,7 +123,7 @@ class VideoRateLaterSerializer(ModelSerializer):
 
     def create(self, validated_data):
         video_id = validated_data.pop("video")["video_id"]
-        video = Video.objects.get(video_id=video_id)
+        video = Entity.objects.get(video_id=video_id)
         try:
             return super().create({"video": video, **validated_data})
         except IntegrityError:
@@ -185,8 +185,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         video_id_2 = validated_data.pop("video_2").get("video_id")
         # the validation performed by the RelatedVideoSerializer guarantees
         # that the videos submitted exist in the database
-        video_1 = Video.objects.get(video_id=video_id_1)
-        video_2 = Video.objects.get(video_id=video_id_2)
+        video_1 = Entity.objects.get(video_id=video_id_1)
+        video_2 = Entity.objects.get(video_id=video_id_2)
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
@@ -306,7 +306,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         video_id = attrs.pop("video_id")
         video_serializer = RelatedVideoSerializer(data={"video_id": video_id})
         video_serializer.is_valid(raise_exception=True)
-        video = Video.objects.get(video_id=video_id)
+        video = Entity.objects.get(video_id=video_id)
         user = self.context["request"].user
         if user.contributorvideoratings.filter(video=video).exists():
             raise ValidationError(

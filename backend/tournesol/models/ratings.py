@@ -7,16 +7,16 @@ from django.db import models
 from core.models import User
 from core.utils.models import WithFeatures
 
-from .video import Video
+from .entity import Entity
 
 
 class ContributorRating(models.Model, WithFeatures):
     """Predictions by individual contributor models."""
 
     video = models.ForeignKey(
-        Video,
+        Entity,
         on_delete=models.CASCADE,
-        help_text="Video being scored",
+        help_text="Entity being scored",
         related_name="contributorvideoratings",
     )
     user = models.ForeignKey(

@@ -25,7 +25,7 @@ CRITERIAS = settings.CRITERIAS
 LANGUAGES = settings.LANGUAGES
 
 
-class Video(models.Model, WithFeatures, WithEmbedding):
+class Entity(models.Model, WithFeatures, WithEmbedding):
     """One video."""
 
     video_id_regex = RegexValidator(
@@ -91,7 +91,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
     tags = models.ManyToManyField(Tag, blank=True)
 
-    # computed in the Video.recompute_pareto(),
+    # computed in the Entity.recompute_pareto(),
     #  called via the manage.py compute_quantile_pareto command
     # should be computed after every ml_train command (see the devops script)
     # SEE also: {feature}_quantile fields (defined below)
@@ -131,7 +131,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         f_1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in CRITERIAS])
         f_2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in CRITERIAS])
 
-        qs = Video.objects.filter(f_1).filter(f_2)
+        qs = Entity.objects.filter(f_1).filter(f_2)
         return qs.count() == 0
 
     @property
@@ -207,7 +207,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         # logging.warning("Computing quantiles...")
         for f in tqdm(CRITERIAS):
             # order by feature (descenting, because using the top quantile)
-            qs = Video.objects.filter(**{f + "__isnull": False}).order_by("-" + f)
+            qs = Entity.objects.filter(**{f + "__isnull": False}).order_by("-" + f)
             quantiles_f = np.linspace(0.0, 1.0, len(qs))
             for i, v in tqdm(enumerate(qs)):
                 quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
@@ -215,14 +215,14 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         logging.warning("Writing quantiles...")
         video_objects = []
         # TODO: use batched updates with bulk_update
-        for v in tqdm(Video.objects.all()):
+        for v in tqdm(Entity.objects.all()):
             for f in CRITERIAS:
                 setattr(
                     v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None)
                 )
             video_objects.append(v)
 
-        Video.objects.bulk_update(
+        Entity.objects.bulk_update(
             video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
         )
 
@@ -233,13 +233,13 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
         logging.warning("Computing pareto-optimality...")
         video_objects = []
-        for v in tqdm(Video.objects.all()):
+        for v in tqdm(Entity.objects.all()):
             new_pareto = v.get_pareto_optimal()
             if new_pareto != v.pareto_optimal:
                 v.pareto_optimal = new_pareto
             video_objects.append(v)
 
-        Video.objects.bulk_update(
+        Entity.objects.bulk_update(
             video_objects, batch_size=200, fields=["pareto_optimal"]
         )
 
@@ -308,10 +308,10 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
 
 class VideoCriteriaScore(models.Model):
-    """Scores per criteria for Videos"""
+    """Scores per criteria for Entities"""
 
     video = models.ForeignKey(
-        to=Video,
+        to=Entity,
         on_delete=models.CASCADE,
         help_text="Foreign key to the video",
         related_name="criteria_scores",
@@ -332,7 +332,7 @@ class VideoCriteriaScore(models.Model):
         help_text="Uncertainty about the video's score for the given criteria",
     )
     # TODO: ensure that the following works:
-    # quantiles are computed in the Video.recompute_quantiles(),
+    # quantiles are computed in the Entity.recompute_quantiles(),
     # called via the manage.py compute_quantile_pareto command
     # should be computed after every ml_train command (see the devops script)
     quantile = models.FloatField(
@@ -361,7 +361,7 @@ class VideoRateLater(models.Model):
         related_name="videoratelaters",
     )
     video = models.ForeignKey(
-        to=Video,
+        to=Entity,
         on_delete=models.CASCADE,
         help_text="Video in the rate later list",
         related_name="videoratelaters",
@@ -386,7 +386,7 @@ class VideoRatingThankYou(models.Model):
     """Thank you for recommendations."""
 
     video = models.ForeignKey(
-        Video, on_delete=models.CASCADE, help_text="Video thanked for"
+        Entity, on_delete=models.CASCADE, help_text="Video thanked for"
     )
     thanks_from = models.ForeignKey(
         User,
@@ -419,7 +419,7 @@ class VideoSelectorSkips(models.Model):
         help_text="Person who skips the videos",
     )
     video = models.ForeignKey(
-        to=Video,
+        to=Entity,
         on_delete=models.CASCADE,
         related_name="skips",
         null=False,
