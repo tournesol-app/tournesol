@@ -11,7 +11,7 @@ from core.models import User
 from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Tag, Entity
+from ..models import Entity, Tag
 
 
 class VideoApi(TestCase):
