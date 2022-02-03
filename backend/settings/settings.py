@@ -36,22 +36,24 @@ except FileNotFoundError:
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = server_settings.get('SECRET_KEY', 'django-insecure-(=8(97oj$3)!#j!+^&bh_+5v5&1pfpzmaos#z80c!ia5@9#jz1')
+SECRET_KEY = server_settings.get(
+    "SECRET_KEY", "django-insecure-(=8(97oj$3)!#j!+^&bh_+5v5&1pfpzmaos#z80c!ia5@9#jz1"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = server_settings.get('DEBUG', False)
+DEBUG = server_settings.get("DEBUG", False)
 
-ALLOWED_HOSTS = server_settings.get('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = server_settings.get("ALLOWED_HOSTS", ["127.0.0.1", "localhost"])
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
 # It is considered quite unsafe to use the /tmp directory, so we might as well use a dedicated root folder in HOME
 base_folder = f"{os.environ.get('HOME')}/.tournesol"
-STATIC_ROOT = server_settings.get('STATIC_ROOT', f"{base_folder}{STATIC_URL}")
-MEDIA_ROOT = server_settings.get('MEDIA_ROOT', f"{base_folder}{MEDIA_URL}")
+STATIC_ROOT = server_settings.get("STATIC_ROOT", f"{base_folder}{STATIC_URL}")
+MEDIA_ROOT = server_settings.get("MEDIA_ROOT", f"{base_folder}{MEDIA_URL}")
 
-MAIN_URL = server_settings.get('MAIN_URL', 'http://localhost:8000/')
+MAIN_URL = server_settings.get("MAIN_URL", "http://localhost:8000/")
 
 # Application definition
 
@@ -65,50 +67,55 @@ INSTALLED_APPS = [
     "django_prometheus",
     "core",
     "tournesol",
+    "twitterbot",
     "ml",
     "oauth2_provider",
     "corsheaders",
     "rest_framework",
     "drf_spectacular",
-    'rest_registration',
+    "rest_registration",
 ]
 
-REST_REGISTRATION_MAIN_URL = server_settings.get('REST_REGISTRATION_MAIN_URL', 'http://localhost:3000/')
+REST_REGISTRATION_MAIN_URL = server_settings.get(
+    "REST_REGISTRATION_MAIN_URL", "http://localhost:3000/"
+)
 REST_REGISTRATION = {
-    'REGISTER_VERIFICATION_ENABLED': True,
-    'REGISTER_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'verify-user/',
-    'REGISTER_VERIFICATION_ONE_TIME_USE': True,
-    'RESET_PASSWORD_VERIFICATION_ENABLED': True,
-    'RESET_PASSWORD_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'reset-password/',
-    'RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND': False, # to be set to True to prevent user enumeration
-    'RESET_PASSWORD_VERIFICATION_ONE_TIME_USE': True,
-    'REGISTER_EMAIL_SERIALIZER_CLASS': 'core.serializers.user.RegisterEmailSerializer',
-    'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
-    'REGISTER_EMAIL_VERIFICATION_URL': REST_REGISTRATION_MAIN_URL + 'verify-email/',
-    'REGISTER_SERIALIZER_CLASS': 'core.serializers.user.RegisterUserSerializer',
-    'PROFILE_SERIALIZER_CLASS': 'core.serializers.user.UserProfileSerializer',
-    'VERIFICATION_FROM_EMAIL': 'noreply@tournesol.app',
-    'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
-        'body': 'accounts/register/body.txt',
-        'subject': 'accounts/register/subject.txt'
+    "REGISTER_VERIFICATION_ENABLED": True,
+    "REGISTER_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "verify-user/",
+    "REGISTER_VERIFICATION_ONE_TIME_USE": True,
+    "RESET_PASSWORD_VERIFICATION_ENABLED": True,
+    "RESET_PASSWORD_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "reset-password/",
+    "RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND": False,  # to be set to True to prevent user enumeration
+    "RESET_PASSWORD_VERIFICATION_ONE_TIME_USE": True,
+    "REGISTER_EMAIL_SERIALIZER_CLASS": "core.serializers.user.RegisterEmailSerializer",
+    "REGISTER_EMAIL_VERIFICATION_ENABLED": True,
+    "REGISTER_EMAIL_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "verify-email/",
+    "REGISTER_SERIALIZER_CLASS": "core.serializers.user.RegisterUserSerializer",
+    "PROFILE_SERIALIZER_CLASS": "core.serializers.user.UserProfileSerializer",
+    "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
+    "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
+        "body": "accounts/register/body.txt",
+        "subject": "accounts/register/subject.txt",
     },
-    'REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES': {
-        'body': 'accounts/register_email/body.txt',
-        'subject': 'accounts/register_email/subject.txt'
+    "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
+        "body": "accounts/register_email/body.txt",
+        "subject": "accounts/register_email/subject.txt",
     },
-    'RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES': {
-        'body': 'accounts/reset_password/body.txt',
-        'subject': 'accounts/reset_password/subject.txt'
-    }
+    "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES": {
+        "body": "accounts/reset_password/body.txt",
+        "subject": "accounts/reset_password/subject.txt",
+    },
 }
 
-EMAIL_BACKEND = server_settings.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = server_settings.get('EMAIL_HOST', '')
-EMAIL_PORT = server_settings.get('EMAIL_PORT', '')
-EMAIL_HOST_USER = server_settings.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = server_settings.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = server_settings.get('EMAIL_USE_TLS', '')
-EMAIL_USE_SSL = server_settings.get('EMAIL_USE_SSL', '')
+EMAIL_BACKEND = server_settings.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = server_settings.get("EMAIL_HOST", "")
+EMAIL_PORT = server_settings.get("EMAIL_PORT", "")
+EMAIL_HOST_USER = server_settings.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = server_settings.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = server_settings.get("EMAIL_USE_TLS", "")
+EMAIL_USE_SSL = server_settings.get("EMAIL_USE_SSL", "")
 
 
 # Modèle utilisateur utilisé par Django (1.5+)
@@ -158,20 +165,29 @@ WSGI_APPLICATION = "settings.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = OrderedDict([
-    ['default', {
-        'ENGINE': 'django_prometheus.db.backends.postgresql',
-        'NAME': server_settings.get('DATABASE_NAME', 'tournesol'),
-        'USER': server_settings.get('DATABASE_USER', 'postgres'),
-        'PASSWORD': server_settings.get('DATABASE_PASSWORD', 'password'),
-        'HOST': server_settings.get("DATABASE_HOST", 'localhost'),
-        'PORT': server_settings.get("DATABASE_PORT", 5432),
-        'NUMBER': 42
-    }]
-])
+DATABASES = OrderedDict(
+    [
+        [
+            "default",
+            {
+                "ENGINE": "django_prometheus.db.backends.postgresql",
+                "NAME": server_settings.get("DATABASE_NAME", "tournesol"),
+                "USER": server_settings.get("DATABASE_USER", "postgres"),
+                "PASSWORD": server_settings.get("DATABASE_PASSWORD", "password"),
+                "HOST": server_settings.get("DATABASE_HOST", "localhost"),
+                "PORT": server_settings.get("DATABASE_PORT", 5432),
+                "NUMBER": 42,
+            },
+        ]
+    ]
+)
 
-DRF_RECAPTCHA_PUBLIC_KEY = server_settings.get("DRF_RECAPTCHA_PUBLIC_KEY", 'dsfsdfdsfsdfsdfsdf')
-DRF_RECAPTCHA_SECRET_KEY = server_settings.get("DRF_RECAPTCHA_SECRET_KEY", 'dsfsdfdsfsdf')
+DRF_RECAPTCHA_PUBLIC_KEY = server_settings.get(
+    "DRF_RECAPTCHA_PUBLIC_KEY", "dsfsdfdsfsdfsdfsdf"
+)
+DRF_RECAPTCHA_SECRET_KEY = server_settings.get(
+    "DRF_RECAPTCHA_SECRET_KEY", "dsfsdfdsfsdf"
+)
 
 
 # Password validation
@@ -232,7 +248,7 @@ OAUTH2_PROVIDER = {
         "REFRESH_TOKEN_EXPIRE_SECONDS", 604800
     ),  # 1w
 }
-LOGIN_URL = server_settings.get('LOGIN_URL', '')
+LOGIN_URL = server_settings.get("LOGIN_URL", "")
 
 CORS_ALLOWED_ORIGINS = server_settings.get("CORS_ALLOWED_ORIGINS", [])
 CORS_ALLOW_CREDENTIALS = server_settings.get("CORS_ALLOW_CREDENTIALS", False)
@@ -271,13 +287,11 @@ REST_FRAMEWORK = {
         # one option is to refactor the GET /users/me/comparisons/ view to
         # include the video metadata in the response, allowing the users to
         # get all comparisons + videos information in only one request
-
         # default rates applied to all requests
         "anon_burst": "120/min",
         "user_burst": "1200/min",
         "anon_sustained": "3600/hour",
         "user_sustained": "3600/hour",
-
         # specific rates for specific parts of the API
         "api_video_post": "50/min",
         "api_users_me_export": "10/min",
@@ -312,53 +326,55 @@ MAX_FEATURE_WEIGHT = 8
 SPECTACULAR_SETTINGS = {
     # Split data components into 2 distinct schemas for request and response.
     # It helps with the support of "read_only" fields by code generators.
-    'COMPONENT_SPLIT_REQUEST': True,
-    'SORT_OPERATION_PARAMETERS': False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SORT_OPERATION_PARAMETERS": False,
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "persistAuthorization": True,
         "oauth2RedirectUrl": MAIN_URL + "docs/",
     },
-    'SWAGGER_UI_OAUTH2_CONFIG': {
-        "clientId": server_settings.get("SWAGGER_UI_OAUTH2_CLIENT_ID",""),
-        "clientSecret": server_settings.get("SWAGGER_UI_OAUTH2_CLIENT_SECRET",""),
+    "SWAGGER_UI_OAUTH2_CONFIG": {
+        "clientId": server_settings.get("SWAGGER_UI_OAUTH2_CLIENT_ID", ""),
+        "clientSecret": server_settings.get("SWAGGER_UI_OAUTH2_CLIENT_SECRET", ""),
         "appName": "Swagger UI",
         "scopes": "read write groups",
     },
-    'SECURITY': [{
-        'oauth2': ['read write groups'],
-    }],
-    'OAUTH2_FLOWS': ["password"],
-    'OAUTH2_AUTHORIZATION_URL': None,
-    'OAUTH2_TOKEN_URL': MAIN_URL + "o/token/",
-    'OAUTH2_REFRESH_URL': MAIN_URL + "o/token/",
-    'OAUTH2_SCOPES': "read write groups",
-    'TITLE': 'Tournesol API',
+    "SECURITY": [
+        {
+            "oauth2": ["read write groups"],
+        }
+    ],
+    "OAUTH2_FLOWS": ["password"],
+    "OAUTH2_AUTHORIZATION_URL": None,
+    "OAUTH2_TOKEN_URL": MAIN_URL + "o/token/",
+    "OAUTH2_REFRESH_URL": MAIN_URL + "o/token/",
+    "OAUTH2_SCOPES": "read write groups",
+    "TITLE": "Tournesol API",
 }
 
 YOUTUBE_API_KEY = server_settings.get("YOUTUBE_API_KEY", "")
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
     },
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'default_cache_table',
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "default_cache_table",
     }
 }
 
-VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600 # 2 days
+VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
