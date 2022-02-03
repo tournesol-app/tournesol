@@ -33,20 +33,26 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
     These fields are kept as-is for now to ease the refactor of the Tournesol
     app, and will be replaced in the future by the `metadata` JSON field.
     """
+    # TODO: specific to YouTube entities, move it somewhere else
     video_id_regex = RegexValidator(
         YOUTUBE_VIDEO_ID_REGEX, f"Video ID must match {YOUTUBE_VIDEO_ID_REGEX}"
     )
 
+    # TODO: will be replaced by the `uid` field
     video_id = models.CharField(
         max_length=20,
         unique=True,
         help_text=f"Video ID from YouTube URL, matches {YOUTUBE_VIDEO_ID_REGEX}",
         validators=[video_id_regex],
     )
+
+    # TODO: specific, will be moved to the metadata
     name = models.CharField(max_length=1000, help_text="Video Title", blank=True)
     description = models.TextField(
         null=True, help_text="Video Description from the web page", blank=True
     )
+
+    # TODO: specific, will be moved to the metadata
     caption_text = models.TextField(
         null=True, help_text="Processed video caption (subtitle) text", blank=True
     )
@@ -58,7 +64,9 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
     info = models.TextField(
         null=True, blank=True, help_text="Additional information (json)"
     )
+    # TODO: specific, will be moved to the metadata
     duration = models.DurationField(null=True, help_text="Video duration", blank=True)
+    # TODO: specific, will be moved to the metadata
     language = models.CharField(
         null=True,
         blank=True,
@@ -66,15 +74,20 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
         help_text="Language of the video",
         choices=LANGUAGES,
     )
+    # TODO: specific, will be moved to the metadata
     publication_date = models.DateField(
         null=True, help_text="Video publication date", blank=True
     )
+
     metadata_timestamp = models.DateTimeField(
         blank=True,
         null=True,
         help_text="Timestamp the metadata was uploaded",
     )
+    # TODO: specific, will be moved to the metadata
     views = models.BigIntegerField(null=True, help_text="Number of views", blank=True)
+
+    # TODO: specific, will be moved to the metadata
     uploader = models.CharField(
         max_length=1000,
         null=True,
@@ -91,9 +104,11 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
         auto_now_add=True,
         help_text="Last time fetch of metadata was attempted",
     )
+    # TODO: specific, will be moved to the metadata
     wrong_url = models.BooleanField(default=False, help_text="Is the URL incorrect")
+    # TODO: specific, will be moved to the metadata
     is_unlisted = models.BooleanField(default=False, help_text="Is the video unlisted")
-
+    # TODO: specific, will be moved to the metadata
     tags = models.ManyToManyField(Tag, blank=True)
 
     # computed in the Entity.recompute_pareto(),
@@ -107,6 +122,7 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
         help_text="Is the video pareto-optimal based on aggregated scores?",
     )
 
+    # TODO: should be moved in a n-n relation with Poll
     rating_n_ratings = models.IntegerField(
         null=False,
         default=0,
@@ -114,6 +130,7 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
         "from certified contributors",
     )
 
+    # TODO: should be moved in a n-n relation with Poll
     rating_n_contributors = models.IntegerField(
         null=False,
         default=0,
@@ -313,8 +330,10 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
 
 
 class VideoCriteriaScore(models.Model):
-    """Scores per criteria for Entities"""
-
+    """
+    The score of an Entity for a given Criteria, in the scope of a given
+    Poll.
+    """
     video = models.ForeignKey(
         to=Entity,
         on_delete=models.CASCADE,
