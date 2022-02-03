@@ -17,7 +17,7 @@ from .models import (
 @admin.register(Entity)
 class VideoAdmin(admin.ModelAdmin):
     list_display = (
-        'video_id',
+        'uid',
         'name',
         'uploader',
         'publication_date',
@@ -26,8 +26,9 @@ class VideoAdmin(admin.ModelAdmin):
         'language',
         'link_to_youtube',
     )
-    search_fields = ('video_id', 'name', 'uploader')
+    search_fields = ('uid', 'name', 'uploader')
     list_filter = (
+        'type',
         ('language', admin.AllValuesFieldListFilter),
     )
     actions = ["update_metadata"]

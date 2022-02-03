@@ -33,6 +33,9 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
     These fields are kept as-is for now to ease the refactor of the Tournesol
     app, and will be replaced in the future by the `metadata` JSON field.
     """
+    class Meta:
+        verbose_name_plural = "entities"
+
     UID_YT_NAMESPACE = 'yt'
 
     TYPE_VIDEO = 'video'
