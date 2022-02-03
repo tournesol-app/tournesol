@@ -329,7 +329,7 @@ class Entity(models.Model, WithFeatures, WithEmbedding):
         return video
 
 
-class VideoCriteriaScore(models.Model):
+class EntityCriteriaScore(models.Model):
     """
     The score of an Entity for a given Criteria, in the scope of a given
     Poll.

@@ -8,8 +8,8 @@ from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    EntityCriteriaScore,
     User,
-    VideoCriteriaScore,
 )
 
 """
@@ -78,10 +78,10 @@ def save_data(video_scores, contributor_rating_scores):
     """
     Saves in the scores for Entities and ContributorRatings
     """
-    VideoCriteriaScore.objects.all().delete()
-    VideoCriteriaScore.objects.bulk_create(
+    EntityCriteriaScore.objects.all().delete()
+    EntityCriteriaScore.objects.bulk_create(
         [
-            VideoCriteriaScore(
+            EntityCriteriaScore(
                 video_id=video_id,
                 criteria=criteria,
                 score=score,

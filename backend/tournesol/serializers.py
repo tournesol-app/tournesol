@@ -23,7 +23,7 @@ from .models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     Entity,
-    VideoCriteriaScore,
+    EntityCriteriaScore,
     VideoRateLater,
 )
 
@@ -95,7 +95,7 @@ class RelatedVideoSerializer(VideoSerializer):
 
 class VideoCriteriaScoreSerializer(ModelSerializer):
     class Meta:
-        model = VideoCriteriaScore
+        model = EntityCriteriaScore
         fields = ["criteria", "score", "uncertainty", "quantile"]
 
 

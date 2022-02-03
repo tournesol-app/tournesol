@@ -10,7 +10,7 @@ from .models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     Entity,
-    VideoCriteriaScore,
+    EntityCriteriaScore,
 )
 
 
@@ -38,7 +38,7 @@ class VideoAdmin(admin.ModelAdmin):
             video.refresh_youtube_metadata(force=True)
 
 
-@admin.register(VideoCriteriaScore)
+@admin.register(EntityCriteriaScore)
 class VideoCriteriaScoreAdmin(admin.ModelAdmin):
     pass
 
