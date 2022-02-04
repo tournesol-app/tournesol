@@ -164,6 +164,7 @@
 }
 
 .video_text {
+  padding-top: 5px;
   color: var(--yt-endpoint-color, var(--yt-spec-text-secondary));
   font-family: "Roboto", "Arial", sans-serif;
   word-break: break-word;

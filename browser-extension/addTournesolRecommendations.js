@@ -19,6 +19,28 @@ document.addEventListener('yt-navigate-finish', process);
 if (document.body) process();
 else document.addEventListener('DOMContentLoaded', process);
 
+
+const convertDurationToClockDuration = (duration) => {
+  const roundToTwoDigits = (number) => {
+    return number < 10 ? `0${number}` : `${number}`;
+  };
+  const hours = Math.floor(duration / 3600);
+  const minutes = roundToTwoDigits(Math.floor((duration % 3600) / 60));
+  const seconds = roundToTwoDigits(duration % 60);
+  return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
+};
+
+
+const calculateScore= (video) => {
+  let total_score=0
+  if ('criteria_scores' in video) {
+    video.criteria_scores?.forEach((criteria) => {
+      total_score += criteria.score != undefined ? 10 * criteria.score : 0;
+    });
+  }
+  return total_score
+}
+
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
@@ -139,20 +161,15 @@ const getTournesolComponent = () => {
       video_thumb.src = `https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`;
       thumb_div.append(video_thumb);
 
-      // TODO: This is commented out until our backend serves again the video duration in the metadata
-      // const video_duration = document.createElement('p');
-      // video_duration.setAttribute('class', 'time_span');
+       const video_duration = document.createElement('p');
+       video_duration.setAttribute('class', 'time_span');
 
-      // Remove useless '00:' as hour value (we keep it if it is as minute value)
-      // var formatted_video_duration = video.duration;
-      // if (formatted_video_duration.startsWith('00:'))
-      //   formatted_video_duration = formatted_video_duration.substring(
-      //     3,
-      //     formatted_video_duration.length,
-      //   );
+      // Convert SECONDS to hh:mm:ss or mm:ss format depending on the duration
+      
+        var formatted_video_duration = convertDurationToClockDuration(video.duration);
 
-      // video_duration.append(document.createTextNode(formatted_video_duration));
-      // thumb_div.append(video_duration);
+       video_duration.append(document.createTextNode(formatted_video_duration));
+       thumb_div.append(video_duration);
 
       video_box.append(thumb_div);
 
@@ -170,17 +187,18 @@ const getTournesolComponent = () => {
       video_uploader.append(video.uploader);
       details_div.append(video_uploader);
 
-      // Tournesol score
-      // const video_score = document.createElement('p');
-      // video_score.className = 'video_text';
-      // video_score.append(
-      //   'Rated ' +
-      //     Number(video.tournesol_score).toFixed(0) +
-      //     ' points by ' +
-      //     video.rating_n_experts +
-      //     ' users',
-      // );
-      // details_div.append(video_score);
+
+
+       const video_score = document.createElement('p');
+       video_score.className = 'video_text';
+       video_score.append(
+         'Rated ' +
+           calculateScore(video).toFixed(0) +
+           ' points by ' +
+           video.rating_n_contributors +
+           ' contributors',
+       );
+       details_div.append(video_score);
 
       const video_link = document.createElement('a');
       video_link.className = 'video_link';
