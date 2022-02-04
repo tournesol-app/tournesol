@@ -163,7 +163,7 @@ class VideoViewSet(mixins.CreateModelMixin,
         unsafe = request.query_params.get('unsafe')
         show_unsafe = False
         if unsafe:
-            show_unsafe = unsafe
+            show_unsafe = unsafe == 'true'
 
         queryset = queryset.annotate(
             total_score=Sum(F("criteria_scores__score") * criteria_weight)
