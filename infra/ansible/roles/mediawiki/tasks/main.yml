@@ -133,7 +133,7 @@
   git:
     repo: "https://github.com/Schine/MW-OAuth2Client.git"
     dest: "/var/lib/mediawiki/extensions/MW-OAuth2Client"
-    version: v0.4
+    version: "{{mediawiki_oauth2client_tag}}"
   notify:
     - Get Mediawiki OAuth2Client extension submodules
     - Run Composer for Mediawiki OAuth2Client extension

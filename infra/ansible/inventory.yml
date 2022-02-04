@@ -174,3 +174,4 @@ all:
           - name: Math
             url: https://github.com/wikimedia/mediawiki-extensions-Math/archive/93b1252386dcd8658a285571a76cea0c6852bb0e.zip
             output_dir: mediawiki-extensions-Math-93b1252386dcd8658a285571a76cea0c6852bb0e
+        mediawiki_oauth2client_tag: v0.4
