@@ -1093,6 +1093,11 @@ paths:
         description: "Return videos published **after** this date.  \nAccepted formats:\
           \ ISO 8601 datetime (e.g `2021-12-01T12:45:00`) or legacy: `dd-mm-yy-hh-mm-ss`."
       - in: query
+        name: unsafe
+        schema:
+          type: boolean
+        description: Return videos mark as unsafe
+      - in: query
         name: largely_recommended
         schema:
           type: integer
