@@ -187,18 +187,15 @@ const getTournesolComponent = () => {
       video_uploader.append(video.uploader);
       details_div.append(video_uploader);
 
-
-
+      
        const video_score = document.createElement('p');
        video_score.className = 'video_text';
-       video_score.append(
-         'Rated ' +
-           calculateScore(video).toFixed(0) +
-           ' points by ' +
-           video.rating_n_contributors +
-           ' contributors',
-       );
+       video_score.innerHTML =
+         `🌻 <strong>${calculateScore(video).toFixed(0)} &nbsp·&nbsp</strong>
+         ${video.rating_n_ratings} comparisons by ${video.rating_n_contributors}
+         contributors`;
        details_div.append(video_score);
+
 
       const video_link = document.createElement('a');
       video_link.className = 'video_link';
