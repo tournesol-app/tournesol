@@ -173,6 +173,26 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   );
 });
 
+const SafeTournesolScoreWrapper = function SafeTournesolScoreWrapper({
+  unsafe,
+  unsafe_cause,
+  children,
+}: {
+  unsafe: boolean;
+  unsafe_cause: string;
+  children?: React.ReactNode;
+}) {
+  return unsafe ? (
+    <Tooltip title={unsafe_cause} placement="bottom">
+      <span>
+        <React.Fragment>{children}</React.Fragment>
+      </span>
+    </Tooltip>
+  ) : (
+    <React.Fragment>{children}</React.Fragment>
+  );
+};
+
 function VideoCard({
   video,
   actions = [],
@@ -193,6 +213,8 @@ function VideoCard({
   let min_score = Infinity;
   let max_criteria = '';
   let min_criteria = '';
+  let unsafe = false;
+  let unsafe_cause = '';
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -223,6 +245,14 @@ function VideoCard({
 
   const nbRatings = video.rating_n_ratings;
   const nbContributors = video.rating_n_contributors;
+  if (nbContributors != null && nbContributors <= 1) {
+    unsafe = true;
+    unsafe_cause = t('video.unsafeNotEnoughContributor');
+    if (total_score < 0) {
+      unsafe = true;
+      unsafe_cause = t('video.unsafeNegativeRating');
+    }
+  }
 
   return (
     <Grid container spacing={1} className={classes.main}>
@@ -308,17 +338,28 @@ function VideoCard({
                 display="flex"
                 alignItems="center"
                 data-testid="video-card-overall-score"
+                {...(unsafe == true && {
+                  sx: {
+                    filter: 'grayscale(100%)',
+                    opacity: 0.6,
+                  },
+                })}
               >
-                <img
-                  className="tournesol"
-                  src={'/svg/tournesol.svg'}
-                  alt="logo"
-                  title="Overall score"
-                  width={32}
-                />
-                <span className={classes.nb_tournesol}>
-                  {total_score.toFixed(0)}
-                </span>
+                <SafeTournesolScoreWrapper
+                  unsafe={unsafe}
+                  unsafe_cause={unsafe_cause}
+                >
+                  <img
+                    className="tournesol"
+                    src={'/svg/tournesol.svg'}
+                    alt="logo"
+                    title="Overall score"
+                    width={32}
+                  />
+                  <span className={classes.nb_tournesol}>
+                    {total_score.toFixed(0)}
+                  </span>
+                </SafeTournesolScoreWrapper>
               </Box>
             )}
 
