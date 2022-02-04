@@ -232,7 +232,7 @@ function VideoCard({
 
   const nbRatings = video.rating_n_ratings;
   const nbContributors = video.rating_n_contributors;
-  if (nbContributors != null && nbContributors > 3) {
+  if (nbContributors != null && nbContributors > 0) {
     if (total_score > 0) {
       safe = true;
     } else {
