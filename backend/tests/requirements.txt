@@ -14,7 +14,7 @@ pytest-html==3.1.1
 pytest-mock==3.6.1
 
 # Pytest for django
-pytest-django==4.4.0
+pytest-django==4.5.2
 
 # Factory tools
 factory-boy==3.2.1
