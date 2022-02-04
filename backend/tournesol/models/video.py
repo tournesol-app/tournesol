@@ -431,11 +431,3 @@ class VideoSelectorSkips(models.Model):
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"
-
-
-class VideoSafe():
-    is_safe = False
-    cause = ""
-
-    def __str__(self):
-        return f"{self.is_safe}:{self.cause}"
