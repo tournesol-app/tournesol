@@ -23,6 +23,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
+import WarningIcon from '@mui/icons-material/Warning';
 import { convertDurationToClockDuration } from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
@@ -83,6 +84,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'normal',
     fontSize: '0.9em',
     color: theme.palette.neutral.main,
+  },
+  safe_warning: {
+    fontSize: '32px',
+    height: '32px',
+    width: '32px',
+    marginLeft: '5px',
   },
   contributors: {
     fontFamily: 'Poppins',
@@ -193,6 +200,8 @@ function VideoCard({
   let min_score = Infinity;
   let max_criteria = '';
   let min_criteria = '';
+  let safe = false;
+  let safeCause = '';
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -223,6 +232,15 @@ function VideoCard({
 
   const nbRatings = video.rating_n_ratings;
   const nbContributors = video.rating_n_contributors;
+  if (nbContributors != null && nbContributors > 3) {
+    if (total_score > 0) {
+      safe = true;
+    } else {
+      safeCause = t('video.unsafeNegativeRating');
+    }
+  } else {
+    safeCause = t('video.unsafeNotEnoughContributor');
+  }
 
   return (
     <Grid container spacing={1} className={classes.main}>
@@ -319,6 +337,13 @@ function VideoCard({
                 <span className={classes.nb_tournesol}>
                   {total_score.toFixed(0)}
                 </span>
+                {safe != null && safe == false && (
+                  <Tooltip title={safeCause} placement="bottom">
+                    <span className={classes.safe_warning}>
+                      <WarningIcon color="warning" fontSize="inherit" />
+                    </span>
+                  </Tooltip>
+                )}
               </Box>
             )}
 
