@@ -93,7 +93,9 @@
     "thisYear": "Cette année",
     "uploadDate": "Mises en ligne",
     "language": "Langues",
-    "uploader": "Chaîne"
+    "uploader": "Chaîne",
+    "safeTile" : "Sécurité",
+    "unsafe": "Mode non sécurisé"
   },
   "ratings": {
     "allRatingsMarkedPublic": "Toutes vos comparaisons sont maintenant publiques.",

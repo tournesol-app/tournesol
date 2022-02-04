@@ -92,7 +92,9 @@
     "thisYear": "This year",
     "uploadDate": "Upload date",
     "language": "Language",
-    "uploader": "Uploader"
+    "uploader": "Uploader",
+    "safeTile": "Security",
+    "unsafe": "Unsafe"
   },
   "ratings": {
     "allRatingsMarkedPublic": "All your ratings have been marked as public.",
