@@ -15,7 +15,7 @@ from .models import (
 
 
 @admin.register(Entity)
-class VideoAdmin(admin.ModelAdmin):
+class EntityAdmin(admin.ModelAdmin):
     list_display = (
         'uid',
         'name',
@@ -35,12 +35,13 @@ class VideoAdmin(admin.ModelAdmin):
 
     @admin.action(description="Force metadata refresh of selected videos")
     def update_metadata(self, request, queryset):
-        for video in queryset:
-            video.refresh_youtube_metadata(force=True)
+        for entity in queryset.iterator():
+            if entity.type == Entity.TYPE_VIDEO:
+                entity.refresh_youtube_metadata(force=True)
 
 
 @admin.register(EntityCriteriaScore)
-class VideoCriteriaScoreAdmin(admin.ModelAdmin):
+class EntityCriteriaScoreAdmin(admin.ModelAdmin):
     pass
 
 
