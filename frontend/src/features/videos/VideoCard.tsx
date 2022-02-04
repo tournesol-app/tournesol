@@ -4,7 +4,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import {
-  Typography,
   Grid,
   Box,
   Collapse,
@@ -27,6 +26,8 @@ import {
   convertDurationToClockDuration,
   videoIdFromEntity,
 } from 'src/utils/video';
+import VideoCardScores from './VideoCardScores';
+import VideoCardTitle from './VideoCardTitle';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const useStyles = makeStyles((theme) => ({
@@ -44,28 +45,6 @@ const useStyles = makeStyles((theme) => ({
   },
   youtube_complements_p: {
     marginRight: '12px',
-  },
-  nb_tournesol: {
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '2em',
-    lineHeight: '32px',
-  },
-  ratings: {
-    marginRight: '4px',
-    fontFamily: 'Poppins',
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '0.9em',
-    color: theme.palette.neutral.main,
-  },
-  contributors: {
-    fontFamily: 'Poppins',
-    fontStyle: 'italic',
-    fontWeight: 500,
-    fontSize: '0.9em',
-    color: '#B38B00',
   },
   top: {
     display: 'flex',
@@ -124,9 +103,7 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
       position="relative"
       height="100%"
       onClick={() => setIsDurationVisible(false)}
-      // Use spread operator to work around missing typing for 'ref' in MUI `Box`
-      // See https://github.com/mui-org/material-ui/issues/17010
-      {...{ ref }}
+      ref={ref}
     >
       {isDurationVisible && duration && (
         <Box
@@ -136,6 +113,7 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
           bgcolor="rgba(0,0,0,0.5)"
           color="#fff"
           px={1}
+          fontFamily="system-ui, arial, sans-serif"
           fontSize="0.8em"
           fontWeight="bold"
           sx={{ pointerEvents: 'none' }}
@@ -189,63 +167,20 @@ function VideoCard({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const { getCriteriaLabel } = useCurrentPoll();
-
-  const videoId = videoIdFromEntity(video);
-  const tournesolScore =
-    'tournesol_score' in video ? video.tournesol_score : null;
-
-  let max_score = -Infinity;
-  let min_score = Infinity;
-  let max_criteria = '';
-  let min_criteria = '';
-  let unsafe = false;
-  let unsafe_cause = '';
+  const videoId = video.video_id;
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
-  if ('criteria_scores' in video) {
-    video.criteria_scores?.forEach((criteria) => {
-      if (
-        criteria.score != undefined &&
-        criteria.score > max_score &&
-        criteria.criteria != 'largely_recommended'
-      ) {
-        max_score = criteria.score;
-        max_criteria = criteria.criteria;
-      }
-      if (
-        criteria.score != undefined &&
-        criteria.score < min_score &&
-        criteria.criteria != 'largely_recommended'
-      ) {
-        min_score = criteria.score;
-        min_criteria = criteria.criteria;
-      }
-    });
-  }
-
-  const nbRatings = video.rating_n_ratings;
-  const nbContributors = video.rating_n_contributors;
-  if (nbContributors != null && nbContributors <= 1) {
-    unsafe = true;
-    unsafe_cause = t('video.unsafeNotEnoughContributor');
-  }
-  if (tournesolScore && tournesolScore < 0) {
-    unsafe = true;
-    unsafe_cause = t('video.unsafeNegativeRating');
-  }
-
   return (
     <Grid container spacing={1} sx={mainSx}>
       <Grid
         item
         xs={12}
-        sm={compact ? 12 : 4}
-        sx={{ aspectRatio: '16 / 9', padding: '0 !important' }}
+        sm={compact ? 12 : 'auto'}
+        style={{ aspectRatio: '16 / 9', padding: 0, width: '240px' }}
       >
         <ReactPlayer
           url={`https://youtube.com/watch?v=${videoId}`}
@@ -262,29 +197,12 @@ function VideoCard({
       <Grid
         item
         xs={12}
-        sm={compact ? 12 : 7}
+        sm={compact ? 12 : true}
         data-testid="video-card-info"
         container
         direction="column"
       >
-        <div className={classes.top}>
-          <Typography
-            sx={{
-              fontFamily: 'Poppins',
-              textAlign: 'left',
-              // Limit text to 3 lines and show ellipsis
-              display: '-webkit-box',
-              overflow: 'hidden',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              fontSize: compact ? '1em !important' : '',
-            }}
-            variant={compact ? 'inherit' : 'h5'}
-            title={video.name}
-          >
-            {video.name}
-          </Typography>
-        </div>
+        <VideoCardTitle video={video} />
         <div className={classes.youtube_complements}>
           {video.views && (
             <span className={classes.youtube_complements_p}>
@@ -299,115 +217,24 @@ function VideoCard({
               {video.publication_date}
             </span>
           )}
-          <Tooltip
-            title={`${t('video.seeRecommendedVideosSameUploader')}`}
-            placement="bottom"
-          >
-            <div>
-              {video.uploader && (
-                <Link
-                  color="inherit"
-                  component={RouterLink}
-                  to={`/recommendations?uploader=${encodeURIComponent(
-                    video.uploader
-                  )}`}
-                >
-                  {video.uploader}
-                </Link>
-              )}
-            </div>
-          </Tooltip>
+          {video.uploader && (
+            <Tooltip
+              title={`${t('video.seeRecommendedVideosSameUploader')}`}
+              placement="bottom"
+            >
+              <Link
+                color="inherit"
+                component={RouterLink}
+                to={`/recommendations?uploader=${encodeURIComponent(
+                  video.uploader
+                )}`}
+              >
+                {video.uploader}
+              </Link>
+            </Tooltip>
+          )}
         </div>
-        {!compact && (
-          <Box
-            display="flex"
-            flexWrap="wrap"
-            alignItems="center"
-            sx={{ gap: '12px' }}
-          >
-            {tournesolScore != null && (
-              <SafeTournesolScoreWrapper
-                unsafe={unsafe}
-                unsafe_cause={unsafe_cause}
-              >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  data-testid="video-card-overall-score"
-                  {...(unsafe == true && {
-                    sx: {
-                      filter: 'grayscale(100%)',
-                      opacity: 0.6,
-                    },
-                  })}
-                >
-                  <img
-                    className="tournesol"
-                    src={'/svg/tournesol.svg'}
-                    alt="logo"
-                    title="Overall score"
-                    width={32}
-                  />
-                  <span className={classes.nb_tournesol}>
-                    {tournesolScore.toFixed(0)}
-                  </span>
-                </Box>
-              </SafeTournesolScoreWrapper>
-            )}
-
-            {nbRatings != null && nbRatings > 0 && (
-              <Box data-testid="video-card-ratings">
-                <span className={classes.ratings}>
-                  <Trans
-                    t={t}
-                    i18nKey="video.nbComparisonsBy"
-                    count={nbRatings}
-                  >
-                    {{ count: nbRatings }} comparisons by
-                  </Trans>
-                </span>{' '}
-                <span className={classes.contributors}>
-                  <Trans
-                    t={t}
-                    i18nKey="video.nbContributors"
-                    count={nbContributors}
-                  >
-                    {{ count: nbContributors }} contributors
-                  </Trans>
-                </span>
-              </Box>
-            )}
-
-            {max_criteria !== '' && min_criteria !== max_criteria && (
-              <Box
-                data-testid="video-card-minmax-criterias"
-                display="flex"
-                alignItems="center"
-                sx={{
-                  fontFamily: 'Poppins',
-                  fontStyle: 'normal',
-                  fontWeight: 'normal',
-                  fontSize: '0.9em',
-                  color: '#847F6E',
-                  gap: '8px',
-                }}
-              >
-                <span>{t('video.criteriaRatedHigh')}</span>
-                <img
-                  src={`/svg/${max_criteria}.svg`}
-                  alt={max_criteria}
-                  title={getCriteriaLabel(max_criteria)}
-                />
-                <span>{t('video.criteriaRatedLow')}</span>
-                <img
-                  src={`/svg/${min_criteria}.svg`}
-                  alt={min_criteria}
-                  title={getCriteriaLabel(min_criteria)}
-                />
-              </Box>
-            )}
-          </Box>
-        )}
+        {!compact && <VideoCardScores video={video} />}
       </Grid>
       <Grid
         item
@@ -468,18 +295,72 @@ function VideoCard({
   );
 }
 
+export const RowVideoCard = ({ video }: { video: VideoObject }) => {
+  const { t, i18n } = useTranslation();
+  const classes = useStyles();
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      gap={1}
+      height="70px"
+      className={classes.main}
+    >
+      <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
+        <img
+          height="100%"
+          src={`https://i.ytimg.com/vi/${video.video_id}/mqdefault.jpg`}
+        />
+      </Box>
+      <Box flex={1}>
+        <VideoCardTitle video={video} titleMaxLines={1} fontSize="1em" />
+        <div className={classes.youtube_complements}>
+          {video.views && (
+            <span className={classes.youtube_complements_p}>
+              <Trans t={t} i18nKey="video.nbViews">
+                {{ nbViews: video.views.toLocaleString(i18n.resolvedLanguage) }}{' '}
+                views
+              </Trans>
+            </span>
+          )}
+          {video.publication_date && (
+            <span className={classes.youtube_complements_p}>
+              {video.publication_date}
+            </span>
+          )}
+          {video.uploader && (
+            <span className={classes.youtube_complements_p}>
+              {video.uploader}
+            </span>
+          )}
+        </div>
+      </Box>
+    </Box>
+  );
+};
+
 export const VideoCardFromId = ({
   videoId,
-  compact,
+  variant = 'full',
+  ...rest
 }: {
   videoId: string;
-  compact?: boolean;
+  variant: 'full' | 'compact' | 'row';
+  [propname: string]: unknown;
 }) => {
   const video = useVideoMetadata(videoId);
   if (video == null || !video.video_id) {
-    return <EmptyVideoCard compact={compact} />;
+    return <EmptyVideoCard compact={variant === 'compact'} />;
   }
-  return <VideoCard video={video} compact={compact} />;
+  if (variant === 'compact') {
+    return <VideoCard video={video} compact {...rest} />;
+  }
+  if (variant === 'row') {
+    return <RowVideoCard video={video} {...rest} />;
+  }
+  return <VideoCard video={video} {...rest} />;
 };
 
 export const EmptyVideoCard = ({

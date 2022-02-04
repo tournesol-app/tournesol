@@ -31,6 +31,18 @@ import { videoFromRelatedEntity } from '../../utils/entity';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 import SelectorListbox from './SelectorListbox';
+import SelectorPopper from './SelectorPopper';
+import VideoInput from './VideoInput';
+
+export const AutocompleteContext = React.createContext<{
+  open: boolean;
+  setOpen: (x: boolean) => void;
+}>({
+  open: false,
+  setOpen: function () {
+    return;
+  },
+});
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -75,29 +87,6 @@ const VideoSelector = ({
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const { name: pollName } = useCurrentPoll();
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState<VideoRequest[]>([]);
-  const optionsLoading = open && options.length === 0;
-
-  React.useEffect(() => {
-    let active = true;
-
-    if (!optionsLoading) {
-      return undefined;
-    }
-
-    (async () => {
-      const response = await VideoService.videoList({ limit: 10 });
-
-      if (active) {
-        setOptions(response.results ?? []);
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [optionsLoading]);
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -149,11 +138,11 @@ const VideoSelector = ({
     }
   }, [loadRating, submitted]);
 
-  const handleChange = (e: unknown, value: string) => {
+  const handleChange = (value: string) => {
     const videoIdFromValue = extractVideoId(value);
-    if (videoIdFromValue) {
-      setOpen(false);
-    }
+    // if (videoIdFromValue) {
+    //   setOpen(false);
+    // }
     const newVideoId = videoIdFromValue
       ? videoIdFromValue
       : value.replace(/[^A-Za-z0-9-_]/g, '').substring(0, 11);
@@ -218,44 +207,54 @@ const VideoSelector = ({
           </IconButton>
         </Tooltip>
       </Box>
-      <div className={classes.controls}>
-        <Autocomplete
-          openOnFocus
-          selectOnFocus
-          freeSolo
-          forcePopupIcon
-          disableClearable
-          sx={{ flex: 1 }}
-          open={open}
-          onOpen={() => {
-            setOpen(true);
+      <Box m="4px">
+        <VideoInput value={videoId} onChange={handleChange} />
+      </Box>
+
+      {/* <AutocompleteContext.Provider
+          value={{
+            open,
+            setOpen,
           }}
-          onClose={() => {
-            setOpen(false);
-          }}
-          isOptionEqualToValue={(option, value) =>
-            option.video_id === value.video_id
-          }
-          value={{ video_id: videoId }}
-          onInputChange={handleChange}
-          filterOptions={(x) => x}
-          ListboxComponent={SelectorListbox}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder={t('videoSelector.pasteUrlOrVideoId')}
-              variant="standard"
-            />
-          )}
-          getOptionLabel={(option) => option.video_id}
-          options={options}
-          renderOption={(props, option) => (
-            <li {...props}>
-              <VideoCardFromId videoId={option.video_id} />
-            </li>
-          )}
-        />
-      </div>
+        >
+          <Autocomplete
+            selectOnFocus
+            freeSolo
+            forcePopupIcon
+            disableClearable
+            disablePortal
+            sx={{ flex: 1 }}
+            open={open}
+            onOpen={() => {
+              setOpen(true);
+            }}
+            // onClose={() => {
+            //   setOpen(false);
+            // }}
+            isOptionEqualToValue={(option, value) =>
+              option.video_id === value.video_id
+            }
+            value={{ video_id: videoId }}
+            onInputChange={handleChange}
+            filterOptions={(x) => x}
+            ListboxComponent={SelectorListbox}
+            PopperComponent={SelectorPopper}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={t('videoSelector.pasteUrlOrVideoId')}
+                variant="standard"
+              />
+            )}
+            getOptionLabel={(option) => option.video_id}
+            options={options}
+            renderOption={(props, option) => (
+              <li {...props}>
+                <VideoCardFromId videoId={option.video_id} variant="row" />
+              </li>
+            )}
+          />
+        </AutocompleteContext.Provider> */}
       {rating ? (
         <VideoCard
           compact
