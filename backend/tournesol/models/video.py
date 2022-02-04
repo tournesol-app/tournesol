@@ -24,6 +24,7 @@ from tournesol.utils import VideoSearchEngine
 CRITERIAS = settings.CRITERIAS
 LANGUAGES = settings.LANGUAGES
 
+
 class Video(models.Model, WithFeatures, WithEmbedding):
     """One video."""
 
