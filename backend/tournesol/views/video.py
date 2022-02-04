@@ -164,13 +164,19 @@ class VideoViewSet(mixins.CreateModelMixin,
         show_unsafe = False
         if unsafe:
             show_unsafe = unsafe
-        
-        queryset = queryset.annotate(total_score=Sum(F("criteria_scores__score") * criteria_weight))
 
-        if show_unsafe == True:
-            queryset = queryset.order_by("-total_score");
+        queryset = queryset.annotate(
+            total_score=Sum(F("criteria_scores__score") * criteria_weight)
+        )
+
+        if show_unsafe is True:
+            queryset = queryset.order_by("-total_score")
         else:
-            queryset = queryset.filter(total_score__gt=0).order_by("-total_score");
+            queryset = (
+                queryset
+                .filter(total_score__gt=0)
+                .order_by("-total_score")
+            )
         return queryset.prefetch_related("criteria_scores")
 
     def get_serializer_class(self):
