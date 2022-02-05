@@ -221,7 +221,7 @@ def add_expander_cursor_position():
 
 def app():
 
-    st.title("Public Dataset")
+    st.title("Comparisons Public Dataset")
 
     # Load public dataset
     add_expander_load_public_dataset()
