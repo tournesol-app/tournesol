@@ -12,7 +12,6 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.html import format_html
-from languages.languages import LANGUAGES
 from tqdm.auto import tqdm
 
 from core.models import User
@@ -23,6 +22,7 @@ from tournesol.models.tags import Tag
 from tournesol.utils import VideoSearchEngine
 
 CRITERIAS = settings.CRITERIAS
+LANGUAGES = settings.LANGUAGES
 
 
 class Video(models.Model, WithFeatures, WithEmbedding):
