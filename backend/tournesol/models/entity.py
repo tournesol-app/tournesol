@@ -16,10 +16,9 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
-from core.utils.models import WithEmbedding, WithFeatures, query_and, query_or
+from core.utils.models import WithEmbedding, WithFeatures
 from tournesol.models.comparisons import Comparison
 from tournesol.models.tags import Tag
-from tournesol.utils import VideoSearchEngine
 
 CRITERIAS = settings.CRITERIAS
 LANGUAGES = settings.LANGUAGES
