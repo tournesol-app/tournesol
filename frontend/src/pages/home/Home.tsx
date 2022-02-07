@@ -5,7 +5,7 @@ import { Grid, Typography, Box } from '@mui/material';
 
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
-import Comparison from 'src/features/comparisons/Comparison';
+import LightComparison from 'src/features/comparisons/LightComparison';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -126,7 +126,7 @@ const HomePage = () => {
           </Grid>
         </Grid>
         <Grid item xs={12} className={classes.container}>
-          <Comparison />
+          <LightComparison />
         </Grid>
         <Grid
           item
