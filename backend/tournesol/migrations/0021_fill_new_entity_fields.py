@@ -3,8 +3,8 @@
 from django.db import migrations
 
 
-ENTITY_UID_YT_NAMESPACE = 'yt'
-ENTITY_TYPE_VIDEO = 'video'
+ENTITY_UID_YT_NAMESPACE = "yt"
+ENTITY_TYPE_VIDEO = "video"
 
 
 def migrate_forward(apps, schema_editor):
@@ -22,9 +22,7 @@ def migrate_forward(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournesol', '0019_entity_refactor_part1'),
+        ("tournesol", "0020_entity_refactor_part1"),
     ]
 
-    operations = [
-        migrations.RunPython(migrate_forward, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(migrate_forward, migrations.RunPython.noop)]
