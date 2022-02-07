@@ -4,7 +4,7 @@ from collections import Counter
 from django.conf import settings
 from langdetect import DetectorFactory, detect, lang_detect_exception
 
-from ..models import Video
+from ..models import Entity
 
 ACCEPTED_LANGUAGE_CODES = {lang[0] for lang in settings.LANGUAGES}
 
@@ -36,7 +36,7 @@ def languages_detection(title, description):
 def compute_video_language(uploader, title, description):
 
     # Get language(s) from other videos of the same uploader
-    lang_list = Video.objects.filter(uploader=uploader).values_list("language")
+    lang_list = Entity.objects.filter(uploader=uploader).values_list("language")
 
     if lang_list:
         main_uploader_lang, main_uploader_lang_cnt = Counter(lang_list).most_common()[0]

@@ -14,7 +14,7 @@ from core.tests.factories.user import UserFactory
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
-from ..models import Comparison, Video
+from ..models import Comparison, Entity
 
 
 class ComparisonApiTestCase(TestCase):
@@ -610,9 +610,9 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 201)
 
-        video5 = Video.objects.get(video_id=self._video_id_05)
-        video6 = Video.objects.get(video_id=self._video_id_06)
-        video7 = Video.objects.get(video_id=self._video_id_07)
+        video5 = Entity.objects.get(video_id=self._video_id_05)
+        video6 = Entity.objects.get(video_id=self._video_id_06)
+        video7 = Entity.objects.get(video_id=self._video_id_07)
 
         self.assertEqual(video5.rating_n_contributors, 2)
         self.assertEqual(video5.rating_n_ratings, 3)

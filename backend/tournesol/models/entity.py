@@ -1,5 +1,5 @@
 """
-Models for Tournesol's main functions related to videos
+Entity and closely related models.
 """
 
 import logging
@@ -16,42 +16,81 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
-from core.utils.models import WithEmbedding, WithFeatures, query_and, query_or
+from core.utils.models import WithFeatures
 from tournesol.models.comparisons import Comparison
 from tournesol.models.tags import Tag
-from tournesol.utils import VideoSearchEngine
 
 CRITERIAS = settings.CRITERIAS
 LANGUAGES = settings.LANGUAGES
 
 
-class Video(models.Model, WithFeatures, WithEmbedding):
-    """One video."""
+class Entity(models.Model, WithFeatures):
+    """
+    A generic entity that can be compared with another one.
 
+    The current model still contains fields from the previous `Video` model.
+    These fields are kept as-is for now to ease the refactor of the Tournesol
+    app, and will be replaced in the future by the `metadata` JSON field.
+    """
+    class Meta:
+        verbose_name_plural = "entities"
+
+    UID_YT_NAMESPACE = 'yt'
+
+    TYPE_VIDEO = 'video'
+    ENTITY_TYPE = [
+        (TYPE_VIDEO, 'Video'),
+    ]
+
+    uid = models.CharField(
+        unique=True,
+        max_length=144,
+        help_text="A unique identifier, build with a namespace and an external id.",
+    )
+
+    type = models.CharField(
+        max_length=32,
+        choices=ENTITY_TYPE,
+    )
+
+    metadata = models.JSONField(
+        default=dict
+    )
+    metadata_timestamp = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="Timestamp the metadata was uploaded",
+    )
+    last_metadata_request_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        auto_now_add=True,
+        help_text="Last time fetch of metadata was attempted",
+    )
+    add_time = models.DateTimeField(
+        null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
+    )
+
+    # TODO: specific to YouTube entities, move it somewhere else
     video_id_regex = RegexValidator(
         YOUTUBE_VIDEO_ID_REGEX, f"Video ID must match {YOUTUBE_VIDEO_ID_REGEX}"
     )
 
+    # TODO: will be replaced by the `uid` field
     video_id = models.CharField(
         max_length=20,
         unique=True,
         help_text=f"Video ID from YouTube URL, matches {YOUTUBE_VIDEO_ID_REGEX}",
         validators=[video_id_regex],
     )
+
+    # TODO
+    # the following fields are specific to video entities
+    # they will be moved inside the new metadata JSON field
+
     name = models.CharField(max_length=1000, help_text="Video Title", blank=True)
     description = models.TextField(
         null=True, help_text="Video Description from the web page", blank=True
-    )
-    caption_text = models.TextField(
-        null=True, help_text="Processed video caption (subtitle) text", blank=True
-    )
-    embedding = models.BinaryField(
-        null=True,
-        help_text="NumPy array with BERT embedding for caption_text, shape("
-        "EMBEDDING_LEN,)",
-    )
-    info = models.TextField(
-        null=True, blank=True, help_text="Additional information (json)"
     )
     duration = models.DurationField(null=True, help_text="Video duration", blank=True)
     language = models.CharField(
@@ -64,11 +103,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
     publication_date = models.DateField(
         null=True, help_text="Video publication date", blank=True
     )
-    metadata_timestamp = models.DateTimeField(
-        blank=True,
-        null=True,
-        help_text="Timestamp the metadata was uploaded",
-    )
     views = models.BigIntegerField(null=True, help_text="Number of views", blank=True)
     uploader = models.CharField(
         max_length=1000,
@@ -76,32 +110,11 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         blank=True,
         help_text="Name of the channel (uploader)",
     )
-
-    add_time = models.DateTimeField(
-        null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
-    )
-    last_metadata_request_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        auto_now_add=True,
-        help_text="Last time fetch of metadata was attempted",
-    )
-    wrong_url = models.BooleanField(default=False, help_text="Is the URL incorrect")
     is_unlisted = models.BooleanField(default=False, help_text="Is the video unlisted")
-
     tags = models.ManyToManyField(Tag, blank=True)
 
-    # computed in the Video.recompute_pareto(),
-    #  called via the manage.py compute_quantile_pareto command
-    # should be computed after every ml_train command (see the devops script)
-    # SEE also: {feature}_quantile fields (defined below)
-
-    pareto_optimal = models.BooleanField(
-        null=False,
-        default=False,
-        help_text="Is the video pareto-optimal based on aggregated scores?",
-    )
-
+    # TODO
+    # the following fields should be moved in a n-n relation with Poll
     rating_n_ratings = models.IntegerField(
         null=False,
         default=0,
@@ -109,6 +122,8 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         "from certified contributors",
     )
 
+    # TODO
+    # the following fields should be moved in a n-n relation with Poll
     rating_n_contributors = models.IntegerField(
         null=False,
         default=0,
@@ -126,18 +141,10 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         )
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
-    def get_pareto_optimal(self):
-        """Compute pareto-optimality in sql. Runs in O(n^2) where n=num videos."""
-        f_1 = query_and([Q(**{f + "__gte": getattr(self, f)}) for f in CRITERIAS])
-        f_2 = query_or([Q(**{f + "__gt": getattr(self, f)}) for f in CRITERIAS])
-
-        qs = Video.objects.filter(f_1).filter(f_2)
-        return qs.count() == 0
-
     @property
     def best_text(self, min_len=5):
-        """Return caption of present, otherwise description, otherwise title."""
-        priorities = [self.caption_text, self.description, self.name]
+        """Return description, otherwise title."""
+        priorities = [self.description, self.name]
 
         # going over all priorities
         for priority in priorities:
@@ -148,8 +155,8 @@ class Video(models.Model, WithFeatures, WithEmbedding):
 
     @property
     def all_text(self):
-        """Return concat of caption, description, title."""
-        options = [self.caption_text, self.description, self.name]
+        """Return concat of description and title."""
+        options = [self.description, self.name]
         options = filter(lambda x: x is not None, options)
         return " ".join(options)
 
@@ -160,30 +167,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         options = filter(lambda x: x is not None, options)
         return " ".join(options)[:100]
 
-    @property
-    def score_info(self):
-        """Get the individual scores as a dictionary."""
-        return self._score_info()
-
-    def _score_info(self):
-        """Outputs a total score for this video given a user."""
-        scores = VideoSearchEngine.score(self.short_text, self.features_as_vector)
-
-        for criteria, score_vector in zip(CRITERIAS, self.features_as_vector):
-            scores[criteria] = score_vector
-
-        return scores
-
-    def score_fcn(self):
-        """Outputs a total score for this video given a user."""
-        info = self._score_info()
-        return info["preferences_term"] + info["phrase_term"]
-
-    # @property
-    # def score(self):
-    #     """Returns the score given a user."""
-    #     return self.score_fcn()
-
     def __str__(self):
         return f"{self.video_id}"
 
@@ -191,12 +174,6 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         return format_html(
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
         )
-
-    @property
-    def tournesol_score(self):
-        """Overall score computed for a video based on aggregated contributions"""
-        # computed by a query
-        return 0.0
 
     @staticmethod
     def recompute_quantiles():
@@ -207,7 +184,7 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         # logging.warning("Computing quantiles...")
         for f in tqdm(CRITERIAS):
             # order by feature (descenting, because using the top quantile)
-            qs = Video.objects.filter(**{f + "__isnull": False}).order_by("-" + f)
+            qs = Entity.objects.filter(**{f + "__isnull": False}).order_by("-" + f)
             quantiles_f = np.linspace(0.0, 1.0, len(qs))
             for i, v in tqdm(enumerate(qs)):
                 quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
@@ -215,32 +192,15 @@ class Video(models.Model, WithFeatures, WithEmbedding):
         logging.warning("Writing quantiles...")
         video_objects = []
         # TODO: use batched updates with bulk_update
-        for v in tqdm(Video.objects.all()):
+        for v in tqdm(Entity.objects.all()):
             for f in CRITERIAS:
                 setattr(
                     v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None)
                 )
             video_objects.append(v)
 
-        Video.objects.bulk_update(
+        Entity.objects.bulk_update(
             video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
-        )
-
-    @staticmethod
-    def recompute_pareto():
-        """Compute pareto-optimality."""
-        # TODO: use a faster algorithm than O(|rated_videos|^2)
-
-        logging.warning("Computing pareto-optimality...")
-        video_objects = []
-        for v in tqdm(Video.objects.all()):
-            new_pareto = v.get_pareto_optimal()
-            if new_pareto != v.pareto_optimal:
-                v.pareto_optimal = new_pareto
-            video_objects.append(v)
-
-        Video.objects.bulk_update(
-            video_objects, batch_size=200, fields=["pareto_optimal"]
         )
 
     def refresh_youtube_metadata(self, force=False):
@@ -306,12 +266,19 @@ class Video(models.Model, WithFeatures, WithEmbedding):
             video.tags.add(tag)
         return video
 
+    def save(self, *args, **kwargs):
+        self.uid = '{}:{}'.format(Entity.UID_YT_NAMESPACE, self.video_id)
+        self.type = Entity.TYPE_VIDEO
+        super().save(*args, **kwargs)
 
-class VideoCriteriaScore(models.Model):
-    """Scores per criteria for Videos"""
 
+class EntityCriteriaScore(models.Model):
+    """
+    The score of an Entity for a given Criteria, in the scope of a given
+    Poll.
+    """
     video = models.ForeignKey(
-        to=Video,
+        to=Entity,
         on_delete=models.CASCADE,
         help_text="Foreign key to the video",
         related_name="criteria_scores",
@@ -332,7 +299,7 @@ class VideoCriteriaScore(models.Model):
         help_text="Uncertainty about the video's score for the given criteria",
     )
     # TODO: ensure that the following works:
-    # quantiles are computed in the Video.recompute_quantiles(),
+    # quantiles are computed in the Entity.recompute_quantiles(),
     # called via the manage.py compute_quantile_pareto command
     # should be computed after every ml_train command (see the devops script)
     quantile = models.FloatField(
@@ -361,7 +328,7 @@ class VideoRateLater(models.Model):
         related_name="videoratelaters",
     )
     video = models.ForeignKey(
-        to=Video,
+        to=Entity,
         on_delete=models.CASCADE,
         help_text="Video in the rate later list",
         related_name="videoratelaters",
@@ -377,57 +344,6 @@ class VideoRateLater(models.Model):
     class Meta:
         unique_together = ["user", "video"]
         ordering = ["user", "-datetime_add"]
-
-    def __str__(self):
-        return f"{self.user}/{self.video}@{self.datetime_add}"
-
-
-class VideoRatingThankYou(models.Model):
-    """Thank you for recommendations."""
-
-    video = models.ForeignKey(
-        Video, on_delete=models.CASCADE, help_text="Video thanked for"
-    )
-    thanks_from = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        help_text="Who thanks for the video",
-        related_name="thanks_from",
-    )
-    thanks_to = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        help_text="Who receives the thanks",
-        related_name="thanks_to",
-    )
-
-    class Meta:
-        unique_together = ["video", "thanks_from", "thanks_to"]
-
-    def __str__(self):
-        return "%s to %s for %s" % (self.thanks_from, self.thanks_to, self.video)
-
-
-class VideoSelectorSkips(models.Model):
-    """Count video being skipped in the Video Selector."""
-
-    user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        related_name="skipped_videos",
-        null=False,
-        help_text="Person who skips the videos",
-    )
-    video = models.ForeignKey(
-        to=Video,
-        on_delete=models.CASCADE,
-        related_name="skips",
-        null=False,
-        help_text="Video being skipped",
-    )
-    datetime_add = models.DateTimeField(
-        auto_now_add=True, help_text="Time the video was skipped", null=True, blank=True
-    )
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"

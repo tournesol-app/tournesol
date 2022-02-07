@@ -10,7 +10,7 @@ from core.models import User
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
-from ..models import Comparison, Video
+from ..models import Comparison, Entity
 
 
 class StatisticsAPI(TestCase):
@@ -44,9 +44,9 @@ class StatisticsAPI(TestCase):
             rating_n_ratings=4,
         )
         
-        Video.objects.filter(pk=video_1.pk).update(add_time=timezone.now() - timedelta(days=5))
-        Video.objects.filter(pk=video_2.pk).update(add_time=timezone.now() - timedelta(days=29))
-        Video.objects.filter(pk=video_3.pk).update(add_time=timezone.now() - timedelta(days=60))
+        Entity.objects.filter(pk=video_1.pk).update(add_time=timezone.now() - timedelta(days=5))
+        Entity.objects.filter(pk=video_2.pk).update(add_time=timezone.now() - timedelta(days=29))
+        Entity.objects.filter(pk=video_3.pk).update(add_time=timezone.now() - timedelta(days=60))
 
         self._list_of_videos = [video_1, video_2, video_3]
 

@@ -22,7 +22,7 @@ from tournesol.throttling import (
     SustainedUserRateThrottle,
 )
 
-from ..models import Video
+from ..models import Entity
 from ..serializers import VideoSerializer, VideoSerializerWithCriteria
 
 
@@ -70,7 +70,7 @@ class VideoViewSet(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
                    GenericViewSet):
-    queryset = Video.objects.all()
+    queryset = Entity.objects.all()
     pagination_class = LimitOffsetPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -116,7 +116,7 @@ class VideoViewSet(mixins.CreateModelMixin,
         if search:
             # Filtering in a nested queryset is necessary here, to be able to annotate
             # each video without duplicated scores, due to the m2m field 'tags'.
-            queryset = queryset.filter(pk__in=Video.objects.filter(
+            queryset = queryset.filter(pk__in=Entity.objects.filter(
                 Q(name__icontains=search) |
                 Q(description__icontains=search) |
                 Q(tags__name__icontains=search)

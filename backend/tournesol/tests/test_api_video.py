@@ -11,7 +11,7 @@ from core.models import User
 from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Tag, Video
+from ..models import Entity, Tag
 
 
 class VideoApi(TestCase):
@@ -60,7 +60,7 @@ class VideoApi(TestCase):
 
         # test a request without query parameters
         response = client.get(
-            reverse("tournesol:video-list"),
+            reverse("tournesol:entity-list"),
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -82,7 +82,7 @@ class VideoApi(TestCase):
         # test a request with the limit query parameter
         limit = 2
         response = client.get(
-            reverse("tournesol:video-list"),
+            reverse("tournesol:entity-list"),
             {"limit": limit},
             format="json",
         )
@@ -97,7 +97,7 @@ class VideoApi(TestCase):
         # test that a huge limit doesn't break anything
         limit = 10000
         response = client.get(
-            reverse("tournesol:video-list"),
+            reverse("tournesol:entity-list"),
             {"limit": limit},
             format="json",
         )
@@ -118,7 +118,7 @@ class VideoApi(TestCase):
 
         offset = 2
         response = client.get(
-            reverse("tournesol:video-list"),
+            reverse("tournesol:entity-list"),
             {"offset": offset},
             format="json",
         )
@@ -134,7 +134,7 @@ class VideoApi(TestCase):
         # test that a huge offset doesn't break anything
         offset = 10000
         response = client.get(
-            reverse("tournesol:video-list"),
+            reverse("tournesol:entity-list"),
             {"offset": offset},
             format="json",
         )
@@ -166,7 +166,7 @@ class VideoApi(TestCase):
 
         for param in parameters:
             response = client.get(
-                reverse("tournesol:video-list"),
+                reverse("tournesol:entity-list"),
                 {"limit": param["limit"], "offset": param["offset"]},
                 format="json",
             )
@@ -345,13 +345,19 @@ class VideoApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        initial_video_nbr = Video.objects.all().count()
+        initial_video_nbr = Entity.objects.all().count()
 
         client.force_authenticate(user=user)
 
         response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
+        new_video = Entity.objects.get(video_id="NeADlWSDFAQ")
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
+        self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
+
+        # ensure newly created entities are considered videos from YT
+        self.assertEqual(new_video.uid, '{}:{}'.format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ"))
+        self.assertEqual(new_video.type, Entity.TYPE_VIDEO)
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -370,7 +376,7 @@ class VideoApi(TestCase):
 
         response = client.post("/video/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        video = Video.objects.filter(video_id=new_video_id)
+        video = Entity.objects.filter(video_id=new_video_id)
         self.assertEqual(video.count(), 1)
 
     def test_authenticated_cant_create_with_incorrect_id(self):
@@ -388,12 +394,12 @@ class VideoApi(TestCase):
         response = client.post("/video/", {"video_id": id_too_big}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id=id_too_big)
+            Entity.objects.get(video_id=id_too_big)
 
         response = client.post("/video/", {"video_id": id_too_small}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id=id_too_small)
+            Entity.objects.get(video_id=id_too_small)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
@@ -422,13 +428,13 @@ class VideoApi(TestCase):
                         "channelTitle": "TED",
                         "defaultAudioLanguage": "en",
                         "defaultLanguage": "en",
-                        "description": "Video description",
+                        "description": "Entity description",
                         "liveBroadcastContent": "none",
                         "localized": {},
                         "publishedAt": "2012-10-01T15:27:35Z",
                         "tags": ["tournesol"],
                         "thumbnails": {},
-                        "title": "Video title",
+                        "title": "Entity title",
                     },
                     "statistics": {
                         "commentCount": "8887",
@@ -446,7 +452,7 @@ class VideoApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        initial_video_nbr = Video.objects.all().count()
+        initial_video_nbr = Entity.objects.all().count()
 
         new_video_id = "NeADlWSDFAQ"
         data = {"video_id": new_video_id}
@@ -455,12 +461,12 @@ class VideoApi(TestCase):
 
         response = client.post("/video/", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
+        self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
-        video = Video.objects.get(video_id=new_video_id)
+        video = Entity.objects.get(video_id=new_video_id)
         tournesol_tag = Tag.objects.get(name="tournesol")
 
-        self.assertEqual(response.json()["name"], "Video title")
+        self.assertEqual(response.json()["name"], "Entity title")
         self.assertIn(tournesol_tag, video.tags.all())
         self.assertEqual(response.json()["duration"], 1263)
         self.assertEqual(video.duration, timedelta(minutes=21, seconds=3))
@@ -492,13 +498,13 @@ class VideoApi(TestCase):
                         "channelTitle": "TED",
                         "defaultAudioLanguage": "en",
                         "defaultLanguage": "en",
-                        "description": "Video description",
+                        "description": "Entity description",
                         "liveBroadcastContent": "none",
                         "localized": {},
                         "publishedAt": "2012-10-01T15:27:35Z",
                         "tags": ["tournesol"],
                         "thumbnails": {},
-                        "title": "Video title",
+                        "title": "Entity title",
                     },
                     "statistics": {},
                 }
@@ -510,7 +516,7 @@ class VideoApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        initial_video_nbr = Video.objects.all().count()
+        initial_video_nbr = Entity.objects.all().count()
 
         new_video_id = "NeADlWSDFAQ"
         data = {"video_id": new_video_id}
@@ -519,10 +525,10 @@ class VideoApi(TestCase):
 
         response = client.post("/video/", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(Video.objects.all().count(), initial_video_nbr + 1)
+        self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
-        video = Video.objects.get(video_id=new_video_id)
-        self.assertEqual(response.json()["name"], "Video title")
+        video = Entity.objects.get(video_id=new_video_id)
+        self.assertEqual(response.json()["name"], "Entity title")
         self.assertEqual(video.views, None)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
@@ -548,7 +554,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         with self.assertRaises(ObjectDoesNotExist):
-            Video.objects.get(video_id=new_video_id)
+            Entity.objects.get(video_id=new_video_id)
 
     def test_get_video_uploader(self):
         client = APIClient()
@@ -557,6 +563,6 @@ class VideoApi(TestCase):
         self.assertEqual(resp.data["count"], 2)
 
     def test_video_views_stored_on_64bits(self):
-        Video.objects.filter(video_id=self.video_1.video_id).update(views=9_000_000_000)
-        video = Video.objects.get(video_id=self.video_1.video_id)
+        Entity.objects.filter(video_id=self.video_1.video_id).update(views=9_000_000_000)
+        video = Entity.objects.get(video_id=self.video_1.video_id)
         self.assertEqual(video.views, 9_000_000_000)

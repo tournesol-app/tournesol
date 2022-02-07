@@ -4,7 +4,7 @@ Models for Tournesol twitter bot already tweeted videos
 
 from django.db import models
 
-from tournesol.models import Video
+from tournesol.models import Entity
 
 BOT_NAME = [
     ("@TournesolBot", "@TournesolBot"),
@@ -16,7 +16,7 @@ class TweetedVideo(models.Model):
     """One tweeted video."""
 
     video = models.ForeignKey(
-        Video,
+        Entity,
         on_delete=models.CASCADE,
         related_name="video",
         help_text="Tweeted video",

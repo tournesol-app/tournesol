@@ -9,15 +9,15 @@ from .models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
-    Video,
-    VideoCriteriaScore,
+    Entity,
+    EntityCriteriaScore,
 )
 
 
-@admin.register(Video)
-class VideoAdmin(admin.ModelAdmin):
+@admin.register(Entity)
+class EntityAdmin(admin.ModelAdmin):
     list_display = (
-        'video_id',
+        'uid',
         'name',
         'uploader',
         'publication_date',
@@ -26,20 +26,22 @@ class VideoAdmin(admin.ModelAdmin):
         'language',
         'link_to_youtube',
     )
-    search_fields = ('video_id', 'name', 'uploader')
+    search_fields = ('uid', 'name', 'uploader')
     list_filter = (
+        'type',
         ('language', admin.AllValuesFieldListFilter),
     )
     actions = ["update_metadata"]
 
     @admin.action(description="Force metadata refresh of selected videos")
     def update_metadata(self, request, queryset):
-        for video in queryset:
-            video.refresh_youtube_metadata(force=True)
+        for entity in queryset.iterator():
+            if entity.type == Entity.TYPE_VIDEO:
+                entity.refresh_youtube_metadata(force=True)
 
 
-@admin.register(VideoCriteriaScore)
-class VideoCriteriaScoreAdmin(admin.ModelAdmin):
+@admin.register(EntityCriteriaScore)
+class EntityCriteriaScoreAdmin(admin.ModelAdmin):
     pass
 
 
