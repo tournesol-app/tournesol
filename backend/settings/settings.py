@@ -42,8 +42,8 @@ SECRET_KEY = server_settings.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = server_settings.get("DEBUG", False)
-
 ALLOWED_HOSTS = server_settings.get("ALLOWED_HOSTS", ["127.0.0.1", "localhost"])
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
