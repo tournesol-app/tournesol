@@ -16,7 +16,7 @@ def migrate_forward(apps, schema_editor):
     for entity in Entity.objects.iterator():
         entity.uid = "{}:{}".format(ENTITY_UID_YT_NAMESPACE, entity.video_id)
         entity.type = ENTITY_TYPE_VIDEO
-        entity.save()
+        entity.save(update_fields=["uid", "type"])
 
 
 class Migration(migrations.Migration):
