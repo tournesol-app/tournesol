@@ -182,6 +182,7 @@ const Comparison = () => {
               initialComparison={initialComparison}
               videoA={videoA}
               videoB={videoB}
+              enableOptional
               isComparisonPublic={
                 selectorA.rating.is_public && selectorB.rating.is_public
               }
