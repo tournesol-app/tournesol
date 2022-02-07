@@ -1,9 +1,13 @@
 import re
 from collections import Counter
 
+from django.conf import settings
 from langdetect import DetectorFactory, detect, lang_detect_exception
 
 from ..models import Video
+
+ACCEPTED_LANGUAGE_CODES = {lang[0] for lang in settings.LANGUAGES}
+
 
 # Enforce consistent results with a constant seed,
 # as the language detection algorithm is non-deterministic.
@@ -39,4 +43,7 @@ def compute_video_language(uploader, title, description):
         if len(lang_list) > 4 and main_uploader_lang_cnt/len(lang_list) > 0.9:
             return main_uploader_lang[0]
 
-    return languages_detection(title, description)
+    lang = languages_detection(title, description)
+    if lang in ACCEPTED_LANGUAGE_CODES:
+        return lang
+    return None
