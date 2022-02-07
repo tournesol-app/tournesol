@@ -11,7 +11,7 @@ class ContributorRatingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ratings_models.ContributorRating
 
-    video = factory.SubFactory(VideoFactory)
+    entity = factory.SubFactory(VideoFactory)
     user = factory.SubFactory(UserFactory)
     is_public = False
 

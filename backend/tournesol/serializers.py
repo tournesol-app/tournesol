@@ -155,8 +155,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
     Use `ComparisonUpdateSerializer` for the update operation.
     """
 
-    video_a = RelatedVideoSerializer(source="video_1")
-    video_b = RelatedVideoSerializer(source="video_2")
+    video_a = RelatedVideoSerializer(source="entity_1")
+    video_b = RelatedVideoSerializer(source="entity_2")
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -181,8 +181,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        video_id_1 = validated_data.pop("video_1").get("video_id")
-        video_id_2 = validated_data.pop("video_2").get("video_id")
+        video_id_1 = validated_data.pop("entity_1").get("video_id")
+        video_id_2 = validated_data.pop("entity_2").get("video_id")
         # the validation performed by the RelatedVideoSerializer guarantees
         # that the videos submitted exist in the database
         video_1 = Entity.objects.get(video_id=video_id_1)
@@ -190,8 +190,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
-            video_1=video_1,
-            video_2=video_2,
+            entity_1=video_1,
+            entity_2=video_2,
             **validated_data,
         )
 
@@ -214,8 +214,8 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     """
 
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
-    video_a = VideoSerializer(source="video_1", read_only=True)
-    video_b = VideoSerializer(source="video_2", read_only=True)
+    video_a = VideoSerializer(source="entity_1", read_only=True)
+    video_b = VideoSerializer(source="entity_2", read_only=True)
 
     class Meta:
         model = Comparison
@@ -275,7 +275,7 @@ class ContributorCriteriaScore(ModelSerializer):
 
 
 class ContributorRatingSerializer(ModelSerializer):
-    video = VideoSerializer(read_only=True)
+    video = VideoSerializer(source="entity", read_only=True)
     criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
@@ -291,7 +291,7 @@ class ContributorRatingSerializer(ModelSerializer):
             # Use annotated field if it has been defined by the queryset
             return obj.n_comparisons
         return obj.user.comparisons.filter(
-            Q(video_1=obj.video) | Q(video_2=obj.video)
+            Q(entity_1=obj.entity) | Q(entity_2=obj.entity)
         ).count()
 
 
@@ -308,12 +308,12 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         video_serializer.is_valid(raise_exception=True)
         video = Entity.objects.get(video_id=video_id)
         user = self.context["request"].user
-        if user.contributorvideoratings.filter(video=video).exists():
+        if user.contributorvideoratings.filter(entity=video).exists():
             raise ValidationError(
                 "A ContributorRating already exists for this (user, video)",
                 code='unique',
             )
-        attrs["video"] = video
+        attrs["entity"] = video
         attrs["user"] = user
         return attrs
 

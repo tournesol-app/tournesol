@@ -24,12 +24,12 @@ class RatingApi(TestCase):
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
         self.video3 = VideoFactory()
-        ComparisonFactory(video_1=self.video1, video_2=self.video2, user=self.user1)
-        ComparisonFactory(video_1=self.video1, video_2=self.video2, user=self.user2)
-        ContributorRatingFactory(video=self.video1, user=self.user1)
-        ContributorRatingFactory(video=self.video2, user=self.user1)
-        ContributorRatingFactory(video=self.video1, user=self.user2)
-        ContributorRatingFactory(video=self.video2, user=self.user2, is_public=True)
+        ComparisonFactory(entity_1=self.video1, entity_2=self.video2, user=self.user1)
+        ComparisonFactory(entity_1=self.video1, entity_2=self.video2, user=self.user2)
+        ContributorRatingFactory(entity=self.video1, user=self.user1)
+        ContributorRatingFactory(entity=self.video2, user=self.user1)
+        ContributorRatingFactory(entity=self.video1, user=self.user2)
+        ContributorRatingFactory(entity=self.video2, user=self.user2, is_public=True)
 
     def test_anonymous_cant_list(self):
         factory = APIClient()
@@ -114,7 +114,7 @@ class RatingApi(TestCase):
         user = self.user1
         factory.force_authenticate(user=user)
         video = VideoFactory()
-        rating = ContributorRatingFactory(video=video, user=user)
+        rating = ContributorRatingFactory(entity=video, user=user)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
             criteria="test-criteria",
@@ -159,7 +159,7 @@ class RatingApi(TestCase):
     def test_patch_rating_is_public(self):
         client = APIClient()
         client.force_authenticate(self.user1)
-        rating = ContributorRating.objects.get(user=self.user1, video=self.video1)
+        rating = ContributorRating.objects.get(user=self.user1, entity=self.video1)
 
         self.assertEqual(rating.is_public, False)
         response = client.patch(

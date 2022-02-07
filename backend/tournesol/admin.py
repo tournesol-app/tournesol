@@ -49,7 +49,7 @@ class EntityCriteriaScoreAdmin(admin.ModelAdmin):
 class ContributorRatingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
-        'video',
+        'entity',
         'link_to_youtube',
         'is_public',
     )
@@ -58,7 +58,7 @@ class ContributorRatingAdmin(admin.ModelAdmin):
     )
 
     def link_to_youtube(self, obj):
-        return obj.video.link_to_youtube()
+        return obj.entity.link_to_youtube()
 
 
 @admin.register(ContributorRatingCriteriaScore)

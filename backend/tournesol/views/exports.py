@@ -22,9 +22,9 @@ def write_comparisons_file(request, write_target):
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     comparisons = Comparison.objects.filter(user=request.user)\
-        .select_related("video_1", "video_2")\
+        .select_related("entity_1", "entity_2")\
         .prefetch_related("criteria_scores")
-    serialized_comparisons = [ComparisonSerializer(comparison).data for comparison in comparisons]
+    serialized_comparisons = ComparisonSerializer(comparisons, many=True).data
 
     writer.writerows(
         {
@@ -45,16 +45,16 @@ def write_public_comparisons_file(request, write_target):
     fieldnames = ['public_username', 'video_a', 'video_b', 'criteria', 'weight', 'score']
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
-    public_data = ContributorRating.objects.filter(is_public=True).select_related("user", "video")
+    public_data = ContributorRating.objects.filter(is_public=True).select_related("user", "entity")
     serialized_comparisons = []
-    public_videos = set((rating.user, rating.video) for rating in public_data)
+    public_videos = set((rating.user, rating.entity) for rating in public_data)
     comparisons = Comparison.objects.all()\
-        .select_related("video_1", "video_2", "user")\
+        .select_related("entity_1", "entity_2", "user")\
         .prefetch_related("criteria_scores")
     public_comparisons = [
         comparison for comparison in comparisons
-        if ((comparison.user, comparison.video_1) in public_videos
-            and (comparison.user, comparison.video_2) in public_videos)]
+        if ((comparison.user, comparison.entity_1) in public_videos
+            and (comparison.user, comparison.entity_2) in public_videos)]
     public_usernames = [comparison.user.username for comparison in public_comparisons]
     serialized_comparisons = ComparisonSerializer(public_comparisons, many=True).data
     writer.writerows(
