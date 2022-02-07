@@ -22,7 +22,7 @@ def migrate_forward(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournesol', '0021_new_entity_fields'),
+        ('tournesol', '0019_entity_refactor_part1'),
     ]
 
     operations = [
