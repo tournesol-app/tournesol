@@ -42,12 +42,14 @@ const ComparisonSliders = ({
   initialComparison,
   videoA,
   videoB,
+  enableOptional,
   isComparisonPublic,
 }: {
   submit: (c: ComparisonRequest) => Promise<void>;
   initialComparison: ComparisonRequest | null;
   videoA: string;
   videoB: string;
+  enableOptional: boolean;
   isComparisonPublic?: boolean;
 }) => {
   const { t } = useTranslation();
@@ -139,19 +141,24 @@ const ComparisonSliders = ({
               handleSliderChange={handleSliderChange}
             />
           ))}
-        <Button
-          onClick={handleCollapseCriterias}
-          startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
-          size="small"
-          color="secondary"
-          style={{ marginBottom: 8, color: showOptionalCriterias ? 'red' : '' }}
-        >
-          {showOptionalCriterias
-            ? t('comparison.removeOptionalCriterias')
-            : t('comparison.addOptionalCriterias')}
-        </Button>
+        {enableOptional && (
+          <Button
+            onClick={handleCollapseCriterias}
+            startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
+            size="small"
+            color="secondary"
+            style={{
+              marginBottom: 8,
+              color: showOptionalCriterias ? 'red' : '',
+            }}
+          >
+            {showOptionalCriterias
+              ? t('comparison.removeOptionalCriterias')
+              : t('comparison.addOptionalCriterias')}
+          </Button>
+        )}
         <Collapse
-          in={showOptionalCriterias}
+          in={showOptionalCriterias && enableOptional}
           timeout="auto"
           style={{ width: '100%' }}
         >

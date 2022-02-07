@@ -70,7 +70,7 @@ const LightComparison = () => {
   const [videoIdB, setVideoIdB] = useState('');
 
   const getRecentReco = async () => {
-    const searchString = '?limit=20date=Month';
+    const searchString = '';
     return await getRecommendedVideos(searchString);
   };
 
@@ -171,6 +171,7 @@ const LightComparison = () => {
               initialComparison={initialComparison}
               videoA={videoIdA}
               videoB={videoIdB}
+              enableOptional={false}
               isComparisonPublic={false}
             />
           )
