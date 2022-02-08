@@ -9,9 +9,10 @@ import {
   Card,
   Box,
   Theme,
+  Button,
 } from '@mui/material';
 
-import { useNotifications } from 'src/hooks';
+import { useLoginState, useNotifications } from 'src/hooks';
 import { ComparisonRequest, UsersService } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
@@ -56,6 +57,7 @@ function getRandomInt(min: number, max: number): number {
 const LightComparison = () => {
   const classes = useStyles();
 
+  const { isLoggedIn } = useLoginState();
   const { t } = useTranslation();
   const { showSuccessAlert } = useNotifications();
 
@@ -65,6 +67,7 @@ const LightComparison = () => {
 
   const [videoIdA, setVideoIdA] = useState('');
   const [videoIdB, setVideoIdB] = useState('');
+  const [comparisonUrl, setComparisonUrl] = useState('');
 
   /**
    * Get an array of two random and distinct video IDs from the Tournesol
@@ -142,6 +145,9 @@ const LightComparison = () => {
 
       setVideoIdA(displayedVideos[0]);
       setVideoIdB(displayedVideos[1]);
+      setComparisonUrl(
+        `https://tournesol.app/comparison/?videoA=${videoIdA}&videoB=${videoIdB}`
+      );
       getUserComparison(displayedVideos[0], displayedVideos[1]);
       setIsLoading(false);
     };
@@ -165,8 +171,32 @@ const LightComparison = () => {
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
+  const renderTopItem = () => {
+    if (isLoggedIn && videoIdA !== '' && videoIdB !== '') {
+      return (
+        <Grid
+          container
+          item
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+        >
+          <Button
+            variant="outlined"
+            onClick={() => {
+              navigator.clipboard.writeText(comparisonUrl);
+            }}
+          >
+            copy link
+          </Button>
+        </Grid>
+      );
+    }
+  };
+
   return (
     <Grid container className={classes.content}>
+      {renderTopItem()}
       <Grid item xs component={Card} className={classes.card}>
         <Box m={0.5}>
           <Typography variant="h5" className={classes.cardTitle}>
