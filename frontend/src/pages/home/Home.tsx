@@ -6,6 +6,7 @@ import { Grid, Typography, Box } from '@mui/material';
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
 import LightComparison from 'src/features/comparisons/LightComparison';
+import { useLoginState } from '../../hooks';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const HomePage = () => {
+  const { isLoggedIn } = useLoginState();
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -96,38 +98,42 @@ const HomePage = () => {
             </Typography>
           </Box>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          className={classes.container}
-          sx={{ background: '#1282B2', color: 'white' }}
-        >
-          <Grid
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item>
-              <Typography variant="h1" component="h1">
-                Give your opinion now
-              </Typography>
+        {isLoggedIn && (
+          <>
+            <Grid
+              item
+              xs={12}
+              className={classes.container}
+              sx={{ background: '#1282B2', color: 'white' }}
+            >
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Grid item>
+                  <Typography variant="h1" component="h1">
+                    Give your opinion now
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h3" component="h3">
+                    and
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h3" component="h3">
+                    make the recommendations better
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography variant="h3" component="h3">
-                and
-              </Typography>
+            <Grid item xs={12} className={classes.container}>
+              <LightComparison />
             </Grid>
-            <Grid item>
-              <Typography variant="h3" component="h3">
-                make the recommendations better
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} className={classes.container}>
-          <LightComparison />
-        </Grid>
+          </>
+        )}
         <Grid
           item
           xs={12}
