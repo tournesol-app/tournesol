@@ -13,7 +13,7 @@ def add_expander_select_filters():
 
         st.markdown(
             "You can select one or several YouTube channels."
-            "If you select none, all channels will be use."
+            " If you select none, all channels will be use."
         )
 
         if not isinstance(st.session_state.df_scores, pd.DataFrame):
