@@ -9,8 +9,12 @@ from .models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    Criteria,
+    CriteriaLocale,
+    CriteriaRank,
     Entity,
     EntityCriteriaScore,
+    Poll,
 )
 
 
@@ -109,3 +113,34 @@ class ComparisonAdmin(admin.ModelAdmin):
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
     pass
+
+
+class CriteriasInline(admin.TabularInline):
+    model = CriteriaRank
+    extra = 0
+
+
+class CriteriaLocalesInline(admin.TabularInline):
+    model = CriteriaLocale
+    extra = 0
+
+
+@admin.register(Poll)
+class PollAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'entity_type',
+        'get_n_criterias',
+    )
+    inlines = (CriteriasInline,)
+
+    @admin.display(description="Nb of criterias")
+    def get_n_criterias(self, obj):
+        return obj.criterias.count()
+
+
+@admin.register(Criteria)
+class CriteriaAdmin(admin.ModelAdmin):
+    inlines = (
+        CriteriaLocalesInline,
+    )
