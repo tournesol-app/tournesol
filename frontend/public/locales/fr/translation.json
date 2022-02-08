@@ -26,6 +26,9 @@
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
+  "lightComparison": {
+    "notEnoughVideos": "Désolé, Tournesol n'a pas été en mesure de trouver des vidéos."
+  },
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "politique de confidentialité",

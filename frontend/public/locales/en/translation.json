@@ -26,6 +26,9 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
+  "lightComparison": {
+    "notEnoughVideos": "Sorry, Tournesol hasn't been able to retrieve videos."
+  },
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "privacy policy",
