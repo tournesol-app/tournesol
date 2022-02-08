@@ -8,12 +8,13 @@ from core.models import User
 from core.utils.models import WithFeatures
 
 from .entity import Entity
+from .poll import Poll
 
 
 class ContributorRating(models.Model, WithFeatures):
     """Predictions by individual contributor models."""
 
-    video = models.ForeignKey(
+    entity = models.ForeignKey(
         Entity,
         on_delete=models.CASCADE,
         help_text="Entity being scored",
@@ -25,15 +26,21 @@ class ContributorRating(models.Model, WithFeatures):
         help_text="The contributor",
         related_name="contributorvideoratings",
     )
+    poll = models.ForeignKey(
+        Poll,
+        on_delete=models.CASCADE,
+        related_name="contributor_ratings",
+        default=Poll.default_poll_pk
+    )
     is_public = models.BooleanField(
         default=False, null=False, help_text="Should the rating be public?"
     )
 
     class Meta:
-        unique_together = ["user", "video"]
+        unique_together = ["user", "entity", "poll"]
 
     def __str__(self):
-        return "%s on %s" % (self.user, self.video)
+        return "%s on %s" % (self.user, self.entity)
 
 
 class ContributorRatingCriteriaScore(models.Model):

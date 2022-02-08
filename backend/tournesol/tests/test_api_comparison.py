@@ -77,23 +77,23 @@ class ComparisonApiTestCase(TestCase):
         self.comparisons = [
             # "user" will have the comparisons: 01 / 02 and 01 / 04
             ComparisonFactory(
-                user=user, video_1=self.videos[0], video_2=self.videos[1],
+                user=user, entity_1=self.videos[0], entity_2=self.videos[1],
                 duration_ms=102,
                 datetime_lastedit=now,
             ),
             ComparisonFactory(
-                user=user, video_1=self.videos[0], video_2=self.videos[3],
+                user=user, entity_1=self.videos[0], entity_2=self.videos[3],
                 duration_ms=104,
                 datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             # "other" will have the comparisons: 03 / 02 and 03 / 04
             ComparisonFactory(
-                user=other, video_1=self.videos[2], video_2=self.videos[1],
+                user=other, entity_1=self.videos[2], entity_2=self.videos[1],
                 duration_ms=302,
                 datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
             ComparisonFactory(
-                user=other, video_1=self.videos[2], video_2=self.videos[3],
+                user=other, entity_1=self.videos[2], entity_2=self.videos[3],
                 duration_ms=304,
                 datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
@@ -122,14 +122,14 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         comparisons = Comparison.objects.filter(
-            video_1__video_id=self._video_id_01,
-            video_2__video_id=self._video_id_03
+            entity_1__video_id=self._video_id_01,
+            entity_2__video_id=self._video_id_03
         )
         self.assertFalse(comparisons.exists())
 
         comparisons = Comparison.objects.filter(
-            video_1__video_id=self._video_id_03,
-            video_2__video_id=self._video_id_01
+            entity_1__video_id=self._video_id_03,
+            entity_2__video_id=self._video_id_01
         )
         self.assertFalse(comparisons.exists())
         self.assertEqual(
@@ -160,10 +160,10 @@ class ComparisonApiTestCase(TestCase):
         # check the authorization
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
 
-        comparison = Comparison.objects.select_related("user", "video_1", "video_2").get(
+        comparison = Comparison.objects.select_related("user", "entity_1", "entity_2").get(
             user=user,
-            video_1__video_id=data["video_a"]["video_id"],
-            video_2__video_id=data["video_b"]["video_id"],
+            entity_1__video_id=data["video_a"]["video_id"],
+            entity_2__video_id=data["video_b"]["video_id"],
         )
         comparisons_nbr = Comparison.objects.filter(user=user).count()
 
@@ -172,9 +172,9 @@ class ComparisonApiTestCase(TestCase):
                          initial_comparisons_nbr + 1)
 
         self.assertEqual(comparison.user, user)
-        self.assertEqual(comparison.video_1.video_id,
+        self.assertEqual(comparison.entity_1.video_id,
                          data["video_a"]["video_id"])
-        self.assertEqual(comparison.video_2.video_id,
+        self.assertEqual(comparison.entity_2.video_id,
                          data["video_b"]["video_id"])
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
@@ -225,10 +225,10 @@ class ComparisonApiTestCase(TestCase):
             reverse("tournesol:comparisons_me_list"), data, format="json",
         )
 
-        comparison = Comparison.objects.select_related("user", "video_1", "video_2").get(
+        comparison = Comparison.objects.select_related("user", "entity_1", "entity_2").get(
             user=user,
-            video_1__video_id=data["video_a"]["video_id"],
-            video_2__video_id=data["video_b"]["video_id"],
+            entity_1__video_id=data["video_a"]["video_id"],
+            entity_2__video_id=data["video_b"]["video_id"],
         )
         comparisons_nbr = Comparison.objects.filter(user=user).count()
 
@@ -373,16 +373,16 @@ class ComparisonApiTestCase(TestCase):
         comparison2 = response.data["results"][1]
 
         self.assertEqual(comparison1["video_a"]["video_id"],
-                         self.comparisons[1].video_1.video_id)
+                         self.comparisons[1].entity_1.video_id)
         self.assertEqual(comparison1["video_b"]["video_id"],
-                         self.comparisons[1].video_2.video_id)
+                         self.comparisons[1].entity_2.video_id)
         self.assertEqual(comparison1["duration_ms"],
                          self.comparisons[1].duration_ms)
 
         self.assertEqual(comparison2["video_a"]["video_id"],
-                         self.comparisons[0].video_1.video_id)
+                         self.comparisons[0].entity_1.video_id)
         self.assertEqual(comparison2["video_b"]["video_id"],
-                         self.comparisons[0].video_2.video_id)
+                         self.comparisons[0].entity_2.video_id)
         self.assertEqual(comparison2["duration_ms"],
                          self.comparisons[0].duration_ms)
 
@@ -394,8 +394,8 @@ class ComparisonApiTestCase(TestCase):
 
         user = User.objects.get(username=self._user)
         comparisons_made = Comparison.objects.filter(
-            Q(video_1__video_id=self._video_id_02) |
-            Q(video_2__video_id=self._video_id_02),
+            Q(entity_1__video_id=self._video_id_02) |
+            Q(entity_2__video_id=self._video_id_02),
             user=user,
         )
 
@@ -476,8 +476,8 @@ class ComparisonApiTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             Comparison.objects.get(
                 user=user,
-                video_1__video_id=self._video_id_02,
-                video_2__video_id=self._video_id_01,
+                entity_1__video_id=self._video_id_02,
+                entity_2__video_id=self._video_id_01,
             )
 
         response = client.get(
@@ -500,13 +500,13 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
         comparison1 = Comparison.objects.create(
             user=user,
-            video_1=self.videos[2],
-            video_2=self.videos[3],
+            entity_1=self.videos[2],
+            entity_2=self.videos[3],
         )
         comparison2 = Comparison.objects.create(
             user=user,
-            video_1=self.videos[1],
-            video_2=self.videos[2],
+            entity_1=self.videos[1],
+            entity_2=self.videos[2],
         )
         client.put(
             reverse(
@@ -531,10 +531,10 @@ class ComparisonApiTestCase(TestCase):
 
         result_comparison1 = response.data["results"][0]
         result_comparison2 = response.data["results"][1]
-        self.assertEqual(result_comparison1["video_a"]["video_id"], comparison1.video_1.video_id)
-        self.assertEqual(result_comparison1["video_b"]["video_id"], comparison1.video_2.video_id)
-        self.assertEqual(result_comparison2["video_a"]["video_id"], comparison2.video_1.video_id)
-        self.assertEqual(result_comparison2["video_b"]["video_id"], comparison2.video_2.video_id)
+        self.assertEqual(result_comparison1["video_a"]["video_id"], comparison1.entity_1.video_id)
+        self.assertEqual(result_comparison1["video_b"]["video_id"], comparison1.entity_2.video_id)
+        self.assertEqual(result_comparison2["video_a"]["video_id"], comparison2.entity_1.video_id)
+        self.assertEqual(result_comparison2["video_b"]["video_id"], comparison2.entity_2.video_id)
 
     def test_n_ratings_from_video(self):
         client = APIClient()

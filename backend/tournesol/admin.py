@@ -49,16 +49,27 @@ class EntityCriteriaScoreAdmin(admin.ModelAdmin):
 class ContributorRatingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
-        'video',
+        'entity',
+        'get_poll_name',
         'link_to_youtube',
         'is_public',
     )
     list_filter = (
+        'poll__name',
+        'entity__type',
         'is_public',
+    )
+    list_select_related = (
+        'poll',
+        'entity',
     )
 
     def link_to_youtube(self, obj):
-        return obj.video.link_to_youtube()
+        return obj.entity.link_to_youtube()
+
+    @admin.display(ordering="poll__name", description="Poll")
+    def get_poll_name(self, obj):
+        return obj.poll.name
 
 
 @admin.register(ContributorRatingCriteriaScore)
@@ -68,7 +79,31 @@ class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
 
 @admin.register(Comparison)
 class ComparisonAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'pk',
+        'user',
+        'get_poll_name',
+        'entity_1',
+        'entity_2',
+        'datetime_lastedit',
+    )
+    list_filter = (
+        'poll__name',
+    )
+    list_select_related = (
+        'entity_1',
+        'entity_2',
+        'poll',
+    )
+    raw_id_fields = (
+        'user',
+        'entity_1',
+        'entity_2',
+    )
+
+    @admin.display(ordering="poll__name", description="Poll")
+    def get_poll_name(self, obj):
+        return obj.poll.name
 
 
 @admin.register(ComparisonCriteriaScore)

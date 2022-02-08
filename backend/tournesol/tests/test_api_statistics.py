@@ -51,15 +51,15 @@ class StatisticsAPI(TestCase):
         self._list_of_videos = [video_1, video_2, video_3]
 
         comparison_1 = ComparisonFactory(
-                user=user_1, video_1=video_1, video_2=video_2,
+                user=user_1, entity_1=video_1, entity_2=video_2,
                 duration_ms=102
         )
         comparison_2 = ComparisonFactory(
-                user=user_2, video_1=video_1, video_2=video_3,
+                user=user_2, entity_1=video_1, entity_2=video_3,
                 duration_ms=104
         )
         comparison_3 = ComparisonFactory(
-                user=user_2, video_1=video_2, video_2=video_3,
+                user=user_2, entity_1=video_2, entity_2=video_3,
                 duration_ms=302
         )
 

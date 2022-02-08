@@ -2,28 +2,26 @@
 Models for Tournesol's main functions related to contributor's comparisons
 """
 
-import logging
 import uuid
 
 import computed_property
-import numpy as np
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Count, F, ObjectDoesNotExist, Q
+from django.db.models import F, ObjectDoesNotExist, Q
 
 from core.models import User
-from core.utils.models import WithDynamicFields, WithFeatures, enum_list
-from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
+
+from .poll import Poll
 
 
 class Comparison(models.Model):
     """Rating given by a user."""
 
     class Meta:
-        unique_together = ["user", "video_1_2_ids_sorted"]
+        unique_together = ["user", "poll", "entity_1_2_ids_sorted"]
         constraints = [
             models.CheckConstraint(
-                check=~Q(video_1=F("video_2")), name="videos_cannot_be_equal"
+                check=~Q(entity_1=F("entity_2")), name="videos_cannot_be_equal"
             )
         ]
 
@@ -33,13 +31,19 @@ class Comparison(models.Model):
         related_name="comparisons",
         help_text="Contributor (user) who left the rating",
     )
-    video_1 = models.ForeignKey(
+    poll = models.ForeignKey(
+        Poll,
+        on_delete=models.CASCADE,
+        related_name="comparisons",
+        default=Poll.default_poll_pk
+    )
+    entity_1 = models.ForeignKey(
         'Entity',
         on_delete=models.CASCADE,
         related_name="comparisons_video_1",
         help_text="Left video to compare",
     )
-    video_2 = models.ForeignKey(
+    entity_2 = models.ForeignKey(
         'Entity',
         on_delete=models.CASCADE,
         related_name="comparisons_video_2",
@@ -62,17 +66,17 @@ class Comparison(models.Model):
         null=True,
         blank=True,
     )
-    video_1_2_ids_sorted = computed_property.ComputedCharField(
-        compute_from="video_first_second",
+    entity_1_2_ids_sorted = computed_property.ComputedCharField(
+        compute_from="entity_first_second",
         max_length=50,
         default=uuid.uuid1,
         help_text="Sorted pair of video IDs",
     )
 
     @property
-    def video_first_second(self):
-        """String representing two video IDs in sorted order."""
-        a, b = sorted([self.video_1_id, self.video_2_id])
+    def entity_first_second(self):
+        """String representing two entity PKs in sorted order."""
+        a, b = sorted([self.entity_1_id, self.entity_2_id])
         return f"{a}_{b}"
 
     @staticmethod
@@ -85,8 +89,8 @@ class Comparison(models.Model):
         """
         try:
             comparison = Comparison.objects.get(
-                video_1__video_id=video_id_1,
-                video_2__video_id=video_id_2,
+                entity_1__video_id=video_id_1,
+                entity_2__video_id=video_id_2,
                 user=user
             )
         except ObjectDoesNotExist:
@@ -95,93 +99,15 @@ class Comparison(models.Model):
             return comparison, False
 
         comparison = Comparison.objects.get(
-            video_1__video_id=video_id_2,
-            video_2__video_id=video_id_1,
+            entity_1__video_id=video_id_2,
+            entity_2__video_id=video_id_1,
             user=user
         )
 
         return comparison, True
 
-    @staticmethod
-    def sample_video_to_rate(username, rated_count=1):
-        """Get one video to rate, the more rated before, the less probable to choose."""
-        # TODO: re-enable sampling videos for rating
-
-        # # annotation: number of comparisons for the video
-        # annotate_num_comparisons = Count(
-        #     "Comparison_video_1__id", distinct=True
-        # ) + Count("Comparison_video_2__id", distinct=True)
-
-        # class Exp(Func):
-        #     """Exponent in sql."""
-
-        #     function = "Exp"
-
-        # # annotating with number of comparisons
-        # videos = Entity.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
-        # score_exp_annotate = Exp(
-        #     -Value(rated_count, FloatField()) * F("_num_comparisons"), output_field=FloatField()
-        # )
-
-        # # adding the exponent
-        # videos = videos.annotate(_score_exp=score_exp_annotate)
-
-        # # statistical total sum
-        # score_exp_sum = videos.aggregate(_score_exp_sum=Sum("_score_exp"))[
-        #     "_score_exp_sum"
-        # ]
-
-        # # re-computing by dividing by the total sum
-        # videos = videos.annotate(_score_exp_div=F("_score_exp") / score_exp_sum)
-
-        # # choosing a random video ID
-        # ids, scores = zip(*videos.values_list("id", "_score_exp_div"))
-        # random_video_id = np.random.choice(ids, p=scores)
-
-        # return Entity.objects.get(id=random_video_id)
-
-        return None
-
-    @staticmethod
-    def sample_rated_video(username):
-        """Get an already rated video, or a random one."""
-        from .entity import Entity
-
-        # annotation: number of comparisons for the video by username
-        annotate_num_comparisons = Count(
-            "Comparison_video_1",
-            filter=Q(Comparison_video_1__user__user__username=username),
-        ) + Count(
-            "Comparison_video_2",
-            filter=Q(Comparison_video_2__user__user__username=username),
-        )
-
-        # annotating with number of comparisons
-        videos = Entity.objects.all().annotate(_num_comparisons=annotate_num_comparisons)
-
-        # only selecting those already rated.
-        videos = videos.filter(_num_comparisons__gt=0)
-
-        if not videos.count():
-            logging.warning("No rated videos, returning a random one")
-            videos = Entity.objects.all()
-
-        # selecting a random ID
-        random_id = np.random.choice([x[0] for x in videos.values_list("id")])
-
-        return Entity.objects.get(id=random_id)
-
-    @staticmethod
-    def sample_video(username, only_rated=False):
-        """Sample video based on parameters."""
-        if only_rated:
-            video = Comparison.sample_rated_video(username)
-        else:
-            video = Comparison.sample_video_to_rate(username)
-        return video
-
     def __str__(self):
-        return "%s [%s/%s]" % (self.user, self.video_1, self.video_2)
+        return "%s [%s/%s]" % (self.user, self.entity_1, self.entity_2)
 
 
 class ComparisonCriteriaScore(models.Model):
@@ -215,77 +141,3 @@ class ComparisonCriteriaScore(models.Model):
 
     def __str__(self):
         return f"{self.comparison}/{self.criteria}/{self.score}"
-
-
-class ComparisonSliderChanges(models.Model, WithFeatures, WithDynamicFields):
-    """Slider values in time for given videos."""
-
-    user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        help_text="Person changing the sliders",
-        null=True,
-    )
-
-    video_left = models.ForeignKey(
-        to='Entity',
-        on_delete=models.CASCADE,
-        help_text="Left video",
-        related_name="slider_left",
-        null=True,
-    )
-    video_right = models.ForeignKey(
-        to='Entity',
-        on_delete=models.CASCADE,
-        help_text="Right video",
-        related_name="slider_right",
-        null=True,
-    )
-
-    datetime = models.DateTimeField(
-        auto_now_add=True,
-        help_text="Time the values are added",
-        null=True,
-        blank=True,
-    )
-
-    duration_ms = models.FloatField(
-        null=True,
-        default=0,
-        help_text="Time from page load to this slider value (in milliseconds)",
-    )
-
-    context = models.CharField(
-        choices=enum_list("RATE", "DIS", "INC"),
-        max_length=10,
-        default="RATE",
-        help_text="The page where slider change occurs",
-    )
-
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field in CRITERIAS:
-            ComparisonSliderChanges.add_to_class(
-                field,
-                models.FloatField(
-                    blank=True,
-                    null=True,
-                    default=None,
-                    help_text=CRITERIAS_DICT[field],
-                    validators=[MinValueValidator(0.0), MaxValueValidator(MAX_VALUE)],
-                ),
-            )
-
-    def __str__(self):
-        return "%s [%s] %s/%s at %s" % (
-            self.user,
-            self.context,
-            self.video_left,
-            self.video_right,
-            self.datetime,
-        )
-
-
-# adding dynamic fields
-WithDynamicFields.create_all()

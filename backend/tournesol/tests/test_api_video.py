@@ -47,10 +47,10 @@ class VideoApi(TestCase):
             rating_n_contributors=5,
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
-        VideoCriteriaScoreFactory(video=self.video_1, criteria="reliability", score=0.1)
-        VideoCriteriaScoreFactory(video=self.video_2, criteria="reliability", score=0.2)
-        VideoCriteriaScoreFactory(video=self.video_3, criteria="importance", score=0.3)
-        VideoCriteriaScoreFactory(video=self.video_4, criteria="importance", score=0.4)
+        VideoCriteriaScoreFactory(entity=self.video_1, criteria="reliability", score=0.1)
+        VideoCriteriaScoreFactory(entity=self.video_2, criteria="reliability", score=0.2)
+        VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
+        VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
 
     def test_anonymous_can_list(self):
         """
@@ -261,8 +261,8 @@ class VideoApi(TestCase):
     def test_cannot_get_video_with_particular_request(self):
         client = APIClient()
         video = VideoFactory(rating_n_contributors=2)
-        VideoCriteriaScoreFactory(video=video, criteria="engaging", score=-1)
-        VideoCriteriaScoreFactory(video=video, criteria="importance", score=1)
+        VideoCriteriaScoreFactory(entity=video, criteria="engaging", score=-1)
+        VideoCriteriaScoreFactory(entity=video, criteria="importance", score=1)
         good_response = client.get("/video/?importance=50&engaging=0")
         self.assertEqual(good_response.status_code, status.HTTP_200_OK)
         self.assertEqual(good_response.data["count"], len(self._list_of_videos) + 1)
@@ -277,9 +277,9 @@ class VideoApi(TestCase):
         video1 = VideoFactory(language="fr", rating_n_contributors=2)
         video2 = VideoFactory(language="en", rating_n_contributors=2)
         video3 = VideoFactory(language="en", rating_n_contributors=2)
-        VideoCriteriaScoreFactory(video=video1)
-        VideoCriteriaScoreFactory(video=video2)
-        VideoCriteriaScoreFactory(video=video3)
+        VideoCriteriaScoreFactory(entity=video1)
+        VideoCriteriaScoreFactory(entity=video2)
+        VideoCriteriaScoreFactory(entity=video3)
 
         resp = client.get("/video/?language=")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)

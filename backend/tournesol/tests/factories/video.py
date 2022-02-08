@@ -5,7 +5,7 @@ import string
 import factory
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import entity as entity_models
+from tournesol.models import Entity, EntityCriteriaScore, VideoRateLater
 
 
 def generate_youtube_id():
@@ -15,7 +15,7 @@ def generate_youtube_id():
 class VideoFactory(factory.django.DjangoModelFactory):
 
     class Meta:
-        model = entity_models.Entity
+        model = Entity
 
     video_id = factory.LazyFunction(generate_youtube_id)
     name = factory.Sequence(lambda n: 'Entity title %s' % n)
@@ -29,9 +29,9 @@ class VideoFactory(factory.django.DjangoModelFactory):
 class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
 
     class Meta:
-        model = entity_models.EntityCriteriaScore
+        model = EntityCriteriaScore
 
-    video = factory.SubFactory(VideoFactory)
+    entity = factory.SubFactory(VideoFactory)
     criteria = "better_habits"
     score = 1
 
@@ -39,7 +39,7 @@ class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
 class VideoRateLaterFactory(factory.django.DjangoModelFactory):
 
     class Meta:
-        model = entity_models.VideoRateLater
+        model = VideoRateLater
 
     video = factory.SubFactory(VideoFactory)
     user = factory.SubFactory(UserFactory)

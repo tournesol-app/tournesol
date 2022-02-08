@@ -4,7 +4,7 @@ from collections import Counter
 from django.conf import settings
 from langdetect import DetectorFactory, detect, lang_detect_exception
 
-from ..models import Entity
+from ..models.entity import Entity
 
 ACCEPTED_LANGUAGE_CODES = {lang[0] for lang in settings.LANGUAGES}
 

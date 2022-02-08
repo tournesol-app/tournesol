@@ -7,7 +7,7 @@ from datetime import timedelta
 
 import numpy as np
 from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -17,7 +17,6 @@ from tqdm.auto import tqdm
 from core.models import User
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from core.utils.models import WithFeatures
-from tournesol.models.comparisons import Comparison
 from tournesol.models.tags import Tag
 
 CRITERIAS = settings.CRITERIAS
@@ -131,11 +130,12 @@ class Entity(models.Model, WithFeatures):
     )
 
     def update_n_ratings(self):
+        from .comparisons import Comparison
         self.rating_n_ratings = Comparison.objects.filter(
-            Q(video_1=self) | Q(video_2=self)
+            Q(entity_1=self) | Q(entity_2=self)
         ).count()
         self.rating_n_contributors = (
-            Comparison.objects.filter(Q(video_1=self) | Q(video_2=self))
+            Comparison.objects.filter(Q(entity_1=self) | Q(entity_2=self))
             .distinct("user")
             .count()
         )
@@ -270,52 +270,6 @@ class Entity(models.Model, WithFeatures):
         self.uid = '{}:{}'.format(Entity.UID_YT_NAMESPACE, self.video_id)
         self.type = Entity.TYPE_VIDEO
         super().save(*args, **kwargs)
-
-
-class EntityCriteriaScore(models.Model):
-    """
-    The score of an Entity for a given Criteria, in the scope of a given
-    Poll.
-    """
-    video = models.ForeignKey(
-        to=Entity,
-        on_delete=models.CASCADE,
-        help_text="Foreign key to the video",
-        related_name="criteria_scores",
-    )
-    criteria = models.TextField(
-        max_length=32,
-        help_text="Name of the criteria",
-        db_index=True,
-    )
-    score = models.FloatField(
-        default=0,
-        blank=False,
-        help_text="Score of the given criteria",
-    )
-    uncertainty = models.FloatField(
-        default=0,
-        blank=False,
-        help_text="Uncertainty about the video's score for the given criteria",
-    )
-    # TODO: ensure that the following works:
-    # quantiles are computed in the Entity.recompute_quantiles(),
-    # called via the manage.py compute_quantile_pareto command
-    # should be computed after every ml_train command (see the devops script)
-    quantile = models.FloatField(
-        default=1.0,
-        null=False,
-        blank=False,
-        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
-        help_text="Top quantile for all rated videos for aggregated scores"
-        "for the given criteria. 0.0=best, 1.0=worst",
-    )
-
-    class Meta:
-        unique_together = ["video", "criteria"]
-
-    def __str__(self):
-        return f"{self.video}/{self.criteria}/{self.score}"
 
 
 class VideoRateLater(models.Model):

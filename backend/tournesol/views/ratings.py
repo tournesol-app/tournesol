@@ -20,13 +20,13 @@ from ..serializers import (
 def get_annotated_ratings():
     comparison_counts = (
         Comparison.objects.filter(user=OuterRef("user"))
-        .filter(Q(video_1=OuterRef("video")) | Q(video_2=OuterRef("video")))
+        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
         .annotate(count=Func("id", function="Count"))
         .values("count")
     )
     return ContributorRating.objects.annotate(
         n_comparisons=Subquery(comparison_counts)
-    ).order_by("-video__publication_date", "-pk")
+    ).order_by("-entity__publication_date", "-pk")
 
 
 @extend_schema_view(
@@ -49,7 +49,7 @@ class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return get_object_or_404(
             get_annotated_ratings(),
-            video__video_id=self.kwargs["video_id"],
+            entity__video_id=self.kwargs["video_id"],
             user=self.request.user,
         )
 
@@ -79,7 +79,7 @@ class ContributorRatingList(generics.ListCreateAPIView):
         ratings = (
             get_annotated_ratings()
             .filter(user=self.request.user, n_comparisons__gt=0)
-            .select_related("video")
+            .select_related("entity")
             .prefetch_related("criteria_scores")
         )
         is_public = self.request.query_params.get("is_public")

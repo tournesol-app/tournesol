@@ -70,7 +70,7 @@ class ComparisonListBaseApi(ComparisonApiMixin,
         if self.kwargs.get("video_id"):
             video_id = self.kwargs.get("video_id")
             queryset = queryset.filter(
-                Q(video_1__video_id=video_id) | Q(video_2__video_id=video_id)
+                Q(entity_1__video_id=video_id) | Q(entity_2__video_id=video_id)
             )
 
         return queryset
@@ -99,12 +99,12 @@ class ComparisonListApi(
                 )
             )
         comparison: Comparison = serializer.save()
-        comparison.video_1.update_n_ratings()
-        comparison.video_1.refresh_youtube_metadata()
-        comparison.video_2.update_n_ratings()
-        comparison.video_2.refresh_youtube_metadata()
-        ContributorRating.objects.get_or_create(user=self.request.user, video=comparison.video_1)
-        ContributorRating.objects.get_or_create(user=self.request.user, video=comparison.video_2)
+        comparison.entity_1.update_n_ratings()
+        comparison.entity_1.refresh_youtube_metadata()
+        comparison.entity_2.update_n_ratings()
+        comparison.entity_2.refresh_youtube_metadata()
+        ContributorRating.objects.get_or_create(user=self.request.user, entity=comparison.entity_1)
+        ContributorRating.objects.get_or_create(user=self.request.user, entity=comparison.entity_2)
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)

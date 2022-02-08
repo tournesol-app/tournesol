@@ -12,8 +12,8 @@ class ComparisonFactory(factory.django.DjangoModelFactory):
         model = comparison_models.Comparison
 
     user = factory.SubFactory(UserFactory)
-    video_1 = factory.SubFactory(VideoFactory)
-    video_2 = factory.SubFactory(VideoFactory)
+    entity_1 = factory.SubFactory(VideoFactory)
+    entity_2 = factory.SubFactory(VideoFactory)
 
 class ComparisonCriteriaScoreFactory(factory.django.DjangoModelFactory):
 
