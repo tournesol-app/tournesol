@@ -27,7 +27,7 @@
   },
   "submit": "submit",
   "lightComparison": {
-    "notEnoughVideos": "Sorry, Tournesol hasn't been able to retrieve videos."
+    "notEnoughVideos": "Sorry, Tournesol hasn't been able to display videos."
   },
   "footer": {
     "wiki": "wiki",
