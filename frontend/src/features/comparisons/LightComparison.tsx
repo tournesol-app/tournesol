@@ -127,16 +127,16 @@ const LightComparison = () => {
       const recent = await getRecommendations('?date=Month');
       const displayedVideos = [...recent];
 
-      // use all time recommendations if the recent videos < 2
+      // use videos from this year if the recent are not enough
       if (displayedVideos.some(empty)) {
-        const allTime = await getRecommendations('');
+        const year = await getRecommendations('?date=Year');
 
         if (displayedVideos[0] === '') {
-          displayedVideos[0] = allTime[0];
+          displayedVideos[0] = year[0];
         }
 
         if (displayedVideos[1] === '') {
-          displayedVideos[1] = allTime[1];
+          displayedVideos[1] = year[1];
         }
       }
 
