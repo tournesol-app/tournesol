@@ -86,7 +86,7 @@ def add_expander_correlation_coefficients():
         df = st.session_state.df_scores
         st.markdown(
             "The table bellow shows the pearson correlation"
-            "coefficient between the criteria scores."
+            " coefficient between the criteria scores."
         )
 
         df_correl = df[CRITERIA].corr()
