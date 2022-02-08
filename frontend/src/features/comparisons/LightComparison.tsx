@@ -12,14 +12,10 @@ import {
 } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
-import {
-  ComparisonRequest,
-  PaginatedVideoSerializerWithCriteriaList,
-  UsersService,
-} from 'src/services/openapi';
+import { ComparisonRequest, UsersService } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
-import { VideoCardFromId } from '../videos/VideoCard';
-import { getRecommendedVideos } from '../recommendation/RecommendationApi';
+import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
+import { VideoCardFromId } from 'src/features/videos/VideoCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centering: {
@@ -40,6 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+// XXX should be move somewhere
 function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -69,9 +66,43 @@ const LightComparison = () => {
   const [videoIdA, setVideoIdA] = useState('');
   const [videoIdB, setVideoIdB] = useState('');
 
-  const getRecentReco = async () => {
-    const searchString = '';
-    return await getRecommendedVideos(searchString);
+  /**
+   * Get an array of two random and distinct video IDs from the Tournesol
+   * recommendations.
+   *
+   * The recommendations can be narrowed using the `searchString` parameter.
+   * If less than two video IDs are found, the rest of the array is filled
+   * with empty strings.
+   *
+   * @param searchString a string used by the request's URLSearchParams
+   */
+  const getRecommendations = async (searchString: string) => {
+    let idA = '';
+    let idB = '';
+
+    const response = await getRecommendedVideos(searchString);
+
+    const count = response && response.count ? response.count : 0;
+    const max =
+      response && response.results && response.results.length > 0
+        ? response.results.length
+        : 0;
+
+    if (count >= 2 && response.results) {
+      const randA = getRandomInt(0, max);
+      let randB = getRandomInt(0, max);
+
+      while (randA === randB) {
+        randB = getRandomInt(0, max);
+      }
+
+      idA = response.results[randA]['video_id'];
+      idB = response.results[randB]['video_id'];
+    } else if (count === 1 && response.results) {
+      idA = response.results[0]['video_id'];
+    }
+
+    return [idA, idB];
   };
 
   const getUserComparison = (idA: string, idB: string) => {
@@ -89,37 +120,33 @@ const LightComparison = () => {
   };
 
   useEffect(() => {
-    let idA = '';
-    let idB = '';
+    const process = async () => {
+      const empty = (elem: string) => elem === '' || !elem;
 
-    getRecentReco().then(
-      (response: PaginatedVideoSerializerWithCriteriaList) => {
-        const count = response && response.count ? response.count : 0;
-        const max =
-          response && response.results && response.results.length > 0
-            ? response.results.length
-            : 0;
+      // randomly pick two recent videos
+      const recent = await getRecommendations('?date=Month');
+      const displayedVideos = [...recent];
 
-        if (count >= 2 && response.results) {
-          const randA = getRandomInt(0, max);
-          let randB = getRandomInt(0, max);
-          while (randA === randB) {
-            randB = getRandomInt(0, max);
-          }
+      // use all time recommendations if the recent videos < 2
+      if (displayedVideos.some(empty)) {
+        const allTime = await getRecommendations('');
 
-          idA = response.results[randA]['video_id'];
-          idB = response.results[randB]['video_id'];
-        } else if (count >= 1 && response.results) {
-          idA = response.results[0]['video_id'];
+        if (displayedVideos[0] === '') {
+          displayedVideos[0] = allTime[0];
         }
 
-        if (idA) setVideoIdA(idA);
-        if (idB) setVideoIdB(idB);
-        getUserComparison(idA, idB);
-
-        setIsLoading(false);
+        if (displayedVideos[1] === '') {
+          displayedVideos[1] = allTime[1];
+        }
       }
-    );
+
+      setVideoIdA(displayedVideos[0]);
+      setVideoIdB(displayedVideos[1]);
+      getUserComparison(displayedVideos[0], displayedVideos[1]);
+      setIsLoading(false);
+    };
+
+    process();
   }, []);
 
   const onSubmitComparison = async (c: ComparisonRequest) => {
