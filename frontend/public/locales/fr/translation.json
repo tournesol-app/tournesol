@@ -27,7 +27,7 @@
   },
   "submit": "enregistrer",
   "lightComparison": {
-    "notEnoughVideos": "Désolé, Tournesol n'a pas été en mesure de trouver des vidéos."
+    "notEnoughVideos": "Désolé, Tournesol n'a pas été en mesure d'afficher des vidéos."
   },
   "footer": {
     "wiki": "wiki",
