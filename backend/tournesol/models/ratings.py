@@ -40,7 +40,7 @@ class ContributorRating(models.Model, WithFeatures):
         unique_together = ["user", "entity", "poll"]
 
     def __str__(self):
-        return "%s on %s" % (self.user, self.video)
+        return "%s on %s" % (self.user, self.entity)
 
 
 class ContributorRatingCriteriaScore(models.Model):

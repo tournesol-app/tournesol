@@ -116,4 +116,13 @@ class Migration(migrations.Migration):
             name='comparison',
             unique_together={('user', 'poll', 'entity_1_2_ids_sorted')},
         ),
+        migrations.RenameField(
+            model_name='entitycriteriascore',
+            old_name='video',
+            new_name='entity',
+        ),
+        migrations.AlterUniqueTogether(
+            name='entitycriteriascore',
+            unique_together={('entity', 'poll', 'criteria')},
+        ),
     ]

@@ -10,7 +10,7 @@ class EntityCriteriaScore(models.Model):
     The score of an Entity for a given Criteria, in the scope of a given
     Poll.
     """
-    video = models.ForeignKey(
+    entity = models.ForeignKey(
         to=Entity,
         on_delete=models.CASCADE,
         help_text="Foreign key to the video",
@@ -51,7 +51,7 @@ class EntityCriteriaScore(models.Model):
     )
 
     class Meta:
-        unique_together = ["video", "poll", "criteria"]
+        unique_together = ["entity", "poll", "criteria"]
 
     def __str__(self):
         return f"{self.entity}/{self.criteria}/{self.score}"
