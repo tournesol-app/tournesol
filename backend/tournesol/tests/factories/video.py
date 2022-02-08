@@ -31,7 +31,7 @@ class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EntityCriteriaScore
 
-    video = factory.SubFactory(VideoFactory)
+    entity = factory.SubFactory(VideoFactory)
     criteria = "better_habits"
     score = 1
 
