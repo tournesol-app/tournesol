@@ -21,3 +21,6 @@ class Poll(models.Model):
             defaults={"entity_type": Entity.TYPE_VIDEO}
         )
         return poll.pk
+
+    def __str__(self) -> str:
+        return f'Poll "{self.name}"'
