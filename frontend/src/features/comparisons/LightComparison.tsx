@@ -73,6 +73,10 @@ const LightComparison = () => {
   const [videoIdA, setVideoIdA] = useState('');
   const [videoIdB, setVideoIdB] = useState('');
 
+  const copyTextInitial = t('lightComparison.copyLink');
+  const copyTextCopied = t('lightComparison.done');
+  const [copyText, setCopyText] = useState(copyTextInitial);
+
   /**
    * Get an array of two random and distinct video IDs from the Tournesol
    * recommendations.
@@ -179,6 +183,14 @@ const LightComparison = () => {
       const comparisonUri =
         `${window.location.protocol}//${window.location.host}` + comparisonPath;
 
+      const copyToClipBoard = () => {
+        navigator.clipboard.writeText(comparisonUri);
+        setCopyText(copyTextCopied);
+        setTimeout(() => {
+          setCopyText(copyTextInitial);
+        }, 2000);
+      };
+
       return (
         <Grid
           container
@@ -188,13 +200,8 @@ const LightComparison = () => {
           alignItems="center"
         >
           <Stack direction="row" spacing={1}>
-            <Button
-              variant="text"
-              onClick={() => {
-                navigator.clipboard.writeText(comparisonUri);
-              }}
-            >
-              copy link
+            <Button variant="text" onClick={copyToClipBoard}>
+              {copyText}
             </Button>
             <IconButton
               aria-label="open-comparison"
