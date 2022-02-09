@@ -168,7 +168,7 @@
     "criteriaRatedHigh": "Noté fortement :",
     "criteriaRatedLow": "Noté faiblement :",
     "labelShowSettings": "Voir les paramètres de cette video",
-    "unsafeNotEnoughContributor": "Peut être bon, mais nous avons peu de confiance car cela n'a été évalué que par un seul contributeur",
+    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un faible nombre de contributeurs distincts",
     "unsafeNegativeRating" : "Peut être bon mais inférieur à la moyenne des vidéos ajoutées à Tournesol"
   },
   "notifications": {
