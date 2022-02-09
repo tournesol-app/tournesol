@@ -10,13 +10,17 @@ import {
   Box,
   Theme,
   Button,
+  IconButton,
 } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { useLoginState, useNotifications } from 'src/hooks';
 import { ComparisonRequest, UsersService } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 import { VideoCardFromId } from 'src/features/videos/VideoCard';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centering: {
@@ -58,6 +62,7 @@ const LightComparison = () => {
   const classes = useStyles();
 
   const { isLoggedIn } = useLoginState();
+  const history = useHistory();
   const { t } = useTranslation();
   const { showSuccessAlert } = useNotifications();
 
@@ -132,7 +137,7 @@ const LightComparison = () => {
 
       // use videos from this year if the recent are not enough
       if (displayedVideos.some(empty)) {
-        const year = await getRecommendations('?date=Year');
+        const year = await getRecommendations('');
 
         if (displayedVideos[0] === '') {
           displayedVideos[0] = year[0];
@@ -145,9 +150,7 @@ const LightComparison = () => {
 
       setVideoIdA(displayedVideos[0]);
       setVideoIdB(displayedVideos[1]);
-      setComparisonUrl(
-        `https://tournesol.app/comparison/?videoA=${videoIdA}&videoB=${videoIdB}`
-      );
+      setComparisonUrl(`/comparison/?videoA=${videoIdA}&videoB=${videoIdB}`);
       getUserComparison(displayedVideos[0], displayedVideos[1]);
       setIsLoading(false);
     };
@@ -173,6 +176,9 @@ const LightComparison = () => {
 
   const renderTopItem = () => {
     if (isLoggedIn && videoIdA !== '' && videoIdB !== '') {
+      const url =
+        `${window.location.protocol}//${window.location.host}` + comparisonUrl;
+
       return (
         <Grid
           container
@@ -181,14 +187,24 @@ const LightComparison = () => {
           justifyContent="flex-end"
           alignItems="center"
         >
-          <Button
-            variant="outlined"
-            onClick={() => {
-              navigator.clipboard.writeText(comparisonUrl);
-            }}
-          >
-            copy link
-          </Button>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="text"
+              onClick={() => {
+                navigator.clipboard.writeText(url);
+              }}
+            >
+              copy link
+            </Button>
+            <IconButton
+              aria-label="open-comparison"
+              onClick={() => {
+                history.push(comparisonUrl);
+              }}
+            >
+              <OpenInNewIcon />
+            </IconButton>
+          </Stack>
         </Grid>
       );
     }
