@@ -1,11 +1,38 @@
-# Tournesol
+<h1 align="center">Tournesol - Collaborative Content Recommendations</h1>
+
+<p align="center">
+  <img
+    src="./frontend/public/logos/Tournesol_Logo.png"
+    alt="tournesol-logo"
+    width="120px"
+    height="120px"
+  />
+  <br>
+  <i>Tournesol is a free and open source platform which aims to collaboratively identify top videos of public utility
+    <br>by eliciting contributors' judgements on content quality.</i>
+  <br>
+</p>
+
+<p align="center">
+  <a href="https://tournesol.app"><strong>https://tournesol.app</strong></a>
+  <br>
+</p>
+
+<p align="center">
+  <a href="https://tournesol.app/comparison">Compare Videos</a>
+  ·
+  <a href="./CONTRIBUTING.md">Contributing Guidelines</a>
+  ·
+  <a href="https://tournesol.app/about/donate">Make a Donation</a>
+  <br>
+</p>
+
+---
 
 This repository hosts the free and open source code of the Tournesol platform.
 
 Learn more about the project on our [Wiki][tournesol-wiki], or meet our community
 on [Discord][tournesol-discord-join].
-
----
 
 **Table of Content**
 
