@@ -10,6 +10,8 @@
     "comparisons": "comparisons"
   },
   "comparison": {
+    "successfullySubmitted": "The comparison has been successfully submitted.",
+    "pleaseSelectTwoVideos": "Please, enter two URLs or IDs of YouTube videos to compare them.",
     "videosAreSimilar": "These two videos are very similar, it is probably not useful to compare them.",
     "removeOptionalCriterias": "Remove optional criterias",
     "addOptionalCriterias": "Add optional criterias",
@@ -18,14 +20,12 @@
     "comparisonInPublicDataset": "This comparison is included in the public dataset.",
     "comparisonInPublicDatasetAfterSubmission": "After submission, this comparison will be included in the public dataset.",
     "criteriaSkipped": "Skipped",
-    "successfullySubmitted": "The comparison has been successfully submitted.",
-    "submitAComparison": "Submit a comparison",
-    "pleaseSelectTwoVideos": "Please, enter two URLs or IDs of YouTube videos to compare them."
+    "submitAComparison": "Submit a comparison"
   },
-  "submit": "submit",
   "comparisons": {
     "goToComparison": "Go to comparison"
   },
+  "submit": "submit",
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "privacy policy",
@@ -181,6 +181,7 @@
     "tournesolVisionResearchOnEthicsOfAlgorithms": "Through research on ethics of algorithms relying on a large and reliable database of human judgements",
     "whoBuildsTournesol": "Who builds Tournesol?",
     "tournesolTransparency": "Tournesol seeks to be an extremely transparent project. All contributions to the project are openly visible on our GitHub, description of important concepts and Tournesol's vision can be found on our wiki, and discussions that guide the development of Tournesol happen openly on our Discord.",
+    "considerHelpingWithDonation": "If you can, please consider helping us <2>with a donation</2>.",
     "tournesolAssociation": "Tournesol Association",
     "tournesolAssociationDetail": "Tournesol is supported by the non-profit Tournesol association based in Lausanne, Switzerland.",
     "rolePresident": "President",
