@@ -259,7 +259,10 @@
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
     "whatIsTournesol": "What is Tournesol?",
-    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which aims to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which aims to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity.",
+    "giveYourOpinionNow": "Give your opinion now",
+    "and": "and",
+    "makeTheRecommendationsBetter": "make the recommendations better"
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",

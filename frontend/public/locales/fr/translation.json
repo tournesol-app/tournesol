@@ -263,7 +263,10 @@
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grande qualité, de <3>manière collaborative</3>, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> dont le but est d'identifier les vidéos d'utilité publique de grande qualité, de <3>manière collaborative</3>, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité.",
+    "giveYourOpinionNow": "Donnez votre avis maintenant",
+    "and": "et",
+    "makeTheRecommendationsBetter": "améliorez les recommandations"
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
