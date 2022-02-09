@@ -2,7 +2,7 @@ describe('Home page comparison feature - anonymous', () => {
   it('doesn\'t display the comparison UI for anonymous users', () => {
     cy.visit('/');
     cy.contains('give your opinion now', {matchCase: false}).should('not.exist');
-  })
+  });
 });
 
 describe('Home page comparison feature - logged', () => {
@@ -16,5 +16,5 @@ describe('Home page comparison feature - logged', () => {
 
     cy.get('#expert_submit_btn').click();
     cy.get('#expert_submit_btn').contains('edit comparison', {matchCase: false});
-  })
+  });
 });

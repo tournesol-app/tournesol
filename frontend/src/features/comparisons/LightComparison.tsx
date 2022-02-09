@@ -144,7 +144,7 @@ const LightComparison = () => {
 
       // use videos from this year if the recent are not enough
       if (displayedVideos.some(empty)) {
-        const year = await getRecommendations('');
+        const year = await getRecommendations('?date=Year');
 
         if (displayedVideos[0] === '') {
           displayedVideos[0] = year[0];
