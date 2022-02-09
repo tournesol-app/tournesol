@@ -114,17 +114,17 @@ const HomePage = () => {
               >
                 <Grid item>
                   <Typography variant="h1" component="h1">
-                    Give your opinion now
+                    {t('home.giveYourOpinionNow')}
                   </Typography>
                 </Grid>
                 <Grid item>
                   <Typography variant="h3" component="h3">
-                    and
+                    {t('home.and')}
                   </Typography>
                 </Grid>
                 <Grid item>
                   <Typography variant="h3" component="h3">
-                    make the recommendations better
+                    {t('home.makeTheRecommendationsBetter')}
                   </Typography>
                 </Grid>
               </Grid>
