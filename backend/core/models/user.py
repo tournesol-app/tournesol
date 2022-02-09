@@ -14,10 +14,7 @@ from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 
-from settings.settings import CRITERIAS, CRITERIAS_DICT, MAX_VALUE
-
-from ..utils.constants import featureIsEnabledByDeFault
-from ..utils.models import WithDynamicFields, WithFeatures, enum_list
+from ..utils.models import WithDynamicFields, enum_list
 from ..utils.validators import validate_avatar
 
 logger = logging.getLogger(__name__)
@@ -188,11 +185,6 @@ class User(AbstractUser):
         null=True,
     )
 
-    @property
-    def user_preferences(self):
-        """Preferences for this user."""
-        return UserPreference.objects.get(user=self)
-
     # @property
     # def is_certified(self):
     #     """Check if the user's email is certified. See #152"""
@@ -254,58 +246,6 @@ class User(AbstractUser):
         if update_fields is None or 'email' in update_fields:
             self.ensure_email_domain_exists()
         return super().save(*args, **kwargs)
-
-
-class UserPreference(models.Model, WithFeatures, WithDynamicFields):
-    """One user with preferences."""
-
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        help_text="User that preferences belong to",
-        related_name="userpreferences",
-    )
-
-    rating_mode = models.CharField(
-        max_length=50,
-        default="enable_all",
-        help_text="Which sliders and parameters to display" " on the rating page?",
-        choices=enum_list("enable_all", "skip", "confidence"),
-    )
-
-    @staticmethod
-    def _create_fields():
-        """Adding score fields."""
-        for field in CRITERIAS:
-            UserPreference.add_to_class(
-                field,
-                models.FloatField(
-                    default=0.0,
-                    blank=False,
-                    help_text=CRITERIAS_DICT[field],
-                    validators=[MinValueValidator(0.0), MaxValueValidator(MAX_VALUE)],
-                ),
-            )
-
-            UserPreference.add_to_class(
-                field + "_enabled",
-                models.BooleanField(
-                    default=featureIsEnabledByDeFault[field],
-                    blank=False,
-                    help_text=f"{field} given for ratings",
-                ),
-            )
-
-    # center ratings around MAX_RATING / 2
-    VECTOR_OFFSET = MAX_VALUE / 2
-
-    def __str__(self):
-        return str(self.user)
-
-    @property
-    def username(self):
-        """DjangoUser username."""
-        return self.user.username
 
 
 class VerifiableEmail(models.Model):

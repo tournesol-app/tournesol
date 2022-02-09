@@ -16,14 +16,12 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
-from core.utils.models import WithFeatures
 from tournesol.models.tags import Tag
 
-CRITERIAS = settings.CRITERIAS
 LANGUAGES = settings.LANGUAGES
 
 
-class Entity(models.Model, WithFeatures):
+class Entity(models.Model):
     """
     A generic entity that can be compared with another one.
 
@@ -177,7 +175,12 @@ class Entity(models.Model, WithFeatures):
 
     @staticmethod
     def recompute_quantiles():
-        """Set {f}_quantile attribute for videos."""
+        """
+        WARNING: This implementation is obsolete, and relies on non-existing
+        fields "{criteria}_quantile" for videos.
+        """
+        from .poll import Poll
+        CRITERIAS = Poll.default_poll().criterias_list()
         quantiles_by_feature_by_id = {f: {} for f in CRITERIAS}
 
         # go over all features

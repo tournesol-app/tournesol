@@ -2,14 +2,14 @@ import logging
 
 from django.core.management.base import BaseCommand
 
+from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
-from settings.settings import CRITERIAS
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
     EntityCriteriaScore,
-    User,
+    Poll,
 )
 
 """
@@ -61,8 +61,8 @@ def fetch_data():
     comparison_data = [
         [
             ccs.comparison.user_id,
-            ccs.comparison.video_1_id,
-            ccs.comparison.video_2_id,
+            ccs.comparison.entity_1_id,
+            ccs.comparison.entity_2_id,
             ccs.criteria,
             ccs.score,
             ccs.weight,
@@ -82,7 +82,7 @@ def save_data(video_scores, contributor_rating_scores):
     EntityCriteriaScore.objects.bulk_create(
         [
             EntityCriteriaScore(
-                video_id=video_id,
+                entity_id=video_id,
                 criteria=criteria,
                 score=score,
                 uncertainty=uncertainty,
@@ -94,7 +94,7 @@ def save_data(video_scores, contributor_rating_scores):
     rating_ids = {
         (contributor_id, video_id): rating_id
         for rating_id, contributor_id, video_id in ContributorRating.objects.all().values_list(
-            "id", "user_id", "video_id"
+            "id", "user_id", "entity_id"
         )
     }
     ratings_to_create = set(
@@ -105,14 +105,14 @@ def save_data(video_scores, contributor_rating_scores):
     created_ratings = ContributorRating.objects.bulk_create(
         [
             ContributorRating(
-                video_id=video_id,
+                entity_id=video_id,
                 user_id=contributor_id,
             )
             for contributor_id, video_id in ratings_to_create
         ]
     )
     rating_ids.update(
-        {(rating.user_id, rating.video_id): rating.id for rating in created_ratings}
+        {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
     )
     ContributorRatingCriteriaScore.objects.all().delete()
     ContributorRatingCriteriaScore.objects.bulk_create(
@@ -132,11 +132,12 @@ class Command(BaseCommand):
     help = "Runs the ml"
 
     def handle(self, *args, **options):
+        criterias_list = Poll.default_poll().criterias_list
         comparison_data = fetch_data()
         if TOURNESOL_DEV:
             logging.error('You must turn TOURNESOL_DEV to 0 to use this')
         else:  # production mode
             glob_scores, loc_scores = ml_run(
-                comparison_data, criterias=CRITERIAS, save=True, verb=-1
+                comparison_data, criterias=criterias_list, save=True, verb=-1
             )
             save_data(glob_scores, loc_scores)
