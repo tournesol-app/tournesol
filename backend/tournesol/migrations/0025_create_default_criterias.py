@@ -60,8 +60,7 @@ CRITERIAS = [
 
 def migrate_forward(apps, schema_editor):
     """
-    Set the `uid` and the `type` field of all entities present in the
-    database (supposedly only YT videos are present).
+    Create the criteria of the `videos` poll.
     """
     Criteria = apps.get_model("tournesol", "Criteria")
     CriteriaLocale = apps.get_model("tournesol", "CriteriaLocale")
