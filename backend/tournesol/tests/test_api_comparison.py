@@ -48,7 +48,7 @@ class ComparisonApiTestCase(TestCase):
         },
         "criteria_scores": [
             {
-                "criteria": "over_the_top",
+                "criteria": "pedagogy",
                 "score": 10,
                 "weight": 10
             }
@@ -62,7 +62,7 @@ class ComparisonApiTestCase(TestCase):
 
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
-        user = UserFactory(username=self._user)
+        self.user = UserFactory(username=self._user)
         UserFactory(username=self._user2)
         other = UserFactory(username=self._other)
         now = datetime.datetime.now()
@@ -77,12 +77,12 @@ class ComparisonApiTestCase(TestCase):
         self.comparisons = [
             # "user" will have the comparisons: 01 / 02 and 01 / 04
             ComparisonFactory(
-                user=user, entity_1=self.videos[0], entity_2=self.videos[1],
+                user=self.user, entity_1=self.videos[0], entity_2=self.videos[1],
                 duration_ms=102,
                 datetime_lastedit=now,
             ),
             ComparisonFactory(
-                user=user, entity_1=self.videos[0], entity_2=self.videos[3],
+                user=self.user, entity_1=self.videos[0], entity_2=self.videos[3],
                 duration_ms=104,
                 datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
@@ -516,7 +516,7 @@ class ComparisonApiTestCase(TestCase):
             {
                 'criteria_scores': [
                     {
-                        "criteria": "over_the_top",
+                        "criteria": "pedagogy",
                         "score": 10,
                         "weight": 10
                     }
@@ -553,7 +553,7 @@ class ComparisonApiTestCase(TestCase):
             },
             "criteria_scores": [
                 {
-                    "criteria": "over_the_top",
+                    "criteria": "pedagogy",
                     "score": 10,
                     "weight": 10
                 }
@@ -574,7 +574,7 @@ class ComparisonApiTestCase(TestCase):
             },
             "criteria_scores": [
                 {
-                    "criteria": "over_the_top",
+                    "criteria": "pedagogy",
                     "score": 10,
                     "weight": 10
                 }
@@ -598,7 +598,7 @@ class ComparisonApiTestCase(TestCase):
             },
             "criteria_scores": [
                 {
-                    "criteria": "over_the_top",
+                    "criteria": "pedagogy",
                     "score": 10,
                     "weight": 10
                 }
@@ -676,3 +676,15 @@ class ComparisonApiTestCase(TestCase):
         # Video01 has been refreshed and video03 was already up-to-date.
         # No additional call to youtube API should be visible.
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
+
+    def test_invalid_criteria_in_comparison(self):
+        client = APIClient()
+        client.force_authenticate(self.user)
+        data = deepcopy(self.non_existing_comparison)
+        data["criteria_scores"][0]["criteria"] = "invalid"
+        response = client.post("/users/me/comparisons/", data, format="json")
+        self.assertContains(
+            response,
+            "not a valid criteria",
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
