@@ -10,9 +10,10 @@ import {
   Box,
   Theme,
   Button,
-  IconButton,
+  Stack,
 } from '@mui/material';
-import Stack from '@mui/material/Stack';
+
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { useLoginState, useNotifications } from 'src/hooks';
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   cardTitle: {
     color: theme.palette.text.secondary,
+  },
+  yellow: {
+    color: theme.palette.primary.main,
   },
 }));
 
@@ -73,8 +77,8 @@ const LightComparison = () => {
   const [videoIdA, setVideoIdA] = useState('');
   const [videoIdB, setVideoIdB] = useState('');
 
-  const copyTextInitial = t('lightComparison.copyLink');
-  const copyTextCopied = t('lightComparison.done');
+  const copyTextInitial = t('lightComparison.shareLink');
+  const copyTextCopied = t('lightComparison.copied');
   const [copyText, setCopyText] = useState(copyTextInitial);
 
   /**
@@ -176,7 +180,7 @@ const LightComparison = () => {
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
-  const renderTopItem = () => {
+  const comparisonTopMenu = () => {
     if (isLoggedIn && videoIdA !== '' && videoIdB !== '') {
       const comparisonPath =
         '/comparison?videoA=' + videoIdA + '&videoB=' + videoIdB;
@@ -200,17 +204,22 @@ const LightComparison = () => {
           alignItems="center"
         >
           <Stack direction="row" spacing={1}>
-            <Button variant="text" onClick={copyToClipBoard}>
+            <Button
+              variant="text"
+              onClick={copyToClipBoard}
+              endIcon={<ContentCopyIcon />}
+            >
               {copyText}
             </Button>
-            <IconButton
-              aria-label="open-comparison"
+            <Button
+              variant="text"
               onClick={() => {
                 history.push(comparisonPath);
               }}
+              endIcon={<OpenInNewIcon />}
             >
-              <OpenInNewIcon />
-            </IconButton>
+              open
+            </Button>
           </Stack>
         </Grid>
       );
@@ -219,7 +228,7 @@ const LightComparison = () => {
 
   return (
     <Grid container className={classes.content}>
-      {renderTopItem()}
+      {comparisonTopMenu()}
       <Grid item xs component={Card} className={classes.card}>
         <Box m={0.5}>
           <Typography variant="h5" className={classes.cardTitle}>

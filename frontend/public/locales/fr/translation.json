@@ -27,8 +27,8 @@
   },
   "submit": "enregistrer",
   "lightComparison": {
-    "copyLink": "copier lien",
-    "done": "fait!",
+    "shareLink": "partager",
+    "copied": "copié !",
     "notEnoughVideos": "Désolé, Tournesol n'a pas été en mesure d'afficher des vidéos."
   },
   "footer": {
