@@ -1,5 +1,3 @@
-from statistics import mode
-
 from django.conf import settings
 from django.db import models
 

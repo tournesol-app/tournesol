@@ -6,7 +6,6 @@ from .entity import Entity
 DEFAULT_POLL_NAME = "videos"
 
 
-
 class Poll(models.Model):
     """
     A poll is an instance that enables comparing a set of "entities"
