@@ -72,7 +72,6 @@ const LightComparison = () => {
 
   const [videoIdA, setVideoIdA] = useState('');
   const [videoIdB, setVideoIdB] = useState('');
-  const [comparisonUrl, setComparisonUrl] = useState('');
 
   /**
    * Get an array of two random and distinct video IDs from the Tournesol
@@ -150,7 +149,6 @@ const LightComparison = () => {
 
       setVideoIdA(displayedVideos[0]);
       setVideoIdB(displayedVideos[1]);
-      setComparisonUrl(`/comparison/?videoA=${videoIdA}&videoB=${videoIdB}`);
       getUserComparison(displayedVideos[0], displayedVideos[1]);
       setIsLoading(false);
     };
@@ -176,8 +174,10 @@ const LightComparison = () => {
 
   const renderTopItem = () => {
     if (isLoggedIn && videoIdA !== '' && videoIdB !== '') {
-      const url =
-        `${window.location.protocol}//${window.location.host}` + comparisonUrl;
+      const comparisonPath =
+        '/comparison?videoA=' + videoIdA + '&videoB=' + videoIdB;
+      const comparisonUri =
+        `${window.location.protocol}//${window.location.host}` + comparisonPath;
 
       return (
         <Grid
@@ -191,7 +191,7 @@ const LightComparison = () => {
             <Button
               variant="text"
               onClick={() => {
-                navigator.clipboard.writeText(url);
+                navigator.clipboard.writeText(comparisonUri);
               }}
             >
               copy link
@@ -199,7 +199,7 @@ const LightComparison = () => {
             <IconButton
               aria-label="open-comparison"
               onClick={() => {
-                history.push(comparisonUrl);
+                history.push(comparisonPath);
               }}
             >
               <OpenInNewIcon />
