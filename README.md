@@ -73,10 +73,6 @@ The code source of the project exists thanks to
 
 Thank you very much!
 
-## Donate
-
-
-
 ## Licenses
 
 The Tournesol project has chosen to distribute its software and its other
