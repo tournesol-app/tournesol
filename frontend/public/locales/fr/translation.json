@@ -10,6 +10,8 @@
     "comparisons": "comparaisons"
   },
   "comparison": {
+    "successfullySubmitted": "Comparaison bien enregistrée.",
+    "pleaseSelectTwoVideos": "Entrez deux URLs ou deux IDs de vidéo YouTube pour les comparer.",
     "videosAreSimilar": "Ces deux vidéos sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
@@ -18,14 +20,12 @@
     "comparisonInPublicDataset": "Cette comparaison fait partie des données publiques.",
     "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
     "criteriaSkipped": "ignoré",
-    "successfullySubmitted": "Comparaison bien enregistrée.",
-    "submitAComparison": "Comparer des vidéos",
-    "pleaseSelectTwoVideos": "Entrez deux URLs ou deux IDs de vidéo YouTube pour les comparer."
+    "submitAComparison": "Comparer des vidéos"
   },
-  "submit": "enregistrer",
   "comparisons": {
     "goToComparison": "Voir la comparaison"
   },
+  "submit": "enregistrer",
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "politique de confidentialité",
@@ -185,6 +185,7 @@
     "tournesolVisionResearchOnEthicsOfAlgorithms": "À travers la recherche sur l'éthique des algorithmes en construisant une grande base de données fiable de jugements humains",
     "whoBuildsTournesol": "Qui fabrique Tournesol ?",
     "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub ; la description des concepts importants et la vision du projet sont consultables sur notre Wiki ; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
+    "considerHelpingWithDonation": "Si vous en avez la possibilité, n'hésitez pas à nous aider <2>en faisant un don</2>.",
     "tournesolAssociation": "L'association Tournesol",
     "tournesolAssociationDetail": "Le projet est porté par l'association à but not lucratif « Association Tournesol » basée à Lausanne en Suisse.",
     "rolePresident": "Président",
@@ -203,7 +204,7 @@
     "donateWithUtipTitle": "Avec uTip",
     "donateWithUtipDescription": "uTip est une plateforme de financement participatif. Visitez notre <2>page uTip</2> pour faire un don unique ou recurrent.",
     "donateByDirectTransferEUR": "Par virement direct en Euros (EUR)",
-    "donateByDirectTransferCHF": "Par virement direct en Franc Suisses (CHF)",
+    "donateByDirectTransferCHF": "Par virement direct en Francs Suisses (CHF)",
     "donateByPaypal": "Par PayPal",
     "publicDatabase": "Base de données publique",
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",

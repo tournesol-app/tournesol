@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link } from '@mui/material';
 
@@ -196,6 +197,15 @@ const AboutPage = () => {
             </Typography>
             <Typography paragraph>
               {t('about.tournesolTransparency')}
+            </Typography>
+            <Typography paragraph>
+              <Trans t={t} i18nKey="about.considerHelpingWithDonation">
+                If you can, please consider helping us{' '}
+                <Link component={RouterLink} to="/about/donate" color="inherit">
+                  with a donation
+                </Link>
+                .
+              </Trans>
             </Typography>
           </ContentBox>
         </Grid>
