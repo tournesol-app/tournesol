@@ -68,7 +68,6 @@ def fetch_data():
             ccs.weight,
         ]
         for ccs in ComparisonCriteriaScore.objects
-            .filter(comparison__user__in=User.trusted_users())
             .prefetch_related("comparison")
     ]
     return comparison_data
