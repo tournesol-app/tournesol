@@ -301,22 +301,18 @@ REST_FRAMEWORK = {
 # 0 means left video is best, 100 means right video is best
 MAX_VALUE = 100.0
 
-CRITERIAS_DICT = OrderedDict(
-    [
-        ("largely_recommended", "Should be largely recommended"),
-        ("reliability", "Reliable and not misleading"),
-        ("importance", "Important and actionable"),
-        ("engaging", "Engaging and thought-provoking"),
-        ("pedagogy", "Clear and pedagogical"),
-        ("layman_friendly", "Layman-friendly"),
-        ("diversity_inclusion", "Diversity and Inclusion"),
-        ("backfire_risk", "Resilience to backfiring risks"),
-        ("better_habits", "Encourages better habits"),
-        ("entertaining_relaxing", "Entertaining and relaxing"),
-    ]
-)
-
-CRITERIAS = list(CRITERIAS_DICT.keys())
+LEGACY_CRITERIAS = [
+    'largely_recommended',
+    'reliability',
+    'importance',
+    'engaging',
+    'pedagogy',
+    'layman_friendly',
+    'diversity_inclusion',
+    'backfire_risk',
+    'better_habits',
+    'entertaining_relaxing',
+]
 
 # maximal weight to assign to a rating for a particular feature, see #41
 MAX_FEATURE_WEIGHT = 8

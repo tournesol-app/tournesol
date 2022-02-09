@@ -9,14 +9,7 @@ from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.db.models.query import QuerySet
 
-from .models import (
-    Degree,
-    EmailDomain,
-    Expertise,
-    ExpertiseKeyword,
-    User,
-    VerifiableEmail,
-)
+from .models import Degree, EmailDomain, Expertise, ExpertiseKeyword, User, VerifiableEmail
 
 
 @admin.register(Degree)

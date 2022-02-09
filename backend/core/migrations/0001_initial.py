@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
                 ('rating_mode', models.CharField(choices=[('enable_all', 'enable_all'), ('skip', 'skip'), ('confidence', 'confidence')], default='enable_all', help_text='Which sliders and parameters to display on the rating page?', max_length=50)),
                 ('user', models.OneToOneField(help_text='User that preferences belong to', on_delete=django.db.models.deletion.CASCADE, related_name='userpreferences', to='core.user')),
             ],
-            bases=(models.Model, core.utils.models.WithFeatures, core.utils.models.WithDynamicFields),
+            bases=(models.Model, core.utils.models.WithDynamicFields),
         ),
         migrations.AddConstraint(
             model_name='emaildomain',

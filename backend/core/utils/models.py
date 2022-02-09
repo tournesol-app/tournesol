@@ -11,8 +11,6 @@ import numpy as np
 from computed_property.fields import ComputedField
 from django.db.models import JSONField
 
-from settings.settings import CRITERIAS
-
 
 def enum_list(*lst):
     """Create choices=... for a list."""
@@ -36,35 +34,6 @@ class WithDynamicFields:
             if not scl.fields_created:
                 scl.fields_created = True
                 scl._create_fields()
-
-
-class WithFeatures:
-    """An object containing features."""
-
-    # subtract this value from all returned vectors
-    VECTOR_OFFSET = 0.0
-
-    def _features_as_vector_fcn(self, suffix=""):
-        """Get features a vector, append suffix to field names."""
-
-        def transform_nan(num):
-            """None -> np.nan."""
-            if num is None:
-                return np.nan
-            else:
-                return num
-
-        return np.array([transform_nan(getattr(self, f + suffix)) for f in CRITERIAS])
-
-    @property
-    def features_as_vector(self):
-        """Get features a vector."""
-        return self._features_as_vector_fcn()
-
-    @property
-    def features_as_vector_centered(self):
-        """Get features as a vector, center around self.VECTOR_OFFSET"""
-        return self.features_as_vector - self.VECTOR_OFFSET
 
 
 class WithEmbedding:

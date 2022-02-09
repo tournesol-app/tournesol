@@ -1,3 +1,5 @@
+from typing import List
+
 from django.db import models
 from django.utils.functional import cached_property
 
@@ -17,15 +19,19 @@ class Poll(models.Model):
     criterias = models.ManyToManyField("Criteria", through="CriteriaRank")
 
     @classmethod
-    def default_poll_pk(cls):
+    def default_poll(cls) -> "Poll":
         poll, _created = cls.objects.get_or_create(
             name=DEFAULT_POLL_NAME,
             defaults={"entity_type": Entity.TYPE_VIDEO}
         )
-        return poll.pk
+        return poll
+
+    @classmethod
+    def default_poll_pk(cls):
+        return cls.default_poll().pk
 
     @cached_property
-    def criterias_list(self):
+    def criterias_list(self) -> List[str]:
         return list(self.criterias.values_list("name", flat=True))
 
     def __str__(self) -> str:

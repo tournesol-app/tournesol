@@ -5,13 +5,12 @@ Models for Tournesol's main functions related to contributor's ratings
 from django.db import models
 
 from core.models import User
-from core.utils.models import WithFeatures
 
 from .entity import Entity
 from .poll import Poll
 
 
-class ContributorRating(models.Model, WithFeatures):
+class ContributorRating(models.Model):
     """Predictions by individual contributor models."""
 
     entity = models.ForeignKey(

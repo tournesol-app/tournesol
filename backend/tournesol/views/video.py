@@ -61,7 +61,7 @@ from ..serializers import VideoSerializer, VideoSerializerWithCriteria
                     OpenApiTypes.INT,
                     description=f"Weight for criteria '{crit}', between 0 and 100"
                 )
-                for crit in settings.CRITERIAS
+                for crit in settings.LEGACY_CRITERIAS
             ],
         ],
     )
@@ -151,7 +151,7 @@ class VideoViewSet(mixins.CreateModelMixin,
                     else 50
                 ),
             )
-            for crit in settings.CRITERIAS
+            for crit in settings.LEGACY_CRITERIAS
         ]
         criteria_weight = Case(*criteria_cases, default=0)
         queryset = (

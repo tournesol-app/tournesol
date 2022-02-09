@@ -3,12 +3,12 @@ import logging
 from django.core.management.base import BaseCommand
 
 from ml.core import TOURNESOL_DEV, ml_run
-from settings.settings import CRITERIAS
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
     EntityCriteriaScore,
+    Poll,
     User,
 )
 
@@ -132,11 +132,12 @@ class Command(BaseCommand):
     help = "Runs the ml"
 
     def handle(self, *args, **options):
+        criterias_list = Poll.default_poll().criterias_list
         comparison_data = fetch_data()
         if TOURNESOL_DEV:
             logging.error('You must turn TOURNESOL_DEV to 0 to use this')
         else:  # production mode
             glob_scores, loc_scores = ml_run(
-                comparison_data, criterias=CRITERIAS, save=True, verb=-1
+                comparison_data, criterias=criterias_list, save=True, verb=-1
             )
             save_data(glob_scores, loc_scores)
