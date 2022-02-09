@@ -111,6 +111,17 @@ const Login = () => {
             {t('login.forgotYourPassword')}
           </Link>
         </Box>
+        <Box my={2}>
+          <Button
+            color="secondary"
+            fullWidth
+            variant="outlined"
+            component={RouterLink}
+            to="/signup"
+          >
+            {t('login.signUp')}
+          </Button>
+        </Box>
       </ContentBox>
     </>
   );
