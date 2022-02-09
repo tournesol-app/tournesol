@@ -9,7 +9,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins, status
 from rest_framework.response import Response
 
-from ..models import Comparison, ContributorRating
+from ..models import Comparison, ContributorRating, Poll
 from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
@@ -84,6 +84,10 @@ class ComparisonListApi(
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
     """
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["poll"] = Poll.default_poll()
+        return context
 
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user."""
@@ -129,8 +133,6 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     Retrieve, update or delete a comparison between two videos made by the
     logged user.
     """
-    serializer_class = ComparisonSerializer
-
     DEFAULT_SERIALIZER = ComparisonSerializer
     UPDATE_SERIALIZER = ComparisonUpdateSerializer
 
@@ -186,6 +188,7 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     def get_serializer_context(self):
         context = super(ComparisonDetailApi, self).get_serializer_context()
         context["reverse"] = self.currently_reversed
+        context["poll"] = Poll.default_poll()
         return context
 
     def get(self, request, *args, **kwargs):

@@ -135,6 +135,14 @@ class ComparisonCriteriaScoreSerializer(ModelSerializer):
         model = ComparisonCriteriaScore
         fields = ["criteria", "score", "weight"]
 
+    def validate_criteria(self, value):
+        current_poll = self.context["poll"]
+        if value not in current_poll.criterias_list:
+            raise ValidationError(
+                f"'{value}' is not a valid criteria for poll '{current_poll.name}'"
+            )
+        return value
+
 
 class ComparisonSerializerMixin:
     def reverse_criteria_scores(self, criteria_scores):
