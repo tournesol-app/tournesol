@@ -55,11 +55,11 @@ describe('Filters feature', () => {
   }
 
   function verifyFiltersPresence() {
-    // Check date filters presence
+    // Check date and safe filters presence
     const dateFilter = document.querySelector(
-      '[data-testid=search-date-filter]'
+      '[data-testid=search-date-safe-filter]'
     );
-    expect(queryAllByTestId(dateFilter, /checkbox-choice/i)).toHaveLength(4);
+    expect(queryAllByTestId(dateFilter, /checkbox-choice/i)).toHaveLength(5);
 
     // Check language filters presence
     const languageFilter = document.querySelector(
