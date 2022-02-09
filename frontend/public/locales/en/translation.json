@@ -27,8 +27,8 @@
   },
   "submit": "submit",
   "lightComparison": {
-    "copyLink": "copy link",
-    "done": "done!",
+    "shareLink": "share link",
+    "copied": "copied!",
     "notEnoughVideos": "Sorry, Tournesol hasn't been able to display videos."
   },
   "footer": {
