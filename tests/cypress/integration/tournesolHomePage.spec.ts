@@ -17,4 +17,25 @@ describe('Home page comparison feature - logged', () => {
     cy.get('#expert_submit_btn').click();
     cy.get('#expert_submit_btn').contains('edit comparison', {matchCase: false});
   });
+
+  it('displays the share button', () => {
+    cy.visit('/login')
+    cy.focused().type('user');
+    cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+
+    cy.get('main').scrollTo(0, 400);
+    cy.get('button[data-testid="comparison-btn-share"]').should('be.visible');
+  });
+
+  it('allows to go to the comparison page', () => {
+    cy.visit('/login')
+    cy.focused().type('user');
+    cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+
+    cy.get('main').scrollTo(0, 400);
+    cy.get('button[data-testid="comparison-btn-open"]').should('be.visible');
+
+    cy.get('button[data-testid="comparison-btn-open"]').click();
+    cy.location('pathname').should('equal', '/comparison');
+  });
 });

@@ -129,7 +129,6 @@ const LightComparison = () => {
         setInitialComparison(comparison);
       })
       .catch((err) => {
-        console.error(err);
         setInitialComparison(null);
       });
   };
@@ -205,6 +204,7 @@ const LightComparison = () => {
         >
           <Stack direction="row" spacing={1}>
             <Button
+              data-testid="comparison-btn-share"
               variant="text"
               onClick={copyToClipBoard}
               endIcon={<ContentCopyIcon />}
@@ -212,6 +212,7 @@ const LightComparison = () => {
               {copyText}
             </Button>
             <Button
+              data-testid="comparison-btn-open"
               variant="text"
               onClick={() => {
                 history.push(comparisonPath);
