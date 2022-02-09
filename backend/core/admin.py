@@ -15,14 +15,8 @@ from .models import (
     Expertise,
     ExpertiseKeyword,
     User,
-    UserPreference,
     VerifiableEmail,
 )
-
-
-@admin.register(UserPreference)
-class UserPreferencesAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Degree)
