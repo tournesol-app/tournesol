@@ -95,18 +95,34 @@ class ComparisonListApi(
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
     """
+
+    # used to avoid multiple database queries in a single HTTP request
+    poll_from_url: Poll
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["poll"] = Poll.default_poll()
+        context["poll"] = self.poll_from_url
         return context
 
     def get(self, request, *args, **kwargs):
-        """List all comparisons made by the logged user."""
+        """List all comparisons made by the logged user, for a given poll."""
         return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new comparison associated with the logged user, in a given
+        poll.
+        """
+        try:
+            self.poll_from_url = Poll.objects.get(name=kwargs["poll_name"])
+        except ObjectDoesNotExist:
+            return self.response_400_poll_doesnt_exist(kwargs["poll_name"])
+
+        return self.create(request, *args, **kwargs)
 
     @transaction.atomic
     def perform_create(self, serializer):
-        poll = Poll.objects.get(name=self.kwargs["poll_name"])
+        poll = serializer.context['poll']
 
         if self.comparison_already_exists(self.request, poll.pk):
             raise exceptions.ValidationError(
@@ -130,14 +146,6 @@ class ComparisonListApi(
             user=self.request.user,
             entity=comparison.entity_2
         )
-
-    def post(self, request, *args, **kwargs):
-        try:
-            Poll.objects.get(name=kwargs["poll_name"])
-        except ObjectDoesNotExist:
-            return self.response_400_poll_doesnt_exist(kwargs["poll_name"])
-
-        return self.create(request, *args, **kwargs)
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
