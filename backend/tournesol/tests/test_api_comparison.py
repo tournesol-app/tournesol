@@ -14,7 +14,7 @@ from core.tests.factories.user import UserFactory
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
-from ..models import Comparison, Entity
+from ..models import Comparison, Entity, Poll
 
 
 class ComparisonApiTestCase(TestCase):
@@ -62,6 +62,8 @@ class ComparisonApiTestCase(TestCase):
 
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
+        self.poll_videos = Poll.default_poll()
+
         self.user = UserFactory(username=self._user)
         UserFactory(username=self._user2)
         other = UserFactory(username=self._other)
@@ -77,23 +79,35 @@ class ComparisonApiTestCase(TestCase):
         self.comparisons = [
             # "user" will have the comparisons: 01 / 02 and 01 / 04
             ComparisonFactory(
-                user=self.user, entity_1=self.videos[0], entity_2=self.videos[1],
+                poll=self.poll_videos,
+                user=self.user,
+                entity_1=self.videos[0],
+                entity_2=self.videos[1],
                 duration_ms=102,
                 datetime_lastedit=now,
             ),
             ComparisonFactory(
-                user=self.user, entity_1=self.videos[0], entity_2=self.videos[3],
+                poll=self.poll_videos,
+                user=self.user,
+                entity_1=self.videos[0],
+                entity_2=self.videos[3],
                 duration_ms=104,
                 datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             # "other" will have the comparisons: 03 / 02 and 03 / 04
             ComparisonFactory(
-                user=other, entity_1=self.videos[2], entity_2=self.videos[1],
+                poll=self.poll_videos,
+                user=other,
+                entity_1=self.videos[2],
+                entity_2=self.videos[1],
                 duration_ms=302,
                 datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
             ComparisonFactory(
-                user=other, entity_1=self.videos[2], entity_2=self.videos[3],
+                poll=self.poll_videos,
+                user=other,
+                entity_1=self.videos[2],
+                entity_2=self.videos[3],
                 duration_ms=304,
                 datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
