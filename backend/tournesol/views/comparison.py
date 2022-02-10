@@ -40,6 +40,16 @@ class ComparisonApiMixin:
         else:
             return False
 
+    def response_400_poll_doesnt_exist(self, poll_name):
+        return Response(
+            {
+                "detail": "The requested poll {0} doesn't exist.".format(
+                    poll_name
+                ),
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     def response_400_video_already_exists(self, request):
         return Response(
             {
@@ -63,12 +73,21 @@ class ComparisonListBaseApi(ComparisonApiMixin,
 
     def get_queryset(self):
         """
-        Return all or a filtered list of comparisons made by the logged user.
+        Return all or a filtered list of comparisons made by the logged user
+        for a given poll.
 
         Keyword arguments:
         video_id -- the video_id used to filter the results (default None)
         """
-        queryset = Comparison.objects.filter(user=self.request.user).order_by('-datetime_lastedit')
+        try:
+            poll = Poll.objects.get(name=self.kwargs.get("poll_name"))
+        except ObjectDoesNotExist:
+            return Comparison.objects.none()
+
+        queryset = Comparison.objects.filter(
+            poll=poll,
+            user=self.request.user
+        ).order_by('-datetime_lastedit')
 
         if self.kwargs.get("video_id"):
             video_id = self.kwargs.get("video_id")
@@ -98,8 +117,9 @@ class ComparisonListApi(
 
     @transaction.atomic
     def perform_create(self, serializer):
-        default_poll_pk = Poll.default_poll_pk()
-        if self.comparison_already_exists(self.request, default_poll_pk):
+        poll = Poll.objects.get(name=self.kwargs["poll_name"])
+
+        if self.comparison_already_exists(self.request, poll.pk):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
                     self.request.data['video_a']['video_id'],
@@ -111,10 +131,23 @@ class ComparisonListApi(
         comparison.entity_1.refresh_youtube_metadata()
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.refresh_youtube_metadata()
-        ContributorRating.objects.get_or_create(user=self.request.user, entity=comparison.entity_1)
-        ContributorRating.objects.get_or_create(user=self.request.user, entity=comparison.entity_2)
+        ContributorRating.objects.get_or_create(
+            poll=poll,
+            user=self.request.user,
+            entity=comparison.entity_1
+        )
+        ContributorRating.objects.get_or_create(
+            poll=poll,
+            user=self.request.user,
+            entity=comparison.entity_2
+        )
 
     def post(self, request, *args, **kwargs):
+        try:
+            Poll.objects.get(name=kwargs["poll_name"])
+        except ObjectDoesNotExist:
+            return self.response_400_poll_doesnt_exist(kwargs["poll_name"])
+
         return self.create(request, *args, **kwargs)
 
 

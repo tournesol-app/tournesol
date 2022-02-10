@@ -50,7 +50,7 @@ urlpatterns = [
     ),
     # Comparison API
     path(
-        "users/me/comparisons/", ComparisonListApi.as_view(),
+        "users/me/comparisons/<str:poll_name>", ComparisonListApi.as_view(),
         name="comparisons_me_list",
     ),
     path(
