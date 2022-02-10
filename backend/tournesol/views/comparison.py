@@ -21,7 +21,6 @@ class ComparisonApiMixin:
     def comparison_already_exists(self, request, poll_id):
         """Return True if the comparison already exist, False instead."""
         try:
-            # TODO: the poll id should be retrieved from the request URL
             comparison = Comparison.get_comparison(
                 request.user,
                 poll_id,
@@ -40,14 +39,20 @@ class ComparisonApiMixin:
         else:
             return False
 
-    def response_400_poll_doesnt_exist(self, poll_name):
+    def poll_from_kwargs_or_404(self, request_kwargs):
+        try:
+            return Poll.objects.get(name=request_kwargs["poll_name"])
+        except ObjectDoesNotExist:
+            return self.response_404_poll_doesnt_exist(request_kwargs["poll_name"])
+
+    def response_404_poll_doesnt_exist(self, poll_name):
         return Response(
             {
                 "detail": "The requested poll {0} doesn't exist.".format(
                     poll_name
                 ),
             },
-            status=status.HTTP_400_BAD_REQUEST,
+            status=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -57,6 +62,9 @@ class ComparisonListBaseApi(ComparisonApiMixin,
     """
     Base class of the ComparisonList API.
     """
+    # used to avoid multiple similar database queries in a single HTTP request
+    poll_from_url: Poll
+
     serializer_class = ComparisonSerializer
     queryset = Comparison.objects.none()
 
@@ -68,13 +76,8 @@ class ComparisonListBaseApi(ComparisonApiMixin,
         Keyword arguments:
         video_id -- the video_id used to filter the results (default None)
         """
-        try:
-            poll = Poll.objects.get(name=self.kwargs.get("poll_name"))
-        except ObjectDoesNotExist:
-            return Comparison.objects.none()
-
         queryset = Comparison.objects.filter(
-            poll=poll,
+            poll=self.poll_from_url,
             user=self.request.user
         ).order_by('-datetime_lastedit')
 
@@ -96,21 +99,17 @@ class ComparisonListApi(
     create a new one.
     """
 
-    # used to avoid multiple database queries in a single HTTP request
-    poll_from_url: Poll
-
     def get_serializer_context(self):
         context = super().get_serializer_context()
+
+        # to avoid running the same SQL query several times we assume that
+        # the Poll object is already known
         context["poll"] = self.poll_from_url
         return context
 
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user, for a given poll."""
-        try:
-            self.poll_from_url = Poll.objects.get(name=kwargs["poll_name"])
-        except ObjectDoesNotExist:
-            return self.response_400_poll_doesnt_exist(kwargs["poll_name"])
-
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -118,11 +117,7 @@ class ComparisonListApi(
         Create a new comparison associated with the logged user, in a given
         poll.
         """
-        try:
-            self.poll_from_url = Poll.objects.get(name=kwargs["poll_name"])
-        except ObjectDoesNotExist:
-            return self.response_400_poll_doesnt_exist(kwargs["poll_name"])
-
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.create(request, *args, **kwargs)
 
     @transaction.atomic
@@ -157,14 +152,15 @@ class ComparisonListFilteredApi(ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user.
     """
-
     @extend_schema(operation_id='users_me_comparisons_list_filtered')
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user."""
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.list(request, *args, **kwargs)
 
 
-class ComparisonDetailApi(mixins.RetrieveModelMixin,
+class ComparisonDetailApi(ComparisonApiMixin,
+                          mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
                           mixins.DestroyModelMixin,
                           generics.GenericAPIView):
@@ -176,6 +172,8 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     UPDATE_SERIALIZER = ComparisonUpdateSerializer
 
     currently_reversed = False
+    # used to avoid multiple similar database queries in a single HTTP request
+    poll_from_url: Poll
 
     def _select_serialization(self, straight=True):
         if straight:
@@ -197,10 +195,9 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
         video_id_b -- the video_id of an other video
         """
         try:
-            # TODO: the poll id should be retrieved from the request URL
             comparison, reverse = Comparison.get_comparison(
                 self.request.user,
-                Poll.default_poll_pk(),
+                self.poll_from_url.pk,
                 self.kwargs['video_id_a'],
                 self.kwargs['video_id_b']
             )
@@ -230,17 +227,23 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     def get_serializer_context(self):
         context = super(ComparisonDetailApi, self).get_serializer_context()
         context["reverse"] = self.currently_reversed
-        context["poll"] = Poll.default_poll()
+
+        # to avoid running the same SQL query several times we assume that
+        # the Poll object is already known
+        context["poll"] = self.poll_from_url
         return context
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user."""
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user."""
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Delete a comparison made by the logged user."""
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.destroy(request, *args, **kwargs)
