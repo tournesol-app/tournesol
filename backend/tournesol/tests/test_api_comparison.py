@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from django.db.models import ObjectDoesNotExist, Q
 from django.test import TestCase
-from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -584,7 +583,7 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(
             self.comparisons_base_url, data1, format="json",
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data2 = {
             "video_a": {
@@ -605,7 +604,7 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(
             self.comparisons_base_url, data2, format="json",
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         user2 = User.objects.get(username=self._user2)
         client.force_authenticate(user=user2)
@@ -629,7 +628,7 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(
             self.comparisons_base_url, data3, format="json",
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         video5 = Entity.objects.get(video_id=self._video_id_05)
         video6 = Entity.objects.get(video_id=self._video_id_06)
@@ -675,7 +674,7 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(
             self.comparisons_base_url, data, format="json"
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
         data = {
@@ -697,7 +696,7 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(
             self.comparisons_base_url, data, format="json"
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Video01 has been refreshed and video03 was already up-to-date.
         # No additional call to youtube API should be visible.
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
