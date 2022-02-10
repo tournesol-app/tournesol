@@ -1,5 +1,5 @@
 """
-API endpoints to interact with the contributor's comparisons
+API endpoints to interact with the contributor's comparisons.
 """
 
 from django.db import transaction
