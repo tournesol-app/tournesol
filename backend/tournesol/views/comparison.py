@@ -50,17 +50,6 @@ class ComparisonApiMixin:
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    def response_400_video_already_exists(self, request):
-        return Response(
-            {
-                "detail": "You've already compared {0} with {1}.".format(
-                    request.data['video_a']['video_id'],
-                    request.data['video_b']['video_id']
-                ),
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
 
 class ComparisonListBaseApi(ComparisonApiMixin,
                             mixins.ListModelMixin,
