@@ -1,4 +1,5 @@
 import { VideoService, UsersService } from 'src/services/openapi';
+import { YOUTUBE_POLL_NAME } from './constants';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -69,9 +70,15 @@ export async function getVideoFromPreviousComparisons(
   currentVideo: string | null
 ): Promise<string | null> {
   const comparisonCount: number =
-    (await UsersService.usersMeComparisonsList({ limit: 0, offset: 0 }))
-      ?.count || 0;
+    (
+      await UsersService.usersMeComparisonsList({
+        pollName: YOUTUBE_POLL_NAME,
+        limit: 0,
+        offset: 0,
+      })
+    )?.count || 0;
   const comparisonVideoResult = await UsersService.usersMeComparisonsList({
+    pollName: YOUTUBE_POLL_NAME,
     limit: 99,
     offset: Math.floor(Math.random() * comparisonCount),
   });

@@ -18,6 +18,7 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centering: {
@@ -106,6 +107,7 @@ const Comparison = () => {
     }
     if (videoA && videoB)
       UsersService.usersMeComparisonsRetrieve({
+        pollName: YOUTUBE_POLL_NAME,
         videoIdA: videoA,
         videoIdB: videoB,
       })
@@ -126,12 +128,16 @@ const Comparison = () => {
     if (initialComparison) {
       const { video_a, video_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate({
+        pollName: YOUTUBE_POLL_NAME,
         videoIdA: video_a.video_id,
         videoIdB: video_b.video_id,
         requestBody: { criteria_scores, duration_ms },
       });
     } else {
-      await UsersService.usersMeComparisonsCreate({ requestBody: c });
+      await UsersService.usersMeComparisonsCreate({
+        pollName: YOUTUBE_POLL_NAME,
+        requestBody: c,
+      });
       setInitialComparison(c);
       // Refresh ratings statistics after the comparisons have been submitted
       setSubmitted(true);

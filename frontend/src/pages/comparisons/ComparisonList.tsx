@@ -6,6 +6,7 @@ import { ContentHeader, Pagination } from 'src/components';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
+import { YOUTUBE_POLL_NAME } from '../../utils/constants';
 
 function ComparisonsPage() {
   const { t } = useTranslation();
@@ -30,11 +31,16 @@ function ComparisonsPage() {
     const process = async () => {
       const comparisonsRequest = await (filteredVideo
         ? UsersService.usersMeComparisonsListFiltered({
+            pollName: YOUTUBE_POLL_NAME,
             videoId: filteredVideo,
             limit,
             offset,
           })
-        : UsersService.usersMeComparisonsList({ limit, offset }));
+        : UsersService.usersMeComparisonsList({
+            pollName: YOUTUBE_POLL_NAME,
+            limit,
+            offset,
+          }));
       setComparisons(comparisonsRequest.results);
       setCount(comparisonsRequest.count || 0);
     };
