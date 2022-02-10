@@ -247,4 +247,13 @@ describe('login feature', () => {
       store.getActions()[1].meta.requestId
     );
   });
+  it('renders a link to sign up', async () => {
+    const state = { token: initialState };
+    const store = mockStore(state);
+    const { getByText } = component({ store: store });
+    getByText('login.noAccountYet');
+    const button = getByText('login.signUp');
+    const href = button.getAttribute('href');
+    expect(href).toEqual('/signup');
+  });
 });

@@ -61,7 +61,9 @@
   "login": {
     "loginToTournesol": "Se connecter à Tournesol",
     "logInAction": "Connexion",
-    "forgotYourPassword": "Mot de passe oublié ?"
+    "forgotYourPassword": "Mot de passe oublié ?",
+    "signUp": "Inscription",
+    "noAccountYet": "Pas encore de compte sur Tournesol ?"
   },
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
