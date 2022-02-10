@@ -414,16 +414,19 @@ class ComparisonApiTestCase(TestCase):
         comparisons_made = Comparison.objects.filter(
             Q(entity_1__video_id=self._video_id_02) |
             Q(entity_2__video_id=self._video_id_02),
+            poll=self.poll_videos,
             user=user,
         )
 
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse("tournesol:comparisons_me_list_filtered", args=[
+            "{}/{}/".format(
+                self.comparisons_base_url,
                 self._video_id_02
-            ]), format="json",
+            ), format="json",
         )
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertEqual(response.data["count"], comparisons_made.count())
@@ -444,9 +447,9 @@ class ComparisonApiTestCase(TestCase):
         client = APIClient()
 
         response = client.get(
-            reverse("tournesol:comparisons_me_detail", args=[
-                self._video_id_01, self._video_id_02
-            ]), format="json",
+            "{}/{}/{}/".format(
+                self.comparisons_base_url, self._video_id_01, self._video_id_02
+            ), format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -464,9 +467,9 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            reverse("tournesol:comparisons_me_detail", args=[
-                self._video_id_01, self._video_id_02
-            ]), format="json",
+            "{}/{}/{}/".format(
+                self.comparisons_base_url, self._video_id_01, self._video_id_02
+            ), format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -493,15 +496,16 @@ class ComparisonApiTestCase(TestCase):
         # database, in order to test the GET view with reversed parameters
         with self.assertRaises(ObjectDoesNotExist):
             Comparison.objects.get(
+                poll=self.poll_videos,
                 user=user,
                 entity_1__video_id=self._video_id_02,
                 entity_2__video_id=self._video_id_01,
             )
 
         response = client.get(
-            reverse("tournesol:comparisons_me_detail", args=[
-                self._video_id_02, self._video_id_01,
-            ]), format="json",
+            "{}/{}/{}/".format(
+                self.comparisons_base_url, self._video_id_02, self._video_id_01,
+            ), format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -527,9 +531,8 @@ class ComparisonApiTestCase(TestCase):
             entity_2=self.videos[2],
         )
         client.put(
-            reverse(
-                "tournesol:comparisons_me_detail",
-                args=[self._video_id_03, self._video_id_04]
+            "{}/{}/{}/".format(
+                self.comparisons_base_url, self._video_id_03, self._video_id_04,
             ),
             {
                 'criteria_scores': [
@@ -543,7 +546,7 @@ class ComparisonApiTestCase(TestCase):
             format="json",
         )
         response = client.get(
-            reverse("tournesol:comparisons_me_list"), format="json",
+            self.comparisons_base_url, format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -579,7 +582,7 @@ class ComparisonApiTestCase(TestCase):
             "duration_ms": 103
         }
         response = client.post(
-            reverse("tournesol:comparisons_me_list"), data1, format="json",
+            self.comparisons_base_url, data1, format="json",
         )
         self.assertEqual(response.status_code, 201)
 
@@ -600,7 +603,7 @@ class ComparisonApiTestCase(TestCase):
             "duration_ms": 103
         }
         response = client.post(
-            reverse("tournesol:comparisons_me_list"), data2, format="json",
+            self.comparisons_base_url, data2, format="json",
         )
         self.assertEqual(response.status_code, 201)
 
@@ -624,7 +627,7 @@ class ComparisonApiTestCase(TestCase):
             "duration_ms": 103
         }
         response = client.post(
-            reverse("tournesol:comparisons_me_list"), data3, format="json",
+            self.comparisons_base_url, data3, format="json",
         )
         self.assertEqual(response.status_code, 201)
 
@@ -669,7 +672,9 @@ class ComparisonApiTestCase(TestCase):
                 }
             ],
         }
-        response = client.post("/users/me/comparisons/", data, format="json")
+        response = client.post(
+            self.comparisons_base_url, data, format="json"
+        )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
@@ -689,7 +694,9 @@ class ComparisonApiTestCase(TestCase):
             ],
         }
 
-        response = client.post("/users/me/comparisons/", data, format="json")
+        response = client.post(
+            self.comparisons_base_url, data, format="json"
+        )
         self.assertEqual(response.status_code, 201)
         # Video01 has been refreshed and video03 was already up-to-date.
         # No additional call to youtube API should be visible.
@@ -700,7 +707,7 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(self.user)
         data = deepcopy(self.non_existing_comparison)
         data["criteria_scores"][0]["criteria"] = "invalid"
-        response = client.post("/users/me/comparisons/", data, format="json")
+        response = client.post(self.comparisons_base_url, data, format="json")
         self.assertContains(
             response,
             "not a valid criteria",
