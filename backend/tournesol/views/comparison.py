@@ -14,9 +14,18 @@ from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
 class ComparisonApiMixin:
-    """
-    A mixin providing several common tools to all comparison API views.
-    """
+    """A mixin used to factorize behaviours common to all API views."""
+    # used to avoid multiple similar database queries in a single HTTP request
+    poll_from_url: Poll
+
+    def initial(self, request, *args, **kwargs):
+        """
+        Runs anything that needs to occur prior to calling the method handler.
+        """
+        super().initial(request, *args, **kwargs)
+
+        # make the requested poll available at any time in the view
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
 
     def comparison_already_exists(self, request, poll_id):
         """Return True if the comparison already exist, False instead."""
@@ -62,8 +71,6 @@ class ComparisonListBaseApi(ComparisonApiMixin,
     """
     Base class of the ComparisonList API.
     """
-    # used to avoid multiple similar database queries in a single HTTP request
-    poll_from_url: Poll
 
     serializer_class = ComparisonSerializer
     queryset = Comparison.objects.none()
@@ -101,9 +108,6 @@ class ComparisonListApi(
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-
-        # to avoid running the same SQL query several times we assume that
-        # the Poll object is already known
         context["poll"] = self.poll_from_url
         return context
 
@@ -111,7 +115,6 @@ class ComparisonListApi(
         """
         Retrieve all comparisons made by the logged user, in a given poll.
         """
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -119,7 +122,6 @@ class ComparisonListApi(
         Create a new comparison associated with the logged user, in a given
         poll.
         """
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.create(request, *args, **kwargs)
 
     @transaction.atomic
@@ -160,7 +162,6 @@ class ComparisonListFilteredApi(ComparisonListBaseApi):
         Retrieve a filtered list of comparisons made by the logged user, in
         the given poll.
         """
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.list(request, *args, **kwargs)
 
 
@@ -177,8 +178,6 @@ class ComparisonDetailApi(ComparisonApiMixin,
     UPDATE_SERIALIZER = ComparisonUpdateSerializer
 
     currently_reversed = False
-    # used to avoid multiple similar database queries in a single HTTP request
-    poll_from_url: Poll
 
     def _select_serialization(self, straight=True):
         if straight:
@@ -232,23 +231,17 @@ class ComparisonDetailApi(ComparisonApiMixin,
     def get_serializer_context(self):
         context = super(ComparisonDetailApi, self).get_serializer_context()
         context["reverse"] = self.currently_reversed
-
-        # to avoid running the same SQL query several times we assume that
-        # the Poll object is already known
         context["poll"] = self.poll_from_url
         return context
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Delete a comparison made by the logged user, in the given poll"""
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.destroy(request, *args, **kwargs)
