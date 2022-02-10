@@ -9,10 +9,7 @@ from rest_framework.test import APIClient
 from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import ComparisonCriteriaScore, ContributorRating, Poll
-from tournesol.tests.factories.comparison import (
-    ComparisonCriteriaScoreFactory,
-    ComparisonFactory,
-)
+from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
 
