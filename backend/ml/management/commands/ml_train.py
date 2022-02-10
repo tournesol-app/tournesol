@@ -50,7 +50,7 @@ USAGE:
 """
 
 
-def fetch_data():
+def fetch_data(trusted=True):
     """Fetches the data from the Comparisons model
 
     Returns:
@@ -58,37 +58,55 @@ def fetch_data():
         [   contributor_id: int, video_id_1: int, video_id_2: int,
             criteria: str, score: float, weight: float  ]
     """
-    comparison_data = [
-        [
-            ccs.comparison.user_id,
-            ccs.comparison.entity_1_id,
-            ccs.comparison.entity_2_id,
-            ccs.criteria,
-            ccs.score,
-            ccs.weight,
+    if trusted:
+        comparison_data = [
+            [
+                ccs.comparison.user_id,
+                ccs.comparison.entity_1_id,
+                ccs.comparison.entity_2_id,
+                ccs.criteria,
+                ccs.score,
+                ccs.weight,
+            ]
+            for ccs in ComparisonCriteriaScore.objects
+                .filter(comparison__user__in=User.trusted_users())
+                .prefetch_related("comparison")
         ]
-        for ccs in ComparisonCriteriaScore.objects
-            .prefetch_related("comparison")
-    ]
+    else:
+        comparison_data = [
+            [
+                ccs.comparison.user_id,
+                ccs.comparison.entity_1_id,
+                ccs.comparison.entity_2_id,
+                ccs.criteria,
+                ccs.score,
+                ccs.weight,
+            ]
+            for ccs in ComparisonCriteriaScore.objects
+                .filter(comparison__user__not__in=User.trusted_users())
+                .prefetch_related("comparison")
+        ]
+
     return comparison_data
 
 
-def save_data(video_scores, contributor_rating_scores):
+def save_data(video_scores, contributor_rating_scores, trusted=True):
     """
     Saves in the scores for Entities and ContributorRatings
     """
-    EntityCriteriaScore.objects.all().delete()
-    EntityCriteriaScore.objects.bulk_create(
-        [
-            EntityCriteriaScore(
-                entity_id=video_id,
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
-            )
-            for video_id, criteria, score, uncertainty in video_scores
-        ]
-    )
+    if trusted:
+        EntityCriteriaScore.objects.all().delete()
+        EntityCriteriaScore.objects.bulk_create(
+            [
+                EntityCriteriaScore(
+                    entity_id=video_id,
+                    criteria=criteria,
+                    score=score,
+                    uncertainty=uncertainty,
+                )
+                for video_id, criteria, score, uncertainty in video_scores
+            ]
+        )
 
     rating_ids = {
         (contributor_id, video_id): rating_id
@@ -132,11 +150,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         criterias_list = Poll.default_poll().criterias_list
-        comparison_data = fetch_data()
+        comparison_data_trusted = fetch_data()
+        compraison_data_not_trusted = fetch_data(trusted=False)
         if TOURNESOL_DEV:
             logging.error('You must turn TOURNESOL_DEV to 0 to use this')
         else:  # production mode
-            glob_scores, loc_scores = ml_run(
-                comparison_data, criterias=criterias_list, save=True, verb=-1
+            # Run for trusted users
+            glob_scores_trusted, loc_scores_trusted = ml_run(
+                comparison_data_trusted, criterias=criterias_list, save=True, verb=-1
             )
-            save_data(glob_scores, loc_scores)
+            save_data(glob_scores_trusted, loc_scores_trusted)
+
+            # Run for all users including non trusted users
+            glob_scores_not_trusted, loc_scores_not_trusted = ml_run(
+                compraison_data_not_trusted, criterias=criterias_list, save=True, verb=-1
+            )
+            save_data(glob_scores_not_trusted, loc_scores_not_trusted, trusted=False)
+
