@@ -42,3 +42,5 @@ export const getCriteriaName = (t: TFunction, criteria: string) => {
   };
   return names[criteria]?.() ?? '';
 };
+
+export const YOUTUBE_POLL_NAME = 'videos';

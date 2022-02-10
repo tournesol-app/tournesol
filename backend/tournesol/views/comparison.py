@@ -1,5 +1,5 @@
 """
-API endpoints to interact with the contributor's comparisons
+API endpoints to interact with the contributor's comparisons.
 """
 
 from django.db import transaction
@@ -14,15 +14,26 @@ from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
 class ComparisonApiMixin:
-    """
-    A mixin providing several common tools to all comparison API views.
-    """
+    """A mixin used to factorize behaviours common to all API views."""
+    # used to avoid multiple similar database queries in a single HTTP request
+    poll_from_url: Poll
 
-    def comparison_already_exists(self, request):
+    def initial(self, request, *args, **kwargs):
+        """
+        Runs anything that needs to occur prior to calling the method handler.
+        """
+        super().initial(request, *args, **kwargs)
+
+        # make the requested poll available at any time in the view
+        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
+
+    def comparison_already_exists(self, request, poll_id):
         """Return True if the comparison already exist, False instead."""
         try:
             comparison = Comparison.get_comparison(
-                request.user, request.data['video_a']['video_id'],
+                request.user,
+                poll_id,
+                request.data['video_a']['video_id'],
                 request.data['video_b']['video_id']
             )
         # if one field is missing, do not raise error yet and let django rest
@@ -37,15 +48,20 @@ class ComparisonApiMixin:
         else:
             return False
 
-    def response_400_video_already_exists(self, request):
+    def poll_from_kwargs_or_404(self, request_kwargs):
+        try:
+            return Poll.objects.get(name=request_kwargs["poll_name"])
+        except ObjectDoesNotExist:
+            return self.response_404_poll_doesnt_exist(request_kwargs["poll_name"])
+
+    def response_404_poll_doesnt_exist(self, poll_name):
         return Response(
             {
-                "detail": "You've already compared {0} with {1}.".format(
-                    request.data['video_a']['video_id'],
-                    request.data['video_b']['video_id']
+                "detail": "The requested poll {0} doesn't exist.".format(
+                    poll_name
                 ),
             },
-            status=status.HTTP_400_BAD_REQUEST,
+            status=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -55,17 +71,22 @@ class ComparisonListBaseApi(ComparisonApiMixin,
     """
     Base class of the ComparisonList API.
     """
+
     serializer_class = ComparisonSerializer
     queryset = Comparison.objects.none()
 
     def get_queryset(self):
         """
-        Return all or a filtered list of comparisons made by the logged user.
+        Return all or a filtered list of comparisons made by the logged user
+        for a given poll.
 
         Keyword arguments:
         video_id -- the video_id used to filter the results (default None)
         """
-        queryset = Comparison.objects.filter(user=self.request.user).order_by('-datetime_lastedit')
+        queryset = Comparison.objects.filter(
+            poll=self.poll_from_url,
+            user=self.request.user
+        ).order_by('-datetime_lastedit')
 
         if self.kwargs.get("video_id"):
             video_id = self.kwargs.get("video_id")
@@ -84,18 +105,30 @@ class ComparisonListApi(
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
     """
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["poll"] = Poll.default_poll()
+        context["poll"] = self.poll_from_url
         return context
 
     def get(self, request, *args, **kwargs):
-        """List all comparisons made by the logged user."""
+        """
+        Retrieve all comparisons made by the logged user, in a given poll.
+        """
         return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new comparison associated with the logged user, in a given
+        poll.
+        """
+        return self.create(request, *args, **kwargs)
 
     @transaction.atomic
     def perform_create(self, serializer):
-        if self.comparison_already_exists(self.request):
+        poll = serializer.context['poll']
+
+        if self.comparison_already_exists(self.request, poll.pk):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
                     self.request.data['video_a']['video_id'],
@@ -107,25 +140,33 @@ class ComparisonListApi(
         comparison.entity_1.refresh_youtube_metadata()
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.refresh_youtube_metadata()
-        ContributorRating.objects.get_or_create(user=self.request.user, entity=comparison.entity_1)
-        ContributorRating.objects.get_or_create(user=self.request.user, entity=comparison.entity_2)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        ContributorRating.objects.get_or_create(
+            poll=poll,
+            user=self.request.user,
+            entity=comparison.entity_1
+        )
+        ContributorRating.objects.get_or_create(
+            poll=poll,
+            user=self.request.user,
+            entity=comparison.entity_2
+        )
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user.
     """
-
     @extend_schema(operation_id='users_me_comparisons_list_filtered')
     def get(self, request, *args, **kwargs):
-        """List all comparisons made by the logged user."""
+        """
+        Retrieve a filtered list of comparisons made by the logged user, in
+        the given poll.
+        """
         return self.list(request, *args, **kwargs)
 
 
-class ComparisonDetailApi(mixins.RetrieveModelMixin,
+class ComparisonDetailApi(ComparisonApiMixin,
+                          mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
                           mixins.DestroyModelMixin,
                           generics.GenericAPIView):
@@ -159,7 +200,9 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
         """
         try:
             comparison, reverse = Comparison.get_comparison(
-                self.request.user, self.kwargs['video_id_a'],
+                self.request.user,
+                self.poll_from_url.pk,
+                self.kwargs['video_id_a'],
                 self.kwargs['video_id_b']
             )
         except ObjectDoesNotExist:
@@ -188,17 +231,17 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
     def get_serializer_context(self):
         context = super(ComparisonDetailApi, self).get_serializer_context()
         context["reverse"] = self.currently_reversed
-        context["poll"] = Poll.default_poll()
+        context["poll"] = self.poll_from_url
         return context
 
     def get(self, request, *args, **kwargs):
-        """Retrieve a comparison made by the logged user."""
+        """Retrieve a comparison made by the logged user, in the given poll."""
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
-        """Update a comparison made by the logged user."""
+        """Update a comparison made by the logged user, in the given poll"""
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        """Delete a comparison made by the logged user."""
+        """Delete a comparison made by the logged user, in the given poll"""
         return self.destroy(request, *args, **kwargs)

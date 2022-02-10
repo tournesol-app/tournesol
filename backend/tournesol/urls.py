@@ -50,17 +50,18 @@ urlpatterns = [
     ),
     # Comparison API
     path(
-        "users/me/comparisons/", ComparisonListApi.as_view(),
-        name="comparisons_me_list",
+        "users/me/comparisons/<str:poll_name>", ComparisonListApi.as_view(),
+        name="poll_comparisons_me_list",
     ),
     path(
-        "users/me/comparisons/<str:video_id>/", ComparisonListFilteredApi.as_view(),
-        name="comparisons_me_list_filtered",
+        "users/me/comparisons/<str:poll_name>/<str:video_id>/",
+        ComparisonListFilteredApi.as_view(),
+        name="poll_comparisons_me_list_filtered",
     ),
     path(
-        "users/me/comparisons/<str:video_id_a>/<str:video_id_b>/",
+        "users/me/comparisons/<str:poll_name>/<str:video_id_a>/<str:video_id_b>/",
         ComparisonDetailApi.as_view(),
-        name="comparisons_me_detail",
+        name="poll_comparisons_me_detail",
     ),
     # VideoRateLater API
     path(

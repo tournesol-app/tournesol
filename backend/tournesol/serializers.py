@@ -198,6 +198,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
+            poll=self.context.get('poll'),
             entity_1=video_1,
             entity_2=video_2,
             **validated_data,
