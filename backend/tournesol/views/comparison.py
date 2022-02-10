@@ -108,7 +108,9 @@ class ComparisonListApi(
         return context
 
     def get(self, request, *args, **kwargs):
-        """List all comparisons made by the logged user, for a given poll."""
+        """
+        Retrieve all comparisons made by the logged user, in a given poll.
+        """
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.list(request, *args, **kwargs)
 
@@ -154,7 +156,10 @@ class ComparisonListFilteredApi(ComparisonListBaseApi):
     """
     @extend_schema(operation_id='users_me_comparisons_list_filtered')
     def get(self, request, *args, **kwargs):
-        """List all comparisons made by the logged user."""
+        """
+        Retrieve a filtered list of comparisons made by the logged user, in
+        the given poll.
+        """
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.list(request, *args, **kwargs)
 
@@ -234,16 +239,16 @@ class ComparisonDetailApi(ComparisonApiMixin,
         return context
 
     def get(self, request, *args, **kwargs):
-        """Retrieve a comparison made by the logged user."""
+        """Retrieve a comparison made by the logged user, in the given poll."""
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
-        """Update a comparison made by the logged user."""
+        """Update a comparison made by the logged user, in the given poll"""
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        """Delete a comparison made by the logged user."""
+        """Delete a comparison made by the logged user, in the given poll"""
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
         return self.destroy(request, *args, **kwargs)
