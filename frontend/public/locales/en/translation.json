@@ -62,7 +62,8 @@
     "loginToTournesol": "Log in to Tournesol",
     "logInAction": "Log In",
     "forgotYourPassword": "Forgot your password?",
-    "signUp": "Join us"
+    "signUp": "Join us",
+    "noAccountYet": "No account on Tournesol yet?"
   },
   "usernameOrEmail": "Username or Email address",
   "password": "Password",

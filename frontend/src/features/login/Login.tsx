@@ -2,7 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useLocation, Redirect } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { TextField, Grid, Button, Link, Box } from '@mui/material';
+import {
+  TextField,
+  Grid,
+  Button,
+  Link,
+  Box,
+  Divider,
+  Typography,
+} from '@mui/material';
 
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { ContentHeader, ContentBox } from 'src/components';
@@ -111,7 +119,11 @@ const Login = () => {
             {t('login.forgotYourPassword')}
           </Link>
         </Box>
+        <Divider />
         <Box my={2}>
+          <Typography variant="subtitle1" gutterBottom>
+            {t('login.noAccountYet')}
+          </Typography>
           <Button
             color="secondary"
             fullWidth

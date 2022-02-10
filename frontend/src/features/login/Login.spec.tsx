@@ -251,6 +251,7 @@ describe('login feature', () => {
     const state = { token: initialState };
     const store = mockStore(state);
     const { getByText } = component({ store: store });
+    getByText('login.noAccountYet');
     const button = getByText('login.signUp');
     const href = button.getAttribute('href');
     expect(href).toEqual('/signup');
