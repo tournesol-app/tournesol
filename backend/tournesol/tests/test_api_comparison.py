@@ -71,7 +71,6 @@ class ComparisonApiTestCase(TestCase):
         self.comparisons = [
             # "user" will have the comparisons: 01 / 02 and 01 / 04
             ComparisonFactory(
-                poll=self.poll_videos,
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[1],
@@ -79,7 +78,6 @@ class ComparisonApiTestCase(TestCase):
                 datetime_lastedit=now,
             ),
             ComparisonFactory(
-                poll=self.poll_videos,
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[3],
@@ -88,7 +86,6 @@ class ComparisonApiTestCase(TestCase):
             ),
             # "other" will have the comparisons: 03 / 02 and 03 / 04
             ComparisonFactory(
-                poll=self.poll_videos,
                 user=self.other,
                 entity_1=self.videos[2],
                 entity_2=self.videos[1],
@@ -96,7 +93,6 @@ class ComparisonApiTestCase(TestCase):
                 datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
             ComparisonFactory(
-                poll=self.poll_videos,
                 user=self.other,
                 entity_1=self.videos[2],
                 entity_2=self.videos[3],
@@ -528,11 +524,13 @@ class ComparisonApiTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=self.user)
         comparison1 = Comparison.objects.create(
+            poll=self.poll_videos,
             user=self.user,
             entity_1=self.videos[2],
             entity_2=self.videos[3],
         )
         comparison2 = Comparison.objects.create(
+            poll=self.poll_videos,
             user=self.user,
             entity_1=self.videos[1],
             entity_2=self.videos[2],

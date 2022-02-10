@@ -34,8 +34,7 @@ class Comparison(models.Model):
     poll = models.ForeignKey(
         Poll,
         on_delete=models.CASCADE,
-        related_name="comparisons",
-        default=Poll.default_poll_pk
+        related_name="comparisons"
     )
     entity_1 = models.ForeignKey(
         'Entity',

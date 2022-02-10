@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import ContributorRating, Poll
+from tournesol.models import ContributorRating
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
@@ -18,36 +18,25 @@ class RatingApi(TestCase):
     """
 
     def setUp(self):
-        self.poll_videos = Poll.default_poll()
         self.user1 = UserFactory()
         self.user2 = UserFactory()
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
         self.video3 = VideoFactory()
         ComparisonFactory(
-            poll=self.poll_videos,
             user=self.user1,
             entity_1=self.video1,
             entity_2=self.video2,
         )
         ComparisonFactory(
-            poll=self.poll_videos,
             user=self.user2,
             entity_1=self.video1,
             entity_2=self.video2,
         )
-        ContributorRatingFactory(
-            poll=self.poll_videos, user=self.user1, entity=self.video1
-        )
-        ContributorRatingFactory(
-            poll=self.poll_videos, user=self.user1, entity=self.video2
-        )
-        ContributorRatingFactory(
-            poll=self.poll_videos, user=self.user2, entity=self.video1
-        )
-        ContributorRatingFactory(
-            poll=self.poll_videos, user=self.user2, entity=self.video2, is_public=True
-        )
+        ContributorRatingFactory(user=self.user1, entity=self.video1)
+        ContributorRatingFactory(user=self.user1, entity=self.video2)
+        ContributorRatingFactory(user=self.user2, entity=self.video1)
+        ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
 
     def test_anonymous_cant_list(self):
         factory = APIClient()
@@ -115,9 +104,7 @@ class RatingApi(TestCase):
         user = self.user1
         factory.force_authenticate(user=user)
         video = VideoFactory()
-        rating = ContributorRatingFactory(
-            poll=self.poll_videos, user=user, entity=video
-        )
+        rating = ContributorRatingFactory(user=user, entity=video)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
             criteria="test-criteria",

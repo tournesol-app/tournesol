@@ -9,7 +9,10 @@ from rest_framework.test import APIClient
 from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import ComparisonCriteriaScore, ContributorRating, Poll
-from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
+from tournesol.tests.factories.comparison import (
+    ComparisonCriteriaScoreFactory,
+    ComparisonFactory,
+)
 from tournesol.tests.factories.video import VideoFactory
 
 
@@ -23,7 +26,6 @@ class ExportTest(TestCase):
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
         self.comparison = ComparisonFactory(
-            poll=self.poll_videos,
             user=self.user_with_comparisons,
             entity_1=self.video1,
             entity_2=self.video2,
@@ -65,7 +67,6 @@ class ExportTest(TestCase):
             comparison=self.comparison_public, score=5, criteria="largely_recommended"
         )
         self.comparison_private = ComparisonFactory(
-            poll=self.poll_videos,
             user=self.public_comparisons,
             entity_1=self.video_public_1,
             entity_2=self.video_private_3,
@@ -141,7 +142,6 @@ class ExportTest(TestCase):
             is_public=True,
         )
         self.comparison_public2 = ComparisonFactory(
-            poll=self.poll_videos,
             user=self.public_comparisons2,
             entity_1=self.video_public_3,
             entity_2=self.video_public_4,

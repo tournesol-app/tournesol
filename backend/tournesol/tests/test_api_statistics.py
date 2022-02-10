@@ -10,7 +10,7 @@ from core.models import User
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
-from ..models import Comparison, Entity, Poll
+from ..models import Comparison, Entity
 
 
 class StatisticsAPI(TestCase):
@@ -23,8 +23,6 @@ class StatisticsAPI(TestCase):
     _list_of_comparisons = []
 
     def setUp(self):
-        self.poll_videos = Poll.default_poll()
-
         user_1 = User.objects.create(username="username", email="user@test")
         user_2 = User.objects.create(
             username="username2",
@@ -59,21 +57,18 @@ class StatisticsAPI(TestCase):
         self._list_of_videos = [video_1, video_2, video_3]
 
         comparison_1 = ComparisonFactory(
-            poll=self.poll_videos,
             user=user_1,
             entity_1=video_1,
             entity_2=video_2,
             duration_ms=102,
         )
         comparison_2 = ComparisonFactory(
-            poll=self.poll_videos,
             user=user_2,
             entity_1=video_1,
             entity_2=video_3,
             duration_ms=104,
         )
         comparison_3 = ComparisonFactory(
-            poll=self.poll_videos,
             user=user_2,
             entity_1=video_2,
             entity_2=video_3,
