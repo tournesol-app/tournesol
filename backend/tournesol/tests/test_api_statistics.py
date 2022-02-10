@@ -10,7 +10,7 @@ from core.models import User
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
-from ..models import Comparison, Entity
+from ..models import Comparison, Entity, Poll
 
 
 class StatisticsAPI(TestCase):
@@ -23,11 +23,13 @@ class StatisticsAPI(TestCase):
     _list_of_comparisons = []
 
     def setUp(self):
+        self.poll_videos = Poll.default_poll()
+
         user_1 = User.objects.create(username="username", email="user@test")
         user_2 = User.objects.create(
-                username="username2",
-                email="user2@test",
-                date_joined=timezone.now() - timedelta(days=90)
+            username="username2",
+            email="user2@test",
+            date_joined=timezone.now() - timedelta(days=90),
         )
         self._list_of_users = [user_1, user_2]
 
@@ -43,30 +45,51 @@ class StatisticsAPI(TestCase):
             uploader="uploader2",
             rating_n_ratings=4,
         )
-        
-        Entity.objects.filter(pk=video_1.pk).update(add_time=timezone.now() - timedelta(days=5))
-        Entity.objects.filter(pk=video_2.pk).update(add_time=timezone.now() - timedelta(days=29))
-        Entity.objects.filter(pk=video_3.pk).update(add_time=timezone.now() - timedelta(days=60))
+
+        Entity.objects.filter(pk=video_1.pk).update(
+            add_time=timezone.now() - timedelta(days=5)
+        )
+        Entity.objects.filter(pk=video_2.pk).update(
+            add_time=timezone.now() - timedelta(days=29)
+        )
+        Entity.objects.filter(pk=video_3.pk).update(
+            add_time=timezone.now() - timedelta(days=60)
+        )
 
         self._list_of_videos = [video_1, video_2, video_3]
 
         comparison_1 = ComparisonFactory(
-                user=user_1, entity_1=video_1, entity_2=video_2,
-                duration_ms=102
+            poll=self.poll_videos,
+            user=user_1,
+            entity_1=video_1,
+            entity_2=video_2,
+            duration_ms=102,
         )
         comparison_2 = ComparisonFactory(
-                user=user_2, entity_1=video_1, entity_2=video_3,
-                duration_ms=104
+            poll=self.poll_videos,
+            user=user_2,
+            entity_1=video_1,
+            entity_2=video_3,
+            duration_ms=104,
         )
         comparison_3 = ComparisonFactory(
-                user=user_2, entity_1=video_2, entity_2=video_3,
-                duration_ms=302
+            poll=self.poll_videos,
+            user=user_2,
+            entity_1=video_2,
+            entity_2=video_3,
+            duration_ms=302,
         )
 
-        Comparison.objects.filter(pk=comparison_1.pk).update(datetime_lastedit=timezone.now() - timedelta(days=5))
-        Comparison.objects.filter(pk=comparison_2.pk).update(datetime_lastedit=timezone.now() - timedelta(days=29))
-        Comparison.objects.filter(pk=comparison_3.pk).update(datetime_lastedit=timezone.now() - timedelta(days=60))
-            
+        Comparison.objects.filter(pk=comparison_1.pk).update(
+            datetime_lastedit=timezone.now() - timedelta(days=5)
+        )
+        Comparison.objects.filter(pk=comparison_2.pk).update(
+            datetime_lastedit=timezone.now() - timedelta(days=29)
+        )
+        Comparison.objects.filter(pk=comparison_3.pk).update(
+            datetime_lastedit=timezone.now() - timedelta(days=60)
+        )
+
         self._list_of_comparisons = [comparison_1, comparison_2, comparison_3]
 
     def test_video_stats(self):
