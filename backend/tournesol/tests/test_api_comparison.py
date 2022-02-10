@@ -27,32 +27,24 @@ class ComparisonApiTestCase(TestCase):
     """
 
     _user = "username"
-    _user2 = "username2"
     _other = "other_username"
 
+    # videos available in all tests
     _video_id_01 = "video_id_01"
     _video_id_02 = "video_id_02"
     _video_id_03 = "video_id_03"
     _video_id_04 = "video_id_04"
+
+    # non existing videos that can be created
     _video_id_05 = "video_id_05"
     _video_id_06 = "video_id_06"
     _video_id_07 = "video_id_07"
 
     non_existing_comparison = {
-        "video_a": {
-            "video_id": _video_id_01
-        },
-        "video_b": {
-            "video_id": _video_id_03
-        },
-        "criteria_scores": [
-            {
-                "criteria": "pedagogy",
-                "score": 10,
-                "weight": 10
-            }
-        ],
-        "duration_ms": 103
+        "video_a": {"video_id": _video_id_01},
+        "video_b": {"video_id": _video_id_03},
+        "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+        "duration_ms": 103,
     }
 
     def setUp(self):
@@ -62,10 +54,11 @@ class ComparisonApiTestCase(TestCase):
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
         self.poll_videos = Poll.default_poll()
-        self.comparisons_base_url = "/users/me/comparisons/{}".format(self.poll_videos.name)
+        self.comparisons_base_url = "/users/me/comparisons/{}".format(
+            self.poll_videos.name
+        )
 
         self.user = UserFactory(username=self._user)
-        UserFactory(username=self._user2)
         other = UserFactory(username=self._other)
         now = datetime.datetime.now()
 
@@ -73,7 +66,7 @@ class ComparisonApiTestCase(TestCase):
             VideoFactory(video_id=self._video_id_01),
             VideoFactory(video_id=self._video_id_02),
             VideoFactory(video_id=self._video_id_03),
-            VideoFactory(video_id=self._video_id_04)
+            VideoFactory(video_id=self._video_id_04),
         ]
 
         self.comparisons = [
@@ -131,25 +124,22 @@ class ComparisonApiTestCase(TestCase):
         data = deepcopy(self.non_existing_comparison)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         comparisons = Comparison.objects.filter(
-            entity_1__video_id=self._video_id_01,
-            entity_2__video_id=self._video_id_03
+            entity_1__video_id=self._video_id_01, entity_2__video_id=self._video_id_03
         )
         self.assertFalse(comparisons.exists())
 
         comparisons = Comparison.objects.filter(
-            entity_1__video_id=self._video_id_03,
-            entity_2__video_id=self._video_id_01
+            entity_1__video_id=self._video_id_03, entity_2__video_id=self._video_id_01
         )
         self.assertFalse(comparisons.exists())
-        self.assertEqual(
-            Comparison.objects.all().count(),
-            initial_comparisons_nbr
-        )
+        self.assertEqual(Comparison.objects.all().count(), initial_comparisons_nbr)
 
     def test_authenticated_can_create(self):
         """
@@ -169,12 +159,16 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         # check the authorization
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
 
-        comparison = Comparison.objects.select_related("user", "entity_1", "entity_2").get(
+        comparison = Comparison.objects.select_related(
+            "user", "entity_1", "entity_2"
+        ).get(
             user=user,
             poll=self.poll_videos,
             entity_1__video_id=data["video_a"]["video_id"],
@@ -183,43 +177,53 @@ class ComparisonApiTestCase(TestCase):
         comparisons_nbr = Comparison.objects.filter(user=user).count()
 
         # check the database integrity
-        self.assertEqual(comparisons_nbr,
-                         initial_comparisons_nbr + 1)
+        self.assertEqual(comparisons_nbr, initial_comparisons_nbr + 1)
 
         self.assertEqual(comparison.poll, self.poll_videos)
         self.assertEqual(comparison.user, user)
-        self.assertEqual(comparison.entity_1.video_id,
-                         data["video_a"]["video_id"])
-        self.assertEqual(comparison.entity_2.video_id,
-                         data["video_b"]["video_id"])
+        self.assertEqual(comparison.entity_1.video_id, data["video_a"]["video_id"])
+        self.assertEqual(comparison.entity_2.video_id, data["video_b"]["video_id"])
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
         comparison_criteria_scores = comparison.criteria_scores.all()
-        self.assertEqual(comparison_criteria_scores.count(),
-                         len(data["criteria_scores"]))
-        self.assertEqual(comparison_criteria_scores[0].criteria,
-                         data["criteria_scores"][0]["criteria"])
-        self.assertEqual(comparison_criteria_scores[0].score,
-                         data["criteria_scores"][0]["score"])
-        self.assertEqual(comparison_criteria_scores[0].weight,
-                         data["criteria_scores"][0]["weight"])
+        self.assertEqual(
+            comparison_criteria_scores.count(), len(data["criteria_scores"])
+        )
+        self.assertEqual(
+            comparison_criteria_scores[0].criteria,
+            data["criteria_scores"][0]["criteria"],
+        )
+        self.assertEqual(
+            comparison_criteria_scores[0].score, data["criteria_scores"][0]["score"]
+        )
+        self.assertEqual(
+            comparison_criteria_scores[0].weight, data["criteria_scores"][0]["weight"]
+        )
 
         # check the representation integrity
-        self.assertEqual(response.data["video_a"]["video_id"],
-                         data["video_a"]["video_id"])
-        self.assertEqual(response.data["video_b"]["video_id"],
-                         data["video_b"]["video_id"])
-        self.assertEqual(response.data["duration_ms"],
-                         data["duration_ms"])
+        self.assertEqual(
+            response.data["video_a"]["video_id"], data["video_a"]["video_id"]
+        )
+        self.assertEqual(
+            response.data["video_b"]["video_id"], data["video_b"]["video_id"]
+        )
+        self.assertEqual(response.data["duration_ms"], data["duration_ms"])
 
-        self.assertEqual(len(response.data["criteria_scores"]),
-                         len(data["criteria_scores"]))
-        self.assertEqual(response.data["criteria_scores"][0]["criteria"],
-                         data["criteria_scores"][0]["criteria"])
-        self.assertEqual(response.data["criteria_scores"][0]["score"],
-                         data["criteria_scores"][0]["score"])
-        self.assertEqual(response.data["criteria_scores"][0]["weight"],
-                         data["criteria_scores"][0]["weight"])
+        self.assertEqual(
+            len(response.data["criteria_scores"]), len(data["criteria_scores"])
+        )
+        self.assertEqual(
+            response.data["criteria_scores"][0]["criteria"],
+            data["criteria_scores"][0]["criteria"],
+        )
+        self.assertEqual(
+            response.data["criteria_scores"][0]["score"],
+            data["criteria_scores"][0]["score"],
+        )
+        self.assertEqual(
+            response.data["criteria_scores"][0]["weight"],
+            data["criteria_scores"][0]["weight"],
+        )
 
     def test_authenticated_can_create_without_optional(self):
         """
@@ -238,10 +242,14 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
 
-        comparison = Comparison.objects.select_related("user", "entity_1", "entity_2").get(
+        comparison = Comparison.objects.select_related(
+            "user", "entity_1", "entity_2"
+        ).get(
             poll=self.poll_videos,
             user=user,
             entity_1__video_id=data["video_a"]["video_id"],
@@ -253,15 +261,17 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # check the database integrity (only the criteria scores part)
-        self.assertEqual(comparisons_nbr,
-                         initial_comparisons_nbr + 1)
+        self.assertEqual(comparisons_nbr, initial_comparisons_nbr + 1)
 
-        self.assertEqual(comparison.duration_ms,
-                         Comparison._meta.get_field("duration_ms").get_default())
+        self.assertEqual(
+            comparison.duration_ms,
+            Comparison._meta.get_field("duration_ms").get_default(),
+        )
 
         comparison_criteria_scores = comparison.criteria_scores.all()
-        self.assertEqual(comparison_criteria_scores.count(),
-                         len(data["criteria_scores"]))
+        self.assertEqual(
+            comparison_criteria_scores.count(), len(data["criteria_scores"])
+        )
         self.assertEqual(comparison_criteria_scores[0].weight, 1)
 
     def test_authenticated_cant_create_criteria_scores_without_mandatory(self):
@@ -282,7 +292,9 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         comparisons_nbr = Comparison.objects.filter(user=user).count()
 
@@ -293,7 +305,9 @@ class ComparisonApiTestCase(TestCase):
         data["criteria_scores"][0].pop("criteria")
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         comparisons_nbr = Comparison.objects.filter(user=user).count()
 
@@ -313,12 +327,16 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -336,16 +354,22 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # swap the video id
-        data['video_a']['video_id'], data['video_b']['video_id'] = \
-            data['video_b']['video_id'], data['video_a']['video_id']
+        data["video_a"]["video_id"], data["video_b"]["video_id"] = (
+            data["video_b"]["video_id"],
+            data["video_a"]["video_id"],
+        )
 
         response = client.post(
-            self.comparisons_base_url, data, format="json",
+            self.comparisons_base_url,
+            data,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -362,7 +386,8 @@ class ComparisonApiTestCase(TestCase):
         client = APIClient()
 
         response = client.get(
-            self.comparisons_base_url, format="json",
+            self.comparisons_base_url,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -378,7 +403,8 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            self.comparisons_base_url, format="json",
+            self.comparisons_base_url,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -389,19 +415,21 @@ class ComparisonApiTestCase(TestCase):
         comparison1 = response.data["results"][0]
         comparison2 = response.data["results"][1]
 
-        self.assertEqual(comparison1["video_a"]["video_id"],
-                         self.comparisons[1].entity_1.video_id)
-        self.assertEqual(comparison1["video_b"]["video_id"],
-                         self.comparisons[1].entity_2.video_id)
-        self.assertEqual(comparison1["duration_ms"],
-                         self.comparisons[1].duration_ms)
+        self.assertEqual(
+            comparison1["video_a"]["video_id"], self.comparisons[1].entity_1.video_id
+        )
+        self.assertEqual(
+            comparison1["video_b"]["video_id"], self.comparisons[1].entity_2.video_id
+        )
+        self.assertEqual(comparison1["duration_ms"], self.comparisons[1].duration_ms)
 
-        self.assertEqual(comparison2["video_a"]["video_id"],
-                         self.comparisons[0].entity_1.video_id)
-        self.assertEqual(comparison2["video_b"]["video_id"],
-                         self.comparisons[0].entity_2.video_id)
-        self.assertEqual(comparison2["duration_ms"],
-                         self.comparisons[0].duration_ms)
+        self.assertEqual(
+            comparison2["video_a"]["video_id"], self.comparisons[0].entity_1.video_id
+        )
+        self.assertEqual(
+            comparison2["video_b"]["video_id"], self.comparisons[0].entity_2.video_id
+        )
+        self.assertEqual(comparison2["duration_ms"], self.comparisons[0].duration_ms)
 
     def test_authenticated_can_list_filtered(self):
         """
@@ -411,8 +439,8 @@ class ComparisonApiTestCase(TestCase):
 
         user = User.objects.get(username=self._user)
         comparisons_made = Comparison.objects.filter(
-            Q(entity_1__video_id=self._video_id_02) |
-            Q(entity_2__video_id=self._video_id_02),
+            Q(entity_1__video_id=self._video_id_02)
+            | Q(entity_2__video_id=self._video_id_02),
             poll=self.poll_videos,
             user=user,
         )
@@ -420,10 +448,8 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=user)
 
         response = client.get(
-            "{}/{}/".format(
-                self.comparisons_base_url,
-                self._video_id_02
-            ), format="json",
+            "{}/{}/".format(self.comparisons_base_url, self._video_id_02),
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -448,7 +474,8 @@ class ComparisonApiTestCase(TestCase):
         response = client.get(
             "{}/{}/{}/".format(
                 self.comparisons_base_url, self._video_id_01, self._video_id_02
-            ), format="json",
+            ),
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -468,14 +495,13 @@ class ComparisonApiTestCase(TestCase):
         response = client.get(
             "{}/{}/{}/".format(
                 self.comparisons_base_url, self._video_id_01, self._video_id_02
-            ), format="json",
+            ),
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(response.data["video_a"]["video_id"],
-                         self._video_id_01)
-        self.assertEqual(response.data["video_b"]["video_id"],
-                         self._video_id_02)
+        self.assertEqual(response.data["video_a"]["video_id"], self._video_id_01)
+        self.assertEqual(response.data["video_b"]["video_id"], self._video_id_02)
         self.assertEqual(response.data["duration_ms"], 102)
 
     def test_authenticated_can_read_reverse(self):
@@ -503,15 +529,16 @@ class ComparisonApiTestCase(TestCase):
 
         response = client.get(
             "{}/{}/{}/".format(
-                self.comparisons_base_url, self._video_id_02, self._video_id_01,
-            ), format="json",
+                self.comparisons_base_url,
+                self._video_id_02,
+                self._video_id_01,
+            ),
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(response.data["video_a"]["video_id"],
-                         self._video_id_02)
-        self.assertEqual(response.data["video_b"]["video_id"],
-                         self._video_id_01)
+        self.assertEqual(response.data["video_a"]["video_id"], self._video_id_02)
+        self.assertEqual(response.data["video_b"]["video_id"], self._video_id_01)
         self.assertEqual(response.data["duration_ms"], 102)
 
     def test_authenticated_integrated_comparison_list(self):
@@ -531,30 +558,33 @@ class ComparisonApiTestCase(TestCase):
         )
         client.put(
             "{}/{}/{}/".format(
-                self.comparisons_base_url, self._video_id_03, self._video_id_04,
+                self.comparisons_base_url,
+                self._video_id_03,
+                self._video_id_04,
             ),
-            {
-                'criteria_scores': [
-                    {
-                        "criteria": "pedagogy",
-                        "score": 10,
-                        "weight": 10
-                    }
-                ]
-            },
+            {"criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}]},
             format="json",
         )
         response = client.get(
-            self.comparisons_base_url, format="json",
+            self.comparisons_base_url,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         result_comparison1 = response.data["results"][0]
         result_comparison2 = response.data["results"][1]
-        self.assertEqual(result_comparison1["video_a"]["video_id"], comparison1.entity_1.video_id)
-        self.assertEqual(result_comparison1["video_b"]["video_id"], comparison1.entity_2.video_id)
-        self.assertEqual(result_comparison2["video_a"]["video_id"], comparison2.entity_1.video_id)
-        self.assertEqual(result_comparison2["video_b"]["video_id"], comparison2.entity_2.video_id)
+        self.assertEqual(
+            result_comparison1["video_a"]["video_id"], comparison1.entity_1.video_id
+        )
+        self.assertEqual(
+            result_comparison1["video_b"]["video_id"], comparison1.entity_2.video_id
+        )
+        self.assertEqual(
+            result_comparison2["video_a"]["video_id"], comparison2.entity_1.video_id
+        )
+        self.assertEqual(
+            result_comparison2["video_b"]["video_id"], comparison2.entity_2.video_id
+        )
 
     def test_n_ratings_from_video(self):
         client = APIClient()
@@ -565,68 +595,44 @@ class ComparisonApiTestCase(TestCase):
         VideoFactory(video_id=self._video_id_06)
         VideoFactory(video_id=self._video_id_07)
         data1 = {
-            "video_a": {
-                "video_id": self._video_id_05
-            },
-            "video_b": {
-                "video_id": self._video_id_06
-            },
-            "criteria_scores": [
-                {
-                    "criteria": "pedagogy",
-                    "score": 10,
-                    "weight": 10
-                }
-            ],
-            "duration_ms": 103
+            "video_a": {"video_id": self._video_id_05},
+            "video_b": {"video_id": self._video_id_06},
+            "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+            "duration_ms": 103,
         }
         response = client.post(
-            self.comparisons_base_url, data1, format="json",
+            self.comparisons_base_url,
+            data1,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data2 = {
-            "video_a": {
-                "video_id": self._video_id_05
-            },
-            "video_b": {
-                "video_id": self._video_id_07
-            },
-            "criteria_scores": [
-                {
-                    "criteria": "pedagogy",
-                    "score": 10,
-                    "weight": 10
-                }
-            ],
-            "duration_ms": 103
+            "video_a": {"video_id": self._video_id_05},
+            "video_b": {"video_id": self._video_id_07},
+            "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+            "duration_ms": 103,
         }
         response = client.post(
-            self.comparisons_base_url, data2, format="json",
+            self.comparisons_base_url,
+            data2,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        user2 = User.objects.get(username=self._user2)
-        client.force_authenticate(user=user2)
+        other = User.objects.get(username=self._other)
+        client.force_authenticate(user=other)
 
         data3 = {
-            "video_a": {
-                "video_id": self._video_id_05
-            },
-            "video_b": {
-                "video_id": self._video_id_06
-            },
-            "criteria_scores": [
-                {
-                    "criteria": "pedagogy",
-                    "score": 10,
-                    "weight": 10
-                }
-            ],
-            "duration_ms": 103
+            "video_a": {"video_id": self._video_id_05},
+            "video_b": {"video_id": self._video_id_06},
+            "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+            "duration_ms": 103,
         }
         response = client.post(
-            self.comparisons_base_url, data3, format="json",
+            self.comparisons_base_url,
+            data3,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -645,7 +651,7 @@ class ComparisonApiTestCase(TestCase):
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
         mock_get_video_metadata.return_value = {}
         client = APIClient()
-        user = User.objects.get(username=self._user2)
+        user = UserFactory(username="non_existing_user")
         client.force_authenticate(user=user)
 
         video01, video02, video03 = self.videos[:3]
@@ -657,48 +663,28 @@ class ComparisonApiTestCase(TestCase):
         video03.save()
 
         data = {
-            "video_a": {
-                "video_id": self._video_id_01
-            },
-            "video_b": {
-                "video_id": self._video_id_02
-            },
+            "video_a": {"video_id": self._video_id_01},
+            "video_b": {"video_id": self._video_id_02},
             "criteria_scores": [
-                {
-                    "criteria": "largely_recommended",
-                    "score": 10,
-                    "weight": 10
-                }
+                {"criteria": "largely_recommended", "score": 10, "weight": 10}
             ],
         }
-        response = client.post(
-            self.comparisons_base_url, data, format="json"
-        )
+        response = client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
         data = {
-            "video_a": {
-                "video_id": self._video_id_01
-            },
-            "video_b": {
-                "video_id": self._video_id_03
-            },
+            "video_a": {"video_id": self._video_id_01},
+            "video_b": {"video_id": self._video_id_03},
             "criteria_scores": [
-                {
-                    "criteria": "largely_recommended",
-                    "score": 10,
-                    "weight": 10
-                }
+                {"criteria": "largely_recommended", "score": 10, "weight": 10}
             ],
         }
 
-        response = client.post(
-            self.comparisons_base_url, data, format="json"
-        )
+        response = client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Video01 has been refreshed and video03 was already up-to-date.
-        # No additional call to youtube API should be visible.
+        # No additional call to YouTube API should be visible.
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
     def test_invalid_criteria_in_comparison(self):
@@ -708,7 +694,5 @@ class ComparisonApiTestCase(TestCase):
         data["criteria_scores"][0]["criteria"] = "invalid"
         response = client.post(self.comparisons_base_url, data, format="json")
         self.assertContains(
-            response,
-            "not a valid criteria",
-            status_code=status.HTTP_400_BAD_REQUEST
+            response, "not a valid criteria", status_code=status.HTTP_400_BAD_REQUEST
         )
