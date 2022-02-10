@@ -12,10 +12,11 @@ class ComparisonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = comparison_models.Comparison
 
-    poll = Poll.default_poll()
+    poll = factory.LazyAttribute(lambda n: Poll.default_poll())
     user = factory.SubFactory(UserFactory)
     entity_1 = factory.SubFactory(VideoFactory)
     entity_2 = factory.SubFactory(VideoFactory)
+
 
 class ComparisonCriteriaScoreFactory(factory.django.DjangoModelFactory):
 

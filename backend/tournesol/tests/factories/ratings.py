@@ -12,7 +12,7 @@ class ContributorRatingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ratings_models.ContributorRating
 
-    poll = Poll.default_poll()
+    poll = factory.LazyAttribute(lambda n: Poll.default_poll())
     entity = factory.SubFactory(VideoFactory)
     user = factory.SubFactory(UserFactory)
     is_public = False
