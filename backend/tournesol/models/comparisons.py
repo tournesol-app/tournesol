@@ -80,18 +80,20 @@ class Comparison(models.Model):
         return f"{a}_{b}"
 
     @staticmethod
-    def get_comparison(user, video_id_1, video_id_2):
+    def get_comparison(user, poll_id, video_id_1, video_id_2):
         """
-        Return a tuple with the user's comparison between two videos, and
-        True is the comparison is made in the reverse way, False instead.
+        Return a tuple with the user's comparison between two videos in the
+        given poll, and True is the comparison is made in the reverse way,
+        False instead.
 
         Raise django.db.model.ObjectDoesNotExist if no comparison is found.
         """
         try:
             comparison = Comparison.objects.get(
+                user=user,
+                poll_id=poll_id,
                 entity_1__video_id=video_id_1,
                 entity_2__video_id=video_id_2,
-                user=user
             )
         except ObjectDoesNotExist:
             pass
@@ -99,9 +101,10 @@ class Comparison(models.Model):
             return comparison, False
 
         comparison = Comparison.objects.get(
+            user=user,
+            poll_id=poll_id,
             entity_1__video_id=video_id_2,
             entity_2__video_id=video_id_1,
-            user=user
         )
 
         return comparison, True

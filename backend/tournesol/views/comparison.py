@@ -18,11 +18,14 @@ class ComparisonApiMixin:
     A mixin providing several common tools to all comparison API views.
     """
 
-    def comparison_already_exists(self, request):
+    def comparison_already_exists(self, request, poll_id):
         """Return True if the comparison already exist, False instead."""
         try:
+            # TODO: the poll id should be retrieved from the request URL
             comparison = Comparison.get_comparison(
-                request.user, request.data['video_a']['video_id'],
+                request.user,
+                poll_id,
+                request.data['video_a']['video_id'],
                 request.data['video_b']['video_id']
             )
         # if one field is missing, do not raise error yet and let django rest
@@ -95,7 +98,8 @@ class ComparisonListApi(
 
     @transaction.atomic
     def perform_create(self, serializer):
-        if self.comparison_already_exists(self.request):
+        default_poll_pk = Poll.default_poll_pk()
+        if self.comparison_already_exists(self.request, default_poll_pk):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
                     self.request.data['video_a']['video_id'],
@@ -158,8 +162,11 @@ class ComparisonDetailApi(mixins.RetrieveModelMixin,
         video_id_b -- the video_id of an other video
         """
         try:
+            # TODO: the poll id should be retrieved from the request URL
             comparison, reverse = Comparison.get_comparison(
-                self.request.user, self.kwargs['video_id_a'],
+                self.request.user,
+                Poll.default_poll_pk(),
+                self.kwargs['video_id_a'],
                 self.kwargs['video_id_b']
             )
         except ObjectDoesNotExist:
