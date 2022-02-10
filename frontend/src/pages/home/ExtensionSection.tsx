@@ -15,11 +15,10 @@ const ExtensionSection = () => {
     <Box
       display="flex"
       flexDirection="column"
-      color="white"
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">{t('home.useOurExtension')}</Typography>
+      <Typography variant="h2">{t('home.useOurExtension')}</Typography>
       <Typography paragraph>{t('home.webExtensionDescription')}</Typography>
       {webExtensionUrl ? (
         <Button

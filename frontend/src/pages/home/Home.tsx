@@ -2,6 +2,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box } from '@mui/material';
+import clsx from 'clsx';
 
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
@@ -11,26 +12,15 @@ import { useLoginState } from '../../hooks';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    paddingBottom: 32,
-  },
-  wateringSunflower: {
-    maxWidth: '100%',
   },
   title: {
-    color: '#ffffff',
-    textAlign: 'right',
-    fontSize: '340%',
-    [theme.breakpoints.down('lg')]: {
-      fontSize: '240%',
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '180%',
-    },
+    fontWeight: 'bold',
+    textAlign: 'left',
     [theme.breakpoints.down('md')]: {
       textAlign: 'center',
     },
     float: 'right',
-    margin: '24px 8px',
+    marginBottom: '24px',
     maxWidth: 1000,
   },
   titleContainer: {
@@ -46,11 +36,18 @@ const useStyles = makeStyles((theme) => ({
   imageContainer: {
     background: '#1282B2',
     display: 'flex',
-    justifyContent: 'left',
+    justifyContent: 'center',
+    maxHeight: '400px',
     [theme.breakpoints.down('md')]: {
       justifyContent: 'center',
+      maxHeight: '300px',
     },
-    padding: 16,
+    padding: 40,
+    maxWidth: '100%',
+    '& img': {
+      maxWidth: '100%',
+      maxHeight: '100%',
+    },
   },
   container: {
     display: 'flex',
@@ -59,6 +56,10 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('md')]: {
       padding: '32px 8px 32px 8px',
     },
+  },
+  containerBlue: {
+    backgroundColor: '#1282B2',
+    color: 'white',
   },
 }));
 
@@ -70,22 +71,24 @@ const HomePage = () => {
   return (
     <div className={classes.root}>
       <Grid container>
+        <Grid item xs={12} md={4} className={classes.imageContainer}>
+          <img src="/svg/Watering.svg" />
+        </Grid>
         <Grid item xs={12} md={8} className={classes.titleContainer}>
-          <Typography variant="h1" className={classes.title}>
+          <Typography
+            variant="h1"
+            color="primary.light"
+            className={classes.title}
+          >
             {t('home.collaborativeContentRecommendations')}
           </Typography>
-        </Grid>
-        <Grid item xs={12} md={4} className={classes.imageContainer}>
-          <img src="/svg/Watering.svg" className={classes.wateringSunflower} />
-        </Grid>
-        <Grid item xs={12} className={classes.container}>
           <Box
             display="flex"
             flexDirection="column"
             maxWidth="640px"
             alignItems="flex-start"
+            color="white"
           >
-            <Typography variant="h1">{t('home.whatIsTournesol')}</Typography>
             <Typography paragraph>
               <Trans t={t} i18nKey="home.tournesolPlatformDescription">
                 Tournesol is an <strong>open source</strong> platform which aims
@@ -104,12 +107,12 @@ const HomePage = () => {
               item
               xs={12}
               className={classes.container}
-              sx={{ background: '#1282B2', color: 'white' }}
+              sx={{ color: '#1282B2', bgcolor: 'white' }}
             >
               <Grid
                 container
                 direction="column"
-                justifyContent="center"
+                textAlign="center"
                 alignItems="center"
               >
                 <Grid item>
@@ -137,12 +140,19 @@ const HomePage = () => {
         <Grid
           item
           xs={12}
-          className={classes.container}
-          style={{ background: '#1282B2' }}
+          className={clsx(classes.container, {
+            [classes.containerBlue]: isLoggedIn,
+          })}
         >
           <ExtensionSection />
         </Grid>
-        <Grid item xs={12} className={classes.container}>
+        <Grid
+          item
+          xs={12}
+          className={clsx(classes.container, {
+            [classes.containerBlue]: !isLoggedIn,
+          })}
+        >
           <ContributeSection />
         </Grid>
       </Grid>

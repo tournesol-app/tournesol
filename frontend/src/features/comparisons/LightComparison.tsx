@@ -201,11 +201,13 @@ const LightComparison = () => {
           direction="row"
           justifyContent="flex-end"
           alignItems="center"
+          color="neutral.main"
         >
           <Stack direction="row" spacing={1}>
             <Button
               data-testid="comparison-btn-share"
               variant="text"
+              color="inherit"
               onClick={copyToClipBoard}
               endIcon={<ContentCopyIcon />}
             >
@@ -214,6 +216,7 @@ const LightComparison = () => {
             <Button
               data-testid="comparison-btn-open"
               variant="text"
+              color="inherit"
               onClick={() => {
                 history.push(comparisonPath);
               }}
