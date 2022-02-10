@@ -106,6 +106,11 @@ class ComparisonListApi(
 
     def get(self, request, *args, **kwargs):
         """List all comparisons made by the logged user, for a given poll."""
+        try:
+            self.poll_from_url = Poll.objects.get(name=kwargs["poll_name"])
+        except ObjectDoesNotExist:
+            return self.response_400_poll_doesnt_exist(kwargs["poll_name"])
+
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
