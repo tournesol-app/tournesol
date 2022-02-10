@@ -8,7 +8,6 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
@@ -59,7 +58,7 @@ class ComparisonApiTestCase(TestCase):
         )
 
         self.user = UserFactory(username=self._user)
-        other = UserFactory(username=self._other)
+        self.other = UserFactory(username=self._other)
         now = datetime.datetime.now()
 
         self.videos = [
@@ -90,7 +89,7 @@ class ComparisonApiTestCase(TestCase):
             # "other" will have the comparisons: 03 / 02 and 03 / 04
             ComparisonFactory(
                 poll=self.poll_videos,
-                user=other,
+                user=self.other,
                 entity_1=self.videos[2],
                 entity_2=self.videos[1],
                 duration_ms=302,
@@ -98,7 +97,7 @@ class ComparisonApiTestCase(TestCase):
             ),
             ComparisonFactory(
                 poll=self.poll_videos,
-                user=other,
+                user=self.other,
                 entity_1=self.videos[2],
                 entity_2=self.videos[3],
                 duration_ms=304,
@@ -152,11 +151,10 @@ class ComparisonApiTestCase(TestCase):
         """
         client = APIClient()
 
-        user = User.objects.get(username=self._user)
-        initial_comparisons_nbr = Comparison.objects.filter(user=user).count()
+        initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
         data = deepcopy(self.non_existing_comparison)
 
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.post(
             self.comparisons_base_url,
@@ -169,18 +167,18 @@ class ComparisonApiTestCase(TestCase):
         comparison = Comparison.objects.select_related(
             "user", "entity_1", "entity_2"
         ).get(
-            user=user,
+            user=self.user,
             poll=self.poll_videos,
             entity_1__video_id=data["video_a"]["video_id"],
             entity_2__video_id=data["video_b"]["video_id"],
         )
-        comparisons_nbr = Comparison.objects.filter(user=user).count()
+        comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
         # check the database integrity
         self.assertEqual(comparisons_nbr, initial_comparisons_nbr + 1)
 
         self.assertEqual(comparison.poll, self.poll_videos)
-        self.assertEqual(comparison.user, user)
+        self.assertEqual(comparison.user, self.user)
         self.assertEqual(comparison.entity_1.video_id, data["video_a"]["video_id"])
         self.assertEqual(comparison.entity_2.video_id, data["video_b"]["video_id"])
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
@@ -235,11 +233,10 @@ class ComparisonApiTestCase(TestCase):
         """
         client = APIClient()
 
-        user = User.objects.get(username=self._user)
-        initial_comparisons_nbr = Comparison.objects.filter(user=user).count()
+        initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
         data = self._remove_optional_fields(deepcopy(self.non_existing_comparison))
 
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.post(
             self.comparisons_base_url,
@@ -251,11 +248,11 @@ class ComparisonApiTestCase(TestCase):
             "user", "entity_1", "entity_2"
         ).get(
             poll=self.poll_videos,
-            user=user,
+            user=self.user,
             entity_1__video_id=data["video_a"]["video_id"],
             entity_2__video_id=data["video_b"]["video_id"],
         )
-        comparisons_nbr = Comparison.objects.filter(user=user).count()
+        comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
         # check the authorization
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -283,20 +280,19 @@ class ComparisonApiTestCase(TestCase):
         """
         client = APIClient()
 
-        user = User.objects.get(username=self._user)
-        initial_comparisons_nbr = Comparison.objects.filter(user=user).count()
+        initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
         data = deepcopy(self.non_existing_comparison)
         data["criteria_scores"][0].pop("score")
 
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.post(
             self.comparisons_base_url,
             data,
             format="json",
         )
-        comparisons_nbr = Comparison.objects.filter(user=user).count()
+        comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
@@ -309,7 +305,7 @@ class ComparisonApiTestCase(TestCase):
             data,
             format="json",
         )
-        comparisons_nbr = Comparison.objects.filter(user=user).count()
+        comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
@@ -320,11 +316,8 @@ class ComparisonApiTestCase(TestCase):
         of videos.
         """
         client = APIClient()
-
-        user = User.objects.get(username=self._user)
         data = deepcopy(self.non_existing_comparison)
-
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.post(
             self.comparisons_base_url,
@@ -347,11 +340,10 @@ class ComparisonApiTestCase(TestCase):
         """
         client = APIClient()
 
-        user = User.objects.get(username=self._user)
         initial_comparisons_nbr = Comparison.objects.all().count()
         data = deepcopy(self.non_existing_comparison)
 
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.post(
             self.comparisons_base_url,
@@ -396,11 +388,8 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can list its comparisons.
         """
         client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        comparisons_made = Comparison.objects.filter(user=user)
-
-        client.force_authenticate(user=user)
+        comparisons_made = Comparison.objects.filter(user=self.user)
+        client.force_authenticate(user=self.user)
 
         response = client.get(
             self.comparisons_base_url,
@@ -437,15 +426,14 @@ class ComparisonApiTestCase(TestCase):
         """
         client = APIClient()
 
-        user = User.objects.get(username=self._user)
         comparisons_made = Comparison.objects.filter(
             Q(entity_1__video_id=self._video_id_02)
             | Q(entity_2__video_id=self._video_id_02),
             poll=self.poll_videos,
-            user=user,
+            user=self.user,
         )
 
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.get(
             "{}/{}/".format(self.comparisons_base_url, self._video_id_02),
@@ -487,10 +475,7 @@ class ComparisonApiTestCase(TestCase):
         match the positional arguments of the URL requested.
         """
         client = APIClient()
-
-        user = User.objects.get(username=self._user)
-
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         response = client.get(
             "{}/{}/{}/".format(
@@ -513,16 +498,14 @@ class ComparisonApiTestCase(TestCase):
         match the positional arguments of the URL requested.
         """
         client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
 
         # assert the comparison 02 / 01 does not exist in this order in the
         # database, in order to test the GET view with reversed parameters
         with self.assertRaises(ObjectDoesNotExist):
             Comparison.objects.get(
                 poll=self.poll_videos,
-                user=user,
+                user=self.user,
                 entity_1__video_id=self._video_id_02,
                 entity_2__video_id=self._video_id_01,
             )
@@ -543,16 +526,14 @@ class ComparisonApiTestCase(TestCase):
 
     def test_authenticated_integrated_comparison_list(self):
         client = APIClient()
-
-        user = User.objects.get(username=self._user)
-        client.force_authenticate(user=user)
+        client.force_authenticate(user=self.user)
         comparison1 = Comparison.objects.create(
-            user=user,
+            user=self.user,
             entity_1=self.videos[2],
             entity_2=self.videos[3],
         )
         comparison2 = Comparison.objects.create(
-            user=user,
+            user=self.user,
             entity_1=self.videos[1],
             entity_2=self.videos[2],
         )
@@ -588,12 +569,12 @@ class ComparisonApiTestCase(TestCase):
 
     def test_n_ratings_from_video(self):
         client = APIClient()
+        client.force_authenticate(user=self.user)
 
-        user = User.objects.get(username=self._user)
-        client.force_authenticate(user=user)
         VideoFactory(video_id=self._video_id_05)
         VideoFactory(video_id=self._video_id_06)
         VideoFactory(video_id=self._video_id_07)
+
         data1 = {
             "video_a": {"video_id": self._video_id_05},
             "video_b": {"video_id": self._video_id_06},
@@ -620,8 +601,7 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        other = User.objects.get(username=self._other)
-        client.force_authenticate(user=other)
+        client.force_authenticate(user=self.other)
 
         data3 = {
             "video_a": {"video_id": self._video_id_05},
@@ -649,8 +629,9 @@ class ComparisonApiTestCase(TestCase):
 
     @patch("tournesol.utils.api_youtube.get_video_metadata")
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
-        mock_get_video_metadata.return_value = {}
         client = APIClient()
+        mock_get_video_metadata.return_value = {}
+
         user = UserFactory(username="non_existing_user")
         client.force_authenticate(user=user)
 
