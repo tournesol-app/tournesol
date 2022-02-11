@@ -109,12 +109,6 @@ class VideoViewSet(mixins.CreateModelMixin,
         request = self.request
         queryset = self.queryset
 
-        show_unsafe = request.query_params.get('unsafe') == 'true'
-
-        if show_unsafe is False:
-            queryset = queryset.filter(
-                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-            )
 
         uploader = request.query_params.get('uploader')
         if uploader:
@@ -167,11 +161,20 @@ class VideoViewSet(mixins.CreateModelMixin,
             total_score=Sum(F("criteria_scores__score") * criteria_weight)
         )
 
+        show_unsafe = request.query_params.get('unsafe') == 'true'
+
         if show_unsafe is True:
-            queryset = queryset.order_by("-total_score")
+            queryset =  (
+                queryset
+                    .filter(total_score__isnull=False)
+                    .order_by("-total_score")
+            )
         else:
             queryset = (
                 queryset
+                .filter(
+                    rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
+                )
                 .filter(total_score__gt=0)
                 .order_by("-total_score")
             )
