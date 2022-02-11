@@ -23,7 +23,6 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import WarningIcon from '@mui/icons-material/Warning';
 import { convertDurationToClockDuration } from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
@@ -84,12 +83,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'normal',
     fontSize: '0.9em',
     color: theme.palette.neutral.main,
-  },
-  safe_warning: {
-    fontSize: '32px',
-    height: '32px',
-    width: '32px',
-    marginLeft: '5px',
   },
   contributors: {
     fontFamily: 'Poppins',
@@ -180,7 +173,7 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   );
 });
 
-const VideoWrapper = function VideoWrapper({
+const SafeTournesolScoreWrapper = function SafeTournesolScoreWrapper({
   unsafe,
   unsafe_cause,
   children,
@@ -352,7 +345,10 @@ function VideoCard({
                   },
                 })}
               >
-                <VideoWrapper unsafe={unsafe} unsafe_cause={unsafe_cause}>
+                <SafeTournesolScoreWrapper
+                  unsafe={unsafe}
+                  unsafe_cause={unsafe_cause}
+                >
                   <img
                     className="tournesol"
                     src={'/svg/tournesol.svg'}
@@ -363,7 +359,7 @@ function VideoCard({
                   <span className={classes.nb_tournesol}>
                     {total_score.toFixed(0)}
                   </span>
-                </VideoWrapper>
+                </SafeTournesolScoreWrapper>
               </Box>
             )}
 
