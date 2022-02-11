@@ -10,6 +10,7 @@ from rest_framework import routers
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.email_domains import EmailDomainsList
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.polls import PollsView
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -101,5 +102,11 @@ urlpatterns = [
         "stats/",
         StatisticsView.as_view(),
         name="statistics_detail"
-     )
+    ),
+    # Polls API
+    path(
+        "polls/<str:name>/",
+        PollsView.as_view(),
+        name="polls_detail"
+    )
 ]
