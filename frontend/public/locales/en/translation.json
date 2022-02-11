@@ -95,8 +95,8 @@
     "uploadDate": "Upload date",
     "language": "Language",
     "uploader": "Uploader",
-    "safeTile": "Security",
-    "unsafe": "Unsafe"
+    "advanced": "Advanced",
+    "unsafe": "Include all videos"
   },
   "ratings": {
     "allRatingsMarkedPublic": "All your ratings have been marked as public.",

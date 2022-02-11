@@ -96,8 +96,8 @@
     "uploadDate": "Mises en ligne",
     "language": "Langues",
     "uploader": "Chaîne",
-    "safeTile" : "Sécurité",
-    "unsafe": "Mode non sécurisé"
+    "advanced" : "Avancées",
+    "unsafe": "Inclure toutes les vidéos"
   },
   "ratings": {
     "allRatingsMarkedPublic": "Toutes vos comparaisons sont maintenant publiques.",
