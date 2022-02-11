@@ -97,7 +97,8 @@
     "language": "Langues",
     "uploader": "Chaîne",
     "advanced" : "Avancées",
-    "unsafe": "Inclure toutes les vidéos"
+    "unsafe": "Inclure toutes les vidéos",
+    "unsafeTooltip" : "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs"
   },
   "ratings": {
     "allRatingsMarkedPublic": "Toutes vos comparaisons sont maintenant publiques.",
