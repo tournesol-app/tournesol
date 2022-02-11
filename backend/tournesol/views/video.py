@@ -55,6 +55,12 @@ from ..serializers import VideoSerializer, VideoSerializerWithCriteria
                 "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
                 "or legacy: `dd-mm-yy-hh-mm-ss`."
             ),
+            OpenApiParameter(
+                "unsafe",
+                OpenApiTypes.BOOL,
+                description="If true, videos considered as unsafe recommendations because of a "
+                "low score or due to too few contributions will be included."
+            ),
             *[
                 OpenApiParameter(
                     crit,
@@ -104,10 +110,6 @@ class VideoViewSet(mixins.CreateModelMixin,
         request = self.request
         queryset = self.queryset
 
-        queryset = queryset.filter(
-            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-        )
-
         uploader = request.query_params.get('uploader')
         if uploader:
             queryset = queryset.filter(uploader=uploader)
@@ -154,13 +156,28 @@ class VideoViewSet(mixins.CreateModelMixin,
             for crit in settings.LEGACY_CRITERIAS
         ]
         criteria_weight = Case(*criteria_cases, default=0)
-        queryset = (
-            queryset.annotate(
-                total_score=Sum(F("criteria_scores__score") * criteria_weight)
-            )
-            .filter(total_score__gt=0)
-            .order_by("-total_score")
+
+        queryset = queryset.annotate(
+            total_score=Sum(F("criteria_scores__score") * criteria_weight)
         )
+
+        show_unsafe = request.query_params.get('unsafe') == 'true'
+
+        if show_unsafe is True:
+            queryset = (
+                queryset
+                .filter(total_score__isnull=False)
+                .order_by("-total_score")
+            )
+        else:
+            queryset = (
+                queryset
+                .filter(
+                    rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
+                )
+                .filter(total_score__gt=0)
+                .order_by("-total_score")
+            )
         return queryset.prefetch_related("criteria_scores")
 
     def get_serializer_class(self):
