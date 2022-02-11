@@ -16,7 +16,7 @@ function SafeFilter(props: Props) {
 
   return (
     <ChoicesFilterSection
-      title={t('filter.safeTile')}
+      title={t('filter.advanced')}
       multipleChoice
       choices={safeChoice}
       {...props}
