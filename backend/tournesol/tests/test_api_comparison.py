@@ -520,6 +520,88 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.data["video_b"]["video_id"], self._video_id_01)
         self.assertEqual(response.data["duration_ms"], 102)
 
+    def test_anonymous_cant_update(self):
+        """
+        An anonymous user can't update a comparison.
+        """
+        client = APIClient()
+
+        response = client.put(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._video_id_01,
+                self._video_id_02,
+            ),
+            {"criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_anonymous_cant_delete(self):
+        """
+        An anonymous user can't delete a comparison.
+        """
+        client = APIClient()
+
+        # ensure ObjectDoesNoteExist is not raised
+        Comparison.objects.get(
+            poll=self.poll_videos,
+            user=self.user,
+            entity_1=self.videos[0],
+            entity_2=self.videos[1],
+        )
+
+        response = client.delete(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._video_id_01,
+                self._video_id_02,
+            ),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # ensure ObjectDoesNoteExist is still not raised
+        Comparison.objects.get(
+            poll=self.poll_videos,
+            user=self.user,
+            entity_1=self.videos[0],
+            entity_2=self.videos[1],
+        )
+
+    def test_authenticated_can_delete(self):
+        """
+        An authenticated user can delete a comparison.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+
+        # ensure ObjectDoesNoteExist is not raised
+        Comparison.objects.get(
+            poll=self.poll_videos,
+            user=self.user,
+            entity_1=self.videos[0],
+            entity_2=self.videos[1],
+        )
+
+        response = client.delete(
+            "{}/{}/{}/".format(
+                self.comparisons_base_url,
+                self._video_id_01,
+                self._video_id_02,
+            ),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            Comparison.objects.get(
+                poll=self.poll_videos,
+                user=self.user,
+                entity_1=self.videos[0],
+                entity_2=self.videos[1],
+            )
+
     def test_authenticated_integrated_comparison_list(self):
         client = APIClient()
         client.force_authenticate(user=self.user)
