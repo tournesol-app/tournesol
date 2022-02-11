@@ -58,7 +58,8 @@ from ..serializers import VideoSerializer, VideoSerializerWithCriteria
             OpenApiParameter(
                 "unsafe",
                 OpenApiTypes.BOOL,
-                description="Return videos mark as unsafe"
+                description="If true, videos considered as unsafe recommendations because of a "
+                "low score or due to too few contributions will be included."
             ),
             *[
                 OpenApiParameter(
