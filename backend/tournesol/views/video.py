@@ -109,7 +109,6 @@ class VideoViewSet(mixins.CreateModelMixin,
         request = self.request
         queryset = self.queryset
 
-
         uploader = request.query_params.get('uploader')
         if uploader:
             queryset = queryset.filter(uploader=uploader)
@@ -164,10 +163,10 @@ class VideoViewSet(mixins.CreateModelMixin,
         show_unsafe = request.query_params.get('unsafe') == 'true'
 
         if show_unsafe is True:
-            queryset =  (
+            queryset = (
                 queryset
-                    .filter(total_score__isnull=False)
-                    .order_by("-total_score")
+                .filter(total_score__isnull=False)
+                .order_by("-total_score")
             )
         else:
             queryset = (
