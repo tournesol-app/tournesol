@@ -94,7 +94,8 @@
     "language": "Language",
     "uploader": "Uploader",
     "advanced": "Advanced",
-    "unsafe": "Include all videos"
+    "unsafe": "Include all videos",
+    "unsafeTooltip" : "Also display videos with a low number of contributors and those with a negative score"
   },
   "ratings": {
     "allRatingsMarkedPublic": "All your ratings have been marked as public.",
