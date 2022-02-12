@@ -9,8 +9,7 @@ def get_uploader_id(video_id):
 
     r = requests.get(url_video)
 
-    if r.status_code != 200:
-        raise ConnectionError(f"Error getting video id: {r.status_code}")
+    r.raise_for_status()
 
     try:
         uploader_id = r.text.split("/channel/")[1].split('"')[0]
