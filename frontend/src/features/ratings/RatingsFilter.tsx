@@ -18,7 +18,11 @@ function RatingsFilter() {
 
   return (
     <Box color="text.secondary">
-      <CollapseButton expanded={expanded} onClick={handleExpandClick}>
+      <CollapseButton
+        expanded={expanded}
+        onClick={handleExpandClick}
+        showBadge={false}
+      >
         {t('options')}
       </CollapseButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>

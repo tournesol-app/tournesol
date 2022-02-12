@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Collapse, Grid, Box, Badge } from '@mui/material';
+import { Collapse, Grid, Box } from '@mui/material';
 
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -37,9 +37,11 @@ function SearchFilter() {
 
   return (
     <Box color="text.secondary">
-      <Badge color="secondary" variant="dot" invisible={!isFilterActive()}>
-        <CollapseButton expanded={expanded} onClick={handleExpandClick} />
-      </Badge>
+      <CollapseButton
+        expanded={expanded}
+        onClick={handleExpandClick}
+        showBadge={isFilterActive()}
+      />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         {filterParams.get(recommendationFilters.uploader) && (
           <Box marginBottom={1}>
