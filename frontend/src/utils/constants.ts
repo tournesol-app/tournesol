@@ -59,3 +59,18 @@ export const recommendationFilters = {
   better_habits: 'better_habits',
   backfire_risk: 'backfire_risk',
 };
+
+export const defaultRecommendationFilters = {
+  date: null,
+  language: null,
+  uploader: null,
+  reliability: '50',
+  pedagogy: '50',
+  importance: '50',
+  layman_friendly: '50',
+  entertaining_relaxing: '50',
+  engaging: '50',
+  diversity_inclusion: '50',
+  better_habits: '50',
+  backfire_risk: '50',
+};

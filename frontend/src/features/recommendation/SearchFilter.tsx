@@ -9,7 +9,10 @@ import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 import UploaderFilter from './UploaderFilter';
-import { recommendationFilters } from 'src/utils/constants';
+import {
+  recommendationFilters,
+  defaultRecommendationFilters,
+} from 'src/utils/constants';
 
 const useStyles = makeStyles({
   filtersContainer: {
@@ -26,14 +29,11 @@ function SearchFilter() {
     setExpanded(!expanded);
   };
 
-  const isFilterActive = () => {
-    for (const pair of filterParams.entries()) {
-      if (pair[0] in recommendationFilters && parseInt(pair[1], 10) !== 50) {
-        return true;
-      }
-    }
-    return false;
-  };
+  const isFilterActive = () =>
+    Object.entries(defaultRecommendationFilters).some(
+      ([key, defaultValue]) =>
+        ![null, defaultValue].includes(filterParams.get(key))
+    );
 
   return (
     <Box color="text.secondary">
