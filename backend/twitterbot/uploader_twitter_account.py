@@ -38,7 +38,7 @@ def get_twitter_account(video_id):
     twitter_names = re.findall(r"twitter.com\%2F(.*?)\"", r.text)
     twitter_names = [name for name in twitter_names if name != ""]
 
-    if len(set([name.lower() for name in twitter_names])) == 1:
+    if len(set(name.lower() for name in twitter_names)) == 1:
         return "@" + twitter_names[0]
     else:
         print("Error getting the uploader id, Twitter account not found")
