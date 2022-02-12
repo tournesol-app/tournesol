@@ -1,36 +1,13 @@
 import re
 import requests
-
-
-def get_uploader_id(video_id):
-    """Get YouTube uploader id from YouTube video id"""
-
-    url_video = f"https://www.youtube.com/watch?v={video_id}"
-
-    r = requests.get(url_video)
-
-    r.raise_for_status()
-
-    try:
-        uploader_id = r.text.split("/channel/")[1].split('"')[0]
-    except IndexError:
-        return None
-
-    if len(uploader_id) == 24:
-        return uploader_id
-    else:
-        print("Error getting the uploader id, Twitter account not found")
-        return None
+from tournesol.utils.api_youtube import get_video_metadata
 
 
 def get_twitter_account(video_id):
     """Get Twitter account from video id"""
 
-    uploader_id = get_uploader_id(video_id)
-
-    if not uploader_id:
-        return None
-
+    metadata = get_video_metadata(video_id, compute_language=False)
+    uploader_id = metadata["uploader_id"]
     uploader_url = f"https://www.youtube.com/channel/{uploader_id}"
 
     r = requests.get(uploader_url, headers={"user-agent": "curl/7.68.0"})
