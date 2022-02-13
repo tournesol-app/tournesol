@@ -1,6 +1,7 @@
 """Utils methods related to time."""
 
 from datetime import timedelta
+
 from django.utils import timezone
 
 
