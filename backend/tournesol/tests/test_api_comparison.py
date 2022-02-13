@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from core.utils.time import time_ago
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
@@ -718,7 +719,7 @@ class ComparisonApiTestCase(TestCase):
         video01, video02, video03 = self.videos[:3]
         video01.last_metadata_request_at = None
         video01.save()
-        video02.last_metadata_request_at = timezone.now() - datetime.timedelta(days=7)
+        video02.last_metadata_request_at = time_ago(days=7)
         video02.save()
         video03.last_metadata_request_at = timezone.now()
         video03.save()
