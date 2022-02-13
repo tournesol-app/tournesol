@@ -8,4 +8,3 @@ def test_time_ago():
     assert time_ago(hours=10) > time_ago(days=1)
     assert time_ago(days=1) > time_ago(days=1, hours= 3)
     assert time_ago(days=6, hours=23) > time_ago(weeks=1)
-    
