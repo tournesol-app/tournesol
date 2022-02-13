@@ -42,7 +42,12 @@ const CollapseButton = ({
 }: CollapseButtonProps) => {
   const classes = useStyles();
   return (
-    <Badge color="secondary" variant="dot" invisible={!showBadge}>
+    <Badge
+      color="secondary"
+      variant="dot"
+      invisible={!showBadge}
+      style={{ padding: '0px 8px' }}
+    >
       <Button
         color="secondary"
         size="large"
