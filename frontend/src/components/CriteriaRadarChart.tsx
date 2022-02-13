@@ -1,5 +1,11 @@
 import React from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis } from 'recharts';
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+} from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { getCriteriaName } from 'src/utils/constants';
 import { useTranslation } from 'react-i18next';
@@ -8,8 +14,14 @@ interface Props {
   video: VideoSerializerWithCriteria;
 }
 
+const between = (a: number, b: number, x: number | undefined): number => {
+  // clips x between a and b
+  return Math.min(b, Math.max(a, x || 0));
+};
+
 const CriteriaRadarChart = ({ video }: Props) => {
   const { t } = useTranslation();
+
   const renderCustomAxisTick = ({
     x,
     y,
@@ -43,25 +55,28 @@ const CriteriaRadarChart = ({ video }: Props) => {
 
   const { criteria_scores } = video;
   const shouldDisplayChart = criteria_scores && criteria_scores.length > 0;
-  const data = shouldDisplayChart
-    ? criteria_scores.filter((s) => s.criteria != 'largely_recommended')
-    : undefined;
+
+  if (!shouldDisplayChart) {
+    return <div></div>;
+  }
+
+  const data = criteria_scores
+    .filter((s) => s.criteria != 'largely_recommended')
+    .map((s) => ({ ...s, score: between(0, 1, s.score) }));
 
   return (
-    <div>
-      {shouldDisplayChart && (
-        <RadarChart width={300} height={300} outerRadius="80%" data={data}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
-          <Radar
-            dataKey="score"
-            stroke="#8884d8"
-            fill="#8884d8"
-            fillOpacity={0.6}
-          />
-        </RadarChart>
-      )}
-    </div>
+    <RadarChart width={300} height={300} outerRadius="80%" data={data}>
+      <PolarGrid />
+      <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
+      {/* An invisible PolarRadiusAxis used to enforce the axis between 0 and 1 */}
+      <PolarRadiusAxis domain={[0, 1]} axisLine={false} tick={false} />
+      <Radar
+        dataKey="score"
+        stroke="#8884d8"
+        fill="#8884d8"
+        fillOpacity={0.6}
+      />
+    </RadarChart>
   );
 };
 
