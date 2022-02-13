@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from core.utils.time import time_ago
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
@@ -27,7 +28,7 @@ class StatisticsAPI(TestCase):
         user_2 = User.objects.create(
             username="username2",
             email="user2@test",
-            date_joined=timezone.now() - timedelta(days=90),
+            date_joined=time_ago(days=90),
         )
         self._list_of_users = [user_1, user_2]
 
@@ -44,15 +45,9 @@ class StatisticsAPI(TestCase):
             rating_n_ratings=4,
         )
 
-        Entity.objects.filter(pk=video_1.pk).update(
-            add_time=timezone.now() - timedelta(days=5)
-        )
-        Entity.objects.filter(pk=video_2.pk).update(
-            add_time=timezone.now() - timedelta(days=29)
-        )
-        Entity.objects.filter(pk=video_3.pk).update(
-            add_time=timezone.now() - timedelta(days=60)
-        )
+        Entity.objects.filter(pk=video_1.pk).update(add_time=time_ago(days=5))
+        Entity.objects.filter(pk=video_2.pk).update(add_time=time_ago(days=29))
+        Entity.objects.filter(pk=video_3.pk).update(add_time=time_ago(days=60))
 
         self._list_of_videos = [video_1, video_2, video_3]
 
@@ -76,13 +71,13 @@ class StatisticsAPI(TestCase):
         )
 
         Comparison.objects.filter(pk=comparison_1.pk).update(
-            datetime_lastedit=timezone.now() - timedelta(days=5)
+            datetime_lastedit=time_ago(days=5)
         )
         Comparison.objects.filter(pk=comparison_2.pk).update(
-            datetime_lastedit=timezone.now() - timedelta(days=29)
+            datetime_lastedit=time_ago(days=29)
         )
         Comparison.objects.filter(pk=comparison_3.pk).update(
-            datetime_lastedit=timezone.now() - timedelta(days=60)
+            datetime_lastedit=time_ago(days=60)
         )
 
         self._list_of_comparisons = [comparison_1, comparison_2, comparison_3]
