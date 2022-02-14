@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface CollapseButtonProps {
   children?: React.ReactNode;
   expanded: boolean;
-  showBadge: boolean;
+  showBadge?: boolean;
   onClick?: (event: React.ChangeEvent<EventTarget>) => void;
 }
 
