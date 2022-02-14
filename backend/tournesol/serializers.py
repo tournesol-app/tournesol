@@ -22,8 +22,10 @@ from .models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    CriteriaRank,
     Entity,
     EntityCriteriaScore,
+    Poll,
     VideoRateLater,
 )
 
@@ -338,3 +340,20 @@ class StatisticsSerializer(Serializer):
     last_month_video_count = IntegerField()
     comparison_count = IntegerField()
     last_month_comparison_count = IntegerField()
+
+
+class PollCriteriaSerializer(ModelSerializer):
+    name = serializers.CharField(source="criteria.name")
+    label = serializers.CharField(source="criteria.get_label")
+
+    class Meta:
+        model = CriteriaRank
+        fields = ["name", "label", "optional"]
+
+
+class PollSerializer(ModelSerializer):
+    criterias = PollCriteriaSerializer(source="criteriarank_set", many=True)
+
+    class Meta:
+        model = Poll
+        fields = ["name", "criterias"]
