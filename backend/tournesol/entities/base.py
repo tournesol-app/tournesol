@@ -2,6 +2,10 @@ from abc import ABC, abstractclassmethod
 
 
 class EntityType(ABC):
+
+    # The 'name' of this entity type corresponds
+    # to the `type` field in Entity,
+    # and to the `entity_type` in Poll.
     name: str
 
     @classmethod
