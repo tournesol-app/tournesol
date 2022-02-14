@@ -3,7 +3,8 @@ from rest_framework.test import APIClient
 
 
 class PollsApi(TestCase):
-    def test_get_video_poll(self):
+    def test_anonymous_can_read(self):
+        """An anonymous user can read a poll with its translated criteria."""
         client = APIClient(HTTP_ACCEPT_LANGUAGE="fr")
         response = client.get("/polls/videos/")
         self.assertEqual(response.status_code, 200)
