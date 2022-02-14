@@ -18,7 +18,7 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
-import { YT_UID_PREFIX, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centering: {
@@ -108,8 +108,8 @@ const Comparison = () => {
     if (videoA && videoB)
       UsersService.usersMeComparisonsRetrieve({
         pollName: YOUTUBE_POLL_NAME,
-        uidA: YT_UID_PREFIX + videoA,
-        uidB: YT_UID_PREFIX + videoB,
+        uidA: UID_YT_NAMESPACE + videoA,
+        uidB: UID_YT_NAMESPACE + videoB,
       })
         .then((comparison) => {
           setInitialComparison(comparison);
@@ -129,8 +129,8 @@ const Comparison = () => {
       const { entity_a, entity_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate({
         pollName: YOUTUBE_POLL_NAME,
-        uidA: YT_UID_PREFIX + entity_a.video_id,
-        uidB: YT_UID_PREFIX + entity_b.video_id,
+        uidA: UID_YT_NAMESPACE + entity_a.video_id,
+        uidB: UID_YT_NAMESPACE + entity_b.video_id,
         requestBody: { criteria_scores, duration_ms },
       });
     } else {
