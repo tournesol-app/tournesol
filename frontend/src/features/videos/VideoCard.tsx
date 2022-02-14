@@ -248,10 +248,10 @@ function VideoCard({
   if (nbContributors != null && nbContributors <= 1) {
     unsafe = true;
     unsafe_cause = t('video.unsafeNotEnoughContributor');
-    if (total_score < 0) {
-      unsafe = true;
-      unsafe_cause = t('video.unsafeNegativeRating');
-    }
+  }
+  if (total_score < 0) {
+    unsafe = true;
+    unsafe_cause = t('video.unsafeNegativeRating');
   }
 
   return (
