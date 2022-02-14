@@ -693,7 +693,7 @@ paths:
       responses:
         '204':
           description: No response body
-  /users/me/comparisons/{poll_name}/{video_id}/:
+  /users/me/comparisons/{poll_name}/{uid}/:
     get:
       operationId: users_me_comparisons_list_filtered
       description: |-
@@ -706,7 +706,7 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id
+        name: uid
         schema:
           type: string
         required: true

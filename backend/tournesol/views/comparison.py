@@ -81,15 +81,15 @@ class ComparisonListBaseApi(ComparisonApiMixin,
         for a given poll.
 
         Keyword arguments:
-        video_id -- the video_id used to filter the results (default None)
+        uid -- the entity uid used to filter the results (default None)
         """
         queryset = Comparison.objects.filter(
             poll=self.poll_from_url,
             user=self.request.user
         ).order_by('-datetime_lastedit')
 
-        if self.kwargs.get("video_id"):
-            video_id = self.kwargs.get("video_id")
+        if self.kwargs.get("uid"):
+            video_id = self.kwargs.get("uid")
             queryset = queryset.filter(
                 Q(entity_1__video_id=video_id) | Q(entity_2__video_id=video_id)
             )
