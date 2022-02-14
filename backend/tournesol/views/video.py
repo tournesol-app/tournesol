@@ -4,7 +4,7 @@ API endpoint to manipulate videos
 import re
 
 from django.conf import settings
-from django.db.models import Case, F, Q, Sum, When
+from django.db.models import Case, F, Sum, When
 from django.utils import dateparse, timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -22,6 +22,7 @@ from tournesol.throttling import (
     SustainedUserRateThrottle,
 )
 
+from ..entities import VideoEntity
 from ..models import Entity
 from ..serializers import VideoSerializer, VideoSerializerWithCriteria
 
@@ -116,26 +117,20 @@ class VideoViewSet(mixins.CreateModelMixin,
 
         search = request.query_params.get('search')
         if search:
-            # Filtering in a nested queryset is necessary here, to be able to annotate
-            # each video without duplicated scores, due to the m2m field 'tags'.
-            queryset = queryset.filter(pk__in=Entity.objects.filter(
-                Q(name__icontains=search) |
-                Q(description__icontains=search) |
-                Q(tags__name__icontains=search)
-            ))
+            queryset = VideoEntity.filter_search(queryset, search)
 
         date_lte = request.query_params.get('date_lte') or ""
         if date_lte:
             try:
                 date_lte = self.parse_datetime(date_lte)
-                queryset = queryset.filter(publication_date__lte=date_lte)
+                queryset = VideoEntity.filter_date_lte(queryset, date_lte)
             except ValueError:
                 raise ValidationError('"date_lte" is an invalid datetime.')
         date_gte = request.query_params.get('date_gte') or ""
         if date_gte:
             try:
                 date_gte = self.parse_datetime(date_gte)
-                queryset = queryset.filter(publication_date__gte=date_gte)
+                queryset = VideoEntity.filter_date_gte(queryset, date_gte)
             except ValueError:
                 raise ValidationError('"date_gte" is an invalid datetime')
 
@@ -167,7 +162,6 @@ class VideoViewSet(mixins.CreateModelMixin,
             queryset = (
                 queryset
                 .filter(total_score__isnull=False)
-                .order_by("-total_score")
             )
         else:
             queryset = (
@@ -176,9 +170,12 @@ class VideoViewSet(mixins.CreateModelMixin,
                     rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
                 )
                 .filter(total_score__gt=0)
-                .order_by("-total_score")
             )
-        return queryset.prefetch_related("criteria_scores")
+        return (
+            queryset
+            .prefetch_related("criteria_scores")
+            .order_by('-total_score', '-publication_date')
+        )
 
     def get_serializer_class(self):
         if self.action in ("retrieve", "list"):

@@ -357,7 +357,7 @@ class VideoApi(TestCase):
 
         # ensure newly created entities are considered videos from YT
         self.assertEqual(new_video.uid, '{}:{}'.format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ"))
-        self.assertEqual(new_video.type, Entity.TYPE_VIDEO)
+        self.assertEqual(new_video.type, "video")
 
     def test_authenticated_cant_create_twice(self):
         """

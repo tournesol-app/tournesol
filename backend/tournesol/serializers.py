@@ -95,14 +95,14 @@ class RelatedVideoSerializer(VideoSerializer):
         return value
 
 
-class VideoCriteriaScoreSerializer(ModelSerializer):
+class EntityCriteriaScoreSerializer(ModelSerializer):
     class Meta:
         model = EntityCriteriaScore
-        fields = ["criteria", "score", "uncertainty", "quantile"]
+        fields = ["criteria", "score"]
 
 
 class VideoSerializerWithCriteria(VideoSerializer):
-    criteria_scores = VideoCriteriaScoreSerializer(many=True)
+    criteria_scores = EntityCriteriaScoreSerializer(many=True)
 
     class Meta(VideoSerializer.Meta):
         fields = VideoSerializer.Meta.fields + ['criteria_scores']
@@ -357,3 +357,21 @@ class PollSerializer(ModelSerializer):
     class Meta:
         model = Poll
         fields = ["name", "criterias"]
+
+
+class RecommendationSerializer(ModelSerializer):
+    n_comparisons = serializers.IntegerField(source="rating_n_ratings")
+    n_contributors = serializers.IntegerField(source="rating_n_contributors")
+    criteria_scores = EntityCriteriaScoreSerializer(many=True)
+    total_score = serializers.FloatField()
+
+    class Meta:
+        model = Entity
+        fields = [
+            "uid",
+            "n_comparisons",
+            "n_contributors",
+            "metadata",
+            "total_score",
+            "criteria_scores",
+        ]
