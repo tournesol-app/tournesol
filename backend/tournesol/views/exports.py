@@ -28,8 +28,8 @@ def write_comparisons_file(request, write_target):
 
     writer.writerows(
         {
-            "video_a": comparison["video_a"]["video_id"],
-            "video_b": comparison["video_b"]["video_id"],
+            "video_a": comparison["entity_a"]["video_id"],
+            "video_b": comparison["entity_b"]["video_id"],
             **criteria_score
         }
         for comparison in serialized_comparisons
@@ -60,8 +60,8 @@ def write_public_comparisons_file(request, write_target):
     writer.writerows(
         {
             "public_username": public_username,
-            "video_a": comparison["video_a"]["video_id"],
-            "video_b": comparison["video_b"]["video_id"],
+            "video_a": comparison["entity_a"]["video_id"],
+            "video_b": comparison["entity_b"]["video_id"],
             **criteria_score
         }
         for (public_username, comparison) in zip(public_usernames, serialized_comparisons)

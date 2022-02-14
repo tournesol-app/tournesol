@@ -1248,9 +1248,9 @@ components:
 
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
-        video_a:
+        entity_a:
           $ref: '#/components/schemas/RelatedVideo'
-        video_b:
+        entity_b:
           $ref: '#/components/schemas/RelatedVideo'
         criteria_scores:
           type: array
@@ -1263,8 +1263,8 @@ components:
           description: Time it took to rate the videos (in milliseconds)
       required:
       - criteria_scores
-      - video_a
-      - video_b
+      - entity_a
+      - entity_b
     ComparisonCriteriaScore:
       type: object
       properties:
@@ -1316,9 +1316,9 @@ components:
 
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
-        video_a:
+        entity_a:
           $ref: '#/components/schemas/RelatedVideoRequest'
-        video_b:
+        entity_b:
           $ref: '#/components/schemas/RelatedVideoRequest'
         criteria_scores:
           type: array
@@ -1331,8 +1331,8 @@ components:
           description: Time it took to rate the videos (in milliseconds)
       required:
       - criteria_scores
-      - video_a
-      - video_b
+      - entity_a
+      - entity_b
     ComparisonUpdate:
       type: object
       description: |-
@@ -1352,18 +1352,18 @@ components:
           format: float
           nullable: true
           description: Time it took to rate the videos (in milliseconds)
-        video_a:
+        entity_a:
           allOf:
           - $ref: '#/components/schemas/Video'
           readOnly: true
-        video_b:
+        entity_b:
           allOf:
           - $ref: '#/components/schemas/Video'
           readOnly: true
       required:
       - criteria_scores
-      - video_a
-      - video_b
+      - entity_a
+      - entity_b
     ComparisonUpdateRequest:
       type: object
       description: |-

@@ -32,7 +32,7 @@ function ComparisonsPage() {
       const comparisonsRequest = await (filteredVideo
         ? UsersService.usersMeComparisonsListFiltered({
             pollName: YOUTUBE_POLL_NAME,
-            videoId: filteredVideo,
+            uid: filteredVideo,
             limit,
             offset,
           })

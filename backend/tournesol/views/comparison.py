@@ -33,8 +33,8 @@ class ComparisonApiMixin:
             comparison = Comparison.get_comparison(
                 request.user,
                 poll_id,
-                request.data['video_a']['video_id'],
-                request.data['video_b']['video_id']
+                request.data['entity_a']['video_id'],
+                request.data['entity_b']['video_id']
             )
         # if one field is missing, do not raise error yet and let django rest
         # framework checks the request integrity
@@ -131,8 +131,8 @@ class ComparisonListApi(
         if self.comparison_already_exists(self.request, poll.pk):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
-                    self.request.data['video_a']['video_id'],
-                    self.request.data['video_b']['video_id']
+                    self.request.data['entity_a']['video_id'],
+                    self.request.data['entity_b']['video_id']
                 )
             )
         comparison: Comparison = serializer.save()
@@ -217,7 +217,7 @@ class ComparisonDetailApi(ComparisonApiMixin,
         Determine the appropriate serializer based on the request's method.
 
         Updating a comparison requires a different serializer because the
-        fields `video_a` and `video_b` are not editable anymore once the
+        fields `entity_a` and `entity_b` are not editable anymore once the
         comparison has been created. Discarding those two fields ensures
         their immutability and thus prevent the falsification of comparisons
         by video id swap.

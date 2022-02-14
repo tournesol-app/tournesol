@@ -41,8 +41,8 @@ class ComparisonApiTestCase(TestCase):
     _video_id_07 = "video_id_07"
 
     non_existing_comparison = {
-        "video_a": {"video_id": _video_id_01},
-        "video_b": {"video_id": _video_id_03},
+        "entity_a": {"video_id": _video_id_01},
+        "entity_b": {"video_id": _video_id_03},
         "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
         "duration_ms": 103,
     }
@@ -166,8 +166,8 @@ class ComparisonApiTestCase(TestCase):
         ).get(
             user=self.user,
             poll=self.poll_videos,
-            entity_1__video_id=data["video_a"]["video_id"],
-            entity_2__video_id=data["video_b"]["video_id"],
+            entity_1__video_id=data["entity_a"]["video_id"],
+            entity_2__video_id=data["entity_b"]["video_id"],
         )
         comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
@@ -176,8 +176,8 @@ class ComparisonApiTestCase(TestCase):
 
         self.assertEqual(comparison.poll, self.poll_videos)
         self.assertEqual(comparison.user, self.user)
-        self.assertEqual(comparison.entity_1.video_id, data["video_a"]["video_id"])
-        self.assertEqual(comparison.entity_2.video_id, data["video_b"]["video_id"])
+        self.assertEqual(comparison.entity_1.video_id, data["entity_a"]["video_id"])
+        self.assertEqual(comparison.entity_2.video_id, data["entity_b"]["video_id"])
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
         comparison_criteria_scores = comparison.criteria_scores.all()
@@ -197,10 +197,10 @@ class ComparisonApiTestCase(TestCase):
 
         # check the representation integrity
         self.assertEqual(
-            response.data["video_a"]["video_id"], data["video_a"]["video_id"]
+            response.data["entity_a"]["video_id"], data["entity_a"]["video_id"]
         )
         self.assertEqual(
-            response.data["video_b"]["video_id"], data["video_b"]["video_id"]
+            response.data["entity_b"]["video_id"], data["entity_b"]["video_id"]
         )
         self.assertEqual(response.data["duration_ms"], data["duration_ms"])
 
@@ -246,8 +246,8 @@ class ComparisonApiTestCase(TestCase):
         ).get(
             poll=self.poll_videos,
             user=self.user,
-            entity_1__video_id=data["video_a"]["video_id"],
-            entity_2__video_id=data["video_b"]["video_id"],
+            entity_1__video_id=data["entity_a"]["video_id"],
+            entity_2__video_id=data["entity_b"]["video_id"],
         )
         comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
@@ -350,9 +350,9 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # swap the video id
-        data["video_a"]["video_id"], data["video_b"]["video_id"] = (
-            data["video_b"]["video_id"],
-            data["video_a"]["video_id"],
+        data["entity_a"]["video_id"], data["entity_b"]["video_id"] = (
+            data["entity_b"]["video_id"],
+            data["entity_a"]["video_id"],
         )
 
         response = client.post(
@@ -402,18 +402,18 @@ class ComparisonApiTestCase(TestCase):
         comparison2 = response.data["results"][1]
 
         self.assertEqual(
-            comparison1["video_a"]["video_id"], self.comparisons[1].entity_1.video_id
+            comparison1["entity_a"]["video_id"], self.comparisons[1].entity_1.video_id
         )
         self.assertEqual(
-            comparison1["video_b"]["video_id"], self.comparisons[1].entity_2.video_id
+            comparison1["entity_b"]["video_id"], self.comparisons[1].entity_2.video_id
         )
         self.assertEqual(comparison1["duration_ms"], self.comparisons[1].duration_ms)
 
         self.assertEqual(
-            comparison2["video_a"]["video_id"], self.comparisons[0].entity_1.video_id
+            comparison2["entity_a"]["video_id"], self.comparisons[0].entity_1.video_id
         )
         self.assertEqual(
-            comparison2["video_b"]["video_id"], self.comparisons[0].entity_2.video_id
+            comparison2["entity_b"]["video_id"], self.comparisons[0].entity_2.video_id
         )
         self.assertEqual(comparison2["duration_ms"], self.comparisons[0].duration_ms)
 
@@ -445,8 +445,8 @@ class ComparisonApiTestCase(TestCase):
         # currently the GET API returns an unordered list, so the assertions
         # are made unordered too
         for comparison in response.data["results"]:
-            if comparison["video_a"]["video_id"] != self._video_id_02:
-                self.assertEqual(comparison["video_b"]["video_id"], self._video_id_02)
+            if comparison["entity_a"]["video_id"] != self._video_id_02:
+                self.assertEqual(comparison["entity_b"]["video_id"], self._video_id_02)
 
             self.assertEqual(comparison["duration_ms"], 102)
 
@@ -468,7 +468,7 @@ class ComparisonApiTestCase(TestCase):
         """
         An authenticated user can read one of its comparisons.
 
-        The `video_a` and  `video_b` fields in the response must respectively
+        The `entity_a` and  `entity_b` fields in the response must respectively
         match the positional arguments of the URL requested.
         """
         client = APIClient()
@@ -482,8 +482,8 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(response.data["video_a"]["video_id"], self._video_id_01)
-        self.assertEqual(response.data["video_b"]["video_id"], self._video_id_02)
+        self.assertEqual(response.data["entity_a"]["video_id"], self._video_id_01)
+        self.assertEqual(response.data["entity_b"]["video_id"], self._video_id_02)
         self.assertEqual(response.data["duration_ms"], 102)
 
     def test_authenticated_can_read_reverse(self):
@@ -491,7 +491,7 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can read one of its comparisons, even if the
         video id are reversed in the URL requested.
 
-        The `video_a` and  `video_b` fields in the response must respectively
+        The `entity_a` and  `entity_b` fields in the response must respectively
         match the positional arguments of the URL requested.
         """
         client = APIClient()
@@ -517,8 +517,8 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(response.data["video_a"]["video_id"], self._video_id_02)
-        self.assertEqual(response.data["video_b"]["video_id"], self._video_id_01)
+        self.assertEqual(response.data["entity_a"]["video_id"], self._video_id_02)
+        self.assertEqual(response.data["entity_b"]["video_id"], self._video_id_01)
         self.assertEqual(response.data["duration_ms"], 102)
 
     def test_anonymous_cant_update(self):
@@ -636,16 +636,16 @@ class ComparisonApiTestCase(TestCase):
         result_comparison1 = response.data["results"][0]
         result_comparison2 = response.data["results"][1]
         self.assertEqual(
-            result_comparison1["video_a"]["video_id"], comparison1.entity_1.video_id
+            result_comparison1["entity_a"]["video_id"], comparison1.entity_1.video_id
         )
         self.assertEqual(
-            result_comparison1["video_b"]["video_id"], comparison1.entity_2.video_id
+            result_comparison1["entity_b"]["video_id"], comparison1.entity_2.video_id
         )
         self.assertEqual(
-            result_comparison2["video_a"]["video_id"], comparison2.entity_1.video_id
+            result_comparison2["entity_a"]["video_id"], comparison2.entity_1.video_id
         )
         self.assertEqual(
-            result_comparison2["video_b"]["video_id"], comparison2.entity_2.video_id
+            result_comparison2["entity_b"]["video_id"], comparison2.entity_2.video_id
         )
 
     def test_n_ratings_from_video(self):
@@ -657,8 +657,8 @@ class ComparisonApiTestCase(TestCase):
         VideoFactory(video_id=self._video_id_07)
 
         data1 = {
-            "video_a": {"video_id": self._video_id_05},
-            "video_b": {"video_id": self._video_id_06},
+            "entity_a": {"video_id": self._video_id_05},
+            "entity_b": {"video_id": self._video_id_06},
             "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
@@ -670,8 +670,8 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data2 = {
-            "video_a": {"video_id": self._video_id_05},
-            "video_b": {"video_id": self._video_id_07},
+            "entity_a": {"video_id": self._video_id_05},
+            "entity_b": {"video_id": self._video_id_07},
             "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
@@ -685,8 +685,8 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=self.other)
 
         data3 = {
-            "video_a": {"video_id": self._video_id_05},
-            "video_b": {"video_id": self._video_id_06},
+            "entity_a": {"video_id": self._video_id_05},
+            "entity_b": {"video_id": self._video_id_06},
             "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
@@ -725,8 +725,8 @@ class ComparisonApiTestCase(TestCase):
         video03.save()
 
         data = {
-            "video_a": {"video_id": self._video_id_01},
-            "video_b": {"video_id": self._video_id_02},
+            "entity_a": {"video_id": self._video_id_01},
+            "entity_b": {"video_id": self._video_id_02},
             "criteria_scores": [
                 {"criteria": "largely_recommended", "score": 10, "weight": 10}
             ],
@@ -736,8 +736,8 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
         data = {
-            "video_a": {"video_id": self._video_id_01},
-            "video_b": {"video_id": self._video_id_03},
+            "entity_a": {"video_id": self._video_id_01},
+            "entity_b": {"video_id": self._video_id_03},
             "criteria_scores": [
                 {"criteria": "largely_recommended", "score": 10, "weight": 10}
             ],
