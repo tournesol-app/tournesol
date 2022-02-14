@@ -10,6 +10,10 @@ import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 import UploaderFilter from './UploaderFilter';
 import SafeFilter from './SafeFilter';
+import {
+  recommendationFilters,
+  defaultRecommendationFilters,
+} from 'src/utils/constants';
 
 const useStyles = makeStyles({
   filtersContainer: {
@@ -17,6 +21,13 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Filter options for Videos recommendations
+ *
+ * The "filters" button has a badge when one of its filter is enabled with a non-default value.
+ * When adding a new filter, it needs to be defined in constants 'recommendationFilters'
+ * and 'defaultRecommendationsFilters'.
+ */
 function SearchFilter() {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
@@ -26,23 +37,33 @@ function SearchFilter() {
     setExpanded(!expanded);
   };
 
+  const isFilterActive = () =>
+    Object.entries(defaultRecommendationFilters).some(
+      ([key, defaultValue]) =>
+        ![null, defaultValue].includes(filterParams.get(key))
+    );
+
   return (
     <Box color="text.secondary">
-      <CollapseButton expanded={expanded} onClick={handleExpandClick} />
+      <CollapseButton
+        expanded={expanded}
+        onClick={handleExpandClick}
+        showBadge={isFilterActive()}
+      />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {filterParams.get('uploader') && (
+        {filterParams.get(recommendationFilters.uploader) && (
           <Box marginBottom={1}>
             <UploaderFilter
-              value={filterParams.get('uploader') ?? ''}
-              onDelete={() => setFilter('uploader', '')}
+              value={filterParams.get(recommendationFilters.uploader) ?? ''}
+              onDelete={() => setFilter(recommendationFilters.uploader, '')}
             />
           </Box>
         )}
         <Grid container spacing={4} className={classes.filtersContainer}>
           <Grid item xs={6} md={3} lg={2} data-testid="search-date-safe-filter">
             <DateFilter
-              value={filterParams.get('date') ?? ''}
-              onChange={(value) => setFilter('date', value)}
+              value={filterParams.get(recommendationFilters.date) ?? ''}
+              onChange={(value) => setFilter(recommendationFilters.date, value)}
             />
             <SafeFilter
               value={filterParams.get('unsafe') ?? ''}
@@ -51,8 +72,10 @@ function SearchFilter() {
           </Grid>
           <Grid item xs={6} md={3} lg={2} data-testid="search-language-filter">
             <LanguageFilter
-              value={filterParams.get('language') ?? ''}
-              onChange={(value) => setFilter('language', value)}
+              value={filterParams.get(recommendationFilters.language) ?? ''}
+              onChange={(value) =>
+                setFilter(recommendationFilters.language, value)
+              }
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
