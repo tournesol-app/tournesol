@@ -20,6 +20,13 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Filter options for Videos recommendations
+ *
+ * The "filters" button has a badge when one of its filter is enabled with a non-default value.
+ * When adding a new filter, it needs to be defined in constants 'recommendationFilters'
+ * and 'defaultRecommendationsFilters'.
+ */
 function SearchFilter() {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
