@@ -34,6 +34,7 @@ class Entity(models.Model):
     class Meta:
         verbose_name_plural = "entities"
 
+    UID_DELIMITER = ':'
     UID_YT_NAMESPACE = 'yt'
 
     uid = models.CharField(
@@ -271,7 +272,9 @@ class Entity(models.Model):
         return video
 
     def save(self, *args, **kwargs):
-        self.uid = '{}:{}'.format(Entity.UID_YT_NAMESPACE, self.video_id)
+        self.uid = '{}{}{}'.format(
+            Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER, self.video_id
+        )
         self.type = TYPE_VIDEO
         super().save(*args, **kwargs)
 
