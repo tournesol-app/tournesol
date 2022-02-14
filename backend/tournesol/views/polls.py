@@ -4,7 +4,12 @@ from django.conf import settings
 from django.db.models import Case, F, Prefetch, Q, Sum, When
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import LimitOffsetPagination
@@ -32,7 +37,23 @@ class PollsView(RetrieveAPIView):
         description="Retrieve a list of recommended videos, sorted by decreasing total score.",
         parameters=[
             RecommendationsFilterSerializer,
-            OpenApiParameter("weights", OpenApiTypes.OBJECT, style="deepObject"),
+            OpenApiParameter(
+                "weights",
+                OpenApiTypes.OBJECT,
+                style="deepObject",
+                description="Weights for criterias in this poll."
+                " The default weight is 10 for each criteria.",
+                examples=[
+                    OpenApiExample(
+                        name="weights example",
+                        value={
+                            "reliability": 10,
+                            "importance": 10,
+                            "ignored_criteria": 0,
+                        }
+                    )
+                ]
+            ),
         ],
     )
 )
