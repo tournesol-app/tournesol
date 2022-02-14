@@ -187,23 +187,22 @@ class ComparisonDetailApi(ComparisonApiMixin,
 
     def get_object(self):
         """
-        Return a comparison made by the logged user between two videos, or
+        Return a comparison made by the logged user between two entities, or
         raise HTTP 404 nothing is found.
 
-        If the comparison `video_id_a` / `video_id_b` is not found, the
-        method will try to return the comparison `video_id_b` / `video_id_a`
-        before raising HTTP 404.
+        If the comparison `uid_a` / `uid_b` is not found, the method will try
+        to return the comparison `uid_b` / `uid_a` before raising HTTP 404.
 
         Query parameters:
-        video_id_a -- the video_id of a video
-        video_id_b -- the video_id of an other video
+        uid_a -- the uid of an entity
+        uid_b -- the uid of another entity
         """
         try:
             comparison, reverse = Comparison.get_comparison(
                 self.request.user,
                 self.poll_from_url.pk,
-                self.kwargs['video_id_a'],
-                self.kwargs['video_id_b']
+                self.kwargs['uid_a'],
+                self.kwargs['uid_b']
             )
         except ObjectDoesNotExist:
             raise Http404

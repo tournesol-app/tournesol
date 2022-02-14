@@ -60,7 +60,7 @@ urlpatterns = [
         name="poll_comparisons_me_list_filtered",
     ),
     path(
-        "users/me/comparisons/<str:poll_name>/<str:video_id_a>/<str:video_id_b>/",
+        "users/me/comparisons/<str:poll_name>/<str:uid_a>/<str:uid_b>/",
         ComparisonDetailApi.as_view(),
         name="poll_comparisons_me_detail",
     ),

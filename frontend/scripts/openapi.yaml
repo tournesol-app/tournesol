@@ -591,7 +591,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Comparison'
           description: ''
-  /users/me/comparisons/{poll_name}/{video_id_a}/{video_id_b}/:
+  /users/me/comparisons/{poll_name}/{uid_a}/{uid_b}/:
     get:
       operationId: users_me_comparisons_retrieve
       description: Retrieve a comparison made by the logged user, in the given poll.
@@ -602,12 +602,12 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id_a
+        name: uid_a
         schema:
           type: string
         required: true
       - in: path
-        name: video_id_b
+        name: uid_b
         schema:
           type: string
         required: true
@@ -633,12 +633,12 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id_a
+        name: uid_a
         schema:
           type: string
         required: true
       - in: path
-        name: video_id_b
+        name: uid_b
         schema:
           type: string
         required: true
@@ -676,12 +676,12 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id_a
+        name: uid_a
         schema:
           type: string
         required: true
       - in: path
-        name: video_id_b
+        name: uid_b
         schema:
           type: string
         required: true
