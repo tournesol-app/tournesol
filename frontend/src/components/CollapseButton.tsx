@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme: Theme) => ({
   collapseButton: {
-    padding: '8px',
+    padding: '0 8px',
+    marginBottom: '8px',
     marginLeft: '-8px', // keep the text aligned to the left
   },
   collapseButtonDefault: {
@@ -37,17 +38,12 @@ const DefaultText = () => {
 const CollapseButton = ({
   children = <DefaultText />,
   expanded,
-  showBadge,
+  showBadge = false,
   onClick,
 }: CollapseButtonProps) => {
   const classes = useStyles();
   return (
-    <Badge
-      color="secondary"
-      variant="dot"
-      invisible={!showBadge}
-      style={{ padding: '0px 8px' }}
-    >
+    <Badge color="secondary" variant="dot" invisible={!showBadge}>
       <Button
         color="secondary"
         size="large"
