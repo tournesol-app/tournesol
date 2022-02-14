@@ -334,20 +334,20 @@ function VideoCard({
             style={{ gap: '12px' }}
           >
             {'criteria_scores' in video && (
-              <Box
-                display="flex"
-                alignItems="center"
-                data-testid="video-card-overall-score"
-                {...(unsafe == true && {
-                  sx: {
-                    filter: 'grayscale(100%)',
-                    opacity: 0.6,
-                  },
-                })}
+              <SafeTournesolScoreWrapper
+                unsafe={unsafe}
+                unsafe_cause={unsafe_cause}
               >
-                <SafeTournesolScoreWrapper
-                  unsafe={unsafe}
-                  unsafe_cause={unsafe_cause}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  data-testid="video-card-overall-score"
+                  {...(unsafe == true && {
+                    sx: {
+                      filter: 'grayscale(100%)',
+                      opacity: 0.6,
+                    },
+                  })}
                 >
                   <img
                     className="tournesol"
@@ -359,8 +359,8 @@ function VideoCard({
                   <span className={classes.nb_tournesol}>
                     {total_score.toFixed(0)}
                   </span>
-                </SafeTournesolScoreWrapper>
-              </Box>
+                </Box>
+              </SafeTournesolScoreWrapper>
             )}
 
             {nbRatings != null && nbRatings > 0 && (
