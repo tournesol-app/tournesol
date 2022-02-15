@@ -216,7 +216,16 @@ function VideoCard({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const videoId = video.video_id;
+
+  let id = '';
+  if (video.uid && video.uid.split(':')[0] === '') {
+    id = video.uid.split(':')[1];
+  } else {
+    id = video.video_id;
+  }
+
+  const videoId = id.slice();
+
   let total_score = 0;
   let max_score = -Infinity;
   let min_score = Infinity;

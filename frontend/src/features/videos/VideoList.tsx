@@ -31,7 +31,7 @@ function VideoList({
     <>
       {videos.length ? (
         videos.map((video: VideoObject) => (
-          <Box key={video.video_id} mx={1} my={2}>
+          <Box key={video.uid} mx={1} my={2}>
             <VideoCard
               video={video}
               actions={actions ?? defaultActions}
