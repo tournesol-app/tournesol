@@ -347,6 +347,101 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /polls/{name}/:
+    get:
+      operationId: polls_retrieve
+      description: Retrieve a poll and its related criteria.
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      tags:
+      - polls
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Poll'
+          description: ''
+  /polls/{name}/recommendations/:
+    get:
+      operationId: polls_recommendations_list
+      description: Retrieve a list of recommended videos, sorted by decreasing total
+        score.
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: date_lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: search
+        schema:
+          type: string
+          minLength: 1
+        description: A search query to filter entities
+      - in: query
+        name: unsafe
+        schema:
+          type: boolean
+          default: false
+        description: If true, entities considered as unsafe recommendations because
+          of a low score or due to too few contributions will be included.
+      - in: query
+        name: weights
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Weights for criterias in this poll. The default weight is 10
+          for each criteria.
+        style: deepObject
+        examples:
+          WeightsExample:
+            value:
+              reliability: 10
+              importance: 10
+              ignored_criteria: 0
+            summary: weights example
+      tags:
+      - polls
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecommendationList'
+          description: ''
   /schema/:
     get:
       operationId: schema_retrieve
@@ -1093,6 +1188,12 @@ paths:
         description: "Return videos published **after** this date.  \nAccepted formats:\
           \ ISO 8601 datetime (e.g `2021-12-01T12:45:00`) or legacy: `dd-mm-yy-hh-mm-ss`."
       - in: query
+        name: unsafe
+        schema:
+          type: boolean
+        description: If true, videos considered as unsafe recommendations because
+          of a low score or due to too few contributions will be included.
+      - in: query
         name: largely_recommended
         schema:
           type: integer
@@ -1542,6 +1643,19 @@ components:
           description: Status of the domain.
       required:
       - domain
+    EntityCriteriaScore:
+      type: object
+      properties:
+        criteria:
+          type: string
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          description: Score of the given criteria
+      required:
+      - criteria
     GenderEnum:
       enum:
       - Not Specified
@@ -1976,6 +2090,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EmailDomain'
+    PaginatedRecommendationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
     PaginatedVideoRateLaterList:
       type: object
       properties:
@@ -2175,6 +2309,32 @@ components:
       - Extreme right
       - Other
       type: string
+    Poll:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        criterias:
+          type: array
+          items:
+            $ref: '#/components/schemas/PollCriteria'
+      required:
+      - criterias
+      - name
+    PollCriteria:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        optional:
+          type: boolean
+      required:
+      - label
+      - name
     RaceEnum:
       enum:
       - Not Specified
@@ -2189,6 +2349,34 @@ components:
       - Unknown
       - Other
       type: string
+    Recommendation:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        n_comparisons:
+          type: integer
+        n_contributors:
+          type: integer
+        metadata:
+          type: object
+          additionalProperties: {}
+        total_score:
+          type: number
+          format: float
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCriteriaScore'
+      required:
+      - criteria_scores
+      - n_comparisons
+      - n_contributors
+      - total_score
+      - uid
     RegisterEmail:
       type: object
       description: Default serializer used for e-mail registration (e-mail change).
@@ -3337,30 +3525,6 @@ components:
       - uploader
       - video_id
       - views
-    VideoCriteriaScore:
-      type: object
-      properties:
-        criteria:
-          type: string
-          description: Name of the criteria
-          maxLength: 32
-        score:
-          type: number
-          format: float
-          description: Score of the given criteria
-        uncertainty:
-          type: number
-          format: float
-          description: Uncertainty about the video's score for the given criteria
-        quantile:
-          type: number
-          format: float
-          maximum: 1.0
-          minimum: 0.0
-          description: Top quantile for all rated videos for aggregated scoresfor
-            the given criteria. 0.0=best, 1.0=worst
-      required:
-      - criteria
     VideoRateLater:
       type: object
       properties:
@@ -3444,7 +3608,7 @@ components:
         criteria_scores:
           type: array
           items:
-            $ref: '#/components/schemas/VideoCriteriaScore'
+            $ref: '#/components/schemas/EntityCriteriaScore'
       required:
       - criteria_scores
       - duration
