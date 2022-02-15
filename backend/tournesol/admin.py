@@ -63,6 +63,7 @@ class EntityAdmin(admin.ModelAdmin):
         'get_uploader',
         'get_publication_date',
         'rating_n_ratings',
+        'tournesol_score',
         'rating_n_contributors',
         'get_language',
         'link_to_youtube',

@@ -64,6 +64,7 @@ class VideoSerializer(ModelSerializer):
             "uploader",
             "language",
             "rating_n_ratings",
+            "tournesol_score",
             "rating_n_contributors",
             "duration",
             # backward compatibility
@@ -72,6 +73,7 @@ class VideoSerializer(ModelSerializer):
         read_only_fields = [
             "uid",
             "rating_n_ratings",
+            "tournesol_score",
             "rating_n_contributors",
         ]
 
