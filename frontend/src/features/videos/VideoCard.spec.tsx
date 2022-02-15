@@ -60,8 +60,6 @@ describe('VideoCard content', () => {
         {
           criteria: 'largely_recommended',
           score: 0.4,
-          uncertainty: 0.0,
-          quantile: 1.0,
         },
       ],
       duration: 4200,
@@ -98,14 +96,10 @@ describe('VideoCard content', () => {
         {
           criteria: 'engaging',
           score: 0.9,
-          uncertainty: 0.0,
-          quantile: 1.0,
         },
         {
           criteria: 'pedagogy',
           score: 0.8,
-          uncertainty: 0.0,
-          quantile: 1.0,
         },
       ],
       duration: 120,
