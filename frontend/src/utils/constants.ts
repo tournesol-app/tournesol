@@ -45,7 +45,7 @@ export const getCriteriaName = (t: TFunction, criteria: string) => {
 
 export const YOUTUBE_POLL_NAME = 'videos';
 
-const UID_DELIMITER = '%3A';
+const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;
 
 export const recommendationFilters = {
