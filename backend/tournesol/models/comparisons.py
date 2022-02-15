@@ -79,7 +79,7 @@ class Comparison(models.Model):
         return f"{a}_{b}"
 
     @staticmethod
-    def get_comparison(user, poll_id, video_id_1, video_id_2):
+    def get_comparison(user, poll_id, uid_a, uid_b):
         """
         Return a tuple with the user's comparison between two videos in the
         given poll, and True is the comparison is made in the reverse way,
@@ -91,8 +91,8 @@ class Comparison(models.Model):
             comparison = Comparison.objects.get(
                 user=user,
                 poll_id=poll_id,
-                entity_1__video_id=video_id_1,
-                entity_2__video_id=video_id_2,
+                entity_1__uid=uid_a,
+                entity_2__uid=uid_b,
             )
         except ObjectDoesNotExist:
             pass
@@ -102,8 +102,8 @@ class Comparison(models.Model):
         comparison = Comparison.objects.get(
             user=user,
             poll_id=poll_id,
-            entity_1__video_id=video_id_2,
-            entity_2__video_id=video_id_1,
+            entity_1__uid=uid_b,
+            entity_2__uid=uid_a,
         )
 
         return comparison, True

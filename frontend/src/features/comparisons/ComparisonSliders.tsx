@@ -56,8 +56,8 @@ const ComparisonSliders = ({
     return c
       ? c
       : {
-          video_a: { video_id: videoA },
-          video_b: { video_id: videoB },
+          entity_a: { video_id: videoA },
+          entity_b: { video_id: videoB },
           criteria_scores: allCriterias
             .filter((c) => !optionalCriterias[c])
             .map((criteria) => ({ criteria, score: 0 })),

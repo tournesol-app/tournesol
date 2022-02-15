@@ -84,8 +84,8 @@ export async function getVideoFromPreviousComparisons(
   });
   const cl = comparisonVideoResult?.results || [];
   const comparisonVideoList = [
-    ...cl.map((v) => v.video_a.video_id),
-    ...cl.map((v) => v.video_b.video_id),
+    ...cl.map((v) => v.entity_a.video_id),
+    ...cl.map((v) => v.entity_b.video_id),
   ];
   const comparisonVideoId = retryRandomPick(
     5,

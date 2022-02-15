@@ -165,14 +165,14 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
     Use `ComparisonUpdateSerializer` for the update operation.
     """
 
-    video_a = RelatedVideoSerializer(source="entity_1")
-    video_b = RelatedVideoSerializer(source="entity_2")
+    entity_a = RelatedVideoSerializer(source="entity_1")
+    entity_b = RelatedVideoSerializer(source="entity_2")
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Comparison
-        fields = ["user", "video_a", "video_b", "criteria_scores", "duration_ms"]
+        fields = ["user", "entity_a", "entity_b", "criteria_scores", "duration_ms"]
 
     def to_representation(self, instance):
         """
@@ -182,7 +182,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         ret = super(ComparisonSerializer, self).to_representation(instance)
 
         if self.context.get("reverse", False):
-            ret["video_a"], ret["video_b"] = ret["video_b"], ret["video_a"]
+            ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
             ret["criteria_scores"] = self.reverse_criteria_scores(
                 ret["criteria_scores"]
             )
@@ -225,31 +225,31 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     """
 
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
-    video_a = VideoSerializer(source="entity_1", read_only=True)
-    video_b = VideoSerializer(source="entity_2", read_only=True)
+    entity_a = VideoSerializer(source="entity_1", read_only=True)
+    entity_b = VideoSerializer(source="entity_2", read_only=True)
 
     class Meta:
         model = Comparison
-        fields = ["criteria_scores", "duration_ms", "video_a", "video_b"]
+        fields = ["criteria_scores", "duration_ms", "entity_a", "entity_b"]
 
     def to_representation(self, instance):
         """
         Display the opposite of each criteria scores if the comparison is
         requested in the reverse order.
 
-        Also add `video_a` and `video_b` fields to make the representation
+        Also add `entity_a` and `entity_b` fields to make the representation
         consistent across all comparison serializers.
         """
         ret = super(ComparisonUpdateSerializer, self).to_representation(instance)
 
         if self.context.get("reverse", False):
-            ret["video_a"], ret["video_b"] = ret["video_b"], ret["video_a"]
+            ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
             ret["criteria_scores"] = self.reverse_criteria_scores(
                 ret["criteria_scores"]
             )
 
-        ret.move_to_end("video_b", last=False)
-        ret.move_to_end("video_a", last=False)
+        ret.move_to_end("entity_b", last=False)
+        ret.move_to_end("entity_a", last=False)
         return ret
 
     def to_internal_value(self, data):

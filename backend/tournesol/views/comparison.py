@@ -9,12 +9,13 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins, status
 from rest_framework.response import Response
 
-from ..models import Comparison, ContributorRating, Poll
+from ..models import Comparison, ContributorRating, Entity, Poll
 from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
 
 
 class ComparisonApiMixin:
     """A mixin used to factorize behaviours common to all API views."""
+
     # used to avoid multiple similar database queries in a single HTTP request
     poll_from_url: Poll
 
@@ -27,14 +28,20 @@ class ComparisonApiMixin:
         # make the requested poll available at any time in the view
         self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
 
-    def comparison_already_exists(self, request, poll_id):
+    def comparison_already_exists(self, poll_id, request):
         """Return True if the comparison already exist, False instead."""
         try:
             comparison = Comparison.get_comparison(
                 request.user,
                 poll_id,
-                request.data['video_a']['video_id'],
-                request.data['video_b']['video_id']
+                "{}{}{}".format(
+                    Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER,
+                    request.data["entity_a"]["video_id"]
+                ),
+                "{}{}{}".format(
+                    Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER,
+                    request.data["entity_b"]["video_id"]
+                ),
             )
         # if one field is missing, do not raise error yet and let django rest
         # framework checks the request integrity
@@ -57,17 +64,15 @@ class ComparisonApiMixin:
     def response_404_poll_doesnt_exist(self, poll_name):
         return Response(
             {
-                "detail": "The requested poll {0} doesn't exist.".format(
-                    poll_name
-                ),
+                "detail": "The requested poll {0} doesn't exist.".format(poll_name),
             },
             status=status.HTTP_404_NOT_FOUND,
         )
 
 
-class ComparisonListBaseApi(ComparisonApiMixin,
-                            mixins.ListModelMixin,
-                            generics.GenericAPIView):
+class ComparisonListBaseApi(
+    ComparisonApiMixin, mixins.ListModelMixin, generics.GenericAPIView
+):
     """
     Base class of the ComparisonList API.
     """
@@ -81,26 +86,22 @@ class ComparisonListBaseApi(ComparisonApiMixin,
         for a given poll.
 
         Keyword arguments:
-        video_id -- the video_id used to filter the results (default None)
+        uid -- the entity uid used to filter the results (default None)
         """
         queryset = Comparison.objects.filter(
-            poll=self.poll_from_url,
-            user=self.request.user
-        ).order_by('-datetime_lastedit')
+            poll=self.poll_from_url, user=self.request.user
+        ).order_by("-datetime_lastedit")
 
-        if self.kwargs.get("video_id"):
-            video_id = self.kwargs.get("video_id")
+        if self.kwargs.get("uid"):
+            uid = self.kwargs.get("uid")
             queryset = queryset.filter(
-                Q(entity_1__video_id=video_id) | Q(entity_2__video_id=video_id)
+                Q(entity_1__uid=uid) | Q(entity_2__uid=uid)
             )
 
         return queryset
 
 
-class ComparisonListApi(
-    mixins.CreateModelMixin,
-    ComparisonListBaseApi
-):
+class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user, or
     create a new one.
@@ -126,13 +127,13 @@ class ComparisonListApi(
 
     @transaction.atomic
     def perform_create(self, serializer):
-        poll = serializer.context['poll']
+        poll = serializer.context["poll"]
 
-        if self.comparison_already_exists(self.request, poll.pk):
+        if self.comparison_already_exists(poll.pk, self.request):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
-                    self.request.data['video_a']['video_id'],
-                    self.request.data['video_b']['video_id']
+                    self.request.data["entity_a"]["video_id"],
+                    self.request.data["entity_b"]["video_id"],
                 )
             )
         comparison: Comparison = serializer.save()
@@ -141,14 +142,10 @@ class ComparisonListApi(
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.refresh_youtube_metadata()
         ContributorRating.objects.get_or_create(
-            poll=poll,
-            user=self.request.user,
-            entity=comparison.entity_1
+            poll=poll, user=self.request.user, entity=comparison.entity_1
         )
         ContributorRating.objects.get_or_create(
-            poll=poll,
-            user=self.request.user,
-            entity=comparison.entity_2
+            poll=poll, user=self.request.user, entity=comparison.entity_2
         )
 
 
@@ -156,7 +153,8 @@ class ComparisonListFilteredApi(ComparisonListBaseApi):
     """
     List all or a filtered list of comparisons made by the logged user.
     """
-    @extend_schema(operation_id='users_me_comparisons_list_filtered')
+
+    @extend_schema(operation_id="users_me_comparisons_list_filtered")
     def get(self, request, *args, **kwargs):
         """
         Retrieve a filtered list of comparisons made by the logged user, in
@@ -165,15 +163,18 @@ class ComparisonListFilteredApi(ComparisonListBaseApi):
         return self.list(request, *args, **kwargs)
 
 
-class ComparisonDetailApi(ComparisonApiMixin,
-                          mixins.RetrieveModelMixin,
-                          mixins.UpdateModelMixin,
-                          mixins.DestroyModelMixin,
-                          generics.GenericAPIView):
+class ComparisonDetailApi(
+    ComparisonApiMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
+):
     """
     Retrieve, update or delete a comparison between two videos made by the
     logged user.
     """
+
     DEFAULT_SERIALIZER = ComparisonSerializer
     UPDATE_SERIALIZER = ComparisonUpdateSerializer
 
@@ -187,23 +188,22 @@ class ComparisonDetailApi(ComparisonApiMixin,
 
     def get_object(self):
         """
-        Return a comparison made by the logged user between two videos, or
+        Return a comparison made by the logged user between two entities, or
         raise HTTP 404 nothing is found.
 
-        If the comparison `video_id_a` / `video_id_b` is not found, the
-        method will try to return the comparison `video_id_b` / `video_id_a`
-        before raising HTTP 404.
+        If the comparison `uid_a` / `uid_b` is not found, the method will try
+        to return the comparison `uid_b` / `uid_a` before raising HTTP 404.
 
         Query parameters:
-        video_id_a -- the video_id of a video
-        video_id_b -- the video_id of an other video
+        uid_a -- the uid of an entity
+        uid_b -- the uid of another entity
         """
         try:
             comparison, reverse = Comparison.get_comparison(
                 self.request.user,
                 self.poll_from_url.pk,
-                self.kwargs['video_id_a'],
-                self.kwargs['video_id_b']
+                self.kwargs["uid_a"],
+                self.kwargs["uid_b"],
             )
         except ObjectDoesNotExist:
             raise Http404
@@ -218,7 +218,7 @@ class ComparisonDetailApi(ComparisonApiMixin,
         Determine the appropriate serializer based on the request's method.
 
         Updating a comparison requires a different serializer because the
-        fields `video_a` and `video_b` are not editable anymore once the
+        fields `entity_a` and `entity_b` are not editable anymore once the
         comparison has been created. Discarding those two fields ensures
         their immutability and thus prevent the falsification of comparisons
         by video id swap.

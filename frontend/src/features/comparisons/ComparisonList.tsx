@@ -33,10 +33,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { video_a, video_b } = comparison;
+  const { entity_a, entity_b } = comparison;
   return (
     <Box className={classes.comparisonContainer}>
-      <VideoCard compact video={video_a} />
+      <VideoCard compact video={entity_a} />
       <Box className={classes.centering} style={{ position: 'relative' }}>
         <div
           style={{
@@ -49,7 +49,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         <Tooltip title={`${t('comparisons.goToComparison')}`} placement="top">
           <Fab
             component="a"
-            href={`/comparison/?videoA=${video_a.video_id}&videoB=${video_b.video_id}`}
+            href={`/comparison/?videoA=${entity_a.video_id}&videoB=${entity_b.video_id}`}
             style={{ backgroundColor: '#F1EFE7' }}
             size="small"
           >
@@ -57,7 +57,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <VideoCard compact video={video_b} />
+      <VideoCard compact video={entity_b} />
     </Box>
   );
 };
@@ -76,7 +76,7 @@ const Comparisons = ({
           {comparisons &&
             comparisons.map((c) => (
               <ComparisonThumbnail
-                key={`${c.video_a.video_id}${c.video_b.video_id}`}
+                key={`${c.entity_a.video_id}${c.entity_b.video_id}`}
                 comparison={c}
               />
             ))}
