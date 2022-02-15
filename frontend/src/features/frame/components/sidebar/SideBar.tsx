@@ -32,6 +32,7 @@ import {
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
 import Footer from './Footer';
+import { LanguageSelector } from 'src/components';
 
 export const sideBarWidth = 264;
 
@@ -201,6 +202,7 @@ const SideBar = () => {
         })}
       </List>
       {drawerOpen && <Footer />}
+      {!drawerOpen && <LanguageSelector hideLanguageName={true} />}
     </Drawer>
   );
 };
