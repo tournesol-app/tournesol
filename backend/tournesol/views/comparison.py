@@ -93,9 +93,9 @@ class ComparisonListBaseApi(
         ).order_by("-datetime_lastedit")
 
         if self.kwargs.get("uid"):
-            video_id = self.kwargs.get("uid")
+            uid = self.kwargs.get("uid")
             queryset = queryset.filter(
-                Q(entity_1__video_id=video_id) | Q(entity_2__video_id=video_id)
+                Q(entity_1__uid=uid) | Q(entity_2__uid=uid)
             )
 
         return queryset

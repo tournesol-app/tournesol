@@ -432,7 +432,7 @@ class ComparisonApiTestCase(TestCase):
         client.force_authenticate(user=self.user)
 
         response = client.get(
-            "{}/{}/".format(self.comparisons_base_url, self._uid_02.split(":")[1]),
+            "{}/{}/".format(self.comparisons_base_url, self._uid_02),
             format="json",
         )
 
