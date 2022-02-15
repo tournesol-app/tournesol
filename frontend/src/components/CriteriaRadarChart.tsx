@@ -10,8 +10,8 @@ import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { getCriteriaName } from 'src/utils/constants';
 import { useTranslation } from 'react-i18next';
 
-const RADER_CHART_CRITERIA_SCORE_MIN = -1;
-const RADER_CHART_CRITERIA_SCORE_MAX = 1;
+const RADAR_CHART_CRITERIA_SCORE_MIN = -1;
+const RADAR_CHART_CRITERIA_SCORE_MAX = 1;
 
 interface Props {
   video: VideoSerializerWithCriteria;
@@ -68,8 +68,8 @@ const CriteriaRadarChart = ({ video }: Props) => {
     .map((s) => ({
       ...s,
       score: between(
-        RADER_CHART_CRITERIA_SCORE_MIN,
-        RADER_CHART_CRITERIA_SCORE_MAX,
+        RADAR_CHART_CRITERIA_SCORE_MIN,
+        RADAR_CHART_CRITERIA_SCORE_MAX,
         s.score
       ),
     }));
@@ -81,8 +81,8 @@ const CriteriaRadarChart = ({ video }: Props) => {
       {/* An invisible PolarRadiusAxis used to enforce the axis between 0 and 1 */}
       <PolarRadiusAxis
         domain={[
-          RADER_CHART_CRITERIA_SCORE_MIN,
-          RADER_CHART_CRITERIA_SCORE_MAX,
+          RADAR_CHART_CRITERIA_SCORE_MIN,
+          RADAR_CHART_CRITERIA_SCORE_MAX,
         ]}
         axisLine={false}
         tick={false}
