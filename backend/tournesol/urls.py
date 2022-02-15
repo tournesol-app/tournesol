@@ -23,7 +23,7 @@ from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 
 router = routers.DefaultRouter()
-router.register(r'video', VideoViewSet)
+router.register(r'video', VideoViewSet, basename="video")
 router.register(r'entities', EntitiesViewSet)
 
 app_name = "tournesol"
