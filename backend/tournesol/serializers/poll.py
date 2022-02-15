@@ -36,6 +36,10 @@ class RecommendationSerializer(ModelSerializer):
             "n_contributors",
             "metadata",
             "total_score",
+            # XXX: the `tournesol_score` field is available directly in the
+            # Entity model for now, but will be moved in an n-n relation
+            # between Entity and Poll
+            "tournesol_score",
             "criteria_scores",
         ]
 

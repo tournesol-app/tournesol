@@ -8,6 +8,7 @@ from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    Entity,
     EntityCriteriaScore,
     Poll,
 )
@@ -100,6 +101,18 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
             for video_id, criteria, score, uncertainty in video_scores
         )
 
+        entities = []
+        for entity in Entity.objects.prefetch_related("criteria_scores").iterator():
+            entity.tournesol_score = 10 * sum(
+                [
+                    criterion.score
+                    for criterion in entity.criteria_scores.iterator()
+                    if criterion.score
+                ]
+            )
+            entities.append(entity)
+        Entity.objects.bulk_update(entities, ["tournesol_score"])
+
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
             for (
@@ -175,7 +188,6 @@ def process(trusted_only=True):
             poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1
         )
         save_data(glob_score, loc_score, poll, trusted_only=trusted_only)
-
 
 class Command(BaseCommand):
     help = "Runs the ml"

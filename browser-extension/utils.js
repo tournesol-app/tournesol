@@ -42,7 +42,7 @@ export const fetchTournesolApi = async (url, method, data) => {
   if (data) {
     body["body"]= JSON.stringify(data)
   }
-  return fetch(`https://api.tournesol.app/${url}`, body).then(r => {
+  return fetch(`http://localhost:8000/${url}`, body).then(r => {
     if (r.status === 401 || r.status === 403) {
 
       // 401 Unauthorized with an access token means either

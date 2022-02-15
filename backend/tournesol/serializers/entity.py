@@ -63,6 +63,10 @@ class VideoSerializer(ModelSerializer):
             "views",
             "uploader",
             "language",
+            # XXX: the `tournesol_score` field is available directly in the
+            # Entity model for now, but will be moved in an n-n relation
+            # between Entity and Poll
+            "tournesol_score",
             "rating_n_ratings",
             "rating_n_contributors",
             "duration",
@@ -71,6 +75,10 @@ class VideoSerializer(ModelSerializer):
         ]
         read_only_fields = [
             "uid",
+            # XXX: the `tournesol_score` field is available directly in the
+            # Entity model for now, but will be moved in an n-n relation
+            # between Entity and Poll
+            "tournesol_score",
             "rating_n_ratings",
             "rating_n_contributors",
         ]
@@ -154,7 +162,17 @@ class EntitySerializer(ModelSerializer):
             "uid",
             "type",
             "metadata",
+            # XXX: the `tournesol_score` field is available directly in the
+            # Entity model for now, but will be moved in an n-n relation
+            # between Entity and Poll
+            "tournesol_score",
             "polls",
+        ]
+        read_only_fields = [
+            # XXX: the `tournesol_score` field is available directly in the
+            # Entity model for now, but will be moved in an n-n relation
+            # between Entity and Poll
+            "tournesol_score"
         ]
 
     @extend_schema_field(EntityPollSerializer(many=True))

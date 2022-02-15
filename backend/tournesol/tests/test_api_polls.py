@@ -31,18 +31,22 @@ class PollsRecommendationsApi(TestCase):
 
         self.video_1 = VideoFactory(
             metadata__publication_date="2021-01-01",
+            tournesol_score=1.1,
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02",
+            tournesol_score=2.2,
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03",
+            tournesol_score=3.3,
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04",
+            tournesol_score=4.4,
             rating_n_contributors=5,
         )
 
@@ -54,7 +58,12 @@ class PollsRecommendationsApi(TestCase):
     def test_anonymous_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 3)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 3)
+        self.assertEqual(results[0]["tournesol_score"], 4.4)
+        self.assertEqual(results[1]["tournesol_score"], 3.3)
+        self.assertEqual(results[2]["tournesol_score"], 2.2)
 
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")

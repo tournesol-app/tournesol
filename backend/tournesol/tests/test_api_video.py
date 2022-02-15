@@ -28,21 +28,25 @@ class VideoApi(TestCase):
         self.video_1 = VideoFactory(
             metadata__publication_date="2021-01-01",
             metadata__uploader="uploader1",
+            tournesol_score=1.1,
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02",
             metadata__uploader="uploader2",
+            tournesol_score=2.2,
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03",
             metadata__uploader="uploader2",
+            tournesol_score=3.3,
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04",
             metadata__uploader="uploader3",
+            tournesol_score=4.4,
             rating_n_contributors=5,
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
@@ -66,9 +70,13 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
+        returned_tournesol_scores = [video["tournesol_score"] for video in response.data["results"]]
+
         existing_video_ids = [video.video_id for video in self._list_of_videos]
+        existing_tournesol_scores = [video.tournesol_score for video in self._list_of_videos]
 
         self.assertEqual(set(returned_video_ids), set(existing_video_ids))
+        self.assertEqual(set(returned_tournesol_scores), set(existing_tournesol_scores))
         self.assertEqual(response.data["count"], len(self._list_of_videos))
 
     def test_anonymous_can_list_with_limit(self):
@@ -221,6 +229,7 @@ class VideoApi(TestCase):
         response = client.get(f"/video/{self.video_1.video_id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], self.video_1.video_id)
+        self.assertEqual(response.json()["tournesol_score"], self.video_1.tournesol_score)
 
     def test_anonymous_can_get_video_with_score_zero(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
@@ -229,6 +238,7 @@ class VideoApi(TestCase):
         response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], "vid_score_0")
+        self.assertEqual(response.json()["tournesol_score"], None)
 
     def test_anonymous_cant_get_video_non_existing(self):
         client = APIClient()

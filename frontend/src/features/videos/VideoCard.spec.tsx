@@ -26,6 +26,7 @@ describe('VideoCard content', () => {
       uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
+      tournesol_score: 0.0,
       duration: 120,
       publication_date: '2021-03-21',
       language: 'fr',
@@ -56,6 +57,7 @@ describe('VideoCard content', () => {
       uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
+      tournesol_score: 4,
       criteria_scores: [
         {
           criteria: 'largely_recommended',
@@ -95,6 +97,7 @@ describe('VideoCard content', () => {
       uploader: 'Channel name',
       rating_n_contributors: 4,
       rating_n_ratings: 9,
+      tournesol_score: 17,
       criteria_scores: [
         {
           criteria: 'engaging',

@@ -28,9 +28,10 @@ class Entity(models.Model):
     """
     A generic entity that can be compared with another one.
 
-    The current model still contains fields from the previous `Video` model.
+    The current model still contains fields from the legacy `Video` model.
     These fields are kept as-is for now to ease the refactor of the Tournesol
-    app, and will be replaced in the future by the `metadata` JSON field.
+    app, and will be moved in the future in a model making a relation between
+    a poll and an entity.
     """
 
     class Meta:
@@ -61,6 +62,15 @@ class Entity(models.Model):
     )
     add_time = models.DateTimeField(
         null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
+    )
+
+    # TODO
+    # the following fields should be moved in a n-n relation with Poll
+    tournesol_score = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="The aggregated of all criteria for all users in a specific poll.",
     )
 
     # TODO
