@@ -9,8 +9,8 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import exceptions, generics
 from rest_framework.response import Response
 
-from ..models import Comparison, ContributorRating
-from ..serializers import (
+from tournesol.models import Comparison, ContributorRating
+from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
     ContributorRatingUpdateAllSerializer,

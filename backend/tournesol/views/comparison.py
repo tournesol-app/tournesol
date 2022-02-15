@@ -9,8 +9,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins, status
 from rest_framework.response import Response
 
-from ..models import Comparison, ContributorRating, Entity, Poll
-from ..serializers import ComparisonSerializer, ComparisonUpdateSerializer
+from tournesol.models import Comparison, ContributorRating, Entity, Poll
+from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 
 
 class ComparisonApiMixin:
@@ -35,12 +35,14 @@ class ComparisonApiMixin:
                 request.user,
                 poll_id,
                 "{}{}{}".format(
-                    Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER,
-                    request.data["entity_a"]["video_id"]
+                    Entity.UID_YT_NAMESPACE,
+                    Entity.UID_DELIMITER,
+                    request.data["entity_a"]["video_id"],
                 ),
                 "{}{}{}".format(
-                    Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER,
-                    request.data["entity_b"]["video_id"]
+                    Entity.UID_YT_NAMESPACE,
+                    Entity.UID_DELIMITER,
+                    request.data["entity_b"]["video_id"],
                 ),
             )
         # if one field is missing, do not raise error yet and let django rest
@@ -94,9 +96,7 @@ class ComparisonListBaseApi(
 
         if self.kwargs.get("uid"):
             uid = self.kwargs.get("uid")
-            queryset = queryset.filter(
-                Q(entity_1__uid=uid) | Q(entity_2__uid=uid)
-            )
+            queryset = queryset.filter(Q(entity_1__uid=uid) | Q(entity_2__uid=uid))
 
         return queryset
 

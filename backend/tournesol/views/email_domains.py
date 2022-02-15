@@ -13,7 +13,9 @@ class EmailDomainsList(generics.ListAPIView):
     List all accepted (=trusted) email domains.
     """
 
-    queryset = EmailDomain.objects.filter(status=EmailDomain.STATUS_ACCEPTED).order_by("domain")
+    queryset = EmailDomain.objects.filter(status=EmailDomain.STATUS_ACCEPTED).order_by(
+        "domain"
+    )
     pagination_class = EmailDomainPagination
     serializer_class = EmailDomainSerializer
     permission_classes = []

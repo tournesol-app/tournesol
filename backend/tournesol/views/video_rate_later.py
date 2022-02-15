@@ -7,18 +7,20 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from ..models import VideoRateLater
-from ..serializers import VideoRateLaterSerializer
+from tournesol.models import VideoRateLater
+from tournesol.serializers.video_rate_later import VideoRateLaterSerializer
 
 
 @extend_schema_view(
-    post=extend_schema(responses={
-        200: VideoRateLaterSerializer,
-        409: OpenApiResponse(
-            description="Conflict: the video is already in the rate later list,"
-                        " or there is an other error with the database query."
-        )
-    })
+    post=extend_schema(
+        responses={
+            200: VideoRateLaterSerializer,
+            409: OpenApiResponse(
+                description="Conflict: the video is already in the rate later list,"
+                " or there is an other error with the database query."
+            ),
+        }
+    )
 )
 class VideoRateLaterList(generics.ListCreateAPIView):
     """
@@ -41,6 +43,7 @@ class VideoRateLaterDetail(generics.RetrieveDestroyAPIView):
     """
     Retrieve, or delete a video from a user's rate later list.
     """
+
     serializer_class = VideoRateLaterSerializer
     permission_classes = [IsAuthenticated]
 

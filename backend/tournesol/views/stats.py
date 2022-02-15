@@ -9,9 +9,9 @@ from rest_framework.response import Response
 
 from core.models import User
 from core.utils.time import time_ago
+from tournesol.serializers.stats import StatisticsSerializer
 
 from ..models import Comparison, Entity
-from ..serializers import StatisticsSerializer
 
 
 class Statistics:

@@ -14,8 +14,11 @@ from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from tournesol.models import Entity, EntityCriteriaScore, Poll
-from tournesol.query_serializers import RecommendationsFilterSerializer
-from tournesol.serializers import PollSerializer, RecommendationSerializer
+from tournesol.serializers.poll import (
+    PollSerializer,
+    RecommendationSerializer,
+    RecommendationsFilterSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +52,9 @@ class PollsView(RetrieveAPIView):
                             "reliability": 10,
                             "importance": 10,
                             "ignored_criteria": 0,
-                        }
+                        },
                     )
-                ]
+                ],
             ),
         ],
     )
