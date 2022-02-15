@@ -12,7 +12,6 @@ from drf_spectacular.utils import (
 )
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.pagination import LimitOffsetPagination
 
 from tournesol.models import Entity, EntityCriteriaScore, Poll
 from tournesol.query_serializers import RecommendationsFilterSerializer
@@ -59,7 +58,6 @@ class PollsView(RetrieveAPIView):
 )
 class PollsRecommendationsView(ListAPIView):
     permission_classes = []
-    pagination_class = LimitOffsetPagination
     serializer_class = RecommendationSerializer
     queryset = Entity.objects.none()
 
