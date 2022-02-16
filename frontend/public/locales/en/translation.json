@@ -166,8 +166,8 @@
     "criteriaRatedHigh": "Rated high:",
     "criteriaRatedLow": "Rated low:",
     "labelShowSettings": "Show settings related to this video",
-    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors",
-    "unsafeNegativeRating" : "May be good but below average of the videos added to Tournesol"
+    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
+    "unsafeNegativeRating" : "This video score is below the average of the other videos added to Tournesol."
 
   },
   "notifications": {

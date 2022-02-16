@@ -170,8 +170,8 @@
     "criteriaRatedHigh": "Noté fortement :",
     "criteriaRatedLow": "Noté faiblement :",
     "labelShowSettings": "Voir les paramètres de cette video",
-    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un faible nombre de contributeurs distincts",
-    "unsafeNegativeRating" : "Peut être bon mais inférieur à la moyenne des vidéos ajoutées à Tournesol"
+    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
+    "unsafeNegativeRating" : "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol."
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",

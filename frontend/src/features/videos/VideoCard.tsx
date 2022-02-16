@@ -14,7 +14,9 @@ import {
   useTheme,
   Tooltip,
   Link,
+  Stack,
 } from '@mui/material';
+import { Warning as WarningIcon } from '@mui/icons-material';
 
 import { getCriteriaName } from 'src/utils/constants';
 import { ActionList, VideoObject } from 'src/utils/types';
@@ -182,8 +184,15 @@ const SafeTournesolScoreWrapper = function SafeTournesolScoreWrapper({
   unsafe_cause: string;
   children?: React.ReactNode;
 }) {
+  const title = (
+    <Stack direction="row" alignItems="center" gap={1}>
+      <WarningIcon />
+      <span>{unsafe_cause}</span>
+    </Stack>
+  );
+
   return unsafe ? (
-    <Tooltip title={unsafe_cause} placement="bottom">
+    <Tooltip title={title} placement="right">
       <span>
         <React.Fragment>{children}</React.Fragment>
       </span>
