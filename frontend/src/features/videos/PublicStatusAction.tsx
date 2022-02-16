@@ -38,7 +38,7 @@ export const UserRatingPublicToggle = ({
 
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
-      <Typography variant="caption" style={{ fontSize: '11px' }}>
+      <Typography variant="caption" sx={{ fontSize: '11px' }}>
         {nComparisons > 0 ? (
           <Link
             color="inherit"
@@ -74,7 +74,7 @@ export const UserRatingPublicToggle = ({
           />
           <Typography
             variant="caption"
-            style={{
+            sx={{
               color: isPublic ? '#222' : '#bbb',
               textTransform: 'capitalize',
             }}

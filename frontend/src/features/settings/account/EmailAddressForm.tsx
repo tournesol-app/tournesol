@@ -33,13 +33,11 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
     >
       <Typography
         component="div"
-        style={{ display: 'flex', alignItems: 'center' }}
+        sx={{ display: 'flex', alignItems: 'center' }}
       >
         {t('settings.emailStatus')}
         {': '}
-        <LensIcon
-          style={{ fontSize: 16, color: statusColor, margin: '0 4px' }}
-        />
+        <LensIcon sx={{ fontSize: 16, color: statusColor, margin: '0 4px' }} />
         <Box color={statusColor} fontWeight="bold">
           {isTrusted
             ? t('settings.emailTrusted')
@@ -52,7 +50,7 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
           component={RouterLink}
           to="/about/trusted_domains"
           size="small"
-          style={{ fontSize: 13, color: '#777' }}
+          sx={{ fontSize: 13, color: '#777' }}
           startIcon={<HelpIcon />}
         >
           {t('settings.learnMoreAboutTrustedDomains')}
@@ -119,7 +117,7 @@ const EmailAddressForm = () => {
       <Grid container spacing={2} direction="column" alignItems="stretch">
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
-        <Grid item style={{ display: isLoading ? 'none' : undefined }}>
+        <Grid item sx={{ display: isLoading ? 'none' : undefined }}>
           {profileData && (
             <Box
               marginBottom={2}

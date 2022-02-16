@@ -177,7 +177,7 @@ const Comparison = () => {
         item
         xs={12}
         className={classes.centering}
-        style={{ marginTop: '16px' }}
+        sx={{ marginTop: '16px' }}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (

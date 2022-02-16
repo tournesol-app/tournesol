@@ -25,7 +25,7 @@ const SettingsSection = ({
     );
 
   return (
-    <Grid item container style={{ paddingBottom: '40px' }}>
+    <Grid item container sx={{ paddingBottom: '40px' }}>
       <Grid item xs={12}>
         <Box marginBottom={2}>
           {sectionTitle}

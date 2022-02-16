@@ -22,7 +22,7 @@ function RatingsFilter() {
         {t('options')}
       </CollapseButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Grid container spacing={4} style={{ marginBottom: '8px' }}>
+        <Grid container spacing={4} sx={{ marginBottom: '8px' }}>
           <Grid item xs={12} sm={6} md={5}>
             <IsPublicFilter
               value={filterParams.get('isPublic') ?? ''}

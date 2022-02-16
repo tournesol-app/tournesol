@@ -37,7 +37,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   return (
     <Box className={classes.comparisonContainer}>
       <VideoCard compact video={entity_a} />
-      <Box className={classes.centering} style={{ position: 'relative' }}>
+      <Box className={classes.centering} sx={{ position: 'relative' }}>
         <div
           style={{
             border: '1px solid #F1EFE7',
@@ -50,10 +50,10 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           <Fab
             component="a"
             href={`/comparison/?videoA=${entity_a.video_id}&videoB=${entity_b.video_id}`}
-            style={{ backgroundColor: '#F1EFE7' }}
+            sx={{ backgroundColor: '#F1EFE7' }}
             size="small"
           >
-            <CompareIcon style={{ color: '#B6B1A1' }} />
+            <CompareIcon sx={{ color: '#B6B1A1' }} />
           </Fab>
         </Tooltip>
       </Box>

@@ -162,7 +162,7 @@ const VideoSelector = ({
         <TextField
           InputProps={{ classes: { input: classes.input } }}
           placeholder={t('videoSelector.pasteUrlOrVideoId')}
-          style={{ flex: 1 }}
+          sx={{ flex: 1 }}
           value={videoId || ''}
           onChange={handleChange}
           variant="standard"

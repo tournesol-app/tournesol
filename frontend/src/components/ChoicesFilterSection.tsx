@@ -79,7 +79,7 @@ const ChoicesFilterSection = ({
                 <Typography
                   variant="body2"
                   color={checked ? 'secondary' : 'textPrimary'}
-                  style={{ textTransform: 'capitalize' }}
+                  sx={{ textTransform: 'capitalize' }}
                 >
                   {choiceLabel}
                 </Typography>

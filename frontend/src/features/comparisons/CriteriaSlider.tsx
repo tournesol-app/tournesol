@@ -113,7 +113,10 @@ const CriteriaSlider = ({
                 handleSliderChange(criteria, e.target.checked ? 0 : undefined)
               }
               color="primary"
-              style={{ padding: 0, marginLeft: 8 }}
+              sx={{
+                padding: 0,
+                marginLeft: 8,
+              }}
             />
           )}
         </Grid>

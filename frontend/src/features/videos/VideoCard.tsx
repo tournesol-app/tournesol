@@ -163,7 +163,7 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
           px={1}
           fontSize="0.8em"
           fontWeight="bold"
-          style={{ pointerEvents: 'none' }}
+          sx={{ pointerEvents: 'none' }}
         >
           {duration}
         </Box>
@@ -230,7 +230,7 @@ function VideoCard({
         item
         xs={12}
         sm={compact ? 12 : 4}
-        style={{ aspectRatio: '16 / 9', padding: 0 }}
+        sx={{ aspectRatio: '16 / 9', padding: 0 }}
       >
         <ReactPlayer
           url={`https://youtube.com/watch?v=${videoId}`}
@@ -301,7 +301,7 @@ function VideoCard({
             display="flex"
             flexWrap="wrap"
             alignItems="center"
-            style={{ gap: '12px' }}
+            sx={{ gap: '12px' }}
           >
             {'criteria_scores' in video && (
               <Box
@@ -449,7 +449,7 @@ export const EmptyVideoCard = ({
         item
         xs={12}
         sm={compact ? 12 : 4}
-        style={{
+        sx={{
           aspectRatio: '16 / 9',
           backgroundColor: '#fafafa',
         }}

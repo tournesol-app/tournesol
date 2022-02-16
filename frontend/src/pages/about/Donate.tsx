@@ -69,7 +69,7 @@ const DonatePage = () => {
             </Trans>
           </Typography>
 
-          <Typography variant="h4" style={{ fontStyle: 'italic' }}>
+          <Typography variant="h4" sx={{ fontStyle: 'italic' }}>
             {t('about.donateHowTo')}
           </Typography>
           <Link
