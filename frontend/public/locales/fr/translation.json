@@ -62,8 +62,8 @@
     "loginToTournesol": "Se connecter à Tournesol",
     "logInAction": "Connexion",
     "forgotYourPassword": "Mot de passe oublié ?",
-    "signUp": "Inscription",
-    "noAccountYet": "Pas encore de compte sur Tournesol ?"
+    "noAccountYet": "Pas encore de compte sur Tournesol ?",
+    "signUp": "Inscription"
   },
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
@@ -95,6 +95,9 @@
     "thisYear": "Cette année",
     "uploadDate": "Mises en ligne",
     "language": "Langues",
+    "includeAllVideos": "Inclure toutes les vidéos",
+    "advanced": "Avancés",
+    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
     "uploader": "Chaîne"
   },
   "ratings": {
