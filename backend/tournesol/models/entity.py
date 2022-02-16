@@ -49,6 +49,7 @@ class Entity(models.Model):
     )
 
     metadata = models.JSONField(
+        blank=True,
         default=dict
     )
     metadata_timestamp = models.DateTimeField(
@@ -270,6 +271,15 @@ class Entity(models.Model):
             tag, _ = Tag.objects.get_or_create(name=tag_name)
             video.tags.add(tag)
         return video
+
+    def clean(self):
+        # An empty dict is considered as an empty value for JSONField,
+        # so blank=True is necessary on "metadata" field.
+        # But then, a blank value would break the validation in the admin form
+        # as "metadata" is a required non-null value.
+        # That's why a default value is set here to handle correctly blank values in forms.
+        if self.metadata is None:
+            self.metadata = {}
 
     def save(self, *args, **kwargs):
         self.uid = '{}{}{}'.format(
