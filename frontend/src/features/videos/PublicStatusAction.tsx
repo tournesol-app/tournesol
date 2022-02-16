@@ -3,6 +3,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { UsersService, ContributorRating } from 'src/services/openapi';
+import { idFromUid } from 'src/utils/video';
 
 const setPublicStatus = async (videoId: string, isPublic: boolean) => {
   return await UsersService.usersMeContributorRatingsPartialUpdate({
@@ -94,7 +95,8 @@ interface RatingsContextValue {
 
 export const RatingsContext = React.createContext<RatingsContextValue>({});
 
-export const PublicStatusAction = ({ videoId }: { videoId: string }) => {
+export const PublicStatusAction = ({ uid }: { uid: string }) => {
+  const videoId = idFromUid(uid);
   const { getContributorRating, onChange } = useContext(RatingsContext);
   const contributorRating = getContributorRating?.(videoId);
   if (contributorRating == null || contributorRating.is_public == null) {
