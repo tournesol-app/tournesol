@@ -10,7 +10,7 @@ function SafeFilter(props: Props) {
   const { t } = useTranslation();
 
   const safeChoice = {
-    true: t('filter.unsafe'),
+    true: t('filter.includeAllVideos'),
   };
 
   return (

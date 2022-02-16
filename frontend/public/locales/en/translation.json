@@ -62,8 +62,8 @@
     "loginToTournesol": "Log in to Tournesol",
     "logInAction": "Log In",
     "forgotYourPassword": "Forgot your password?",
-    "signUp": "Join us",
-    "noAccountYet": "No account on Tournesol yet?"
+    "noAccountYet": "No account on Tournesol yet?",
+    "signUp": "Join us"
   },
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
@@ -94,10 +94,10 @@
     "thisYear": "This year",
     "uploadDate": "Upload date",
     "language": "Language",
-    "uploader": "Uploader",
+    "includeAllVideos": "Include all videos",
     "advanced": "Advanced",
-    "unsafe": "Include all videos",
-    "unsafeTooltip" : "Also display videos with a low number of contributors and those with a negative score"
+    "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
+    "uploader": "Uploader"
   },
   "ratings": {
     "allRatingsMarkedPublic": "All your ratings have been marked as public.",
