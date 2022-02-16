@@ -19,6 +19,7 @@ import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { idFromUid } from 'src/utils/video';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centering: {
@@ -61,8 +62,18 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const videoA: string = searchParams.get('videoA') || '';
-  const videoB: string = searchParams.get('videoB') || '';
+
+  // try to read UIDs from the URL...
+  const uidA: string = searchParams.get('uidA') || '';
+  const uidB: string = searchParams.get('uidB') || '';
+
+  // ... if they are empty, try the legacy videoA/videoB parameters
+  const videoA: string = uidA
+    ? idFromUid(uidA)
+    : searchParams.get('videoA') || '';
+  const videoB: string = uidB
+    ? idFromUid(uidB)
+    : searchParams.get('videoB') || '';
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
     videoId: videoA,

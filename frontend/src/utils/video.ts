@@ -31,7 +31,7 @@ export function isVideoIdValid(videoId: string) {
  *     yt:videoABCDEF -> videoABCDEF
  *     yt:video:ABCDE -> video:ABCDE
  */
-export function idFromUid(entity: VideoObject): string {
+export function idFromEntity(entity: VideoObject): string {
   if (entity.uid) {
     const uid = entity.uid.split(':');
 
@@ -41,6 +41,18 @@ export function idFromUid(entity: VideoObject): string {
   }
 
   return entity.video_id;
+}
+
+export function idFromUid(uid: string): string {
+  if (uid) {
+    const uidSplit = uid.split(':');
+
+    if (uidSplit[0] !== '' && uidSplit[1] !== '') {
+      return uidSplit.slice(1).join();
+    }
+  }
+
+  return '';
 }
 
 function pick(arr: string[]): string | null {

@@ -7,9 +7,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Video, UsersService } from 'src/services/openapi';
 import { useNotifications } from 'src/hooks';
+import { idFromUid } from './video';
 
-export const CompareNowAction = ({ videoId }: { videoId: string }) => {
+export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const videoId = idFromUid(uid);
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
@@ -23,14 +25,14 @@ export const CompareNowAction = ({ videoId }: { videoId: string }) => {
   );
 };
 
-export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
+export const AddToRateLaterList = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
   const handleCreation = async () => {
     try {
       await UsersService.usersMeVideoRateLaterCreate({
         requestBody: {
-          video: { video_id: videoId } as Video,
+          video: { video_id: idFromUid(uid) } as Video,
         },
       });
       showSuccessAlert(t('actions.videoAddedToRateLaterList'));
@@ -53,9 +55,11 @@ export const AddToRateLaterList = ({ videoId }: { videoId: string }) => {
 };
 
 export const RemoveFromRateLater = (asyncCallback?: () => void) => {
-  const RemoveFromRateLaterComponnent = ({ videoId }: { videoId: string }) => {
+  const RemoveFromRateLaterComponnent = ({ uid }: { uid: string }) => {
     const { t } = useTranslation();
     const { showSuccessAlert } = useNotifications();
+    const videoId = idFromUid(uid);
+
     return (
       <Tooltip title={`${t('actions.remove')}`} placement="left">
         <IconButton
