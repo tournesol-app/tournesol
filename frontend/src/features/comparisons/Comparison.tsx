@@ -62,10 +62,16 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
+  const uidParams: { uidA: string; uidB: string } = {
+    uidA: 'uidA',
+    uidB: 'uidB',
+  };
 
   // try to read UIDs from the URL...
-  const uidA: string = searchParams.get('uidA') || '';
-  const uidB: string = searchParams.get('uidB') || '';
+  const encodedUidA: string = searchParams.get(uidParams.uidA) || '';
+  const encodedUidB: string = searchParams.get(uidParams.uidB) || '';
+  const uidA: string = encodedUidA ? decodeURIComponent(encodedUidA) : '';
+  const uidB: string = encodedUidB ? decodeURIComponent(encodedUidB) : '';
 
   // ... if they are empty, try the legacy videoA/videoB parameters
   const videoA: string = uidA
@@ -74,6 +80,10 @@ const Comparison = () => {
   const videoB: string = uidB
     ? idFromUid(uidB)
     : searchParams.get('videoB') || '';
+
+  // these keys control which parameter names should be added to the URL
+  const videoKeyA: string = uidA || !videoA ? uidParams.uidA : 'videoA';
+  const videoKeyB: string = uidB || !videoB ? uidParams.uidB : 'videoB';
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
     videoId: videoA,
@@ -91,21 +101,25 @@ const Comparison = () => {
       if (searchParams.get(videoKey) !== videoId) {
         searchParams.delete(videoKey);
         if (videoId) {
-          searchParams.append(videoKey, videoId);
+          if (Object.values(uidParams).includes(videoKey)) {
+            searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
+          } else {
+            searchParams.append(videoKey, videoId);
+          }
         }
         history.push('?' + searchParams.toString());
       }
-      if (videoKey === 'videoA') {
+      if (videoKey === videoKeyA) {
         setSelectorA(newValue);
-      } else if (videoKey === 'videoB') {
+      } else if (videoKey === videoKeyB) {
         setSelectorB(newValue);
       }
       setSubmitted(false);
     },
-    [history, location.search]
+    [history, location.search, uidParams, videoKeyA, videoKeyB]
   );
-  const onChangeA = useMemo(() => onChange('videoA'), [onChange]);
-  const onChangeB = useMemo(() => onChange('videoB'), [onChange]);
+  const onChangeA = useMemo(() => onChange(videoKeyA), [onChange, videoKeyA]);
+  const onChangeB = useMemo(() => onChange(videoKeyB), [onChange, videoKeyB]);
 
   useEffect(() => {
     setIsLoading(true);

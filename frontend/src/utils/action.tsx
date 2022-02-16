@@ -11,12 +11,11 @@ import { idFromUid } from './video';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
-  const videoId = idFromUid(uid);
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
         size="medium"
-        href={`/comparison/?videoA=${videoId}`}
+        href={`/comparison/?uidA=${uid}`}
         style={{ color: '#CDCABC' }}
       >
         <CompareIcon />
