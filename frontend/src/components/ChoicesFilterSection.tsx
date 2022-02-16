@@ -84,19 +84,20 @@ const ChoicesFilterSection = ({
                 />
               }
               label={
-                <Tooltip title={tooltip} placement="bottom">
-                  <Typography
-                    variant="body2"
-                    color={checked ? 'secondary' : 'textPrimary'}
-                    sx={{
-                      '&::first-letter': {
-                        textTransform: 'uppercase',
-                      },
-                    }}
-                  >
-                    {choiceLabel}
-                  </Typography>
-                </Tooltip>
+                <Typography
+                  variant="body2"
+                  color={checked ? 'secondary' : 'textPrimary'}
+                  sx={{
+                    flexGrow: 1,
+                    '&::first-letter': {
+                      textTransform: 'uppercase',
+                    },
+                  }}
+                >
+                  <Tooltip title={tooltip} placement="bottom">
+                    <span>{choiceLabel}</span>
+                  </Tooltip>
+                </Typography>
               }
               key={choiceValue}
             />
