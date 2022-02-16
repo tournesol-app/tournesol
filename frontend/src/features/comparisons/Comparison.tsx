@@ -62,10 +62,12 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const uidParams: { uidA: string; uidB: string } = {
-    uidA: 'uidA',
-    uidB: 'uidB',
-  };
+  const uidParams: { uidA: string; uidB: string } = useMemo(() => {
+    return {
+      uidA: 'uidA',
+      uidB: 'uidB',
+    };
+  }, []);
 
   // try to read UIDs from the URL...
   const encodedUidA: string = searchParams.get(uidParams.uidA) || '';
