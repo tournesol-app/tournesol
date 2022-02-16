@@ -32,6 +32,7 @@ import {
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
 import Footer from './Footer';
+import { LanguageSelector } from 'src/components';
 
 export const sideBarWidth = 264;
 
@@ -156,6 +157,7 @@ const SideBar = () => {
       <List
         disablePadding
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
+        sx={{ flexGrow: 1 }}
       >
         {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
           if (!IconComponent || !targetUrl)
@@ -201,6 +203,7 @@ const SideBar = () => {
         })}
       </List>
       {drawerOpen && <Footer />}
+      <LanguageSelector languageName={drawerOpen} />
     </Drawer>
   );
 };
