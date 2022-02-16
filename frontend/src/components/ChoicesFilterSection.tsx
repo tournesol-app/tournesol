@@ -90,7 +90,7 @@ const ChoicesFilterSection = ({
                     color={checked ? 'secondary' : 'textPrimary'}
                     sx={{
                       '&::first-letter': {
-                        textTransform: 'capitalize',
+                        textTransform: 'uppercase',
                       },
                     }}
                   >
