@@ -1,12 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChoicesFilterSection } from 'src/components';
+
 interface Props {
   value: string;
   onChange: (value: string) => void;
 }
 
-function SafeFilter(props: Props) {
+function AdvancedFilter(props: Props) {
   const { t } = useTranslation();
 
   const safeChoice = {
@@ -24,4 +25,4 @@ function SafeFilter(props: Props) {
   );
 }
 
-export default SafeFilter;
+export default AdvancedFilter;
