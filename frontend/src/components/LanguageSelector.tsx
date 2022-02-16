@@ -29,7 +29,7 @@ const LanguageSelector = ({ languageName = true }: LanguageSelectorProps) => {
     <Box color="neutral.main">
       <MenuButton
         startIcon={<Language />}
-        sx={{ width: '100%', px: 3 }}
+        sx={{ width: '100%', px: '20px' }}
         className={classes.HideLanguageNameContainer}
         menuContent={SUPPORTED_LANGUAGES.map(({ code, name }) => (
           <MenuItem

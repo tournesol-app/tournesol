@@ -157,6 +157,7 @@ const SideBar = () => {
       <List
         disablePadding
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
+        sx={{ flexGrow: 1 }}
       >
         {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
           if (!IconComponent || !targetUrl)
