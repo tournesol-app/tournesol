@@ -202,7 +202,7 @@ const SideBar = () => {
         })}
       </List>
       {drawerOpen && <Footer />}
-      {!drawerOpen && <LanguageSelector hideLanguageName={true} />}
+      <LanguageSelector languageName={drawerOpen} />
     </Drawer>
   );
 };

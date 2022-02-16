@@ -7,7 +7,7 @@ import MenuButton from './MenuButton';
 import makeStyles from '@mui/styles/makeStyles';
 
 interface LanguageSelectorProps {
-  hideLanguageName?: boolean;
+  languageName?: boolean;
 }
 
 const useStyles = makeStyles({
@@ -20,9 +20,7 @@ const codeToLanguage = Object.fromEntries(
   SUPPORTED_LANGUAGES.map((l) => [l.code, l])
 );
 
-const LanguageSelector = ({
-  hideLanguageName = false,
-}: LanguageSelectorProps) => {
+const LanguageSelector = ({ languageName = true }: LanguageSelectorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.resolvedLanguage;
   const classes = useStyles();
@@ -65,7 +63,7 @@ const LanguageSelector = ({
           },
         }}
       >
-        {!hideLanguageName && (
+        {languageName && (
           <Box
             flexGrow={1}
             textAlign="left"
