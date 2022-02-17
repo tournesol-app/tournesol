@@ -57,6 +57,8 @@ Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` de
 
 ## Setup Google Api Key
 
+* This step is important in development, especially if you add a new video to the database and the relevant information should be fetched from Youtube API.
+
 * Go to https://console.cloud.google.com/apis/ and create a new project named `tournesol`
 
 * Setup you credentials by getting a API key. Do not restrict its use for development purpose.
