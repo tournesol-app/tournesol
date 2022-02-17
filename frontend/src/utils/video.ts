@@ -18,7 +18,7 @@ export function isVideoIdValid(videoId: string) {
 }
 
 /**
- * Return the id of an entity.
+ * Return the video id of an entity.
  *
  * If no field `uid` is found, return the value of the legacy `video_id`
  * field instead.
@@ -31,13 +31,10 @@ export function isVideoIdValid(videoId: string) {
  *     yt:videoABCDEF -> videoABCDEF
  *     yt:video:ABCDE -> video:ABCDE
  */
-export function idFromEntity(entity: VideoObject): string {
+export function videoIdFromEntity(entity: VideoObject): string {
   if (entity.uid) {
-    const uid = entity.uid.split(':');
-
-    if (uid[0] !== '' && uid[1] !== '') {
-      return uid.slice(1).join();
-    }
+    const id = idFromUid(entity.uid);
+    if (id) return id;
   }
 
   return entity.video_id;

@@ -25,7 +25,10 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import { convertDurationToClockDuration, idFromEntity } from 'src/utils/video';
+import {
+  convertDurationToClockDuration,
+  videoIdFromEntity,
+} from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -217,7 +220,7 @@ function VideoCard({
   const theme = useTheme();
   const classes = useStyles();
 
-  const videoId = idFromEntity(video);
+  const videoId = videoIdFromEntity(video);
   let total_score = 0;
   let max_score = -Infinity;
   let min_score = Infinity;
