@@ -329,6 +329,82 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedEmailDomainList'
           description: ''
+  /entities/:
+    get:
+      operationId: entities_list
+      description: Fetch entities and their detailed scores in all polls
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - video
+        description: Type of entities to return
+      - in: query
+        name: poll_name
+        schema:
+          type: string
+        description: If defined, only scores related to this poll will be returned
+      tags:
+      - entities
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntityList'
+          description: ''
+  /entities/{uid}/:
+    get:
+      operationId: entities_retrieve
+      description: Fetch entities and their detailed scores in all polls
+      parameters:
+      - in: path
+        name: uid
+        schema:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+        required: true
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum: []
+        description: Type of entities to return
+      - in: query
+        name: poll_name
+        schema:
+          type: string
+        description: If defined, only scores related to this poll will be returned
+      tags:
+      - entities
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+          description: ''
   /exports/comparisons/:
     get:
       operationId: exports_comparisons_retrieve
@@ -1643,6 +1719,28 @@ components:
           description: Status of the domain.
       required:
       - domain
+    Entity:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        metadata:
+          type: object
+          additionalProperties: {}
+        polls:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityPoll'
+          readOnly: true
+      required:
+      - polls
+      - type
+      - uid
     EntityCriteriaScore:
       type: object
       properties:
@@ -1656,6 +1754,18 @@ components:
           description: Score of the given criteria
       required:
       - criteria
+    EntityPoll:
+      type: object
+      properties:
+        name:
+          type: string
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCriteriaScore'
+      required:
+      - criteria_scores
+      - name
     GenderEnum:
       enum:
       - Not Specified
@@ -2090,6 +2200,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EmailDomain'
+    PaginatedEntityList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
     PaginatedRecommendationList:
       type: object
       properties:
@@ -3083,6 +3213,7 @@ components:
       type: string
     Statistics:
       type: object
+      description: A representation of the Tournesol public statistics.
       properties:
         user_count:
           type: integer
@@ -3108,6 +3239,10 @@ components:
       - RJ
       - ACK
       - PD
+      type: string
+    TypeEnum:
+      enum:
+      - video
       type: string
     UserProfile:
       type: object
