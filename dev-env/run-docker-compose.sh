@@ -35,7 +35,7 @@ function wait_for() {
       return 0
     fi
     echo "Waiting for $service_name to be ready..."
-    sleep 2
+    sleep 3
   done
   echo "$service_name is unreachable."
   exit 1
