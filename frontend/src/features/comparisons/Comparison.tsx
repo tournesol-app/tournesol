@@ -98,7 +98,15 @@ const Comparison = () => {
     (videoKey: string) => (newValue: VideoSelectorValue) => {
       const searchParams = new URLSearchParams(location.search);
       const videoId = newValue.videoId;
-      if (searchParams.get(videoKey) !== videoId) {
+
+      let idInUrl;
+      if (Object.values(uidParams).includes(videoKey)) {
+        idInUrl = idFromUid(searchParams.get(videoKey) || '');
+      } else {
+        idInUrl = searchParams.get(videoKey);
+      }
+
+      if (idInUrl !== videoId) {
         searchParams.delete(videoKey);
         if (videoId) {
           if (Object.values(uidParams).includes(videoKey)) {
