@@ -70,10 +70,8 @@ const Comparison = () => {
   }, []);
 
   // try to read UIDs from the URL...
-  const encodedUidA: string = searchParams.get(uidParams.uidA) || '';
-  const encodedUidB: string = searchParams.get(uidParams.uidB) || '';
-  const uidA: string = encodedUidA ? decodeURIComponent(encodedUidA) : '';
-  const uidB: string = encodedUidB ? decodeURIComponent(encodedUidB) : '';
+  const uidA: string = searchParams.get(uidParams.uidA) || '';
+  const uidB: string = searchParams.get(uidParams.uidB) || '';
 
   // ... if they are empty, try the legacy videoA/videoB parameters
   const videoA: string = uidA
