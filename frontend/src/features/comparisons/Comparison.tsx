@@ -62,28 +62,50 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const uidParams: { uidA: string; uidB: string } = useMemo(() => {
+  const uidParams: { vidA: string; vidB: string } = useMemo(() => {
     return {
-      uidA: 'uidA',
-      uidB: 'uidB',
+      vidA: 'uidA',
+      vidB: 'uidB',
+    };
+  }, []);
+  const legacyParams: { vidA: string; vidB: string } = useMemo(() => {
+    return {
+      vidA: 'videoA',
+      vidB: 'videoB',
     };
   }, []);
 
-  // try to read UIDs from the URL...
-  const uidA: string = searchParams.get(uidParams.uidA) || '';
-  const uidB: string = searchParams.get(uidParams.uidB) || '';
+  // step1: try to read UIDs from the URL...
+  const uidA: string = searchParams.get(uidParams.vidA) || '';
+  const uidB: string = searchParams.get(uidParams.vidB) || '';
 
-  // ... if they are empty, try the legacy videoA/videoB parameters
+  // step2: if they are empty, try the legacy videoA/videoB parameters
   const videoA: string = uidA
     ? idFromUid(uidA)
-    : searchParams.get('videoA') || '';
+    : searchParams.get(legacyParams.vidA) || '';
   const videoB: string = uidB
     ? idFromUid(uidB)
-    : searchParams.get('videoB') || '';
+    : searchParams.get(legacyParams.vidB) || '';
 
-  // these keys control which parameter names should be added to the URL
-  const videoKeyA: string = uidA || !videoA ? uidParams.uidA : 'videoA';
-  const videoKeyB: string = uidB || !videoB ? uidParams.uidB : 'videoB';
+  // step 3: Clean the URL by replacing legacy parameters by UIDs.
+  useEffect(() => {
+    const legacyA = searchParams.get(legacyParams.vidA);
+    const legacyB = searchParams.get(legacyParams.vidB);
+
+    searchParams.delete(legacyParams.vidA);
+    searchParams.delete(legacyParams.vidB);
+
+    if (legacyA && uidA === '') {
+      searchParams.append(uidParams.vidA, UID_YT_NAMESPACE + legacyA);
+    }
+
+    if (legacyB && uidB === '') {
+      searchParams.append(uidParams.vidB, UID_YT_NAMESPACE + legacyB);
+    }
+
+    history.push('?' + searchParams.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
     videoId: videoA,
@@ -99,35 +121,40 @@ const Comparison = () => {
       const searchParams = new URLSearchParams(location.search);
       const videoId = newValue.videoId;
 
-      let idInUrl;
-      if (Object.values(uidParams).includes(videoKey)) {
-        idInUrl = idFromUid(searchParams.get(videoKey) || '');
-      } else {
-        idInUrl = searchParams.get(videoKey);
-      }
-
-      if (idInUrl !== videoId) {
+      if (idFromUid(searchParams.get(videoKey) || '') !== videoId) {
         searchParams.delete(videoKey);
+
+        if (videoKey === uidParams.vidA) {
+          searchParams.delete(legacyParams.vidA);
+        }
+        if (videoKey === uidParams.vidB) {
+          searchParams.delete(legacyParams.vidB);
+        }
+
         if (videoId) {
-          if (Object.values(uidParams).includes(videoKey)) {
-            searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
-          } else {
-            searchParams.append(videoKey, videoId);
-          }
+          searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
         }
         history.push('?' + searchParams.toString());
       }
-      if (videoKey === videoKeyA) {
+      if (videoKey === uidParams.vidA) {
         setSelectorA(newValue);
-      } else if (videoKey === videoKeyB) {
+      } else if (videoKey === uidParams.vidB) {
         setSelectorB(newValue);
       }
       setSubmitted(false);
     },
-    [history, location.search, uidParams, videoKeyA, videoKeyB]
+    [history, location.search, uidParams, legacyParams]
   );
-  const onChangeA = useMemo(() => onChange(videoKeyA), [onChange, videoKeyA]);
-  const onChangeB = useMemo(() => onChange(videoKeyB), [onChange, videoKeyB]);
+
+  const onChangeA = useMemo(
+    () => onChange(uidParams.vidA),
+    [onChange, uidParams.vidA]
+  );
+
+  const onChangeB = useMemo(
+    () => onChange(uidParams.vidB),
+    [onChange, uidParams.vidB]
+  );
 
   useEffect(() => {
     setIsLoading(true);
