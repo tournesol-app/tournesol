@@ -83,7 +83,6 @@ def fetch_data(trusted=True):
                 ccs.weight,
             ]
             for ccs in ComparisonCriteriaScore.objects
-                .exclude(comparison__user__in=User.trusted_users())
                 .prefetch_related("comparison")
         ]
 
@@ -144,7 +143,7 @@ def save_data(video_scores, contributor_rating_scores, trusted=True):
         ]
     )
 
-def process(trusted=False):
+def process(trusted=True):
     criterias_list = Poll.default_poll().criterias_list
     comparison_data = fetch_data(trusted=trusted)
     glob_score, loc_score = ml_run(
