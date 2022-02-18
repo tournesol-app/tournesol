@@ -144,26 +144,24 @@ def save_data(video_scores, contributor_rating_scores, trusted=True):
         ]
     )
 
+def process(trusted=False):
+    criterias_list = Poll.default_poll().criterias_list
+    comparison_data = fetch_data(trusted=trusted)
+    glob_score, loc_score = ml_run(
+        comparison_data, criterias=criterias_list, save=True, verb=-1
+    )
+    save_data(glob_score, loc_score, trusted=trusted)
+
+
 
 class Command(BaseCommand):
     help = "Runs the ml"
 
     def handle(self, *args, **options):
-        criterias_list = Poll.default_poll().criterias_list
-        comparison_data_trusted = fetch_data()
-        compraison_data_not_trusted = fetch_data(trusted=False)
         if TOURNESOL_DEV:
             logging.error('You must turn TOURNESOL_DEV to 0 to use this')
-        else:  # production mode
+        else: #production
             # Run for trusted users
-            glob_scores_trusted, loc_scores_trusted = ml_run(
-                comparison_data_trusted, criterias=criterias_list, save=True, verb=-1
-            )
-            save_data(glob_scores_trusted, loc_scores_trusted)
-
+            process()
             # Run for all users including non trusted users
-            glob_scores_not_trusted, loc_scores_not_trusted = ml_run(
-                compraison_data_not_trusted, criterias=criterias_list, save=True, verb=-1
-            )
-            save_data(glob_scores_not_trusted, loc_scores_not_trusted, trusted=False)
-
+            process(trusted=False)
