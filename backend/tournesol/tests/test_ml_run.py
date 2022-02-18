@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from core.models import EmailDomain
 from core.tests.factories.user import UserFactory
-from tournesol.models import EntityCriteriaScore, ContributorRatingCriteriaScore
+from tournesol.models import ContributorRatingCriteriaScore, EntityCriteriaScore
 
 from .factories.comparison import ComparisonCriteriaScoreFactory
 
