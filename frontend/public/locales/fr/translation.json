@@ -112,9 +112,9 @@
   },
   "options": "Options",
   "language": {
-    "english": "anglais",
-    "french": "français",
-    "german": "allemand"
+    "en": "anglais",
+    "fr": "français",
+    "de": "allemand"
   },
   "settings": {
     "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",

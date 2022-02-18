@@ -79,3 +79,5 @@ export const defaultRecommendationFilters = {
   better_habits: '50',
   backfire_risk: '50',
 };
+
+export const availableRecommendationsLanguages = ['en', 'fr', 'de'];

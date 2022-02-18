@@ -1,6 +1,8 @@
 import { useLocation, useHistory } from 'react-router';
 
-export const useListFilter = (): [
+export const useListFilter = ({
+  setEmptyValues = false,
+}: { setEmptyValues?: boolean } = {}): [
   URLSearchParams,
   (key: string, value: string) => void
 ] => {
@@ -9,7 +11,7 @@ export const useListFilter = (): [
   const searchParams = new URLSearchParams(location.search);
 
   const setFilter = (key: string, value: string) => {
-    if (value) {
+    if (value || setEmptyValues) {
       searchParams.set(key, value);
     } else {
       searchParams.delete(key);
