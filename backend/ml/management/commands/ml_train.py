@@ -58,8 +58,11 @@ def fetch_data(trusted=True):
         [   contributor_id: int, video_id_1: int, video_id_2: int,
             criteria: str, score: float, weight: float  ]
     """
+    comparisons_queryset = ComparisonCriteriaScore.objects.all().prefetch_related("comparison")
+    
     if trusted:
-        comparison_data = [
+        comparisons_queryset = comparisons_queryset.filter(comparison__user__in=User.trusted_users())
+    comparison_data = [
             [
                 ccs.comparison.user_id,
                 ccs.comparison.entity_1_id,
@@ -68,23 +71,8 @@ def fetch_data(trusted=True):
                 ccs.score,
                 ccs.weight,
             ]
-            for ccs in ComparisonCriteriaScore.objects
-                .filter(comparison__user__in=User.trusted_users())
-                .prefetch_related("comparison")
-        ]
-    else:
-        comparison_data = [
-            [
-                ccs.comparison.user_id,
-                ccs.comparison.entity_1_id,
-                ccs.comparison.entity_2_id,
-                ccs.criteria,
-                ccs.score,
-                ccs.weight,
-            ]
-            for ccs in ComparisonCriteriaScore.objects
-                .prefetch_related("comparison")
-        ]
+            for ccs in comparisons_queryset
+    ]
 
     return comparison_data
 
