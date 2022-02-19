@@ -40,10 +40,12 @@ def add_expander_video_data():
             return
 
         df = st.session_state.df_scores
-        st.write(
-            f"There are {df['video_id'].size} videos "
-            f"from {df['uploader'].nunique()} channels."
-        )
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Channel", df["uploader"].nunique())
+        col2.metric("Videos", df["video_id"].size)
+        col3.metric("Language", df["language"].nunique())
+
         st.write(df)
 
 
