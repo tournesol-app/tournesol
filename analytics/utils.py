@@ -34,10 +34,12 @@ TCOLOR = [
 MSG_NO_DATA = "You should first load the public dataset at the top of the page."
 
 
-def set_df(data, users=[]):
+@st.cache
+def set_df(users=[]):
     """Set up the dataframe"""
 
-    df_tmp = pd.read_csv(data)
+    url = "https://api.tournesol.app/exports/comparisons/"
+    df_tmp = pd.read_csv(url)
 
     index = ["video_a", "video_b", "public_username"]
 
