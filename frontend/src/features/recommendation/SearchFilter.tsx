@@ -51,7 +51,7 @@ function SearchFilter() {
           </Box>
         )}
         <Grid container spacing={4} sx={{ marginBottom: '8px' }}>
-          <Grid item xs={6} md={3} lg={2} data-testid="search-date-filter">
+          <Grid item xs={6} md={3} lg={2} data-testid="search-date-safe-filter">
             <DateFilter
               value={filterParams.get(recommendationFilters.date) ?? ''}
               onChange={(value) => setFilter(recommendationFilters.date, value)}
