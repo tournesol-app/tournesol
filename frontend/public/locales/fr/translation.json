@@ -62,8 +62,8 @@
     "loginToTournesol": "Se connecter à Tournesol",
     "logInAction": "Connexion",
     "forgotYourPassword": "Mot de passe oublié ?",
-    "signUp": "Inscription",
-    "noAccountYet": "Pas encore de compte sur Tournesol ?"
+    "noAccountYet": "Pas encore de compte sur Tournesol ?",
+    "signUp": "Inscription"
   },
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
@@ -95,6 +95,9 @@
     "thisYear": "Cette année",
     "uploadDate": "Mises en ligne",
     "language": "Langues",
+    "includeAllVideos": "Inclure toutes les vidéos",
+    "advanced": "Avancés",
+    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
     "uploader": "Chaîne"
   },
   "ratings": {
@@ -169,7 +172,9 @@
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
     "criteriaRatedLow": "Noté faiblement :",
-    "labelShowSettings": "Voir les paramètres de cette video"
+    "labelShowSettings": "Voir les paramètres de cette video",
+    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
+    "unsafeNegativeRating" : "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol."
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",

@@ -7,6 +7,7 @@ import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 import UploaderFilter from './UploaderFilter';
+import AdvancedFilter from './AdvancedFilter';
 import {
   recommendationFilters,
   defaultRecommendationFilters,
@@ -55,6 +56,12 @@ function SearchFilter() {
               value={filterParams.get(recommendationFilters.date) ?? ''}
               onChange={(value) => setFilter(recommendationFilters.date, value)}
             />
+            <Box mt={2}>
+              <AdvancedFilter
+                value={filterParams.get('unsafe') ?? ''}
+                onChange={(value) => setFilter('unsafe', value)}
+              />
+            </Box>
           </Grid>
           <Grid item xs={6} md={3} lg={2} data-testid="search-language-filter">
             <LanguageFilter

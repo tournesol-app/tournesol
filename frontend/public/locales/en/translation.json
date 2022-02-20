@@ -62,8 +62,8 @@
     "loginToTournesol": "Log in to Tournesol",
     "logInAction": "Log In",
     "forgotYourPassword": "Forgot your password?",
-    "signUp": "Join us",
-    "noAccountYet": "No account on Tournesol yet?"
+    "noAccountYet": "No account on Tournesol yet?",
+    "signUp": "Join us"
   },
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
@@ -94,6 +94,9 @@
     "thisYear": "This year",
     "uploadDate": "Upload date",
     "language": "Language",
+    "includeAllVideos": "Include all videos",
+    "advanced": "Advanced",
+    "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
     "uploader": "Uploader"
   },
   "ratings": {
@@ -165,7 +168,10 @@
     "nbContributors_other": "{{count}} contributors",
     "criteriaRatedHigh": "Rated high:",
     "criteriaRatedLow": "Rated low:",
-    "labelShowSettings": "Show settings related to this video"
+    "labelShowSettings": "Show settings related to this video",
+    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
+    "unsafeNegativeRating" : "This video score is below the average of the other videos added to Tournesol."
+
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",

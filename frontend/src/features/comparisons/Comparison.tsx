@@ -88,8 +88,8 @@ const Comparison = () => {
     if (videoA && videoB)
       UsersService.usersMeComparisonsRetrieve({
         pollName: YOUTUBE_POLL_NAME,
-        uidA: encodeURIComponent(UID_YT_NAMESPACE) + videoA,
-        uidB: encodeURIComponent(UID_YT_NAMESPACE) + videoB,
+        uidA: UID_YT_NAMESPACE + videoA,
+        uidB: UID_YT_NAMESPACE + videoB,
       })
         .then((comparison) => {
           setInitialComparison(comparison);
@@ -109,8 +109,8 @@ const Comparison = () => {
       const { entity_a, entity_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate({
         pollName: YOUTUBE_POLL_NAME,
-        uidA: encodeURIComponent(UID_YT_NAMESPACE) + entity_a.video_id,
-        uidB: encodeURIComponent(UID_YT_NAMESPACE) + entity_b.video_id,
+        uidA: UID_YT_NAMESPACE + entity_a.video_id,
+        uidB: UID_YT_NAMESPACE + entity_b.video_id,
         requestBody: { criteria_scores, duration_ms },
       });
     } else {
