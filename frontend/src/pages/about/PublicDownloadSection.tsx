@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button } from '@mui/material';
-
+import { StatsService } from 'src/services/openapi';
+import type { Statistics } from 'src/services/openapi';
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case
 const PublicDownloadSection = () => {
   const { t } = useTranslation();
   const api_url = process.env.REACT_APP_API_URL;
+
+  const [user_count, setUserCount] = useState(0);
+  const [video_count, setVideoCount] = useState(0);
+  const [comparison_count, setComparisonCount] = useState(0);
+
+  const updateState = (value: Statistics) => {
+    setUserCount(value.user_count);
+    setVideoCount(value.video_count);
+    setComparisonCount(value.comparison_count);
+  };
+
+  useEffect(() => {
+    StatsService.statsRetrieve()
+      .then(updateState)
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   return (
     <>
       <Typography variant="h1">{t('about.publicDatabase')}</Typography>
@@ -26,7 +46,12 @@ const PublicDownloadSection = () => {
         </Trans>
       </Typography>
       <Typography paragraph>
-        {t('about.publicDatabaseThanksToContributors')}
+        <Trans t={t} i18nKey="about.publicDatabaseThanksToContributors">
+          Finally, we would like to thank all the contributors who compared
+          videos on Tournesol. We count so far about {{ user_count }} users who
+          compared {{ comparison_count }} times more than {{ video_count }}{' '}
+          videos.
+        </Trans>
       </Typography>
 
       <Button
