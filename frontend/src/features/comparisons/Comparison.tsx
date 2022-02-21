@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -39,6 +39,29 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.text.secondary,
   },
 }));
+
+const rewriteLegacyParameters = (
+  uidA: string,
+  uidB: string,
+  legacyA: string | null,
+  legacyB: string | null,
+  paramVidA: string,
+  paramVidB: string
+) => {
+  const searchParams = new URLSearchParams();
+  searchParams.append(paramVidA, uidA);
+  searchParams.append(paramVidB, uidB);
+
+  if (legacyA && uidA === '') {
+    searchParams.append(paramVidA, UID_YT_NAMESPACE + legacyA);
+  }
+
+  if (legacyB && uidB === '') {
+    searchParams.append(paramVidB, UID_YT_NAMESPACE + legacyB);
+  }
+
+  return searchParams;
+};
 
 /**
  * The comparison UI.
@@ -88,24 +111,18 @@ const Comparison = () => {
     : searchParams.get(legacyParams.vidB) || '';
 
   // step 3: Clean the URL by replacing legacy parameters by UIDs.
-  useEffect(() => {
-    const legacyA = searchParams.get(legacyParams.vidA);
-    const legacyB = searchParams.get(legacyParams.vidB);
-
-    searchParams.delete(legacyParams.vidA);
-    searchParams.delete(legacyParams.vidB);
-
-    if (legacyA && uidA === '') {
-      searchParams.append(uidParams.vidA, UID_YT_NAMESPACE + legacyA);
-    }
-
-    if (legacyB && uidB === '') {
-      searchParams.append(uidParams.vidB, UID_YT_NAMESPACE + legacyB);
-    }
-
-    history.push('?' + searchParams.toString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const legacyA = searchParams.get(legacyParams.vidA);
+  const legacyB = searchParams.get(legacyParams.vidB);
+  searchParams.delete(legacyParams.vidA);
+  searchParams.delete(legacyParams.vidB);
+  const newSearchParams = rewriteLegacyParameters(
+    uidA,
+    uidB,
+    legacyA,
+    legacyB,
+    uidParams.vidA,
+    uidParams.vidB
+  );
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
     videoId: videoA,
@@ -204,6 +221,16 @@ const Comparison = () => {
     }
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
+
+  // redirect the user if at least one legacy parameters has been used
+  // existing UIDs always prevail
+  if (legacyA != null || legacyB != null) {
+    return (
+      <Redirect
+        to={{ pathname: location.pathname, search: newSearchParams.toString() }}
+      />
+    );
+  }
 
   return (
     <Grid container className={classes.content}>
