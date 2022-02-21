@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+/**
+ * Return an URLSearchParams without legacy parameters.
+ */
 const rewriteLegacyParameters = (
   uidA: string,
   uidB: string,
@@ -108,8 +111,6 @@ const Comparison = () => {
   // clean the URL by replacing legacy parameters by UIDs
   const legacyA = searchParams.get(legacyParams.vidA);
   const legacyB = searchParams.get(legacyParams.vidB);
-  searchParams.delete(legacyParams.vidA);
-  searchParams.delete(legacyParams.vidB);
   const newSearchParams = rewriteLegacyParameters(
     uidA,
     uidB,
