@@ -13,7 +13,6 @@ import {
   useTheme,
   Tooltip,
   Link,
-  Theme,
   Stack,
 } from '@mui/material';
 import { Warning as WarningIcon } from '@mui/icons-material';
@@ -90,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mainSx = (theme: Theme) => {
+const mainSx = () => {
   return {
     margin: 0,
     width: '100%',
@@ -102,9 +101,9 @@ const mainSx = (theme: Theme) => {
     borderRadius: '4px',
     alignContent: 'flex-start',
     overflow: 'hidden',
-    fontSize: '16px',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '14px',
+    fontSize: {
+      xs: '14px',
+      md: '16px',
     },
   };
 };
@@ -242,14 +241,14 @@ function VideoCard({
       container
       spacing={1}
       sx={{
-        ...mainSx(theme),
+        ...mainSx(),
       }}
     >
       <Grid
         item
         xs={12}
         sm={compact ? 12 : 4}
-        sx={{ aspectRatio: '16 / 9', padding: 0 }}
+        sx={{ aspectRatio: '16 / 9', padding: '0 !important' }}
       >
         <ReactPlayer
           url={`https://youtube.com/watch?v=${videoId}`}
@@ -494,14 +493,13 @@ export const EmptyVideoCard = ({
   loading?: boolean;
 }) => {
   const classes = useStyles();
-  const theme = useTheme();
 
   return (
     <Grid
       container
       spacing={1}
       sx={{
-        ...mainSx(theme),
+        ...mainSx(),
       }}
     >
       <Grid

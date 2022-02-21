@@ -2,19 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Grid, Theme, useTheme } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
 import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
 
-const accountLoginButton = (theme: Theme) => {
+const accountLoginButton = () => {
   return {
     borderColor: 'rgba(0, 0, 0, 0.23)',
     textTransform: 'initial',
     fontWeight: 'bold',
     borderWidth: '2px',
-    color: theme.palette.text.primary,
+    color: 'text.primary',
   };
 };
 
@@ -22,7 +22,6 @@ const LoggedInActions = () => {
   const { t } = useTranslation();
   const { contactAdministratorLowSeverity } = useNotifications();
 
-  const theme = useTheme();
   const { logout, loginState } = useLoginState();
 
   const logoutProcess = async () => {
@@ -40,7 +39,7 @@ const LoggedInActions = () => {
         variant="outlined"
         color="inherit"
         sx={{
-          ...accountLoginButton(theme),
+          ...accountLoginButton(),
         }}
         onClick={logoutProcess}
       >
@@ -55,7 +54,7 @@ const LoggedInActions = () => {
           textTransform: 'initial',
           fontWeight: 'bold',
           borderWidth: '2px',
-          color: theme.palette.text.primary,
+          color: 'text.primary',
         }}
         endIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
       >
@@ -67,7 +66,6 @@ const LoggedInActions = () => {
 
 const LoggedOutActions = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <>
@@ -75,7 +73,7 @@ const LoggedOutActions = () => {
         variant="outlined"
         color="inherit"
         sx={{
-          ...accountLoginButton(theme),
+          ...accountLoginButton(),
         }}
         component={Link}
         to="/login"
