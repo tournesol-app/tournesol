@@ -8,14 +8,12 @@ import { AccountCircle } from '@mui/icons-material';
 import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
 
-const accountLoginButton = () => {
-  return {
-    borderColor: 'rgba(0, 0, 0, 0.23)',
-    textTransform: 'initial',
-    fontWeight: 'bold',
-    borderWidth: '2px',
-    color: 'text.primary',
-  };
+const accountLoginButtonSx = {
+  borderColor: 'rgba(0, 0, 0, 0.23)',
+  textTransform: 'initial',
+  fontWeight: 'bold',
+  borderWidth: '2px',
+  color: 'text.primary',
 };
 
 const LoggedInActions = () => {
@@ -38,9 +36,7 @@ const LoggedInActions = () => {
       <Button
         variant="outlined"
         color="inherit"
-        sx={{
-          ...accountLoginButton(),
-        }}
+        sx={accountLoginButtonSx}
         onClick={logoutProcess}
       >
         {t('logoutButton')}
@@ -72,9 +68,7 @@ const LoggedOutActions = () => {
       <Button
         variant="outlined"
         color="inherit"
-        sx={{
-          ...accountLoginButton(),
-        }}
+        sx={accountLoginButtonSx}
         component={Link}
         to="/login"
       >
