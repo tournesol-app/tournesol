@@ -67,7 +67,7 @@ const Comparisons = ({
         [theme.breakpoints.down('sm')]: {
           padding: theme.spacing(0),
         },
-        maxWidth: 840,
+        maxWidth: '840px !important',
       }}
     >
       <Grid container>

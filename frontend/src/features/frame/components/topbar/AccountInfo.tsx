@@ -2,11 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Grid, useTheme } from '@mui/material';
+import { Button, Grid, Theme, useTheme } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
 import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
+
+const accountLoginButton = (theme: Theme) => {
+  return {
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    textTransform: 'initial',
+    fontWeight: 'bold',
+    borderWidth: '2px',
+    color: theme.palette.text.primary,
+  };
+};
 
 const LoggedInActions = () => {
   const { t } = useTranslation();
@@ -30,11 +40,7 @@ const LoggedInActions = () => {
         variant="outlined"
         color="inherit"
         sx={{
-          borderColor: 'rgba(0, 0, 0, 0.23)',
-          textTransform: 'initial',
-          fontWeight: 'bold',
-          borderWidth: '2px',
-          color: theme.palette.text.primary,
+          ...accountLoginButton(theme),
         }}
         onClick={logoutProcess}
       >
@@ -69,11 +75,7 @@ const LoggedOutActions = () => {
         variant="outlined"
         color="inherit"
         sx={{
-          borderColor: 'rgba(0, 0, 0, 0.23)',
-          textTransform: 'initial',
-          fontWeight: 'bold',
-          borderWidth: '2px',
-          color: theme.palette.text.primary,
+          ...accountLoginButton(theme),
         }}
         component={Link}
         to="/login"
