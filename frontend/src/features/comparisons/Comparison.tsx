@@ -98,11 +98,11 @@ const Comparison = () => {
     };
   }, []);
 
-  // step1: try to read UIDs from the URL...
+  // step 1: try to read UIDs from the URL...
   const uidA: string = searchParams.get(uidParams.vidA) || '';
   const uidB: string = searchParams.get(uidParams.vidB) || '';
 
-  // step2: if they are empty, try the legacy videoA/videoB parameters
+  // step 2: if they are empty, try the legacy videoA/videoB parameters
   const videoA: string = uidA
     ? idFromUid(uidA)
     : searchParams.get(legacyParams.vidA) || '';
@@ -141,13 +141,6 @@ const Comparison = () => {
       if (idFromUid(searchParams.get(videoKey) || '') !== videoId) {
         searchParams.delete(videoKey);
 
-        if (videoKey === uidParams.vidA) {
-          searchParams.delete(legacyParams.vidA);
-        }
-        if (videoKey === uidParams.vidB) {
-          searchParams.delete(legacyParams.vidB);
-        }
-
         if (videoId) {
           searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
         }
@@ -160,7 +153,7 @@ const Comparison = () => {
       }
       setSubmitted(false);
     },
-    [history, location.search, uidParams, legacyParams]
+    [history, location.search, uidParams]
   );
 
   const onChangeA = useMemo(
