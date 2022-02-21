@@ -9,19 +9,6 @@ from sklearn.linear_model import LinearRegression
 from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
 
-def add_expander_load_public_dataset():
-
-    with st.expander("Load the public dataset (*.csv)", expanded=True):
-
-        data = st.file_uploader("")
-
-        if data:
-            st.success("Data have been loaded!")
-            st.session_state.df = set_df(data)
-        else:
-            st.session_state.df = None
-
-
 def add_expander_select_user():
 
     with st.expander("Select user(s)"):
@@ -81,6 +68,12 @@ def add_expander_statistics():
         df_stats["Nb of video"] = df_stats["public_username"].apply(
             lambda x: len(get_unique_video_list(df[df["public_username"] == x]))
         )
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Users", df["public_username"].nunique())
+        col2.metric("Videos", df_stats["Nb of video"].sum())
+        col3.metric("Comparisons", df["video_a"].size)
+
         st.write("Number of public comparisons by user:")
         st.write(df_stats)
 
@@ -209,10 +202,14 @@ def add_expander_cursor_position():
 
             for user in selected_users:
                 df_user = df[df["public_username"] == user]
-                fig.add_trace(go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21))
+                fig.add_trace(
+                    go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21)
+                )
 
         else:
-            fig.add_trace(go.Histogram(x=df[selected_crit], name="all users", nbinsx=21))
+            fig.add_trace(
+                go.Histogram(x=df[selected_crit], name="all users", nbinsx=21)
+            )
 
         fig.update_layout(barmode="overlay")
         fig.update_traces(opacity=0.7)
@@ -221,10 +218,10 @@ def add_expander_cursor_position():
 
 def app():
 
-    st.title("Public Dataset")
+    st.title("Comparisons Public Dataset")
 
-    # Load public dataset
-    add_expander_load_public_dataset()
+    # Load public dataset (the function is cached to not overload the API)
+    st.session_state.df = set_df()
 
     # Select users
     add_expander_select_user()
