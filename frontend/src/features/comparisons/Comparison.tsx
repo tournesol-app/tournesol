@@ -181,7 +181,7 @@ const Comparison = () => {
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
-          paddingTop: 16,
+          paddingTop: '16px',
         }}
       >
         {selectorA.rating && selectorB.rating ? (

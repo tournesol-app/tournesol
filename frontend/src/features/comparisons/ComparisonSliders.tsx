@@ -145,7 +145,7 @@ const ComparisonSliders = ({
           size="small"
           color="secondary"
           sx={{
-            marginBottom: 8,
+            marginBottom: '8px',
             color: showOptionalCriterias ? 'red' : '',
           }}
         >

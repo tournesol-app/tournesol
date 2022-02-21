@@ -115,7 +115,7 @@ const CriteriaSlider = ({
               color="primary"
               sx={{
                 padding: 0,
-                marginLeft: 8,
+                marginLeft: '8px',
               }}
             />
           )}

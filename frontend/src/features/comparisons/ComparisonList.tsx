@@ -12,7 +12,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   return (
     <Box
       sx={{
-        marginBottom: 16,
+        marginBottom: '16px',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
