@@ -307,6 +307,16 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
 
+    def test_missing_non_optional_criteria_in_comparison(self):
+        client = APIClient()
+        client.force_authenticate(self.user)
+        data = deepcopy(self.non_existing_comparison)
+        data["criteria_scores"][0]["criteria"] = "pedagogy"
+        response = client.post(self.comparisons_base_url, data, format="json")
+        self.assertContains(
+            response, "Missing required criteria", status_code=status.HTTP_400_BAD_REQUEST
+        )
+
     def test_authenticated_cant_create_twice(self):
         """
         An authenticated user can't create two comparisons for the same couple
@@ -762,14 +772,4 @@ class ComparisonApiTestCase(TestCase):
         response = client.post(self.comparisons_base_url, data, format="json")
         self.assertContains(
             response, "not a valid criteria", status_code=status.HTTP_400_BAD_REQUEST
-        )
-
-    def test_missing_non_optional_criteria_in_comparison(self):
-        client = APIClient()
-        client.force_authenticate(self.user)
-        data = deepcopy(self.non_existing_comparison)
-        data["criteria_scores"][0]["criteria"] = "pedagogy"
-        response = client.post(self.comparisons_base_url, data, format="json")
-        self.assertContains(
-            response, "Missing required criteria", status_code=status.HTTP_400_BAD_REQUEST
         )
