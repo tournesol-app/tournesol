@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -18,6 +18,35 @@ import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { idFromUid } from 'src/utils/video';
+
+/**
+ * Return an URLSearchParams without legacy parameters.
+ */
+const rewriteLegacyParameters = (
+  uidA: string,
+  uidB: string,
+  legacyA: string | null,
+  legacyB: string | null,
+  paramVidA: string,
+  paramVidB: string
+) => {
+  const searchParams = new URLSearchParams();
+  searchParams.append(paramVidA, uidA);
+  searchParams.append(paramVidB, uidB);
+
+  if (legacyA && uidA === '') {
+    searchParams.delete(paramVidA);
+    searchParams.append(paramVidA, UID_YT_NAMESPACE + legacyA);
+  }
+
+  if (legacyB && uidB === '') {
+    searchParams.delete(paramVidB);
+    searchParams.append(paramVidB, UID_YT_NAMESPACE + legacyB);
+  }
+
+  return searchParams;
+};
 
 /**
  * The comparison UI.
@@ -41,8 +70,35 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const videoA: string = searchParams.get('videoA') || '';
-  const videoB: string = searchParams.get('videoB') || '';
+  const uidParams: { vidA: string; vidB: string } = useMemo(() => {
+    return {
+      vidA: 'uidA',
+      vidB: 'uidB',
+    };
+  }, []);
+  const legacyParams: { vidA: string; vidB: string } = useMemo(() => {
+    return {
+      vidA: 'videoA',
+      vidB: 'videoB',
+    };
+  }, []);
+
+  const uidA: string = searchParams.get(uidParams.vidA) || '';
+  const uidB: string = searchParams.get(uidParams.vidB) || '';
+  const videoA: string = idFromUid(uidA);
+  const videoB: string = idFromUid(uidB);
+
+  // clean the URL by replacing legacy parameters by UIDs
+  const legacyA = searchParams.get(legacyParams.vidA);
+  const legacyB = searchParams.get(legacyParams.vidB);
+  const newSearchParams = rewriteLegacyParameters(
+    uidA,
+    uidB,
+    legacyA,
+    legacyB,
+    uidParams.vidA,
+    uidParams.vidB
+  );
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
     videoId: videoA,
@@ -57,24 +113,34 @@ const Comparison = () => {
     (videoKey: string) => (newValue: VideoSelectorValue) => {
       const searchParams = new URLSearchParams(location.search);
       const videoId = newValue.videoId;
-      if (searchParams.get(videoKey) !== videoId) {
+
+      if (idFromUid(searchParams.get(videoKey) || '') !== videoId) {
         searchParams.delete(videoKey);
+
         if (videoId) {
-          searchParams.append(videoKey, videoId);
+          searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
         }
         history.push('?' + searchParams.toString());
       }
-      if (videoKey === 'videoA') {
+      if (videoKey === uidParams.vidA) {
         setSelectorA(newValue);
-      } else if (videoKey === 'videoB') {
+      } else if (videoKey === uidParams.vidB) {
         setSelectorB(newValue);
       }
       setSubmitted(false);
     },
-    [history, location.search]
+    [history, location.search, uidParams]
   );
-  const onChangeA = useMemo(() => onChange('videoA'), [onChange]);
-  const onChangeB = useMemo(() => onChange('videoB'), [onChange]);
+
+  const onChangeA = useMemo(
+    () => onChange(uidParams.vidA),
+    [onChange, uidParams.vidA]
+  );
+
+  const onChangeB = useMemo(
+    () => onChange(uidParams.vidB),
+    [onChange, uidParams.vidB]
+  );
 
   useEffect(() => {
     setIsLoading(true);
@@ -124,6 +190,16 @@ const Comparison = () => {
     }
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
+
+  // redirect the user if at least one legacy parameters has been used
+  // existing UIDs always prevail
+  if (legacyA != null || legacyB != null) {
+    return (
+      <Redirect
+        to={{ pathname: location.pathname, search: newSearchParams.toString() }}
+      />
+    );
+  }
 
   return (
     <Grid

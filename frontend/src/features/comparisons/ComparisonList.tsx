@@ -40,7 +40,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         <Tooltip title={`${t('comparisons.goToComparison')}`} placement="top">
           <Fab
             component="a"
-            href={`/comparison/?videoA=${entity_a.video_id}&videoB=${entity_b.video_id}`}
+            href={`/comparison/?uidA=${entity_a.uid}&uidB=${entity_b.uid}`}
             sx={{ backgroundColor: '#F1EFE7' }}
             size="small"
           >

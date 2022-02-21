@@ -2836,9 +2836,11 @@ components:
         and having the constraint to ensure that video instances exist before
         they can be saved properly.
       properties:
-        video_id:
+        uid:
           type: string
-          pattern: ^[A-Za-z0-9-_]{11}$
+          readOnly: true
+          description: A unique identifier, build with a namespace and an external
+            id.
         name:
           type: string
           readOnly: true
@@ -2884,6 +2886,9 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        video_id:
+          type: string
+          pattern: ^[A-Za-z0-9-_]{11}$
       required:
       - description
       - duration
@@ -2892,6 +2897,7 @@ components:
       - publication_date
       - rating_n_contributors
       - rating_n_ratings
+      - uid
       - uploader
       - video_id
       - views
@@ -3599,11 +3605,11 @@ components:
     Video:
       type: object
       properties:
-        video_id:
+        uid:
           type: string
-          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
+          readOnly: true
+          description: A unique identifier, build with a namespace and an external
+            id.
         name:
           type: string
           readOnly: true
@@ -3649,6 +3655,11 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        video_id:
+          type: string
+          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
+          pattern: ^[A-Za-z0-9-_]{11}$
+          maxLength: 20
       required:
       - description
       - duration
@@ -3657,6 +3668,7 @@ components:
       - publication_date
       - rating_n_contributors
       - rating_n_ratings
+      - uid
       - uploader
       - video_id
       - views
@@ -3688,11 +3700,11 @@ components:
     VideoSerializerWithCriteria:
       type: object
       properties:
-        video_id:
+        uid:
           type: string
-          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
         name:
           type: string
           description: Video Title
@@ -3740,6 +3752,11 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        video_id:
+          type: string
+          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
+          pattern: ^[A-Za-z0-9-_]{11}$
+          maxLength: 20
         criteria_scores:
           type: array
           items:
@@ -3747,6 +3764,7 @@ components:
       required:
       - criteria_scores
       - duration
+      - uid
       - video_id
   securitySchemes:
     oauth2:

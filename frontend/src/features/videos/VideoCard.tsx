@@ -24,7 +24,10 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import { convertDurationToClockDuration } from 'src/utils/video';
+import {
+  convertDurationToClockDuration,
+  videoIdFromEntity,
+} from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
   youtube_complements: {
@@ -186,7 +189,8 @@ function VideoCard({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const videoId = video.video_id;
+
+  const videoId = videoIdFromEntity(video);
   let total_score = 0;
   let max_score = -Infinity;
   let min_score = Infinity;
@@ -419,7 +423,7 @@ function VideoCard({
       >
         {actions.map((Action, index) =>
           typeof Action === 'function' ? (
-            <Action key={index} videoId={videoId} />
+            <Action key={index} uid={video.uid} />
           ) : (
             Action
           )
@@ -449,7 +453,7 @@ function VideoCard({
             >
               {settings.map((Action, index) =>
                 typeof Action === 'function' ? (
-                  <Action key={index} videoId={videoId} />
+                  <Action key={index} uid={video.uid} />
                 ) : (
                   Action
                 )
