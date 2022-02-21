@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import makeStyles from '@mui/styles/makeStyles';
 import {
   CircularProgress,
   Grid,
   Typography,
   Card,
   Box,
-  Theme,
+  useTheme,
 } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
@@ -20,25 +19,6 @@ import VideoSelector, {
 } from 'src/features/video_selector/VideoSelector';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { idFromUid } from 'src/utils/video';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  centering: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    paddingTop: 16,
-  },
-  content: {
-    maxWidth: '880px',
-    gap: '8px',
-  },
-  card: {
-    alignSelf: 'start',
-  },
-  cardTitle: {
-    color: theme.palette.text.secondary,
-  },
-}));
 
 const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -86,7 +66,7 @@ const rewriteLegacyParameters = (
  * these new video ID in the URL parameters.
  */
 const Comparison = () => {
-  const classes = useStyles();
+  const theme = useTheme();
 
   const { t } = useTranslation();
   const history = useHistory();
@@ -211,10 +191,23 @@ const Comparison = () => {
   }
 
   return (
-    <Grid container className={classes.content}>
-      <Grid item xs component={Card} className={classes.card}>
+    <Grid
+      container
+      sx={{
+        maxWidth: '880px',
+        gap: '8px',
+      }}
+    >
+      <Grid
+        item
+        xs
+        component={Card}
+        sx={{
+          alignSelf: 'start',
+        }}
+      >
         <Box m={0.5}>
-          <Typography variant="h5" className={classes.cardTitle}>
+          <Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
             Video 1
           </Typography>
         </Box>
@@ -225,9 +218,16 @@ const Comparison = () => {
           submitted={submitted}
         />
       </Grid>
-      <Grid item xs component={Card} className={classes.card}>
+      <Grid
+        item
+        xs
+        component={Card}
+        sx={{
+          alignSelf: 'start',
+        }}
+      >
         <Box m={0.5}>
-          <Typography variant="h5" className={classes.cardTitle}>
+          <Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
             Video 2
           </Typography>
         </Box>
@@ -241,8 +241,13 @@ const Comparison = () => {
       <Grid
         item
         xs={12}
-        className={classes.centering}
-        style={{ marginTop: '16px' }}
+        sx={{
+          marginTop: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+          paddingTop: '16px',
+        }}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (

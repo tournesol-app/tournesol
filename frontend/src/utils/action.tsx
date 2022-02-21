@@ -16,7 +16,7 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
       <IconButton
         size="medium"
         href={`/comparison/?uidA=${uid}`}
-        style={{ color: '#CDCABC' }}
+        sx={{ color: '#CDCABC' }}
       >
         <CompareIcon />
       </IconButton>
@@ -45,7 +45,7 @@ export const AddToRateLaterList = ({ uid }: { uid: string }) => {
         size="medium"
         color="secondary"
         onClick={handleCreation}
-        style={{ color: '#CDCABC' }}
+        sx={{ color: '#CDCABC' }}
       >
         <AddIcon />
       </IconButton>
@@ -68,7 +68,7 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
             if (asyncCallback) await asyncCallback();
             showSuccessAlert(t('actions.videoDeletedFromRateLaterList'));
           }}
-          style={{ color: '#CDCABC' }}
+          sx={{ color: '#CDCABC' }}
         >
           <DeleteIcon />
         </IconButton>

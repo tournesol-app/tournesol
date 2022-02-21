@@ -1,16 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
 import { Box, CircularProgress } from '@mui/material';
-
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles(() => ({
-  loadingContent: {
-    opacity: '30%',
-    filter: 'grayscale(100%) blur(2px)',
-    pointerEvents: 'none',
-  },
-}));
 
 interface LoaderProps {
   isLoading: boolean;
@@ -23,8 +12,6 @@ interface LoaderProps {
  * and a circular loader will be visibled in an overlay.
  */
 const LoaderWrapper = ({ isLoading, children }: LoaderProps) => {
-  const classes = useStyles();
-
   return (
     <>
       {isLoading && (
@@ -41,7 +28,15 @@ const LoaderWrapper = ({ isLoading, children }: LoaderProps) => {
           </Box>
         </Box>
       )}
-      <Box className={clsx({ [classes.loadingContent]: isLoading })}>
+      <Box
+        sx={{
+          ...(isLoading && {
+            opacity: '30%',
+            filter: 'grayscale(100%) blur(2px)',
+            pointerEvents: 'none',
+          }),
+        }}
+      >
         {children}
       </Box>
     </>
