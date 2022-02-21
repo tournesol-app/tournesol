@@ -17,7 +17,9 @@ class VideoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Entity
 
+    type = "video"
     video_id = factory.LazyFunction(generate_youtube_id)
+    uid = factory.LazyAttribute(lambda e: f"yt:{e.video_id}")
     name = factory.Sequence(lambda n: 'Entity title %s' % n)
     description = factory.Sequence(lambda n: 'Entity description %s' % n)
     duration = factory.LazyAttribute(lambda _: datetime.timedelta(seconds=60))

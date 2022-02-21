@@ -265,7 +265,12 @@ class Entity(models.Model):
         except VideoNotFound:
             raise
         tags = extra_data.pop('tags', [])
-        video = cls.objects.create(video_id=video_id, **extra_data)
+        video = cls.objects.create(
+            video_id=video_id,
+            type=TYPE_VIDEO,
+            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}",
+            **extra_data
+        )
         for tag_name in tags:
             #  The return object is a tuple having first an instance of Tag, and secondly a bool
             tag, _ = Tag.objects.get_or_create(name=tag_name)
@@ -280,13 +285,6 @@ class Entity(models.Model):
         # That's why a default value is set here to handle correctly blank values in forms.
         if self.metadata is None:
             self.metadata = {}
-
-    def save(self, *args, **kwargs):
-        self.uid = '{}{}{}'.format(
-            Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER, self.video_id
-        )
-        self.type = TYPE_VIDEO
-        super().save(*args, **kwargs)
 
 
 class VideoRateLater(models.Model):

@@ -1,4 +1,6 @@
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
+from typing import Type
+from rest_framework.serializers import Serializer
 
 
 class EntityType(ABC):
@@ -8,6 +10,8 @@ class EntityType(ABC):
     # and to the `entity_type` in Poll.
     name: str
 
+    metadata_serializer_class: Type[Serializer]
+
     @classmethod
     def filter_date_lte(cls, qs, dt):
         return qs.filter(add_time__lte=dt)
@@ -16,6 +20,7 @@ class EntityType(ABC):
     def filter_date_gte(cls, qs, dt):
         return qs.filter(add_time__gte=dt)
 
-    @abstractclassmethod
+    @abstractmethod
+    @classmethod
     def filter_search(cls, qs, query: str):
         raise NotImplementedError
