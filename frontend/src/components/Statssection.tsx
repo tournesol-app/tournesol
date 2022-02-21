@@ -3,86 +3,96 @@ import { StatsService } from 'src/services/openapi';
 import type { Statistics } from 'src/services/openapi';
 import React, { useEffect, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Box } from '@mui/system';
 
-interface statsType {
+interface statsProp {
   text: string;
   count: number;
-  last_month_count: number;
+  lastMonthCount: number;
 }
 
-const StatsUi = (props: statsType) => {
+interface statsData {
+  userCount: number;
+  lastMonthUserCount: number;
+  videoCount: number;
+  lastMonthVideoCount: number;
+  comparisonCount: number;
+  lastMonthComparisonCount: number;
+}
+
+const StatsUi = (props: statsProp) => {
   return (
     <Grid item xs={4}>
-      <span style={{ fontSize: '12px' }}>{props.text}</span> <br />
-      <span style={{ fontSize: '50px', lineHeight: '1em' }}>
+      <Box component="span" sx={{ fontSize: '12px' }}>
+        {props.text}
+      </Box>{' '}
+      <br />
+      <Box component="span" sx={{ fontSize: '50px', lineHeight: '1em' }}>
         {' '}
-        {props.count}{' '}  
-      </span>{' '}
+        {props.count}{' '}
+      </Box>{' '}
       <br />
       {
-        <span
-          style={
-            props.last_month_count >= 0 ? { color: 'green' } : { color: 'red' }
-          }
+        <Box
+          component="span"
+          sx={props.lastMonthCount >= 0 ? { color: 'black' } : { color: 'red' }}
         >
-          {(props.last_month_count >= 0 ? '+ ' : '') + props.last_month_count}
-        </span>
+          {(props.lastMonthCount >= 0 ? '+ ' : '') + props.lastMonthCount}
+        </Box>
       }
     </Grid>
   );
 };
 
 const StatsSection = () => {
-  const [data, setData] = useState({
-    user_count: 0,
-    last_month_user_count: 0,
-    video_count: 0,
-    last_month_video_count: 0,
-    comparison_count: 0,
-    last_month_comparison_count: 0,
+  const [data, setData] = useState<statsData>({
+    userCount: 0,
+    lastMonthUserCount: 0,
+    videoCount: 0,
+    lastMonthVideoCount: 0,
+    comparisonCount: 0,
+    lastMonthComparisonCount: 0,
   });
 
   const matches = useMediaQuery('(min-width:600px)');
 
-  const updateState = (value: Statistics) => {
-    setData({
-      user_count: value.user_count,
-      video_count: value.video_count,
-      comparison_count: value.comparison_count,
-      last_month_user_count: value.last_month_user_count,
-      last_month_video_count: value.last_month_video_count,
-      last_month_comparison_count: value.last_month_video_count,
-    });
-  };
-
   useEffect(() => {
     StatsService.statsRetrieve()
-      .then(updateState)
+      .then((value: Statistics) => {
+        setData({
+          userCount: value.user_count,
+          videoCount: value.video_count,
+          comparisonCount: value.comparison_count,
+          lastMonthUserCount: value.last_month_user_count,
+          lastMonthVideoCount: value.last_month_video_count,
+          lastMonthComparisonCount: value.last_month_video_count,
+        });
+      })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
 
   return (
     <Grid
       container
-      style={{ background: 'black', color: 'white', textAlign: 'center' }}
+      sx={{ background: '#1282B2', color: 'white', textAlign: 'center' }}
       direction={!matches ? 'column' : 'row'}
     >
       <StatsUi
-        text="User Count"
-        count={data.user_count}
-        last_month_count={data.last_month_user_count}
+        text="Active users"
+        count={data.userCount}
+        lastMonthCount={data.lastMonthUserCount}
       />
       <StatsUi
-        text="Comparison Count"
-        count={data.comparison_count}
-        last_month_count={data.last_month_comparison_count}
+        text="Comparisons"
+        count={data.comparisonCount}
+        lastMonthCount={data.lastMonthComparisonCount}
       />
       <StatsUi
-        text="Video Count"
-        count={data.video_count}
-        last_month_count={data.last_month_video_count}
+        text="Rated videos"
+        count={data.videoCount}
+        lastMonthCount={data.lastMonthVideoCount}
       />
     </Grid>
   );
