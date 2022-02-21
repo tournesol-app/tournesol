@@ -40,6 +40,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const UID_PARAMS: { vidA: string; vidB: string } = {
+  vidA: 'uidA',
+  vidB: 'uidB',
+};
+const LEGACY_PARAMS: { vidA: string; vidB: string } = {
+  vidA: 'videoA',
+  vidB: 'videoB',
+};
+
 /**
  * Return an URLSearchParams without legacy parameters.
  */
@@ -90,34 +99,21 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const uidParams: { vidA: string; vidB: string } = useMemo(() => {
-    return {
-      vidA: 'uidA',
-      vidB: 'uidB',
-    };
-  }, []);
-  const legacyParams: { vidA: string; vidB: string } = useMemo(() => {
-    return {
-      vidA: 'videoA',
-      vidB: 'videoB',
-    };
-  }, []);
-
-  const uidA: string = searchParams.get(uidParams.vidA) || '';
-  const uidB: string = searchParams.get(uidParams.vidB) || '';
+  const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
+  const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
   const videoA: string = idFromUid(uidA);
   const videoB: string = idFromUid(uidB);
 
   // clean the URL by replacing legacy parameters by UIDs
-  const legacyA = searchParams.get(legacyParams.vidA);
-  const legacyB = searchParams.get(legacyParams.vidB);
+  const legacyA = searchParams.get(LEGACY_PARAMS.vidA);
+  const legacyB = searchParams.get(LEGACY_PARAMS.vidB);
   const newSearchParams = rewriteLegacyParameters(
     uidA,
     uidB,
     legacyA,
     legacyB,
-    uidParams.vidA,
-    uidParams.vidB
+    UID_PARAMS.vidA,
+    UID_PARAMS.vidB
   );
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
@@ -142,25 +138,18 @@ const Comparison = () => {
         }
         history.push('?' + searchParams.toString());
       }
-      if (videoKey === uidParams.vidA) {
+      if (videoKey === UID_PARAMS.vidA) {
         setSelectorA(newValue);
-      } else if (videoKey === uidParams.vidB) {
+      } else if (videoKey === UID_PARAMS.vidB) {
         setSelectorB(newValue);
       }
       setSubmitted(false);
     },
-    [history, location.search, uidParams]
+    [history, location.search]
   );
 
-  const onChangeA = useMemo(
-    () => onChange(uidParams.vidA),
-    [onChange, uidParams.vidA]
-  );
-
-  const onChangeB = useMemo(
-    () => onChange(uidParams.vidB),
-    [onChange, uidParams.vidB]
-  );
+  const onChangeA = useMemo(() => onChange(UID_PARAMS.vidA), [onChange]);
+  const onChangeB = useMemo(() => onChange(UID_PARAMS.vidB), [onChange]);
 
   useEffect(() => {
     setIsLoading(true);
