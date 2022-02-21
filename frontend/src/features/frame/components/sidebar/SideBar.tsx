@@ -99,7 +99,10 @@ const SideBar = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
 
-  const isItemSelected = (url: string) => url === location.pathname;
+  // parameter 'url', which corresponds to the target url, may contain some url parameters
+  // we make sure that we highlight the component the user loaded
+  const isItemSelected = (url: string) =>
+    url.split('?')[0] === location.pathname;
 
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },

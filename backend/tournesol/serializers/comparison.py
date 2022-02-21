@@ -29,6 +29,16 @@ class ComparisonSerializerMixin:
 
         return opposite_scores
 
+    def validate_criteria_scores(self, value):
+        current_poll = self.context["poll"]
+        missing_criterias = (
+            set(current_poll.required_criterias_list)
+            - set(score["criteria"] for score in value)
+        )
+        if missing_criterias:
+            raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
+        return value
+
 
 class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
     """
