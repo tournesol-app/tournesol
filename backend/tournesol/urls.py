@@ -79,7 +79,7 @@ urlpatterns = [
     ),
     # Ratings API
     path(
-        "users/me/contributor_ratings/",
+        "users/me/contributor_ratings/<str:poll_name>",
         ContributorRatingList.as_view(),
         name="ratings_me_list",
     ),

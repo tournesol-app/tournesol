@@ -1,7 +1,6 @@
 """
-API endpoint to manipulate contributor ratings
+API endpoint to manipulate contributor ratings.
 """
-
 from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
@@ -9,12 +8,13 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import exceptions, generics
 from rest_framework.response import Response
 
-from tournesol.models import Comparison, ContributorRating
+from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
     ContributorRatingUpdateAllSerializer,
 )
+from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 def get_annotated_ratings():
@@ -67,7 +67,7 @@ class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
         "specific video, with optional visibility settings."
     ),
 )
-class ContributorRatingList(generics.ListCreateAPIView):
+class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
     queryset = ContributorRating.objects.none()
 
     def get_serializer_class(self):
@@ -78,7 +78,7 @@ class ContributorRatingList(generics.ListCreateAPIView):
     def get_queryset(self):
         ratings = (
             get_annotated_ratings()
-            .filter(user=self.request.user, n_comparisons__gt=0)
+            .filter(poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0)
             .select_related("entity")
             .prefetch_related("criteria_scores")
         )
