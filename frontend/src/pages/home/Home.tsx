@@ -107,7 +107,7 @@ const HomePage = () => {
         <Grid item xs={12} className={classes.container}>
           <ContributeSection />
         </Grid>
-        <StatsSection/>
+        <StatsSection />
       </Grid>
     </div>
   );

@@ -9,21 +9,19 @@ const PublicDownloadSection = () => {
   const { t } = useTranslation();
   const api_url = process.env.REACT_APP_API_URL;
 
-  const [user_count, setUserCount] = useState(0);
-  const [video_count, setVideoCount] = useState(0);
-  const [comparison_count, setComparisonCount] = useState(0);
-
-  const updateState = (value: Statistics) => {
-    setUserCount(value.user_count);
-    setVideoCount(value.video_count);
-    setComparisonCount(value.comparison_count);
-  };
+  const [userCount, setUserCount] = useState<number>(0);
+  const [videoCount, setVideoCount] = useState<number>(0);
+  const [comparisonCount, setComparisonCount] = useState<number>(0);
 
   useEffect(() => {
     StatsService.statsRetrieve()
-      .then(updateState)
+      .then((value: Statistics) => {
+        setUserCount(value.user_count);
+        setVideoCount(value.video_count);
+        setComparisonCount(value.comparison_count);
+      })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
 
@@ -48,8 +46,8 @@ const PublicDownloadSection = () => {
       <Typography paragraph>
         <Trans t={t} i18nKey="about.publicDatabaseThanksToContributors">
           Finally, we would like to thank all the contributors who compared
-          videos on Tournesol. We count so far about {{ user_count }} users who
-          compared {{ comparison_count }} times more than {{ video_count }}{' '}
+          videos on Tournesol. We count so far about {{ userCount }} users who
+          compared {{ comparisonCount }} times more than {{ videoCount }}{' '}
           videos.
         </Trans>
       </Typography>
