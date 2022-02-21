@@ -53,10 +53,12 @@ const rewriteLegacyParameters = (
   searchParams.append(paramVidB, uidB);
 
   if (legacyA && uidA === '') {
+    searchParams.delete(paramVidA);
     searchParams.append(paramVidA, UID_YT_NAMESPACE + legacyA);
   }
 
   if (legacyB && uidB === '') {
+    searchParams.delete(paramVidB);
     searchParams.append(paramVidB, UID_YT_NAMESPACE + legacyB);
   }
 
@@ -98,19 +100,12 @@ const Comparison = () => {
     };
   }, []);
 
-  // step 1: try to read UIDs from the URL...
   const uidA: string = searchParams.get(uidParams.vidA) || '';
   const uidB: string = searchParams.get(uidParams.vidB) || '';
+  const videoA: string = idFromUid(uidA);
+  const videoB: string = idFromUid(uidB);
 
-  // step 2: if they are empty, try the legacy videoA/videoB parameters
-  const videoA: string = uidA
-    ? idFromUid(uidA)
-    : searchParams.get(legacyParams.vidA) || '';
-  const videoB: string = uidB
-    ? idFromUid(uidB)
-    : searchParams.get(legacyParams.vidB) || '';
-
-  // step 3: Clean the URL by replacing legacy parameters by UIDs.
+  // clean the URL by replacing legacy parameters by UIDs
   const legacyA = searchParams.get(legacyParams.vidA);
   const legacyB = searchParams.get(legacyParams.vidB);
   searchParams.delete(legacyParams.vidA);
