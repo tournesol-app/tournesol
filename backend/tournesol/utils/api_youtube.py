@@ -36,7 +36,7 @@ def get_youtube_video_details(video_id):
         )
 
     request = youtube.videos().list(
-        part="snippet,contentDetails,statistics", id=video_id
+        part="snippet,contentDetails,statistics,status", id=video_id
     )
     return request.execute()
 
@@ -62,21 +62,25 @@ def get_video_metadata(video_id, compute_language=True):
     # we could truncate description to spare some space
     description = str(yt_info["snippet"]["description"])
     uploader = yt_info["snippet"]["channelTitle"]
+    channel_id = yt_info["snippet"]["channelId"]
     if compute_language:
         language = compute_video_language(uploader, title, description)
     else:
         language = None
-    #  if video has no tags, te field doesn't appear on response
+    #  if video has no tags, the field doesn't appear on response
     tags = yt_info["snippet"].get("tags", [])
     duration = parse_duration(yt_info["contentDetails"]["duration"])
+    is_unlisted = yt_info["status"].get("privacyStatus") == "unlisted"
     return {
+        "source": "youtube",
         "name": title,
         "description": description,
         "publication_date": published_date,
         "views": nb_views,
         "uploader": uploader,
+        "channel_id": channel_id,
         "language": language,
         "tags": tags,
-        "duration": duration,
-        "metadata_timestamp": timezone.now(),
+        "duration": int(duration.total_seconds()) if duration else None,
+        "is_unlisted": is_unlisted,
     }

@@ -2,6 +2,7 @@
 Entity and closely related models.
 """
 
+from functools import cached_property
 import logging
 from datetime import timedelta
 
@@ -19,6 +20,7 @@ from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models.tags import Tag
+from tournesol.serializers.metadata import VideoMetadata
 
 LANGUAGES = settings.LANGUAGES
 
@@ -142,6 +144,10 @@ class Entity(models.Model):
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.type]
 
+    @cached_property
+    def inner(self):
+        return self.entity_cls(self)
+
     @property
     def best_text(self, min_len=5):
         """Return description, otherwise title."""
@@ -244,18 +250,11 @@ class Entity(models.Model):
         if not metadata:
             return
 
-        fields = [
-            "name",
-            "description",
-            "publication_date",
-            "uploader",
-            "views",
-            "duration",
-            "metadata_timestamp",
-        ]
-        for f in fields:
-            setattr(self, f, metadata[f])
-        self.save(update_fields=fields)
+        for (metadata_key, metadata_value) in metadata.items():
+            if metadata_value is not None:
+                self.metadata[metadata_key] = metadata_value
+        self.metadata_timestamp = timezone.now()
+        self.save(update_fields=["metadata", "metadata_timestamp"])
 
     @classmethod
     def create_from_video_id(cls, video_id):
@@ -264,18 +263,29 @@ class Entity(models.Model):
             extra_data = get_video_metadata(video_id)
         except VideoNotFound:
             raise
-        tags = extra_data.pop('tags', [])
-        video = cls.objects.create(
+
+        serializer = VideoMetadata(data={
+            **extra_data,
+            "video_id": video_id,
+        })
+        if serializer.is_valid():
+            metadata = serializer.data
+        else:
+            raise RuntimeError(f"Unexpected errors in video metadata format: {serializer.errors}")
+
+        return cls.objects.create(
             video_id=video_id,
             type=TYPE_VIDEO,
             uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}",
-            **extra_data
+            metadata=metadata,
+            metadata_timestamp=timezone.now(),
         )
-        for tag_name in tags:
-            #  The return object is a tuple having first an instance of Tag, and secondly a bool
-            tag, _ = Tag.objects.get_or_create(name=tag_name)
-            video.tags.add(tag)
-        return video
+
+    @classmethod
+    def get_from_video_id(cls, video_id):
+        return cls.objects.get(
+            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}"
+        )
 
     def clean(self):
         # An empty dict is considered as an empty value for JSONField,

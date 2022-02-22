@@ -24,7 +24,7 @@ class TwitterBotAdmin(admin.ModelAdmin):
         "bot_name",
         "get_video_link",
     )
-    search_fields = ("video__video_id", "video__name", "video__uploader")
+    search_fields = ("video__uid", "video__name", "video__uploader")
     list_filter = ["bot_name"]
 
     @staticmethod
@@ -50,5 +50,5 @@ class TwitterBotAdmin(admin.ModelAdmin):
 
         return format_html(
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>',
-            obj.video.video_id,
+            obj.video.inner.youtube_video_id,
         )

@@ -26,7 +26,7 @@ def get_annotated_ratings():
     )
     return ContributorRating.objects.annotate(
         n_comparisons=Subquery(comparison_counts)
-    ).order_by("-entity__publication_date", "-pk")
+    ).order_by("-entity__metadata__publication_date", "-pk")
 
 
 @extend_schema_view(

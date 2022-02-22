@@ -33,15 +33,15 @@ class StatisticsAPI(TestCase):
         self._list_of_users = [user_1, user_2]
 
         video_1 = VideoFactory(
-            uploader="uploader1",
+            metadata__uploader="uploader1",
             rating_n_ratings=2,
         )
         video_2 = VideoFactory(
-            uploader="uploader2",
+            metadata__uploader="uploader2",
             rating_n_ratings=3,
         )
         video_3 = VideoFactory(
-            uploader="uploader2",
+            metadata__uploader="uploader2",
             rating_n_ratings=4,
         )
 

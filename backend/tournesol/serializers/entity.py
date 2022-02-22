@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Optional
 
 from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema_field
@@ -7,14 +6,23 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.fields import RegexField
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueValidator
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.models import Entity, EntityCriteriaScore
+from tournesol.entities.video import TYPE_VIDEO
 from tournesol.utils.api_youtube import VideoNotFound
 
 
 class VideoSerializer(ModelSerializer):
-    duration = serializers.SerializerMethodField()
+    video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX, source="metadata.video_id")
+    name = serializers.CharField(source="metadata.name", read_only=True)
+    description = serializers.CharField(source="metadata.description", read_only=True, allow_null=True)
+    publication_date = serializers.DateField(source="metadata.publication_date", read_only=True, allow_null=True)
+    views = serializers.IntegerField(source="metadata.views", read_only=True, allow_null=True)
+    uploader = serializers.CharField(source="metadata.uploader", read_only=True, allow_null=True)
+    language = serializers.CharField(source="metadata.language", read_only=True, allow_null=True)
+    duration = serializers.IntegerField(source="metadata.duration", read_only=True, allow_null=True)
 
     class Meta:
         model = Entity
@@ -34,28 +42,22 @@ class VideoSerializer(ModelSerializer):
         ]
         read_only_fields = [
             "uid",
-            "name",
-            "description",
-            "publication_date",
-            "views",
-            "uploader",
-            "language",
             "rating_n_ratings",
             "rating_n_contributors",
-            "duration",
         ]
+
+    def validate_video_id(self, value):
+        if Entity.objects.filter(
+            uid=f"{Entity.UID_YT_NAMESPACE}{Entity.UID_DELIMITER}{value}"
+        ).exists():
+            raise ValidationError("A video with this video_id already exists")
+        return value
 
     def create(self, validated_data):
         try:
-            return Entity.create_from_video_id(validated_data["video_id"])
+            return Entity.create_from_video_id(validated_data["metadata"]["video_id"])
         except VideoNotFound:
             raise NotFound("The video has not been found. `video_id` may be incorrect.")
-
-    # Convert duration to seconds to facilitate use of Humanize package
-    def get_duration(self, obj) -> Optional[int]:
-        if obj.duration:
-            return int(obj.duration.total_seconds())
-        return None
 
 
 class RelatedVideoSerializer(VideoSerializer):
@@ -72,7 +74,7 @@ class RelatedVideoSerializer(VideoSerializer):
 
     def validate_video_id(self, value):
         try:
-            Entity.objects.get(video_id=value)
+            Entity.get_from_video_id(video_id=value)
         except ObjectDoesNotExist:
             try:
                 Entity.create_from_video_id(value)
