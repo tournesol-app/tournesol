@@ -57,7 +57,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve the logged in user's ratings per video "
+        description="Retrieve the logged in user's ratings per video in a given poll"
         "(computed automatically from the user's comparisons).",
         parameters=[
             OpenApiParameter("is_public", OpenApiTypes.BOOL, OpenApiParameter.QUERY)
@@ -65,7 +65,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
     ),
     post=extend_schema(
         description="Initialize the rating object for the current user about a "
-        "specific video, with optional visibility settings."
+        "specific video in a given poll, with optional visibility settings."
     ),
 )
 class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
@@ -98,15 +98,18 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
         return ratings
 
 
-class ContributorRatingUpdateAll(generics.GenericAPIView):
+class ContributorRatingUpdateAll(PollScopedViewMixin, generics.GenericAPIView):
     """
-    Mark all contributor ratings by current user as public or private.
+    Mark all contributor ratings by current user as public or private in the
+    given poll.
     """
 
     serializer_class = ContributorRatingUpdateAllSerializer
 
     def get_queryset(self):
-        return ContributorRating.objects.filter(user=self.request.user)
+        return ContributorRating.objects.filter(
+            poll=self.poll_from_url, user=self.request.user
+        )
 
     def patch(self, request, *args, **kwargs):
         queryset = self.get_queryset()

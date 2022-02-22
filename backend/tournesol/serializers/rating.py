@@ -36,7 +36,8 @@ class ContributorRatingSerializer(ModelSerializer):
             # Use annotated field if it has been defined by the queryset
             return obj.n_comparisons
         return obj.user.comparisons.filter(
-            Q(poll=self.context["poll"]) & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
+            Q(poll=self.context["poll"])
+            & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
         ).count()
 
 

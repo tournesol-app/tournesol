@@ -249,7 +249,7 @@ class RatingApi(TestCase):
             self.user2.contributorvideoratings.filter(is_public=False).count(), 1
         )
         response = self.client.patch(
-            "/users/me/contributor_ratings/_all/", data={"is_public": False}
+            "{}_all/".format(self.ratings_base_url), data={"is_public": False}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
