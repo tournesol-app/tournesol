@@ -17,6 +17,7 @@ import {
   isVideoIdValid,
 } from 'src/utils/video';
 import { UsersService, ContributorRating } from 'src/services/openapi';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -63,7 +64,10 @@ const VideoSelector = ({
     setLoading(true);
     try {
       const contributorRating =
-        await UsersService.usersMeContributorRatingsRetrieve({ videoId });
+        await UsersService.usersMeContributorRatingsRetrieve({
+          pollName: YOUTUBE_POLL_NAME,
+          videoId: videoId,
+        });
       onChange({
         videoId,
         rating: contributorRating,
@@ -73,6 +77,7 @@ const VideoSelector = ({
         try {
           const contributorRating =
             await UsersService.usersMeContributorRatingsCreate({
+              pollName: YOUTUBE_POLL_NAME,
               requestBody: {
                 video_id: videoId,
                 is_public: true,
