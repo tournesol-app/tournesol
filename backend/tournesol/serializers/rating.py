@@ -30,7 +30,8 @@ class ContributorRatingSerializer(ModelSerializer):
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_comparisons(self, obj):
         """
-        The number of comparisons always is computed for a specific poll.
+        The number of comparisons is always computed for a specific poll for
+        now.
         """
         if hasattr(obj, "n_comparisons"):
             # Use annotated field if it has been defined by the queryset
