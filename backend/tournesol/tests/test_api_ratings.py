@@ -68,8 +68,10 @@ class RatingApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        rating = ContributorRating.objects.select_related("user", "entity").get(
-            user=self.user1, entity__video_id=self.video3.video_id
+        rating = ContributorRating.objects.select_related("poll", "user", "entity").get(
+            poll=self.poll_videos,
+            user=self.user1,
+            entity__video_id=self.video3.video_id,
         )
         self.assertEqual(rating.is_public, False)
 
@@ -85,8 +87,8 @@ class RatingApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        rating = ContributorRating.objects.select_related("user", "entity").get(
-            user=self.user1, entity__video_id="NeADlWSDFAQ"
+        rating = ContributorRating.objects.select_related("poll", "user", "entity").get(
+            poll=self.poll_videos, user=self.user1, entity__video_id="NeADlWSDFAQ"
         )
         self.assertEqual(rating.is_public, False)
 
@@ -234,7 +236,9 @@ class RatingApi(TestCase):
         An anonymous user can't update the public/private status of a rating,
         in a given poll.
         """
-        rating = ContributorRating.objects.get(user=self.user1, entity=self.video1)
+        rating = ContributorRating.objects.get(
+            poll=self.poll_videos, user=self.user1, entity=self.video1
+        )
         self.assertEqual(rating.is_public, False)
 
         response = self.client.patch(
@@ -252,7 +256,9 @@ class RatingApi(TestCase):
         rating, in a given poll.
         """
         self.client.force_authenticate(self.user1)
-        rating = ContributorRating.objects.get(user=self.user1, entity=self.video1)
+        rating = ContributorRating.objects.get(
+            poll=self.poll_videos, user=self.user1, entity=self.video1
+        )
 
         self.assertEqual(rating.is_public, False)
         response = self.client.patch(
@@ -271,6 +277,7 @@ class RatingApi(TestCase):
         ratings, in a given poll.
         """
         self.client.force_authenticate(self.user2)
+
         self.assertEqual(self.user2.contributorvideoratings.count(), 2)
         self.assertEqual(
             self.user2.contributorvideoratings.filter(is_public=False).count(), 1
