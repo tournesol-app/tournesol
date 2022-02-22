@@ -88,5 +88,5 @@ export const getLanguageName = (t: TFunction, language: string) => {
     fr: () => t('language.french'),
     de: () => t('language.german'),
   };
-  return names[language]?.() ?? '';
+  return names[language]?.() ?? language.toUpperCase();
 };
