@@ -81,3 +81,12 @@ export const defaultRecommendationFilters = {
 };
 
 export const availableRecommendationsLanguages = ['en', 'fr', 'de'];
+
+export const getLanguageName = (t: TFunction, language: string) => {
+  const names: Record<string, () => string> = {
+    en: () => t('language.english'),
+    fr: () => t('language.french'),
+    de: () => t('language.german'),
+  };
+  return names[language]?.() ?? '';
+};

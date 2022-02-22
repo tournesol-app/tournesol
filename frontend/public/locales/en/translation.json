@@ -111,9 +111,9 @@
   },
   "options": "Options",
   "language": {
-    "en": "english",
-    "fr": "french",
-    "de": "german"
+    "english": "english",
+    "french": "french",
+    "german": "german"
   },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
