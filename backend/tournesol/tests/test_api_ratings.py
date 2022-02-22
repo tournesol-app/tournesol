@@ -27,6 +27,7 @@ class RatingApi(TestCase):
 
         self.user1 = UserFactory()
         self.user2 = UserFactory()
+
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
         self.video3 = VideoFactory()
@@ -45,6 +46,15 @@ class RatingApi(TestCase):
         ContributorRatingFactory(user=self.user1, entity=self.video2)
         ContributorRatingFactory(user=self.user2, entity=self.video1)
         ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
+
+    def test_anonymous_cant_create(self):
+        """
+        An anonymous user can't create a rating for an existing video.
+        """
+        response = self.client.post(
+            self.ratings_base_url, {"video_id": self.video3.video_id}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_create_with_existing_video(self):
         """
@@ -219,6 +229,23 @@ class RatingApi(TestCase):
             response.json()["results"][0]["video"]["video_id"], self.video2.video_id
         )
 
+    def test_anonymous_cant_update_public_status(self):
+        """
+        An anonymous user can't update the public/private status of a rating,
+        in a given poll.
+        """
+        rating = ContributorRating.objects.get(user=self.user1, entity=self.video1)
+        self.assertEqual(rating.is_public, False)
+
+        response = self.client.patch(
+            "{}{}/".format(self.ratings_base_url, self.video1.video_id),
+            data={"is_public": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        rating.refresh_from_db()
+        self.assertEqual(rating.is_public, False)
+
     def test_authenticated_can_update_public_status(self):
         """
         An authenticated user can update the public/private status of its
@@ -254,4 +281,26 @@ class RatingApi(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             self.user2.contributorvideoratings.filter(is_public=False).count(), 2
+        )
+
+    def test_anonymous_cant_update_public_status_all(self):
+        """
+        An anonymous user can't update the public/private status of a list of
+        ratings, in a given poll.
+        """
+        user2_private_ratings = self.user2.contributorvideoratings.filter(
+            is_public=False
+        ).count()
+
+        self.assertEqual(self.user2.contributorvideoratings.count(), 2)
+        self.assertEqual(user2_private_ratings, 1)
+
+        response = self.client.patch(
+            "{}_all/".format(self.ratings_base_url), data={"is_public": False}
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # the number of private ratings of the user2 must not have changed
+        self.assertEqual(
+            self.user2.contributorvideoratings.filter(is_public=False).count(),
+            user2_private_ratings,
         )
