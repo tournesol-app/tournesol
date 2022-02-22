@@ -57,6 +57,8 @@ Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` de
 
 ## Setup Google Api Key
 
+* Configuring a Google API key allows the application to fetch video metadata directly from YouTube. The application should still start without it, but some features will be missing. It's recommended to get and configure this API key if you plan to contribute regularly to the project, to make your environment closer to the production one.
+
 * Go to https://console.cloud.google.com/apis/ and create a new project named `tournesol`
 
 * Setup you credentials by getting a API key. Do not restrict its use for development purpose.
