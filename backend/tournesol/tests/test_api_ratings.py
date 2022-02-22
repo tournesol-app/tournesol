@@ -19,7 +19,7 @@ class RatingApi(TestCase):
 
     def setUp(self):
         self.poll_videos = Poll.default_poll()
-        self.ratings_base_url = "/users/me/contributor_ratings/{}".format(
+        self.ratings_base_url = "/users/me/contributor_ratings/{}/".format(
             self.poll_videos.name
         )
 
@@ -152,7 +152,7 @@ class RatingApi(TestCase):
         )
 
         response = self.client.get(
-            "{}/{}/".format(self.ratings_base_url, video.video_id), format="json"
+            "{}{}/".format(self.ratings_base_url, video.video_id), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["video"]["video_id"], video.video_id)
@@ -201,7 +201,7 @@ class RatingApi(TestCase):
 
         # get private ratings
         response = self.client.get(
-            "{}/?is_public=false".format(self.ratings_base_url), format="json"
+            "{}?is_public=false".format(self.ratings_base_url), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["count"], 1)
@@ -211,7 +211,7 @@ class RatingApi(TestCase):
 
         # get public ratings
         response = self.client.get(
-            "{}/?is_public=true".format(self.ratings_base_url), format="json"
+            "{}?is_public=true".format(self.ratings_base_url), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["count"], 1)
@@ -229,7 +229,7 @@ class RatingApi(TestCase):
 
         self.assertEqual(rating.is_public, False)
         response = self.client.patch(
-            "{}/{}/".format(self.ratings_base_url, self.video1.video_id),
+            "{}{}/".format(self.ratings_base_url, self.video1.video_id),
             data={"is_public": True},
             format="json",
         )

@@ -32,25 +32,26 @@ def get_annotated_ratings():
 @extend_schema_view(
     get=extend_schema(
         description="Retrieve the logged-in user's ratings for a specific video "
-        "(computed automatically from the user's comparisons)"
+        "in a given poll (computed automatically from the user's comparisons)."
     ),
     put=extend_schema(
         description="Update public / private status of the logged-in user ratings "
-        "for a specific video."
+        "for a specific video, in a given poll."
     ),
     patch=extend_schema(
         description="Update public / private status of the logged-in user ratings "
-        "for a specific video."
+        "for a specific video, in a given poll."
     ),
 )
-class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
+class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIView):
     serializer_class = ContributorRatingSerializer
 
     def get_object(self):
         return get_object_or_404(
             get_annotated_ratings(),
-            entity__video_id=self.kwargs["video_id"],
+            poll=self.poll_from_url,
             user=self.request.user,
+            entity__video_id=self.kwargs["video_id"],
         )
 
 

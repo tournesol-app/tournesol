@@ -7,20 +7,21 @@ from tournesol.models import Poll
 
 class PollScopedViewMixin:
     """
-    A mixin that automatically retrieves the poll name from a URL path
+    A mixin view that automatically retrieves the poll name from a URL path
     parameter, and make it available in the view and the serializer context.
 
-    This view must be mixed with `rest_framework.generics.GenericAPIView`.
+    This view must be mixed with a `rest_framework.generics.GenericAPIView`
+    view or a subclass of it.
     """
-
+    poll_parameter = "poll_name"
     # used to avoid multiple similar database queries in a single HTTP request
     poll_from_url: Poll
 
     def poll_from_kwargs_or_404(self, request_kwargs):
         try:
-            return Poll.objects.get(name=request_kwargs["poll_name"])
+            return Poll.objects.get(name=request_kwargs[self.poll_parameter])
         except ObjectDoesNotExist:
-            return self.response_404_poll_doesnt_exist(request_kwargs["poll_name"])
+            return self.response_404_poll_doesnt_exist(request_kwargs[self.poll_parameter])
 
     def response_404_poll_doesnt_exist(self, poll_name: str):
         return Response(
