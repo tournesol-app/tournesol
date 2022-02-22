@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import ContributorRating
+from tournesol.models import ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
@@ -18,11 +18,19 @@ class RatingApi(TestCase):
     """
 
     def setUp(self):
+        self.poll_videos = Poll.default_poll()
+        self.ratings_base_url = "/users/me/contributor_ratings/{}".format(
+            self.poll_videos.name
+        )
+
+        self.client = APIClient()
+
         self.user1 = UserFactory()
         self.user2 = UserFactory()
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
         self.video3 = VideoFactory()
+
         ComparisonFactory(
             user=self.user1,
             entity_1=self.video1,
@@ -39,14 +47,15 @@ class RatingApi(TestCase):
         ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
 
     def test_anonymous_cant_list(self):
-        factory = APIClient()
-        response = factory.get("/users/me/contributor_ratings/", format="json")
+        response = self.client.get(
+            self.ratings_base_url,
+            format="json",
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_list(self):
-        factory = APIClient()
-        factory.force_authenticate(user=self.user1)
-        response = factory.get("/users/me/contributor_ratings/", format="json")
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.get(self.ratings_base_url, format="json")
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rating = response.data["results"][0]
@@ -54,27 +63,53 @@ class RatingApi(TestCase):
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
 
-    def test_authenticated_can_create_rating_about_non_existing_video(self):
-        factory = APIClient()
-        factory.force_authenticate(user=self.user1)
-        response = factory.post(
-            "/users/me/contributor_ratings/", {"video_id": "NeADlWSDFAQ"}, format="json"
+    def test_authenticated_can_create_with_existing_video(self):
+        """
+        An authenticated user can create a rating for an existing video. The
+        rating is private by default.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url, {"video_id": self.video3.video_id}, format="json"
         )
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_authenticated_cant_create_rating_about_invalid_id(self):
-        factory = APIClient()
-        factory.force_authenticate(user=self.user1)
-        response = factory.post(
-            "/users/me/contributor_ratings/", {"video_id": "invalid"}, format="json"
+        rating = ContributorRating.objects.select_related(
+            "user", "entity"
+        ).get(
+            user=self.user1,
+            entity__video_id=self.video3.video_id
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(rating.is_public, False)
 
-    def test_authenticated_initialize_rating_as_public(self):
-        factory = APIClient()
-        factory.force_authenticate(user=self.user1)
-        response = factory.post(
-            "/users/me/contributor_ratings/",
+    def test_authenticated_can_create_with_non_existing_video(self):
+        """
+        An authenticated user can create a rating even if the video is not
+        already present in the database. The rating is private by default.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url, {"video_id": "NeADlWSDFAQ"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        rating = ContributorRating.objects.select_related(
+            "user", "entity"
+        ).get(
+            user=self.user1,
+            entity__video_id="NeADlWSDFAQ"
+        )
+        self.assertEqual(rating.is_public, False)
+
+    def test_authenticated_can_create_rating_as_public(self):
+        """
+        An authenticated user can create a public rating.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url,
             {"video_id": self.video3.video_id, "is_public": True},
             format="json",
         )
@@ -83,19 +118,37 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
 
-        # Create the same rating object raises a validation error
-        response = factory.post(
-            "/users/me/contributor_ratings/",
+    def test_authenticated_cant_create_twice(self):
+        """
+        An authenticated user can't create two ratings for a same couple video
+        id and poll name.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url,
+            {"video_id": self.video3.video_id, "is_public": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+
+        response = self.client.post(
+            self.ratings_base_url,
             {"video_id": self.video3.video_id, "is_public": True},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_authenticated_cant_create_with_invalid_video_id(self):
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url, {"video_id": "invalid"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_authenticated_fetch_non_existing_video(self):
-        factory = APIClient()
-        factory.force_authenticate(user=self.user1)
-        response = factory.get(
-            "/users/me/contributor_ratings/NeADlWSDFAQ/", format="json"
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.get(
+            "{}{}/".format(self.ratings_base_url, "NeADlWSDFAQ"), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
