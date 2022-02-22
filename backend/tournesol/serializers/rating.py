@@ -41,6 +41,14 @@ class ContributorRatingSerializer(ModelSerializer):
             & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
         ).count()
 
+    def to_internal_value(self, data):
+        """
+        Determine the poll according to the context provided by the view.
+        """
+        ret = super(ContributorRatingSerializer, self).to_internal_value(data)
+        ret["poll_id"] = self.context.get("poll").id
+        return ret
+
 
 class ContributorRatingCreateSerializer(ContributorRatingSerializer):
     video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX, write_only=True)
