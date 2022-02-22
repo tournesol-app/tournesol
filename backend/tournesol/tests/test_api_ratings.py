@@ -266,7 +266,7 @@ class RatingApi(TestCase):
             data={"is_public": True},
             format="json",
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["is_public"], True, response.json())
         rating.refresh_from_db()
         self.assertEqual(rating.is_public, True)
@@ -276,18 +276,29 @@ class RatingApi(TestCase):
         An authenticated user can update the public/private status of all its
         ratings, in a given poll.
         """
-        self.client.force_authenticate(self.user2)
+        self.client.force_authenticate(self.user1)
 
-        self.assertEqual(self.user2.contributorvideoratings.count(), 2)
-        self.assertEqual(
-            self.user2.contributorvideoratings.filter(is_public=False).count(), 1
-        )
+        user1_private_ratings = self.user1.contributorvideoratings.filter(
+            is_public=True
+        ).count()
+        user2_private_ratings = self.user2.contributorvideoratings.filter(
+            is_public=True
+        ).count()
+
+        self.assertEqual(self.user1.contributorvideoratings.count(), 2)
+        self.assertEqual(user1_private_ratings, 0)
+        self.assertEqual(user2_private_ratings, 1)
+
         response = self.client.patch(
             "{}_all/".format(self.ratings_base_url), data={"is_public": False}
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            self.user2.contributorvideoratings.filter(is_public=False).count(), 2
+            self.user1.contributorvideoratings.filter(is_public=False).count(), 2
+        )
+        self.assertEqual(
+            self.user2.contributorvideoratings.filter(is_public=False).count(),
+            user2_private_ratings,
         )
 
     def test_anonymous_cant_update_public_status_all(self):
