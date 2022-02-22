@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from functools import cache
 from typing import Type
 
 from django.utils.functional import cached_property

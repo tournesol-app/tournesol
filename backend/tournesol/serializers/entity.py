@@ -6,23 +6,41 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.fields import RegexField
 from rest_framework.serializers import ModelSerializer
-from rest_framework.validators import UniqueValidator
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.models import Entity, EntityCriteriaScore
-from tournesol.entities.video import TYPE_VIDEO
 from tournesol.utils.api_youtube import VideoNotFound
 
 
 class VideoSerializer(ModelSerializer):
     video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX, source="metadata.video_id")
     name = serializers.CharField(source="metadata.name", read_only=True)
-    description = serializers.CharField(source="metadata.description", read_only=True, allow_null=True)
-    publication_date = serializers.DateField(source="metadata.publication_date", read_only=True, allow_null=True)
-    views = serializers.IntegerField(source="metadata.views", read_only=True, allow_null=True)
-    uploader = serializers.CharField(source="metadata.uploader", read_only=True, allow_null=True)
+    description = serializers.CharField(
+        source="metadata.description",
+        read_only=True,
+        allow_null=True
+    )
+    publication_date = serializers.DateField(
+        source="metadata.publication_date",
+        read_only=True,
+        allow_null=True
+    )
+    views = serializers.IntegerField(
+        source="metadata.views",
+        read_only=True,
+        allow_null=True
+    )
+    uploader = serializers.CharField(
+        source="metadata.uploader",
+        read_only=True,
+        allow_null=True
+    )
     language = serializers.CharField(source="metadata.language", read_only=True, allow_null=True)
-    duration = serializers.IntegerField(source="metadata.duration", read_only=True, allow_null=True)
+    duration = serializers.IntegerField(
+        source="metadata.duration",
+        read_only=True,
+        allow_null=True
+    )
 
     class Meta:
         model = Entity

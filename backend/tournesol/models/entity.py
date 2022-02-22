@@ -2,9 +2,9 @@
 Entity and closely related models.
 """
 
-from functools import cached_property
 import logging
 from datetime import timedelta
+from functools import cached_property
 
 import numpy as np
 from django.conf import settings

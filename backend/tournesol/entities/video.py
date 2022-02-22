@@ -1,8 +1,8 @@
-from xml.dom.minidom import Attr
 from django.db.models import Q
 
-from .base import EntityType
 from tournesol.serializers.metadata import VideoMetadata
+
+from .base import EntityType
 
 TYPE_VIDEO = "video"
 

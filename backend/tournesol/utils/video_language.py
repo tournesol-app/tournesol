@@ -36,7 +36,11 @@ def languages_detection(title, description):
 def compute_video_language(uploader, title, description):
 
     # Get language(s) from other videos of the same uploader
-    lang_list = Entity.objects.filter(metadata__uploader=uploader).values_list("metadata__language")
+    lang_list = (
+        Entity.objects
+        .filter(metadata__uploader=uploader)
+        .values_list("metadata__language")
+    )
 
     if lang_list:
         main_uploader_lang, main_uploader_lang_cnt = Counter(lang_list).most_common()[0]

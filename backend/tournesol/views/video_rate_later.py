@@ -7,7 +7,7 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.models import VideoRateLater, Entity
+from tournesol.models import Entity, VideoRateLater
 from tournesol.serializers.video_rate_later import VideoRateLaterSerializer
 
 
