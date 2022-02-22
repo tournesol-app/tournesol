@@ -1,23 +1,7 @@
 import React from 'react';
-import clsx from 'clsx';
-import { Button, Theme, Badge } from '@mui/material';
+import { Button, Badge, useTheme } from '@mui/material';
 import { ExpandMore, ExpandLess } from '@mui/icons-material';
-import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  collapseButton: {
-    padding: '0 8px',
-    marginBottom: '8px',
-    marginLeft: '-8px', // keep the text aligned to the left
-  },
-  collapseButtonDefault: {
-    color: theme.palette.action.active,
-  },
-  collapseButtonExpanded: {
-    color: theme.palette.secondary.main,
-  },
-}));
 
 interface CollapseButtonProps {
   children?: React.ReactNode;
@@ -41,7 +25,7 @@ const CollapseButton = ({
   showBadge = false,
   onClick,
 }: CollapseButtonProps) => {
-  const classes = useStyles();
+  const theme = useTheme();
   return (
     <Badge color="secondary" variant="dot" invisible={!showBadge}>
       <Button
@@ -51,10 +35,14 @@ const CollapseButton = ({
         aria-expanded={expanded}
         aria-label="show more"
         onClick={onClick}
-        className={clsx(classes.collapseButton, {
-          [classes.collapseButtonDefault]: !expanded,
-          [classes.collapseButtonExpanded]: expanded,
-        })}
+        sx={{
+          padding: '0 8px',
+          marginBottom: '8px',
+          marginLeft: '-8px', // keep the text aligned to the left
+          color: expanded
+            ? theme.palette.secondary.main
+            : theme.palette.action.active,
+        }}
       >
         {children}
       </Button>

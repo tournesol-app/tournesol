@@ -34,6 +34,14 @@ class Poll(models.Model):
     def criterias_list(self) -> List[str]:
         return list(self.criterias.values_list("name", flat=True))
 
+    @cached_property
+    def required_criterias_list(self) -> List[str]:
+        return list(
+            self.criterias
+            .filter(criteriarank__optional=False)
+            .values_list("name", flat=True)
+        )
+
     @property
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.entity_type]

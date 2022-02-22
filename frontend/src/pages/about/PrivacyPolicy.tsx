@@ -29,7 +29,7 @@ const PrivacyPolicyPage = () => {
           <Typography variant="h3" gutterBottom>
             {t('privacyPolicy.privacyPolicy')}
           </Typography>
-          <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontStyle: 'italic' }}>
             {t('privacyPolicy.whatPersonalDataTournesolCollectAndWhy')}
           </Typography>
           <Typography variant="h5">{t('privacyPolicy.ratings')}</Typography>
@@ -60,7 +60,7 @@ const PrivacyPolicyPage = () => {
           <Typography paragraph>
             {t('privacyPolicy.whatDataCollectEmbeddedWebsites')}
           </Typography>
-          <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontStyle: 'italic' }}>
             {t('privacyPolicy.whoTournesolSharesUsersNContributorsDataWith')}
           </Typography>
           <Typography paragraph>
@@ -84,7 +84,7 @@ const PrivacyPolicyPage = () => {
           <Typography paragraph>
             {t('privacyPolicy.researchPurposesParagraph')}
           </Typography>
-          <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontStyle: 'italic' }}>
             {t('privacyPolicy.howLongTournesolRetainsContributorsData')}
           </Typography>
           <Typography paragraph>
@@ -92,7 +92,7 @@ const PrivacyPolicyPage = () => {
               'privacyPolicy.howLongTournesolRetainsContributorsDataParagraph'
             )}
           </Typography>
-          <Typography variant="h4" gutterBottom style={{ fontStyle: 'italic' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontStyle: 'italic' }}>
             {t('privacyPolicy.whatRightsContributorsHaveOverTheirData')}
           </Typography>
           <Typography paragraph>

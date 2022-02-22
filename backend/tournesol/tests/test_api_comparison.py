@@ -43,7 +43,7 @@ class ComparisonApiTestCase(TestCase):
     non_existing_comparison = {
         "entity_a": {"video_id": _uid_01.split(":")[1]},
         "entity_b": {"video_id": _uid_03.split(":")[1]},
-        "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+        "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
         "duration_ms": 103,
     }
 
@@ -307,6 +307,16 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
 
+    def test_missing_non_optional_criteria_in_comparison(self):
+        client = APIClient()
+        client.force_authenticate(self.user)
+        data = deepcopy(self.non_existing_comparison)
+        data["criteria_scores"][0]["criteria"] = "pedagogy"
+        response = client.post(self.comparisons_base_url, data, format="json")
+        self.assertContains(
+            response, "Missing required criteria", status_code=status.HTTP_400_BAD_REQUEST
+        )
+
     def test_authenticated_cant_create_twice(self):
         """
         An authenticated user can't create two comparisons for the same couple
@@ -538,7 +548,7 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_01,
                 self._uid_02,
             ),
-            {"criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}]},
+            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -629,7 +639,7 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_03,
                 self._uid_04,
             ),
-            {"criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}]},
+            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
             format="json",
         )
         response = client.get(
@@ -664,7 +674,7 @@ class ComparisonApiTestCase(TestCase):
         data1 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},
             "entity_b": {"video_id": self._uid_06.split(":")[1]},
-            "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
         response = client.post(
@@ -677,7 +687,7 @@ class ComparisonApiTestCase(TestCase):
         data2 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},
             "entity_b": {"video_id": self._uid_07.split(":")[1]},
-            "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
         response = client.post(
@@ -692,7 +702,7 @@ class ComparisonApiTestCase(TestCase):
         data3 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},
             "entity_b": {"video_id": self._uid_06.split(":")[1]},
-            "criteria_scores": [{"criteria": "pedagogy", "score": 10, "weight": 10}],
+            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
             "duration_ms": 103,
         }
         response = client.post(

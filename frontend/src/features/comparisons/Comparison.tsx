@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import makeStyles from '@mui/styles/makeStyles';
 import {
   CircularProgress,
   Grid,
   Typography,
   Card,
   Box,
-  Theme,
+  useTheme,
 } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
@@ -19,25 +18,44 @@ import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { idFromUid } from 'src/utils/video';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  centering: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    paddingTop: 16,
-  },
-  content: {
-    maxWidth: '880px',
-    gap: '8px',
-  },
-  card: {
-    alignSelf: 'start',
-  },
-  cardTitle: {
-    color: theme.palette.text.secondary,
-  },
-}));
+const UID_PARAMS: { vidA: string; vidB: string } = {
+  vidA: 'uidA',
+  vidB: 'uidB',
+};
+const LEGACY_PARAMS: { vidA: string; vidB: string } = {
+  vidA: 'videoA',
+  vidB: 'videoB',
+};
+
+/**
+ * Return an URLSearchParams without legacy parameters.
+ */
+const rewriteLegacyParameters = (
+  uidA: string,
+  uidB: string,
+  legacyA: string | null,
+  legacyB: string | null,
+  paramVidA: string,
+  paramVidB: string
+) => {
+  const searchParams = new URLSearchParams();
+  searchParams.append(paramVidA, uidA);
+  searchParams.append(paramVidB, uidB);
+
+  if (legacyA && uidA === '') {
+    searchParams.delete(paramVidA);
+    searchParams.append(paramVidA, UID_YT_NAMESPACE + legacyA);
+  }
+
+  if (legacyB && uidB === '') {
+    searchParams.delete(paramVidB);
+    searchParams.append(paramVidB, UID_YT_NAMESPACE + legacyB);
+  }
+
+  return searchParams;
+};
 
 /**
  * The comparison UI.
@@ -48,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * these new video ID in the URL parameters.
  */
 const Comparison = () => {
-  const classes = useStyles();
+  const theme = useTheme();
 
   const { t } = useTranslation();
   const history = useHistory();
@@ -61,8 +79,22 @@ const Comparison = () => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const videoA: string = searchParams.get('videoA') || '';
-  const videoB: string = searchParams.get('videoB') || '';
+  const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
+  const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
+  const videoA: string = idFromUid(uidA);
+  const videoB: string = idFromUid(uidB);
+
+  // clean the URL by replacing legacy parameters by UIDs
+  const legacyA = searchParams.get(LEGACY_PARAMS.vidA);
+  const legacyB = searchParams.get(LEGACY_PARAMS.vidB);
+  const newSearchParams = rewriteLegacyParameters(
+    uidA,
+    uidB,
+    legacyA,
+    legacyB,
+    UID_PARAMS.vidA,
+    UID_PARAMS.vidB
+  );
 
   const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
     videoId: videoA,
@@ -77,24 +109,27 @@ const Comparison = () => {
     (videoKey: string) => (newValue: VideoSelectorValue) => {
       const searchParams = new URLSearchParams(location.search);
       const videoId = newValue.videoId;
-      if (searchParams.get(videoKey) !== videoId) {
+
+      if (idFromUid(searchParams.get(videoKey) || '') !== videoId) {
         searchParams.delete(videoKey);
+
         if (videoId) {
-          searchParams.append(videoKey, videoId);
+          searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
         }
         history.push('?' + searchParams.toString());
       }
-      if (videoKey === 'videoA') {
+      if (videoKey === UID_PARAMS.vidA) {
         setSelectorA(newValue);
-      } else if (videoKey === 'videoB') {
+      } else if (videoKey === UID_PARAMS.vidB) {
         setSelectorB(newValue);
       }
       setSubmitted(false);
     },
     [history, location.search]
   );
-  const onChangeA = useMemo(() => onChange('videoA'), [onChange]);
-  const onChangeB = useMemo(() => onChange('videoB'), [onChange]);
+
+  const onChangeA = useMemo(() => onChange(UID_PARAMS.vidA), [onChange]);
+  const onChangeB = useMemo(() => onChange(UID_PARAMS.vidB), [onChange]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -145,11 +180,34 @@ const Comparison = () => {
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
+  // redirect the user if at least one legacy parameters has been used
+  // existing UIDs always prevail
+  if (legacyA != null || legacyB != null) {
+    return (
+      <Redirect
+        to={{ pathname: location.pathname, search: newSearchParams.toString() }}
+      />
+    );
+  }
+
   return (
-    <Grid container className={classes.content}>
-      <Grid item xs component={Card} className={classes.card}>
+    <Grid
+      container
+      sx={{
+        maxWidth: '880px',
+        gap: '8px',
+      }}
+    >
+      <Grid
+        item
+        xs
+        component={Card}
+        sx={{
+          alignSelf: 'start',
+        }}
+      >
         <Box m={0.5}>
-          <Typography variant="h5" className={classes.cardTitle}>
+          <Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
             Video 1
           </Typography>
         </Box>
@@ -160,9 +218,16 @@ const Comparison = () => {
           submitted={submitted}
         />
       </Grid>
-      <Grid item xs component={Card} className={classes.card}>
+      <Grid
+        item
+        xs
+        component={Card}
+        sx={{
+          alignSelf: 'start',
+        }}
+      >
         <Box m={0.5}>
-          <Typography variant="h5" className={classes.cardTitle}>
+          <Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
             Video 2
           </Typography>
         </Box>
@@ -176,8 +241,13 @@ const Comparison = () => {
       <Grid
         item
         xs={12}
-        className={classes.centering}
-        style={{ marginTop: '16px' }}
+        sx={{
+          marginTop: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+          paddingTop: '16px',
+        }}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (

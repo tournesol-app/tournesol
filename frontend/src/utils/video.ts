@@ -1,5 +1,6 @@
 import { VideoService, UsersService } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from './constants';
+import { VideoObject } from './types';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -14,6 +15,41 @@ export function extractVideoId(idOrUrl: string) {
 
 export function isVideoIdValid(videoId: string) {
   return !!videoId.match(/^[A-Za-z0-9-_]{11}$/);
+}
+
+/**
+ * Return the video id of an entity.
+ *
+ * If no field `uid` is found, return the value of the legacy `video_id`
+ * field instead.
+ *
+ * The `uid` is expected to have the form `{namespace}:{id}`. The potential
+ * occurrences of the delimiter `:` in the identifier are considered part of it.
+ *
+ * Example with different `uid`:
+ *
+ *     yt:videoABCDEF -> videoABCDEF
+ *     yt:video:ABCDE -> video:ABCDE
+ */
+export function videoIdFromEntity(entity: VideoObject): string {
+  if (entity.uid) {
+    const id = idFromUid(entity.uid);
+    if (id) return id;
+  }
+
+  return entity.video_id;
+}
+
+export function idFromUid(uid: string): string {
+  if (uid) {
+    const uidSplit = uid.split(':');
+
+    if (uidSplit[0] !== '' && uidSplit[1] !== '') {
+      return uidSplit.slice(1).join();
+    }
+  }
+
+  return '';
 }
 
 function pick(arr: string[]): string | null {

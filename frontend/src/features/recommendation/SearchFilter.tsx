@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Collapse, Grid, Box } from '@mui/material';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import { CollapseButton } from 'src/components';
 import { useListFilter } from 'src/hooks';
 import LanguageFilter from './LanguageFilter';
@@ -16,12 +14,6 @@ import {
 } from 'src/utils/constants';
 import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 
-const useStyles = makeStyles({
-  filtersContainer: {
-    marginBottom: '8px',
-  },
-});
-
 /**
  * Filter options for Videos recommendations
  *
@@ -30,7 +22,6 @@ const useStyles = makeStyles({
  * and 'defaultRecommendationsFilters'.
  */
 function SearchFilter() {
-  const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
 
@@ -68,7 +59,7 @@ function SearchFilter() {
             />
           </Box>
         )}
-        <Grid container spacing={4} className={classes.filtersContainer}>
+        <Grid container spacing={4} sx={{ marginBottom: '8px' }}>
           <Grid item xs={6} md={3} lg={2} data-testid="search-date-safe-filter">
             <DateFilter
               value={filterParams.get(recommendationFilters.date) ?? ''}

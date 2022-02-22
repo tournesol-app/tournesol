@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import { Link as RouterLink } from 'react-router-dom';
-import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -25,37 +24,12 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import { convertDurationToClockDuration } from 'src/utils/video';
+import {
+  convertDurationToClockDuration,
+  videoIdFromEntity,
+} from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
-  main: {
-    margin: 0,
-    width: '100%',
-    maxWidth: 1000,
-    background: '#FFFFFF',
-    border: '1px solid #DCD8CB',
-    boxShadow:
-      '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
-    borderRadius: '4px',
-    alignContent: 'flex-start',
-    overflow: 'hidden',
-    fontSize: '16px',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '14px',
-    },
-  },
-  title: {
-    fontFamily: 'Poppins',
-    textAlign: 'left',
-    // Limit text to 3 lines and show ellipsis
-    display: '-webkit-box',
-    overflow: 'hidden',
-    '-webkit-line-clamp': 3,
-    '-webkit-box-orient': 'vertical',
-  },
-  title_compact: {
-    fontSize: '1em',
-  },
   youtube_complements: {
     margin: '4px 0',
     display: 'flex',
@@ -93,27 +67,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '0.9em',
     color: '#B38B00',
   },
-  rated: {
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    fontSize: '0.9em',
-    color: '#847F6E',
-    gap: '8px',
-  },
   top: {
     display: 'flex',
     flexWrap: 'wrap',
     alignContent: 'space-between',
-  },
-  actionsContainer: {
-    display: 'flex',
-    alignItems: 'end',
-    flexDirection: 'column',
-    padding: 4,
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'row',
-    },
   },
   settingsContainer: {
     '&.MuiGrid-item': {
@@ -134,6 +91,22 @@ const useStyles = makeStyles((theme) => ({
     animation: '1.2s ease-out infinite alternate $scaling',
   },
 }));
+
+const mainSx = {
+  margin: 0,
+  width: '100%',
+  maxWidth: 1000,
+  background: '#FFFFFF',
+  border: '1px solid #DCD8CB',
+  boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
+  borderRadius: '4px',
+  alignContent: 'flex-start',
+  overflow: 'hidden',
+  fontSize: {
+    xs: '14px',
+    md: '16px',
+  },
+};
 
 const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   {
@@ -165,7 +138,7 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
           px={1}
           fontSize="0.8em"
           fontWeight="bold"
-          style={{ pointerEvents: 'none' }}
+          sx={{ pointerEvents: 'none' }}
         >
           {duration}
         </Box>
@@ -216,7 +189,8 @@ function VideoCard({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const videoId = video.video_id;
+
+  const videoId = videoIdFromEntity(video);
   let total_score = 0;
   let max_score = -Infinity;
   let min_score = Infinity;
@@ -264,12 +238,12 @@ function VideoCard({
   }
 
   return (
-    <Grid container spacing={1} className={classes.main}>
+    <Grid container spacing={1} sx={mainSx}>
       <Grid
         item
         xs={12}
         sm={compact ? 12 : 4}
-        style={{ aspectRatio: '16 / 9', padding: 0 }}
+        sx={{ aspectRatio: '16 / 9', padding: '0 !important' }}
       >
         <ReactPlayer
           url={`https://youtube.com/watch?v=${videoId}`}
@@ -293,9 +267,16 @@ function VideoCard({
       >
         <div className={classes.top}>
           <Typography
-            className={clsx(classes.title, {
-              [classes.title_compact]: compact,
-            })}
+            sx={{
+              fontFamily: 'Poppins',
+              textAlign: 'left',
+              // Limit text to 3 lines and show ellipsis
+              display: '-webkit-box',
+              overflow: 'hidden',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              fontSize: compact ? '1em !important' : '',
+            }}
             variant={compact ? 'inherit' : 'h5'}
             title={video.name}
           >
@@ -340,7 +321,7 @@ function VideoCard({
             display="flex"
             flexWrap="wrap"
             alignItems="center"
-            style={{ gap: '12px' }}
+            sx={{ gap: '12px' }}
           >
             {'criteria_scores' in video && (
               <SafeTournesolScoreWrapper
@@ -400,7 +381,14 @@ function VideoCard({
                 data-testid="video-card-minmax-criterias"
                 display="flex"
                 alignItems="center"
-                className={classes.rated}
+                sx={{
+                  fontFamily: 'Poppins',
+                  fontStyle: 'normal',
+                  fontWeight: 'normal',
+                  fontSize: '0.9em',
+                  color: '#847F6E',
+                  gap: '8px',
+                }}
               >
                 <span>{t('video.criteriaRatedHigh')}</span>
                 <img
@@ -423,11 +411,19 @@ function VideoCard({
         item
         xs={12}
         sm={compact ? 12 : 1}
-        className={classes.actionsContainer}
+        sx={{
+          display: 'flex',
+          alignItems: 'end',
+          flexDirection: 'column',
+          padding: '4px !important',
+          [theme.breakpoints.down('sm')]: {
+            flexDirection: 'row',
+          },
+        }}
       >
         {actions.map((Action, index) =>
           typeof Action === 'function' ? (
-            <Action key={index} videoId={videoId} />
+            <Action key={index} uid={video.uid} />
           ) : (
             Action
           )
@@ -457,7 +453,7 @@ function VideoCard({
             >
               {settings.map((Action, index) =>
                 typeof Action === 'function' ? (
-                  <Action key={index} videoId={videoId} />
+                  <Action key={index} uid={video.uid} />
                 ) : (
                   Action
                 )
@@ -494,12 +490,12 @@ export const EmptyVideoCard = ({
   const classes = useStyles();
 
   return (
-    <Grid container spacing={1} className={classes.main}>
+    <Grid container spacing={1} sx={mainSx}>
       <Grid
         item
         xs={12}
         sm={compact ? 12 : 4}
-        style={{
+        sx={{
           aspectRatio: '16 / 9',
           backgroundColor: '#fafafa',
         }}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Grid, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 
 import ContentHeader from 'src/components/ContentHeader';
 import PasswordForm from 'src/features/settings/account/PasswordForm';
@@ -11,13 +10,9 @@ import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import { SettingsSection } from 'src/components';
 
-const useStyles = makeStyles((theme) => ({
-  titleDanger: { color: theme.palette.error.main },
-}));
-
 export const AccountPage = () => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const theme = useTheme();
   // sectionBreakP can be changed independently of breakP
   const breakP = { xs: 12, sm: 12, md: 9, lg: 9, xl: 10 };
   const sectionBreakP = breakP;
@@ -60,7 +55,10 @@ export const AccountPage = () => {
             </SettingsSection>
             <SettingsSection
               title={
-                <Typography variant="h4" className={classes.titleDanger}>
+                <Typography
+                  variant="h4"
+                  sx={{ color: theme.palette.error.main }}
+                >
                   {t('settings.deleteAccount')}
                 </Typography>
               }

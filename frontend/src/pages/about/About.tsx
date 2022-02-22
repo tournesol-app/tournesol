@@ -51,7 +51,7 @@ const PeopleCard = ({
   const classes = useStyles();
 
   return (
-    <Card className={classes.card} style={{ maxWidth: 320 }}>
+    <Card className={classes.card} sx={{ maxWidth: 320 }}>
       <img
         src={image}
         width="100%"
@@ -96,7 +96,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#1282B2', color: 'white' }}
+        sx={{ background: '#1282B2', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -188,7 +188,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#1282B2', color: 'white' }}
+        sx={{ background: '#1282B2', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -367,7 +367,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        style={{ background: '#1282B2', color: 'white' }}
+        sx={{ background: '#1282B2', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>

@@ -31,22 +31,6 @@ const useStyles = makeStyles(() => ({
   criteria_img: {
     marginRight: 6,
   },
-  criteriaName: {
-    flex: 1,
-    fontSize: '0.85rem',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  valueText: {
-    maxWidth: 'calc(100% - 8px)',
-    margin: 2,
-    fontSize: '0.7rem',
-    fontWeight: 600,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
 }));
 
 const CustomSlider = withStyles({
@@ -134,7 +118,15 @@ function CriteriaFilter({
                       src={`/svg/${criteria}.svg`}
                       width="16px"
                     />
-                    <Typography className={classes.criteriaName}>
+                    <Typography
+                      sx={{
+                        flex: 1,
+                        fontSize: '0.85rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
                       <span title={criteriaName}>{criteriaName}</span>
                     </Typography>
                   </Grid>
@@ -148,7 +140,17 @@ function CriteriaFilter({
                     alignItems="flex-start"
                     container
                   >
-                    <Typography className={classes.valueText}>
+                    <Typography
+                      sx={{
+                        maxWidth: 'calc(100% - 8px)',
+                        margin: '2px !important',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
                       {valuetoText(
                         parseInt(searchParams.get(criteria) || '50')
                       )}

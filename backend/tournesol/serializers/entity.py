@@ -19,7 +19,7 @@ class VideoSerializer(ModelSerializer):
     class Meta:
         model = Entity
         fields = [
-            "video_id",
+            "uid",
             "name",
             "description",
             "publication_date",
@@ -29,8 +29,11 @@ class VideoSerializer(ModelSerializer):
             "rating_n_ratings",
             "rating_n_contributors",
             "duration",
+            # backward compatibility
+            "video_id",
         ]
         read_only_fields = [
+            "uid",
             "name",
             "description",
             "publication_date",

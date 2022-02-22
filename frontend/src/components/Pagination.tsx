@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Paper, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation, Trans } from 'react-i18next';
 
 interface PaginationProps {
@@ -11,16 +10,6 @@ interface PaginationProps {
   itemType?: string;
 }
 
-const useStyles = makeStyles({
-  paginationContainer: {
-    padding: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-});
-
 const Pagination = ({
   offset,
   limit,
@@ -29,14 +18,23 @@ const Pagination = ({
   itemType,
 }: PaginationProps) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const firstShowing = offset + 1;
   const lastShowing = Math.min(count, offset + limit);
   const itemTypeText = itemType ?? t('pagination.videos');
 
   return (
-    <Paper square variant="outlined" className={classes.paginationContainer}>
+    <Paper
+      square
+      variant="outlined"
+      sx={{
+        padding: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+      }}
+    >
       <Button
         disabled={offset <= 0}
         variant="contained"
