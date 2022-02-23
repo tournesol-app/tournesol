@@ -82,7 +82,7 @@ urlpatterns = [
         name="ratings_me_list_update_is_public",
     ),
     path(
-        "users/me/contributor_ratings/<str:poll_name>/<str:video_id>/",
+        "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
     ),

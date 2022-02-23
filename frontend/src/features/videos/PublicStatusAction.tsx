@@ -4,12 +4,12 @@ import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 import { idFromUid } from 'src/utils/video';
-import { YOUTUBE_POLL_NAME } from '../../utils/constants';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const setPublicStatus = async (videoId: string, isPublic: boolean) => {
   return await UsersService.usersMeContributorRatingsPartialUpdate({
     pollName: YOUTUBE_POLL_NAME,
-    videoId: videoId,
+    uid: UID_YT_NAMESPACE + videoId,
     requestBody: {
       is_public: isPublic,
     },

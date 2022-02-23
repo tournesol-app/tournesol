@@ -51,7 +51,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
             get_annotated_ratings(),
             poll=self.poll_from_url,
             user=self.request.user,
-            entity__video_id=self.kwargs["video_id"],
+            entity__uid=self.kwargs["uid"],
         )
 
 
