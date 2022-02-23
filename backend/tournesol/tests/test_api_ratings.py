@@ -1,3 +1,4 @@
+from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -55,6 +56,26 @@ class RatingApi(TestCase):
             self.ratings_base_url, {"video_id": self.video3.video_id}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_authenticated_cant_create_non_existing_poll(self):
+        """
+        An authenticated user can't create a rating in a non-existing poll.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            "/users/me/contributor_ratings/nonexisting/",
+            {"video_id": self.video3.video_id},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            ContributorRating.objects.select_related("poll", "user", "entity").get(
+                poll=self.poll_videos,
+                user=self.user1,
+                entity__video_id=self.video3.video_id,
+            )
 
     def test_authenticated_can_create_with_existing_video(self):
         """
