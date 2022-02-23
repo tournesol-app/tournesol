@@ -1,6 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
-from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 
 from tournesol.models import Poll
 
@@ -13,23 +12,17 @@ class PollScopedViewMixin:
     This view must be mixed with a `rest_framework.generics.GenericAPIView`
     view or a subclass of it.
     """
+
     poll_parameter = "poll_name"
     # used to avoid multiple similar database queries in a single HTTP request
     poll_from_url: Poll
 
     def poll_from_kwargs_or_404(self, request_kwargs):
+        poll_name = request_kwargs[self.poll_parameter]
         try:
-            return Poll.objects.get(name=request_kwargs[self.poll_parameter])
+            return Poll.objects.get(name=poll_name)
         except ObjectDoesNotExist:
-            return self.response_404_poll_doesnt_exist(request_kwargs[self.poll_parameter])
-
-    def response_404_poll_doesnt_exist(self, poll_name: str):
-        return Response(
-            {
-                "detail": "The requested poll {0} doesn't exist.".format(poll_name),
-            },
-            status=status.HTTP_404_NOT_FOUND,
-        )
+            raise NotFound("The requested poll {0} doesn't exist.".format(poll_name))
 
     def initial(self, request, *args, **kwargs):
         """
