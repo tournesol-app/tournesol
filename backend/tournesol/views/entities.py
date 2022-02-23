@@ -10,7 +10,7 @@ filter_parameters = [
     OpenApiParameter(
         "type",
         description="Type of entities to return",
-        enum=map(lambda x: x[0], ENTITY_TYPE_CHOICES),
+        enum=[c[0] for c in ENTITY_TYPE_CHOICES],
     ),
     OpenApiParameter(
         "poll_name",

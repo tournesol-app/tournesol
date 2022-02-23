@@ -13,17 +13,26 @@ from tournesol.utils.api_youtube import VideoNotFound
 
 
 class VideoSerializer(ModelSerializer):
-    video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX, source="metadata.video_id")
-    name = serializers.CharField(source="metadata.name", read_only=True)
+    video_id = RegexField(
+        YOUTUBE_VIDEO_ID_REGEX,
+        source="metadata.video_id",
+        help_text="Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$",
+    )
+    name = serializers.CharField(
+        source="metadata.name",
+        read_only=True,
+        help_text="Video title",
+    )
     description = serializers.CharField(
         source="metadata.description",
         read_only=True,
-        allow_null=True
+        allow_null=True,
+        help_text="Video description, from YouTube",
     )
     publication_date = serializers.DateField(
         source="metadata.publication_date",
         read_only=True,
-        allow_null=True
+        allow_null=True,
     )
     views = serializers.IntegerField(
         source="metadata.views",
@@ -33,7 +42,8 @@ class VideoSerializer(ModelSerializer):
     uploader = serializers.CharField(
         source="metadata.uploader",
         read_only=True,
-        allow_null=True
+        allow_null=True,
+        help_text="Name of the channel on YouTube",
     )
     language = serializers.CharField(source="metadata.language", read_only=True, allow_null=True)
     duration = serializers.IntegerField(
