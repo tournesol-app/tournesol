@@ -4,10 +4,10 @@ Entity and closely related models.
 
 import logging
 from datetime import timedelta
+from functools import cached_property
 
 import numpy as np
 from django.conf import settings
-from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -15,10 +15,9 @@ from django.utils.html import format_html
 from tqdm.auto import tqdm
 
 from core.models import User
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.video import TYPE_VIDEO
-from tournesol.models.tags import Tag
+from tournesol.serializers.metadata import VideoMetadata
 
 LANGUAGES = settings.LANGUAGES
 
@@ -67,48 +66,6 @@ class Entity(models.Model):
         null=True, auto_now_add=True, help_text="Time the video was added to Tournesol"
     )
 
-    # TODO: specific to YouTube entities, move it somewhere else
-    video_id_regex = RegexValidator(
-        YOUTUBE_VIDEO_ID_REGEX, f"Video ID must match {YOUTUBE_VIDEO_ID_REGEX}"
-    )
-
-    # TODO: will be replaced by the `uid` field
-    video_id = models.CharField(
-        max_length=20,
-        unique=True,
-        help_text=f"Video ID from YouTube URL, matches {YOUTUBE_VIDEO_ID_REGEX}",
-        validators=[video_id_regex],
-    )
-
-    # TODO
-    # the following fields are specific to video entities
-    # they will be moved inside the new metadata JSON field
-
-    name = models.CharField(max_length=1000, help_text="Video Title", blank=True)
-    description = models.TextField(
-        null=True, help_text="Video Description from the web page", blank=True
-    )
-    duration = models.DurationField(null=True, help_text="Video duration", blank=True)
-    language = models.CharField(
-        null=True,
-        blank=True,
-        max_length=10,
-        help_text="Language of the video",
-        choices=LANGUAGES,
-    )
-    publication_date = models.DateField(
-        null=True, help_text="Video publication date", blank=True
-    )
-    views = models.BigIntegerField(null=True, help_text="Number of views", blank=True)
-    uploader = models.CharField(
-        max_length=1000,
-        null=True,
-        blank=True,
-        help_text="Name of the channel (uploader)",
-    )
-    is_unlisted = models.BooleanField(default=False, help_text="Is the video unlisted")
-    tags = models.ManyToManyField(Tag, blank=True)
-
     # TODO
     # the following fields should be moved in a n-n relation with Poll
     rating_n_ratings = models.IntegerField(
@@ -142,10 +99,27 @@ class Entity(models.Model):
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.type]
 
+    @cached_property
+    def inner(self):
+        """
+        An instance of the entity type class related to the current entity.
+
+        For example, to access metadata of the entity, validated by the serializer
+        specific to the current entity type, use `self.inner.validated_metadata`.
+        """
+        return self.entity_cls(self)
+
+    @property
+    def video_id(self):
+        # A helper for the migration from "video_id" to "uid"
+        if self.type != TYPE_VIDEO:
+            raise AttributeError("Cannot access 'video_id': this entity is not a video")
+        return self.metadata.get("video_id")
+
     @property
     def best_text(self, min_len=5):
         """Return description, otherwise title."""
-        priorities = [self.description, self.name]
+        priorities = [self.metadata.get("description"), self.metadata.get("name")]
 
         # going over all priorities
         for priority in priorities:
@@ -157,21 +131,27 @@ class Entity(models.Model):
     @property
     def all_text(self):
         """Return concat of description and title."""
-        options = [self.description, self.name]
+        options = [self.metadata.get("description"), self.metadata.get("name")]
         options = filter(lambda x: x is not None, options)
         return " ".join(options)
 
     @property
     def short_text(self):
         """Returns a short string representation of a video"""
-        options = [self.name, self.uploader, self.description]
+        options = [
+            self.metadata.get("name"),
+            self.metadata.get("uploader"),
+            self.metadata.get("description")
+        ]
         options = filter(lambda x: x is not None, options)
         return " ".join(options)[:100]
 
     def __str__(self):
-        return f"{self.video_id}"
+        return f"{self.uid}"
 
     def link_to_youtube(self):
+        if self.type != TYPE_VIDEO:
+            return None
         return format_html(
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
         )
@@ -229,7 +209,7 @@ class Entity(models.Model):
         ):
             logging.debug(
                 "Not refreshing metadata for video %s. Last attempt is too recent at %s",
-                self.video_id,
+                self.uid,
                 self.last_metadata_request_at,
             )
             return
@@ -237,25 +217,18 @@ class Entity(models.Model):
         self.last_metadata_request_at = timezone.now()
         self.save(update_fields=["last_metadata_request_at"])
         try:
-            metadata = get_video_metadata(self.video_id, compute_language=False)
+            metadata = get_video_metadata(self.metadata["video_id"], compute_language=False)
         except VideoNotFound:
             metadata = {}
 
         if not metadata:
             return
 
-        fields = [
-            "name",
-            "description",
-            "publication_date",
-            "uploader",
-            "views",
-            "duration",
-            "metadata_timestamp",
-        ]
-        for f in fields:
-            setattr(self, f, metadata[f])
-        self.save(update_fields=fields)
+        for (metadata_key, metadata_value) in metadata.items():
+            if metadata_value is not None:
+                self.metadata[metadata_key] = metadata_value
+        self.metadata_timestamp = timezone.now()
+        self.save(update_fields=["metadata", "metadata_timestamp"])
 
     @classmethod
     def create_from_video_id(cls, video_id):
@@ -264,13 +237,28 @@ class Entity(models.Model):
             extra_data = get_video_metadata(video_id)
         except VideoNotFound:
             raise
-        tags = extra_data.pop('tags', [])
-        video = cls.objects.create(video_id=video_id, **extra_data)
-        for tag_name in tags:
-            #  The return object is a tuple having first an instance of Tag, and secondly a bool
-            tag, _ = Tag.objects.get_or_create(name=tag_name)
-            video.tags.add(tag)
-        return video
+
+        serializer = VideoMetadata(data={
+            **extra_data,
+            "video_id": video_id,
+        })
+        if serializer.is_valid():
+            metadata = serializer.data
+        else:
+            raise RuntimeError(f"Unexpected errors in video metadata format: {serializer.errors}")
+
+        return cls.objects.create(
+            type=TYPE_VIDEO,
+            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}",
+            metadata=metadata,
+            metadata_timestamp=timezone.now(),
+        )
+
+    @classmethod
+    def get_from_video_id(cls, video_id):
+        return cls.objects.get(
+            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}"
+        )
 
     def clean(self):
         # An empty dict is considered as an empty value for JSONField,
@@ -280,13 +268,6 @@ class Entity(models.Model):
         # That's why a default value is set here to handle correctly blank values in forms.
         if self.metadata is None:
             self.metadata = {}
-
-    def save(self, *args, **kwargs):
-        self.uid = '{}{}{}'.format(
-            Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER, self.video_id
-        )
-        self.type = TYPE_VIDEO
-        super().save(*args, **kwargs)
 
 
 class VideoRateLater(models.Model):

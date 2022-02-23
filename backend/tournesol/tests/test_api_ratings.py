@@ -120,7 +120,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         rating = ContributorRating.objects.select_related("poll", "user", "entity").get(
-            poll=self.poll_videos, user=self.user1, entity__video_id="NeADlWSDFAQ"
+            poll=self.poll_videos, user=self.user1, entity__uid="yt:NeADlWSDFAQ"
         )
         self.assertEqual(rating.is_public, False)
 

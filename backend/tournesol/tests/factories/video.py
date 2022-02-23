@@ -12,18 +12,25 @@ def generate_youtube_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=11))
 
 
+class VideoMetadataFactory(factory.DictFactory):
+    source = "youtube"
+    video_id = factory.LazyFunction(generate_youtube_id)
+    name = factory.Sequence(lambda n: 'Entity title %s' % n)
+    description = factory.Sequence(lambda n: 'Entity description %s' % n)
+    duration = 60
+    language = 'aa'
+    uploader = factory.Sequence(lambda n: 'Uploader %s' % n)
+    publication_date = factory.LazyFunction(lambda: datetime.date.today().isoformat())
+
+
 class VideoFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Entity
 
-    video_id = factory.LazyFunction(generate_youtube_id)
-    name = factory.Sequence(lambda n: 'Entity title %s' % n)
-    description = factory.Sequence(lambda n: 'Entity description %s' % n)
-    duration = factory.LazyAttribute(lambda _: datetime.timedelta(seconds=60))
-    language = 'aa'
-    uploader = factory.Sequence(lambda n: 'Uploader %s' % n)
-    publication_date = factory.LazyFunction(datetime.datetime.now)
+    type = "video"
+    metadata = factory.SubFactory(VideoMetadataFactory)
+    uid = factory.LazyAttribute(lambda e: f"yt:{e.metadata['video_id']}")
 
 
 class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):

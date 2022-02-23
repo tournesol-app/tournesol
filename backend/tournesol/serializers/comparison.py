@@ -80,8 +80,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         video_id_2 = validated_data.pop("entity_2").get("video_id")
         # the validation performed by the RelatedVideoSerializer guarantees
         # that the videos submitted exist in the database
-        video_1 = Entity.objects.get(video_id=video_id_1)
-        video_2 = Entity.objects.get(video_id=video_id_2)
+        video_1 = Entity.get_from_video_id(video_id_1)
+        video_2 = Entity.get_from_video_id(video_id_2)
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(

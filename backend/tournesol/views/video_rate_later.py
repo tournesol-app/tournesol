@@ -7,7 +7,7 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.models import VideoRateLater
+from tournesol.models import Entity, VideoRateLater
 from tournesol.serializers.video_rate_later import VideoRateLaterSerializer
 
 
@@ -52,6 +52,6 @@ class VideoRateLaterDetail(generics.RetrieveDestroyAPIView):
         video_rate_later = get_object_or_404(
             VideoRateLater,
             user__pk=self.request.user.pk,
-            video__video_id=self.kwargs["video_id"],
+            video__uid=f'{Entity.UID_YT_NAMESPACE}{Entity.UID_DELIMITER}{self.kwargs["video_id"]}',
         )
         return video_rate_later
