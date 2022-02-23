@@ -534,7 +534,8 @@ class ComparisonApiTestCase(TestCase):
 
     def test_authenticated_cant_read_non_existing_poll(self):
         """
-        An anonymous user can't read one of its comparisons.
+        An authenticated user can't read one of its comparisons in a
+        non-existing poll.
         """
         client = APIClient()
         client.force_authenticate(user=self.user)
@@ -632,6 +633,27 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_authenticated_cant_update_non_existing_poll(self):
+        """
+        An authenticated user can't update a comparison in a non-existing poll.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        non_existing_poll = "non-existing"
+
+        response = client.put(
+            "/users/me/comparisons/{}/{}/{}/".format(
+                non_existing_poll, self._uid_01, self._uid_02
+            ),
+            {
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_anonymous_cant_delete(self):
         """
         An anonymous user can't delete a comparison.
@@ -663,6 +685,23 @@ class ComparisonApiTestCase(TestCase):
             entity_1=self.videos[0],
             entity_2=self.videos[1],
         )
+
+    def test_authenticated_cant_delete_non_existing_poll(self):
+        """
+        An authenticated user can't delete a comparison in a non-existing
+        poll.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        non_existing_poll = "non-existing"
+
+        response = client.delete(
+            "/users/me/comparisons/{}/{}/{}/".format(
+                non_existing_poll, self._uid_01, self._uid_02
+            ),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_authenticated_can_delete(self):
         """
