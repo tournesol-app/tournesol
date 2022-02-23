@@ -10,7 +10,11 @@ from rest_framework import routers
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
-from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.exports import (
+    ExportAllView,
+    ExportComparisonsView,
+    ExportPublicComparisonsView,
+)
 from .views.polls import PollsRecommendationsView, PollsView
 from .views.ratings import (
     ContributorRatingDetail,
@@ -82,7 +86,7 @@ urlpatterns = [
         name="ratings_me_list_update_is_public",
     ),
     path(
-        "users/me/contributor_ratings/<str:poll_name>/<str:video_id>/",
+        "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
     ),

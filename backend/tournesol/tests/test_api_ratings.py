@@ -196,7 +196,7 @@ class RatingApi(TestCase):
         )
 
         response = self.client.get(
-            "{}{}/".format(self.ratings_base_url, video.video_id), format="json"
+            "{}{}/".format(self.ratings_base_url, video.uid), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["video"]["video_id"], video.video_id)
@@ -293,8 +293,9 @@ class RatingApi(TestCase):
         )
 
         self.assertEqual(rating.is_public, False)
+
         response = self.client.patch(
-            "{}{}/".format(self.ratings_base_url, self.video1.video_id),
+            "{}{}/".format(self.ratings_base_url, self.video1.uid),
             data={"is_public": True},
             format="json",
         )

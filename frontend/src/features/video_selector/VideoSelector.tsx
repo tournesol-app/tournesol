@@ -17,7 +17,7 @@ import {
   isVideoIdValid,
 } from 'src/utils/video';
 import { UsersService, ContributorRating } from 'src/services/openapi';
-import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -66,7 +66,7 @@ const VideoSelector = ({
       const contributorRating =
         await UsersService.usersMeContributorRatingsRetrieve({
           pollName: YOUTUBE_POLL_NAME,
-          videoId: videoId,
+          uid: UID_YT_NAMESPACE + videoId,
         });
       onChange({
         videoId,

@@ -978,7 +978,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContributorRatingCreate'
           description: ''
-  /users/me/contributor_ratings/{poll_name}/{video_id}/:
+  /users/me/contributor_ratings/{poll_name}/{uid}/:
     get:
       operationId: users_me_contributor_ratings_retrieve
       description: Retrieve the logged-in user's ratings for a specific video in a
@@ -990,7 +990,7 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id
+        name: uid
         schema:
           type: string
         required: true
@@ -1017,7 +1017,7 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id
+        name: uid
         schema:
           type: string
         required: true
@@ -1055,7 +1055,7 @@ paths:
           type: string
         required: true
       - in: path
-        name: video_id
+        name: uid
         schema:
           type: string
         required: true
