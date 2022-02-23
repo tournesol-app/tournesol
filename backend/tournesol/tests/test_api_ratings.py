@@ -272,6 +272,8 @@ class RatingApi(TestCase):
             "{}?is_public=true".format(self.ratings_base_url), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        json_resp = response.json()
+
         self.assertEqual(json_resp["count"], 1)
         self.assertEqual(json_resp["results"][0]["video"]["uid"], self.video2.uid)
         # TODO: this legacy check must be removed, after video_id has been
