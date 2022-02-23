@@ -8,6 +8,7 @@ from functools import cached_property
 
 import numpy as np
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -268,6 +269,12 @@ class Entity(models.Model):
         # That's why a default value is set here to handle correctly blank values in forms.
         if self.metadata is None:
             self.metadata = {}
+
+        if self.entity_cls.metadata_serializer_class:
+            serializer = self.entity_cls.metadata_serializer_class(data=self.metadata)
+            if not serializer.is_valid():
+                raise ValidationError({"metadata": str(serializer.errors)})
+            self.metadata = serializer.data
 
 
 class VideoRateLater(models.Model):
