@@ -179,7 +179,7 @@ class Entity(models.Model):
 
     def link_to_youtube(self):
         return format_html(
-            '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
+            '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.inner.video_id
         )
 
     @staticmethod

@@ -29,7 +29,5 @@ class VideoEntity(EntityType):
         ))
 
     @property
-    def youtube_video_id(self):
-        if self.validated_metadata["source"] == "youtube":
-            return self.validated_metadata["video_id"]
-        raise AttributeError(f"Entity {self.instance.uid} is not a Youtube video")
+    def video_id(self):
+        return self.validated_metadata["video_id"]

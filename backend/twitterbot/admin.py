@@ -50,5 +50,5 @@ class TwitterBotAdmin(admin.ModelAdmin):
 
         return format_html(
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>',
-            obj.video.inner.youtube_video_id,
+            obj.video.inner.video_id,
         )

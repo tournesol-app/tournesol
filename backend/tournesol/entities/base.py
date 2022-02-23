@@ -31,6 +31,6 @@ class EntityType(ABC):
 
     @cached_property
     def validated_metadata(self):
-        serializer = self.metadata_serializer_class(self.instance.metadata)
+        serializer = self.metadata_serializer_class(data=self.instance.metadata)
         serializer.is_valid(raise_exception=True)
-        return serializer.validated_metadata
+        return serializer.validated_data
