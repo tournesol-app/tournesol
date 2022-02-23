@@ -43,7 +43,9 @@ class ComparisonApiTestCase(TestCase):
     non_existing_comparison = {
         "entity_a": {"video_id": _uid_01.split(":")[1]},
         "entity_b": {"video_id": _uid_03.split(":")[1]},
-        "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+        "criteria_scores": [
+            {"criteria": "largely_recommended", "score": 10, "weight": 10}
+        ],
         "duration_ms": 103,
     }
 
@@ -136,6 +138,46 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertFalse(comparisons.exists())
         self.assertEqual(Comparison.objects.all().count(), initial_comparisons_nbr)
+
+    def test_authenticated_cant_create_non_existing_poll(self):
+        """
+        An authenticated user can't create a comparison in a non-existing
+        poll.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        data = deepcopy(self.non_existing_comparison)
+        non_existing_poll = "non-existing"
+
+        response = client.post(
+            "/users/me/comparisons/{}/".format(non_existing_poll),
+            data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # the non-existing poll must not be created
+        with self.assertRaises(ObjectDoesNotExist):
+            Comparison.objects.select_related(
+                "user", "poll", "entity_1", "entity_2"
+            ).get(
+                user=self.user,
+                poll__name=non_existing_poll,
+                entity_1__video_id=data["entity_a"]["video_id"],
+                entity_2__video_id=data["entity_b"]["video_id"],
+            )
+
+        # the default poll must not contain the comparison
+        with self.assertRaises(ObjectDoesNotExist):
+            Comparison.objects.select_related(
+                "user", "poll", "entity_1", "entity_2"
+            ).get(
+                user=self.user,
+                poll=self.poll_videos,
+                entity_1__video_id=data["entity_a"]["video_id"],
+                entity_2__video_id=data["entity_b"]["video_id"],
+            )
 
     def test_authenticated_can_create(self):
         """
@@ -314,7 +356,9 @@ class ComparisonApiTestCase(TestCase):
         data["criteria_scores"][0]["criteria"] = "pedagogy"
         response = client.post(self.comparisons_base_url, data, format="json")
         self.assertContains(
-            response, "Missing required criteria", status_code=status.HTTP_400_BAD_REQUEST
+            response,
+            "Missing required criteria",
+            status_code=status.HTTP_400_BAD_REQUEST,
         )
 
     def test_authenticated_cant_create_twice(self):
@@ -389,6 +433,21 @@ class ComparisonApiTestCase(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_authenticated_cant_list_non_existing_poll(self):
+        """
+        An authenticated user can't list its comparisons in a non-existing
+        poll.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        non_existing_poll = "non-existing"
+
+        response = client.get(
+            "/users/me/comparisons/{}/".format(non_existing_poll),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_authenticated_can_list(self):
         """
@@ -473,6 +532,22 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_authenticated_cant_read_non_existing_poll(self):
+        """
+        An anonymous user can't read one of its comparisons.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        non_existing_poll = "non-existing"
+
+        response = client.get(
+            "/users/me/comparisons/{}/{}/{}/".format(
+                non_existing_poll, self._uid_01, self._uid_02
+            ),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_authenticated_can_read(self):
         """
         An authenticated user can read one of its comparisons.
@@ -548,7 +623,11 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_01,
                 self._uid_02,
             ),
-            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
+            {
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                ]
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -639,7 +718,11 @@ class ComparisonApiTestCase(TestCase):
                 self._uid_03,
                 self._uid_04,
             ),
-            {"criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}]},
+            {
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                ]
+            },
             format="json",
         )
         response = client.get(
@@ -674,7 +757,9 @@ class ComparisonApiTestCase(TestCase):
         data1 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},
             "entity_b": {"video_id": self._uid_06.split(":")[1]},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "weight": 10}
+            ],
             "duration_ms": 103,
         }
         response = client.post(
@@ -687,7 +772,9 @@ class ComparisonApiTestCase(TestCase):
         data2 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},
             "entity_b": {"video_id": self._uid_07.split(":")[1]},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "weight": 10}
+            ],
             "duration_ms": 103,
         }
         response = client.post(
@@ -702,7 +789,9 @@ class ComparisonApiTestCase(TestCase):
         data3 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},
             "entity_b": {"video_id": self._uid_06.split(":")[1]},
-            "criteria_scores": [{"criteria": "largely_recommended", "score": 10, "weight": 10}],
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "weight": 10}
+            ],
             "duration_ms": 103,
         }
         response = client.post(

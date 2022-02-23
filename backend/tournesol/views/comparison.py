@@ -6,27 +6,15 @@ from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
-from rest_framework import exceptions, generics, mixins, status
-from rest_framework.response import Response
+from rest_framework import exceptions, generics, mixins
 
-from tournesol.models import Comparison, ContributorRating, Entity, Poll
+from tournesol.models import Comparison, ContributorRating, Entity
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
+from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 class ComparisonApiMixin:
     """A mixin used to factorize behaviours common to all API views."""
-
-    # used to avoid multiple similar database queries in a single HTTP request
-    poll_from_url: Poll
-
-    def initial(self, request, *args, **kwargs):
-        """
-        Runs anything that needs to occur prior to calling the method handler.
-        """
-        super().initial(request, *args, **kwargs)
-
-        # make the requested poll available at any time in the view
-        self.poll_from_url = self.poll_from_kwargs_or_404(kwargs)
 
     def comparison_already_exists(self, poll_id, request):
         """Return True if the comparison already exist, False instead."""
@@ -57,23 +45,12 @@ class ComparisonApiMixin:
         else:
             return False
 
-    def poll_from_kwargs_or_404(self, request_kwargs):
-        try:
-            return Poll.objects.get(name=request_kwargs["poll_name"])
-        except ObjectDoesNotExist:
-            return self.response_404_poll_doesnt_exist(request_kwargs["poll_name"])
-
-    def response_404_poll_doesnt_exist(self, poll_name):
-        return Response(
-            {
-                "detail": "The requested poll {0} doesn't exist.".format(poll_name),
-            },
-            status=status.HTTP_404_NOT_FOUND,
-        )
-
 
 class ComparisonListBaseApi(
-    ComparisonApiMixin, mixins.ListModelMixin, generics.GenericAPIView
+    ComparisonApiMixin,
+    PollScopedViewMixin,
+    mixins.ListModelMixin,
+    generics.GenericAPIView,
 ):
     """
     Base class of the ComparisonList API.
@@ -165,6 +142,7 @@ class ComparisonListFilteredApi(ComparisonListBaseApi):
 
 class ComparisonDetailApi(
     ComparisonApiMixin,
+    PollScopedViewMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,

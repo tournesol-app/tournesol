@@ -62,17 +62,28 @@ class RatingApi(TestCase):
         An authenticated user can't create a rating in a non-existing poll.
         """
         self.client.force_authenticate(user=self.user1)
+        non_existing_poll = "non-existing"
+
         response = self.client.post(
-            "/users/me/contributor_ratings/nonexisting/",
+            "/users/me/contributor_ratings/{}/".format(non_existing_poll),
             {"video_id": self.video3.video_id},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+        # the non-existing poll must not be created
         with self.assertRaises(ObjectDoesNotExist):
             ContributorRating.objects.select_related("poll", "user", "entity").get(
-                poll=self.poll_videos,
+                poll__name=non_existing_poll,
+                user=self.user1,
+                entity__video_id=self.video3.video_id,
+            )
+
+        # the default poll must not contain the rating
+        with self.assertRaises(ObjectDoesNotExist):
+            ContributorRating.objects.select_related("poll", "user", "entity").get(
+                poll__name=self.poll_videos,
                 user=self.user1,
                 entity__video_id=self.video3.video_id,
             )
