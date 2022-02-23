@@ -110,6 +110,13 @@ class Entity(models.Model):
         return self.entity_cls(self)
 
     @property
+    def video_id(self):
+        # A helper for the migration from "video_id" to "uid"
+        if self.type != TYPE_VIDEO:
+            raise AttributeError("Cannot access 'video_id': this entity is not a video")
+        return self.metadata.get("video_id")
+
+    @property
     def best_text(self, min_len=5):
         """Return description, otherwise title."""
         priorities = [self.metadata.get("description"), self.metadata.get("name")]
@@ -252,13 +259,6 @@ class Entity(models.Model):
         return cls.objects.get(
             uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}"
         )
-
-    @property
-    def video_id(self):
-        # A helper for the migration from "video_id" to "uid"
-        if self.type != TYPE_VIDEO:
-            raise AttributeError("Cannot access 'video_id': this entity is not a video")
-        return self.metadata.get("video_id")
 
     def clean(self):
         # An empty dict is considered as an empty value for JSONField,
