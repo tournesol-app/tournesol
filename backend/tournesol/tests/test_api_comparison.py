@@ -208,8 +208,8 @@ class ComparisonApiTestCase(TestCase):
         ).get(
             user=self.user,
             poll=self.poll_videos,
-            entity_1__video_id=data["entity_a"]["video_id"],
-            entity_2__video_id=data["entity_b"]["video_id"],
+            entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+            entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
         )
         comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
@@ -288,8 +288,8 @@ class ComparisonApiTestCase(TestCase):
         ).get(
             poll=self.poll_videos,
             user=self.user,
-            entity_1__video_id=data["entity_a"]["video_id"],
-            entity_2__video_id=data["entity_b"]["video_id"],
+            entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+            entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
         )
         comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 

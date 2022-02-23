@@ -27,7 +27,3 @@ class VideoEntity(EntityType):
             Q(metadata__description__icontains=query) |
             Q(metadata__tags__icontains=query)
         ))
-
-    @property
-    def video_id(self):
-        return self.validated_metadata["video_id"]

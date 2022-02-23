@@ -11,7 +11,7 @@ from core.models import User
 from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Entity, Tag
+from ..models import Entity
 
 
 class VideoApi(TestCase):
@@ -254,7 +254,7 @@ class VideoApi(TestCase):
 
     def test_cannot_get_existing_video_without_positive_score(self):
         client = APIClient()
-        VideoFactory(video_id="video_null_score")
+        VideoFactory(metadata__video_id="video_null_score")
         response = client.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(self._list_of_videos))
@@ -351,7 +351,7 @@ class VideoApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
-        new_video = Entity.objects.get(video_id="NeADlWSDFAQ")
+        new_video = Entity.get_from_video_id(video_id="NeADlWSDFAQ")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
@@ -379,7 +379,7 @@ class VideoApi(TestCase):
 
         response = client.post("/video/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        video = Entity.objects.filter(video_id=new_video_id)
+        video = Entity.objects.filter(metadata__video_id=new_video_id)
         self.assertEqual(video.count(), 1)
 
     def test_authenticated_cant_create_with_incorrect_id(self):
@@ -397,12 +397,12 @@ class VideoApi(TestCase):
         response = client.post("/video/", {"video_id": id_too_big}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
-            Entity.objects.get(video_id=id_too_big)
+            Entity.get_from_video_id(video_id=id_too_big)
 
         response = client.post("/video/", {"video_id": id_too_small}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
-            Entity.objects.get(video_id=id_too_small)
+            Entity.get_from_video_id(video_id=id_too_small)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
@@ -474,7 +474,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
-        video = Entity.objects.get(video_id=new_video_id)
+        video = Entity.get_from_video_id(video_id=new_video_id)
         self.assertEqual(response.json()["name"], "Entity title")
         self.assertIn("tournesol", video.metadata["tags"])
         self.assertEqual(response.json()["duration"], 1263)
@@ -537,7 +537,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
-        video = Entity.objects.get(video_id=new_video_id)
+        video = Entity.get_from_video_id(video_id=new_video_id)
         self.assertEqual(response.json()["name"], "Entity title")
         self.assertEqual(video.metadata["views"], None)
 
@@ -564,7 +564,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         with self.assertRaises(ObjectDoesNotExist):
-            Entity.objects.get(video_id=new_video_id)
+            Entity.get_from_video_id(video_id=new_video_id)
 
     def test_get_video_uploader(self):
         client = APIClient()
@@ -575,5 +575,5 @@ class VideoApi(TestCase):
     def test_video_views_stored_on_64bits(self):
         self.video_1.metadata["views"] = 9_000_000_000
         self.video_1.save()
-        video = Entity.objects.get(video_id=self.video_1.video_id)
+        video = Entity.get_from_video_id(video_id=self.video_1.video_id)
         self.assertEqual(video.metadata["views"], 9_000_000_000)

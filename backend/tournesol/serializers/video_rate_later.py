@@ -17,7 +17,7 @@ class VideoRateLaterSerializer(ModelSerializer):
 
     def create(self, validated_data):
         video_id = validated_data.pop("video")["video_id"]
-        video = Entity.objects.get(video_id=video_id)
+        video = Entity.get_from_video_id(video_id)
         try:
             return super().create({"video": video, **validated_data})
         except IntegrityError:

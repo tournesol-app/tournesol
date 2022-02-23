@@ -32,7 +32,7 @@ def migrate_forward(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournesol', '0027_alter_entity_metadata'),
+        ('tournesol', '0028_remove_contributorrating_poll_default'),
     ]
 
     operations = [migrations.RunPython(migrate_forward, migrations.RunPython.noop)]

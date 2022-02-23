@@ -61,7 +61,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         video_id = attrs.pop("video_id")
         video_serializer = RelatedVideoSerializer(data={"video_id": video_id})
         video_serializer.is_valid(raise_exception=True)
-        video = Entity.objects.get(video_id=video_id)
+        video = Entity.get_from_video_id(video_id)
         user = self.context["request"].user
         if user.contributorvideoratings.filter(entity=video).exists():
             raise ValidationError(
