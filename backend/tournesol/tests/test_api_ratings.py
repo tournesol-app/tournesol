@@ -66,7 +66,7 @@ class RatingApi(TestCase):
 
         response = self.client.post(
             "/users/me/contributor_ratings/{}/".format(non_existing_poll),
-            {"video_id": self.video3.uid},
+            {"video_id": self.video3.video_id},
             format="json",
         )
 
