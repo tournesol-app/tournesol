@@ -10,11 +10,7 @@ from rest_framework import routers
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
-from .views.exports import (
-    ExportAllView,
-    ExportComparisonsView,
-    ExportPublicComparisonsView,
-)
+from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
 from .views.polls import PollsRecommendationsView, PollsView
 from .views.ratings import (
     ContributorRatingDetail,
