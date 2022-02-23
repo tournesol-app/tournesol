@@ -83,7 +83,7 @@ class RatingApi(TestCase):
         # the default poll must not contain the rating
         with self.assertRaises(ObjectDoesNotExist):
             ContributorRating.objects.select_related("poll", "user", "entity").get(
-                poll__name=self.poll_videos,
+                poll=self.poll_videos,
                 user=self.user1,
                 entity__video_id=self.video3.video_id,
             )
