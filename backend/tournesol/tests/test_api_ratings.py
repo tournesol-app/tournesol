@@ -53,7 +53,7 @@ class RatingApi(TestCase):
         An anonymous user can't create a rating for an existing video.
         """
         response = self.client.post(
-            self.ratings_base_url, {"video_id": self.video3.uid}, format="json"
+            self.ratings_base_url, {"video_id": self.video3.video_id}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
