@@ -29,12 +29,25 @@ class ContributorRatingSerializer(ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_comparisons(self, obj):
+        """
+        The number of comparisons is always computed for a specific poll for
+        now.
+        """
         if hasattr(obj, "n_comparisons"):
             # Use annotated field if it has been defined by the queryset
             return obj.n_comparisons
         return obj.user.comparisons.filter(
-            Q(entity_1=obj.entity) | Q(entity_2=obj.entity)
+            Q(poll=self.context["poll"])
+            & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
         ).count()
+
+    def to_internal_value(self, data):
+        """
+        Determine the poll according to the context provided by the view.
+        """
+        ret = super(ContributorRatingSerializer, self).to_internal_value(data)
+        ret["poll_id"] = self.context.get("poll").id
+        return ret
 
 
 class ContributorRatingCreateSerializer(ContributorRatingSerializer):

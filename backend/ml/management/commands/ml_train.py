@@ -78,6 +78,8 @@ def save_data(video_scores, contributor_rating_scores):
     """
     Saves in the scores for Entities and ContributorRatings
     """
+    default_poll_pk = Poll.default_poll_pk()
+
     EntityCriteriaScore.objects.all().delete()
     EntityCriteriaScore.objects.bulk_create(
         [
@@ -105,6 +107,7 @@ def save_data(video_scores, contributor_rating_scores):
     created_ratings = ContributorRating.objects.bulk_create(
         [
             ContributorRating(
+                poll_id=default_poll_pk,
                 entity_id=video_id,
                 user_id=contributor_id,
             )

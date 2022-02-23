@@ -28,8 +28,7 @@ class ContributorRating(models.Model):
     poll = models.ForeignKey(
         Poll,
         on_delete=models.CASCADE,
-        related_name="contributor_ratings",
-        default=Poll.default_poll_pk
+        related_name="contributor_ratings"
     )
     is_public = models.BooleanField(
         default=False, null=False, help_text="Should the rating be public?"

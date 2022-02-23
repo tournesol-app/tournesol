@@ -905,12 +905,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedComparisonList'
           description: ''
-  /users/me/contributor_ratings/:
+  /users/me/contributor_ratings/{poll_name}/:
     get:
       operationId: users_me_contributor_ratings_list
-      description: Retrieve the logged in user's ratings per video (computed automatically
-        from the user's comparisons).
+      description: Retrieve the logged in user's ratings per video in a given poll(computed
+        automatically from the user's comparisons).
       parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
       - name: limit
         required: false
         in: query
@@ -942,7 +947,13 @@ paths:
     post:
       operationId: users_me_contributor_ratings_create
       description: Initialize the rating object for the current user about a specific
-        video, with optional visibility settings.
+        video in a given poll, with optional visibility settings.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
       tags:
       - users
       requestBody:
@@ -967,12 +978,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContributorRatingCreate'
           description: ''
-  /users/me/contributor_ratings/{video_id}/:
+  /users/me/contributor_ratings/{poll_name}/{video_id}/:
     get:
       operationId: users_me_contributor_ratings_retrieve
-      description: Retrieve the logged-in user's ratings for a specific video (computed
-        automatically from the user's comparisons)
+      description: Retrieve the logged-in user's ratings for a specific video in a
+        given poll (computed automatically from the user's comparisons).
       parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
       - in: path
         name: video_id
         schema:
@@ -993,8 +1009,13 @@ paths:
     put:
       operationId: users_me_contributor_ratings_update
       description: Update public / private status of the logged-in user ratings for
-        a specific video.
+        a specific video, in a given poll.
       parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
       - in: path
         name: video_id
         schema:
@@ -1026,8 +1047,13 @@ paths:
     patch:
       operationId: users_me_contributor_ratings_partial_update
       description: Update public / private status of the logged-in user ratings for
-        a specific video.
+        a specific video, in a given poll.
       parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
       - in: path
         name: video_id
         schema:
@@ -1056,10 +1082,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContributorRating'
           description: ''
-  /users/me/contributor_ratings/_all/:
+  /users/me/contributor_ratings/{poll_name}/_all/:
     patch:
       operationId: users_me_contributor_ratings__all_partial_update
-      description: Mark all contributor ratings by current user as public or private.
+      description: |-
+        Mark all contributor ratings by current user as public or private in the
+        given poll.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
       tags:
       - users
       requestBody:
