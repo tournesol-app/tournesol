@@ -164,8 +164,8 @@ class ComparisonApiTestCase(TestCase):
             ).get(
                 user=self.user,
                 poll__name=non_existing_poll,
-                entity_1__video_id=data["entity_a"]["video_id"],
-                entity_2__video_id=data["entity_b"]["video_id"],
+                entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+                entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
             )
 
         # the default poll must not contain the comparison
@@ -175,8 +175,8 @@ class ComparisonApiTestCase(TestCase):
             ).get(
                 user=self.user,
                 poll=self.poll_videos,
-                entity_1__video_id=data["entity_a"]["video_id"],
-                entity_2__video_id=data["entity_b"]["video_id"],
+                entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+                entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
             )
 
     def test_authenticated_can_create(self):
