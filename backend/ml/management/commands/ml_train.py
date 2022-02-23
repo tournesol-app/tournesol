@@ -50,7 +50,7 @@ USAGE:
 """
 
 
-def fetch_data():
+def fetch_data(poll):
     """Fetches the data from the Comparisons model
 
     Returns:
@@ -69,17 +69,16 @@ def fetch_data():
         ]
         for ccs in ComparisonCriteriaScore.objects
             .filter(comparison__user__in=User.trusted_users())
+            .filter(comparison__poll=poll)
             .prefetch_related("comparison")
     ]
     return comparison_data
 
 
-def save_data(video_scores, contributor_rating_scores):
+def save_data(video_scores, contributor_rating_scores, poll):
     """
     Saves in the scores for Entities and ContributorRatings
     """
-    default_poll_pk = Poll.default_poll_pk()
-
     EntityCriteriaScore.objects.all().delete()
     EntityCriteriaScore.objects.bulk_create(
         [
@@ -107,7 +106,7 @@ def save_data(video_scores, contributor_rating_scores):
     created_ratings = ContributorRating.objects.bulk_create(
         [
             ContributorRating(
-                poll_id=default_poll_pk,
+                poll_id=poll.pk,
                 entity_id=video_id,
                 user_id=contributor_id,
             )
@@ -130,17 +129,21 @@ def save_data(video_scores, contributor_rating_scores):
         ]
     )
 
+def process():
+    for poll in Poll.objects.all():
+        poll_criterias_list = poll.criterias_list
+        poll_comparison_data = fetch_data(poll=poll)
+        glob_score, loc_score = ml_run(
+            poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1
+        )
+        save_data(glob_score, loc_score, poll)
+
 
 class Command(BaseCommand):
     help = "Runs the ml"
 
     def handle(self, *args, **options):
-        criterias_list = Poll.default_poll().criterias_list
-        comparison_data = fetch_data()
         if TOURNESOL_DEV:
             logging.error('You must turn TOURNESOL_DEV to 0 to use this')
         else:  # production mode
-            glob_scores, loc_scores = ml_run(
-                comparison_data, criterias=criterias_list, save=True, verb=-1
-            )
-            save_data(glob_scores, loc_scores)
+            process()
