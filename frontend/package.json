@@ -76,8 +76,7 @@
     "fetch-mock-jest": "^1.5.1",
     "husky": "^7.0.1",
     "i18next-parser": "^5.3.0",
-    "openapi-typescript": "^4.0.2",
-    "openapi-typescript-codegen": "^0.9.3",
+    "openapi-typescript-codegen": "^0.19.0",
     "prettier": "^2.3.2",
     "react-test-renderer": "^17.0.2",
     "redux-mock-store": "^1.5.4"

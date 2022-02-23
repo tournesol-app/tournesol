@@ -16,6 +16,8 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
+from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models.tags import Tag
 
 LANGUAGES = settings.LANGUAGES
@@ -32,12 +34,8 @@ class Entity(models.Model):
     class Meta:
         verbose_name_plural = "entities"
 
+    UID_DELIMITER = ':'
     UID_YT_NAMESPACE = 'yt'
-
-    TYPE_VIDEO = 'video'
-    ENTITY_TYPE = [
-        (TYPE_VIDEO, 'Video'),
-    ]
 
     uid = models.CharField(
         unique=True,
@@ -47,10 +45,11 @@ class Entity(models.Model):
 
     type = models.CharField(
         max_length=32,
-        choices=ENTITY_TYPE,
+        choices=ENTITY_TYPE_CHOICES,
     )
 
     metadata = models.JSONField(
+        blank=True,
         default=dict
     )
     metadata_timestamp = models.DateTimeField(
@@ -138,6 +137,10 @@ class Entity(models.Model):
             .count()
         )
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
+
+    @property
+    def entity_cls(self):
+        return ENTITY_TYPE_NAME_TO_CLASS[self.type]
 
     @property
     def best_text(self, min_len=5):
@@ -269,9 +272,20 @@ class Entity(models.Model):
             video.tags.add(tag)
         return video
 
+    def clean(self):
+        # An empty dict is considered as an empty value for JSONField,
+        # so blank=True is necessary on "metadata" field.
+        # But then, a blank value would break the validation in the admin form
+        # as "metadata" is a required non-null value.
+        # That's why a default value is set here to handle correctly blank values in forms.
+        if self.metadata is None:
+            self.metadata = {}
+
     def save(self, *args, **kwargs):
-        self.uid = '{}:{}'.format(Entity.UID_YT_NAMESPACE, self.video_id)
-        self.type = Entity.TYPE_VIDEO
+        self.uid = '{}{}{}'.format(
+            Entity.UID_YT_NAMESPACE, Entity.UID_DELIMITER, self.video_id
+        )
+        self.type = TYPE_VIDEO
         super().save(*args, **kwargs)
 
 

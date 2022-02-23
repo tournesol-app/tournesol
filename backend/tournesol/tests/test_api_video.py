@@ -59,10 +59,7 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # test a request without query parameters
-        response = client.get(
-            reverse("tournesol:entity-list"),
-            format="json",
-        )
+        response = client.get("/video/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         returned_video_ids = [video["video_id"] for video in response.data["results"]]
@@ -82,7 +79,7 @@ class VideoApi(TestCase):
         # test a request with the limit query parameter
         limit = 2
         response = client.get(
-            reverse("tournesol:entity-list"),
+            "/video/",
             {"limit": limit},
             format="json",
         )
@@ -97,7 +94,7 @@ class VideoApi(TestCase):
         # test that a huge limit doesn't break anything
         limit = 10000
         response = client.get(
-            reverse("tournesol:entity-list"),
+            "/video/",
             {"limit": limit},
             format="json",
         )
@@ -118,7 +115,7 @@ class VideoApi(TestCase):
 
         offset = 2
         response = client.get(
-            reverse("tournesol:entity-list"),
+            "/video/",
             {"offset": offset},
             format="json",
         )
@@ -134,7 +131,7 @@ class VideoApi(TestCase):
         # test that a huge offset doesn't break anything
         offset = 10000
         response = client.get(
-            reverse("tournesol:entity-list"),
+            "/video/",
             {"offset": offset},
             format="json",
         )
@@ -166,7 +163,7 @@ class VideoApi(TestCase):
 
         for param in parameters:
             response = client.get(
-                reverse("tournesol:entity-list"),
+                "/video/",
                 {"limit": param["limit"], "offset": param["offset"]},
                 format="json",
             )
@@ -357,7 +354,7 @@ class VideoApi(TestCase):
 
         # ensure newly created entities are considered videos from YT
         self.assertEqual(new_video.uid, '{}:{}'.format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ"))
-        self.assertEqual(new_video.type, Entity.TYPE_VIDEO)
+        self.assertEqual(new_video.type, "video")
 
     def test_authenticated_cant_create_twice(self):
         """

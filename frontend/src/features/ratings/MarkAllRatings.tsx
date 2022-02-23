@@ -7,6 +7,7 @@ import { TitledSection } from 'src/components';
 import { UsersService } from 'src/services/openapi';
 import { RatingsContext } from 'src/features/videos/PublicStatusAction';
 import { useNotifications } from 'src/hooks';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 function MarkAllRatings() {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ function MarkAllRatings() {
   const updateRatings = async (isPublic: boolean) => {
     try {
       await UsersService.usersMeContributorRatingsAllPartialUpdate({
+        pollName: YOUTUBE_POLL_NAME,
         requestBody: { is_public: isPublic },
       });
     } catch (err) {

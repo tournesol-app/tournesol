@@ -1,7 +1,6 @@
 """
-API endpoint to manipulate contributor ratings
+API endpoint to manipulate contributor ratings.
 """
-
 from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
@@ -9,12 +8,13 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import exceptions, generics
 from rest_framework.response import Response
 
-from ..models import Comparison, ContributorRating
-from ..serializers import (
+from tournesol.models import Comparison, ContributorRating
+from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
     ContributorRatingUpdateAllSerializer,
 )
+from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 def get_annotated_ratings():
@@ -32,31 +32,32 @@ def get_annotated_ratings():
 @extend_schema_view(
     get=extend_schema(
         description="Retrieve the logged-in user's ratings for a specific video "
-        "(computed automatically from the user's comparisons)"
+        "in a given poll (computed automatically from the user's comparisons)."
     ),
     put=extend_schema(
         description="Update public / private status of the logged-in user ratings "
-        "for a specific video."
+        "for a specific video, in a given poll."
     ),
     patch=extend_schema(
         description="Update public / private status of the logged-in user ratings "
-        "for a specific video."
+        "for a specific video, in a given poll."
     ),
 )
-class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
+class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIView):
     serializer_class = ContributorRatingSerializer
 
     def get_object(self):
         return get_object_or_404(
             get_annotated_ratings(),
-            entity__video_id=self.kwargs["video_id"],
+            poll=self.poll_from_url,
             user=self.request.user,
+            entity__uid=self.kwargs["uid"],
         )
 
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve the logged in user's ratings per video "
+        description="Retrieve the logged in user's ratings per video in a given poll"
         "(computed automatically from the user's comparisons).",
         parameters=[
             OpenApiParameter("is_public", OpenApiTypes.BOOL, OpenApiParameter.QUERY)
@@ -64,10 +65,10 @@ class ContributorRatingDetail(generics.RetrieveUpdateAPIView):
     ),
     post=extend_schema(
         description="Initialize the rating object for the current user about a "
-        "specific video, with optional visibility settings."
+        "specific video in a given poll, with optional visibility settings."
     ),
 )
-class ContributorRatingList(generics.ListCreateAPIView):
+class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
     queryset = ContributorRating.objects.none()
 
     def get_serializer_class(self):
@@ -78,7 +79,9 @@ class ContributorRatingList(generics.ListCreateAPIView):
     def get_queryset(self):
         ratings = (
             get_annotated_ratings()
-            .filter(user=self.request.user, n_comparisons__gt=0)
+            .filter(
+                poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0
+            )
             .select_related("entity")
             .prefetch_related("criteria_scores")
         )
@@ -95,15 +98,18 @@ class ContributorRatingList(generics.ListCreateAPIView):
         return ratings
 
 
-class ContributorRatingUpdateAll(generics.GenericAPIView):
+class ContributorRatingUpdateAll(PollScopedViewMixin, generics.GenericAPIView):
     """
-    Mark all contributor ratings by current user as public or private.
+    Mark all contributor ratings by current user as public or private in the
+    given poll.
     """
 
     serializer_class = ContributorRatingUpdateAllSerializer
 
     def get_queryset(self):
-        return ContributorRating.objects.filter(user=self.request.user)
+        return ContributorRating.objects.filter(
+            poll=self.poll_from_url, user=self.request.user
+        )
 
     def patch(self, request, *args, **kwargs):
         queryset = self.get_queryset()

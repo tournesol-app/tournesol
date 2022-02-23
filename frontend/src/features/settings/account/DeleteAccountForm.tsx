@@ -1,28 +1,16 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { TextField, Typography, Button } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { TextField, Typography, Button, useTheme } from '@mui/material';
 
 import { UsersService } from 'src/services/openapi';
 import { useLoginState } from 'src/hooks';
-
-const useStyles = makeStyles((theme) => ({
-  buttonDanger: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.error.contrastText,
-    '&:hover': {
-      backgroundColor: theme.palette.error.dark,
-    },
-  },
-  inputDanger: { width: '100%', margin: '8px 0px 8px 0px' },
-}));
 
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
 const DeleteAccountForm = () => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const theme = useTheme();
   const [keyword, setKeyword] = useState('');
   const { logout } = useLoginState();
 
@@ -48,11 +36,17 @@ const DeleteAccountForm = () => {
         color="secondary"
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
-        className={classes.inputDanger}
+        sx={{ width: '100%', margin: '8px 0px 8px 0px' }}
       />
       <Button
         disabled={keyword !== DELETE_ACCOUNT_KEYWORD}
-        className={classes.buttonDanger}
+        sx={{
+          backgroundColor: theme.palette.error.main,
+          color: theme.palette.error.contrastText,
+          '&:hover': {
+            backgroundColor: theme.palette.error.dark,
+          },
+        }}
         onClick={deleteAccount}
         fullWidth
         variant="contained"

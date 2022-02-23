@@ -23,8 +23,9 @@ export const getVideoInformation = async (videoId: string): Promise<Video> => {
   if (_inMemoryCache[videoId] == undefined) {
     const promise = VideoService.videoRetrieve({ videoId }).catch((err) => {
       console.log(err);
-      const defautVideo: Video = {
+      const defaultVideo: Video = {
         name: 'Missing Information',
+        uid: '',
         publication_date: '',
         uploader: '',
         views: 0,
@@ -36,7 +37,7 @@ export const getVideoInformation = async (videoId: string): Promise<Video> => {
         criteria_scores: [],
         duration: null,
       };
-      return defautVideo;
+      return defaultVideo;
     });
     _inMemoryCache[videoId] = promise;
   }

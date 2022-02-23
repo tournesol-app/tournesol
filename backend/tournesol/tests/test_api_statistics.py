@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from core.utils.time import time_ago
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
 
@@ -25,9 +26,9 @@ class StatisticsAPI(TestCase):
     def setUp(self):
         user_1 = User.objects.create(username="username", email="user@test")
         user_2 = User.objects.create(
-                username="username2",
-                email="user2@test",
-                date_joined=timezone.now() - timedelta(days=90)
+            username="username2",
+            email="user2@test",
+            date_joined=time_ago(days=90),
         )
         self._list_of_users = [user_1, user_2]
 
@@ -43,30 +44,42 @@ class StatisticsAPI(TestCase):
             uploader="uploader2",
             rating_n_ratings=4,
         )
-        
-        Entity.objects.filter(pk=video_1.pk).update(add_time=timezone.now() - timedelta(days=5))
-        Entity.objects.filter(pk=video_2.pk).update(add_time=timezone.now() - timedelta(days=29))
-        Entity.objects.filter(pk=video_3.pk).update(add_time=timezone.now() - timedelta(days=60))
+
+        Entity.objects.filter(pk=video_1.pk).update(add_time=time_ago(days=5))
+        Entity.objects.filter(pk=video_2.pk).update(add_time=time_ago(days=29))
+        Entity.objects.filter(pk=video_3.pk).update(add_time=time_ago(days=60))
 
         self._list_of_videos = [video_1, video_2, video_3]
 
         comparison_1 = ComparisonFactory(
-                user=user_1, entity_1=video_1, entity_2=video_2,
-                duration_ms=102
+            user=user_1,
+            entity_1=video_1,
+            entity_2=video_2,
+            duration_ms=102,
         )
         comparison_2 = ComparisonFactory(
-                user=user_2, entity_1=video_1, entity_2=video_3,
-                duration_ms=104
+            user=user_2,
+            entity_1=video_1,
+            entity_2=video_3,
+            duration_ms=104,
         )
         comparison_3 = ComparisonFactory(
-                user=user_2, entity_1=video_2, entity_2=video_3,
-                duration_ms=302
+            user=user_2,
+            entity_1=video_2,
+            entity_2=video_3,
+            duration_ms=302,
         )
 
-        Comparison.objects.filter(pk=comparison_1.pk).update(datetime_lastedit=timezone.now() - timedelta(days=5))
-        Comparison.objects.filter(pk=comparison_2.pk).update(datetime_lastedit=timezone.now() - timedelta(days=29))
-        Comparison.objects.filter(pk=comparison_3.pk).update(datetime_lastedit=timezone.now() - timedelta(days=60))
-            
+        Comparison.objects.filter(pk=comparison_1.pk).update(
+            datetime_lastedit=time_ago(days=5)
+        )
+        Comparison.objects.filter(pk=comparison_2.pk).update(
+            datetime_lastedit=time_ago(days=29)
+        )
+        Comparison.objects.filter(pk=comparison_3.pk).update(
+            datetime_lastedit=time_ago(days=60)
+        )
+
         self._list_of_comparisons = [comparison_1, comparison_2, comparison_3]
 
     def test_video_stats(self):

@@ -1,7 +1,13 @@
 import React from 'react';
 
 import { TitledSection } from 'src/components';
-import { Typography, FormControlLabel, Checkbox, Box } from '@mui/material';
+import {
+  Typography,
+  FormControlLabel,
+  Checkbox,
+  Box,
+  Tooltip,
+} from '@mui/material';
 import {
   CheckCircle,
   CheckCircleOutline,
@@ -14,6 +20,7 @@ interface Props {
   value: string;
   choices: Record<string, string>;
   multipleChoice?: boolean;
+  tooltip?: string;
   onChange: (value: string) => void;
 }
 
@@ -22,6 +29,7 @@ const ChoicesFilterSection = ({
   value,
   choices,
   multipleChoice = false,
+  tooltip = '',
   onChange,
 }: Props) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,9 +87,16 @@ const ChoicesFilterSection = ({
                 <Typography
                   variant="body2"
                   color={checked ? 'secondary' : 'textPrimary'}
-                  style={{ textTransform: 'capitalize' }}
+                  sx={{
+                    flexGrow: 1,
+                    '&::first-letter': {
+                      textTransform: 'uppercase',
+                    },
+                  }}
                 >
-                  {choiceLabel}
+                  <Tooltip title={tooltip} placement="bottom">
+                    <span>{choiceLabel}</span>
+                  </Tooltip>
                 </Typography>
               }
               key={choiceValue}

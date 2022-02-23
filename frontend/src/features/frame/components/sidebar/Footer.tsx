@@ -5,7 +5,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Box, Divider, Theme } from '@mui/material';
 
 import { getWikiBaseUrl } from 'src/utils/url';
-import { LanguageSelector } from 'src/components';
 
 const useStyles = makeStyles((theme: Theme) => ({
   linksContainer: {
@@ -77,7 +76,6 @@ const Footer = () => {
         </a>
       </div>
       <Divider />
-      <LanguageSelector />
     </Box>
   );
 };

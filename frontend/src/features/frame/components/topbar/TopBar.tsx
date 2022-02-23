@@ -14,26 +14,11 @@ import { Menu } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import AccountInfo from './AccountInfo';
+import { useTheme } from '@mui/material';
 
 export const topBarHeight = 80;
 
-const useStyles = makeStyles((theme) => ({
-  appBar: { [theme.breakpoints.up('md')]: { zIndex: theme.zIndex.drawer + 1 } },
-  container: {
-    width: '100%',
-  },
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: topBarHeight,
-    padding: 4,
-  },
-  logo: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+const useStyles = makeStyles(() => ({
   search: {
     display: 'flex',
     flexDirection: 'row',
@@ -70,12 +55,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Logo = () => {
-  const classes = useStyles();
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
 
   return (
-    <Grid item md={4} xs={3} className={classes.logo}>
+    <Grid
+      item
+      md={4}
+      xs={3}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}
+    >
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
         size="large"
@@ -129,11 +122,24 @@ const Search = () => {
 };
 
 const TopBar = () => {
-  const classes = useStyles();
+  const theme = useTheme();
   return (
-    <AppBar position="sticky" className={classes.appBar}>
-      <Toolbar className={classes.toolbar}>
-        <Grid container className={classes.container}>
+    <AppBar
+      position="sticky"
+      sx={{
+        [theme.breakpoints.up('md')]: { zIndex: theme.zIndex.drawer + 1 },
+      }}
+    >
+      <Toolbar
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: topBarHeight,
+          padding: '4px !important',
+        }}
+      >
+        <Grid container sx={{ width: '100%' }}>
           <Logo />
           <Hidden mdDown>
             <Search />

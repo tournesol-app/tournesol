@@ -1,12 +1,13 @@
 import streamlit as st
 from PIL import Image
 
-from pages import page_public_dataset
+from pages import page_public_dataset, page_tournesol_scores
 
 st.session_state.data = None
 
 PAGES = {
-    "Public Dataset": page_public_dataset,
+    "Comparisons Public Dataset": page_public_dataset,
+    "Tournesol Scores": page_tournesol_scores,
 }
 
 # === Side bar ==================================

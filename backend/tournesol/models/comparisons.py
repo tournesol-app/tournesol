@@ -34,8 +34,7 @@ class Comparison(models.Model):
     poll = models.ForeignKey(
         Poll,
         on_delete=models.CASCADE,
-        related_name="comparisons",
-        default=Poll.default_poll_pk
+        related_name="comparisons"
     )
     entity_1 = models.ForeignKey(
         'Entity',
@@ -80,18 +79,20 @@ class Comparison(models.Model):
         return f"{a}_{b}"
 
     @staticmethod
-    def get_comparison(user, video_id_1, video_id_2):
+    def get_comparison(user, poll_id, uid_a, uid_b):
         """
-        Return a tuple with the user's comparison between two videos, and
-        True is the comparison is made in the reverse way, False instead.
+        Return a tuple with the user's comparison between two videos in the
+        given poll, and True is the comparison is made in the reverse way,
+        False instead.
 
         Raise django.db.model.ObjectDoesNotExist if no comparison is found.
         """
         try:
             comparison = Comparison.objects.get(
-                entity_1__video_id=video_id_1,
-                entity_2__video_id=video_id_2,
-                user=user
+                user=user,
+                poll_id=poll_id,
+                entity_1__uid=uid_a,
+                entity_2__uid=uid_b,
             )
         except ObjectDoesNotExist:
             pass
@@ -99,9 +100,10 @@ class Comparison(models.Model):
             return comparison, False
 
         comparison = Comparison.objects.get(
-            entity_1__video_id=video_id_2,
-            entity_2__video_id=video_id_1,
-            user=user
+            user=user,
+            poll_id=poll_id,
+            entity_1__uid=uid_b,
+            entity_2__uid=uid_a,
         )
 
         return comparison, True

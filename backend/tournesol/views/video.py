@@ -4,7 +4,7 @@ API endpoint to manipulate videos
 import re
 
 from django.conf import settings
-from django.db.models import Case, F, Q, Sum, When
+from django.db.models import Case, F, Sum, When
 from django.utils import dateparse, timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -14,6 +14,9 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
 
+from tournesol.entities import VideoEntity
+from tournesol.models import Entity
+from tournesol.serializers.entity import VideoSerializer, VideoSerializerWithCriteria
 from tournesol.throttling import (
     BurstAnonRateThrottle,
     BurstUserRateThrottle,
@@ -22,54 +25,59 @@ from tournesol.throttling import (
     SustainedUserRateThrottle,
 )
 
-from ..models import Entity
-from ..serializers import VideoSerializer, VideoSerializerWithCriteria
-
 
 @extend_schema_view(
     create=extend_schema(
         description="Add a video to the db if it does not already exist."
     ),
-    retrieve=extend_schema(
-        description="Retrieve details about a single video."
-    ),
+    retrieve=extend_schema(description="Retrieve details about a single video."),
     list=extend_schema(
         description="Retrieve a list of recommended videos, sorted by decreasing total score.",
         parameters=[
             OpenApiParameter("search"),
-            OpenApiParameter("language",
-                             description="Accepted languages separated by commas "
-                                         "(e.g. 'en,fr,de'). If empty, accept all languages."),
+            OpenApiParameter(
+                "language",
+                description="Accepted languages separated by commas "
+                "(e.g. 'en,fr,de'). If empty, accept all languages.",
+            ),
             OpenApiParameter("uploader"),
             OpenApiParameter(
                 "date_lte",
                 OpenApiTypes.DATETIME,
                 description="Return videos published **before** this date.  \n"
                 "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
-                "or legacy: `dd-mm-yy-hh-mm-ss`."
+                "or legacy: `dd-mm-yy-hh-mm-ss`.",
             ),
             OpenApiParameter(
                 "date_gte",
                 OpenApiTypes.DATETIME,
                 description="Return videos published **after** this date.  \n"
                 "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`) "
-                "or legacy: `dd-mm-yy-hh-mm-ss`."
+                "or legacy: `dd-mm-yy-hh-mm-ss`.",
+            ),
+            OpenApiParameter(
+                "unsafe",
+                OpenApiTypes.BOOL,
+                description="If true, videos considered as unsafe recommendations because of a "
+                "low score or due to too few contributions will be included.",
             ),
             *[
                 OpenApiParameter(
                     crit,
                     OpenApiTypes.INT,
-                    description=f"Weight for criteria '{crit}', between 0 and 100"
+                    description=f"Weight for criteria '{crit}', between 0 and 100",
                 )
                 for crit in settings.LEGACY_CRITERIAS
             ],
         ],
-    )
+    ),
 )
-class VideoViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
+class VideoViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = Entity.objects.all()
     pagination_class = LimitOffsetPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -79,7 +87,7 @@ class VideoViewSet(mixins.CreateModelMixin,
         BurstAnonRateThrottle,
         BurstUserRateThrottle,
         SustainedAnonRateThrottle,
-        SustainedUserRateThrottle
+        SustainedUserRateThrottle,
     ]
     throttle_scope = "api_video_post"
 
@@ -90,8 +98,8 @@ class VideoViewSet(mixins.CreateModelMixin,
         Parse ISO datetime from query string.
         Also accepts legacy format 'DD-MM-YY-HH-MM-SS'
         """
-        if re.match(r'^\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$', value):
-            return timezone.datetime.strptime(value, '%d-%m-%y-%H-%M-%S')
+        if re.match(r"^\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$", value):
+            return timezone.datetime.strptime(value, "%d-%m-%y-%H-%M-%S")
         parsed = dateparse.parse_datetime(value)
         if parsed is None:
             raise ValueError(f'Failed to parse "{value}" as datetime')
@@ -104,36 +112,26 @@ class VideoViewSet(mixins.CreateModelMixin,
         request = self.request
         queryset = self.queryset
 
-        queryset = queryset.filter(
-            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-        )
-
-        uploader = request.query_params.get('uploader')
+        uploader = request.query_params.get("uploader")
         if uploader:
             queryset = queryset.filter(uploader=uploader)
 
-        search = request.query_params.get('search')
+        search = request.query_params.get("search")
         if search:
-            # Filtering in a nested queryset is necessary here, to be able to annotate
-            # each video without duplicated scores, due to the m2m field 'tags'.
-            queryset = queryset.filter(pk__in=Entity.objects.filter(
-                Q(name__icontains=search) |
-                Q(description__icontains=search) |
-                Q(tags__name__icontains=search)
-            ))
+            queryset = VideoEntity.filter_search(queryset, search)
 
-        date_lte = request.query_params.get('date_lte') or ""
+        date_lte = request.query_params.get("date_lte") or ""
         if date_lte:
             try:
                 date_lte = self.parse_datetime(date_lte)
-                queryset = queryset.filter(publication_date__lte=date_lte)
+                queryset = VideoEntity.filter_date_lte(queryset, date_lte)
             except ValueError:
                 raise ValidationError('"date_lte" is an invalid datetime.')
-        date_gte = request.query_params.get('date_gte') or ""
+        date_gte = request.query_params.get("date_gte") or ""
         if date_gte:
             try:
                 date_gte = self.parse_datetime(date_gte)
-                queryset = queryset.filter(publication_date__gte=date_gte)
+                queryset = VideoEntity.filter_date_gte(queryset, date_gte)
             except ValueError:
                 raise ValidationError('"date_gte" is an invalid datetime')
 
@@ -154,14 +152,22 @@ class VideoViewSet(mixins.CreateModelMixin,
             for crit in settings.LEGACY_CRITERIAS
         ]
         criteria_weight = Case(*criteria_cases, default=0)
-        queryset = (
-            queryset.annotate(
-                total_score=Sum(F("criteria_scores__score") * criteria_weight)
-            )
-            .filter(total_score__gt=0)
-            .order_by("-total_score")
+
+        queryset = queryset.annotate(
+            total_score=Sum(F("criteria_scores__score") * criteria_weight)
         )
-        return queryset.prefetch_related("criteria_scores")
+
+        show_unsafe = request.query_params.get("unsafe") == "true"
+
+        if show_unsafe is True:
+            queryset = queryset.filter(total_score__isnull=False)
+        else:
+            queryset = queryset.filter(
+                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
+            ).filter(total_score__gt=0)
+        return queryset.prefetch_related("criteria_scores").order_by(
+            "-total_score", "-publication_date"
+        )
 
     def get_serializer_class(self):
         if self.action in ("retrieve", "list"):

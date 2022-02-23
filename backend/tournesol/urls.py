@@ -9,7 +9,9 @@ from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.email_domains import EmailDomainsList
+from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.polls import PollsRecommendationsView, PollsView
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -21,46 +23,41 @@ from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 
 router = routers.DefaultRouter()
-router.register(r'video', VideoViewSet)
+router.register(r"video", VideoViewSet, basename="video")
+router.register(r"entities", EntitiesViewSet)
 
 app_name = "tournesol"
 urlpatterns = [
     path("", include(router.urls)),
     # User API
-    path(
-        "users/me/",
-        CurrentUserView.as_view(),
-        name="users_me"
-    ),
+    path("users/me/", CurrentUserView.as_view(), name="users_me"),
     # Data exports
     path(
         "users/me/exports/comparisons/",
         ExportComparisonsView.as_view(),
-        name="export_comparisons"
+        name="export_comparisons",
     ),
-    path(
-        "users/me/exports/all/",
-        ExportAllView.as_view(),
-        name="export_all"
-    ),
+    path("users/me/exports/all/", ExportAllView.as_view(), name="export_all"),
     path(
         "exports/comparisons/",
         ExportPublicComparisonsView.as_view(),
-        name="export_public"
+        name="export_public",
     ),
     # Comparison API
     path(
-        "users/me/comparisons/", ComparisonListApi.as_view(),
-        name="comparisons_me_list",
+        "users/me/comparisons/<str:poll_name>",
+        ComparisonListApi.as_view(),
+        name="poll_comparisons_me_list",
     ),
     path(
-        "users/me/comparisons/<str:video_id>/", ComparisonListFilteredApi.as_view(),
-        name="comparisons_me_list_filtered",
+        "users/me/comparisons/<str:poll_name>/<str:uid>/",
+        ComparisonListFilteredApi.as_view(),
+        name="poll_comparisons_me_list_filtered",
     ),
     path(
-        "users/me/comparisons/<str:video_id_a>/<str:video_id_b>/",
+        "users/me/comparisons/<str:poll_name>/<str:uid_a>/<str:uid_b>/",
         ComparisonDetailApi.as_view(),
-        name="comparisons_me_detail",
+        name="poll_comparisons_me_detail",
     ),
     # VideoRateLater API
     path(
@@ -75,30 +72,29 @@ urlpatterns = [
     ),
     # Ratings API
     path(
-        "users/me/contributor_ratings/",
+        "users/me/contributor_ratings/<str:poll_name>/",
         ContributorRatingList.as_view(),
         name="ratings_me_list",
     ),
     path(
-        "users/me/contributor_ratings/_all/",
+        "users/me/contributor_ratings/<str:poll_name>/_all/",
         ContributorRatingUpdateAll.as_view(),
         name="ratings_me_list_update_is_public",
     ),
     path(
-        "users/me/contributor_ratings/<str:video_id>/",
+        "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
     ),
     # Email domain API
-    path(
-        "domains/",
-        EmailDomainsList.as_view(),
-        name="email_domains_list"
-    ),
+    path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),
     # Statistics API
+    path("stats/", StatisticsView.as_view(), name="statistics_detail"),
+    # Polls API
+    path("polls/<str:name>/", PollsView.as_view(), name="polls_detail"),
     path(
-        "stats/",
-        StatisticsView.as_view(),
-        name="statistics_detail"
-     )
+        "polls/<str:name>/recommendations/",
+        PollsRecommendationsView.as_view(),
+        name="polls_recommendations",
+    ),
 ]

@@ -20,13 +20,6 @@ import { useNotifications } from 'src/hooks';
 import { getWebExtensionUrl } from 'src/utils/extension';
 
 const useStyles = makeStyles({
-  rateLaterIntro: {
-    textAlign: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    fontSize: '14px',
-  },
   rateLaterContent: {
     flexDirection: 'column',
     width: '100%',
@@ -113,8 +106,17 @@ const RateLaterPage = () => {
   return (
     <>
       <ContentHeader title={t('myRateLaterListPage.title')} />
-      <ContentBox noMinPadding maxWidth="md">
-        <Card className={classes.rateLaterIntro} elevation={4}>
+      <ContentBox noMinPaddingX maxWidth="md">
+        <Card
+          elevation={4}
+          sx={{
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+            fontSize: '14px',
+          }}
+        >
           <CardContent>
             <Typography variant="h6">
               {t('ratelater.addVideosToRateLaterList')}

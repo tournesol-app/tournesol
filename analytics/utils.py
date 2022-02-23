@@ -1,4 +1,6 @@
 import pandas as pd
+import requests
+import streamlit as st
 
 
 CRITERIA = [
@@ -13,6 +15,8 @@ CRITERIA = [
     "diversity_inclusion",
     "backfire_risk",
 ]
+
+CRITERI_EXT = CRITERIA + ["views", "duration", "tournesol_score"]
 
 TCOLOR = [
     "#1282b2",
@@ -30,10 +34,12 @@ TCOLOR = [
 MSG_NO_DATA = "You should first load the public dataset at the top of the page."
 
 
-def set_df(data, users=[]):
+@st.cache
+def set_df(users=[]):
     """Set up the dataframe"""
 
-    df_tmp = pd.read_csv(data)
+    url = "https://api.tournesol.app/exports/comparisons/"
+    df_tmp = pd.read_csv(url)
 
     index = ["video_a", "video_b", "public_username"]
 
@@ -49,3 +55,29 @@ def set_df(data, users=[]):
 def get_unique_video_list(df):
 
     return list(set(df["video_a"].tolist() + df["video_b"].tolist()))
+
+
+def get_score(row, crit):
+    for item in row["criteria_scores"]:
+        if item["criteria"] == crit:
+            return item["score"]
+
+
+@st.cache
+def api_get_tournesol_scores():
+    """Get a dataframe with all videos from tournesol.."""
+
+    response = requests.get(
+        f"https://api.tournesol.app/video/?limit=9999&unsafe=true"
+    ).json()
+
+    df = pd.DataFrame.from_dict(response["results"])
+
+    for crit in CRITERIA:
+        df[crit] = df.apply(lambda x: get_score(x, crit), axis=1)
+
+    df.drop(columns=["criteria_scores"], inplace=True)
+
+    df["tournesol_score"] = df[CRITERIA].sum(axis=1)
+
+    return df

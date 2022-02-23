@@ -22,5 +22,7 @@ class CurrentUserView(APIView):
         user = request.user
         user.delete()
         logout(request)
-        logger.info("User '%s' with email '%s' has been deleted.", user.username, user.email)
+        logger.info(
+            "User '%s' with email '%s' has been deleted.", user.username, user.email
+        )
         return Response(status=status.HTTP_204_NO_CONTENT)

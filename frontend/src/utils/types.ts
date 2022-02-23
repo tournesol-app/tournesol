@@ -14,7 +14,7 @@ export interface JSONObject {
 }
 
 export type ActionList = Array<
-  (({ videoId }: { videoId: string }) => JSX.Element) | React.ReactNode
+  (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
 export type VideoObject = Video | VideoSerializerWithCriteria;

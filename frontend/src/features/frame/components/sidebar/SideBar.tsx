@@ -32,6 +32,7 @@ import {
 import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
 import Footer from './Footer';
+import { LanguageSelector } from 'src/components';
 
 export const sideBarWidth = 264;
 
@@ -98,7 +99,10 @@ const SideBar = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
 
-  const isItemSelected = (url: string) => url === location.pathname;
+  // parameter 'url', which corresponds to the target url, may contain some url parameters
+  // we make sure that we highlight the component the user loaded
+  const isItemSelected = (url: string) =>
+    url.split('?')[0] === location.pathname;
 
   const menuItems = [
     { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },
@@ -156,6 +160,7 @@ const SideBar = () => {
       <List
         disablePadding
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
+        sx={{ flexGrow: 1 }}
       >
         {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
           if (!IconComponent || !targetUrl)
@@ -201,6 +206,7 @@ const SideBar = () => {
         })}
       </List>
       {drawerOpen && <Footer />}
+      <LanguageSelector languageName={drawerOpen} />
     </Drawer>
   );
 };

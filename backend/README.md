@@ -1,10 +1,33 @@
 # Tournesol Backend
 
-The API of the Tournesol application, made with Python and Django.
+The API of the Tournesol platform, made with Python and Django.
+
+**Table of Content**
+
+- [Install](#install)
+  - [Automatic installation (recommended)](#automatic-installation-recommended)
+  - [Manual installation](#manual-installation-advanced)
+  - [Set up a Google API key](#set-up-a-google-api-key)
+- [Tests](#tests)
+- [Code Quality](#code-quality)
+- [F.A.Q.](#faq)
 
 ## Install
 
+The API can be installed by following the recommended automatic installation
+path, or manually if you need a more personal setup.
+
+After having installed the application, complete your setup by following the
+last steps describes in the [Set up a Google API key](#set-up-a-google-api-key)
+section.
+
 ### Automatic installation (recommended)
+
+#### Required packages
+
+- [expect](https://core.tcl-lang.org/expect/index)
+
+#### Procedure
 
 Use the procedure in the `dev-env`'s [README.md][dev-env-readme] to
 automatically set up a fully functional environment with Docker.
@@ -51,11 +74,15 @@ These tools are already included in the `dev-env`.
 pip install -r tests/requirements.txt
 ```
 
-## Dependencies
+### Set up a Google API Key
 
-Both `dev-env/run-docker-compose.sh` and `dev-env/run-db-and-local-django.sh` depend on [expect](https://core.tcl-lang.org/expect/index) for superuser unattended creation.
+Configuring a Google API key allows the application to fetch video metadata
+directly from YouTube. The application should still start without it, but some
+features will be missing. It's recommended to get and configure this API key
+if you plan to contribute regularly to the project, to make your environment
+closer to the production one.
 
-## Setup Google Api Key
+#### Procedure
 
 * Go to https://console.cloud.google.com/apis/ and create a new project named `tournesol`
 
@@ -66,7 +93,7 @@ If you are using the "dev-env", this is in [backend/dev-env/settings-tournesol.y
 
 * Then go to https://console.cloud.google.com/apis/credentials/consent, and add a user test (typicaly your gmail account)
 
-## Testing
+## Tests
 
 In order to ease your testing and debug time, use pytest : `pytest`
 Moreover, you can run the following command to have a complete recap in a html document for each test:

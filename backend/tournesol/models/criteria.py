@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils import translation
 
 from .poll import Poll
 
@@ -9,6 +11,18 @@ class Criteria(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_label(self, lang=None):
+        if lang is None:
+            lang = translation.get_language()
+        try:
+            locale = self.locales.get(language=lang)
+        except ObjectDoesNotExist:
+            try:
+                locale = self.locales.get(language="en")
+            except ObjectDoesNotExist:
+                return self.name
+        return locale.label
 
 
 class CriteriaRank(models.Model):

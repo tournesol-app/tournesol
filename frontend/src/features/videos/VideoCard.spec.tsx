@@ -20,7 +20,7 @@ const renderVideoCard = (video: VideoObject) =>
 describe('VideoCard content', () => {
   it('shows video metadata without criterias', () => {
     const video: VideoObject = {
-      video_id: 'xSqqXN0D4fY',
+      uid: 'yt:xSqqXN0D4fY',
       name: 'Video title',
       description: 'Video description',
       views: 154988,
@@ -30,6 +30,7 @@ describe('VideoCard content', () => {
       duration: 120,
       publication_date: '',
       language: LanguageEnum.FR,
+      video_id: 'xSqqXN0D4fY',
     };
     renderVideoCard(video);
 
@@ -49,7 +50,7 @@ describe('VideoCard content', () => {
 
   it('shows video card with single criteria', () => {
     const video: VideoObject = {
-      video_id: 'xSqqXN0D4fY',
+      uid: 'yt:xSqqXN0D4fY',
       name: 'Video title',
       description: 'Video description',
       views: 154988,
@@ -60,11 +61,10 @@ describe('VideoCard content', () => {
         {
           criteria: 'largely_recommended',
           score: 0.4,
-          uncertainty: 0.0,
-          quantile: 1.0,
         },
       ],
       duration: 4200,
+      video_id: 'xSqqXN0D4fY',
     };
     renderVideoCard(video);
 
@@ -87,7 +87,7 @@ describe('VideoCard content', () => {
 
   it('shows video card with multiple criteria', () => {
     const video: VideoObject = {
-      video_id: 'xSqqXN0D4fY',
+      uid: 'yt:xSqqXN0D4fY',
       name: 'Video title',
       description: 'Video description',
       views: 154988,
@@ -98,17 +98,14 @@ describe('VideoCard content', () => {
         {
           criteria: 'engaging',
           score: 0.9,
-          uncertainty: 0.0,
-          quantile: 1.0,
         },
         {
           criteria: 'pedagogy',
           score: 0.8,
-          uncertainty: 0.0,
-          quantile: 1.0,
         },
       ],
       duration: 120,
+      video_id: 'xSqqXN0D4fY',
     };
     renderVideoCard(video);
 

@@ -17,6 +17,7 @@ import {
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 import { scrollToTop } from 'src/utils/ui';
+import { YOUTUBE_POLL_NAME } from '../../utils/constants';
 
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
   const { t } = useTranslation();
@@ -69,6 +70,7 @@ const VideoRatingsPage = () => {
     const isPublicParam = urlParams.get('isPublic');
     const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
     const response = await UsersService.usersMeContributorRatingsList({
+      pollName: YOUTUBE_POLL_NAME,
       limit,
       offset,
       isPublic,
@@ -120,7 +122,7 @@ const VideoRatingsPage = () => {
       }}
     >
       <ContentHeader title={t('myRatedVideosPage.title')} />
-      <ContentBox noMinPadding maxWidth="md">
+      <ContentBox noMinPaddingX maxWidth="md">
         <Box px={{ xs: 2, sm: 0 }}>
           <RatingsFilter />
         </Box>

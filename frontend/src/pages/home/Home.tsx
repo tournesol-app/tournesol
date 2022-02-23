@@ -99,7 +99,7 @@ const HomePage = () => {
           item
           xs={12}
           className={classes.container}
-          style={{ background: '#1282B2' }}
+          sx={{ background: '#1282B2' }}
         >
           <ExtensionSection />
         </Grid>

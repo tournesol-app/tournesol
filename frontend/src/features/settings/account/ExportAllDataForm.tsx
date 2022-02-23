@@ -17,14 +17,14 @@ async function usersMeExportsAllRetrieveBlob(): Promise<Response> {
   const api_url = OpenAPI.BASE;
   const options: ApiRequestOptions = {
     method: 'GET',
-    path: '/users/me/exports/all/',
+    url: '/users/me/exports/all/',
   };
   const access_token =
     typeof OpenAPI.TOKEN === 'function'
       ? await OpenAPI.TOKEN(options)
       : OpenAPI.TOKEN;
   const headers = { Authorization: `Bearer ${access_token}` };
-  const response = await fetch(`${api_url}${options.path}`, {
+  const response = await fetch(`${api_url}${options.url}`, {
     credentials: 'include',
     method: options.method,
     headers: headers,

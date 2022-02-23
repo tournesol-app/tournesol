@@ -56,8 +56,8 @@ const ComparisonSliders = ({
     return c
       ? c
       : {
-          video_a: { video_id: videoA },
-          video_b: { video_id: videoB },
+          entity_a: { video_id: videoA },
+          entity_b: { video_id: videoB },
           criteria_scores: allCriterias
             .filter((c) => !optionalCriterias[c])
             .map((criteria) => ({ criteria, score: 0 })),
@@ -116,7 +116,7 @@ const ComparisonSliders = ({
   if (videoA == videoB) {
     return (
       <div className={classes.root}>
-        <Typography paragraph style={{ textAlign: 'center' }}>
+        <Typography paragraph sx={{ textAlign: 'center' }}>
           {t('comparison.videosAreSimilar')}
           {' 🌻'}
         </Typography>
@@ -144,7 +144,10 @@ const ComparisonSliders = ({
           startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
           size="small"
           color="secondary"
-          style={{ marginBottom: 8, color: showOptionalCriterias ? 'red' : '' }}
+          sx={{
+            marginBottom: '8px',
+            color: showOptionalCriterias ? 'red' : '',
+          }}
         >
           {showOptionalCriterias
             ? t('comparison.removeOptionalCriterias')
@@ -153,7 +156,7 @@ const ComparisonSliders = ({
         <Collapse
           in={showOptionalCriterias}
           timeout="auto"
-          style={{ width: '100%' }}
+          sx={{ width: '100%' }}
         >
           {allCriterias
             .filter((c) => optionalCriterias[c])
