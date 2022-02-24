@@ -272,16 +272,9 @@ function loadRecommandations() {
   if(areRecommandationsLoading) return;
   
   areRecommandationsLoading = true;
-  /*
-   ** Send message to background.js to get recommendations from the API of Tournesol.
-   ** I put video amount here because we can get the value of --ytd-rich-grid-posts-per-row (css) to know how many videos we should retreive from api
-   */
-  const language =
-    localStorage.getItem('tournesol_extension_config_language') || 'en';
   
   chrome.runtime.sendMessage({
     message: 'getTournesolRecommendations',
-    language: language,
     videosNumber: videosPerRow,
     additionalVideosNumber: videosPerRow * (rowsWhenExpanded - 1)
   }, handleResponse);

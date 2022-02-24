@@ -152,12 +152,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const process = async () => {
       const threeWeeksAgo = getDateThreeWeeksAgo()
 
+      const storedRecommendationsLanguages = () => new Promise(
+        (resolve) => chrome.storage.local.get(
+          "recommendationsLanguages",
+          ({recommendationsLanguages}) => resolve(recommendationsLanguages),
+        )
+      )
+      const language = await storedRecommendationsLanguages() || "en";
+
       // Only one request for both videos and additional videos
       const recent = await request_recommendations(
-        `date_gte=${threeWeeksAgo}&language=${request.language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
+        `date_gte=${threeWeeksAgo}&language=${language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
       );
       const old = await request_recommendations(
-        `date_lte=${threeWeeksAgo}&language=${request.language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
+        `date_lte=${threeWeeksAgo}&language=${language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
       );
       
       // Cut the response into the part for the videos and the one for the additional videos
