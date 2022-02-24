@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChoicesFilterSection } from 'src/components';
+import {
+  availableRecommendationsLanguages,
+  getLanguageName,
+} from 'src/utils/constants';
 
 interface Props {
   value: string;
@@ -10,11 +14,16 @@ interface Props {
 function LanguageFilter(props: Props) {
   const { t } = useTranslation();
 
-  const languageChoices = {
-    en: t('language.english'),
-    fr: t('language.french'),
-    de: t('language.german'),
-  };
+  const languageChoices: Record<string, string> = useMemo(
+    () =>
+      Object.fromEntries(
+        availableRecommendationsLanguages.map((language) => [
+          language,
+          getLanguageName(t, language),
+        ])
+      ),
+    [t]
+  );
 
   return (
     <ChoicesFilterSection

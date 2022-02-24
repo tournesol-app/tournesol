@@ -15,6 +15,7 @@ import {
 } from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
+import { loadRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 
 import SearchFilter from './SearchFilter';
 
@@ -90,7 +91,7 @@ describe('Filters feature', () => {
     // Check that it updated the URL with the new date type filter
     // Use encodeURI to escape comas (in URL, "," => "%2C")
     expect(pushSpy).toHaveBeenLastCalledWith({
-      search: expectInUrl ? 'date=' + encodeURIComponent(expectInUrl) : '',
+      search: 'date=' + encodeURIComponent(expectInUrl),
     });
   }
 
@@ -112,8 +113,9 @@ describe('Filters feature', () => {
     // Check that it updated the URL with the new language filter
     // Use encodeURI to escape comas (in URL, "," => "%2C")
     expect(pushSpy).toHaveBeenLastCalledWith({
-      search: expectInUrl ? 'language=' + encodeURIComponent(expectInUrl) : '',
+      search: 'language=' + encodeURIComponent(expectInUrl),
     });
+    expect(loadRecommendationsLanguages()).toEqual(expectInUrl);
   }
 
   it('Can open and close the filters menu', () => {
