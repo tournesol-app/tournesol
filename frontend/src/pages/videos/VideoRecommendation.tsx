@@ -43,7 +43,11 @@ function VideoRecommendationPage() {
   }
 
   useEffect(() => {
-    if (location.search === locationSearchRef.current) return;
+    if (location.search === locationSearchRef.current) {
+      // This ref is used as a precaution, to avoid triggering
+      // this effect redundantly, eg if "history" has changed.
+      return;
+    }
     locationSearchRef.current = location.search;
 
     if (searchParams.get('language') === null) {
