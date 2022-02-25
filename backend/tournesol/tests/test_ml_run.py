@@ -43,7 +43,7 @@ class TestMlTrain(TestCase):
         self.assertEqual(EntityCriteriaScore.objects.count(), 2)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 24)
 
-    def test_ml_train_only_on_trusted_user(self):
+    def test_ml_train_on_trusted_and_all_users(self):
         # Test on trusted user
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
