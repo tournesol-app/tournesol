@@ -58,13 +58,10 @@
     },
     {
       "matches": ["https://tournesol.app/*"],
-      "js": ["fetchTournesolToken.js"],
-      "run_at": "document_end",
-      "all_frames": true
-    },
-    {
-      "matches": ["https://tournesol.app/*"],
-      "js": ["fetchTournesolRecommendationsLanguages.js"],
+      "js": [
+        "fetchTournesolToken.js",
+        "fetchTournesolRecommendationsLanguages.js"
+      ],
       "run_at": "document_end",
       "all_frames": true
     }
