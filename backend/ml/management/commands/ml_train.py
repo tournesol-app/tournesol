@@ -79,7 +79,7 @@ def save_data(video_scores, contributor_rating_scores, poll):
     """
     Saves in the scores for Entities and ContributorRatings
     """
-    EntityCriteriaScore.objects.all().delete()
+    EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
     EntityCriteriaScore.objects.bulk_create(
         [
             EntityCriteriaScore(
@@ -87,6 +87,7 @@ def save_data(video_scores, contributor_rating_scores, poll):
                 criteria=criteria,
                 score=score,
                 uncertainty=uncertainty,
+                poll_id=poll.pk
             )
             for video_id, criteria, score, uncertainty in video_scores
         ]
@@ -116,7 +117,8 @@ def save_data(video_scores, contributor_rating_scores, poll):
     rating_ids.update(
         {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
     )
-    ContributorRatingCriteriaScore.objects.all().delete()
+
+    ContributorRatingCriteriaScore.objects.filter(contributor_rating__poll_id=poll.pk).delete()
     ContributorRatingCriteriaScore.objects.bulk_create(
         [
             ContributorRatingCriteriaScore(
