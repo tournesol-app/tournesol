@@ -22,16 +22,8 @@ class ComparisonApiMixin:
             comparison = Comparison.get_comparison(
                 request.user,
                 poll_id,
-                "{}{}{}".format(
-                    Entity.UID_YT_NAMESPACE,
-                    Entity.UID_DELIMITER,
-                    request.data["entity_a"]["video_id"],
-                ),
-                "{}{}{}".format(
-                    Entity.UID_YT_NAMESPACE,
-                    Entity.UID_DELIMITER,
-                    request.data["entity_b"]["video_id"],
-                ),
+                request.data["entity_a"]["uid"],
+                request.data["entity_b"]["uid"],
             )
         # if one field is missing, do not raise error yet and let django rest
         # framework checks the request integrity
@@ -109,8 +101,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         if self.comparison_already_exists(poll.pk, self.request):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
-                    self.request.data["entity_a"]["video_id"],
-                    self.request.data["entity_b"]["video_id"],
+                    self.request.data["entity_a"]["uid"],
+                    self.request.data["entity_b"]["uid"],
                 )
             )
         comparison: Comparison = serializer.save()

@@ -35,9 +35,7 @@ class VideoSerializer(ModelSerializer):
         allow_null=True,
     )
     views = serializers.IntegerField(
-        source="metadata.views",
-        read_only=True,
-        allow_null=True
+        source="metadata.views", read_only=True, allow_null=True
     )
     uploader = serializers.CharField(
         source="metadata.uploader",
@@ -45,11 +43,11 @@ class VideoSerializer(ModelSerializer):
         allow_null=True,
         help_text="Name of the channel on YouTube",
     )
-    language = serializers.CharField(source="metadata.language", read_only=True, allow_null=True)
+    language = serializers.CharField(
+        source="metadata.language", read_only=True, allow_null=True
+    )
     duration = serializers.IntegerField(
-        source="metadata.duration",
-        read_only=True,
-        allow_null=True
+        source="metadata.duration", read_only=True, allow_null=True
     )
 
     class Meta:
@@ -155,3 +153,33 @@ class EntitySerializer(ModelSerializer):
             for (name, scores) in poll_to_scores.items()
         ]
         return EntityPollSerializer(items, many=True).data
+
+
+class RelatedEntitySerializer(serializers.Serializer):
+    """
+    A serializer representing an entity by its UID. It also creates the
+    entity object on validation if it does not exist in the database yet.
+
+    Used by ModelSerializer(s) having one or more nested relations with Entity,
+    and having the constraint to ensure that entity instances exist before
+    they can be saved properly.
+    """
+    uid = serializers.CharField()
+
+    def validate_uid(self, value):
+        split_uid = value.split(Entity.UID_DELIMITER)
+
+        # TODO: add test
+        if len(split_uid) <= 1 or not split_uid[1]:
+            raise ValidationError("Malformed `uid`.")
+
+        try:
+            Entity.get_from_video_id(video_id=value.split(Entity.UID_DELIMITER)[1])
+        except ObjectDoesNotExist:
+            try:
+                Entity.create_from_video_id(value.split(Entity.UID_DELIMITER)[1])
+            except VideoNotFound:
+                raise ValidationError(
+                    "The entity has not been found. `uid` may be incorrect."
+                )
+        return value
