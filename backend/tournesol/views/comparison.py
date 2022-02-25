@@ -8,7 +8,7 @@ from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
-from tournesol.models import Comparison, ContributorRating, Entity
+from tournesol.models import Comparison, ContributorRating
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 

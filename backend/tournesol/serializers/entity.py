@@ -137,6 +137,11 @@ class EntityPollSerializer(serializers.Serializer):
 
 
 class EntitySerializer(ModelSerializer):
+    """
+    An Entity serializer that also includes polls.
+
+    Use `EntityOnlySerializer` if you don't need the related polls.
+    """
     polls = serializers.SerializerMethodField()
 
     class Meta:
@@ -155,31 +160,43 @@ class EntitySerializer(ModelSerializer):
         return EntityPollSerializer(items, many=True).data
 
 
-class RelatedEntitySerializer(serializers.Serializer):
+class RelatedEntitySerializer(EntitySerializer):
     """
-    A serializer representing an entity by its UID. It also creates the
-    entity object on validation if it does not exist in the database yet.
+    An Entity serializer that will create the Entity object on validation
+    if it does not exist in the database yet.
+
+    Only the field `uid` is provided when using write HTTP methods.
 
     Used by ModelSerializer(s) having one or more nested relations with Entity,
-    and having the constraint to ensure that entity instances exist before
+    and having the constraint to ensure that video instances exist before
     they can be saved properly.
     """
-    uid = serializers.CharField()
+    # XXX: should not be tightly related to the video entity type
+    uid = RegexField(rf"yt:{YOUTUBE_VIDEO_ID_REGEX[1:]}")
+
+    class Meta:
+        model = Entity
+        fields = ["uid", "type", "metadata"]
+        read_only_fields = ["type", "metadata"]
 
     def validate_uid(self, value):
         split_uid = value.split(Entity.UID_DELIMITER)
 
-        # TODO: add test
         if len(split_uid) <= 1 or not split_uid[1]:
             raise ValidationError("Malformed `uid`.")
 
+        return value
+
+    def validate(self, data):
+        # XXX: should not be tightly related to the video entity type
+        video_id = data.get("uid").split(Entity.UID_DELIMITER)[1]
         try:
-            Entity.get_from_video_id(video_id=value.split(Entity.UID_DELIMITER)[1])
+            Entity.get_from_video_id(video_id=video_id)
         except ObjectDoesNotExist:
             try:
-                Entity.create_from_video_id(value.split(Entity.UID_DELIMITER)[1])
+                Entity.create_from_video_id(video_id)
             except VideoNotFound:
                 raise ValidationError(
                     "The entity has not been found. `uid` may be incorrect."
                 )
-        return value
+        return data

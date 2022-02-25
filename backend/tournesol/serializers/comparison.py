@@ -85,7 +85,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         # type check will be needed here to avoid calling `get_from_video_id`
         # on non-video Entity.
 
-        # The validation performed by the RelatedEntitySerializer guarantees
+        # The validation performed by the `RelatedEntitySerializer` guarantees
         # that the submitted UIDs exist in the database.
         video_1 = Entity.get_from_video_id(uid_1.split(Entity.UID_DELIMITER)[1])
         video_2 = Entity.get_from_video_id(uid_2.split(Entity.UID_DELIMITER)[1])
