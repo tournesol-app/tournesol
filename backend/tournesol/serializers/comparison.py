@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
 from tournesol.models import Comparison, ComparisonCriteriaScore, Entity
-from tournesol.serializers.entity import RelatedEntitySerializer, VideoSerializer
+from tournesol.serializers.entity import RelatedEntitySerializer
 
 
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
@@ -117,8 +117,8 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     """
 
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
-    entity_a = VideoSerializer(source="entity_1", read_only=True)
-    entity_b = VideoSerializer(source="entity_2", read_only=True)
+    entity_a = RelatedEntitySerializer(source="entity_1", read_only=True)
+    entity_b = RelatedEntitySerializer(source="entity_2", read_only=True)
 
     class Meta:
         model = Comparison
