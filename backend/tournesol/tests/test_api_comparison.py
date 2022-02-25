@@ -35,7 +35,7 @@ class ComparisonApiTestCase(TestCase):
     _uid_03 = "yt:video_id_03"
     _uid_04 = "yt:video_id_04"
 
-    # non existing videos that can be created
+    # non-existing videos that can be created
     _uid_05 = "yt:video_id_05"
     _uid_06 = "yt:video_id_06"
     _uid_07 = "yt:video_id_07"
@@ -305,6 +305,49 @@ class ComparisonApiTestCase(TestCase):
             comparison_criteria_scores.count(), len(data["criteria_scores"])
         )
         self.assertEqual(comparison_criteria_scores[0].weight, 1)
+
+    def test_authenticated_can_create_with_non_existing_entity(self):
+        """
+        An authenticated user can create a comparison involving entities that
+        are not present in the database yet.
+        """
+        client = APIClient()
+
+        initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
+        data = deepcopy(self.non_existing_comparison)
+        # use the UID of a non-existing entity
+        data["entity_a"]["uid"] = self._uid_05
+
+        client.force_authenticate(user=self.user)
+
+        response = client.post(
+            self.comparisons_base_url,
+            data,
+            format="json",
+        )
+        # check the authorization
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+
+        comparison = Comparison.objects.select_related(
+            "user", "entity_1", "entity_2"
+        ).get(
+            user=self.user,
+            poll=self.poll_videos,
+            entity_1__uid=data["entity_a"]["uid"],
+            entity_2__uid=data["entity_b"]["uid"],
+        )
+        comparisons_nbr = Comparison.objects.filter(user=self.user).count()
+
+        # check the database integrity
+        self.assertEqual(comparisons_nbr, initial_comparisons_nbr + 1)
+
+        # do not check the response data as the `test_authenticated_can_create`
+        # method already tests it
+        self.assertEqual(comparison.poll, self.poll_videos)
+        self.assertEqual(comparison.user, self.user)
+        self.assertEqual(comparison.entity_1.uid, data["entity_a"]["uid"])
+        self.assertEqual(comparison.entity_2.uid, data["entity_b"]["uid"])
+        self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
     def test_authenticated_cant_create_criteria_scores_without_mandatory(self):
         """
