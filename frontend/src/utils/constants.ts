@@ -79,3 +79,18 @@ export const defaultRecommendationFilters = {
   better_habits: '50',
   backfire_risk: '50',
 };
+
+export const availableRecommendationsLanguages = ['en', 'fr', 'de'];
+
+export const getLanguageName = (t: TFunction, language: string) => {
+  switch (language) {
+    case 'en':
+      return t('language.english');
+    case 'fr':
+      return t('language.french');
+    case 'de':
+      return t('language.german');
+    default:
+      return language.toUpperCase();
+  }
+};
