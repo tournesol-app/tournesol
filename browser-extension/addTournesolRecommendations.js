@@ -83,24 +83,6 @@ const getTournesolComponent = () => {
     tournesol_title.append('Recommended by Tournesol');
     inline_div.append(tournesol_title);
 
-    // Language options
-    const makeLanguageLink = (lang) => {
-      lang_option = document.createElement('a');
-      lang_option.className = 'language_option';
-      lang_option.href = '#';
-      lang_option.setAttribute('role', 'button');
-      lang_option.append(lang);
-      lang_option.onclick = (event) => {
-        event.preventDefault();
-        localStorage.setItem('tournesol_extension_config_language', lang);
-        loadRecommandations();
-      };
-      return lang_option;
-    };
-    inline_div.append(makeLanguageLink('de'));
-    inline_div.append(makeLanguageLink('en'));
-    inline_div.append(makeLanguageLink('fr'));
-
     // Add title
     tournesol_link = document.createElement('a');
     tournesol_link.id = 'tournesol_link';
