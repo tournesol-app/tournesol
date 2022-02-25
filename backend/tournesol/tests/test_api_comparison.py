@@ -10,10 +10,9 @@ from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
+from tournesol.models import Comparison, Entity, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.video import VideoFactory
-
-from ..models import Comparison, Entity, Poll
 
 
 class ComparisonApiTestCase(TestCase):
@@ -51,7 +50,7 @@ class ComparisonApiTestCase(TestCase):
 
     def setUp(self):
         """
-        Set-up a minimal set of data to test the ComparisonList API.
+        Set up a minimal set of data to test the ComparisonList API.
 
         At least 4 videos and 2 users with 2 comparisons each are required.
         """
@@ -59,6 +58,8 @@ class ComparisonApiTestCase(TestCase):
         self.comparisons_base_url = "/users/me/comparisons/{}".format(
             self.poll_videos.name
         )
+
+        self.client = APIClient()
 
         self.user = UserFactory(username=self._user)
         self.other = UserFactory(username=self._other)
@@ -117,11 +118,10 @@ class ComparisonApiTestCase(TestCase):
         """
         An anonymous user can't create a comparison.
         """
-        client = APIClient()
         initial_comparisons_nbr = Comparison.objects.all().count()
         data = deepcopy(self.non_existing_comparison)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -144,12 +144,11 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can't create a comparison in a non-existing
         poll.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
         data = deepcopy(self.non_existing_comparison)
         non_existing_poll = "non-existing"
 
-        response = client.post(
+        response = self.client.post(
             "/users/me/comparisons/{}/".format(non_existing_poll),
             data,
             format="json",
@@ -188,14 +187,12 @@ class ComparisonApiTestCase(TestCase):
         Also ensure the object representation included in the API response
         contains the data sent.
         """
-        client = APIClient()
-
         initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
         data = deepcopy(self.non_existing_comparison)
 
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -266,14 +263,12 @@ class ComparisonApiTestCase(TestCase):
         All optional fields of the comparison and its related criteria are
         tested.
         """
-        client = APIClient()
-
         initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
         data = self._remove_optional_fields(deepcopy(self.non_existing_comparison))
 
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -311,16 +306,14 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can create a comparison involving entities that
         are not present in the database yet.
         """
-        client = APIClient()
-
         initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
         data = deepcopy(self.non_existing_comparison)
         # use the UID of a non-existing entity
         data["entity_a"]["uid"] = self._uid_05
 
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -356,16 +349,14 @@ class ComparisonApiTestCase(TestCase):
 
         Only required fields of the comparison's criteria are tested.
         """
-        client = APIClient()
-
         initial_comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
         data = deepcopy(self.non_existing_comparison)
         data["criteria_scores"][0].pop("score")
 
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -378,7 +369,7 @@ class ComparisonApiTestCase(TestCase):
         data = deepcopy(self.non_existing_comparison)
         data["criteria_scores"][0].pop("criteria")
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -389,11 +380,10 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(comparisons_nbr, initial_comparisons_nbr)
 
     def test_missing_non_optional_criteria_in_comparison(self):
-        client = APIClient()
-        client.force_authenticate(self.user)
+        self.client.force_authenticate(self.user)
         data = deepcopy(self.non_existing_comparison)
         data["criteria_scores"][0]["criteria"] = "pedagogy"
-        response = client.post(self.comparisons_base_url, data, format="json")
+        response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertContains(
             response,
             "Missing required criteria",
@@ -405,18 +395,17 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can't create two comparisons for the same couple
         of videos.
         """
-        client = APIClient()
         data = deepcopy(self.non_existing_comparison)
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -428,14 +417,12 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can't create two comparisons for the same couple
         of videos, even by providing the video id in the reverse order.
         """
-        client = APIClient()
-
         initial_comparisons_nbr = Comparison.objects.all().count()
         data = deepcopy(self.non_existing_comparison)
 
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -448,7 +435,7 @@ class ComparisonApiTestCase(TestCase):
             data["entity_a"]["uid"],
         )
 
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data,
             format="json",
@@ -465,9 +452,7 @@ class ComparisonApiTestCase(TestCase):
         """
         An anonymous user can't list its comparisons.
         """
-        client = APIClient()
-
-        response = client.get(
+        response = self.client.get(
             self.comparisons_base_url,
             format="json",
         )
@@ -478,11 +463,10 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can't list its comparisons in a non-existing
         poll.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
         non_existing_poll = "non-existing"
 
-        response = client.get(
+        response = self.client.get(
             "/users/me/comparisons/{}/".format(non_existing_poll),
             format="json",
         )
@@ -492,11 +476,10 @@ class ComparisonApiTestCase(TestCase):
         """
         An authenticated user can list its comparisons.
         """
-        client = APIClient()
         comparisons_made = Comparison.objects.filter(user=self.user)
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.get(
+        response = self.client.get(
             self.comparisons_base_url,
             format="json",
         )
@@ -529,17 +512,15 @@ class ComparisonApiTestCase(TestCase):
         """
         An authenticated user can list its comparisons filtered by a video id.
         """
-        client = APIClient()
-
         comparisons_made = Comparison.objects.filter(
             Q(entity_1__uid=self._uid_02) | Q(entity_2__uid=self._uid_02),
             poll=self.poll_videos,
             user=self.user,
         )
 
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.get(
+        response = self.client.get(
             "{}/{}/".format(self.comparisons_base_url, self._uid_02),
             format="json",
         )
@@ -561,9 +542,7 @@ class ComparisonApiTestCase(TestCase):
         """
         An anonymous user can't read one of its comparisons.
         """
-        client = APIClient()
-
-        response = client.get(
+        response = self.client.get(
             "{}/{}/{}/".format(self.comparisons_base_url, self._uid_01, self._uid_02),
             format="json",
         )
@@ -574,11 +553,10 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can't read one of its comparisons in a
         non-existing poll.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
         non_existing_poll = "non-existing"
 
-        response = client.get(
+        response = self.client.get(
             "/users/me/comparisons/{}/{}/{}/".format(
                 non_existing_poll, self._uid_01, self._uid_02
             ),
@@ -593,10 +571,9 @@ class ComparisonApiTestCase(TestCase):
         The `entity_a` and  `entity_b` fields in the response must respectively
         match the positional arguments of the URL requested.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
-        response = client.get(
+        response = self.client.get(
             "{}/{}/{}/".format(self.comparisons_base_url, self._uid_01, self._uid_02),
             format="json",
         )
@@ -614,8 +591,7 @@ class ComparisonApiTestCase(TestCase):
         The `entity_a` and  `entity_b` fields in the response must respectively
         match the positional arguments of the URL requested.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
         # assert the comparison 02 / 01 does not exist in this order in the
         # database, in order to test the GET view with reversed parameters
@@ -627,7 +603,7 @@ class ComparisonApiTestCase(TestCase):
                 entity_2__uid=self._uid_01,
             )
 
-        response = client.get(
+        response = self.client.get(
             "{}/{}/{}/".format(
                 self.comparisons_base_url,
                 self._uid_02,
@@ -644,9 +620,7 @@ class ComparisonApiTestCase(TestCase):
         """
         An anonymous user can't update a comparison.
         """
-        client = APIClient()
-
-        response = client.put(
+        response = self.client.put(
             "{}/{}/{}/".format(
                 self.comparisons_base_url,
                 self._uid_01,
@@ -665,11 +639,10 @@ class ComparisonApiTestCase(TestCase):
         """
         An authenticated user can't update a comparison in a non-existing poll.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
         non_existing_poll = "non-existing"
 
-        response = client.put(
+        response = self.client.put(
             "/users/me/comparisons/{}/{}/{}/".format(
                 non_existing_poll, self._uid_01, self._uid_02
             ),
@@ -686,8 +659,6 @@ class ComparisonApiTestCase(TestCase):
         """
         An anonymous user can't delete a comparison.
         """
-        client = APIClient()
-
         # ensure ObjectDoesNoteExist is not raised
         Comparison.objects.get(
             poll=self.poll_videos,
@@ -696,7 +667,7 @@ class ComparisonApiTestCase(TestCase):
             entity_2=self.videos[1],
         )
 
-        response = client.delete(
+        response = self.client.delete(
             "{}/{}/{}/".format(
                 self.comparisons_base_url,
                 self._uid_01,
@@ -719,11 +690,10 @@ class ComparisonApiTestCase(TestCase):
         An authenticated user can't delete a comparison in a non-existing
         poll.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
         non_existing_poll = "non-existing"
 
-        response = client.delete(
+        response = self.client.delete(
             "/users/me/comparisons/{}/{}/{}/".format(
                 non_existing_poll, self._uid_01, self._uid_02
             ),
@@ -735,8 +705,7 @@ class ComparisonApiTestCase(TestCase):
         """
         An authenticated user can delete a comparison.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
         # ensure ObjectDoesNoteExist is not raised
         Comparison.objects.get(
@@ -746,7 +715,7 @@ class ComparisonApiTestCase(TestCase):
             entity_2=self.videos[1],
         )
 
-        response = client.delete(
+        response = self.client.delete(
             "{}/{}/{}/".format(
                 self.comparisons_base_url,
                 self._uid_01,
@@ -765,8 +734,7 @@ class ComparisonApiTestCase(TestCase):
             )
 
     def test_authenticated_integrated_comparison_list(self):
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
         comparison1 = Comparison.objects.create(
             poll=self.poll_videos,
             user=self.user,
@@ -779,7 +747,7 @@ class ComparisonApiTestCase(TestCase):
             entity_1=self.videos[1],
             entity_2=self.videos[2],
         )
-        client.put(
+        self.client.put(
             "{}/{}/{}/".format(
                 self.comparisons_base_url,
                 self._uid_03,
@@ -792,7 +760,7 @@ class ComparisonApiTestCase(TestCase):
             },
             format="json",
         )
-        response = client.get(
+        response = self.client.get(
             self.comparisons_base_url,
             format="json",
         )
@@ -814,8 +782,7 @@ class ComparisonApiTestCase(TestCase):
         )
 
     def test_n_ratings_from_video(self):
-        client = APIClient()
-        client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
         VideoFactory(metadata__video_id=self._uid_05.split(":")[1])
         VideoFactory(metadata__video_id=self._uid_06.split(":")[1])
@@ -829,7 +796,7 @@ class ComparisonApiTestCase(TestCase):
             ],
             "duration_ms": 103,
         }
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data1,
             format="json",
@@ -844,14 +811,14 @@ class ComparisonApiTestCase(TestCase):
             ],
             "duration_ms": 103,
         }
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data2,
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        client.force_authenticate(user=self.other)
+        self.client.force_authenticate(user=self.other)
 
         data3 = {
             "entity_a": {"uid": self._uid_05},
@@ -861,7 +828,7 @@ class ComparisonApiTestCase(TestCase):
             ],
             "duration_ms": 103,
         }
-        response = client.post(
+        response = self.client.post(
             self.comparisons_base_url,
             data3,
             format="json",
@@ -881,11 +848,10 @@ class ComparisonApiTestCase(TestCase):
 
     @patch("tournesol.utils.api_youtube.get_video_metadata")
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
-        client = APIClient()
         mock_get_video_metadata.return_value = {}
 
         user = UserFactory(username="non_existing_user")
-        client.force_authenticate(user=user)
+        self.client.force_authenticate(user=user)
 
         video01, video02, video03 = self.videos[:3]
         video01.last_metadata_request_at = None
@@ -902,7 +868,7 @@ class ComparisonApiTestCase(TestCase):
                 {"criteria": "largely_recommended", "score": 10, "weight": 10}
             ],
         }
-        response = client.post(self.comparisons_base_url, data, format="json")
+        response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
@@ -914,18 +880,17 @@ class ComparisonApiTestCase(TestCase):
             ],
         }
 
-        response = client.post(self.comparisons_base_url, data, format="json")
+        response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         # Video01 has been refreshed and video03 was already up-to-date.
         # No additional call to YouTube API should be visible.
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
     def test_invalid_criteria_in_comparison(self):
-        client = APIClient()
-        client.force_authenticate(self.user)
+        self.client.force_authenticate(self.user)
         data = deepcopy(self.non_existing_comparison)
         data["criteria_scores"][0]["criteria"] = "invalid"
-        response = client.post(self.comparisons_base_url, data, format="json")
+        response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertContains(
             response, "not a valid criteria", status_code=status.HTTP_400_BAD_REQUEST
         )
