@@ -3,6 +3,10 @@ import { uniq } from 'src/utils/array';
 
 export const saveRecommendationsLanguages = (value: string) => {
   localStorage.setItem('recommendationsLanguages', value);
+  const event = new CustomEvent('tournesol:recommendationsLanguagesChange', {
+    detail: { recommendationsLanguages: value },
+  });
+  document.dispatchEvent(event);
 };
 
 export const loadRecommendationsLanguages = (): string | null =>
