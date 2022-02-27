@@ -1,8 +1,10 @@
-import { VideoService } from 'src/services/openapi';
-import { allCriterias } from 'src/utils/constants';
+import { PollCriteria, VideoService } from 'src/services/openapi';
 import { snakeToCamel } from 'src/utils/string';
 
-export const getRecommendedVideos = async (searchString: string) => {
+export const getRecommendedVideos = async (
+  searchString: string,
+  criterias: PollCriteria[]
+) => {
   const dayInMillisecondes = 1000 * 60 * 60 * 24;
   const conversionTime = new Map();
   const params = new URLSearchParams(searchString);
@@ -58,7 +60,7 @@ export const getRecommendedVideos = async (searchString: string) => {
       dateGte: params.get('date_gte') ?? undefined,
       unsafe: params.get('unsafe') === 'true' ?? undefined,
       ...Object.fromEntries(
-        allCriterias.map((c) => [snakeToCamel(c), getNumberValue(c)])
+        criterias.map((c) => [snakeToCamel(c.name), getNumberValue(c.name)])
       ),
     });
   } catch (err) {

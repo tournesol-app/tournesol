@@ -18,8 +18,9 @@ import {
   isVideoIdValid,
 } from 'src/utils/video';
 import { UsersService, ContributorRating } from 'src/services/openapi';
-import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { videoFromRelatedEntity } from '../../utils/entity';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -61,13 +62,14 @@ const VideoSelector = ({
   const { videoId, rating } = value;
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
+  const { name: pollName } = useCurrentPoll();
 
   const loadRating = useCallback(async () => {
     setLoading(true);
     try {
       const contributorRating =
         await UsersService.usersMeContributorRatingsRetrieve({
-          pollName: YOUTUBE_POLL_NAME,
+          pollName,
           uid: UID_YT_NAMESPACE + videoId,
         });
       onChange({
@@ -79,7 +81,7 @@ const VideoSelector = ({
         try {
           const contributorRating =
             await UsersService.usersMeContributorRatingsCreate({
-              pollName: YOUTUBE_POLL_NAME,
+              pollName,
               requestBody: {
                 uid: UID_YT_NAMESPACE + videoId,
                 is_public: true,
@@ -97,7 +99,7 @@ const VideoSelector = ({
       }
     }
     setLoading(false);
-  }, [videoId, onChange]);
+  }, [pollName, videoId, onChange]);
 
   useEffect(() => {
     if (isVideoIdValid(videoId) && rating == null) {

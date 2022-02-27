@@ -4,11 +4,16 @@ import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 import { idFromUid } from 'src/utils/video';
-import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-const setPublicStatus = async (videoId: string, isPublic: boolean) => {
+const setPublicStatus = async (
+  pollName: string,
+  videoId: string,
+  isPublic: boolean
+) => {
   return await UsersService.usersMeContributorRatingsPartialUpdate({
-    pollName: YOUTUBE_POLL_NAME,
+    pollName,
     uid: UID_YT_NAMESPACE + videoId,
     requestBody: {
       is_public: isPublic,
@@ -28,15 +33,17 @@ export const UserRatingPublicToggle = ({
   onChange?: (rating: ContributorRating) => void;
 }) => {
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
+
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const newStatus = e.target.checked;
-      const rating = await setPublicStatus(videoId, newStatus);
+      const rating = await setPublicStatus(pollName, videoId, newStatus);
       if (onChange) {
         onChange(rating);
       }
     },
-    [onChange, videoId]
+    [onChange, pollName, videoId]
   );
 
   return (

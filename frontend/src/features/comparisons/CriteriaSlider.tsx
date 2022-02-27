@@ -8,7 +8,7 @@ import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 
 import { getWikiBaseUrl } from 'src/utils/url';
-import { optionalCriterias } from 'src/utils/constants';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const SLIDER_MIN_STEP = -10;
 const SLIDER_MAX_STEP = 10;
@@ -42,19 +42,20 @@ const useStyles = makeStyles(() => ({
 
 const CriteriaSlider = ({
   criteria,
-  criteria_name,
+  criteriaLabel,
   criteriaValue,
   disabled,
   handleSliderChange,
 }: {
   criteria: string;
-  criteria_name: string;
+  criteriaLabel: string;
   criteriaValue: number | undefined;
   disabled: boolean;
   handleSliderChange: (criteria: string, value: number | undefined) => void;
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { criteriaByName } = useCurrentPoll();
 
   const computeMedian = function (
     min: number,
@@ -98,13 +99,14 @@ const CriteriaSlider = ({
               target="_blank"
               rel="noreferrer"
             >
-              {criteria_name}{' '}
+              {criteriaLabel}{' '}
               {criteriaValue === undefined
                 ? `(${t('comparison.criteriaSkipped')})`
                 : ''}
             </a>
           </Typography>
-          {(optionalCriterias[criteria] || criteriaValue == undefined) && (
+          {(criteriaByName[criteria]?.optional ||
+            criteriaValue == undefined) && (
             <Checkbox
               id={`id_checkbox_skip_${criteria}`}
               disabled={disabled}
