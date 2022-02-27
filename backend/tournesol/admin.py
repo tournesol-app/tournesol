@@ -6,8 +6,7 @@ from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q
 
-from tournesol.entities.video import TYPE_VIDEO
-
+from .entities.video import TYPE_VIDEO
 from .models import (
     Comparison,
     ComparisonCriteriaScore,
@@ -20,6 +19,7 @@ from .models import (
     EntityCriteriaScore,
     Poll,
 )
+from .utils.video_language import LANGUAGE_CODE_TO_NAME_MATCHING
 
 
 class MetadataFieldFilter(SimpleListFilter):
@@ -98,7 +98,7 @@ class EntityAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display(description="language", ordering="metadata__language")
     def get_language(obj):
-        return obj.metadata.get("language")
+        return LANGUAGE_CODE_TO_NAME_MATCHING.get(obj.metadata.get("language"))
 
 
 @admin.register(EntityCriteriaScore)
