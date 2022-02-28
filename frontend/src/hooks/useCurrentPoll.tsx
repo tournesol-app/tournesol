@@ -56,7 +56,6 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    console.info('POLL');
     setContextValue((value) => ({
       ...value,
       setPollName,
@@ -86,13 +85,13 @@ export const useCurrentPoll = () => {
   const contextValue = useContext(pollContext);
   const poll = contextValue.poll;
 
-  const getCriteriaLabel = (criteriaName: string) =>
-    (poll?.criterias || []).find((c) => c.name === criteriaName)?.label ?? '';
-
-  const criteriaByName = React.useMemo(() => {
+  const criteriaByName = useMemo(() => {
     const criterias = poll?.criterias ?? [];
     return Object.fromEntries(criterias.map((c) => [c.name, c]));
   }, [poll?.criterias]);
+
+  const getCriteriaLabel = (criteriaName: string) =>
+    criteriaByName[criteriaName]?.label;
 
   const pollOptions = useMemo(
     () => polls.find((p) => p.name === contextValue.name),

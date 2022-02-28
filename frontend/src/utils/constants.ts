@@ -62,10 +62,13 @@ export const polls = [
   //   name: 'presidentielle',
   //   path: '/presidentielle',
   //   withSearchBar: false,
+  //   topBarBackground:
+  //     'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
   // },
   {
     name: YOUTUBE_POLL_NAME,
     path: '/',
     withSearchBar: true,
+    topBarBackground: null,
   },
 ];

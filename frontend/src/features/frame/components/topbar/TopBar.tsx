@@ -122,16 +122,15 @@ const Search = () => {
 
 const TopBar = () => {
   const theme = useTheme();
-  const { name: pollName, options } = useCurrentPoll();
+  const { options } = useCurrentPoll();
 
   return (
     <AppBar
       position="sticky"
       sx={{
-        background:
-          pollName === 'presidentielle'
-            ? 'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)'
-            : undefined,
+        background: options?.topBarBackground
+          ? options.topBarBackground
+          : undefined,
         [theme.breakpoints.up('md')]: { zIndex: theme.zIndex.drawer + 1 },
       }}
     >
