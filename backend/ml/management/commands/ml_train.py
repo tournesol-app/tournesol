@@ -82,12 +82,14 @@ def save_data(video_scores, contributor_rating_scores, trusted_only=True):
     Saves in the scores for Entities and ContributorRatings
     """
     default_poll_pk = Poll.default_poll_pk()
+    trusted_user_ids = set(User.trusted_users().values_list("id", flat=True))
 
     if trusted_only:
         EntityCriteriaScore.objects.all().delete()
         EntityCriteriaScore.objects.bulk_create(
             [
                 EntityCriteriaScore(
+                    poll_id=default_poll_pk,
                     entity_id=video_id,
                     criteria=criteria,
                     score=score,
@@ -97,25 +99,17 @@ def save_data(video_scores, contributor_rating_scores, trusted_only=True):
             ]
         )
 
-    if trusted_only:
-        trusted_contributor_rating_scores = set(
+        contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
             for (contributor_id, video_id, criteria, score, uncertainty) in contributor_rating_scores
-            if (contributor_id,) in User.trusted_users().values_list (
-                "id"
-            )
-        )
-        print(trusted_contributor_rating_scores)
-        contributor_rating_scores = trusted_contributor_rating_scores
+            if contributor_id in trusted_user_ids
+        ]
     else:
-        no_trusted_contributor_rating_scores = set(
+        contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
             for (contributor_id, video_id, criteria, score, uncertainty) in contributor_rating_scores
-            if (contributor_id,) not in User.trusted_users().values_list (
-                "id"
-            )
-        )
-        contributor_rating_scores = no_trusted_contributor_rating_scores
+            if contributor_id not in trusted_user_ids
+        ]
 
     rating_ids = {
         (contributor_id, video_id): rating_id
@@ -125,18 +119,16 @@ def save_data(video_scores, contributor_rating_scores, trusted_only=True):
     }
     ratings_to_create = set(
         (contributor_id, video_id)
-        for contributor_id, video_id, _, _, _ in contributor_rating_scores
+        for contributor_id, video_id, _, _, _ in contributor_scores_to_save
         if (contributor_id, video_id) not in rating_ids
     )
     created_ratings = ContributorRating.objects.bulk_create(
-        [
-            ContributorRating(
-                poll_id=default_poll_pk,
-                entity_id=video_id,
-                user_id=contributor_id,
-            )
-            for contributor_id, video_id in ratings_to_create
-        ]
+        ContributorRating(
+            poll_id=default_poll_pk,
+            entity_id=video_id,
+            user_id=contributor_id,
+        )
+        for contributor_id, video_id in ratings_to_create
     )
     rating_ids.update(
         {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
@@ -148,15 +140,13 @@ def save_data(video_scores, contributor_rating_scores, trusted_only=True):
         ContributorRatingCriteriaScore.objects.exclude(contributor_rating__user__in=User.trusted_users()).delete()
 
     ContributorRatingCriteriaScore.objects.bulk_create(
-        [
-            ContributorRatingCriteriaScore(
-                contributor_rating_id=rating_ids[(contributor_id, video_id)],
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
-            )
-            for contributor_id, video_id, criteria, score, uncertainty in contributor_rating_scores
-        ]
+        ContributorRatingCriteriaScore(
+            contributor_rating_id=rating_ids[(contributor_id, video_id)],
+            criteria=criteria,
+            score=score,
+            uncertainty=uncertainty,
+        )
+        for contributor_id, video_id, criteria, score, uncertainty in contributor_scores_to_save
     )
 
 def process(trusted_only=True):
@@ -174,8 +164,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--skip_untrusted',
-            nargs='?',
+            '--skip-untrusted',
+            action="store_true",
             help='Skip ML run on untrusted users',
         )
 

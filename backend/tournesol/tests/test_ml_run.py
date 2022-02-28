@@ -43,25 +43,29 @@ class TestMlTrain(TestCase):
         self.assertEqual(EntityCriteriaScore.objects.count(), 2)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 24)
 
-    def test_ml_train_on_trusted_and_all_users(self):
-        # Test on trusted user
+    def test_ml_train_skip_untrusted(self):
+        # Test on trusted users only
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
 
-        call_command("ml_train","--skip_untrusted", "1")
+        call_command("ml_train", "--skip-untrusted")
 
         self.assertEqual(EntityCriteriaScore.objects.count(), 2)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
-        
-        contributor_rating_user_1 = ContributorRating.objects.get(user=self.user1, entity=self.video1);
-        contributor_rating_user_2 = ContributorRating.objects.get(user=self.user2, entity=self.video1);
-        contributor_rating_score_user_1 = ContributorRatingCriteriaScore.objects.get(contributor_rating=contributor_rating_user_1).score
-        contributor_rating_score_user_2 = ContributorRatingCriteriaScore.objects.get(contributor_rating=contributor_rating_user_2).score
 
+        contributor_rating_user_1 = ContributorRating.objects.get(user=self.user1, entity=self.video1)
+        contributor_rating_user_2 = ContributorRating.objects.get(user=self.user2, entity=self.video1)
 
         self.assertLess(EntityCriteriaScore.objects.get(entity_id=self.video1.id).score, 0)
-        print(EntityCriteriaScore.objects.get(entity_id=self.video1.id).score)
         self.assertGreater(EntityCriteriaScore.objects.get(entity_id=self.video2.id).score, 0)
+
+    def test_ml_train_on_trusted_and_all_users(self):
+        call_command("ml_train", "--skip-untrusted")
+
+        contributor_rating_user_1 = ContributorRating.objects.get(user=self.user1, entity=self.video1)
+        contributor_rating_user_2 = ContributorRating.objects.get(user=self.user2, entity=self.video1)
+        contributor_rating_score_user_1 = ContributorRatingCriteriaScore.objects.get(contributor_rating=contributor_rating_user_1).score
+        contributor_rating_score_user_2 = ContributorRatingCriteriaScore.objects.get(contributor_rating=contributor_rating_user_2).score
 
         # Test on all user
         call_command("ml_train")
