@@ -95,7 +95,7 @@ class RatingApi(TestCase):
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
-            self.ratings_base_url, {"video_id": self.video3.video_id}, format="json"
+            self.ratings_base_url, {"uid": self.video3.uid}, format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -114,7 +114,7 @@ class RatingApi(TestCase):
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
-            self.ratings_base_url, {"video_id": "NeADlWSDFAQ"}, format="json"
+            self.ratings_base_url, {"uid": "yt:NeADlWSDFAQ"}, format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -131,61 +131,58 @@ class RatingApi(TestCase):
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
             self.ratings_base_url,
-            {"video_id": self.video3.video_id, "is_public": True},
+            {"uid": self.video3.uid, "is_public": True},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(response.data["video"]["uid"], self.video3.uid)
-        # TODO: this legacy check must be removed, after video_id has been
-        #       fully deprecated
-        self.assertEqual(response.data["video"]["video_id"], self.video3.video_id)
+        self.assertEqual(response.data["entity"]["uid"], self.video3.uid)
         self.assertEqual(response.data["is_public"], True)
         self.assertEqual(response.data["n_comparisons"], 0)
 
     def test_authenticated_cant_create_twice(self):
         """
-        An authenticated user can't create two ratings for a single video id
-        in a given poll.
+        An authenticated user can't create two ratings for a single uid in a
+        given poll.
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
             self.ratings_base_url,
-            {"video_id": self.video3.video_id, "is_public": True},
+            {"uid": self.video3.uid, "is_public": True},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
 
         response = self.client.post(
             self.ratings_base_url,
-            {"video_id": self.video3.video_id, "is_public": True},
+            {"uid": self.video3.uid, "is_public": True},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_authenticated_cant_create_with_invalid_video_id(self):
+    def test_authenticated_cant_create_with_invalid_uid(self):
         """
-        An authenticated user can't create a rating with an invalid video id.
+        An authenticated user can't create a rating with an invalid uid.
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
-            self.ratings_base_url, {"video_id": "invalid"}, format="json"
+            self.ratings_base_url, {"uid": "invalid"}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_authenticated_fetch_non_existing_video(self):
+    def test_authenticated_cant_fetch_non_existing_entity(self):
         """
         An authenticated user can't fetch its rating about a non-existing
-        video.
+        entity.
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.get(
-            "{}{}/".format(self.ratings_base_url, "NeADlWSDFAQ"), format="json"
+            "{}{}/".format(self.ratings_base_url, "yt:NeADlWSDFAQ"), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_authenticated_fetch_existing_video(self):
+    def test_authenticated_can_fetch_existing_entity(self):
         """
-        An authenticated user can fetch its rating about an existing video,
+        An authenticated user can fetch its rating about an existing entity,
         in a given poll.
         """
         self.client.force_authenticate(user=self.user1)
@@ -202,10 +199,7 @@ class RatingApi(TestCase):
             "{}{}/".format(self.ratings_base_url, video.uid), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["video"]["uid"], video.uid)
-        # TODO: this legacy check must be removed, after video_id has been
-        #       fully deprecated
-        self.assertEqual(response.data["video"]["video_id"], video.video_id)
+        self.assertEqual(response.data["entity"]["uid"], video.uid)
         self.assertEqual(response.data["is_public"], False)
         self.assertEqual(
             response.data["criteria_scores"],
@@ -238,10 +232,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         rating = response.data["results"][0]
-        self.assertEqual(rating["video"]["uid"], self.video2.uid)
-        # TODO: this legacy check must be removed, after video_id has been
-        #       fully deprecated
-        self.assertEqual(rating["video"]["video_id"], self.video2.video_id)
+        self.assertEqual(rating["entity"]["uid"], self.video2.uid)
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
 
@@ -260,12 +251,7 @@ class RatingApi(TestCase):
         json_resp = response.json()
 
         self.assertEqual(json_resp["count"], 1)
-        self.assertEqual(json_resp["results"][0]["video"]["uid"], self.video1.uid)
-        # TODO: this legacy check must be removed, after video_id has been
-        #       fully deprecated
-        self.assertEqual(
-            json_resp["results"][0]["video"]["video_id"], self.video1.video_id
-        )
+        self.assertEqual(json_resp["results"][0]["entity"]["uid"], self.video1.uid)
 
         # get public ratings
         response = self.client.get(
@@ -275,12 +261,7 @@ class RatingApi(TestCase):
         json_resp = response.json()
 
         self.assertEqual(json_resp["count"], 1)
-        self.assertEqual(json_resp["results"][0]["video"]["uid"], self.video2.uid)
-        # TODO: this legacy check must be removed, after video_id has been
-        #       fully deprecated
-        self.assertEqual(
-            json_resp["results"][0]["video"]["video_id"], self.video2.video_id
-        )
+        self.assertEqual(json_resp["results"][0]["entity"]["uid"], self.video2.uid)
 
     def test_anonymous_cant_update_public_status(self):
         """
