@@ -3,7 +3,6 @@ import { MemoryRouter as Router } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 
-import { LanguageEnum } from 'src/services/openapi';
 import { VideoObject } from 'src/utils/types';
 import { theme } from 'src/theme';
 import VideoCard from './VideoCard';
@@ -28,8 +27,8 @@ describe('VideoCard content', () => {
       rating_n_contributors: 4,
       rating_n_ratings: 9,
       duration: 120,
-      publication_date: '',
-      language: LanguageEnum.FR,
+      publication_date: '2021-03-21',
+      language: 'fr',
       video_id: 'xSqqXN0D4fY',
     };
     renderVideoCard(video);
@@ -65,6 +64,8 @@ describe('VideoCard content', () => {
       ],
       duration: 4200,
       video_id: 'xSqqXN0D4fY',
+      publication_date: '2021-03-21',
+      language: 'fr',
     };
     renderVideoCard(video);
 
@@ -106,6 +107,8 @@ describe('VideoCard content', () => {
       ],
       duration: 120,
       video_id: 'xSqqXN0D4fY',
+      publication_date: '2021-03-21',
+      language: 'fr',
     };
     renderVideoCard(video);
 
