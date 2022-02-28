@@ -40,14 +40,14 @@ const useStyles = makeStyles(() => ({
 const ComparisonSliders = ({
   submit,
   initialComparison,
-  videoA,
-  videoB,
+  uidA,
+  uidB,
   isComparisonPublic,
 }: {
   submit: (c: ComparisonRequest) => Promise<void>;
   initialComparison: ComparisonRequest | null;
-  videoA: string;
-  videoB: string;
+  uidA: string;
+  uidB: string;
   isComparisonPublic?: boolean;
 }) => {
   const { t } = useTranslation();
@@ -56,8 +56,8 @@ const ComparisonSliders = ({
     return c
       ? c
       : {
-          entity_a: { uid: videoA },
-          entity_b: { uid: videoB },
+          entity_a: { uid: uidA },
+          entity_b: { uid: uidB },
           criteria_scores: allCriterias
             .filter((c) => !optionalCriterias[c])
             .map((criteria) => ({ criteria, score: 0 })),
@@ -113,7 +113,7 @@ const ComparisonSliders = ({
     );
   };
 
-  if (videoA == videoB) {
+  if (uidA == uidB) {
     return (
       <div className={classes.root}>
         <Typography paragraph sx={{ textAlign: 'center' }}>

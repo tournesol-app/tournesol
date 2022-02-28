@@ -256,8 +256,8 @@ const Comparison = () => {
             <ComparisonSliders
               submit={onSubmitComparison}
               initialComparison={initialComparison}
-              videoA={videoA}
-              videoB={videoB}
+              uidA={uidA}
+              uidB={uidB}
               isComparisonPublic={
                 selectorA.rating.is_public && selectorB.rating.is_public
               }
