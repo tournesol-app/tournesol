@@ -80,6 +80,7 @@ export const defaultRecommendationFilters = {
   backfire_risk: '50',
 };
 
+// This constant is also defined in the browser extension so it should be updated there too if it changes.
 export const availableRecommendationsLanguages = ['en', 'fr', 'de'];
 
 export const getLanguageName = (t: TFunction, language: string) => {

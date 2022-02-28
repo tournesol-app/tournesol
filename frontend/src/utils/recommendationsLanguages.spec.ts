@@ -1,4 +1,7 @@
-import { recommendationsLanguagesFromNavigator } from './recommendationsLanguages';
+import {
+  recommendationsLanguagesFromNavigator,
+  saveRecommendationsLanguages,
+} from './recommendationsLanguages';
 
 describe('recommendationsLanguagesFromNavigator', () => {
   const testCases = [
@@ -19,4 +22,21 @@ describe('recommendationsLanguagesFromNavigator', () => {
       expect(recommendationsLanguagesFromNavigator()).toEqual(expected);
     })
   );
+});
+
+describe('saveRecommendationsLanguages', () => {
+  it('dispatches an event for the extension', () => {
+    const eventHandler = jest.fn((event) => {
+      const { detail } = event;
+      expect(detail).toEqual({ recommendationsLanguages: 'fr,de' });
+    });
+    document.addEventListener(
+      'tournesol:recommendationsLanguagesChange',
+      eventHandler
+    );
+
+    saveRecommendationsLanguages('fr,de');
+
+    expect(eventHandler).toHaveBeenCalledTimes(1);
+  });
 });

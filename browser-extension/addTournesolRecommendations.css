@@ -26,20 +26,12 @@
   font-weight: normal;
 }
 
-.language_option {
+#tournesol_link {
   color: var(--yt-spec-text-primary);
   font-family: "Roboto", "Arial", sans-serif;
   float: right;
   margin-top: 3px;
   margin-left: 2px;
-}
-
-#tournesol_link {
-  color: var(--yt-spec-text-primary);
-  font-family: "Roboto", "Arial", sans-serif;
-  position: absolute;
-  right: 0px;
-  top: 15px;
 }
 
 #tournesol_refresh_button {
