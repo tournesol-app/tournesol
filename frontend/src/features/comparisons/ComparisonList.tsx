@@ -12,13 +12,8 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { t } = useTranslation();
   const { entity_a, entity_b } = comparison;
 
-  const videoA: VideoObject = {
-    ...videoFromRelatedEntity(entity_a),
-  };
-
-  const videoB: VideoObject = {
-    ...videoFromRelatedEntity(entity_b),
-  };
+  const videoA: VideoObject = videoFromRelatedEntity(entity_a);
+  const videoB: VideoObject = videoFromRelatedEntity(entity_b);
 
   return (
     <Box
