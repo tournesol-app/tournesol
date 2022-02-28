@@ -65,10 +65,10 @@ class ComparisonApiTestCase(TestCase):
         now = datetime.datetime.now()
 
         self.videos = [
-            VideoFactory(video_id=self._uid_01.split(":")[1]),
-            VideoFactory(video_id=self._uid_02.split(":")[1]),
-            VideoFactory(video_id=self._uid_03.split(":")[1]),
-            VideoFactory(video_id=self._uid_04.split(":")[1]),
+            VideoFactory(metadata__video_id=self._uid_01.split(":")[1]),
+            VideoFactory(metadata__video_id=self._uid_02.split(":")[1]),
+            VideoFactory(metadata__video_id=self._uid_03.split(":")[1]),
+            VideoFactory(metadata__video_id=self._uid_04.split(":")[1]),
         ]
 
         self.comparisons = [
@@ -164,8 +164,8 @@ class ComparisonApiTestCase(TestCase):
             ).get(
                 user=self.user,
                 poll__name=non_existing_poll,
-                entity_1__video_id=data["entity_a"]["video_id"],
-                entity_2__video_id=data["entity_b"]["video_id"],
+                entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+                entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
             )
 
         # the default poll must not contain the comparison
@@ -175,8 +175,8 @@ class ComparisonApiTestCase(TestCase):
             ).get(
                 user=self.user,
                 poll=self.poll_videos,
-                entity_1__video_id=data["entity_a"]["video_id"],
-                entity_2__video_id=data["entity_b"]["video_id"],
+                entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+                entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
             )
 
     def test_authenticated_can_create(self):
@@ -208,8 +208,8 @@ class ComparisonApiTestCase(TestCase):
         ).get(
             user=self.user,
             poll=self.poll_videos,
-            entity_1__video_id=data["entity_a"]["video_id"],
-            entity_2__video_id=data["entity_b"]["video_id"],
+            entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+            entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
         )
         comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
@@ -288,8 +288,8 @@ class ComparisonApiTestCase(TestCase):
         ).get(
             poll=self.poll_videos,
             user=self.user,
-            entity_1__video_id=data["entity_a"]["video_id"],
-            entity_2__video_id=data["entity_b"]["video_id"],
+            entity_1__uid=f'yt:{data["entity_a"]["video_id"]}',
+            entity_2__uid=f'yt:{data["entity_b"]["video_id"]}',
         )
         comparisons_nbr = Comparison.objects.filter(user=self.user).count()
 
@@ -789,9 +789,9 @@ class ComparisonApiTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=self.user)
 
-        VideoFactory(video_id=self._uid_05.split(":")[1])
-        VideoFactory(video_id=self._uid_06.split(":")[1])
-        VideoFactory(video_id=self._uid_07.split(":")[1])
+        VideoFactory(metadata__video_id=self._uid_05.split(":")[1])
+        VideoFactory(metadata__video_id=self._uid_06.split(":")[1])
+        VideoFactory(metadata__video_id=self._uid_07.split(":")[1])
 
         data1 = {
             "entity_a": {"video_id": self._uid_05.split(":")[1]},

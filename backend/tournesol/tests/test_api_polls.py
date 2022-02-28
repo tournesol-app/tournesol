@@ -30,19 +30,19 @@ class PollsRecommendationsApi(TestCase):
         self.client = APIClient()
 
         self.video_1 = VideoFactory(
-            publication_date=date(2021, 1, 1),
+            metadata__publication_date="2021-01-01",
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
-            publication_date=date(2021, 1, 2),
+            metadata__publication_date="2021-01-02",
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
-            publication_date=date(2021, 1, 3),
+            metadata__publication_date="2021-01-03",
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
-            publication_date=date(2021, 1, 4),
+            metadata__publication_date="2021-01-04",
             rating_n_contributors=5,
         )
 
@@ -59,7 +59,7 @@ class PollsRecommendationsApi(TestCase):
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")
         video_5 = VideoFactory(
-            publication_date=date(2021, 1, 5),
+            metadata__publication_date="2021-01-05",
             rating_n_contributors=6,
         )
         VideoCriteriaScoreFactory(poll=other_poll, entity=video_5, criteria="importance", score=0.5)

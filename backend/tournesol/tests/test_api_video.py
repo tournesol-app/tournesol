@@ -11,7 +11,7 @@ from core.models import User
 from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
 
-from ..models import Entity, Tag
+from ..models import Entity
 
 
 class VideoApi(TestCase):
@@ -27,28 +27,32 @@ class VideoApi(TestCase):
         User.objects.create(username=self._user, email="user@test")
 
         self.video_1 = VideoFactory(
-            publication_date=date(2021, 1, 1),
-            uploader="uploader1",
+            metadata__publication_date="2021-01-01",
+            metadata__uploader="uploader1",
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
-            publication_date=date(2021, 1, 2),
-            uploader="uploader2",
+            metadata__publication_date="2021-01-02",
+            metadata__uploader="uploader2",
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
-            publication_date=date(2021, 1, 3),
-            uploader="uploader2",
+            metadata__publication_date="2021-01-03",
+            metadata__uploader="uploader2",
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
-            publication_date=date(2021, 1, 4),
-            uploader="uploader3",
+            metadata__publication_date="2021-01-04",
+            metadata__uploader="uploader3",
             rating_n_contributors=5,
         )
         self._list_of_videos = [self.video_1, self.video_2, self.video_3, self.video_4]
-        VideoCriteriaScoreFactory(entity=self.video_1, criteria="reliability", score=0.1)
-        VideoCriteriaScoreFactory(entity=self.video_2, criteria="reliability", score=0.2)
+        VideoCriteriaScoreFactory(
+            entity=self.video_1, criteria="reliability", score=0.1
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.video_2, criteria="reliability", score=0.2
+        )
         VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
         VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
 
@@ -222,7 +226,7 @@ class VideoApi(TestCase):
     def test_anonymous_can_get_video_with_score_zero(self):
         # The default filter used to fetch a list should not be applied to retrieve a single video
         client = APIClient()
-        VideoFactory(video_id="vid_score_0")
+        VideoFactory(metadata__video_id="vid_score_0")
         response = client.get("/video/vid_score_0/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["video_id"], "vid_score_0")
@@ -233,9 +237,9 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_language_detection(self):
-        VideoFactory.create_batch(5, uploader="Tournesol4All", language="fr")
+        VideoFactory.create_batch(5, metadata__uploader="Tournesol4All", metadata__language="fr")
         # Not enough videos to qualify for skipping language detection
-        VideoFactory.create_batch(2, uploader="Sunflower4All", language="en")
+        VideoFactory.create_batch(2, metadata__uploader="Sunflower4All", metadata__language="en")
         test_details = [
             (
                 ["Tournesol4All", "I speak english", "I have not description"],
@@ -250,7 +254,7 @@ class VideoApi(TestCase):
 
     def test_cannot_get_existing_video_without_positive_score(self):
         client = APIClient()
-        VideoFactory(video_id='video_null_score')
+        VideoFactory(metadata__video_id="video_null_score")
         response = client.get("/video/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(self._list_of_videos))
@@ -271,9 +275,9 @@ class VideoApi(TestCase):
         client = APIClient()
 
         # Add 1 video in French and 2 videos in English
-        video1 = VideoFactory(language="fr", rating_n_contributors=2)
-        video2 = VideoFactory(language="en", rating_n_contributors=2)
-        video3 = VideoFactory(language="en", rating_n_contributors=2)
+        video1 = VideoFactory(metadata__language="fr", rating_n_contributors=2)
+        video2 = VideoFactory(metadata__language="en", rating_n_contributors=2)
+        video3 = VideoFactory(metadata__language="en", rating_n_contributors=2)
         VideoCriteriaScoreFactory(entity=video1)
         VideoCriteriaScoreFactory(entity=video2)
         VideoCriteriaScoreFactory(entity=video3)
@@ -314,10 +318,10 @@ class VideoApi(TestCase):
         self.assertEqual(resp.data["count"], 3)
 
     def test_search_in_tags_should_not_affect_order(self):
-        self.video_1.tags.create(name="tag1")
-        self.video_1.tags.create(name="tag2")
-        self.video_1.tags.create(name="tag3")
-        self.video_2.tags.create(name="tag4")
+        self.video_1.metadata["tags"] = ["tag1", "tag2", "tag3"]
+        self.video_1.save()
+        self.video_2.metadata["tags"] = ["tag4"]
+        self.video_2.save()
 
         client = APIClient()
         resp = client.get("/video/?search=tag")
@@ -347,13 +351,15 @@ class VideoApi(TestCase):
         client.force_authenticate(user=user)
 
         response = client.post("/video/", {"video_id": "NeADlWSDFAQ"}, format="json")
-        new_video = Entity.objects.get(video_id="NeADlWSDFAQ")
+        new_video = Entity.get_from_video_id(video_id="NeADlWSDFAQ")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
         # ensure newly created entities are considered videos from YT
-        self.assertEqual(new_video.uid, '{}:{}'.format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ"))
+        self.assertEqual(
+            new_video.uid, "{}:{}".format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ")
+        )
         self.assertEqual(new_video.type, "video")
 
     def test_authenticated_cant_create_twice(self):
@@ -369,11 +375,11 @@ class VideoApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        VideoFactory(video_id=new_video_id)
+        VideoFactory(metadata__video_id=new_video_id)
 
         response = client.post("/video/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        video = Entity.objects.filter(video_id=new_video_id)
+        video = Entity.objects.filter(metadata__video_id=new_video_id)
         self.assertEqual(video.count(), 1)
 
     def test_authenticated_cant_create_with_incorrect_id(self):
@@ -391,12 +397,12 @@ class VideoApi(TestCase):
         response = client.post("/video/", {"video_id": id_too_big}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
-            Entity.objects.get(video_id=id_too_big)
+            Entity.get_from_video_id(video_id=id_too_big)
 
         response = client.post("/video/", {"video_id": id_too_small}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         with self.assertRaises(ObjectDoesNotExist):
-            Entity.objects.get(video_id=id_too_small)
+            Entity.get_from_video_id(video_id=id_too_small)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_api_key(self, mock_youtube):
@@ -440,6 +446,14 @@ class VideoApi(TestCase):
                         "likeCount": "307433",
                         "viewCount": "20186268",
                     },
+                    "status": {
+                        "uploadStatus": "processed",
+                        "privacyStatus": "public",
+                        "license": "youtube",
+                        "embeddable": True,
+                        "publicStatsViewable": True,
+                        "madeForKids": False,
+                    },
                 }
             ],
             "kind": "youtube#videoListResponse",
@@ -460,13 +474,11 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
-        video = Entity.objects.get(video_id=new_video_id)
-        tournesol_tag = Tag.objects.get(name="tournesol")
-
+        video = Entity.get_from_video_id(video_id=new_video_id)
         self.assertEqual(response.json()["name"], "Entity title")
-        self.assertIn(tournesol_tag, video.tags.all())
+        self.assertIn("tournesol", video.metadata["tags"])
         self.assertEqual(response.json()["duration"], 1263)
-        self.assertEqual(video.duration, timedelta(minutes=21, seconds=3))
+        self.assertEqual(video.metadata["duration"], 1263)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_can_create_with_yt_no_statistics(self, mock_youtube):
@@ -504,6 +516,7 @@ class VideoApi(TestCase):
                         "title": "Entity title",
                     },
                     "statistics": {},
+                    "status": {},
                 }
             ],
             "kind": "youtube#videoListResponse",
@@ -524,9 +537,9 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(Entity.objects.all().count(), initial_video_nbr + 1)
 
-        video = Entity.objects.get(video_id=new_video_id)
+        video = Entity.get_from_video_id(video_id=new_video_id)
         self.assertEqual(response.json()["name"], "Entity title")
-        self.assertEqual(video.views, None)
+        self.assertEqual(video.metadata["views"], None)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
@@ -551,7 +564,7 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         with self.assertRaises(ObjectDoesNotExist):
-            Entity.objects.get(video_id=new_video_id)
+            Entity.get_from_video_id(video_id=new_video_id)
 
     def test_get_video_uploader(self):
         client = APIClient()
@@ -560,6 +573,7 @@ class VideoApi(TestCase):
         self.assertEqual(resp.data["count"], 2)
 
     def test_video_views_stored_on_64bits(self):
-        Entity.objects.filter(video_id=self.video_1.video_id).update(views=9_000_000_000)
-        video = Entity.objects.get(video_id=self.video_1.video_id)
-        self.assertEqual(video.views, 9_000_000_000)
+        self.video_1.metadata["views"] = 9_000_000_000
+        self.video_1.save()
+        video = Entity.get_from_video_id(video_id=self.video_1.video_id)
+        self.assertEqual(video.metadata["views"], 9_000_000_000)

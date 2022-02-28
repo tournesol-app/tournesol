@@ -44,4 +44,4 @@ class TweetedVideo(models.Model):
     )
 
     def __str__(self):
-        return f"{self.video.video_id} tweeted at {self.datetime_tweet}"
+        return f"{self.video.uid} tweeted at {self.datetime_tweet}"

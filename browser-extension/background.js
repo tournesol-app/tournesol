@@ -91,6 +91,30 @@ function getDateThreeWeeksAgo() {
   return `${d}-${m}-${y}-${H}-${M}-${S}`;
 }
 
+async function recommendationsLanguages() {
+  const storedRecommendationsLanguages = () => new Promise(
+    (resolve) => chrome.storage.local.get(
+      "recommendationsLanguages",
+      ({recommendationsLanguages}) => resolve(recommendationsLanguages),
+    )
+  )
+
+  const availableRecommendationsLanguages = ['en', 'fr', 'de']
+  const uniq = (array) => Array.from(new Set(array));
+  const recommendationsLanguagesFromNavigator = () =>
+    uniq(
+      navigator.languages
+      .map((languageTag) => languageTag.split('-', 1)[0])
+      .filter((language) =>
+        availableRecommendationsLanguages.includes(language)
+      )
+    ).join(',');
+
+  return await storedRecommendationsLanguages() ||
+    recommendationsLanguagesFromNavigator() ||
+    "en";
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   // Return the current access token in the chrome.storage.local.
@@ -152,12 +176,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const process = async () => {
       const threeWeeksAgo = getDateThreeWeeksAgo()
 
+      const language = await recommendationsLanguages();
+
       // Only one request for both videos and additional videos
       const recent = await request_recommendations(
-        `date_gte=${threeWeeksAgo}&language=${request.language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
+        `date_gte=${threeWeeksAgo}&language=${language}&limit=${recentVideoToLoad+recentAdditionalVideoToLoad}`
       );
       const old = await request_recommendations(
-        `date_lte=${threeWeeksAgo}&language=${request.language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
+        `date_lte=${threeWeeksAgo}&language=${language}&limit=${oldVideoToLoad+oldAdditionalVideoToLoad}`
       );
       
       // Cut the response into the part for the videos and the one for the additional videos

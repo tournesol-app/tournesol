@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Collapse, Grid, Box } from '@mui/material';
 
 import { CollapseButton } from 'src/components';
@@ -12,6 +12,7 @@ import {
   recommendationFilters,
   defaultRecommendationFilters,
 } from 'src/utils/constants';
+import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 
 /**
  * Filter options for Videos recommendations
@@ -22,7 +23,7 @@ import {
  */
 function SearchFilter() {
   const [expanded, setExpanded] = useState(false);
-  const [filterParams, setFilter] = useListFilter();
+  const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -33,6 +34,14 @@ function SearchFilter() {
       ([key, defaultValue]) =>
         ![null, defaultValue].includes(filterParams.get(key))
     );
+
+  const handleLanguageChange = useCallback(
+    (value: string) => {
+      saveRecommendationsLanguages(value);
+      setFilter(recommendationFilters.language, value);
+    },
+    [setFilter]
+  );
 
   return (
     <Box color="text.secondary">
@@ -66,9 +75,7 @@ function SearchFilter() {
           <Grid item xs={6} md={3} lg={2} data-testid="search-language-filter">
             <LanguageFilter
               value={filterParams.get(recommendationFilters.language) ?? ''}
-              onChange={(value) =>
-                setFilter(recommendationFilters.language, value)
-              }
+              onChange={handleLanguageChange}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6}>

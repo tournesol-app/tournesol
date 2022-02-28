@@ -79,3 +79,19 @@ export const defaultRecommendationFilters = {
   better_habits: '50',
   backfire_risk: '50',
 };
+
+// This constant is also defined in the browser extension so it should be updated there too if it changes.
+export const availableRecommendationsLanguages = ['en', 'fr', 'de'];
+
+export const getLanguageName = (t: TFunction, language: string) => {
+  switch (language) {
+    case 'en':
+      return t('language.english');
+    case 'fr':
+      return t('language.french');
+    case 'de':
+      return t('language.german');
+    default:
+      return language.toUpperCase();
+  }
+};
