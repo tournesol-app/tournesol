@@ -48,6 +48,7 @@ class EntitiesApi(TestCase):
                     },
                 ],
             },
+            response.json()
         )
 
     def test_anonymous_can_list_filter_by_type(self):

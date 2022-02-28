@@ -35,9 +35,7 @@ class VideoSerializer(ModelSerializer):
         allow_null=True,
     )
     views = serializers.IntegerField(
-        source="metadata.views",
-        read_only=True,
-        allow_null=True
+        source="metadata.views", read_only=True, allow_null=True
     )
     uploader = serializers.CharField(
         source="metadata.uploader",
@@ -45,11 +43,11 @@ class VideoSerializer(ModelSerializer):
         allow_null=True,
         help_text="Name of the channel on YouTube",
     )
-    language = serializers.CharField(source="metadata.language", read_only=True, allow_null=True)
+    language = serializers.CharField(
+        source="metadata.language", read_only=True, allow_null=True
+    )
     duration = serializers.IntegerField(
-        source="metadata.duration",
-        read_only=True,
-        allow_null=True
+        source="metadata.duration", read_only=True, allow_null=True
     )
 
     class Meta:
@@ -139,11 +137,22 @@ class EntityPollSerializer(serializers.Serializer):
 
 
 class EntitySerializer(ModelSerializer):
+    """
+    An Entity serializer that also includes polls.
+
+    Use `EntityOnlySerializer` if you don't need the related polls.
+    """
+
     polls = serializers.SerializerMethodField()
 
     class Meta:
         model = Entity
-        fields = ["uid", "type", "metadata", "polls"]
+        fields = [
+            "uid",
+            "type",
+            "metadata",
+            "polls",
+        ]
 
     @extend_schema_field(EntityPollSerializer(many=True))
     def get_polls(self, obj):
@@ -155,3 +164,57 @@ class EntitySerializer(ModelSerializer):
             for (name, scores) in poll_to_scores.items()
         ]
         return EntityPollSerializer(items, many=True).data
+
+
+class RelatedEntitySerializer(EntitySerializer):
+    """
+    An Entity serializer that will create the Entity object on validation
+    if it does not exist in the database yet.
+
+    Only the field `uid` is provided when using write HTTP methods.
+
+    Used by ModelSerializer(s) having one or more nested relations with Entity,
+    and having the constraint to ensure that video instances exist before
+    they can be saved properly.
+    """
+
+    # XXX: should not be tightly related to the video entity type
+    uid = RegexField(rf"yt:{YOUTUBE_VIDEO_ID_REGEX[1:]}")
+
+    class Meta:
+        model = Entity
+
+        # XXX: fields `rating_n_ratings` and `rating_n_contributors` are used
+        # temporarily to make it possible for API consumers to fully rebuild
+        # a Video object from an Entity object
+        fields = [
+            "uid",
+            "type",
+            "metadata",
+        ]
+        read_only_fields = [
+            "type",
+            "metadata",
+        ]
+
+    def validate_uid(self, value):
+        split_uid = value.split(Entity.UID_DELIMITER)
+
+        if len(split_uid) <= 1 or not split_uid[1]:
+            raise ValidationError("Malformed `uid`.")
+
+        return value
+
+    def validate(self, data):
+        # XXX: should not be tightly related to the video entity type
+        video_id = data.get("uid").split(Entity.UID_DELIMITER)[1]
+        try:
+            Entity.get_from_video_id(video_id=video_id)
+        except ObjectDoesNotExist:
+            try:
+                Entity.create_from_video_id(video_id)
+            except VideoNotFound:
+                raise ValidationError(
+                    "The entity has not been found. `uid` may be incorrect."
+                )
+        return data
