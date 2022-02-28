@@ -10,8 +10,8 @@ export const videoFromRelatedEntity = (entity: RelatedEntityObject): Video => {
     views: entity.metadata.views,
     uploader: entity.metadata.uploader,
     language: entity.metadata.language,
-    rating_n_ratings: entity.rating_n_ratings || 0,
-    rating_n_contributors: entity.rating_n_contributors || 0,
+    rating_n_ratings: 0,
+    rating_n_contributors: 0,
     duration: entity.metadata.duration,
     video_id: entity.metadata.video_id,
   };

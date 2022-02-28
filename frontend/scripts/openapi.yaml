@@ -2883,23 +2883,12 @@ components:
           allOf:
           - $ref: '#/components/schemas/TypeEnum'
           readOnly: true
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          description: Total number of pairwise comparisons for this videofrom certified
-            contributors
-        rating_n_contributors:
-          type: integer
-          readOnly: true
-          description: Total number of certified contributors who rated the video
         metadata:
           type: object
           additionalProperties: {}
           readOnly: true
       required:
       - metadata
-      - rating_n_contributors
-      - rating_n_ratings
       - type
       - uid
     RelatedEntityRequest:

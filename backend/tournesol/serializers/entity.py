@@ -190,14 +190,10 @@ class RelatedEntitySerializer(EntitySerializer):
         fields = [
             "uid",
             "type",
-            "rating_n_ratings",
-            "rating_n_contributors",
             "metadata",
         ]
         read_only_fields = [
             "type",
-            "rating_n_ratings",
-            "rating_n_contributors",
             "metadata",
         ]
 
