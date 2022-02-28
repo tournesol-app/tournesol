@@ -14,12 +14,10 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
 
   const videoA: VideoObject = {
     ...videoFromRelatedEntity(entity_a),
-    criteria_scores: comparison.criteria_scores,
   };
 
   const videoB: VideoObject = {
     ...videoFromRelatedEntity(entity_b),
-    criteria_scores: comparison.criteria_scores,
   };
 
   return (
