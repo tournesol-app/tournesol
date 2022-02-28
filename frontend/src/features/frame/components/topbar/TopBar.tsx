@@ -122,7 +122,7 @@ const Search = () => {
 
 const TopBar = () => {
   const theme = useTheme();
-  const { name: pollName, withSearchBar } = useCurrentPoll();
+  const { name: pollName, options } = useCurrentPoll();
 
   return (
     <AppBar
@@ -148,7 +148,7 @@ const TopBar = () => {
           <Logo />
           <Hidden mdDown>
             <Grid item md={4}>
-              {withSearchBar && <Search />}
+              {options?.withSearchBar && <Search />}
             </Grid>
           </Hidden>
           <AccountInfo />

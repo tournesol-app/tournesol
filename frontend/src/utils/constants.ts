@@ -54,11 +54,15 @@ export const getLanguageName = (t: TFunction, language: string) => {
 };
 
 export const polls = [
-  {
-    name: 'presidentielle',
-    path: '/presidentielle',
-    withSearchBar: false,
-  },
+  /*
+    The most specific paths should be listed first,
+    to be routed correctly.
+  */
+  // {
+  //   name: 'presidentielle',
+  //   path: '/presidentielle',
+  //   withSearchBar: false,
+  // },
   {
     name: YOUTUBE_POLL_NAME,
     path: '/',

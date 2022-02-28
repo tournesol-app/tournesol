@@ -48,7 +48,8 @@ const ComparisonSliders = ({
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { criterias, criteriaByName } = useCurrentPoll();
+  const { poll, criteriaByName } = useCurrentPoll();
+  const criterias = poll?.criterias || [];
 
   const castToComparison = (c: ComparisonRequest | null): ComparisonRequest => {
     return c

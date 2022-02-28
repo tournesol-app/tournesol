@@ -117,6 +117,9 @@ function CriteriaFilter({
                     <img
                       className={classes.criteria_img}
                       src={`/svg/${criteria.name}.svg`}
+                      onError={(e) => {
+                        e.currentTarget.src = '/svg/LogoSmall.svg';
+                      }}
                       width="16px"
                     />
                     <Typography

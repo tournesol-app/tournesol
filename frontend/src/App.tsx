@@ -23,10 +23,10 @@ import PrivacyPolicy from './pages/about/PrivacyPolicy';
 import About from './pages/about/About';
 
 import { OpenAPI } from 'src/services/openapi';
-import { PollContext } from './app/poll';
 import { LoginState } from './features/login/LoginState.model';
-import { YOUTUBE_POLL_NAME, polls } from './utils/constants';
+import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
+import { PollProvider } from './hooks/useCurrentPoll';
 
 // The Analysis Page uses recharts which is a rather big library,
 // thus we choose to load it lazily.
@@ -48,17 +48,9 @@ const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
   });
 };
 
-const getInitialPollName = () => {
-  return (
-    polls.find((p) => location.pathname.startsWith(p.path))?.name ??
-    YOUTUBE_POLL_NAME
-  );
-};
-
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
-  const [pollName, setPollName] = useState(getInitialPollName);
 
   // `useState` is used here to call initializeOpenAPI before first render
   useState(() => initializeOpenAPI(loginState, i18n));
@@ -67,7 +59,7 @@ function App() {
   }, [loginState, i18n]);
 
   return (
-    <PollContext.Provider value={{ name: pollName, setPollName }}>
+    <PollProvider>
       <Frame>
         <Switch>
           {/* About routes */}
@@ -121,15 +113,14 @@ function App() {
             <HomePage />
           </PublicRoute>
           {/* Polls */}
-          <PublicRoute path="/presidentielle">
-            <PollRoutes pollName="presidentielle"></PollRoutes>
-          </PublicRoute>
-          <PublicRoute path="/">
-            <PollRoutes pollName={YOUTUBE_POLL_NAME}></PollRoutes>
-          </PublicRoute>
+          {polls.map(({ name, path }) => (
+            <PublicRoute key={name} path={path}>
+              <PollRoutes pollName={name}></PollRoutes>
+            </PublicRoute>
+          ))}
         </Switch>
       </Frame>
-    </PollContext.Provider>
+    </PollProvider>
   );
 }
 

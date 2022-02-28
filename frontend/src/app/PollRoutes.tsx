@@ -1,5 +1,6 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Switch, useRouteMatch } from 'react-router-dom';
+import { CircularProgress, Box } from '@mui/material';
 import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
@@ -7,7 +8,7 @@ import VideoRecommendationPage from 'src/pages/videos/VideoRecommendation';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
-import { PollContext } from 'src/app/poll';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 interface Props {
   pollName: string;
@@ -18,11 +19,21 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
   const { path } = useRouteMatch();
   const basePath = path.replace(/\/+$/g, '');
 
-  const { setPollName } = useContext(PollContext);
+  const { setPollName, name: currentPollName, isReady } = useCurrentPoll();
 
   useEffect(() => {
-    setPollName(() => pollName);
-  });
+    if (currentPollName !== pollName || !isReady) {
+      setPollName(pollName);
+    }
+  }, [setPollName, pollName, currentPollName, isReady]);
+
+  if (pollName !== currentPollName || !isReady) {
+    return (
+      <Box m={4} textAlign="center">
+        <CircularProgress color="secondary" size={50} />
+      </Box>
+    );
+  }
 
   return (
     <Switch>
@@ -43,7 +54,7 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
       <PrivateRoute path={`${basePath}/ratings`}>
         <VideoRatingsPage />
       </PrivateRoute>
-      <PublicRoute>404</PublicRoute>
+      <PublicRoute>Page not found</PublicRoute>
     </Switch>
   );
 };
