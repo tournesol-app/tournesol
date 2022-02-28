@@ -141,7 +141,7 @@ class ComparisonDetailApi(
     generics.GenericAPIView,
 ):
     """
-    Retrieve, update or delete a comparison between two videos made by the
+    Retrieve, update or delete a comparison between two entities made by the
     logged user.
     """
 
@@ -191,7 +191,7 @@ class ComparisonDetailApi(
         fields `entity_a` and `entity_b` are not editable anymore once the
         comparison has been created. Discarding those two fields ensures
         their immutability and thus prevent the falsification of comparisons
-        by video id swap.
+        by uid swap.
         """
         if self.request.method == "PUT":
             return self.UPDATE_SERIALIZER

@@ -142,11 +142,17 @@ class EntitySerializer(ModelSerializer):
 
     Use `EntityOnlySerializer` if you don't need the related polls.
     """
+
     polls = serializers.SerializerMethodField()
 
     class Meta:
         model = Entity
-        fields = ["uid", "type", "metadata", "polls"]
+        fields = [
+            "uid",
+            "type",
+            "metadata",
+            "polls",
+        ]
 
     @extend_schema_field(EntityPollSerializer(many=True))
     def get_polls(self, obj):
@@ -171,13 +177,29 @@ class RelatedEntitySerializer(EntitySerializer):
     and having the constraint to ensure that video instances exist before
     they can be saved properly.
     """
+
     # XXX: should not be tightly related to the video entity type
     uid = RegexField(rf"yt:{YOUTUBE_VIDEO_ID_REGEX[1:]}")
 
     class Meta:
         model = Entity
-        fields = ["uid", "type", "metadata"]
-        read_only_fields = ["type", "metadata"]
+
+        # XXX: fields `rating_n_ratings` and `rating_n_contributors` are used
+        # temporarily to make it possible for API consumers to fully rebuild
+        # a Video object from an Entity object
+        fields = [
+            "uid",
+            "type",
+            "rating_n_ratings",
+            "rating_n_contributors",
+            "metadata",
+        ]
+        read_only_fields = [
+            "type",
+            "rating_n_ratings",
+            "rating_n_contributors",
+            "metadata",
+        ]
 
     def validate_uid(self, value):
         split_uid = value.split(Entity.UID_DELIMITER)

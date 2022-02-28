@@ -164,8 +164,8 @@ const Comparison = () => {
       const { entity_a, entity_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate({
         pollName: YOUTUBE_POLL_NAME,
-        uidA: UID_YT_NAMESPACE + entity_a.video_id,
-        uidB: UID_YT_NAMESPACE + entity_b.video_id,
+        uidA: entity_a.uid,
+        uidB: entity_b.uid,
         requestBody: { criteria_scores, duration_ms },
       });
     } else {

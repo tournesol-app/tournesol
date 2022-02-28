@@ -1460,9 +1460,9 @@ components:
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
         entity_a:
-          $ref: '#/components/schemas/RelatedVideo'
+          $ref: '#/components/schemas/RelatedEntity'
         entity_b:
-          $ref: '#/components/schemas/RelatedVideo'
+          $ref: '#/components/schemas/RelatedEntity'
         criteria_scores:
           type: array
           items:
@@ -1528,9 +1528,9 @@ components:
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
         entity_a:
-          $ref: '#/components/schemas/RelatedVideoRequest'
+          $ref: '#/components/schemas/RelatedEntityRequest'
         entity_b:
-          $ref: '#/components/schemas/RelatedVideoRequest'
+          $ref: '#/components/schemas/RelatedEntityRequest'
         criteria_scores:
           type: array
           items:
@@ -1565,11 +1565,11 @@ components:
           description: Time it took to rate the videos (in milliseconds)
         entity_a:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
         entity_b:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
       required:
       - criteria_scores
@@ -1755,6 +1755,10 @@ components:
       - domain
     Entity:
       type: object
+      description: |-
+        An Entity serializer that also includes polls.
+
+        Use `EntityOnlySerializer` if you don't need the related polls.
       properties:
         uid:
           type: string
@@ -2860,6 +2864,62 @@ components:
       - password
       - password_confirm
       - username
+    RelatedEntity:
+      type: object
+      description: |-
+        An Entity serializer that will create the Entity object on validation
+        if it does not exist in the database yet.
+
+        Only the field `uid` is provided when using write HTTP methods.
+
+        Used by ModelSerializer(s) having one or more nested relations with Entity,
+        and having the constraint to ensure that video instances exist before
+        they can be saved properly.
+      properties:
+        uid:
+          type: string
+          pattern: yt:[A-Za-z0-9-_]{11}$
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this videofrom certified
+            contributors
+        rating_n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the video
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - metadata
+      - rating_n_contributors
+      - rating_n_ratings
+      - type
+      - uid
+    RelatedEntityRequest:
+      type: object
+      description: |-
+        An Entity serializer that will create the Entity object on validation
+        if it does not exist in the database yet.
+
+        Only the field `uid` is provided when using write HTTP methods.
+
+        Used by ModelSerializer(s) having one or more nested relations with Entity,
+        and having the constraint to ensure that video instances exist before
+        they can be saved properly.
+      properties:
+        uid:
+          type: string
+          minLength: 1
+          pattern: yt:[A-Za-z0-9-_]{11}$
+      required:
+      - uid
     RelatedVideo:
       type: object
       description: |-
