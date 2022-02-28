@@ -386,7 +386,8 @@ paths:
         name: type
         schema:
           type: string
-          enum: []
+          enum:
+          - video
         description: Type of entities to return
       - in: query
         name: poll_name
@@ -1402,7 +1403,6 @@ paths:
         name: video_id
         schema:
           type: string
-          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
         required: true
       tags:
       - video
@@ -1419,9 +1419,6 @@ paths:
           description: ''
 components:
   schemas:
-    BlankEnum:
-      enum:
-      - ''
     ChangePassword:
       type: object
       properties:
@@ -1812,106 +1809,6 @@ components:
       - Female
       - Male
       type: string
-    LanguageEnum:
-      enum:
-      - af
-      - ar
-      - ar-dz
-      - ast
-      - az
-      - bg
-      - be
-      - bn
-      - br
-      - bs
-      - ca
-      - cs
-      - cy
-      - da
-      - de
-      - dsb
-      - el
-      - en
-      - en-au
-      - en-gb
-      - eo
-      - es
-      - es-ar
-      - es-co
-      - es-mx
-      - es-ni
-      - es-ve
-      - et
-      - eu
-      - fa
-      - fi
-      - fr
-      - fy
-      - ga
-      - gd
-      - gl
-      - he
-      - hi
-      - hr
-      - hsb
-      - hu
-      - hy
-      - ia
-      - id
-      - ig
-      - io
-      - is
-      - it
-      - ja
-      - ka
-      - kab
-      - kk
-      - km
-      - kn
-      - ko
-      - ky
-      - lb
-      - lt
-      - lv
-      - mk
-      - ml
-      - mn
-      - mr
-      - ms
-      - my
-      - nb
-      - ne
-      - nl
-      - nn
-      - os
-      - pa
-      - pl
-      - pt
-      - pt-br
-      - ro
-      - ru
-      - sk
-      - sl
-      - sq
-      - sr
-      - sr-latn
-      - sv
-      - sw
-      - ta
-      - te
-      - tg
-      - th
-      - tk
-      - tr
-      - tt
-      - udm
-      - uk
-      - ur
-      - uz
-      - vi
-      - zh-hans
-      - zh-hant
-      type: string
     MoralPhilosophyEnum:
       enum:
       - Not Specified
@@ -2175,9 +2072,6 @@ components:
       - Zambia
       - Zimbabwe
       type: string
-    NullEnum:
-      enum:
-      - null
     PaginatedComparisonList:
       type: object
       properties:
@@ -2927,35 +2821,30 @@ components:
         name:
           type: string
           readOnly: true
-          description: Video Title
+          description: Video title
         description:
           type: string
           readOnly: true
           nullable: true
-          description: Video Description from the web page
+          description: Video description, from YouTube
         publication_date:
           type: string
           format: date
           readOnly: true
           nullable: true
-          description: Video publication date
         views:
           type: integer
           readOnly: true
           nullable: true
-          description: Number of views
         uploader:
           type: string
           readOnly: true
           nullable: true
-          description: Name of the channel (uploader)
+          description: Name of the channel on YouTube
         language:
+          type: string
           readOnly: true
           nullable: true
-          description: Language of the video
-          oneOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/NullEnum'
         rating_n_ratings:
           type: integer
           readOnly: true
@@ -2967,8 +2856,8 @@ components:
           description: Total number of certified contributors who rated the video
         duration:
           type: integer
-          nullable: true
           readOnly: true
+          nullable: true
         video_id:
           type: string
           pattern: ^[A-Za-z0-9-_]{11}$
@@ -3696,35 +3585,30 @@ components:
         name:
           type: string
           readOnly: true
-          description: Video Title
+          description: Video title
         description:
           type: string
           readOnly: true
           nullable: true
-          description: Video Description from the web page
+          description: Video description, from YouTube
         publication_date:
           type: string
           format: date
           readOnly: true
           nullable: true
-          description: Video publication date
         views:
           type: integer
           readOnly: true
           nullable: true
-          description: Number of views
         uploader:
           type: string
           readOnly: true
           nullable: true
-          description: Name of the channel (uploader)
+          description: Name of the channel on YouTube
         language:
+          type: string
           readOnly: true
           nullable: true
-          description: Language of the video
-          oneOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/NullEnum'
         rating_n_ratings:
           type: integer
           readOnly: true
@@ -3736,13 +3620,12 @@ components:
           description: Total number of certified contributors who rated the video
         duration:
           type: integer
-          nullable: true
           readOnly: true
+          nullable: true
         video_id:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
       required:
       - description
       - duration
@@ -3777,7 +3660,6 @@ components:
           minLength: 1
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
       required:
       - video_id
     VideoSerializerWithCriteria:
@@ -3790,36 +3672,31 @@ components:
           maxLength: 144
         name:
           type: string
-          description: Video Title
-          maxLength: 1000
+          readOnly: true
+          description: Video title
         description:
           type: string
+          readOnly: true
           nullable: true
-          description: Video Description from the web page
+          description: Video description, from YouTube
         publication_date:
           type: string
           format: date
+          readOnly: true
           nullable: true
-          description: Video publication date
         views:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          readOnly: true
           nullable: true
-          description: Number of views
         uploader:
           type: string
+          readOnly: true
           nullable: true
-          description: Name of the channel (uploader)
-          maxLength: 1000
+          description: Name of the channel on YouTube
         language:
+          type: string
+          readOnly: true
           nullable: true
-          description: Language of the video
-          oneOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
         rating_n_ratings:
           type: integer
           maximum: 2147483647
@@ -3833,22 +3710,27 @@ components:
           description: Total number of certified contributors who rated the video
         duration:
           type: integer
-          nullable: true
           readOnly: true
+          nullable: true
         video_id:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/EntityCriteriaScore'
       required:
       - criteria_scores
+      - description
       - duration
+      - language
+      - name
+      - publication_date
       - uid
+      - uploader
       - video_id
+      - views
   securitySchemes:
     oauth2:
       type: oauth2
