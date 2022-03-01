@@ -2,7 +2,7 @@ from django.db.models import Q
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import BooleanField, RegexField, SerializerMethodField
+from rest_framework.fields import BooleanField, CharField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
@@ -51,7 +51,10 @@ class ContributorRatingSerializer(ModelSerializer):
 
 
 class ContributorRatingCreateSerializer(ContributorRatingSerializer):
-    uid = RegexField(rf"yt:{YOUTUBE_VIDEO_ID_REGEX[1:]}", write_only=True)
+    uid = CharField(
+        write_only=True,
+        max_length=144,
+    )
 
     class Meta:
         model = ContributorRating
@@ -62,10 +65,12 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         entity_serializer = RelatedEntitySerializer(data={"uid": uid})
         entity_serializer.is_valid(raise_exception=True)
         entity = Entity.objects.get(uid=uid)
+
+        poll = self.context["poll"]
         user = self.context["request"].user
-        if user.contributorvideoratings.filter(entity=entity).exists():
+        if user.contributorvideoratings.filter(poll=poll, entity=entity).exists():
             raise ValidationError(
-                "A ContributorRating already exists for this (user, entity)",
+                "A ContributorRating already exists for this (user, entity, poll)",
                 code="unique",
             )
         attrs["entity"] = entity
