@@ -1,10 +1,11 @@
 from collections import defaultdict
+import re
 
 from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.fields import RegexField
+from rest_framework.fields import CharField, RegexField
 from rest_framework.serializers import ModelSerializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
@@ -196,15 +197,10 @@ class RelatedEntitySerializer(EntitySerializer):
     they can be saved properly.
     """
 
-    # XXX: should not be tightly related to the video entity type
-    uid = RegexField(rf"yt:{YOUTUBE_VIDEO_ID_REGEX[1:]}")
+    uid = CharField(max_length=144, write_only=True)
 
     class Meta:
         model = Entity
-
-        # XXX: fields `rating_n_ratings` and `rating_n_contributors` are used
-        # temporarily to make it possible for API consumers to fully rebuild
-        # a Video object from an Entity object
         fields = [
             "uid",
             "type",
@@ -220,6 +216,19 @@ class RelatedEntitySerializer(EntitySerializer):
 
         if len(split_uid) <= 1 or not split_uid[1]:
             raise ValidationError("Malformed `uid`.")
+
+        poll = self.context.get("poll")
+        if poll:
+            regex = poll.entity_cls.get_uid_regex(split_uid[0])
+            if not regex:
+                raise ValidationError(
+                    f"Unknown `uid namespace: `{split_uid[0]}"
+                )
+
+            if not re.match(regex, value):
+                raise ValidationError(
+                    "This value does not match the required pattern."
+                )
 
         return value
 

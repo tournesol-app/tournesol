@@ -29,6 +29,12 @@ class EntityType(ABC):
     def filter_search(cls, qs, query: str):
         raise NotImplementedError
 
+    @classmethod
+    @abstractmethod
+    def get_uid_regex(cls, namespace: str):
+        """Get a regex able to validate the entity UID."""
+        raise NotImplementedError
+
     @cached_property
     def validated_metadata(self):
         serializer = self.metadata_serializer_class(data=self.instance.metadata)
