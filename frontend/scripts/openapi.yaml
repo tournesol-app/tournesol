@@ -1633,7 +1633,7 @@ components:
       properties:
         entity:
           allOf:
-          - $ref: '#/components/schemas/RelatedEntity'
+          - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
         is_public:
           type: boolean
@@ -1660,7 +1660,7 @@ components:
           description: Should the rating be public?
         entity:
           allOf:
-          - $ref: '#/components/schemas/RelatedEntity'
+          - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
         criteria_scores:
           type: array
@@ -1755,7 +1755,7 @@ components:
       description: |-
         An Entity serializer that also includes polls.
 
-        Use `EntityOnlySerializer` if you don't need the related polls.
+        Use `EntityNoExtraFieldSerializer` if you don't need the related polls.
       properties:
         uid:
           type: string
@@ -1789,6 +1789,39 @@ components:
           description: Score of the given criteria
       required:
       - criteria
+    EntityNoExtraField:
+      type: object
+      description: An Entity serializer that doesn't include extra fields.
+      properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - metadata
+      - type
+      - uid
+    EntityNoExtraFieldRequest:
+      type: object
+      description: An Entity serializer that doesn't include extra fields.
+      properties:
+        uid:
+          type: string
+          minLength: 1
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+      required:
+      - uid
     EntityPoll:
       type: object
       properties:

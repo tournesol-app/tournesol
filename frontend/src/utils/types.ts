@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  EntityNoExtraField,
   RelatedEntity,
   Video,
   VideoSerializerWithCriteria,
@@ -21,5 +22,5 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
-export type RelatedEntityObject = RelatedEntity;
+export type RelatedEntityObject = EntityNoExtraField | RelatedEntity;
 export type VideoObject = Video | VideoSerializerWithCriteria;

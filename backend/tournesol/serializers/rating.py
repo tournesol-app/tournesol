@@ -7,7 +7,7 @@ from rest_framework.serializers import ModelSerializer, Serializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Entity
-from tournesol.serializers.entity import RelatedEntitySerializer
+from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEntitySerializer
 
 
 class ContributorCriteriaScore(ModelSerializer):
@@ -17,7 +17,7 @@ class ContributorCriteriaScore(ModelSerializer):
 
 
 class ContributorRatingSerializer(ModelSerializer):
-    entity = RelatedEntitySerializer(read_only=True)
+    entity = EntityNoExtraFieldSerializer(read_only=True)
     criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
