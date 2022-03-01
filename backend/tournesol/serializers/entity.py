@@ -178,6 +178,7 @@ class EntityNoExtraFieldSerializer(EntitySerializer):
             "metadata",
         ]
         read_only_fields = [
+            "uid",
             "type",
             "metadata",
         ]

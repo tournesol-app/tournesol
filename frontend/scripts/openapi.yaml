@@ -1683,7 +1683,7 @@ components:
           type: string
           writeOnly: true
           minLength: 1
-          pattern: yt:[A-Za-z0-9-_]{11}$
+          maxLength: 144
         is_public:
           type: boolean
           description: Should the rating be public?
@@ -1795,9 +1795,9 @@ components:
       properties:
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
         type:
           allOf:
           - $ref: '#/components/schemas/TypeEnum'
@@ -1809,18 +1809,6 @@ components:
       required:
       - metadata
       - type
-      - uid
-    EntityNoExtraFieldRequest:
-      type: object
-      description: An Entity serializer that doesn't include extra fields.
-      properties:
-        uid:
-          type: string
-          minLength: 1
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-      required:
       - uid
     EntityPoll:
       type: object
