@@ -16,12 +16,6 @@ class VideoEntity(EntityType):
     metadata_serializer_class = VideoMetadata
 
     @classmethod
-    def get_uid_regex(cls, namespace):
-        if namespace == YOUTUBE_UID_NAMESPACE:
-            return YOUTUBE_UID_REGEX
-        return None
-
-    @classmethod
     def filter_date_lte(cls, qs, dt):
         return qs.filter(metadata__publication_date__lte=dt.date().isoformat())
 
@@ -37,3 +31,9 @@ class VideoEntity(EntityType):
             Q(metadata__description__icontains=query) |
             Q(metadata__tags__icontains=query)
         ))
+
+    @classmethod
+    def get_uid_regex(cls, namespace):
+        if namespace == YOUTUBE_UID_NAMESPACE:
+            return YOUTUBE_UID_REGEX
+        return None

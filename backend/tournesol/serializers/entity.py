@@ -198,7 +198,7 @@ class RelatedEntitySerializer(EntitySerializer):
     they can be saved properly.
     """
 
-    uid = CharField(max_length=144, write_only=True)
+    uid = CharField(max_length=144)
 
     class Meta:
         model = Entity
@@ -213,6 +213,9 @@ class RelatedEntitySerializer(EntitySerializer):
         ]
 
     def validate_uid(self, value):
+        """
+        Validate the `uid` against the regex provided by the entity class.
+        """
         split_uid = value.split(Entity.UID_DELIMITER)
 
         if len(split_uid) <= 1 or not split_uid[1]:
