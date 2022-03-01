@@ -56,6 +56,8 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    // Expose setPollName callback after this provider itself
+    // has been initialized.
     setContextValue((value) => ({
       ...value,
       setPollName,
@@ -63,6 +65,8 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
   }, [setPollName]);
 
   useEffect(() => {
+    // Fetch poll details from API, whenever the current context relates to another poll,
+    // or the UI language has changed.
     getPoll(contextValue.name, i18n.resolvedLanguage).then((poll) => {
       setContextValue((value) => {
         if (value.name === poll.name) {
