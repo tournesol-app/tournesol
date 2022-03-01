@@ -5,7 +5,7 @@ from credentials import secrets
 class TwitterBot:
     def __init__(self, account):
 
-        if not account in secrets.keys():
+        if account not in secrets.keys():
             raise ValueError(f"No credentials found for {account} account!")
 
         self.language = secrets[account]["LANGUAGE"]

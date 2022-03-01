@@ -1,10 +1,10 @@
-from twitterbot.uploader_twitter_account import get_twitter_account_from_uploader_id
+from twitterbot.uploader_twitter_account import get_twitter_account_from_channel_id
 from unittest.mock import MagicMock, patch
 
 
 @patch("twitterbot.uploader_twitter_account.requests.get")
-def test_get_twitter_account_from_uploader_id(mock_requests):
-    """Test function for get_twitter_account_from_uploader_id"""
+def test_get_twitter_account_from_channel_id(mock_requests):
+    """Test function for get_twitter_account_from_channel_id"""
 
     # Correct response from youtube
     with open("./twitterbot/tests/mock_resp.txt") as f:
@@ -13,7 +13,7 @@ def test_get_twitter_account_from_uploader_id(mock_requests):
     mock_requests.return_value = MagicMock(status_code=200, text=mock_resp)
 
     assert (
-        get_twitter_account_from_uploader_id("UC0NCbj8CxzeCGIF6sODJ-7A")
+        get_twitter_account_from_channel_id("UC0NCbj8CxzeCGIF6sODJ-7A")
         == "@le_science4all"
     )
 
@@ -23,4 +23,4 @@ def test_get_twitter_account_from_uploader_id(mock_requests):
 
     mock_requests.return_value = MagicMock(status_code=200, text=mock_bad_resp)
 
-    assert get_twitter_account_from_uploader_id("UC0NCbj8CxzeCGIF6sOZZZZZ") is None
+    assert get_twitter_account_from_channel_id("UC0NCbj8CxzeCGIF6sOZZZZZ") is None
