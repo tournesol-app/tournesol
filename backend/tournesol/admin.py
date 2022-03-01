@@ -98,7 +98,8 @@ class EntityAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display(description="language", ordering="metadata__language")
     def get_language(obj):
-        return LANGUAGE_CODE_TO_NAME_MATCHING.get(obj.metadata.get("language"))
+        language_code = obj.metadata.get("language")
+        return LANGUAGE_CODE_TO_NAME_MATCHING.get(language_code, language_code)
 
 
 @admin.register(EntityCriteriaScore)
