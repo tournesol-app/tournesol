@@ -140,7 +140,7 @@ class EntitySerializer(ModelSerializer):
     """
     An Entity serializer that also includes polls.
 
-    Use `EntityOnlySerializer` if you don't need the related polls.
+    Use `EntityNoExtraFieldSerializer` if you don't need the related polls.
     """
 
     polls = serializers.SerializerMethodField()
@@ -164,6 +164,24 @@ class EntitySerializer(ModelSerializer):
             for (name, scores) in poll_to_scores.items()
         ]
         return EntityPollSerializer(items, many=True).data
+
+
+class EntityNoExtraFieldSerializer(EntitySerializer):
+    """
+    An Entity serializer that doesn't include extra fields.
+    """
+    class Meta:
+        model = Entity
+        fields = [
+            "uid",
+            "type",
+            "metadata",
+        ]
+        read_only_fields = [
+            "uid",
+            "type",
+            "metadata",
+        ]
 
 
 class RelatedEntitySerializer(EntitySerializer):

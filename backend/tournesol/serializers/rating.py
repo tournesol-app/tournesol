@@ -2,12 +2,11 @@ from django.db.models import Q
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import BooleanField, RegexField, SerializerMethodField
+from rest_framework.fields import BooleanField, CharField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Entity
-from tournesol.serializers.entity import RelatedVideoSerializer, VideoSerializer
+from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEntitySerializer
 
 
 class ContributorCriteriaScore(ModelSerializer):
@@ -17,7 +16,7 @@ class ContributorCriteriaScore(ModelSerializer):
 
 
 class ContributorRatingSerializer(ModelSerializer):
-    video = VideoSerializer(source="entity", read_only=True)
+    entity = EntityNoExtraFieldSerializer(read_only=True)
     criteria_scores = ContributorCriteriaScore(many=True, read_only=True)
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
@@ -25,7 +24,7 @@ class ContributorRatingSerializer(ModelSerializer):
 
     class Meta:
         model = ContributorRating
-        fields = ["video", "is_public", "criteria_scores", "n_comparisons"]
+        fields = ["entity", "is_public", "criteria_scores", "n_comparisons"]
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_comparisons(self, obj):
@@ -51,24 +50,26 @@ class ContributorRatingSerializer(ModelSerializer):
 
 
 class ContributorRatingCreateSerializer(ContributorRatingSerializer):
-    video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX, write_only=True)
+    uid = CharField(max_length=144, write_only=True)
 
     class Meta:
         model = ContributorRating
-        fields = ["video_id", "is_public", "video", "criteria_scores", "n_comparisons"]
+        fields = ["uid", "is_public", "entity", "criteria_scores", "n_comparisons"]
 
     def validate(self, attrs):
-        video_id = attrs.pop("video_id")
-        video_serializer = RelatedVideoSerializer(data={"video_id": video_id})
-        video_serializer.is_valid(raise_exception=True)
-        video = Entity.get_from_video_id(video_id)
+        uid = attrs.pop("uid")
+        entity_serializer = RelatedEntitySerializer(data={"uid": uid})
+        entity_serializer.is_valid(raise_exception=True)
+        entity = Entity.objects.get(uid=uid)
+
+        poll = self.context["poll"]
         user = self.context["request"].user
-        if user.contributorvideoratings.filter(entity=video).exists():
+        if user.contributorvideoratings.filter(poll=poll, entity=entity).exists():
             raise ValidationError(
-                "A ContributorRating already exists for this (user, video)",
+                "A ContributorRating already exists for this (user, entity, poll)",
                 code="unique",
             )
-        attrs["entity"] = video
+        attrs["entity"] = entity
         attrs["user"] = user
         return attrs
 

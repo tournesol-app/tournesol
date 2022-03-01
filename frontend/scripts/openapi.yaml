@@ -1631,9 +1631,9 @@ components:
     ContributorRating:
       type: object
       properties:
-        video:
+        entity:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
         is_public:
           type: boolean
@@ -1650,17 +1650,17 @@ components:
             current video
       required:
       - criteria_scores
+      - entity
       - n_comparisons
-      - video
     ContributorRatingCreate:
       type: object
       properties:
         is_public:
           type: boolean
           description: Should the rating be public?
-        video:
+        entity:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
         criteria_scores:
           type: array
@@ -1674,21 +1674,21 @@ components:
             current video
       required:
       - criteria_scores
+      - entity
       - n_comparisons
-      - video
     ContributorRatingCreateRequest:
       type: object
       properties:
-        video_id:
+        uid:
           type: string
           writeOnly: true
           minLength: 1
-          pattern: ^[A-Za-z0-9-_]{11}$
+          maxLength: 144
         is_public:
           type: boolean
           description: Should the rating be public?
       required:
-      - video_id
+      - uid
     ContributorRatingRequest:
       type: object
       properties:
@@ -1755,7 +1755,7 @@ components:
       description: |-
         An Entity serializer that also includes polls.
 
-        Use `EntityOnlySerializer` if you don't need the related polls.
+        Use `EntityNoExtraFieldSerializer` if you don't need the related polls.
       properties:
         uid:
           type: string
@@ -1789,6 +1789,27 @@ components:
           description: Score of the given criteria
       required:
       - criteria
+    EntityNoExtraField:
+      type: object
+      description: An Entity serializer that doesn't include extra fields.
+      properties:
+        uid:
+          type: string
+          readOnly: true
+          description: A unique identifier, build with a namespace and an external
+            id.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - metadata
+      - type
+      - uid
     EntityPoll:
       type: object
       properties:

@@ -79,22 +79,16 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
     def create(self, validated_data):
         uid_1 = validated_data.pop("entity_1").get("uid")
         uid_2 = validated_data.pop("entity_2").get("uid")
-
-        # XXX: the following lines are still specific to `video` Entity. When
-        # the comparisons API will be used by more than one entity type, a
-        # type check will be needed here to avoid calling `get_from_video_id`
-        # on non-video Entity.
-
         # The validation performed by the `RelatedEntitySerializer` guarantees
         # that the submitted UIDs exist in the database.
-        video_1 = Entity.get_from_video_id(uid_1.split(Entity.UID_DELIMITER)[1])
-        video_2 = Entity.get_from_video_id(uid_2.split(Entity.UID_DELIMITER)[1])
+        entity_1 = Entity.objects.get(uid=uid_1)
+        entity_2 = Entity.objects.get(uid=uid_2)
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
             poll=self.context.get("poll"),
-            entity_1=video_1,
-            entity_2=video_2,
+            entity_1=entity_1,
+            entity_2=entity_2,
             **validated_data,
         )
 
