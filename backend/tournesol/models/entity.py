@@ -17,7 +17,7 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
-from tournesol.entities.video import TYPE_VIDEO
+from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.serializers.metadata import VideoMetadata
 
 LANGUAGES = settings.LANGUAGES
@@ -35,7 +35,6 @@ class Entity(models.Model):
         verbose_name_plural = "entities"
 
     UID_DELIMITER = ':'
-    UID_YT_NAMESPACE = 'yt'
 
     uid = models.CharField(
         unique=True,
@@ -250,7 +249,7 @@ class Entity(models.Model):
 
         return cls.objects.create(
             type=TYPE_VIDEO,
-            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}",
+            uid=f"{YOUTUBE_UID_NAMESPACE}{cls.UID_DELIMITER}{video_id}",
             metadata=metadata,
             metadata_timestamp=timezone.now(),
         )
@@ -258,7 +257,7 @@ class Entity(models.Model):
     @classmethod
     def get_from_video_id(cls, video_id):
         return cls.objects.get(
-            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}"
+            uid=f"{YOUTUBE_UID_NAMESPACE}{cls.UID_DELIMITER}{video_id}"
         )
 
     def clean(self):

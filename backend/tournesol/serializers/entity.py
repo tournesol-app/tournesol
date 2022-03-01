@@ -9,6 +9,7 @@ from rest_framework.fields import CharField, RegexField
 from rest_framework.serializers import ModelSerializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.models import Entity, EntityCriteriaScore
 from tournesol.utils.api_youtube import VideoNotFound
 
@@ -75,7 +76,7 @@ class VideoSerializer(ModelSerializer):
 
     def validate_video_id(self, value):
         if Entity.objects.filter(
-            uid=f"{Entity.UID_YT_NAMESPACE}{Entity.UID_DELIMITER}{value}"
+            uid=f"{YOUTUBE_UID_NAMESPACE}{Entity.UID_DELIMITER}{value}"
         ).exists():
             raise ValidationError("A video with this video_id already exists")
         return value

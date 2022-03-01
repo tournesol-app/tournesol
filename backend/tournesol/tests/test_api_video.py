@@ -1,13 +1,12 @@
-from datetime import date, timedelta
 from unittest.mock import patch
 
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
 
@@ -358,7 +357,7 @@ class VideoApi(TestCase):
 
         # ensure newly created entities are considered videos from YT
         self.assertEqual(
-            new_video.uid, "{}:{}".format(Entity.UID_YT_NAMESPACE, "NeADlWSDFAQ")
+            new_video.uid, "{}:{}".format(YOUTUBE_UID_NAMESPACE, "NeADlWSDFAQ")
         )
         self.assertEqual(new_video.type, "video")
 
