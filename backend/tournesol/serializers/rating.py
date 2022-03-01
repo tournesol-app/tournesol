@@ -5,7 +5,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import BooleanField, CharField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Entity
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEntitySerializer
 
@@ -51,10 +50,7 @@ class ContributorRatingSerializer(ModelSerializer):
 
 
 class ContributorRatingCreateSerializer(ContributorRatingSerializer):
-    uid = CharField(
-        write_only=True,
-        max_length=144,
-    )
+    uid = CharField(max_length=144, write_only=True)
 
     class Meta:
         model = ContributorRating
