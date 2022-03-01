@@ -4,6 +4,8 @@ from typing import Type
 from django.utils.functional import cached_property
 from rest_framework.serializers import Serializer
 
+UID_DELIMITER = ":"
+
 
 class EntityType(ABC):
 

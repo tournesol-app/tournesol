@@ -3,12 +3,14 @@ from django.db.models import Q
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.serializers.metadata import VideoMetadata
 
-from .base import EntityType
+from .base import UID_DELIMITER, EntityType
 
 TYPE_VIDEO = "video"
 
-YOUTUBE_UID_NAMESPACE = 'yt'
-YOUTUBE_UID_REGEX = rf"{YOUTUBE_UID_NAMESPACE}:{YOUTUBE_VIDEO_ID_REGEX[1:]}"
+YOUTUBE_UID_NAMESPACE = "yt"
+YOUTUBE_UID_REGEX = (
+    rf"^{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{YOUTUBE_VIDEO_ID_REGEX[1:]}"
+)
 
 
 class VideoEntity(EntityType):
@@ -26,11 +28,14 @@ class VideoEntity(EntityType):
     @classmethod
     def filter_search(cls, qs, query):
         from tournesol.models import Entity
-        return qs.filter(pk__in=Entity.objects.filter(
-            Q(metadata__name__icontains=query) |
-            Q(metadata__description__icontains=query) |
-            Q(metadata__tags__icontains=query)
-        ))
+
+        return qs.filter(
+            pk__in=Entity.objects.filter(
+                Q(metadata__name__icontains=query)
+                | Q(metadata__description__icontains=query)
+                | Q(metadata__tags__icontains=query)
+            )
+        )
 
     @classmethod
     def get_uid_regex(cls, namespace):
