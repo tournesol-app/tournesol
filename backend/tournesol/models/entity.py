@@ -17,7 +17,8 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
-from tournesol.entities.video import TYPE_VIDEO
+from tournesol.entities.base import UID_DELIMITER
+from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.serializers.metadata import VideoMetadata
 
 LANGUAGES = settings.LANGUAGES
@@ -31,11 +32,9 @@ class Entity(models.Model):
     These fields are kept as-is for now to ease the refactor of the Tournesol
     app, and will be replaced in the future by the `metadata` JSON field.
     """
+
     class Meta:
         verbose_name_plural = "entities"
-
-    UID_DELIMITER = ':'
-    UID_YT_NAMESPACE = 'yt'
 
     uid = models.CharField(
         unique=True,
@@ -48,10 +47,7 @@ class Entity(models.Model):
         choices=ENTITY_TYPE_CHOICES,
     )
 
-    metadata = models.JSONField(
-        blank=True,
-        default=dict
-    )
+    metadata = models.JSONField(blank=True, default=dict)
     metadata_timestamp = models.DateTimeField(
         blank=True,
         null=True,
@@ -86,6 +82,7 @@ class Entity(models.Model):
 
     def update_n_ratings(self):
         from .comparisons import Comparison
+
         self.rating_n_ratings = Comparison.objects.filter(
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
@@ -142,7 +139,7 @@ class Entity(models.Model):
         options = [
             self.metadata.get("name"),
             self.metadata.get("uploader"),
-            self.metadata.get("description")
+            self.metadata.get("description"),
         ]
         options = filter(lambda x: x is not None, options)
         return " ".join(options)[:100]
@@ -164,6 +161,7 @@ class Entity(models.Model):
         fields "{criteria}_quantile" for videos.
         """
         from .poll import Poll
+
         CRITERIAS = Poll.default_poll().criterias_list()
         quantiles_by_feature_by_id = {f: {} for f in CRITERIAS}
 
@@ -218,7 +216,9 @@ class Entity(models.Model):
         self.last_metadata_request_at = timezone.now()
         self.save(update_fields=["last_metadata_request_at"])
         try:
-            metadata = get_video_metadata(self.metadata["video_id"], compute_language=False)
+            metadata = get_video_metadata(
+                self.metadata["video_id"], compute_language=False
+            )
         except VideoNotFound:
             metadata = {}
 
@@ -234,32 +234,35 @@ class Entity(models.Model):
     @classmethod
     def create_from_video_id(cls, video_id):
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
+
         try:
             extra_data = get_video_metadata(video_id)
         except VideoNotFound:
             raise
 
-        serializer = VideoMetadata(data={
-            **extra_data,
-            "video_id": video_id,
-        })
+        serializer = VideoMetadata(
+            data={
+                **extra_data,
+                "video_id": video_id,
+            }
+        )
         if serializer.is_valid():
             metadata = serializer.data
         else:
-            raise RuntimeError(f"Unexpected errors in video metadata format: {serializer.errors}")
+            raise RuntimeError(
+                f"Unexpected errors in video metadata format: {serializer.errors}"
+            )
 
         return cls.objects.create(
             type=TYPE_VIDEO,
-            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}",
+            uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
             metadata=metadata,
             metadata_timestamp=timezone.now(),
         )
 
     @classmethod
     def get_from_video_id(cls, video_id):
-        return cls.objects.get(
-            uid=f"{cls.UID_YT_NAMESPACE}{cls.UID_DELIMITER}{video_id}"
-        )
+        return cls.objects.get(uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}")
 
     def clean(self):
         # An empty dict is considered as an empty value for JSONField,

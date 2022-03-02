@@ -4,6 +4,8 @@ from typing import Type
 from django.utils.functional import cached_property
 from rest_framework.serializers import Serializer
 
+UID_DELIMITER = ":"
+
 
 class EntityType(ABC):
 
@@ -27,6 +29,12 @@ class EntityType(ABC):
     @classmethod
     @abstractmethod
     def filter_search(cls, qs, query: str):
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def get_uid_regex(cls, namespace: str):
+        """Get a regex able to validate the entity UID."""
         raise NotImplementedError
 
     @cached_property

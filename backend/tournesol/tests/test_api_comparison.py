@@ -342,6 +342,35 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(comparison.entity_2.uid, data["entity_b"]["uid"])
         self.assertEqual(comparison.duration_ms, data["duration_ms"])
 
+    def test_authenticated_cant_create_invalid_uid(self):
+        """
+        An authenticated user can't create a comparison with an unknown
+        uid namespace, or invalid YouTube id.
+        """
+        self.client.force_authenticate(user=self.user)
+
+        # use an invalid uid namespace
+        data = deepcopy(self.non_existing_comparison)
+        data["entity_a"]["uid"] = data["entity_a"]["uid"].replace("yt:", "invalid:")
+
+        response = self.client.post(
+            self.comparisons_base_url,
+            data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # use an invalid YouTube id
+        data = deepcopy(self.non_existing_comparison)
+        data["entity_a"]["uid"] = "yt:abc"
+
+        response = self.client.post(
+            self.comparisons_base_url,
+            data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_authenticated_cant_create_criteria_scores_without_mandatory(self):
         """
         An authenticated user can't create a new comparison without explicitly

@@ -1,13 +1,16 @@
+import re
 from collections import defaultdict
 
 from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.fields import RegexField
+from rest_framework.fields import CharField, RegexField
 from rest_framework.serializers import ModelSerializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.entities.base import UID_DELIMITER
+from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.models import Entity, EntityCriteriaScore
 from tournesol.utils.api_youtube import VideoNotFound
 
@@ -74,7 +77,7 @@ class VideoSerializer(ModelSerializer):
 
     def validate_video_id(self, value):
         if Entity.objects.filter(
-            uid=f"{Entity.UID_YT_NAMESPACE}{Entity.UID_DELIMITER}{value}"
+            uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{value}"
         ).exists():
             raise ValidationError("A video with this video_id already exists")
         return value
@@ -170,6 +173,7 @@ class EntityNoExtraFieldSerializer(EntitySerializer):
     """
     An Entity serializer that doesn't include extra fields.
     """
+
     class Meta:
         model = Entity
         fields = [
@@ -196,15 +200,10 @@ class RelatedEntitySerializer(EntitySerializer):
     they can be saved properly.
     """
 
-    # XXX: should not be tightly related to the video entity type
-    uid = RegexField(rf"yt:{YOUTUBE_VIDEO_ID_REGEX[1:]}")
+    uid = CharField(max_length=144)
 
     class Meta:
         model = Entity
-
-        # XXX: fields `rating_n_ratings` and `rating_n_contributors` are used
-        # temporarily to make it possible for API consumers to fully rebuild
-        # a Video object from an Entity object
         fields = [
             "uid",
             "type",
@@ -216,16 +215,28 @@ class RelatedEntitySerializer(EntitySerializer):
         ]
 
     def validate_uid(self, value):
-        split_uid = value.split(Entity.UID_DELIMITER)
+        """
+        Validate the `uid` against the regex provided by the entity class.
+        """
+        split_uid = value.split(UID_DELIMITER)
 
         if len(split_uid) <= 1 or not split_uid[1]:
             raise ValidationError("Malformed `uid`.")
+
+        poll = self.context["poll"]
+        regex = poll.entity_cls.get_uid_regex(split_uid[0])
+
+        if not regex:
+            raise ValidationError(f"Unknown `uid` namespace: {split_uid[0]}")
+
+        if not re.match(regex, value):
+            raise ValidationError("This value does not match the required pattern.")
 
         return value
 
     def validate(self, data):
         # XXX: should not be tightly related to the video entity type
-        video_id = data.get("uid").split(Entity.UID_DELIMITER)[1]
+        video_id = data.get("uid").split(UID_DELIMITER)[1]
         try:
             Entity.get_from_video_id(video_id=video_id)
         except ObjectDoesNotExist:

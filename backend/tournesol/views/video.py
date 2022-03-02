@@ -16,7 +16,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
 
 from tournesol.entities import VideoEntity
-from tournesol.entities.video import TYPE_VIDEO
+from tournesol.entities.base import UID_DELIMITER
+from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models import Entity
 from tournesol.serializers.entity import VideoSerializer, VideoSerializerWithCriteria
 from tournesol.throttling import (
@@ -110,7 +111,7 @@ class VideoViewSet(
     def get_object(self):
         obj = get_object_or_404(
             self.queryset,
-            uid=f'{Entity.UID_YT_NAMESPACE}{Entity.UID_DELIMITER}{self.kwargs["video_id"]}'
+            uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
         )
         self.check_object_permissions(self.request, obj)
         return obj

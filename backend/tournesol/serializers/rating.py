@@ -58,7 +58,9 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
 
     def validate(self, attrs):
         uid = attrs.pop("uid")
-        entity_serializer = RelatedEntitySerializer(data={"uid": uid})
+        entity_serializer = RelatedEntitySerializer(
+            data={"uid": uid}, context=self.context
+        )
         entity_serializer.is_valid(raise_exception=True)
         entity = Entity.objects.get(uid=uid)
 

@@ -8,7 +8,8 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
-from tournesol.models import Comparison, ContributorRating, Entity
+from tournesol.entities.base import UID_DELIMITER
+from tournesol.models import Comparison, ContributorRating
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 
@@ -30,8 +31,8 @@ def write_comparisons_file(request, write_target):
 
     writer.writerows(
         {
-            "video_a": comparison["entity_a"]["uid"].split(Entity.UID_DELIMITER)[1],
-            "video_b": comparison["entity_b"]["uid"].split(Entity.UID_DELIMITER)[1],
+            "video_a": comparison["entity_a"]["uid"].split(UID_DELIMITER)[1],
+            "video_b": comparison["entity_b"]["uid"].split(UID_DELIMITER)[1],
             **criteria_score,
         }
         for comparison in serialized_comparisons
@@ -77,8 +78,8 @@ def write_public_comparisons_file(request, write_target):
     writer.writerows(
         {
             "public_username": public_username,
-            "video_a": comparison["entity_a"]["uid"].split(Entity.UID_DELIMITER)[1],
-            "video_b": comparison["entity_b"]["uid"].split(Entity.UID_DELIMITER)[1],
+            "video_a": comparison["entity_a"]["uid"].split(UID_DELIMITER)[1],
+            "video_b": comparison["entity_b"]["uid"].split(UID_DELIMITER)[1],
             **criteria_score,
         }
         for (public_username, comparison) in zip(
