@@ -6,7 +6,8 @@ from langdetect import DetectorFactory, detect, lang_detect_exception
 
 from ..models.entity import Entity
 
-ACCEPTED_LANGUAGE_CODES = {lang[0] for lang in settings.LANGUAGES}
+LANGUAGE_CODE_TO_NAME_MATCHING = {code: name for code, name in settings.LANGUAGES}
+ACCEPTED_LANGUAGE_CODES = set(LANGUAGE_CODE_TO_NAME_MATCHING.keys())
 
 
 # Enforce consistent results with a constant seed,
