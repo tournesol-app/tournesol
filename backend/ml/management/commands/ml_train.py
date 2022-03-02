@@ -88,12 +88,11 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
         EntityCriteriaScore.objects.bulk_create(
             [
                 EntityCriteriaScore(
-                    poll_id=default_poll_pk,
+					poll_id=poll.pk,
                     entity_id=video_id,
                     criteria=criteria,
                     score=score,
                     uncertainty=uncertainty,
-					poll_id=poll.pk
                 )
                 for video_id, criteria, score, uncertainty in video_scores
             ]
@@ -150,9 +149,9 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
     )
 
 def process(trusted_only=True):
-	for poll in Poll.objects.all():
-	    poll_criterias_list = poll.criterias_list
-        poll_comparison_data = fetch_data(poll=poll,trusted_only=trusted_only)
+    for poll in Poll.objects.all():
+        poll_criterias_list = poll.criterias_list
+        poll_comparison_data = fetch_data(poll=poll, trusted_only=trusted_only)
         glob_score, loc_score = ml_run(
             poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1
         )
