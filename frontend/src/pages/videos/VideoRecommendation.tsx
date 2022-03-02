@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
@@ -11,6 +11,12 @@ import { getRecommendedVideos } from 'src/features/recommendation/Recommendation
 import { ContentBox, ContentHeader } from 'src/components';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import { scrollToTop } from 'src/utils/ui';
+import {
+  saveRecommendationsLanguages,
+  loadRecommendationsLanguages,
+  recommendationsLanguagesFromNavigator,
+} from 'src/utils/recommendationsLanguages';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 function VideoRecommendationPage() {
   const { t } = useTranslation();
@@ -22,10 +28,15 @@ function VideoRecommendationPage() {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const history = useHistory();
-  const searchParams = new URLSearchParams(location.search);
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
   const videoCount = videos.count || 0;
+  const locationSearchRef = useRef<string>();
+  const { criterias } = useCurrentPoll();
 
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
@@ -34,13 +45,33 @@ function VideoRecommendationPage() {
   }
 
   useEffect(() => {
+    if (location.search === locationSearchRef.current) {
+      // This ref is used as a precaution, to avoid triggering
+      // this effect redundantly, eg if "history" has changed.
+      return;
+    }
+    locationSearchRef.current = location.search;
+
+    if (searchParams.get('language') === null) {
+      let loadedLanguages = loadRecommendationsLanguages();
+
+      if (loadedLanguages === null) {
+        loadedLanguages = recommendationsLanguagesFromNavigator();
+        saveRecommendationsLanguages(loadedLanguages);
+      }
+
+      searchParams.set('language', loadedLanguages);
+      history.push({ search: searchParams.toString() });
+      return;
+    }
+
     const fetchVideos = async () => {
       setIsLoading(true);
-      setVideos(await getRecommendedVideos(location.search));
+      setVideos(await getRecommendedVideos(location.search, criterias));
       setIsLoading(false);
     };
     fetchVideos();
-  }, [location.search]);
+  }, [location.search, history, searchParams, criterias]);
 
   return (
     <>

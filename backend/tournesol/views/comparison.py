@@ -8,7 +8,7 @@ from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
-from tournesol.models import Comparison, ContributorRating, Entity
+from tournesol.models import Comparison, ContributorRating
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
@@ -22,16 +22,8 @@ class ComparisonApiMixin:
             comparison = Comparison.get_comparison(
                 request.user,
                 poll_id,
-                "{}{}{}".format(
-                    Entity.UID_YT_NAMESPACE,
-                    Entity.UID_DELIMITER,
-                    request.data["entity_a"]["video_id"],
-                ),
-                "{}{}{}".format(
-                    Entity.UID_YT_NAMESPACE,
-                    Entity.UID_DELIMITER,
-                    request.data["entity_b"]["video_id"],
-                ),
+                request.data["entity_a"]["uid"],
+                request.data["entity_b"]["uid"],
             )
         # if one field is missing, do not raise error yet and let django rest
         # framework checks the request integrity
@@ -109,8 +101,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         if self.comparison_already_exists(poll.pk, self.request):
             raise exceptions.ValidationError(
                 "You've already compared {0} with {1}.".format(
-                    self.request.data["entity_a"]["video_id"],
-                    self.request.data["entity_b"]["video_id"],
+                    self.request.data["entity_a"]["uid"],
+                    self.request.data["entity_b"]["uid"],
                 )
             )
         comparison: Comparison = serializer.save()
@@ -149,7 +141,7 @@ class ComparisonDetailApi(
     generics.GenericAPIView,
 ):
     """
-    Retrieve, update or delete a comparison between two videos made by the
+    Retrieve, update or delete a comparison between two entities made by the
     logged user.
     """
 
@@ -199,7 +191,7 @@ class ComparisonDetailApi(
         fields `entity_a` and `entity_b` are not editable anymore once the
         comparison has been created. Discarding those two fields ensures
         their immutability and thus prevent the falsification of comparisons
-        by video id swap.
+        by uid swap.
         """
         if self.request.method == "PUT":
             return self.UPDATE_SERIALIZER

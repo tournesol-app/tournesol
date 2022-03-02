@@ -5,10 +5,16 @@ import { Compare as CompareIcon } from '@mui/icons-material';
 
 import type { Comparison } from 'src/services/openapi';
 import VideoCard from '../videos/VideoCard';
+import { VideoObject } from 'src/utils/types';
+import { videoFromRelatedEntity } from 'src/utils/entity';
 
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { t } = useTranslation();
   const { entity_a, entity_b } = comparison;
+
+  const videoA: VideoObject = videoFromRelatedEntity(entity_a);
+  const videoB: VideoObject = videoFromRelatedEntity(entity_b);
+
   return (
     <Box
       sx={{
@@ -20,7 +26,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         gap: '16px',
       }}
     >
-      <VideoCard compact video={entity_a} />
+      <VideoCard compact video={videoA} />
       <Box
         sx={{
           position: 'relative',
@@ -48,7 +54,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <VideoCard compact video={entity_b} />
+      <VideoCard compact video={videoB} />
     </Box>
   );
 };
@@ -75,7 +81,7 @@ const Comparisons = ({
           {comparisons &&
             comparisons.map((c) => (
               <ComparisonThumbnail
-                key={`${c.entity_a.video_id}${c.entity_b.video_id}`}
+                key={`${c.entity_a.metadata.video_id}${c.entity_b.metadata.video_id}`}
                 comparison={c}
               />
             ))}

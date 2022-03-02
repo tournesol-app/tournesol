@@ -10,13 +10,9 @@ import type {
   ComparisonRequest,
   ComparisonCriteriaScore,
 } from 'src/services/openapi';
-import {
-  allCriterias,
-  optionalCriterias,
-  getCriteriaName,
-} from 'src/utils/constants';
 
 import CriteriaSlider from './CriteriaSlider';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -40,27 +36,29 @@ const useStyles = makeStyles(() => ({
 const ComparisonSliders = ({
   submit,
   initialComparison,
-  videoA,
-  videoB,
+  uidA,
+  uidB,
   isComparisonPublic,
 }: {
   submit: (c: ComparisonRequest) => Promise<void>;
   initialComparison: ComparisonRequest | null;
-  videoA: string;
-  videoB: string;
+  uidA: string;
+  uidB: string;
   isComparisonPublic?: boolean;
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { criteriaByName, criterias } = useCurrentPoll();
+
   const castToComparison = (c: ComparisonRequest | null): ComparisonRequest => {
     return c
       ? c
       : {
-          entity_a: { video_id: videoA },
-          entity_b: { video_id: videoB },
-          criteria_scores: allCriterias
-            .filter((c) => !optionalCriterias[c])
-            .map((criteria) => ({ criteria, score: 0 })),
+          entity_a: { uid: uidA },
+          entity_b: { uid: uidB },
+          criteria_scores: criterias
+            .filter((c) => !c.optional)
+            .map((c) => ({ criteria: c.name, score: 0 })),
         };
   };
   const [comparison, setComparison] = useState<ComparisonRequest>(
@@ -101,19 +99,19 @@ const ComparisonSliders = ({
   };
 
   const showOptionalCriterias = comparison.criteria_scores.some(
-    ({ criteria }) => optionalCriterias[criteria]
+    ({ criteria }) => criteriaByName[criteria]?.optional
   );
 
   const handleCollapseCriterias = () => {
-    const optionalCriteriasKeys = allCriterias.filter(
-      (criteria) => optionalCriterias[criteria]
-    );
+    const optionalCriteriasKeys = criterias
+      .filter((c) => c.optional)
+      .map((c) => c.name);
     optionalCriteriasKeys.forEach((criteria) =>
       handleSliderChange(criteria, showOptionalCriterias ? undefined : 0)
     );
   };
 
-  if (videoA == videoB) {
+  if (uidA == uidB) {
     return (
       <div className={classes.root}>
         <Typography paragraph sx={{ textAlign: 'center' }}>
@@ -127,14 +125,14 @@ const ComparisonSliders = ({
   return (
     <div className={classes.root}>
       <div className={classes.centered}>
-        {allCriterias
-          .filter((c) => !optionalCriterias[c])
+        {criterias
+          .filter((c) => !c.optional)
           .map((criteria) => (
             <CriteriaSlider
-              key={criteria}
-              criteria={criteria}
-              criteria_name={getCriteriaName(t, criteria)}
-              criteriaValue={criteriaValues[criteria]}
+              key={criteria.name}
+              criteria={criteria.name}
+              criteriaLabel={criteria.label}
+              criteriaValue={criteriaValues[criteria.name]}
               disabled={submitted}
               handleSliderChange={handleSliderChange}
             />
@@ -158,14 +156,14 @@ const ComparisonSliders = ({
           timeout="auto"
           sx={{ width: '100%' }}
         >
-          {allCriterias
-            .filter((c) => optionalCriterias[c])
+          {criterias
+            .filter((c) => c.optional)
             .map((criteria) => (
               <CriteriaSlider
-                key={criteria}
-                criteria={criteria}
-                criteria_name={getCriteriaName(t, criteria)}
-                criteriaValue={criteriaValues[criteria]}
+                key={criteria.name}
+                criteria={criteria.name}
+                criteriaLabel={criteria.label}
+                criteriaValue={criteriaValues[criteria.name]}
                 disabled={submitted}
                 handleSliderChange={handleSliderChange}
               />

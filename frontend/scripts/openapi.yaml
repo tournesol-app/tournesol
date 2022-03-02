@@ -386,7 +386,8 @@ paths:
         name: type
         schema:
           type: string
-          enum: []
+          enum:
+          - video
         description: Type of entities to return
       - in: query
         name: poll_name
@@ -1402,7 +1403,6 @@ paths:
         name: video_id
         schema:
           type: string
-          description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
         required: true
       tags:
       - video
@@ -1419,9 +1419,6 @@ paths:
           description: ''
 components:
   schemas:
-    BlankEnum:
-      enum:
-      - ''
     ChangePassword:
       type: object
       properties:
@@ -1460,9 +1457,9 @@ components:
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
         entity_a:
-          $ref: '#/components/schemas/RelatedVideo'
+          $ref: '#/components/schemas/RelatedEntity'
         entity_b:
-          $ref: '#/components/schemas/RelatedVideo'
+          $ref: '#/components/schemas/RelatedEntity'
         criteria_scores:
           type: array
           items:
@@ -1528,9 +1525,9 @@ components:
         Use `ComparisonUpdateSerializer` for the update operation.
       properties:
         entity_a:
-          $ref: '#/components/schemas/RelatedVideoRequest'
+          $ref: '#/components/schemas/RelatedEntityRequest'
         entity_b:
-          $ref: '#/components/schemas/RelatedVideoRequest'
+          $ref: '#/components/schemas/RelatedEntityRequest'
         criteria_scores:
           type: array
           items:
@@ -1565,11 +1562,11 @@ components:
           description: Time it took to rate the videos (in milliseconds)
         entity_a:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
         entity_b:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/RelatedEntity'
           readOnly: true
       required:
       - criteria_scores
@@ -1634,9 +1631,9 @@ components:
     ContributorRating:
       type: object
       properties:
-        video:
+        entity:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
         is_public:
           type: boolean
@@ -1653,17 +1650,17 @@ components:
             current video
       required:
       - criteria_scores
+      - entity
       - n_comparisons
-      - video
     ContributorRatingCreate:
       type: object
       properties:
         is_public:
           type: boolean
           description: Should the rating be public?
-        video:
+        entity:
           allOf:
-          - $ref: '#/components/schemas/Video'
+          - $ref: '#/components/schemas/EntityNoExtraField'
           readOnly: true
         criteria_scores:
           type: array
@@ -1677,21 +1674,21 @@ components:
             current video
       required:
       - criteria_scores
+      - entity
       - n_comparisons
-      - video
     ContributorRatingCreateRequest:
       type: object
       properties:
-        video_id:
+        uid:
           type: string
           writeOnly: true
           minLength: 1
-          pattern: ^[A-Za-z0-9-_]{11}$
+          maxLength: 144
         is_public:
           type: boolean
           description: Should the rating be public?
       required:
-      - video_id
+      - uid
     ContributorRatingRequest:
       type: object
       properties:
@@ -1755,6 +1752,10 @@ components:
       - domain
     Entity:
       type: object
+      description: |-
+        An Entity serializer that also includes polls.
+
+        Use `EntityNoExtraFieldSerializer` if you don't need the related polls.
       properties:
         uid:
           type: string
@@ -1788,6 +1789,27 @@ components:
           description: Score of the given criteria
       required:
       - criteria
+    EntityNoExtraField:
+      type: object
+      description: An Entity serializer that doesn't include extra fields.
+      properties:
+        uid:
+          type: string
+          readOnly: true
+          description: A unique identifier, build with a namespace and an external
+            id.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - metadata
+      - type
+      - uid
     EntityPoll:
       type: object
       properties:
@@ -1807,106 +1829,6 @@ components:
       - Other
       - Female
       - Male
-      type: string
-    LanguageEnum:
-      enum:
-      - af
-      - ar
-      - ar-dz
-      - ast
-      - az
-      - bg
-      - be
-      - bn
-      - br
-      - bs
-      - ca
-      - cs
-      - cy
-      - da
-      - de
-      - dsb
-      - el
-      - en
-      - en-au
-      - en-gb
-      - eo
-      - es
-      - es-ar
-      - es-co
-      - es-mx
-      - es-ni
-      - es-ve
-      - et
-      - eu
-      - fa
-      - fi
-      - fr
-      - fy
-      - ga
-      - gd
-      - gl
-      - he
-      - hi
-      - hr
-      - hsb
-      - hu
-      - hy
-      - ia
-      - id
-      - ig
-      - io
-      - is
-      - it
-      - ja
-      - ka
-      - kab
-      - kk
-      - km
-      - kn
-      - ko
-      - ky
-      - lb
-      - lt
-      - lv
-      - mk
-      - ml
-      - mn
-      - mr
-      - ms
-      - my
-      - nb
-      - ne
-      - nl
-      - nn
-      - os
-      - pa
-      - pl
-      - pt
-      - pt-br
-      - ro
-      - ru
-      - sk
-      - sl
-      - sq
-      - sr
-      - sr-latn
-      - sv
-      - sw
-      - ta
-      - te
-      - tg
-      - th
-      - tk
-      - tr
-      - tt
-      - udm
-      - uk
-      - ur
-      - uz
-      - vi
-      - zh-hans
-      - zh-hant
       type: string
     MoralPhilosophyEnum:
       enum:
@@ -2171,9 +2093,6 @@ components:
       - Zambia
       - Zimbabwe
       type: string
-    NullEnum:
-      enum:
-      - null
     PaginatedComparisonList:
       type: object
       properties:
@@ -2860,6 +2779,51 @@ components:
       - password
       - password_confirm
       - username
+    RelatedEntity:
+      type: object
+      description: |-
+        An Entity serializer that will create the Entity object on validation
+        if it does not exist in the database yet.
+
+        Only the field `uid` is provided when using write HTTP methods.
+
+        Used by ModelSerializer(s) having one or more nested relations with Entity,
+        and having the constraint to ensure that video instances exist before
+        they can be saved properly.
+      properties:
+        uid:
+          type: string
+          pattern: yt:[A-Za-z0-9-_]{11}$
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - metadata
+      - type
+      - uid
+    RelatedEntityRequest:
+      type: object
+      description: |-
+        An Entity serializer that will create the Entity object on validation
+        if it does not exist in the database yet.
+
+        Only the field `uid` is provided when using write HTTP methods.
+
+        Used by ModelSerializer(s) having one or more nested relations with Entity,
+        and having the constraint to ensure that video instances exist before
+        they can be saved properly.
+      properties:
+        uid:
+          type: string
+          minLength: 1
+          pattern: yt:[A-Za-z0-9-_]{11}$
+      required:
+      - uid
     RelatedVideo:
       type: object
       description: |-
@@ -2878,35 +2842,30 @@ components:
         name:
           type: string
           readOnly: true
-          description: Video Title
+          description: Video title
         description:
           type: string
           readOnly: true
           nullable: true
-          description: Video Description from the web page
+          description: Video description, from YouTube
         publication_date:
           type: string
           format: date
           readOnly: true
           nullable: true
-          description: Video publication date
         views:
           type: integer
           readOnly: true
           nullable: true
-          description: Number of views
         uploader:
           type: string
           readOnly: true
           nullable: true
-          description: Name of the channel (uploader)
+          description: Name of the channel on YouTube
         language:
+          type: string
           readOnly: true
           nullable: true
-          description: Language of the video
-          oneOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/NullEnum'
         rating_n_ratings:
           type: integer
           readOnly: true
@@ -2918,8 +2877,8 @@ components:
           description: Total number of certified contributors who rated the video
         duration:
           type: integer
-          nullable: true
           readOnly: true
+          nullable: true
         video_id:
           type: string
           pattern: ^[A-Za-z0-9-_]{11}$
@@ -3647,35 +3606,30 @@ components:
         name:
           type: string
           readOnly: true
-          description: Video Title
+          description: Video title
         description:
           type: string
           readOnly: true
           nullable: true
-          description: Video Description from the web page
+          description: Video description, from YouTube
         publication_date:
           type: string
           format: date
           readOnly: true
           nullable: true
-          description: Video publication date
         views:
           type: integer
           readOnly: true
           nullable: true
-          description: Number of views
         uploader:
           type: string
           readOnly: true
           nullable: true
-          description: Name of the channel (uploader)
+          description: Name of the channel on YouTube
         language:
+          type: string
           readOnly: true
           nullable: true
-          description: Language of the video
-          oneOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/NullEnum'
         rating_n_ratings:
           type: integer
           readOnly: true
@@ -3687,13 +3641,12 @@ components:
           description: Total number of certified contributors who rated the video
         duration:
           type: integer
-          nullable: true
           readOnly: true
+          nullable: true
         video_id:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
       required:
       - description
       - duration
@@ -3728,7 +3681,6 @@ components:
           minLength: 1
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
       required:
       - video_id
     VideoSerializerWithCriteria:
@@ -3741,36 +3693,31 @@ components:
           maxLength: 144
         name:
           type: string
-          description: Video Title
-          maxLength: 1000
+          readOnly: true
+          description: Video title
         description:
           type: string
+          readOnly: true
           nullable: true
-          description: Video Description from the web page
+          description: Video description, from YouTube
         publication_date:
           type: string
           format: date
+          readOnly: true
           nullable: true
-          description: Video publication date
         views:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          readOnly: true
           nullable: true
-          description: Number of views
         uploader:
           type: string
+          readOnly: true
           nullable: true
-          description: Name of the channel (uploader)
-          maxLength: 1000
+          description: Name of the channel on YouTube
         language:
+          type: string
+          readOnly: true
           nullable: true
-          description: Language of the video
-          oneOf:
-          - $ref: '#/components/schemas/LanguageEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
         rating_n_ratings:
           type: integer
           maximum: 2147483647
@@ -3784,22 +3731,27 @@ components:
           description: Total number of certified contributors who rated the video
         duration:
           type: integer
-          nullable: true
           readOnly: true
+          nullable: true
         video_id:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
-          maxLength: 20
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/EntityCriteriaScore'
       required:
       - criteria_scores
+      - description
       - duration
+      - language
+      - name
+      - publication_date
       - uid
+      - uploader
       - video_id
+      - views
   securitySchemes:
     oauth2:
       type: oauth2

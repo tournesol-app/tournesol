@@ -17,8 +17,9 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import VideoSelector, {
   VideoSelectorValue,
 } from 'src/features/video_selector/VideoSelector';
-import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { idFromUid } from 'src/utils/video';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -72,6 +73,7 @@ const Comparison = () => {
   const history = useHistory();
   const location = useLocation();
   const { showSuccessAlert } = useNotifications();
+  const { name: pollName } = useCurrentPoll();
 
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -134,15 +136,9 @@ const Comparison = () => {
   useEffect(() => {
     setIsLoading(true);
     setInitialComparison(null);
-    if (selectorA.videoId !== videoA) {
-      setSelectorA({ videoId: videoA, rating: null });
-    }
-    if (selectorB.videoId !== videoB) {
-      setSelectorB({ videoId: videoB, rating: null });
-    }
     if (videoA && videoB)
       UsersService.usersMeComparisonsRetrieve({
-        pollName: YOUTUBE_POLL_NAME,
+        pollName,
         uidA: UID_YT_NAMESPACE + videoA,
         uidB: UID_YT_NAMESPACE + videoB,
       })
@@ -155,22 +151,20 @@ const Comparison = () => {
           setInitialComparison(null);
           setIsLoading(false);
         });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoA, videoB]);
+  }, [videoA, videoB, pollName]);
 
   const onSubmitComparison = async (c: ComparisonRequest) => {
     if (initialComparison) {
       const { entity_a, entity_b, criteria_scores, duration_ms } = c;
       await UsersService.usersMeComparisonsUpdate({
-        pollName: YOUTUBE_POLL_NAME,
-        uidA: UID_YT_NAMESPACE + entity_a.video_id,
-        uidB: UID_YT_NAMESPACE + entity_b.video_id,
+        pollName,
+        uidA: entity_a.uid,
+        uidB: entity_b.uid,
         requestBody: { criteria_scores, duration_ms },
       });
     } else {
       await UsersService.usersMeComparisonsCreate({
-        pollName: YOUTUBE_POLL_NAME,
+        pollName,
         requestBody: c,
       });
       setInitialComparison(c);
@@ -256,8 +250,8 @@ const Comparison = () => {
             <ComparisonSliders
               submit={onSubmitComparison}
               initialComparison={initialComparison}
-              videoA={videoA}
-              videoB={videoB}
+              uidA={uidA}
+              uidB={uidB}
               isComparisonPublic={
                 selectorA.rating.is_public && selectorB.rating.is_public
               }

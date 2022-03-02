@@ -6,10 +6,12 @@ import { ContentHeader, Pagination } from 'src/components';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
-import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 function ComparisonsPage() {
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
   const [comparisons, setComparisons]: [
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
@@ -31,13 +33,13 @@ function ComparisonsPage() {
     const process = async () => {
       const comparisonsRequest = await (filteredVideo
         ? UsersService.usersMeComparisonsListFiltered({
-            pollName: YOUTUBE_POLL_NAME,
+            pollName,
             uid: UID_YT_NAMESPACE + filteredVideo,
             limit,
             offset,
           })
         : UsersService.usersMeComparisonsList({
-            pollName: YOUTUBE_POLL_NAME,
+            pollName,
             limit,
             offset,
           }));

@@ -5,6 +5,7 @@ import re
 
 from django.conf import settings
 from django.db.models import Case, F, Sum, When
+from django.shortcuts import get_object_or_404
 from django.utils import dateparse, timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -15,6 +16,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
 
 from tournesol.entities import VideoEntity
+from tournesol.entities.base import UID_DELIMITER
+from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models import Entity
 from tournesol.serializers.entity import VideoSerializer, VideoSerializerWithCriteria
 from tournesol.throttling import (
@@ -78,7 +81,7 @@ class VideoViewSet(
     mixins.ListModelMixin,
     GenericViewSet,
 ):
-    queryset = Entity.objects.all()
+    queryset = Entity.objects.filter(type=TYPE_VIDEO)
     pagination_class = LimitOffsetPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -105,6 +108,14 @@ class VideoViewSet(
             raise ValueError(f'Failed to parse "{value}" as datetime')
         return parsed
 
+    def get_object(self):
+        obj = get_object_or_404(
+            self.queryset,
+            uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
+        )
+        self.check_object_permissions(self.request, obj)
+        return obj
+
     def get_queryset(self):
         if self.action != "list":
             return self.queryset
@@ -114,7 +125,7 @@ class VideoViewSet(
 
         uploader = request.query_params.get("uploader")
         if uploader:
-            queryset = queryset.filter(uploader=uploader)
+            queryset = queryset.filter(metadata__uploader=uploader)
 
         search = request.query_params.get("search")
         if search:
@@ -137,7 +148,7 @@ class VideoViewSet(
 
         language = request.query_params.get("language")
         if language:
-            queryset = queryset.filter(language__in=language.split(","))
+            queryset = queryset.filter(metadata__language__in=language.split(","))
 
         criteria_cases = [
             When(
@@ -166,7 +177,7 @@ class VideoViewSet(
                 rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
             ).filter(total_score__gt=0)
         return queryset.prefetch_related("criteria_scores").order_by(
-            "-total_score", "-publication_date"
+            "-total_score", "-metadata__publication_date"
         )
 
     def get_serializer_class(self):

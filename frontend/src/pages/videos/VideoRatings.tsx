@@ -16,8 +16,10 @@ import {
   RatingsContext,
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
+import { videoFromRelatedEntity } from 'src/utils/entity';
 import { scrollToTop } from 'src/utils/ui';
-import { YOUTUBE_POLL_NAME } from '../../utils/constants';
+import { idFromUid } from 'src/utils/video';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
   const { t } = useTranslation();
@@ -47,6 +49,7 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
 };
 
 const VideoRatingsPage = () => {
+  const { name: pollName } = useCurrentPoll();
   const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
@@ -70,24 +73,27 @@ const VideoRatingsPage = () => {
     const isPublicParam = urlParams.get('isPublic');
     const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
     const response = await UsersService.usersMeContributorRatingsList({
-      pollName: YOUTUBE_POLL_NAME,
+      pollName,
       limit,
       offset,
       isPublic,
     });
     setRatings(response);
     setIsLoading(false);
-  }, [offset, location.search]);
+  }, [offset, location.search, pollName]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const videos = (ratings.results || []).map(
-    (rating: ContributorRating) => rating.video
+  const entities = (ratings.results || []).map(
+    (rating: ContributorRating) => rating.entity
   );
   const idToRating = Object.fromEntries(
-    (ratings.results || []).map((rating) => [rating.video.video_id, rating])
+    (ratings.results || []).map((rating) => [
+      idFromUid(rating.entity.uid),
+      rating,
+    ])
   );
   const getRating = (videoId: string) => idToRating[videoId];
 
@@ -95,9 +101,7 @@ const VideoRatingsPage = () => {
     if (newRating) {
       setRatings((prevRatings) => {
         const updatedResults = (prevRatings.results || []).map((rating) =>
-          rating.video.video_id === newRating.video.video_id
-            ? newRating
-            : rating
+          rating.entity.uid === newRating.entity.uid ? newRating : rating
         );
         return { ...prevRatings, results: updatedResults };
       });
@@ -128,7 +132,7 @@ const VideoRatingsPage = () => {
         </Box>
         <LoaderWrapper isLoading={isLoading}>
           <VideoList
-            videos={videos}
+            videos={entities.map((ent) => videoFromRelatedEntity(ent))}
             settings={[PublicStatusAction]}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
           />

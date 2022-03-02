@@ -39,8 +39,8 @@ class VideoRateLaterApi(TestCase):
         user1 = UserFactory(username=self._user)
         user2 = UserFactory(username=self._other)
 
-        video1 = VideoFactory(name=self._users_video)
-        video2 = VideoFactory(name=self._others_video)
+        video1 = VideoFactory(metadata__name=self._users_video)
+        video2 = VideoFactory(metadata__name=self._others_video)
 
         VideoRateLaterFactory(user=user1, video=video1)
         VideoRateLaterFactory(user=user2, video=video2)
@@ -118,7 +118,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(name=self._others_video).video_id}}
+        data = {"video": {"video_id": Entity.objects.get(metadata__name=self._others_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -145,7 +145,7 @@ class VideoRateLaterApi(TestCase):
             data,
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
 
     def test_authenticated_cant_create_twice(self):
         """
@@ -155,7 +155,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(name=self._users_video).video_id}}
+        data = {"video": {"video_id": Entity.objects.get(metadata__name=self._users_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -175,7 +175,7 @@ class VideoRateLaterApi(TestCase):
 
         user = User.objects.get(username=self._user)
         other = User.objects.get(username=self._other)
-        data = {"video": {"video_id": Entity.objects.get(name=self._users_video).video_id}}
+        data = {"video": {"video_id": Entity.objects.get(metadata__name=self._users_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -205,7 +205,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        video = Entity.objects.get(name=self._users_video)
+        video = Entity.objects.get(metadata__name=self._users_video)
 
         client.force_authenticate(user=user)
 
@@ -232,7 +232,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        video = Entity.objects.get(name=self._users_video)
+        video = Entity.objects.get(metadata__name=self._users_video)
 
         client.force_authenticate(user=user)
 

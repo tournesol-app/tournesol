@@ -26,8 +26,10 @@ class Command(BaseCommand):
     help = 'Runs the ml'
 
     def handle(self, *args, **options):
-        comparison_data = fetch_data()
+        comparison_data_trusted = fetch_data()
+        comparison_data_not_trusted = fetch_data(trusted=False)
         if TOURNESOL_DEV:
-            run_experiment(comparison_data)
+            run_experiment(comparison_data_trusted)
+            run_experiment(comparison_data_not_trusted)
         else:
             logging.error('You must turn TOURNESOL_DEV to 1 to run this')

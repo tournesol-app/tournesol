@@ -1,5 +1,10 @@
 import React from 'react';
-import { Video, VideoSerializerWithCriteria } from 'src/services/openapi';
+import {
+  EntityNoExtraField,
+  RelatedEntity,
+  Video,
+  VideoSerializerWithCriteria,
+} from 'src/services/openapi';
 
 export type JSONValue =
   | string
@@ -17,4 +22,5 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
+export type RelatedEntityObject = EntityNoExtraField | RelatedEntity;
 export type VideoObject = Video | VideoSerializerWithCriteria;

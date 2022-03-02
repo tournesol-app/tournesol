@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
 from tournesol.models import Comparison, ComparisonCriteriaScore, Entity
-from tournesol.serializers.entity import RelatedVideoSerializer, VideoSerializer
+from tournesol.serializers.entity import RelatedEntitySerializer
 
 
 class ComparisonCriteriaScoreSerializer(ModelSerializer):
@@ -31,12 +31,13 @@ class ComparisonSerializerMixin:
 
     def validate_criteria_scores(self, value):
         current_poll = self.context["poll"]
-        missing_criterias = (
-            set(current_poll.required_criterias_list)
-            - set(score["criteria"] for score in value)
+        missing_criterias = set(current_poll.required_criterias_list) - set(
+            score["criteria"] for score in value
         )
         if missing_criterias:
-            raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
+            raise ValidationError(
+                f"Missing required criteria: {','.join(missing_criterias)}"
+            )
         return value
 
 
@@ -50,8 +51,8 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
     Use `ComparisonUpdateSerializer` for the update operation.
     """
 
-    entity_a = RelatedVideoSerializer(source="entity_1")
-    entity_b = RelatedVideoSerializer(source="entity_2")
+    entity_a = RelatedEntitySerializer(source="entity_1")
+    entity_b = RelatedEntitySerializer(source="entity_2")
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -76,18 +77,18 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        video_id_1 = validated_data.pop("entity_1").get("video_id")
-        video_id_2 = validated_data.pop("entity_2").get("video_id")
-        # the validation performed by the RelatedVideoSerializer guarantees
-        # that the videos submitted exist in the database
-        video_1 = Entity.objects.get(video_id=video_id_1)
-        video_2 = Entity.objects.get(video_id=video_id_2)
+        uid_1 = validated_data.pop("entity_1").get("uid")
+        uid_2 = validated_data.pop("entity_2").get("uid")
+        # The validation performed by the `RelatedEntitySerializer` guarantees
+        # that the submitted UIDs exist in the database.
+        entity_1 = Entity.objects.get(uid=uid_1)
+        entity_2 = Entity.objects.get(uid=uid_2)
         criteria_scores = validated_data.pop("criteria_scores")
 
         comparison = Comparison.objects.create(
             poll=self.context.get("poll"),
-            entity_1=video_1,
-            entity_2=video_2,
+            entity_1=entity_1,
+            entity_2=entity_2,
             **validated_data,
         )
 
@@ -110,8 +111,8 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
     """
 
     criteria_scores = ComparisonCriteriaScoreSerializer(many=True)
-    entity_a = VideoSerializer(source="entity_1", read_only=True)
-    entity_b = VideoSerializer(source="entity_2", read_only=True)
+    entity_a = RelatedEntitySerializer(source="entity_1", read_only=True)
+    entity_b = RelatedEntitySerializer(source="entity_2", read_only=True)
 
     class Meta:
         model = Comparison

@@ -24,27 +24,23 @@ class TwitterBotAdmin(admin.ModelAdmin):
         "bot_name",
         "get_video_link",
     )
-    search_fields = ("video__video_id", "video__name", "video__uploader")
+    search_fields = ("video__uid", "video__metadata__name", "video__metadata__uploader")
     list_filter = ["bot_name"]
 
     @staticmethod
-    @admin.display(ordering="video__name", description="Video name")
+    @admin.display(ordering="video__metadata__name", description="Video name")
     def get_video_name(obj):
         """Returns video name"""
-
-        return obj.video.name
+        return obj.video.metadata.get("name")
 
     @staticmethod
-    @admin.display(ordering="video__uploader", description="Video uploader")
+    @admin.display(ordering="video__metadata__uploader", description="Video uploader")
     def get_video_uploader(obj):
         """Returns video uploader"""
-
-        return obj.video.uploader
+        return obj.video.metadata.get("uploader")
 
     @staticmethod
-    @admin.display(
-        ordering="video__link_to_youtube", description="Video link to Youtube"
-    )
+    @admin.display(description="Video link to Youtube")
     def get_video_link(obj):
         """Returns video link to Youtube"""
 
