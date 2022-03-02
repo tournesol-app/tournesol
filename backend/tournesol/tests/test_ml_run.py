@@ -14,6 +14,7 @@ from tournesol.models import (
 from .factories.comparison import ComparisonCriteriaScoreFactory, VideoFactory
 from .factories.poll import PollWithCriterasFactory
 
+
 class TestMlTrain(TestCase):
     def setUp(self) -> None:
         EmailDomain.objects.create(
