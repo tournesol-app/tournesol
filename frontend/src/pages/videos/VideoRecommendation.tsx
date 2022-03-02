@@ -16,6 +16,7 @@ import {
   loadRecommendationsLanguages,
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 function VideoRecommendationPage() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ function VideoRecommendationPage() {
   const offset = Number(searchParams.get('offset') || 0);
   const videoCount = videos.count || 0;
   const locationSearchRef = useRef<string>();
+  const { criterias } = useCurrentPoll();
 
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
@@ -65,11 +67,11 @@ function VideoRecommendationPage() {
 
     const fetchVideos = async () => {
       setIsLoading(true);
-      setVideos(await getRecommendedVideos(location.search));
+      setVideos(await getRecommendedVideos(location.search, criterias));
       setIsLoading(false);
     };
     fetchVideos();
-  }, [location.search, history, searchParams]);
+  }, [location.search, history, searchParams, criterias]);
 
   return (
     <>

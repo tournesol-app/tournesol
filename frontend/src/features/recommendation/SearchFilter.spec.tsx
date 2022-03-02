@@ -12,30 +12,57 @@ import {
   screen,
   fireEvent,
   queryAllByTestId,
+  act,
 } from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { loadRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
+import { PollProvider } from 'src/hooks/useCurrentPoll';
+import { PollsService } from 'src/services/openapi';
 
 import SearchFilter from './SearchFilter';
 
 describe('Filters feature', () => {
   let pushSpy = null;
-  beforeEach(() => {
+  beforeEach(async () => {
     // Used to spy on URL parameters updates
     const history = createMemoryHistory();
     pushSpy = jest.spyOn(history, 'push');
+    jest.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
+      name: 'videos',
+      criterias: [
+        {
+          name: 'criteria1',
+          label: 'Criteria 1 Label',
+          optional: false,
+        },
+        {
+          name: 'criteria2',
+          label: 'Criteria 2 Label',
+          optional: true,
+        },
+        {
+          name: 'criteria3',
+          label: 'Criteria 3 Label',
+          optional: true,
+        },
+      ],
+    }));
 
     // Some context is needed by the component SearchFilter
-    render(
-      <Router history={history}>
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>
-            <SearchFilter />
-          </ThemeProvider>
-        </StyledEngineProvider>
-      </Router>
-    );
+    await act(async () => {
+      render(
+        <Router history={history}>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+              <PollProvider>
+                <SearchFilter />
+              </PollProvider>
+            </ThemeProvider>
+          </StyledEngineProvider>
+        </Router>
+      );
+    });
   });
 
   function clickOnShowMore(wasClosed = true) {
@@ -72,7 +99,7 @@ describe('Filters feature', () => {
 
     // Check criteria filters presence
     // 1 slider per criteria, "Neutral" position by default
-    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(9);
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(3);
   }
 
   // Click on a date filter checkbox and verify the resulting URL parameters

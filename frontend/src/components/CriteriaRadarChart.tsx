@@ -7,8 +7,7 @@ import {
   PolarRadiusAxis,
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
-import { getCriteriaName } from 'src/utils/constants';
-import { useTranslation } from 'react-i18next';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const RADAR_CHART_CRITERIA_SCORE_MIN = -1;
 const RADAR_CHART_CRITERIA_SCORE_MAX = 1;
@@ -23,7 +22,7 @@ const between = (a: number, b: number, x: number | undefined): number => {
 };
 
 const CriteriaRadarChart = ({ video }: Props) => {
-  const { t } = useTranslation();
+  const { getCriteriaLabel } = useCurrentPoll();
 
   const renderCustomAxisTick = ({
     x,
@@ -51,7 +50,7 @@ const CriteriaRadarChart = ({ video }: Props) => {
           height="28"
           href={`/svg/${payload.value}.svg`}
         />
-        <title>{getCriteriaName(t, payload.value)}</title>
+        <title>{getCriteriaLabel(payload.value)}</title>
       </svg>
     );
   };

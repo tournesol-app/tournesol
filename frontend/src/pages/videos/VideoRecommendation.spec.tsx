@@ -49,7 +49,8 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('fr,en');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
-      '?language=fr%2Cen'
+      '?language=fr%2Cen',
+      expect.anything()
     );
   });
 
@@ -63,7 +64,10 @@ describe('VideoRecommendationPage', () => {
     });
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
-    expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith('?language=de');
+    expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      '?language=de',
+      expect.anything()
+    );
   });
 
   it("doesn't change the languages already in the query string", async () => {
@@ -76,6 +80,9 @@ describe('VideoRecommendationPage', () => {
     expect(pushSpy).not.toHaveBeenCalled();
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
-    expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith('?language=fr');
+    expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      '?language=fr',
+      expect.anything()
+    );
   });
 });

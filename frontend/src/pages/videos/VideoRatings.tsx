@@ -16,10 +16,10 @@ import {
   RatingsContext,
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
-import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { videoFromRelatedEntity } from 'src/utils/entity';
 import { scrollToTop } from 'src/utils/ui';
 import { idFromUid } from 'src/utils/video';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
   const { t } = useTranslation();
@@ -49,6 +49,7 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
 };
 
 const VideoRatingsPage = () => {
+  const { name: pollName } = useCurrentPoll();
   const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
@@ -72,14 +73,14 @@ const VideoRatingsPage = () => {
     const isPublicParam = urlParams.get('isPublic');
     const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
     const response = await UsersService.usersMeContributorRatingsList({
-      pollName: YOUTUBE_POLL_NAME,
+      pollName,
       limit,
       offset,
       isPublic,
     });
     setRatings(response);
     setIsLoading(false);
-  }, [offset, location.search]);
+  }, [offset, location.search, pollName]);
 
   useEffect(() => {
     loadData();

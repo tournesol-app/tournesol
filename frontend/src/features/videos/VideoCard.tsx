@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import { Warning as WarningIcon } from '@mui/icons-material';
 
-import { getCriteriaName } from 'src/utils/constants';
 import { ActionList, VideoObject } from 'src/utils/types';
 import { useVideoMetadata } from './VideoApi';
 import {
@@ -28,6 +27,7 @@ import {
   convertDurationToClockDuration,
   videoIdFromEntity,
 } from 'src/utils/video';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const useStyles = makeStyles((theme) => ({
   youtube_complements: {
@@ -189,6 +189,7 @@ function VideoCard({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
+  const { getCriteriaLabel } = useCurrentPoll();
 
   const videoId = videoIdFromEntity(video);
   let total_score = 0;
@@ -394,13 +395,13 @@ function VideoCard({
                 <img
                   src={`/svg/${max_criteria}.svg`}
                   alt={max_criteria}
-                  title={getCriteriaName(t, max_criteria)}
+                  title={getCriteriaLabel(max_criteria)}
                 />
                 <span>{t('video.criteriaRatedLow')}</span>
                 <img
                   src={`/svg/${min_criteria}.svg`}
                   alt={min_criteria}
-                  title={getCriteriaName(t, min_criteria)}
+                  title={getCriteriaLabel(min_criteria)}
                 />
               </Box>
             )}

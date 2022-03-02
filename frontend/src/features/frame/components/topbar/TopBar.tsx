@@ -15,6 +15,7 @@ import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import AccountInfo from './AccountInfo';
 import { useTheme } from '@mui/material';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 export const topBarHeight = 80;
 
@@ -104,29 +105,32 @@ const Search = () => {
   };
 
   return (
-    <Grid item md={4}>
-      <form onSubmit={onSubmit} className={classes.search}>
-        <input
-          type="text"
-          className={classes.searchTerm}
-          id="searchInput"
-          defaultValue={search}
-          onChange={(e) => setSearch(e.target.value)}
-        ></input>
-        <button type="submit" className={classes.searchButton}>
-          <img src="/svg/Search.svg" alt={t('topbar.search')} />
-        </button>
-      </form>
-    </Grid>
+    <form onSubmit={onSubmit} className={classes.search}>
+      <input
+        type="text"
+        className={classes.searchTerm}
+        id="searchInput"
+        defaultValue={search}
+        onChange={(e) => setSearch(e.target.value)}
+      ></input>
+      <button type="submit" className={classes.searchButton}>
+        <img src="/svg/Search.svg" alt={t('topbar.search')} />
+      </button>
+    </form>
   );
 };
 
 const TopBar = () => {
   const theme = useTheme();
+  const { options } = useCurrentPoll();
+
   return (
     <AppBar
       position="sticky"
       sx={{
+        background: options?.topBarBackground
+          ? options.topBarBackground
+          : undefined,
         [theme.breakpoints.up('md')]: { zIndex: theme.zIndex.drawer + 1 },
       }}
     >
@@ -142,7 +146,9 @@ const TopBar = () => {
         <Grid container sx={{ width: '100%' }}>
           <Logo />
           <Hidden mdDown>
-            <Search />
+            <Grid item md={4}>
+              {options?.withSearchBar && <Search />}
+            </Grid>
           </Hidden>
           <AccountInfo />
         </Grid>

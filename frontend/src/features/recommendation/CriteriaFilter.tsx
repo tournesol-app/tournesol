@@ -6,8 +6,8 @@ import { Grid, Typography, Slider, Tooltip } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 
-import { mainCriterias, getCriteriaName } from 'src/utils/constants';
 import { TitledSection } from 'src/components';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const useStyles = makeStyles(() => ({
   featuresContainer: {
@@ -78,6 +78,7 @@ function CriteriaFilter({
   const Location = useLocation();
   const searchParams = new URLSearchParams(Location.search);
   const marks = [0, 25, 50, 75, 100].map((value) => ({ value }));
+  const { criterias } = useCurrentPoll();
 
   function valuetoText(value: number) {
     if (value == 0) {
@@ -96,12 +97,12 @@ function CriteriaFilter({
   return (
     <TitledSection title={t('filter.criteria')}>
       <Grid container spacing={1}>
-        {mainCriterias.map((criteria) => {
-          const criteriaName = getCriteriaName(t, criteria);
+        {criterias.map((criteria) => {
+          const criteriaLabel = criteria.label;
           return (
-            <Grid item xs={12} sm={6} key={criteria}>
+            <Grid item xs={12} sm={6} key={criteria.name}>
               <div
-                id={`id_container_feature_${criteria}`}
+                id={`id_container_feature_${criteria.name}`}
                 className={classes.featuresContainer}
               >
                 <div className={classes.featureNameDisplay}>
@@ -115,7 +116,10 @@ function CriteriaFilter({
                   >
                     <img
                       className={classes.criteria_img}
-                      src={`/svg/${criteria}.svg`}
+                      src={`/svg/${criteria.name}.svg`}
+                      onError={(e) => {
+                        e.currentTarget.src = '/svg/LogoSmall.svg';
+                      }}
                       width="16px"
                     />
                     <Typography
@@ -127,7 +131,7 @@ function CriteriaFilter({
                         textOverflow: 'ellipsis',
                       }}
                     >
-                      <span title={criteriaName}>{criteriaName}</span>
+                      <span title={criteriaLabel}>{criteriaLabel}</span>
                     </Typography>
                   </Grid>
                 </div>
@@ -152,7 +156,7 @@ function CriteriaFilter({
                       }}
                     >
                       {valuetoText(
-                        parseInt(searchParams.get(criteria) || '50')
+                        parseInt(searchParams.get(criteria.name) || '50')
                       )}
                     </Typography>
                   </Grid>
@@ -165,9 +169,9 @@ function CriteriaFilter({
                     container
                   >
                     <CustomSlider
-                      name={criteria}
+                      name={criteria.name}
                       defaultValue={parseInt(
-                        searchParams.get(criteria) || '50'
+                        searchParams.get(criteria.name) || '50'
                       )}
                       step={25}
                       min={0}
@@ -176,7 +180,7 @@ function CriteriaFilter({
                       valueLabelDisplay="auto"
                       valueLabelFormat={valuetoText}
                       onChangeCommitted={(e, value) =>
-                        setFilter(criteria, value.toString())
+                        setFilter(criteria.name, value.toString())
                       }
                       components={{
                         ValueLabel: ValueLabelComponent,
