@@ -51,7 +51,7 @@ describe('Comparison page', () => {
         .should('have.length', 2);
 
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
-        .type(videoAUrl.split('?v=')[1]);
+        .type(videoAUrl.split('?v=')[1], {delay: 0});
 
       // the video title, upload date, and the number of views must be displayed
       cy.get('div[data-testid=video-card-info]').first().within(() => {
@@ -62,6 +62,38 @@ describe('Comparison page', () => {
         cy.contains('2021-11-22', {matchCase: false}).should('be.visible');
         cy.contains('views', {matchCase: false}).should('be.visible');
       });
+    })
+  });
+
+  describe('submit a comparison', () => {
+    const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
+    const videoBUrl = 'https://www.youtube.com/watch?v=6jK9bFWE--g';
+
+    it('with only the main criteria', () => {
+      cy.visit('/comparison');
+
+      cy.focused().type('user1');
+      cy.get('input[name="password"]').click()
+        .type('tournesol').type('{enter}');
+
+      cy.get('input[placeholder="Paste URL or Video ID"]').first()
+        .type(videoAUrl.split('?v=')[1], {delay: 0});
+
+      // TODO: click on the New Video button instead to guarantee
+      //       the comparison doesn't already exist
+      cy.get('input[placeholder="Paste URL or Video ID"]').last()
+        .type(videoBUrl.split('?v=')[1], {delay: 0});
+
+      cy.contains('should be largely recommended', {matchCase: false})
+        .should('be.visible');
+
+      cy.contains('submit', {matchCase: false})
+        .should('be.visible');
+
+      cy.get('button#expert_submit_btn').click();
+
+      cy.contains('edit comparison', {matchCase: false})
+        .should('be.visible');
     })
   });
 });
