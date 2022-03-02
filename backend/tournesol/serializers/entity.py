@@ -223,14 +223,14 @@ class RelatedEntitySerializer(EntitySerializer):
         if len(split_uid) <= 1 or not split_uid[1]:
             raise ValidationError("Malformed `uid`.")
 
-        poll = self.context.get("poll")
-        if poll:
-            regex = poll.entity_cls.get_uid_regex(split_uid[0])
-            if not regex:
-                raise ValidationError(f"Unknown `uid namespace: `{split_uid[0]}")
+        poll = self.context["poll"]
+        regex = poll.entity_cls.get_uid_regex(split_uid[0])
 
-            if not re.match(regex, value):
-                raise ValidationError("This value does not match the required pattern.")
+        if not regex:
+            raise ValidationError(f"Unknown `uid` namespace: {split_uid[0]}")
+
+        if not re.match(regex, value):
+            raise ValidationError("This value does not match the required pattern.")
 
         return value
 
