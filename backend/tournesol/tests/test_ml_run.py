@@ -3,9 +3,16 @@ from django.test import TestCase
 
 from core.models import EmailDomain
 from core.tests.factories.user import UserFactory
-from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, EntityCriteriaScore
+from tournesol.models import (
+    ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    EntityCriteriaScore,
+    Poll,
+)
 
 from .factories.comparison import ComparisonCriteriaScoreFactory, VideoFactory
+from .factories.poll import PollWithCriteriasFactory
 
 
 class TestMlTrain(TestCase):
@@ -24,6 +31,12 @@ class TestMlTrain(TestCase):
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
 
+        self.poll = PollWithCriteriasFactory.create()
+
+        # Comparison on custom poll
+        ComparisonCriteriaScoreFactory.create_batch(10, comparison__user=self.user1, comparison__poll=self.poll)
+
+        # Comparison on default poll
         ComparisonCriteriaScoreFactory(comparison__user=self.user1, comparison__entity_1=self.video1, comparison__entity_2=self.video2, score=10)
         ComparisonCriteriaScoreFactory(comparison__user=self.user2, comparison__entity_1=self.video1, comparison__entity_2=self.video2, score=10)
 
@@ -40,8 +53,22 @@ class TestMlTrain(TestCase):
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         call_command("ml_train")
-        self.assertEqual(EntityCriteriaScore.objects.count(), 2)
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 24)
+        self.assertEqual(EntityCriteriaScore.objects.count(), 22)
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 44)
+
+    def test_ml_on_multiple_poll(self):
+
+        self.assertEqual(EntityCriteriaScore.objects.count(), 0)
+        self.assertEqual(ComparisonCriteriaScore.objects.exclude(comparison__poll=self.poll).count(),12)
+        self.assertEqual(ComparisonCriteriaScore.objects.filter(comparison__poll=self.poll).count(),10)
+        self.assertEqual(len(self.poll.criterias_list),1)
+
+        call_command("ml_train")
+
+        self.assertEqual(EntityCriteriaScore.objects.count(), 22)
+        self.assertEqual(EntityCriteriaScore.objects.filter(poll=self.poll).count(),20)
+        self.assertEqual(EntityCriteriaScore.objects.filter(poll=Poll.default_poll()).count(),2)
+
 
     def test_ml_train_skip_untrusted(self):
         # Test on trusted users only
@@ -50,8 +77,8 @@ class TestMlTrain(TestCase):
 
         call_command("ml_train", "--skip-untrusted")
 
-        self.assertEqual(EntityCriteriaScore.objects.count(), 2)
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
+        self.assertEqual(EntityCriteriaScore.objects.count(), 22)
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 24)
 
         contributor_rating_user_1 = ContributorRating.objects.get(user=self.user1, entity=self.video1)
         contributor_rating_user_2 = ContributorRating.objects.get(user=self.user2, entity=self.video1)
@@ -75,7 +102,7 @@ class TestMlTrain(TestCase):
         self.assertEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating=contributor_rating_user_2).score,contributor_rating_score_user_2)
 
 
-        self.assertEqual(EntityCriteriaScore.objects.count(), 2)
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 24)
+        self.assertEqual(EntityCriteriaScore.objects.count(), 22)
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 44)
         self.assertLess(EntityCriteriaScore.objects.get(entity_id=self.video1.id).score, 0)
         self.assertGreater(EntityCriteriaScore.objects.get(entity_id=self.video2.id).score, 0)
