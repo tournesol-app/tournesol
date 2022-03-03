@@ -67,7 +67,7 @@ def _distribute_data_handler(arr, user_ids, vid_vidx, first_of_each, device="cpu
     nodes_dic = {}
 
     for i, id in enumerate(user_ids):
-        node_arr = arr[first_of_each[i] : first_of_each[i + 1], :]
+        node_arr = arr[first_of_each[i]: first_of_each[i + 1], :]
 
         batch1 = one_hot_vids(vid_vidx, node_arr[:, 1], device)
         batch2 = one_hot_vids(vid_vidx, node_arr[:, 2], device)

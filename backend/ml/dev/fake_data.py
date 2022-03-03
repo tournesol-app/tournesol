@@ -131,11 +131,8 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
     return all_comps
 
 
-def generate_data(
-        nb_vids, nb_users, vids_per_user,
-        dens=0.8, scale=0.5, noise=0.1
-    ):
-    """ Generates fake input data for testing
+def generate_data(nb_vids, nb_users, vids_per_user, dens=0.8, scale=0.5, noise=0.1):
+    """Generates fake input data for testing
 
     nb_vids (int): number of videos
     nb_user (int): number of users
@@ -157,7 +154,7 @@ def generate_data(
     s_params = _fake_s(nb_users)
     distr = [vids_per_user] * nb_users
     glob = _fake_glob_scores(nb_vids, scale=scale)
-    logging.info(f'{nb_vids} global scores generated')
+    logging.info(f"{nb_vids} global scores generated")
     loc = _fake_loc_scores(distr, glob, noise)
     logging.info(f"{vids_per_user} local scores generated per user")
     comp = _fake_comparisons(loc, s_params, dens)
