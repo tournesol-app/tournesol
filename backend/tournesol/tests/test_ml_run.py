@@ -12,7 +12,7 @@ from tournesol.models import (
 )
 
 from .factories.comparison import ComparisonCriteriaScoreFactory, VideoFactory
-from .factories.poll import PollWithCriterasFactory
+from .factories.poll import PollWithCriteriasFactory
 
 
 class TestMlTrain(TestCase):
@@ -31,7 +31,7 @@ class TestMlTrain(TestCase):
         self.video1 = VideoFactory()
         self.video2 = VideoFactory()
 
-        self.poll = PollWithCriterasFactory.create()
+        self.poll = PollWithCriteriasFactory.create()
 
         # Comparison on custom poll
         ComparisonCriteriaScoreFactory.create_batch(10, comparison__user=self.user1, comparison__poll=self.poll)

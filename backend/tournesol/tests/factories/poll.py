@@ -1,29 +1,37 @@
 import factory
-from factory import fuzzy
+from factory.django import DjangoModelFactory
 
 from tournesol.models import Criteria, CriteriaRank, Poll
 
 
-class PollFactory(factory.django.DjangoModelFactory):
-
+class PollFactory(DjangoModelFactory):
     class Meta:
         model = Poll
 
     name = factory.Sequence(lambda n: "Poll #%s" % n)
-    entity_type = "Video"
+    entity_type = "video"
 
 
-class CriteriaRankFactory(factory.django.DjangoModelFactory):
+class CriteriaFactory(DjangoModelFactory):
+    class Meta:
+        model = Criteria
+        django_get_or_create = ("name",)
+
+    name = "better_habits"
+
+
+class CriteriaRankFactory(DjangoModelFactory):
     class Meta:
         model = CriteriaRank
 
-    criteria = factory.LazyAttribute(lambda x:  Criteria.objects.get_or_create(name="better_habits")[0])
+    criteria = factory.SubFactory(CriteriaFactory)
     poll = factory.SubFactory(PollFactory)
     rank = 0
     optional = False
 
-class PollWithCriterasFactory(PollFactory):
-   criteras = factory.RelatedFactory(
+
+class PollWithCriteriasFactory(PollFactory):
+   criterias = factory.RelatedFactory(
         CriteriaRankFactory,
         factory_related_name='poll'
     )
