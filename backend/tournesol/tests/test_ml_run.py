@@ -109,7 +109,7 @@ class TestMlTrain(TestCase):
 
     def test_tournesol_score_are_computed(self):
         """
-        The `tournesol_score` of each entities must be computed during an
+        The `tournesol_score` of each entity must be computed during an
         ML train.
         """
         self.assertEqual(self.video1.tournesol_score, None)
@@ -118,4 +118,4 @@ class TestMlTrain(TestCase):
         self.video1.refresh_from_db()
         self.video2.refresh_from_db()
         self.assertEqual(self.video1.tournesol_score, -4.1)
-        self.assertEqual(self.video2.tournesol_score, -4.1)
+        self.assertEqual(self.video2.tournesol_score, 4.1)
