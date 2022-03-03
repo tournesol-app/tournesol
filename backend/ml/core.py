@@ -92,23 +92,23 @@ def _set_licchavi(
             full_data, fullpath, device
         )
         licch = _get_licchavi(
-            len(vid_vidx), 
-            vid_vidx, 
+            len(vid_vidx),
+            vid_vidx,
             criteria,
-            device, 
-            verb, 
-            ground_truths, 
+            device,
+            verb,
+            ground_truths,
             licchavi_class
         )
         licch.load_and_update(nodes_dic, users_ids, fullpath)
     else:
         nodes_dic, users_ids, vid_vidx = distribute_data(full_data, device)
         licch = _get_licchavi(
-            len(vid_vidx), 
+            len(vid_vidx),
             vid_vidx, criteria,
-            device, 
-            verb, 
-            ground_truths, 
+            device,
+            verb,
+            ground_truths,
             licchavi_class
         )
         licch.set_allnodes(nodes_dic, users_ids)

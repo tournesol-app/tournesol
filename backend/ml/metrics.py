@@ -137,7 +137,7 @@ def get_uncertainty_loc(licch):
         local_uncerts = []
         for vid in node.vids:  # for all videos of the node
             vidx = licch.vid_vidx[vid]  # video index
-            score = node.model[vidx : vidx + 1].detach()
+            score = node.model[vidx: vidx + 1].detach()
             score = deepcopy(score)
             fun = _get_hessian_fun_loc(licch, uid, vidx)
             deriv2 = hessian(fun, score)

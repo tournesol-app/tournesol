@@ -50,7 +50,7 @@ USAGE:
 """
 
 
-def fetch_data(poll,trusted_only=True):
+def fetch_data(poll, trusted_only=True):
     """Fetches the data from the Comparisons model
 
     Returns:
@@ -58,20 +58,24 @@ def fetch_data(poll,trusted_only=True):
         [   contributor_id: int, video_id_1: int, video_id_2: int,
             criteria: str, score: float, weight: float  ]
     """
-    comparisons_queryset = ComparisonCriteriaScore.objects.filter(comparison__poll=poll).prefetch_related("comparison")
-    
+    comparisons_queryset = ComparisonCriteriaScore.objects.filter(
+        comparison__poll=poll
+    ).prefetch_related("comparison")
     if trusted_only:
-        comparisons_queryset = comparisons_queryset.filter(comparison__user__in=User.trusted_users())
+        comparisons_queryset = comparisons_queryset.filter(
+            comparison__user__in=User.trusted_users()
+        )
+
     comparison_data = [
-            [
-                ccs.comparison.user_id,
-                ccs.comparison.entity_1_id,
-                ccs.comparison.entity_2_id,
-                ccs.criteria,
-                ccs.score,
-                ccs.weight,
-            ]
-            for ccs in comparisons_queryset
+        [
+            ccs.comparison.user_id,
+            ccs.comparison.entity_1_id,
+            ccs.comparison.entity_2_id,
+            ccs.criteria,
+            ccs.score,
+            ccs.weight,
+        ]
+        for ccs in comparisons_queryset
     ]
 
     return comparison_data
@@ -86,27 +90,37 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
     if trusted_only:
         EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
         EntityCriteriaScore.objects.bulk_create(
-            [
-                EntityCriteriaScore(
-					poll_id=poll.pk,
-                    entity_id=video_id,
-                    criteria=criteria,
-                    score=score,
-                    uncertainty=uncertainty,
-                )
-                for video_id, criteria, score, uncertainty in video_scores
-            ]
+            EntityCriteriaScore(
+                poll_id=poll.pk,
+                entity_id=video_id,
+                criteria=criteria,
+                score=score,
+                uncertainty=uncertainty,
+            )
+            for video_id, criteria, score, uncertainty in video_scores
         )
 
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
-            for (contributor_id, video_id, criteria, score, uncertainty) in contributor_rating_scores
+            for (
+                contributor_id,
+                video_id,
+                criteria,
+                score,
+                uncertainty,
+            ) in contributor_rating_scores
             if contributor_id in trusted_user_ids
         ]
     else:
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
-            for (contributor_id, video_id, criteria, score, uncertainty) in contributor_rating_scores
+            for (
+                contributor_id,
+                video_id,
+                criteria,
+                score,
+                uncertainty,
+            ) in contributor_rating_scores
             if contributor_id not in trusted_user_ids
         ]
 
@@ -134,9 +148,13 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
     )
 
     if trusted_only:
-        ContributorRatingCriteriaScore.objects.filter(contributor_rating__poll_id=poll.pk).filter(contributor_rating__user__in=User.trusted_users()).delete()
+        ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll_id=poll.pk
+        ).filter(contributor_rating__user__in=User.trusted_users()).delete()
     else:
-        ContributorRatingCriteriaScore.objects.filter(contributor_rating__poll_id=poll.pk).exclude(contributor_rating__user__in=User.trusted_users()).delete()
+        ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll_id=poll.pk
+        ).exclude(contributor_rating__user__in=User.trusted_users()).delete()
 
     ContributorRatingCriteriaScore.objects.bulk_create(
         ContributorRatingCriteriaScore(
@@ -147,6 +165,7 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
         )
         for contributor_id, video_id, criteria, score, uncertainty in contributor_scores_to_save
     )
+
 
 def process(trusted_only=True):
     for poll in Poll.objects.all():
@@ -163,16 +182,16 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--skip-untrusted',
+            "--skip-untrusted",
             action="store_true",
-            help='Skip ML run on untrusted users',
+            help="Skip ML run on untrusted users",
         )
 
     def handle(self, *args, **options):
-        skip_untrusted = options['skip_untrusted']
+        skip_untrusted = options["skip_untrusted"]
         if TOURNESOL_DEV:
-            logging.error('You must turn TOURNESOL_DEV to 0 to use this')
-        else: #production
+            logging.error("You must turn TOURNESOL_DEV to 0 to use this")
+        else:  # production
             # Run for trusted users
             logging.debug("Process on trusted users")
             process()
