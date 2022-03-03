@@ -189,6 +189,7 @@ def process(trusted_only=True):
         )
         save_data(glob_score, loc_score, poll, trusted_only=trusted_only)
 
+
 class Command(BaseCommand):
     help = "Runs the ml"
 

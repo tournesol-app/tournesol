@@ -1767,6 +1767,13 @@ components:
         metadata:
           type: object
           additionalProperties: {}
+        tournesol_score:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
         polls:
           type: array
           items:
@@ -1774,6 +1781,7 @@ components:
           readOnly: true
       required:
       - polls
+      - tournesol_score
       - type
       - uid
     EntityCriteriaScore:
@@ -2450,6 +2458,12 @@ components:
         total_score:
           type: number
           format: float
+        tournesol_score:
+          type: number
+          format: float
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
         criteria_scores:
           type: array
           items:
@@ -2866,16 +2880,17 @@ components:
           type: string
           readOnly: true
           nullable: true
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          description: Total number of pairwise comparisons for this videofrom certified
-            contributors
         tournesol_score:
           type: number
           format: float
           readOnly: true
-          description: Tournesol ScoreCalculated from the criteria_score from certified
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this videofrom certified
             contributors
         rating_n_contributors:
           type: integer
@@ -2896,8 +2911,8 @@ components:
       - publication_date
       - rating_n_contributors
       - rating_n_ratings
-      - uid
       - tournesol_score
+      - uid
       - uploader
       - video_id
       - views
@@ -3637,16 +3652,17 @@ components:
           type: string
           readOnly: true
           nullable: true
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          description: Total number of pairwise comparisons for this videofrom certified
-            contributors
         tournesol_score:
           type: number
           format: float
           readOnly: true
-          description: Tournesol ScoreCalculated from the criteria_score from certified
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
+        rating_n_ratings:
+          type: integer
+          readOnly: true
+          description: Total number of pairwise comparisons for this videofrom certified
             contributors
         rating_n_contributors:
           type: integer
@@ -3668,9 +3684,9 @@ components:
       - publication_date
       - rating_n_contributors
       - rating_n_ratings
+      - tournesol_score
       - uid
       - uploader
-      - tournesol_score
       - video_id
       - views
     VideoRateLater:
@@ -3732,16 +3748,17 @@ components:
           type: string
           readOnly: true
           nullable: true
+        tournesol_score:
+          type: number
+          format: float
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
         rating_n_ratings:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
           description: Total number of pairwise comparisons for this videofrom certified
-            contributors
-        tournesol_score:
-          type: number
-          format: float
-          description: Tournesol ScoreCalculated from the criteria_score from certified
             contributors
         rating_n_contributors:
           type: integer

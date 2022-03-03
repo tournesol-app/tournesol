@@ -192,7 +192,8 @@ function VideoCard({
   const { getCriteriaLabel } = useCurrentPoll();
 
   const videoId = videoIdFromEntity(video);
-  const total_score = video.tournesol_score ? video.tournesol_score : 0;
+  const tournesolScore = video.tournesol_score;
+
   let max_score = -Infinity;
   let min_score = Infinity;
   let max_criteria = '';
@@ -232,7 +233,7 @@ function VideoCard({
     unsafe = true;
     unsafe_cause = t('video.unsafeNotEnoughContributor');
   }
-  if (total_score < 0) {
+  if (tournesolScore && tournesolScore < 0) {
     unsafe = true;
     unsafe_cause = t('video.unsafeNegativeRating');
   }
@@ -323,7 +324,7 @@ function VideoCard({
             alignItems="center"
             sx={{ gap: '12px' }}
           >
-            {'criteria_scores' in video && (
+            {tournesolScore && (
               <SafeTournesolScoreWrapper
                 unsafe={unsafe}
                 unsafe_cause={unsafe_cause}
@@ -347,7 +348,7 @@ function VideoCard({
                     width={32}
                   />
                   <span className={classes.nb_tournesol}>
-                    {total_score.toFixed(0)}
+                    {tournesolScore.toFixed(0)}
                   </span>
                 </Box>
               </SafeTournesolScoreWrapper>
