@@ -42,3 +42,9 @@ class EntityType(ABC):
         serializer = self.metadata_serializer_class(data=self.instance.metadata)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
+
+    def metadata_needs_to_be_refreshed(self):
+        return False
+
+    def refresh_metadata(self, force=False, save=True):
+        raise NotImplementedError

@@ -20,3 +20,13 @@ class VideoMetadata(serializers.Serializer):
     language = serializers.CharField(allow_null=True, default=None)
     tags = serializers.ListField(child=serializers.CharField(), default=list)
     is_unlisted = serializers.BooleanField(default=False)
+
+
+
+class CandidateMetadata(serializers.Serializer):
+    name = serializers.CharField()
+    image_url = serializers.URLField(allow_null=True, default=None)
+    frwiki_title = serializers.CharField(allow_null=True, default=None)
+    website_url = serializers.URLField(allow_null=True, default=None)
+    youtube_channel_id = serializers.CharField(allow_null=True, default=None)
+    twitter_username = serializers.CharField(allow_null=True, default=None)
