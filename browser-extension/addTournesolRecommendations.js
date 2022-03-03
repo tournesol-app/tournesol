@@ -31,6 +31,16 @@ const convertDurationToClockDuration = (duration) => {
 };
 
 
+const calculateScore= (video) => {
+  let total_score=0
+  if ('criteria_scores' in video) {
+    video.criteria_scores?.forEach((criteria) => {
+      total_score += criteria.score != undefined ? 10 * criteria.score : 0;
+    });
+  }
+  return total_score
+}
+
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
@@ -162,9 +172,8 @@ const getTournesolComponent = () => {
       
        const video_score = document.createElement('p');
        video_score.className = 'video_text';
-      
        video_score.innerHTML =
-         `🌻 <strong>${video.tournesol_score.toFixed(0)} &nbsp·&nbsp</strong>
+         `🌻 <strong>${calculateScore(video).toFixed(0)} &nbsp·&nbsp</strong>
          ${video.rating_n_ratings} comparisons by ${video.rating_n_contributors}
          contributors`;
        details_div.append(video_score);

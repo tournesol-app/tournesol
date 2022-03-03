@@ -5,7 +5,6 @@
   "permissions": [
     "https://tournesol.app/",
     "https://api.tournesol.app/",
-    "http://localhost:8000/",
     "https://www.youtube.com/",
     "activeTab",
     "contextMenus",
