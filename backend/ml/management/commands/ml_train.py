@@ -104,11 +104,7 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
         entities = []
         for entity in Entity.objects.prefetch_related("criteria_scores").iterator():
             entity.tournesol_score = 10 * sum(
-                [
-                    criterion.score
-                    for criterion in entity.criteria_scores.iterator()
-                    if criterion.score
-                ]
+                criterion.score for criterion in entity.criteria_scores.iterator()
             )
             entities.append(entity)
         Entity.objects.bulk_update(entities, ["tournesol_score"])
