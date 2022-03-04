@@ -1,37 +1,50 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChoicesFilterSection } from 'src/components';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import {
   availableRecommendationsLanguages,
   getLanguageName,
-} from 'src/utils/constants';
+} from 'src/utils/recommendationsLanguages';
+import { TitledSection } from 'src/components';
 
 interface Props {
   value: string;
   onChange: (value: string) => void;
 }
 
-function LanguageFilter(props: Props) {
+function LanguageFilter({ value, onChange }: Props) {
   const { t } = useTranslation();
 
-  const languageChoices: Record<string, string> = useMemo(
-    () =>
-      Object.fromEntries(
-        availableRecommendationsLanguages.map((language) => [
-          language,
-          getLanguageName(t, language),
-        ])
-      ),
+  const getOptionLabel = useCallback(
+    (option) => getLanguageName(t, option),
     [t]
   );
 
+  const handleChange = useCallback(
+    (event: React.SyntheticEvent<Element, Event>, newValue: string[]) => {
+      onChange(newValue.join(','));
+    },
+    [onChange]
+  );
+
+  const arrayValue = useMemo(
+    () => (value === '' ? [] : value.split(',')),
+    [value]
+  );
+
   return (
-    <ChoicesFilterSection
-      title={t('filter.language')}
-      multipleChoice
-      choices={languageChoices}
-      {...props}
-    ></ChoicesFilterSection>
+    <TitledSection title={t('filter.language')}>
+      <Autocomplete
+        multiple
+        options={availableRecommendationsLanguages}
+        getOptionLabel={getOptionLabel}
+        renderInput={(params) => <TextField {...params} variant="standard" />}
+        value={arrayValue}
+        onChange={handleChange}
+        data-testid="autocomplete"
+      />
+    </TitledSection>
   );
 }
 
