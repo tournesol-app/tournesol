@@ -67,8 +67,16 @@ describe('Comparison page', () => {
 
   describe('submit a comparison', () => {
     const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
-    const videoBUrl = 'https://www.youtube.com/watch?v=6jK9bFWE--g';
 
+    /**
+     * Select a video in the first VideoSelector then click on the new video
+     * button in the second VideoSelector.
+     *
+     * The test ensures:
+     * - only the main criteria is visible
+     * - the add optional criteria button is displayed
+     * - success hints are visible (edit button and success alert)
+     */
     it('with only the main criteria', () => {
       cy.visit('/comparison');
 
@@ -79,11 +87,10 @@ describe('Comparison page', () => {
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
         .type(videoAUrl.split('?v=')[1], {delay: 0});
 
-      // TODO: click on the New Video button instead to guarantee
-      //       the comparison doesn't already exist
-      cy.get('input[placeholder="Paste URL or Video ID"]').last()
-        .type(videoBUrl.split('?v=')[1], {delay: 0});
+      cy.get('button[data-testid=new-video').last().click()
 
+      cy.contains('add optional criteria', {matchCase: false})
+          .should('be.visible');
       cy.contains('should be largely recommended', {matchCase: false})
         .should('be.visible');
 
@@ -92,6 +99,8 @@ describe('Comparison page', () => {
 
       cy.get('button#expert_submit_btn').click();
 
+      cy.contains('successfully submitted', {matchCase: false})
+          .should('be.visible');
       cy.contains('edit comparison', {matchCase: false})
         .should('be.visible');
     })
