@@ -68,6 +68,18 @@ describe('Comparison page', () => {
   describe('submit a comparison', () => {
     const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
 
+    const criteriaSliders = [
+      "slider_expert_reliability",
+      "slider_expert_pedagogy",
+      "slider_expert_importance",
+      "slider_expert_layman_friendly",
+      "slider_expert_entertaining_relaxing",
+      "slider_expert_engaging",
+      "slider_expert_diversity_inclusion",
+      "slider_expert_better_habits",
+      "slider_expert_backfire_risk",
+    ]
+
     /**
      * Select a video in the first VideoSelector then click on the new video
      * button in the second VideoSelector.
@@ -107,6 +119,42 @@ describe('Comparison page', () => {
           .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
           .should('be.visible');
-    })
+    });
+
+    /**
+     * A user can submit a comparison with all criteria.
+     */
+    it('with all the criteria', () => {
+      cy.visit('/comparison');
+
+      cy.focused().type('user1');
+      cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
+
+      cy.get('input[placeholder="Paste URL or Video ID"]').first()
+          .type(videoAUrl.split('?v=')[1], {delay: 0});
+      cy.get('button[data-testid=new-video').last().click()
+
+      cy.contains('add optional criteria', {matchCase: false}).click()
+
+      cy.get('#slider_expert_largely_recommended').within(() => {
+        cy.get('span[data-index=12]').click();
+      })
+
+      criteriaSliders.forEach((slider) => {
+        cy.get('#' + slider).within(() => {
+          cy.get('span[data-index=12]').click();
+        })
+      });
+
+      cy.contains('submit', {matchCase: false})
+          .should('be.visible');
+      cy.get('button#expert_submit_btn').click();
+
+      cy.contains('edit comparison', {matchCase: false})
+          .should('be.visible');
+      cy.contains('successfully submitted', {matchCase: false})
+          .should('be.visible');
+    });
   });
 });
