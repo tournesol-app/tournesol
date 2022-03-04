@@ -84,25 +84,29 @@ describe('Comparison page', () => {
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
+      // add one video, and ask for a second one
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
         .type(videoAUrl.split('?v=')[1], {delay: 0});
-
       cy.get('button[data-testid=new-video').last().click()
 
+      // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
           .should('be.visible');
       cy.contains('should be largely recommended', {matchCase: false})
         .should('be.visible');
 
+      cy.get('#slider_expert_largely_recommended').within(() => {
+        cy.get('span[data-index=12]').click();
+      })
+
       cy.contains('submit', {matchCase: false})
         .should('be.visible');
-
       cy.get('button#expert_submit_btn').click();
 
+      cy.contains('edit comparison', {matchCase: false})
+          .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
           .should('be.visible');
-      cy.contains('edit comparison', {matchCase: false})
-        .should('be.visible');
     })
   });
 });
