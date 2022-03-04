@@ -68,7 +68,7 @@ describe('Comparison page', () => {
   describe('submit a comparison', () => {
     const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
 
-    const criteriaSliders = [
+    const optionalCriteriaSliders = [
       "slider_expert_reliability",
       "slider_expert_pedagogy",
       "slider_expert_importance",
@@ -78,7 +78,7 @@ describe('Comparison page', () => {
       "slider_expert_diversity_inclusion",
       "slider_expert_better_habits",
       "slider_expert_backfire_risk",
-    ]
+    ];
 
     /**
      * Select a video in the first VideoSelector then click on the new video
@@ -141,7 +141,7 @@ describe('Comparison page', () => {
         cy.get('span[data-index=12]').click();
       })
 
-      criteriaSliders.forEach((slider) => {
+      optionalCriteriaSliders.forEach((slider) => {
         cy.get('#' + slider).within(() => {
           cy.get('span[data-index=12]').click();
         })
