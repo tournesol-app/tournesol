@@ -8,7 +8,7 @@ from tournesol.serializers.metadata import CandidateMetadata
 
 from .base import EntityType
 
-TYPE_CANDIDATE = "2022_candidate"
+TYPE_CANDIDATE = "candidate_fr_2022"
 CANDIDATE_UID_REGEX = r"wd:Q(\d+)"
 
 WIKIDATA_API_BASE_URL = "https://www.wikidata.org/w/api.php"
