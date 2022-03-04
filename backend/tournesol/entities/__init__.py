@@ -1,5 +1,5 @@
-from .video import VideoEntity
 from .candidate import CandidateEntity
+from .video import VideoEntity
 
 ENTITY_CLASSES = [VideoEntity, CandidateEntity]
 

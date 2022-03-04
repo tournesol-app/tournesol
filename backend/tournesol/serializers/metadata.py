@@ -22,7 +22,6 @@ class VideoMetadata(serializers.Serializer):
     is_unlisted = serializers.BooleanField(default=False)
 
 
-
 class CandidateMetadata(serializers.Serializer):
     name = serializers.CharField()
     image_url = serializers.URLField(allow_null=True, default=None)

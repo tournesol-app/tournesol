@@ -6,7 +6,6 @@ from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
 
-from .entities.video import TYPE_VIDEO
 from .models import (
     Comparison,
     ComparisonCriteriaScore,
