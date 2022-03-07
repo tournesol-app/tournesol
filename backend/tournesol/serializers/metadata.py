@@ -5,7 +5,7 @@ from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 
 class VideoMetadata(serializers.Serializer):
     source = serializers.CharField(allow_blank=True, default="")
-    video_id = serializers.RegexField(YOUTUBE_VIDEO_ID_REGEX)
+    video_id = serializers.RegexField(rf"^({YOUTUBE_VIDEO_ID_REGEX})$")
     name = serializers.CharField(allow_blank=True, default="")
     description = serializers.CharField(allow_blank=True, default="")
     uploader = serializers.CharField(allow_blank=True, default="")
