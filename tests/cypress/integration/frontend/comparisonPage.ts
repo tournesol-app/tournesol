@@ -122,7 +122,7 @@ describe('Comparison page', () => {
      * - the add optional criteria button is displayed
      * - success hints are visible (edit button and success alert)
      */
-    it('with only the main criteria', () => {
+    it('works with only the main criteria', () => {
       cy.visit('/comparison');
 
       cy.focused().type('user1');
@@ -155,7 +155,7 @@ describe('Comparison page', () => {
         .should('be.visible');
     });
 
-    it('with all the criteria', () => {
+    it('works with all the criteria', () => {
       cy.visit('/comparison');
 
       cy.focused().type('user1');
