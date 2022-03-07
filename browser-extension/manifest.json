@@ -1,6 +1,6 @@
 {
   "name": "Tournesol Extension",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Open Tournesol directly from Youtube",
   "permissions": [
     "https://tournesol.app/",
