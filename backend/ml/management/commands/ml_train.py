@@ -8,6 +8,7 @@ from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    Entity,
     EntityCriteriaScore,
     Poll,
 )
@@ -99,6 +100,18 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
             )
             for video_id, criteria, score, uncertainty in video_scores
         )
+
+        entities = []
+        for entity in (
+            Entity.objects.filter(criteria_scores__poll=poll)
+            .distinct()
+            .prefetch_related("criteria_scores")
+        ):
+            entity.tournesol_score = 10 * sum(
+                criterion.score for criterion in entity.criteria_scores.all()
+            )
+            entities.append(entity)
+        Entity.objects.bulk_update(entities, ["tournesol_score"])
 
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)

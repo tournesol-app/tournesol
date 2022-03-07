@@ -32,6 +32,7 @@ export const getVideoInformation = async (videoId: string): Promise<Video> => {
         video_id: videoId,
         description: '',
         language: null,
+        tournesol_score: null,
         rating_n_ratings: 0,
         rating_n_contributors: 0,
         criteria_scores: [],

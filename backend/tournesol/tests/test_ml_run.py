@@ -106,3 +106,16 @@ class TestMlTrain(TestCase):
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 44)
         self.assertLess(EntityCriteriaScore.objects.get(entity_id=self.video1.id).score, 0)
         self.assertGreater(EntityCriteriaScore.objects.get(entity_id=self.video2.id).score, 0)
+
+    def test_tournesol_score_are_computed(self):
+        """
+        The `tournesol_score` of each entity must be computed during an
+        ML train.
+        """
+        self.assertEqual(self.video1.tournesol_score, None)
+        self.assertEqual(self.video2.tournesol_score, None)
+        call_command("ml_train")
+        self.video1.refresh_from_db()
+        self.video2.refresh_from_db()
+        self.assertEqual(self.video1.tournesol_score, -4.1)
+        self.assertEqual(self.video2.tournesol_score, 4.1)

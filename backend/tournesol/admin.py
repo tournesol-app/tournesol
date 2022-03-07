@@ -57,12 +57,14 @@ class EntityLanguageFilter(MetadataFieldFilter):
 
 @admin.register(Entity)
 class EntityAdmin(admin.ModelAdmin):
+    readonly_fields = ('tournesol_score',)
     list_display = (
         'uid',
         'get_name',
         'get_uploader',
         'get_publication_date',
         'rating_n_ratings',
+        'tournesol_score',
         'rating_n_contributors',
         'get_language',
         'link_to_youtube',

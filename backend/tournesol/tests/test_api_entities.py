@@ -32,6 +32,7 @@ class EntitiesApi(TestCase):
             {
                 "uid": self.video.uid,
                 "metadata": ANY,
+                "tournesol_score": None,
                 "type": "video",
                 "polls": [
                     {
