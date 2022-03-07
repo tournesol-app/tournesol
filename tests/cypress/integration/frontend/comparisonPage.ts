@@ -1,4 +1,29 @@
 describe('Comparison page', () => {
+
+  const deleteComparison = (idA, idB) => {
+    cy.sql(`
+        DELETE FROM tournesol_comparisoncriteriascore
+        WHERE comparison_id = (
+            SELECT id
+            FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+            )
+        );
+      `);
+
+    cy.sql(`
+        DELETE FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+            );
+      `);
+  };
+
   describe('authorization', () => {
     it('is not accessible by anonymous users', () => {
       cy.visit('/comparison');
@@ -80,30 +105,6 @@ describe('Comparison page', () => {
       "slider_expert_better_habits",
       "slider_expert_backfire_risk",
     ];
-
-    const deleteComparison = (idA, idB) => {
-      cy.sql(`
-        DELETE FROM tournesol_comparisoncriteriascore
-        WHERE comparison_id = (
-            SELECT id
-            FROM tournesol_comparison
-            WHERE entity_1_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoAId}'
-            ) AND entity_2_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoBId}'
-            )
-        );
-      `);
-
-      cy.sql(`
-        DELETE FROM tournesol_comparison
-            WHERE entity_1_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoAId}'
-            ) AND entity_2_id = (
-                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoBId}'
-            );
-      `);
-    };
 
     beforeEach(() => {
       deleteComparison(videoAId, videoBId);
