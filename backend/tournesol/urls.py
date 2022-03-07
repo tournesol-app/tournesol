@@ -91,12 +91,12 @@ urlpatterns = [
     path(
         "users/me/recommendations/<str:poll_name>",
         PersonalRecommendations.as_view(),
-        name="user_recommendations",
+        name="personal_recommendations",
     ),
     path(
         "users/<str:username>/recommendations/<str:poll_name>",
         ExternalUserRecommendations.as_view(),
-        name="user_recommendations",
+        name="external_user_recommendations",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),
