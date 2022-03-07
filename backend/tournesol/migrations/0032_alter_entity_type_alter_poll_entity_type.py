@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournesol', '0030_remove_entity_description_remove_entity_duration_and_more'),
+        ('tournesol', '0031_entity_tournesol_score'),
     ]
 
     operations = [
