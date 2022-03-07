@@ -239,7 +239,7 @@ class Entity(models.Model):
         if self.metadata is None:
             self.metadata = {}
 
-        if self.entity_cls.metadata_serializer_class:
+        if self.type and self.entity_cls.metadata_serializer_class:
             serializer = self.entity_cls.metadata_serializer_class(data=self.metadata)
             if not serializer.is_valid():
                 raise ValidationError({"metadata": str(serializer.errors)})
