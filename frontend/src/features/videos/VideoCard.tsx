@@ -192,7 +192,8 @@ function VideoCard({
   const { getCriteriaLabel } = useCurrentPoll();
 
   const videoId = videoIdFromEntity(video);
-  const tournesolScore = video.tournesol_score;
+  const tournesolScore =
+    'tournesol_score' in video ? video.tournesol_score : null;
 
   let max_score = -Infinity;
   let min_score = Infinity;
@@ -324,7 +325,7 @@ function VideoCard({
             alignItems="center"
             sx={{ gap: '12px' }}
           >
-            {tournesolScore && (
+            {tournesolScore != null && (
               <SafeTournesolScoreWrapper
                 unsafe={unsafe}
                 unsafe_cause={unsafe_cause}

@@ -2880,13 +2880,6 @@ components:
           type: string
           readOnly: true
           nullable: true
-        tournesol_score:
-          type: number
-          format: float
-          readOnly: true
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
         rating_n_ratings:
           type: integer
           readOnly: true
@@ -2911,7 +2904,6 @@ components:
       - publication_date
       - rating_n_contributors
       - rating_n_ratings
-      - tournesol_score
       - uid
       - uploader
       - video_id
@@ -3652,13 +3644,6 @@ components:
           type: string
           readOnly: true
           nullable: true
-        tournesol_score:
-          type: number
-          format: float
-          readOnly: true
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
         rating_n_ratings:
           type: integer
           readOnly: true
@@ -3684,7 +3669,6 @@ components:
       - publication_date
       - rating_n_contributors
       - rating_n_ratings
-      - tournesol_score
       - uid
       - uploader
       - video_id
@@ -3748,12 +3732,6 @@ components:
           type: string
           readOnly: true
           nullable: true
-        tournesol_score:
-          type: number
-          format: float
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
         rating_n_ratings:
           type: integer
           maximum: 2147483647
@@ -3773,6 +3751,13 @@ components:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
           pattern: ^[A-Za-z0-9-_]{11}$
+        tournesol_score:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
         criteria_scores:
           type: array
           items:
@@ -3784,6 +3769,7 @@ components:
       - language
       - name
       - publication_date
+      - tournesol_score
       - uid
       - uploader
       - video_id
