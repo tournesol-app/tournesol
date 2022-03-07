@@ -1,6 +1,6 @@
 describe('Comparison page', () => {
 
-  const deleteComparison = (idA, idB) => {
+  const deleteComparison = (username, idA, idB) => {
     cy.sql(`
         DELETE FROM tournesol_comparisoncriteriascore
         WHERE comparison_id = (
@@ -10,6 +10,8 @@ describe('Comparison page', () => {
                 SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
             ) AND entity_2_id = (
                 SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+            ) AND user_id = (
+                SELECT id FROM core_user WHERE username = '${username}'
             )
         );
       `);
@@ -20,6 +22,8 @@ describe('Comparison page', () => {
                 SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idA}'
             ) AND entity_2_id = (
                 SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${idB}'
+            ) AND user_id = (
+                SELECT id FROM core_user WHERE username = '${username}'
             );
       `);
   };
@@ -91,6 +95,7 @@ describe('Comparison page', () => {
   });
 
   describe('submit a comparison', () => {
+    const username = 'user1';
     const videoAId = 'u83A7DUNMHs';
     const videoBId = '6jK9bFWE--g';
 
@@ -107,11 +112,11 @@ describe('Comparison page', () => {
     ];
 
     beforeEach(() => {
-      deleteComparison(videoAId, videoBId);
+      deleteComparison(username, videoAId, videoBId);
     })
 
     after(() => {
-      deleteComparison(videoAId, videoBId);
+      deleteComparison(username, videoAId, videoBId);
     })
 
     /**
@@ -125,7 +130,7 @@ describe('Comparison page', () => {
     it('works with only the main criteria', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
@@ -158,7 +163,7 @@ describe('Comparison page', () => {
     it('works with all the criteria', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
@@ -192,7 +197,7 @@ describe('Comparison page', () => {
     it('doesn\'t allow comparing a video with itself', () => {
       cy.visit('/comparison');
 
-      cy.focused().type('user1');
+      cy.focused().type(username);
       cy.get('input[name="password"]').click()
           .type('tournesol').type('{enter}');
 
