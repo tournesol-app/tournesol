@@ -182,6 +182,7 @@ const VideoSelector = ({
         >
           <IconButton
             aria-label="new_video"
+            data-testid="new-video"
             onClick={loadNewVideo}
             size="large"
           >
