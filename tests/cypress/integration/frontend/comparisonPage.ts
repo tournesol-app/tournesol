@@ -66,7 +66,8 @@ describe('Comparison page', () => {
   });
 
   describe('submit a comparison', () => {
-    const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
+    const videoAId = 'u83A7DUNMHs';
+    const videoBId = '6jK9bFWE--g';
 
     const optionalCriteriaSliders = [
       "slider_expert_reliability",
@@ -80,9 +81,40 @@ describe('Comparison page', () => {
       "slider_expert_backfire_risk",
     ];
 
+    const deleteComparison = (idA, idB) => {
+      cy.sql(`
+        DELETE FROM tournesol_comparisoncriteriascore
+        WHERE comparison_id = (
+            SELECT id
+            FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoAId}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoBId}'
+            )
+        );
+      `);
+
+      cy.sql(`
+        DELETE FROM tournesol_comparison
+            WHERE entity_1_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoAId}'
+            ) AND entity_2_id = (
+                SELECT id FROM tournesol_entity WHERE metadata->>'video_id' = '${videoBId}'
+            );
+      `);
+    };
+
+    beforeEach(() => {
+      deleteComparison(videoAId, videoBId);
+    })
+
+    after(() => {
+      deleteComparison(videoAId, videoBId);
+    })
+
     /**
-     * Select a video in the first VideoSelector then click on the new video
-     * button in the second VideoSelector.
+     * A user can submit a comparison with only the main criteria.
      *
      * The test ensures:
      * - only the main criteria is visible
@@ -98,12 +130,13 @@ describe('Comparison page', () => {
 
       // add one video, and ask for a second one
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
-        .type(videoAUrl.split('?v=')[1], {delay: 0});
-      cy.get('button[data-testid=new-video').last().click()
+        .type(videoAId, {delay: 0});
+      cy.get('input[placeholder="Paste URL or Video ID"]').last()
+        .type(videoBId, {delay: 0});
 
       // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
-          .should('be.visible');
+        .should('be.visible');
       cy.contains('should be largely recommended', {matchCase: false})
         .should('be.visible');
 
@@ -116,24 +149,22 @@ describe('Comparison page', () => {
       cy.get('button#expert_submit_btn').click();
 
       cy.contains('edit comparison', {matchCase: false})
-          .should('be.visible');
+        .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
-          .should('be.visible');
+        .should('be.visible');
     });
 
-    /**
-     * A user can submit a comparison with all criteria.
-     */
     it('with all the criteria', () => {
       cy.visit('/comparison');
 
       cy.focused().type('user1');
       cy.get('input[name="password"]').click()
-          .type('tournesol').type('{enter}');
+        .type('tournesol').type('{enter}');
 
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
-          .type(videoAUrl.split('?v=')[1], {delay: 0});
-      cy.get('button[data-testid=new-video').last().click()
+        .type(videoAId, {delay: 0});
+      cy.get('input[placeholder="Paste URL or Video ID"]').last()
+        .type(videoBId, {delay: 0});
 
       cy.contains('add optional criteria', {matchCase: false}).click()
 
@@ -148,13 +179,13 @@ describe('Comparison page', () => {
       });
 
       cy.contains('submit', {matchCase: false})
-          .should('be.visible');
+        .should('be.visible');
       cy.get('button#expert_submit_btn').click();
 
       cy.contains('edit comparison', {matchCase: false})
-          .should('be.visible');
+        .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
-          .should('be.visible');
+        .should('be.visible');
     });
   });
 });
