@@ -45,7 +45,7 @@ describe('VideoCard content', () => {
     );
     expect(
       screen.queryByTestId('video-card-overall-score')
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
   });
 
   it('shows video card with single criteria', () => {
@@ -122,5 +122,66 @@ describe('VideoCard content', () => {
       '9 comparisons by 4 contributors'
     );
     expect(screen.queryByTestId('video-card-minmax-criterias')).toBeVisible();
+  });
+
+  it('shows video metadata with null Tournesol score', () => {
+    const video: VideoObject = {
+      uid: 'yt:xSqqXN0D4fY',
+      name: 'Video title',
+      description: 'Video description',
+      views: 154988,
+      uploader: 'Channel name',
+      rating_n_contributors: 4,
+      rating_n_ratings: 9,
+      tournesol_score: null,
+      duration: 120,
+      publication_date: '2021-03-21',
+      language: 'fr',
+      video_id: 'xSqqXN0D4fY',
+    };
+    renderVideoCard(video);
+
+    expect(screen.getByTestId('video-card-info')).toHaveTextContent(
+      'Video title'
+    );
+    expect(screen.getByTestId('video-card-info')).toHaveTextContent(
+      '154,988 views'
+    );
+    expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
+      '9 comparisons by 4 contributors'
+    );
+    expect(
+      screen.queryByTestId('video-card-overall-score')
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows video metadata without Tournesol score', () => {
+    const video: VideoObject = {
+      uid: 'yt:xSqqXN0D4fY',
+      name: 'Video title',
+      description: 'Video description',
+      views: 154988,
+      uploader: 'Channel name',
+      rating_n_contributors: 4,
+      rating_n_ratings: 9,
+      duration: 120,
+      publication_date: '2021-03-21',
+      language: 'fr',
+      video_id: 'xSqqXN0D4fY',
+    };
+    renderVideoCard(video);
+
+    expect(screen.getByTestId('video-card-info')).toHaveTextContent(
+      'Video title'
+    );
+    expect(screen.getByTestId('video-card-info')).toHaveTextContent(
+      '154,988 views'
+    );
+    expect(screen.getByTestId('video-card-ratings')).toHaveTextContent(
+      '9 comparisons by 4 contributors'
+    );
+    expect(
+      screen.queryByTestId('video-card-overall-score')
+    ).not.toBeInTheDocument();
   });
 });
