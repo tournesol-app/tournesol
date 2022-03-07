@@ -1,6 +1,10 @@
+import logging
+
 import factory
 
 from core.models import User
+
+logging.getLogger('faker').setLevel(logging.INFO)
 
 
 class UserFactory(factory.django.DjangoModelFactory):
