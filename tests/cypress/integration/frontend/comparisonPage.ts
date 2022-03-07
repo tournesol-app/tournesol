@@ -39,6 +39,9 @@ describe('Comparison page', () => {
 
       cy.location('pathname').should('equal', '/comparison');
       cy.contains('submit a comparison', {matchCase: false}).should('be.visible');
+
+      cy.contains('video 1', {matchCase: false}).should('be.visible');
+      cy.contains('video 2', {matchCase: false}).should('be.visible');
     })
   });
 
@@ -51,9 +54,6 @@ describe('Comparison page', () => {
       cy.focused().type('user1');
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
-
-      cy.contains('video 1', {matchCase: false}).should('be.visible');
-      cy.contains('video 2', {matchCase: false}).should('be.visible');
 
       // TODO: a little help is required to write the tests
 
@@ -187,6 +187,28 @@ describe('Comparison page', () => {
         .should('be.visible');
       cy.contains('successfully submitted', {matchCase: false})
         .should('be.visible');
+    });
+
+    it('doesn\'t allow comparing a video with itself', () => {
+      cy.visit('/comparison');
+
+      cy.focused().type('user1');
+      cy.get('input[name="password"]').click()
+          .type('tournesol').type('{enter}');
+
+      cy.get('input[placeholder="Paste URL or Video ID"]').first()
+          .type(videoAId, {delay: 0});
+      cy.get('input[placeholder="Paste URL or Video ID"]').last()
+          .type(videoAId, {delay: 0});
+
+      cy.contains('These two videos are very similar', {matchCase: false})
+          .should('be.visible');
+
+      cy.contains('add optional criteria', {matchCase: false})
+          .should('not.exist');
+      cy.contains('should be largely recommended', {matchCase: false})
+          .should('not.exist');
+      cy.get('button#expert_submit_btn').should('not.exist');
     });
   });
 });
