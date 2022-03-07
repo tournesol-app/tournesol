@@ -4,9 +4,8 @@ Defines Tournesol's backend admin interface
 
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
-from .entities.video import TYPE_VIDEO
 from .models import (
     Comparison,
     ComparisonCriteriaScore,
@@ -76,11 +75,10 @@ class EntityAdmin(admin.ModelAdmin):
     )
     actions = ["update_metadata"]
 
-    @admin.action(description="Force metadata refresh of selected videos")
-    def update_metadata(self, request, queryset):
+    @admin.action(description="Force metadata refresh of selected entities")
+    def update_metadata(self, request, queryset: QuerySet[Entity]):
         for entity in queryset.iterator():
-            if entity.type == TYPE_VIDEO:
-                entity.refresh_youtube_metadata(force=True)
+            entity.inner.refresh_metadata(force=True)
 
     @staticmethod
     @admin.display(description="name", ordering="metadata__name")

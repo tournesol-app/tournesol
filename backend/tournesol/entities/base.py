@@ -1,8 +1,12 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
+from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.serializers import Serializer
+
+from tournesol import models
 
 UID_DELIMITER = ":"
 
@@ -15,7 +19,7 @@ class EntityType(ABC):
     name: str
     metadata_serializer_class: Type[Serializer]
 
-    def __init__(self, entity):
+    def __init__(self, entity: "models.Entity"):
         self.instance = entity
 
     @classmethod
@@ -42,3 +46,27 @@ class EntityType(ABC):
         serializer = self.metadata_serializer_class(data=self.instance.metadata)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
+
+    def metadata_needs_to_be_refreshed(self):
+        return False
+
+    def update_metadata_field(self):
+        raise NotImplementedError
+
+    def refresh_metadata(self, *, force=False, save=True):
+        if not force and not self.metadata_needs_to_be_refreshed():
+            logging.debug(
+                "Not refreshing metadata for entity %s. Last attempt at %s",
+                self.instance.uid,
+                self.instance.last_metadata_request_at,
+            )
+            return
+
+        self.instance.last_metadata_request_at = timezone.now()
+        if save:
+            self.instance.save(update_fields=["last_metadata_request_at"])
+
+        self.update_metadata_field()
+        self.instance.metadata_timestamp = timezone.now()
+        if save:
+            self.instance.save(update_fields=["metadata", "metadata_timestamp"])

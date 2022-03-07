@@ -17,7 +17,7 @@ from tournesol.utils.api_youtube import VideoNotFound
 
 class VideoSerializer(ModelSerializer):
     video_id = RegexField(
-        YOUTUBE_VIDEO_ID_REGEX,
+        rf"^({YOUTUBE_VIDEO_ID_REGEX})$",
         source="metadata.video_id",
         help_text="Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$",
     )
@@ -99,7 +99,7 @@ class RelatedVideoSerializer(VideoSerializer):
     they can be saved properly.
     """
 
-    video_id = RegexField(YOUTUBE_VIDEO_ID_REGEX)
+    video_id = RegexField(rf"^({YOUTUBE_VIDEO_ID_REGEX})$")
 
     def validate_video_id(self, value):
         try:
@@ -243,7 +243,7 @@ class RelatedEntitySerializer(EntitySerializer):
         if not regex:
             raise ValidationError(f"Unknown `uid` namespace: {split_uid[0]}")
 
-        if not re.match(regex, value):
+        if not re.fullmatch(regex, value):
             raise ValidationError("This value does not match the required pattern.")
 
         return value

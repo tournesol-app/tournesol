@@ -3,7 +3,6 @@ Entity and closely related models.
 """
 
 import logging
-from datetime import timedelta
 from functools import cached_property
 
 import numpy as np
@@ -17,7 +16,7 @@ from tqdm.auto import tqdm
 
 from core.models import User
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
-from tournesol.entities.base import UID_DELIMITER
+from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.serializers.metadata import VideoMetadata
 
@@ -108,7 +107,7 @@ class Entity(models.Model):
         return ENTITY_TYPE_NAME_TO_CLASS[self.type]
 
     @cached_property
-    def inner(self):
+    def inner(self) -> EntityType:
         """
         An instance of the entity type class related to the current entity.
 
@@ -198,49 +197,6 @@ class Entity(models.Model):
             video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
         )
 
-    def refresh_youtube_metadata(self, force=False):
-        """
-        Fetch and update video metadata from Youtube API.
-
-        By default, the request will be executed only if the current metadata
-        are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
-        The request can be forced with `force=True`.
-        """
-        from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
-
-        if (
-            not force
-            and self.last_metadata_request_at is not None
-            and (
-                timezone.now() - self.last_metadata_request_at
-                < timedelta(seconds=settings.VIDEO_METADATA_EXPIRE_SECONDS)
-            )
-        ):
-            logging.debug(
-                "Not refreshing metadata for video %s. Last attempt is too recent at %s",
-                self.uid,
-                self.last_metadata_request_at,
-            )
-            return
-
-        self.last_metadata_request_at = timezone.now()
-        self.save(update_fields=["last_metadata_request_at"])
-        try:
-            metadata = get_video_metadata(
-                self.metadata["video_id"], compute_language=False
-            )
-        except VideoNotFound:
-            metadata = {}
-
-        if not metadata:
-            return
-
-        for (metadata_key, metadata_value) in metadata.items():
-            if metadata_value is not None:
-                self.metadata[metadata_key] = metadata_value
-        self.metadata_timestamp = timezone.now()
-        self.save(update_fields=["metadata", "metadata_timestamp"])
-
     @classmethod
     def create_from_video_id(cls, video_id):
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
@@ -283,7 +239,7 @@ class Entity(models.Model):
         if self.metadata is None:
             self.metadata = {}
 
-        if self.entity_cls.metadata_serializer_class:
+        if self.type and self.entity_cls.metadata_serializer_class:
             serializer = self.entity_cls.metadata_serializer_class(data=self.metadata)
             if not serializer.is_valid():
                 raise ValidationError({"metadata": str(serializer.errors)})
