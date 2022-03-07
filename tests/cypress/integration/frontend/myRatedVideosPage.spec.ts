@@ -5,7 +5,7 @@ describe('"My rated videos" page', () => {
     cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
 
     // All rated videos are listed.
-    cy.contains('/Showing videos 1 to 20 of \d+/').should('be.visible');
+    cy.contains(/Showing videos 1 to 20 of \d+/).should('be.visible');
 
     // Mark all videos as public.
     cy.contains('button', 'Options', {matchCase: false}).click();
@@ -25,7 +25,7 @@ describe('"My rated videos" page', () => {
 
     // Mark all videos as public, the filter is reset and all videos are listed
     cy.contains('button', 'Mark all as public').click();
-    cy.contains('/Showing videos 1 to 20 of \d+/').should('be.visible');
+    cy.contains(/Showing videos 1 to 20 of \d+/).should('be.visible');
   })
 
   it('visit ratings page with filter in URL', () => {
