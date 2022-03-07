@@ -19,6 +19,7 @@ from .views.ratings import (
 )
 from .views.stats import StatisticsView
 from .views.user import CurrentUserView
+from .views.user_recommendations import ExternalUserRecommendations, PersonalRecommendations
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 
@@ -85,6 +86,17 @@ urlpatterns = [
         "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
+    ),
+    # User recommendations API
+    path(
+        "users/me/recommendations/<str:poll_name>",
+        PersonalRecommendations.as_view(),
+        name="user_recommendations",
+    ),
+    path(
+        "users/<str:username>/recommendations/<str:poll_name>",
+        ExternalUserRecommendations.as_view(),
+        name="user_recommendations",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),

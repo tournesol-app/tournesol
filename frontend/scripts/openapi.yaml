@@ -499,8 +499,8 @@ paths:
         schema:
           type: object
           additionalProperties: {}
-        description: Weights for criterias in this poll. The default weight is 10
-          for each criteria.
+        description: Weights for criteria in this poll. The default weight is 10 for
+          each criteria.
         style: deepObject
         examples:
           WeightsExample:
@@ -681,6 +681,84 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Statistics'
+          description: ''
+  /users/{username}/recommendations/{poll_name}:
+    get:
+      operationId: users_recommendations_list
+      description: Retrieve a list of recommended videos, sorted by decreasing total
+        score.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: date_lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: search
+        schema:
+          type: string
+          minLength: 1
+        description: A search query to filter entities
+      - in: query
+        name: unsafe
+        schema:
+          type: boolean
+          default: false
+        description: If true, entities considered as unsafe recommendations because
+          of a low score or due to too few contributions will be included.
+      - in: query
+        name: weights
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Weights for criteria in this poll. The default weight is 10 for
+          each criteria.
+        style: deepObject
+        examples:
+          WeightsExample:
+            value:
+              reliability: 10
+              importance: 10
+              ignored_criteria: 0
+            summary: weights example
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserRecommendationsList'
           description: ''
   /users/me/:
     delete:
@@ -1153,6 +1231,83 @@ paths:
               schema:
                 type: string
                 format: binary
+          description: ''
+  /users/me/recommendations/{poll_name}:
+    get:
+      operationId: users_me_recommendations_list
+      description: Retrieve a list of entities filtered and sorted by the logged user's
+        rating
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: date_lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: search
+        schema:
+          type: string
+          minLength: 1
+        description: A search query to filter entities
+      - in: query
+        name: unsafe
+        schema:
+          type: boolean
+          default: false
+        description: If true, entities considered as unsafe recommendations because
+          of a low score or due to too few contributions will be included.
+      - in: query
+        name: weights
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Weights for criteria in this poll. The default weight is 10 for
+          each criteria.
+        style: deepObject
+        examples:
+          WeightsExample:
+            value:
+              reliability: 10
+              importance: 10
+              ignored_criteria: 0
+            summary: weights example
+      - in: query
+        name: include_private
+        schema:
+          type: boolean
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserRecommendationsList'
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -2203,6 +2358,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Recommendation'
+    PaginatedUserRecommendationsList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRecommendations'
     PaginatedVideoRateLaterList:
       type: object
       properties:
@@ -2269,8 +2444,9 @@ components:
         username:
           type: string
           minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
           pattern: ^[\w.@+-]+$
           maxLength: 150
         is_demo:
@@ -2511,17 +2687,19 @@ components:
           readOnly: true
         password:
           type: string
+          title: Mot de passe
           maxLength: 128
         username:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
           format: email
-          title: Email address
+          title: Adresse e-mail
           maxLength: 254
         is_demo:
           type: boolean
@@ -2657,19 +2835,21 @@ components:
         password:
           type: string
           minLength: 1
+          title: Mot de passe
           maxLength: 128
         username:
           type: string
           minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
           format: email
           minLength: 1
-          title: Email address
+          title: Adresse e-mail
           maxLength: 254
         is_demo:
           type: boolean
@@ -3277,15 +3457,16 @@ components:
           readOnly: true
         username:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
           format: email
           readOnly: true
-          title: Email address
+          title: Adresse e-mail
         is_demo:
           type: boolean
           description: Is a demo account?
@@ -3423,8 +3604,9 @@ components:
         username:
           type: string
           minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          title: Nom d’utilisateur
+          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
+            et les caractères « @ », « . », « + », « - » et « _ ».
           pattern: ^[\w.@+-]+$
           maxLength: 150
         is_demo:
@@ -3547,6 +3729,58 @@ components:
       required:
       - is_trusted
       - username
+    UserRecommendations:
+      type: object
+      description: Format the output of user_recommendations views
+      properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        metadata:
+          type: object
+          additionalProperties: {}
+        n_comparisons:
+          type: integer
+        n_contributors:
+          type: integer
+        total_score:
+          type: number
+          format: float
+        contributorvideoratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRecommendationsRating'
+      required:
+      - contributorvideoratings
+      - n_comparisons
+      - n_contributors
+      - total_score
+      - uid
+    UserRecommendationsRating:
+      type: object
+      properties:
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRecommendationsScore'
+      required:
+      - criteria_scores
+    UserRecommendationsScore:
+      type: object
+      description: Outputs the recommending user's criteria scores for the given entity
+      properties:
+        criteria:
+          type: string
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          description: Score for the given criteria
+      required:
+      - criteria
     VerifyEmail:
       type: object
       properties:
