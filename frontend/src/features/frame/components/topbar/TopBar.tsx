@@ -14,7 +14,7 @@ import { Menu } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import AccountInfo from './AccountInfo';
-import { useTheme } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 export const topBarHeight = 80;
@@ -58,6 +58,7 @@ const useStyles = makeStyles(() => ({
 const Logo = () => {
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
+  const { name: pollName } = useCurrentPoll();
 
   return (
     <Grid
@@ -78,7 +79,15 @@ const Logo = () => {
       </IconButton>
       <Link to="/">
         <Hidden smDown>
-          <img src="/svg/Logo.svg" alt="logo" />
+          <Grid container>
+            <Grid item>
+              <img src="/svg/LogoSmall.svg" alt="logo" />
+            </Grid>
+            <Grid item>
+              <Typography variant="h3">Tournesol</Typography>
+              <Typography variant="subtitle1">{pollName}</Typography>
+            </Grid>
+          </Grid>
         </Hidden>
         <Hidden smUp>
           <img src="/svg/LogoSmall.svg" alt="logo" />
