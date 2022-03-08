@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import React from 'react';
+import { useHistory } from 'react-router';
 import {
   Button,
   Grid,
@@ -13,8 +13,8 @@ import { HowToVote, YouTube } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const PollSelector = () => {
+  const history = useHistory();
   const { name: currentPoll } = useCurrentPoll();
-  const [selectedPoll, setSelectedPoll] = useState('');
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -29,13 +29,10 @@ const PollSelector = () => {
   };
 
   const onItemSelect = (event: React.MouseEvent<HTMLElement>) => {
-    const poll = event.currentTarget.dataset.pollName || '';
-    setSelectedPoll(poll);
+    const poll = event.currentTarget.dataset.pollUrl || '';
+    history.push(poll);
+    onMenuClose();
   };
-
-  if (selectedPoll) {
-    return <Redirect push to={`/${selectedPoll}/`} />;
-  }
 
   return (
     <>
@@ -75,17 +72,19 @@ const PollSelector = () => {
           {
             name: 'videos',
             label: 'Vidéos',
+            url: '/',
             icon: <YouTube fontSize="small" />,
           },
           {
-            name: 'elections_2022',
+            name: 'presidentielle2022',
             label: 'Élections 2022',
+            url: '/presidentielle2022/',
             icon: <HowToVote fontSize="small" />,
           },
         ].map((elem) => (
           <MenuItem
             key={elem.name}
-            data-poll-name={elem.name}
+            data-poll-url={elem.url}
             onClick={onItemSelect}
             selected={elem.name === currentPoll}
           >
