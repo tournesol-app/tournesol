@@ -351,6 +351,7 @@ paths:
         schema:
           type: string
           enum:
+          - candidate_fr_2022
           - video
         description: Type of entities to return
       - in: query
@@ -387,6 +388,7 @@ paths:
         schema:
           type: string
           enum:
+          - candidate_fr_2022
           - video
         description: Type of entities to return
       - in: query
@@ -2807,7 +2809,7 @@ components:
       properties:
         uid:
           type: string
-          pattern: yt:[A-Za-z0-9-_]{11}$
+          maxLength: 144
         type:
           allOf:
           - $ref: '#/components/schemas/TypeEnum'
@@ -2835,7 +2837,7 @@ components:
         uid:
           type: string
           minLength: 1
-          pattern: yt:[A-Za-z0-9-_]{11}$
+          maxLength: 144
       required:
       - uid
     RelatedVideo:
@@ -2895,7 +2897,7 @@ components:
           nullable: true
         video_id:
           type: string
-          pattern: ^[A-Za-z0-9-_]{11}$
+          pattern: ^([A-Za-z0-9-_]{11})$
       required:
       - description
       - duration
@@ -2921,7 +2923,7 @@ components:
         video_id:
           type: string
           minLength: 1
-          pattern: ^[A-Za-z0-9-_]{11}$
+          pattern: ^([A-Za-z0-9-_]{11})$
       required:
       - video_id
     ReligionEnum:
@@ -3256,6 +3258,7 @@ components:
     TypeEnum:
       enum:
       - video
+      - candidate_fr_2022
       type: string
     UserProfile:
       type: object
@@ -3660,7 +3663,7 @@ components:
         video_id:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^[A-Za-z0-9-_]{11}$
+          pattern: ^([A-Za-z0-9-_]{11})$
       required:
       - description
       - duration
@@ -3694,7 +3697,7 @@ components:
           type: string
           minLength: 1
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^[A-Za-z0-9-_]{11}$
+          pattern: ^([A-Za-z0-9-_]{11})$
       required:
       - video_id
     VideoSerializerWithCriteria:
@@ -3750,7 +3753,7 @@ components:
         video_id:
           type: string
           description: Video ID from YouTube URL, matches ^[A-Za-z0-9-_]{11}$
-          pattern: ^[A-Za-z0-9-_]{11}$
+          pattern: ^([A-Za-z0-9-_]{11})$
         tournesol_score:
           type: number
           format: float
