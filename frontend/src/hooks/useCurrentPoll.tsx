@@ -104,6 +104,7 @@ export const useCurrentPoll = () => {
 
   return {
     ...contextValue,
+    baseUrl: pollOptions?.path.replace(/\/+$/g, ''),
     criterias: poll?.criterias ?? [],
     options: pollOptions,
     getCriteriaLabel,

@@ -1,14 +1,13 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { VideoObject } from 'src/utils/types';
 
-const VideoCardTitle = ({
-  video,
+const EntityCardTitle = ({
+  title,
   compact = true,
   titleMaxLines = 3,
   ...rest
 }: {
-  video: VideoObject;
+  title: string;
   compact?: boolean;
   titleMaxLines?: number;
   [propName: string]: unknown;
@@ -27,13 +26,13 @@ const VideoCardTitle = ({
           WebkitBoxOrient: 'vertical',
         }}
         variant={compact ? 'body1' : 'h6'}
-        title={video.name}
+        title={title}
         {...rest}
       >
-        {video.name}
+        {title}
       </Typography>
     </Box>
   );
 };
 
-export default VideoCardTitle;
+export default EntityCardTitle;

@@ -4,17 +4,17 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
-import VideoCard, { EmptyVideoCard } from 'src/features/videos/VideoCard';
+import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
-import { videoFromRelatedEntity } from '../../utils/entity';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import AutoEntityButton from './AutoEntityButton';
 
 import VideoInput from './VideoInput';
+import EntityCard from 'src/components/entity/EntityCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -186,13 +186,9 @@ const VideoSelector = ({
       </Box>
 
       {rating ? (
-        <VideoCard
-          compact
-          video={videoFromRelatedEntity(rating.entity)}
-          settings={toggleAction}
-        />
+        <EntityCard compact entity={rating.entity} settings={toggleAction} />
       ) : (
-        <EmptyVideoCard compact loading={loading} />
+        <EmptyEntityCard compact loading={loading} />
       )}
     </div>
   );
