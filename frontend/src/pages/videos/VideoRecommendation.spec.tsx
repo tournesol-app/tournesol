@@ -18,12 +18,12 @@ jest.mock('src/features/videos/VideoList', () => VideoList);
 
 describe('VideoRecommendationPage', () => {
   let history: ReturnType<typeof createMemoryHistory>;
-  let pushSpy: ReturnType<typeof jest.spyOn>;
+  let historySpy: ReturnType<typeof jest.spyOn>;
   let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
   let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
   beforeEach(() => {
     history = createMemoryHistory();
-    pushSpy = jest.spyOn(history, 'push');
+    historySpy = jest.spyOn(history, 'replace');
     navigatorLanguagesGetter = jest.spyOn(window.navigator, 'languages', 'get');
     getRecommendedVideosSpy = jest
       .spyOn(RecommendationApi, 'getRecommendedVideos')
@@ -43,7 +43,7 @@ describe('VideoRecommendationPage', () => {
     navigatorLanguagesGetter.mockReturnValue(['fr', 'en-US']);
     await act(async () => component());
 
-    expect(pushSpy).toHaveBeenLastCalledWith({
+    expect(historySpy).toHaveBeenLastCalledWith({
       search: 'language=fr%2Cen',
     });
     expect(loadRecommendationsLanguages()).toEqual('fr,en');
@@ -59,7 +59,7 @@ describe('VideoRecommendationPage', () => {
     saveRecommendationsLanguages('de');
     await act(async () => component());
 
-    expect(pushSpy).toHaveBeenLastCalledWith({
+    expect(historySpy).toHaveBeenLastCalledWith({
       search: 'language=de',
     });
     expect(loadRecommendationsLanguages()).toEqual('de');
@@ -74,10 +74,9 @@ describe('VideoRecommendationPage', () => {
     navigatorLanguagesGetter.mockReturnValue(['fr', 'en-US']);
     saveRecommendationsLanguages('de');
     history.push({ search: 'language=fr' });
-    (history.push as jest.Mock).mockClear();
     await act(async () => component());
 
-    expect(pushSpy).not.toHaveBeenCalled();
+    expect(historySpy).not.toHaveBeenCalled();
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
