@@ -28,9 +28,8 @@ import {
 } from 'src/utils/video';
 import VideoCardScores from './VideoCardScores';
 import VideoCardTitle from './VideoCardTitle';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   youtube_complements: {
     margin: '4px 0',
     display: 'flex',
@@ -69,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   loadingEffect: {
     animation: '1.2s ease-out infinite alternate $scaling',
   },
-}));
+});
 
 const mainSx = {
   margin: 0,
@@ -167,7 +166,8 @@ function VideoCard({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const videoId = video.video_id;
+
+  const videoId = videoIdFromEntity(video);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'), {
     noSsr: true,
@@ -306,7 +306,7 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
       alignItems="center"
       gap={1}
       height="70px"
-      className={classes.main}
+      sx={mainSx}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
         <img

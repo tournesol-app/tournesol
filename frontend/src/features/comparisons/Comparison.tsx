@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-<<<<<<< HEAD
 import {
   CircularProgress,
   Grid,
@@ -11,10 +10,6 @@ import {
   Box,
   useTheme,
 } from '@mui/material';
-=======
-import makeStyles from '@mui/styles/makeStyles';
-import { CircularProgress, Grid, Typography, Card } from '@mui/material';
->>>>>>> 2df96fb9... wip: video selector with autocomplete
 
 import { useNotifications } from 'src/hooks';
 import { UsersService, ComparisonRequest } from 'src/services/openapi';
@@ -26,7 +21,6 @@ import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { idFromUid } from 'src/utils/video';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-<<<<<<< HEAD
 const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
   vidB: 'uidB',
@@ -63,23 +57,6 @@ const rewriteLegacyParameters = (
 
   return searchParams;
 };
-=======
-const useStyles = makeStyles(() => ({
-  centering: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    paddingTop: 16,
-  },
-  content: {
-    maxWidth: '880px',
-    gap: '8px',
-  },
-  card: {
-    alignSelf: 'start',
-  },
-}));
->>>>>>> 2df96fb9... wip: video selector with autocomplete
 
 /**
  * The comparison UI.
@@ -90,8 +67,6 @@ const useStyles = makeStyles(() => ({
  * these new video ID in the URL parameters.
  */
 const Comparison = () => {
-  const theme = useTheme();
-
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();

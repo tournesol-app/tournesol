@@ -34,15 +34,15 @@ import SelectorListbox from './SelectorListbox';
 import SelectorPopper from './SelectorPopper';
 import VideoInput from './VideoInput';
 
-export const AutocompleteContext = React.createContext<{
-  open: boolean;
-  setOpen: (x: boolean) => void;
-}>({
-  open: false,
-  setOpen: function () {
-    return;
-  },
-});
+// export const AutocompleteContext = React.createContext<{
+//   open: boolean;
+//   setOpen: (x: boolean) => void;
+// }>({
+//   open: false,
+//   setOpen: function () {
+//     return;
+//   },
+// });
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -211,50 +211,6 @@ const VideoSelector = ({
         <VideoInput value={videoId} onChange={handleChange} />
       </Box>
 
-      {/* <AutocompleteContext.Provider
-          value={{
-            open,
-            setOpen,
-          }}
-        >
-          <Autocomplete
-            selectOnFocus
-            freeSolo
-            forcePopupIcon
-            disableClearable
-            disablePortal
-            sx={{ flex: 1 }}
-            open={open}
-            onOpen={() => {
-              setOpen(true);
-            }}
-            // onClose={() => {
-            //   setOpen(false);
-            // }}
-            isOptionEqualToValue={(option, value) =>
-              option.video_id === value.video_id
-            }
-            value={{ video_id: videoId }}
-            onInputChange={handleChange}
-            filterOptions={(x) => x}
-            ListboxComponent={SelectorListbox}
-            PopperComponent={SelectorPopper}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder={t('videoSelector.pasteUrlOrVideoId')}
-                variant="standard"
-              />
-            )}
-            getOptionLabel={(option) => option.video_id}
-            options={options}
-            renderOption={(props, option) => (
-              <li {...props}>
-                <VideoCardFromId videoId={option.video_id} variant="row" />
-              </li>
-            )}
-          />
-        </AutocompleteContext.Provider> */}
       {rating ? (
         <VideoCard
           compact

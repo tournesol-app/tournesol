@@ -3,7 +3,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Box, Theme } from '@mui/system';
 import { VideoObject } from 'src/utils/types';
 import { makeStyles } from '@mui/styles';
-import { getCriteriaName } from 'src/utils/constants';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 interface Props {
   video: VideoObject;
@@ -45,11 +45,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 const VideoCardScores = ({ video }: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { getCriteriaLabel } = useCurrentPoll();
 
   const nbRatings = video.rating_n_ratings;
   const nbContributors = video.rating_n_contributors;
 
-  let total_score = 0;
   let max_score = -Infinity;
   let min_score = Infinity;
   let max_criteria = '';
@@ -57,7 +57,6 @@ const VideoCardScores = ({ video }: Props) => {
 
   if ('criteria_scores' in video) {
     video.criteria_scores?.forEach((criteria) => {
-      total_score += criteria.score != undefined ? 10 * criteria.score : 0;
       if (
         criteria.score != undefined &&
         criteria.score > max_score &&
@@ -85,7 +84,7 @@ const VideoCardScores = ({ video }: Props) => {
       columnGap="12px"
       paddingBottom={1}
     >
-      {'criteria_scores' in video && (
+      {'tournesol_score' in video && video.tournesol_score != null && (
         <Box
           display="flex"
           alignItems="center"
@@ -98,7 +97,9 @@ const VideoCardScores = ({ video }: Props) => {
             title="Overall score"
             width={32}
           />
-          <span className={classes.nb_tournesol}>{total_score.toFixed(0)}</span>
+          <span className={classes.nb_tournesol}>
+            {video.tournesol_score.toFixed(0)}
+          </span>
         </Box>
       )}
 
@@ -128,13 +129,13 @@ const VideoCardScores = ({ video }: Props) => {
           <img
             src={`/svg/${max_criteria}.svg`}
             alt={max_criteria}
-            title={getCriteriaName(t, max_criteria)}
+            title={getCriteriaLabel(max_criteria)}
           />
           <span>{t('video.criteriaRatedLow')}</span>
           <img
             src={`/svg/${min_criteria}.svg`}
             alt={min_criteria}
-            title={getCriteriaName(t, min_criteria)}
+            title={getCriteriaLabel(min_criteria)}
           />
         </Box>
       )}
