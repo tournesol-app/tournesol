@@ -2,7 +2,6 @@ import { Grid } from '@mui/material';
 import { StatsService } from 'src/services/openapi';
 import type { Statistics } from 'src/services/openapi';
 import React, { useEffect, useState } from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 
