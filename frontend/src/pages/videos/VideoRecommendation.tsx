@@ -61,7 +61,7 @@ function VideoRecommendationPage() {
       }
 
       searchParams.set('language', loadedLanguages);
-      history.push({ search: searchParams.toString() });
+      history.replace({ search: searchParams.toString() });
       return;
     }
 
