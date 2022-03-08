@@ -3,18 +3,16 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Tooltip, Typography, Box, Switch, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { UsersService, ContributorRating } from 'src/services/openapi';
-import { idFromUid } from 'src/utils/video';
-import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const setPublicStatus = async (
   pollName: string,
-  videoId: string,
+  uid: string,
   isPublic: boolean
 ) => {
   return await UsersService.usersMeContributorRatingsPartialUpdate({
     pollName,
-    uid: UID_YT_NAMESPACE + videoId,
+    uid,
     requestBody: {
       is_public: isPublic,
     },
@@ -22,12 +20,12 @@ const setPublicStatus = async (
 };
 
 export const UserRatingPublicToggle = ({
-  videoId,
+  uid,
   nComparisons,
   isPublic,
   onChange,
 }: {
-  videoId: string;
+  uid: string;
   nComparisons: number;
   isPublic: boolean;
   onChange?: (rating: ContributorRating) => void;
@@ -38,12 +36,12 @@ export const UserRatingPublicToggle = ({
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const newStatus = e.target.checked;
-      const rating = await setPublicStatus(pollName, videoId, newStatus);
+      const rating = await setPublicStatus(pollName, uid, newStatus);
       if (onChange) {
         onChange(rating);
       }
     },
-    [onChange, pollName, videoId]
+    [onChange, pollName, uid]
   );
 
   return (
@@ -53,7 +51,7 @@ export const UserRatingPublicToggle = ({
           <Link
             color="inherit"
             component={RouterLink}
-            to={`/comparisons/?video=${videoId}`}
+            to={`/comparisons/?uid=${uid}`}
           >
             <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
               {{ count: nComparisons }} comparison by you
@@ -98,16 +96,15 @@ export const UserRatingPublicToggle = ({
 };
 
 interface RatingsContextValue {
-  getContributorRating?: (videoId: string) => ContributorRating;
+  getContributorRating?: (uid: string) => ContributorRating;
   onChange?: (rating?: ContributorRating) => void;
 }
 
 export const RatingsContext = React.createContext<RatingsContextValue>({});
 
 export const PublicStatusAction = ({ uid }: { uid: string }) => {
-  const videoId = idFromUid(uid);
   const { getContributorRating, onChange } = useContext(RatingsContext);
-  const contributorRating = getContributorRating?.(videoId);
+  const contributorRating = getContributorRating?.(uid);
   if (contributorRating == null || contributorRating.is_public == null) {
     return null;
   }
@@ -115,7 +112,7 @@ export const PublicStatusAction = ({ uid }: { uid: string }) => {
     <UserRatingPublicToggle
       nComparisons={contributorRating.n_comparisons}
       isPublic={contributorRating.is_public}
-      videoId={videoId}
+      uid={uid}
       onChange={onChange}
     />
   );

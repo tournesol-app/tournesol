@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Box, Theme } from '@mui/system';
+import { Box, Theme, Stack, Tooltip } from '@mui/material';
+import { Warning as WarningIcon } from '@mui/icons-material';
 import { VideoObject } from 'src/utils/types';
 import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -32,14 +33,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '0.9em',
     color: '#B38B00',
   },
-  rated: {
-    fontFamily: 'Poppins',
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    fontSize: '0.9em',
-    color: '#847F6E',
-    gap: '8px',
-  },
 }));
 
 const VideoCardScores = ({ video }: Props) => {
@@ -54,6 +47,16 @@ const VideoCardScores = ({ video }: Props) => {
   let min_score = Infinity;
   let max_criteria = '';
   let min_criteria = '';
+
+  let unsafeCause = '';
+  if ('tournesol_score' in video) {
+    if (nbContributors != null && nbContributors <= 1) {
+      unsafeCause = t('video.unsafeNotEnoughContributor');
+    } else if (video.tournesol_score && video.tournesol_score < 0) {
+      unsafeCause = t('video.unsafeNegativeRating');
+    }
+  }
+  const isUnsafe = unsafeCause !== '';
 
   if ('criteria_scores' in video) {
     video.criteria_scores?.forEach((criteria) => {
@@ -76,6 +79,15 @@ const VideoCardScores = ({ video }: Props) => {
     });
   }
 
+  const tournesolScoreTitle = isUnsafe ? (
+    <Stack direction="row" alignItems="center" gap={1}>
+      <WarningIcon />
+      <span>{unsafeCause}</span>
+    </Stack>
+  ) : (
+    ''
+  );
+
   return (
     <Box
       display="flex"
@@ -85,22 +97,30 @@ const VideoCardScores = ({ video }: Props) => {
       paddingBottom={1}
     >
       {'tournesol_score' in video && video.tournesol_score != null && (
-        <Box
-          display="flex"
-          alignItems="center"
-          data-testid="video-card-overall-score"
-        >
-          <img
-            className="tournesol"
-            src={'/svg/tournesol.svg'}
-            alt="logo"
-            title="Overall score"
-            width={32}
-          />
-          <span className={classes.nb_tournesol}>
-            {video.tournesol_score.toFixed(0)}
-          </span>
-        </Box>
+        <Tooltip title={tournesolScoreTitle} placement="right">
+          <Box
+            display="flex"
+            alignItems="center"
+            data-testid="video-card-overall-score"
+            {...(isUnsafe && {
+              sx: {
+                filter: 'grayscale(100%)',
+                opacity: 0.6,
+              },
+            })}
+          >
+            <img
+              className="tournesol"
+              src={'/svg/tournesol.svg'}
+              alt="logo"
+              title="Overall score"
+              width={32}
+            />
+            <span className={classes.nb_tournesol}>
+              {video.tournesol_score.toFixed(0)}
+            </span>
+          </Box>
+        </Tooltip>
       )}
 
       {nbRatings != null && nbRatings > 0 && (
@@ -123,7 +143,12 @@ const VideoCardScores = ({ video }: Props) => {
           data-testid="video-card-minmax-criterias"
           display="flex"
           alignItems="center"
-          className={classes.rated}
+          sx={{
+            fontFamily: 'Poppins',
+            fontSize: '0.9em',
+            color: 'text.secondary',
+            gap: '6px',
+          }}
         >
           <span>{t('video.criteriaRatedHigh')}</span>
           <img
@@ -131,6 +156,7 @@ const VideoCardScores = ({ video }: Props) => {
             alt={max_criteria}
             title={getCriteriaLabel(max_criteria)}
           />
+          <span />
           <span>{t('video.criteriaRatedLow')}</span>
           <img
             src={`/svg/${min_criteria}.svg`}

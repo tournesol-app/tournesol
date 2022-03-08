@@ -12,9 +12,8 @@ import {
   useTheme,
   Tooltip,
   Link,
-  Stack,
+  Theme,
 } from '@mui/material';
-import { Warning as WarningIcon } from '@mui/icons-material';
 
 import { ActionList, VideoObject } from 'src/utils/types';
 import { useVideoMetadata } from './VideoApi';
@@ -29,18 +28,15 @@ import {
 import VideoCardScores from './VideoCardScores';
 import VideoCardTitle from './VideoCardTitle';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   youtube_complements: {
-    margin: '4px 0',
+    marginBottom: '8px',
     display: 'flex',
     flexWrap: 'wrap',
     alignContent: 'space-between',
     fontFamily: 'Poppins',
-    fontStyle: 'italic',
-    fontWeight: 'normal',
     fontSize: '0.8em',
-    lineHeight: '19px',
-    color: '#B6B1A1',
+    color: theme.palette.neutral.main,
   },
   youtube_complements_p: {
     marginRight: '12px',
@@ -68,7 +64,7 @@ const useStyles = makeStyles({
   loadingEffect: {
     animation: '1.2s ease-out infinite alternate $scaling',
   },
-});
+}));
 
 const mainSx = {
   margin: 0,
@@ -125,33 +121,6 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   );
 });
 
-const SafeTournesolScoreWrapper = function SafeTournesolScoreWrapper({
-  unsafe,
-  unsafe_cause,
-  children,
-}: {
-  unsafe: boolean;
-  unsafe_cause: string;
-  children?: React.ReactNode;
-}) {
-  const title = (
-    <Stack direction="row" alignItems="center" gap={1}>
-      <WarningIcon />
-      <span>{unsafe_cause}</span>
-    </Stack>
-  );
-
-  return unsafe ? (
-    <Tooltip title={title} placement="right">
-      <span>
-        <React.Fragment>{children}</React.Fragment>
-      </span>
-    </Tooltip>
-  ) : (
-    <React.Fragment>{children}</React.Fragment>
-  );
-};
-
 function VideoCard({
   video,
   actions = [],
@@ -175,12 +144,12 @@ function VideoCard({
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
   return (
-    <Grid container spacing={1} sx={mainSx}>
+    <Grid container sx={mainSx}>
       <Grid
         item
         xs={12}
         sm={compact ? 12 : 'auto'}
-        style={{ aspectRatio: '16 / 9', padding: 0, width: '240px' }}
+        sx={{ aspectRatio: '16 / 9', width: '240px !important' }}
       >
         <ReactPlayer
           url={`https://youtube.com/watch?v=${videoId}`}
@@ -198,11 +167,14 @@ function VideoCard({
         item
         xs={12}
         sm={compact ? 12 : true}
+        sx={{
+          padding: 1,
+        }}
         data-testid="video-card-info"
         container
         direction="column"
       >
-        <VideoCardTitle video={video} />
+        <VideoCardTitle video={video} compact={compact} />
         <div className={classes.youtube_complements}>
           {video.views && (
             <span className={classes.youtube_complements_p}>
@@ -244,7 +216,6 @@ function VideoCard({
           display: 'flex',
           alignItems: 'end',
           flexDirection: 'column',
-          padding: '4px !important',
           [theme.breakpoints.down('sm')]: {
             flexDirection: 'row',
           },
