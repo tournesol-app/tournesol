@@ -5,7 +5,7 @@ import { Grid, Typography, Box } from '@mui/material';
 
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
-import StatsSection from 'src/components/StatsSection';
+import UsageStatsSection from 'src/components/UsageStatsSection';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,7 +107,7 @@ const HomePage = () => {
         <Grid item xs={12} className={classes.container}>
           <ContributeSection />
         </Grid>
-        <StatsSection />
+        <UsageStatsSection />
       </Grid>
     </div>
   );
