@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   Button,
   Grid,
   Hidden,
+  ListItemIcon,
   Menu,
   MenuItem,
   Typography,
 } from '@mui/material';
+import { HowToVote, YouTube } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const PollSelector = () => {
-  const { name: pollName } = useCurrentPoll();
+  const { name: currentPoll } = useCurrentPoll();
+  const [selectedPoll, setSelectedPoll] = useState('');
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -23,6 +27,15 @@ const PollSelector = () => {
   const onMenuClose = () => {
     setMenuAnchorEl(null);
   };
+
+  const onItemSelect = (event: React.MouseEvent<HTMLElement>) => {
+    const poll = event.currentTarget.dataset.pollName || '';
+    setSelectedPoll(poll);
+  };
+
+  if (selectedPoll) {
+    return <Redirect push to={`/${selectedPoll}/`} />;
+  }
 
   return (
     <>
@@ -38,6 +51,7 @@ const PollSelector = () => {
               sx={{
                 color: 'black',
                 fontSize: '1.4em !important',
+                fontWeight: 'bold',
                 lineHeight: 1,
                 padding: 0,
                 textTransform: 'none',
@@ -45,7 +59,7 @@ const PollSelector = () => {
             >
               Tournesol
             </Button>
-            <Typography variant="subtitle1">{pollName}</Typography>
+            <Typography variant="subtitle1">{currentPoll}</Typography>
           </Grid>
         </Grid>
       </Hidden>
@@ -57,8 +71,28 @@ const PollSelector = () => {
         open={Boolean(menuAnchorEl)}
         onClose={onMenuClose}
       >
-        <MenuItem>videos</MenuItem>
-        <MenuItem>élection 2022</MenuItem>
+        {[
+          {
+            name: 'videos',
+            label: 'Vidéos',
+            icon: <YouTube fontSize="small" />,
+          },
+          {
+            name: 'elections_2022',
+            label: 'Élections 2022',
+            icon: <HowToVote fontSize="small" />,
+          },
+        ].map((elem) => (
+          <MenuItem
+            key={elem.name}
+            data-poll-name={elem.name}
+            onClick={onItemSelect}
+            selected={elem.name === currentPoll}
+          >
+            <ListItemIcon>{elem.icon}</ListItemIcon>
+            {elem.label}
+          </MenuItem>
+        ))}
       </Menu>
     </>
   );
