@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -14,8 +14,9 @@ import { Menu } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import AccountInfo from './AccountInfo';
-import { Typography, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import PollSelector from './PollSelector';
 
 export const topBarHeight = 80;
 
@@ -58,7 +59,6 @@ const useStyles = makeStyles(() => ({
 const Logo = () => {
   const drawerOpen = useAppSelector(selectFrame);
   const dispatch = useAppDispatch();
-  const { name: pollName } = useCurrentPoll();
 
   return (
     <Grid
@@ -77,22 +77,7 @@ const Logo = () => {
       >
         <Menu />
       </IconButton>
-      <Link to="/">
-        <Hidden smDown>
-          <Grid container>
-            <Grid item>
-              <img src="/svg/LogoSmall.svg" alt="logo" />
-            </Grid>
-            <Grid item>
-              <Typography variant="h3">Tournesol</Typography>
-              <Typography variant="subtitle1">{pollName}</Typography>
-            </Grid>
-          </Grid>
-        </Hidden>
-        <Hidden smUp>
-          <img src="/svg/LogoSmall.svg" alt="logo" />
-        </Hidden>
-      </Link>
+      <PollSelector />
     </Grid>
   );
 };
