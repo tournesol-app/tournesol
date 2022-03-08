@@ -5,7 +5,7 @@ import { Grid, Typography, Box } from '@mui/material';
 
 import ExtensionSection from './ExtensionSection';
 import ContributeSection from './ContributeSection';
-import StatsSection from 'src/components/Statssection';
+import StatsSection from 'src/components/StatsSection';
 
 const useStyles = makeStyles((theme) => ({
   root: {

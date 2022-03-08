@@ -3,7 +3,8 @@ import { StatsService } from 'src/services/openapi';
 import type { Statistics } from 'src/services/openapi';
 import React, { useEffect, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Box } from '@mui/system';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/system/Box';
 
 interface statsProp {
   text: string;
@@ -20,26 +21,24 @@ interface statsData {
   lastMonthComparisonCount: number;
 }
 
-const StatsUi = (props: statsProp) => {
+const StatsUi = ({ text, count, lastMonthCount }: statsProp) => {
   return (
-    <Grid item xs={4}>
-      <Box component="span" sx={{ fontSize: '12px' }}>
-        {props.text}
-      </Box>{' '}
+    <Grid item xs={12} sm={4}>
+      <Typography component="span" sx={{ fontSize: '24px' }}>
+        {text}
+      </Typography>
       <br />
-      <Box component="span" sx={{ fontSize: '50px', lineHeight: '1em' }}>
-        {' '}
-        {props.count}{' '}
-      </Box>{' '}
+      <Typography component="span" sx={{ fontSize: '50px', lineHeight: '1em' }}>
+        {count}
+      </Typography>
       <br />
-      {
-        <Box
-          component="span"
-          sx={props.lastMonthCount >= 0 ? { color: 'black' } : { color: 'red' }}
-        >
-          {(props.lastMonthCount >= 0 ? '+ ' : '') + props.lastMonthCount}
-        </Box>
-      }
+      <Typography
+        component="span"
+        title={`New ${text} in the last month`}
+        sx={{ fontSize: '24px' }}
+      >
+        + {lastMonthCount}
+      </Typography>
     </Grid>
   );
 };
@@ -53,8 +52,6 @@ const StatsSection = () => {
     comparisonCount: 0,
     lastMonthComparisonCount: 0,
   });
-
-  const matches = useMediaQuery('(min-width:600px)');
 
   useEffect(() => {
     StatsService.statsRetrieve()
@@ -74,27 +71,35 @@ const StatsSection = () => {
   }, []);
 
   return (
-    <Grid
-      container
-      sx={{ background: '#1282B2', color: 'white', textAlign: 'center' }}
-      direction={!matches ? 'column' : 'row'}
+    <Box
+      sx={{
+        background: '#1282B2',
+        color: 'white',
+        textAlign: 'center',
+        py: 4,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
     >
-      <StatsUi
-        text="Active users"
-        count={data.userCount}
-        lastMonthCount={data.lastMonthUserCount}
-      />
-      <StatsUi
-        text="Comparisons"
-        count={data.comparisonCount}
-        lastMonthCount={data.lastMonthComparisonCount}
-      />
-      <StatsUi
-        text="Rated videos"
-        count={data.videoCount}
-        lastMonthCount={data.lastMonthVideoCount}
-      />
-    </Grid>
+      <Grid container sx={{ maxWidth: 800 }}>
+        <StatsUi
+          text="Active users"
+          count={data.userCount}
+          lastMonthCount={data.lastMonthUserCount}
+        />
+        <StatsUi
+          text="Comparisons"
+          count={data.comparisonCount}
+          lastMonthCount={data.lastMonthComparisonCount}
+        />
+        <StatsUi
+          text="Rated videos"
+          count={data.videoCount}
+          lastMonthCount={data.lastMonthVideoCount}
+        />
+      </Grid>
+    </Box>
   );
 };
 
