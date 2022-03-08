@@ -1,6 +1,7 @@
 import { TFunction } from 'react-i18next';
 
 export const YOUTUBE_POLL_NAME = 'videos';
+export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
 
 const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;
@@ -58,13 +59,13 @@ export const polls = [
     The most specific paths should be listed first,
     to be routed correctly.
   */
-  // {
-  //   name: 'presidentielle',
-  //   path: '/presidentielle',
-  //   withSearchBar: false,
-  //   topBarBackground:
-  //     'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
-  // },
+  {
+    name: PRESIDENTIELLE_2022_POLL_NAME,
+    path: '/presidentielle2022/',
+    withSearchBar: false,
+    topBarBackground:
+      'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
+  },
   {
     name: YOUTUBE_POLL_NAME,
     path: '/',

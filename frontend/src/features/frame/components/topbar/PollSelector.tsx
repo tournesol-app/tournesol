@@ -5,6 +5,7 @@ import {
   Grid,
   Hidden,
   ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Typography,
@@ -14,7 +15,7 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const PollSelector = () => {
   const history = useHistory();
-  const { name: currentPoll } = useCurrentPoll();
+  const { name: currentPoll, setPollName } = useCurrentPoll();
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -29,8 +30,8 @@ const PollSelector = () => {
   };
 
   const onItemSelect = (event: React.MouseEvent<HTMLElement>) => {
-    const poll = event.currentTarget.dataset.pollUrl || '';
-    history.push(poll);
+    setPollName(event.currentTarget.dataset.pollName || '');
+    history.push(event.currentTarget.dataset.pollUrl || '');
     onMenuClose();
   };
 
@@ -77,7 +78,7 @@ const PollSelector = () => {
           },
           {
             name: 'presidentielle2022',
-            label: 'Élections 2022',
+            label: 'Élection FR 2022',
             url: '/presidentielle2022/',
             icon: <HowToVote fontSize="small" />,
           },
@@ -85,11 +86,12 @@ const PollSelector = () => {
           <MenuItem
             key={elem.name}
             data-poll-url={elem.url}
+            data-poll-name={elem.name}
             onClick={onItemSelect}
             selected={elem.name === currentPoll}
           >
             <ListItemIcon>{elem.icon}</ListItemIcon>
-            {elem.label}
+            <ListItemText>{elem.label}</ListItemText>
           </MenuItem>
         ))}
       </Menu>
