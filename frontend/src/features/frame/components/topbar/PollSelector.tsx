@@ -1,22 +1,50 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Grid, Hidden, Typography } from '@mui/material';
+import {
+  Button,
+  Grid,
+  Hidden,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const PollSelector = () => {
   const { name: pollName } = useCurrentPoll();
 
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const displayMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const onMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
   return (
-    <Link to="/">
+    <>
       <Hidden smDown>
         <Grid container alignItems="center" spacing={1}>
           <Grid item>
             <img src="/svg/LogoSmall.svg" alt="logo" />
           </Grid>
           <Grid item>
-            <Typography variant="h3" sx={{ fontSize: '1.4em !important' }}>
+            <Button
+              onClick={displayMenu}
+              variant="text"
+              sx={{
+                color: 'black',
+                fontSize: '1.4em !important',
+                lineHeight: 1,
+                padding: 0,
+                textTransform: 'none',
+              }}
+            >
               Tournesol
-            </Typography>
+            </Button>
             <Typography variant="subtitle1">{pollName}</Typography>
           </Grid>
         </Grid>
@@ -24,7 +52,15 @@ const PollSelector = () => {
       <Hidden smUp>
         <img src="/svg/LogoSmall.svg" alt="logo" />
       </Hidden>
-    </Link>
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={onMenuClose}
+      >
+        <MenuItem>videos</MenuItem>
+        <MenuItem>élection 2022</MenuItem>
+      </Menu>
+    </>
   );
 };
 
