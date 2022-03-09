@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { HowToVote, YouTube } from '@mui/icons-material';
+import { YouTube } from '@mui/icons-material';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -55,11 +55,13 @@ export const getLanguageName = (t: TFunction, language: string) => {
   }
 };
 
+/*
+  The most specific paths should be listed first,
+  to be routed correctly.
+*/
 export const polls = [
-  /*
-    The most specific paths should be listed first,
-    to be routed correctly.
-  */
+  /* disable the poll presidentielle2022 for now
+     as it doesn't exist in the back end
   {
     name: PRESIDENTIELLE_2022_POLL_NAME,
     // could be translated by the back end
@@ -71,6 +73,7 @@ export const polls = [
     topBarBackground:
       'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
   },
+  */
   {
     name: YOUTUBE_POLL_NAME,
     // could be translated by the back end
