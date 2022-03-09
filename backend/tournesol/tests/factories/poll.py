@@ -8,7 +8,7 @@ class PollFactory(DjangoModelFactory):
     class Meta:
         model = Poll
 
-    name = factory.Sequence(lambda n: "Poll #%s" % n)
+    name = factory.Sequence(lambda n: "poll_%s" % n)
     entity_type = "video"
 
 

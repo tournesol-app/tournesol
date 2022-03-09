@@ -10,7 +10,7 @@ from rest_framework.serializers import ModelSerializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
+from tournesol.entities.video import YOUTUBE_UID_NAMESPACE, VideoEntity
 from tournesol.models import Entity, EntityCriteriaScore
 from tournesol.utils.api_youtube import VideoNotFound
 
@@ -204,13 +204,13 @@ class EntityNoExtraFieldSerializer(EntitySerializer):
 
 class RelatedEntitySerializer(EntitySerializer):
     """
-    An Entity serializer that will create the Entity object on validation
-    if it does not exist in the database yet.
+    An Entity serializer that will lookup and possibly create the Entity
+    object on validation, if it does not exist in the database yet.
 
     Only the field `uid` is provided when using write HTTP methods.
 
     Used by ModelSerializer(s) having one or more nested relations with Entity,
-    and having the constraint to ensure that video instances exist before
+    and having the constraint to ensure that entity instances exist before
     they can be saved properly.
     """
 
@@ -249,15 +249,20 @@ class RelatedEntitySerializer(EntitySerializer):
         return value
 
     def validate(self, data):
-        # XXX: should not be tightly related to the video entity type
-        video_id = data.get("uid").split(UID_DELIMITER)[1]
+        uid = data.get("uid")
         try:
-            Entity.get_from_video_id(video_id=video_id)
+            Entity.objects.get(uid=uid)
         except ObjectDoesNotExist:
-            try:
-                Entity.create_from_video_id(video_id)
-            except VideoNotFound:
-                raise ValidationError(
-                    "The entity has not been found. `uid` may be incorrect."
-                )
+            created = False
+            if self.context["poll"].entity_type == VideoEntity.name:
+                # A video entity can be created dynamically from a YouTube video id
+                video_id = uid.split(UID_DELIMITER)[1]
+                try:
+                    Entity.create_from_video_id(video_id)
+                    created = True
+                except VideoNotFound:
+                    pass
+            if not created:
+                raise ValidationError("The entity has not been found. `uid` may be incorrect.")
+
         return data
