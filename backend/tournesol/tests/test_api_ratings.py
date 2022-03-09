@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from core.tests.factories.user import UserFactory
 from tournesol.models import ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.poll import PollFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
@@ -123,6 +124,17 @@ class RatingApi(TestCase):
             poll=self.poll_videos, user=self.user1, entity__uid="yt:NeADlWSDFAQ"
         )
         self.assertEqual(rating.is_public, False)
+
+    def test_authenticated_cannot_create_with_unknonwn_non_video_entity(self):
+        poll2 = PollFactory(entity_type="candidate_fr_2022")
+
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            f"/users/me/contributor_ratings/{poll2.name}/",
+            data={"uid": "wd:Q42"},
+            format="json"
+        )
+        self.assertContains(response, "entity has not been found", status_code=status.HTTP_400_BAD_REQUEST)
 
     def test_authenticated_can_create_rating_as_public(self):
         """
