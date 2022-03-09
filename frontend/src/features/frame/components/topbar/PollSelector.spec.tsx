@@ -48,25 +48,30 @@ describe('change password feature', () => {
     return { logos, title, rendered };
   };
 
+  it("doesn't display the menu by default", async () => {
+    setup();
+    expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
+    expect(screen.getByTestId('ArrowDropDownIcon')).toBeInTheDocument();
+  });
+
   it('click on the logo displays the menu', async () => {
     const { logos } = setup();
-    expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
 
     fireEvent.click(logos[0]);
     expect(screen.getAllByRole('menuitem')).toHaveLength(2);
+    expect(screen.getByTestId('ArrowDropUpIcon')).toBeInTheDocument();
   });
 
   it('click on the title displays the menu', async () => {
     const { title } = setup();
-    expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
 
     fireEvent.click(title);
     expect(screen.getAllByRole('menuitem')).toHaveLength(2);
+    expect(screen.getByTestId('ArrowDropUpIcon')).toBeInTheDocument();
   });
 
   it('the menu is closed after a click on an item', async () => {
     const { title } = setup();
-    expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
 
     fireEvent.click(title);
     // then click on item 1
