@@ -216,4 +216,23 @@ describe('Comparison page', () => {
       cy.get('button#expert_submit_btn').should('not.exist');
     });
   });
+
+  describe('access a comparison page', () => {
+    it('redirects legacy video params to corresponding uids', () => {
+      const videoAId = 'u83A7DUNMHs';
+      const videoBId = '6jK9bFWE--g';
+
+      cy.visit(`/comparison/?videoA=${videoAId}&videoB=${videoBId}`);
+      cy.focused().type('user1');
+      cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+
+      cy.location('search').should('contain', `uidA=yt%3A${videoAId}`)
+      cy.location('search').should('contain', `uidB=yt%3A${videoBId}`)
+
+      cy.get('input[placeholder="Paste URL or Video ID"]').first()
+        .should('have.value', `yt:${videoAId}`);
+      cy.get('input[placeholder="Paste URL or Video ID"]').last()
+        .should('have.value', `yt:${videoBId}`);
+    });
+  })
 });
