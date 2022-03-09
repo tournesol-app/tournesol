@@ -10,8 +10,8 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
-import { HowToVote, YouTube } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { polls } from 'src/utils/constants';
 
 const PollSelector = () => {
   const history = useHistory();
@@ -69,31 +69,22 @@ const PollSelector = () => {
         open={Boolean(menuAnchorEl)}
         onClose={onMenuClose}
       >
-        {[
-          {
-            name: 'videos',
-            label: 'Vidéos',
-            url: '/',
-            icon: <YouTube fontSize="small" />,
-          },
-          {
-            name: 'presidentielle2022',
-            label: 'Élection FR 2022',
-            url: '/presidentielle2022/',
-            icon: <HowToVote fontSize="small" />,
-          },
-        ].map((elem) => (
-          <MenuItem
-            key={elem.name}
-            data-poll-url={elem.url}
-            data-poll-name={elem.name}
-            onClick={onItemSelect}
-            selected={elem.name === currentPoll}
-          >
-            <ListItemIcon>{elem.icon}</ListItemIcon>
-            <ListItemText>{elem.label}</ListItemText>
-          </MenuItem>
-        ))}
+        {polls
+          .sort((a, b) => a.displayOrder - b.displayOrder)
+          .map((elem) => (
+            <MenuItem
+              key={elem.name}
+              data-poll-url={elem.path}
+              data-poll-name={elem.name}
+              onClick={onItemSelect}
+              selected={elem.name === currentPoll}
+            >
+              <ListItemIcon>
+                <elem.iconComponent fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{elem.displayName}</ListItemText>
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );

@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next';
+import { HowToVote, YouTube } from '@mui/icons-material';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -61,14 +62,22 @@ export const polls = [
   */
   {
     name: PRESIDENTIELLE_2022_POLL_NAME,
+    // could be translated by the back end
+    displayName: 'Élection FR 2022',
+    displayOrder: 20,
     path: '/presidentielle2022/',
+    iconComponent: HowToVote,
     withSearchBar: false,
     topBarBackground:
       'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
   },
   {
     name: YOUTUBE_POLL_NAME,
+    // could be translated by the back end
+    displayName: 'Videos',
+    displayOrder: 10,
     path: '/',
+    iconComponent: YouTube,
     withSearchBar: true,
     topBarBackground: null,
   },
