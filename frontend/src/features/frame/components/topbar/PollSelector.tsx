@@ -1,9 +1,9 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import {
-  Button,
   Grid,
   Hidden,
+  Link,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -21,7 +21,7 @@ const PollSelector = () => {
     null
   );
 
-  const displayMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const displayMenu = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
   };
 
@@ -30,6 +30,7 @@ const PollSelector = () => {
   };
 
   const onItemSelect = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setPollName(event.currentTarget.dataset.pollName || '');
     history.push(event.currentTarget.dataset.pollUrl || '');
     onMenuClose();
@@ -38,28 +39,31 @@ const PollSelector = () => {
   return (
     <>
       <Hidden smDown>
-        <Grid container alignItems="center" spacing={1}>
-          <Grid item>
-            <img src="/svg/LogoSmall.svg" alt="logo" />
+        {/* use Link to make the area clickable while preserving its accessibility */}
+        <Link
+          onClick={displayMenu}
+          underline="none"
+          sx={{ cursor: 'pointer', color: 'rgb(29, 26, 20)' }}
+        >
+          <Grid container alignItems="center" spacing={1}>
+            <Grid item>
+              <img src="/svg/LogoSmall.svg" alt="logo" />
+            </Grid>
+            <Grid item>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontSize: '1.4em !important',
+                  fontWeight: 'bold',
+                  lineHeight: 1,
+                }}
+              >
+                Tournesol
+              </Typography>
+              <Typography variant="subtitle1">{currentPoll}</Typography>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Button
-              onClick={displayMenu}
-              variant="text"
-              sx={{
-                color: 'black',
-                fontSize: '1.4em !important',
-                fontWeight: 'bold',
-                lineHeight: 1,
-                padding: 0,
-                textTransform: 'none',
-              }}
-            >
-              Tournesol
-            </Button>
-            <Typography variant="subtitle1">{currentPoll}</Typography>
-          </Grid>
-        </Grid>
+        </Link>
       </Hidden>
       <Hidden smUp>
         <img src="/svg/LogoSmall.svg" alt="logo" />
