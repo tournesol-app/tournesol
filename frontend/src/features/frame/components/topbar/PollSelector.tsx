@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import {
+  Box,
   Grid,
   Hidden,
   Link,
@@ -10,6 +11,7 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
+import { ArrowLeft } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { polls } from 'src/utils/constants';
 
@@ -37,13 +39,22 @@ const PollSelector = () => {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        padding: '8px',
+        paddingLeft: 0,
+        '&:hover': { backgroundColor: 'rgba(29, 26, 20, 0.08)' },
+      }}
+    >
       <Hidden smDown>
         {/* use Link to make the area clickable while preserving its accessibility */}
         <Link
           onClick={displayMenu}
           underline="none"
-          sx={{ cursor: 'pointer', color: 'rgb(29, 26, 20)' }}
+          sx={{
+            cursor: 'pointer',
+            color: 'text.primary',
+          }}
         >
           <Grid container alignItems="center" spacing={1}>
             <Grid item>
@@ -60,7 +71,16 @@ const PollSelector = () => {
               >
                 Tournesol
               </Typography>
-              <Typography variant="subtitle1">{currentPoll}</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="subtitle1">{currentPoll}</Typography>
+                <ArrowLeft sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
+              </Box>
             </Grid>
           </Grid>
         </Link>
@@ -90,7 +110,7 @@ const PollSelector = () => {
             </MenuItem>
           ))}
       </Menu>
-    </>
+    </Box>
   );
 };
 
