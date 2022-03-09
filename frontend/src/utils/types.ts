@@ -1,4 +1,5 @@
 import React from 'react';
+import { SvgIconComponent } from '@mui/icons-material';
 import {
   EntityNoExtraField,
   RelatedEntity,
@@ -24,3 +25,14 @@ export type ActionList = Array<
 
 export type RelatedEntityObject = EntityNoExtraField | RelatedEntity;
 export type VideoObject = Video | VideoSerializerWithCriteria;
+
+// a poll that can be displayed by <PollSelector>
+export type SelectablePoll = {
+  name: string;
+  displayOrder: number;
+  path: string;
+  iconComponent: SvgIconComponent;
+  withSearchBar: boolean;
+  topBarBackground: string | null;
+};
+export type SelectablePolls = Array<SelectablePoll>;

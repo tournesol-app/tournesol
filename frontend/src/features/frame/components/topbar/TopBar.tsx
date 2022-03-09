@@ -16,6 +16,7 @@ import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import AccountInfo from './AccountInfo';
 import { useTheme } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { polls } from 'src/utils/constants';
 import PollSelector from './PollSelector';
 
 export const topBarHeight = 80;
@@ -77,7 +78,7 @@ const Logo = () => {
       >
         <Menu />
       </IconButton>
-      <PollSelector />
+      <PollSelector polls={polls} />
     </Grid>
   );
 };

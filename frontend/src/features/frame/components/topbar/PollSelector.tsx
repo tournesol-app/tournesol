@@ -13,9 +13,10 @@ import {
 } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { getPollName, polls } from 'src/utils/constants';
+import { getPollName } from 'src/utils/constants';
+import { SelectablePoll } from 'src/utils/types';
 
-const PollSelector = () => {
+const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
   const history = useHistory();
   const { t } = useTranslation();
   const { name: currentPoll, setPollName } = useCurrentPoll();
@@ -95,7 +96,7 @@ const PollSelector = () => {
       >
         {polls
           .sort((a, b) => a.displayOrder - b.displayOrder)
-          .map((elem) => (
+          .map((elem: SelectablePoll) => (
             <MenuItem
               key={elem.name}
               data-poll-url={elem.path}

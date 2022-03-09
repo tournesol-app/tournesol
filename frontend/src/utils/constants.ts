@@ -1,5 +1,6 @@
 import { TFunction } from 'react-i18next';
 import { YouTube } from '@mui/icons-material';
+import { SelectablePolls } from './types';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -70,7 +71,7 @@ export const getPollName = (t: TFunction, pollName: string) => {
   The most specific paths should be listed first,
   to be routed correctly.
 */
-export const polls = [
+export const polls: SelectablePolls = [
   /* disable the poll presidentielle2022 for now
      as it doesn't exist in the back end
   {
