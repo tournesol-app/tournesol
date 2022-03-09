@@ -82,6 +82,9 @@
   "private": "private",
   "filter": {
     "filterByVisibility": "Filter by visibility",
+    "includeAllVideos": "Include all videos",
+    "advanced": "Advanced",
+    "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
     "ignore": "Ignore",
     "notImportant": "Not important",
     "neutral": "Neutral",
@@ -94,9 +97,6 @@
     "thisYear": "This year",
     "uploadDate": "Upload date",
     "language": "Language",
-    "includeAllVideos": "Include all videos",
-    "advanced": "Advanced",
-    "unsafeTooltip": "Also display videos with a low number of contributors and those with a negative score.",
     "uploader": "Uploader"
   },
   "ratings": {
@@ -110,11 +110,6 @@
     "compareVideosButton": "Compare videos"
   },
   "options": "Options",
-  "language": {
-    "english": "english",
-    "french": "french",
-    "german": "german"
-  },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
     "deleteYourAccount": "Delete your account",
@@ -160,6 +155,8 @@
     "notYetComparedByYou": "Not yet compared by you",
     "contributionsArePublicMessage": "Your contributions about this video are currently public. Comparisons appear in the public data associated to your profile only if you tag both videos as public.",
     "contributionsArePrivateMessage": "Your contributions about this video are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores about videos.",
+    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
+    "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
     "nbViews": "{{nbViews}} views",
     "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
     "nbComparisonsBy_one": "{{count}} comparison by",
@@ -168,10 +165,7 @@
     "nbContributors_other": "{{count}} contributors",
     "criteriaRatedHigh": "Rated high:",
     "criteriaRatedLow": "Rated low:",
-    "labelShowSettings": "Show settings related to this video",
-    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
-    "unsafeNegativeRating" : "This video score is below the average of the other videos added to Tournesol."
-
+    "labelShowSettings": "Show settings related to this video"
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
@@ -307,16 +301,13 @@
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list."
   },
-  "criteria": {
-    "shouldBeLargelyRecommended": "Should be largely recommended",
-    "reliableAndNotMisleading": "Reliable & not misleading",
-    "clearAndPedagogical": "Clear & pedagogical",
-    "importantAndActionable": "Important and actionable",
-    "laymanFriendly": "Layman-friendly",
-    "entertainingAndRelaxing": "Entertaining and relaxing",
-    "engagingAndThoughtProvoking": "Engaging & thought-provoking",
-    "diversityAndInclusion": "Diversity & inclusion",
-    "encouragesBetterHabits": "Encourages better habits",
-    "resilienceToBackfiringRisks": "Resilience to backfiring risks"
+  "language": {
+    "english": "english",
+    "french": "french",
+    "german": "german"
+  },
+  "poll": {
+    "presidential2022": "election FR 2022",
+    "videos": "videos"
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import {
   Box,
@@ -13,10 +14,11 @@ import {
 } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { polls } from 'src/utils/constants';
+import { getPollName, polls } from 'src/utils/constants';
 
 const PollSelector = () => {
   const history = useHistory();
+  const { t } = useTranslation();
   const { name: currentPoll, setPollName } = useCurrentPoll();
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
@@ -77,7 +79,9 @@ const PollSelector = () => {
                   alignItems: 'center',
                 }}
               >
-                <Typography variant="subtitle1">{currentPoll}</Typography>
+                <Typography variant="subtitle1">
+                  {getPollName(t, currentPoll)}
+                </Typography>
                 {menuAnchorEl ? (
                   <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
                 ) : (
@@ -109,7 +113,7 @@ const PollSelector = () => {
               <ListItemIcon>
                 <elem.iconComponent fontSize="small" />
               </ListItemIcon>
-              <ListItemText>{elem.displayName}</ListItemText>
+              <ListItemText>{getPollName(t, elem.name)}</ListItemText>
             </MenuItem>
           ))}
       </Menu>

@@ -55,6 +55,17 @@ export const getLanguageName = (t: TFunction, language: string) => {
   }
 };
 
+export const getPollName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case PRESIDENTIELLE_2022_POLL_NAME:
+      return t('poll.presidential2022');
+    case YOUTUBE_POLL_NAME:
+      return t('poll.videos');
+    default:
+      return pollName;
+  }
+};
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.
@@ -64,8 +75,6 @@ export const polls = [
      as it doesn't exist in the back end
   {
     name: PRESIDENTIELLE_2022_POLL_NAME,
-    // could be translated by the back end
-    displayName: 'Élection FR 2022',
     displayOrder: 20,
     path: '/presidentielle2022/',
     iconComponent: HowToVote,
@@ -76,8 +85,6 @@ export const polls = [
   */
   {
     name: YOUTUBE_POLL_NAME,
-    // could be translated by the back end
-    displayName: 'Videos',
     displayOrder: 10,
     path: '/',
     iconComponent: YouTube,

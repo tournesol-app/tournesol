@@ -83,6 +83,9 @@
   "private": "privée",
   "filter": {
     "filterByVisibility": "Filtrer par visibilité",
+    "includeAllVideos": "Inclure toutes les vidéos",
+    "advanced": "Avancés",
+    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
     "ignore": "Ignoré",
     "notImportant": "Pas important",
     "neutral": "Neutre",
@@ -95,9 +98,6 @@
     "thisYear": "Cette année",
     "uploadDate": "Mises en ligne",
     "language": "Langues",
-    "includeAllVideos": "Inclure toutes les vidéos",
-    "advanced": "Avancés",
-    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
     "uploader": "Chaîne"
   },
   "ratings": {
@@ -111,11 +111,6 @@
     "compareVideosButton": "Comparer des vidéos"
   },
   "options": "Options",
-  "language": {
-    "english": "anglais",
-    "french": "français",
-    "german": "allemand"
-  },
   "settings": {
     "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
     "deleteYourAccount": "Supprimer votre compte",
@@ -162,6 +157,8 @@
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cette vidéo sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux vidéos comme publiques.",
     "contributionsArePrivateMessage": "Vos contributions impliquant cette vidéo sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer le score agréré public des vidéos.",
+    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
+    "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
     "nbComparisonsBy_one": "{{count}} comparaison par",
@@ -172,9 +169,7 @@
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
     "criteriaRatedLow": "Noté faiblement :",
-    "labelShowSettings": "Voir les paramètres de cette video",
-    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
-    "unsafeNegativeRating" : "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol."
+    "labelShowSettings": "Voir les paramètres de cette video"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
@@ -310,16 +305,13 @@
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard."
   },
-  "criteria": {
-    "shouldBeLargelyRecommended": "Devrait être largement recommandé",
-    "reliableAndNotMisleading": "Fiable & non trompeur",
-    "clearAndPedagogical": "Clair & pédagogique",
-    "importantAndActionable": "Important & actionnable",
-    "laymanFriendly": "Accessible aux non-spécialistes",
-    "entertainingAndRelaxing": "Divertissant & relaxant",
-    "engagingAndThoughtProvoking": "Stimulant & suscite la réflexion",
-    "diversityAndInclusion": "Diversité & inclusion",
-    "encouragesBetterHabits": "Encourage de meilleures habitudes",
-    "resilienceToBackfiringRisks": "Résistant aux retours négatifs"
+  "language": {
+    "english": "anglais",
+    "french": "français",
+    "german": "allemand"
+  },
+  "poll": {
+    "presidential2022": "présidentielle FR 2022",
+    "videos": "vidéos"
   }
 }
