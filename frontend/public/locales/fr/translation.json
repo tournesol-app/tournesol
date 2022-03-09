@@ -9,6 +9,11 @@
     "nextButton": "{{limit}} suiv.",
     "comparisons": "comparaisons"
   },
+  "stats": {
+    "activeUsers": "Utilisateurs actifs",
+    "comparisons": "Comparaisons",
+    "ratedVideos": "Vidéos notées"
+  },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "pleaseSelectTwoVideos": "Entrez deux URLs ou deux IDs de vidéo YouTube pour les comparer.",

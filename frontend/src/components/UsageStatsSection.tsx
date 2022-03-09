@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Grid } from '@mui/material';
 import { StatsService } from 'src/services/openapi';
 import type { Statistics } from 'src/services/openapi';
-import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 
@@ -43,6 +44,7 @@ const StatsUi = ({ text, count, lastMonthCount }: statsProp) => {
 };
 
 const StatsSection = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState<statsData>({
     userCount: 0,
     lastMonthUserCount: 0,
@@ -81,19 +83,19 @@ const StatsSection = () => {
         justifyContent: 'center',
       }}
     >
-      <Grid container sx={{ maxWidth: 800 }}>
+      <Grid container sx={{ maxWidth: 900 }}>
         <StatsUi
-          text="Active users"
+          text={t('stats.activeUsers')}
           count={data.userCount}
           lastMonthCount={data.lastMonthUserCount}
         />
         <StatsUi
-          text="Comparisons"
+          text={t('stats.comparisons')}
           count={data.comparisonCount}
           lastMonthCount={data.lastMonthComparisonCount}
         />
         <StatsUi
-          text="Rated videos"
+          text={t('stats.ratedVideos')}
           count={data.videoCount}
           lastMonthCount={data.lastMonthVideoCount}
         />
