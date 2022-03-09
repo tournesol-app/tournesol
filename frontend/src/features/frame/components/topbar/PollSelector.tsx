@@ -11,7 +11,7 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
-import { ArrowLeft } from '@mui/icons-material';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { polls } from 'src/utils/constants';
 
@@ -78,7 +78,11 @@ const PollSelector = () => {
                 }}
               >
                 <Typography variant="subtitle1">{currentPoll}</Typography>
-                <ArrowLeft sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
+                {menuAnchorEl ? (
+                  <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
+                ) : (
+                  <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
+                )}
               </Box>
             </Grid>
           </Grid>
