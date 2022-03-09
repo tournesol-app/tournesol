@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 from core.models import User
 from core.utils.time import time_ago
+from tournesol.entities import VideoEntity
 from tournesol.serializers.stats import StatisticsSerializer
 
 from ..models import Comparison, Entity
@@ -49,10 +50,14 @@ class StatisticsView(generics.GenericAPIView):
         last_month_user_count = User.objects.filter(
             is_active=True, date_joined__gte=time_ago(days=self._days_delta)
         ).count()
-        video_count = Entity.objects.filter(rating_n_ratings__gt=0).count()
-        last_month_video_count = Entity.objects.filter(
-            add_time__gte=time_ago(days=self._days_delta), rating_n_ratings__gt=0
+
+        all_videos = Entity.objects.filter(type=VideoEntity.name)
+        video_count = all_videos.filter(rating_n_ratings__gt=0).count()
+        last_month_video_count = all_videos.filter(
+            add_time__gte=time_ago(days=self._days_delta),
+            rating_n_ratings__gt=0
         ).count()
+
         comparison_count = Comparison.objects.all().count()
         last_month_comparison_count = Comparison.objects.filter(
             datetime_lastedit__gte=time_ago(days=self._days_delta)

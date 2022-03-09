@@ -12,7 +12,7 @@ from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
 from tournesol.models import Comparison, Entity, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.video import VideoFactory
+from tournesol.tests.factories.entity import VideoFactory
 
 
 class ComparisonApiTestCase(TestCase):

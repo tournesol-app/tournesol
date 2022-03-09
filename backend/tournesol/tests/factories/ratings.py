@@ -4,7 +4,7 @@ from factory import fuzzy
 from core.tests.factories.user import UserFactory
 from tournesol.models import Poll
 from tournesol.models import ratings as ratings_models
-from tournesol.tests.factories.video import VideoFactory
+from tournesol.tests.factories.entity import VideoFactory
 
 
 class ContributorRatingFactory(factory.django.DjangoModelFactory):

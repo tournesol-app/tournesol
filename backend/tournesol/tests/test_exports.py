@@ -10,7 +10,7 @@ from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import ComparisonCriteriaScore, ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
-from tournesol.tests.factories.video import VideoFactory
+from tournesol.tests.factories.entity import VideoFactory
 
 
 class ExportTest(TestCase):

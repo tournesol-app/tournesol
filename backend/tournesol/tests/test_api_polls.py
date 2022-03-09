@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from tournesol.models import Poll
 
-from .factories.video import VideoCriteriaScoreFactory, VideoFactory
+from .factories.entity import VideoCriteriaScoreFactory, VideoFactory
 
 
 class PollsApi(TestCase):
