@@ -14,7 +14,7 @@ interface Props {
 }
 
 function LanguageFilter({ value, onChange }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const getOptionLabel = useCallback(
     (option) => getLanguageName(t, option),
@@ -33,11 +33,18 @@ function LanguageFilter({ value, onChange }: Props) {
     [value]
   );
 
+  const sortedLanguages = useMemo(() => {
+    const compare = new Intl.Collator(i18n.language).compare;
+    return availableRecommendationsLanguages.sort((a, b) =>
+      compare(getOptionLabel(a), getOptionLabel(b))
+    );
+  }, [i18n.language, getOptionLabel]);
+
   return (
     <TitledSection title={t('filter.language')}>
       <Autocomplete
         multiple
-        options={availableRecommendationsLanguages}
+        options={sortedLanguages}
         getOptionLabel={getOptionLabel}
         renderInput={(params) => <TextField {...params} variant="standard" />}
         value={arrayValue}
