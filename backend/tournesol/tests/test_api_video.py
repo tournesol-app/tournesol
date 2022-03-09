@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
-from tournesol.tests.factories.video import VideoCriteriaScoreFactory, VideoFactory
+from tournesol.tests.factories.entity import VideoCriteriaScoreFactory, VideoFactory
 from tournesol.utils.video_language import compute_video_language
 
 from ..models import Entity

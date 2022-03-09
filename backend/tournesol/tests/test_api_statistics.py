@@ -9,7 +9,7 @@ from rest_framework.test import APIClient
 from core.models import User
 from core.utils.time import time_ago
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.video import EntityFactory, VideoFactory
+from tournesol.tests.factories.entity import EntityFactory, VideoFactory
 
 from ..models import Comparison, Entity
 

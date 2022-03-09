@@ -11,7 +11,7 @@ from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
 )
-from tournesol.tests.factories.video import VideoFactory
+from tournesol.tests.factories.entity import VideoFactory
 
 
 class RatingApi(TestCase):
