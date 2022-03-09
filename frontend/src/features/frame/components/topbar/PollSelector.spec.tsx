@@ -48,13 +48,13 @@ describe('change password feature', () => {
     return { logos, title, rendered };
   };
 
-  it("doesn't display the menu by default", async () => {
+  it("doesn't display the menu by default", () => {
     setup();
     expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
     expect(screen.getByTestId('ArrowDropDownIcon')).toBeInTheDocument();
   });
 
-  it('click on the logo displays the menu', async () => {
+  it('click on the logo displays the menu', () => {
     const { logos } = setup();
 
     fireEvent.click(logos[0]);
@@ -62,7 +62,7 @@ describe('change password feature', () => {
     expect(screen.getByTestId('ArrowDropUpIcon')).toBeInTheDocument();
   });
 
-  it('click on the title displays the menu', async () => {
+  it('click on the title displays the menu', () => {
     const { title } = setup();
 
     fireEvent.click(title);
@@ -70,13 +70,17 @@ describe('change password feature', () => {
     expect(screen.getByTestId('ArrowDropUpIcon')).toBeInTheDocument();
   });
 
-  it('the menu is closed after a click on an item', async () => {
+  it('items can be selected', () => {
     const { title } = setup();
 
     fireEvent.click(title);
     // then click on item 1
     fireEvent.click(screen.getAllByRole('menuitem')[0]);
     expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
+
+    expect(screen.getByRole('heading', { level: 6 })).toHaveTextContent(
+      'poll.video'
+    );
 
     fireEvent.click(title);
     // then click on item 2
