@@ -124,6 +124,12 @@ const Comparison = () => {
   useEffect(() => {
     setIsLoading(true);
     setInitialComparison(null);
+    if (selectorA.uid !== uidA) {
+      setSelectorA({ uid: uidA, rating: null });
+    }
+    if (selectorB.uid !== uidB) {
+      setSelectorB({ uid: uidB, rating: null });
+    }
     if (uidA && uidB)
       UsersService.usersMeComparisonsRetrieve({
         pollName,
@@ -139,7 +145,7 @@ const Comparison = () => {
           setInitialComparison(null);
           setIsLoading(false);
         });
-  }, [uidA, uidB, pollName]);
+  }, [pollName, uidA, uidB, selectorA.uid, selectorB.uid]);
 
   const onSubmitComparison = async (c: ComparisonRequest) => {
     if (initialComparison) {
