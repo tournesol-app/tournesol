@@ -4,7 +4,6 @@ import { useHistory } from 'react-router';
 import {
   Box,
   Grid,
-  Hidden,
   Link,
   ListItemIcon,
   ListItemText,
@@ -56,7 +55,7 @@ const PollSelector = () => {
           color: 'text.primary',
         }}
       >
-        <Hidden smDown>
+        <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
           <Grid container alignItems="center" spacing={1}>
             <Grid item>
               <img src="/svg/LogoSmall.svg" alt="logo" />
@@ -84,10 +83,10 @@ const PollSelector = () => {
               </Box>
             </Grid>
           </Grid>
-        </Hidden>
-        <Hidden smUp>
+        </Box>
+        <Box sx={{ display: { sm: 'block', md: 'none' } }}>
           <img src="/svg/LogoSmall.svg" alt="logo" />
-        </Hidden>
+        </Box>
       </Link>
       <Menu
         anchorEl={menuAnchorEl}
