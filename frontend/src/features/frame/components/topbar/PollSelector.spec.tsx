@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { HowToVote, YouTube } from '@mui/icons-material';
 import PollSelector from './PollSelector';
+import { PollProvider } from 'src/hooks/useCurrentPoll';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
@@ -32,13 +33,15 @@ describe('change password feature', () => {
 
   const component = () =>
     render(
-      <MemoryRouter>
-        <Switch>
-          <Route path="/">
-            <PollSelector polls={polls} />
-          </Route>
-        </Switch>
-      </MemoryRouter>
+      <PollProvider>
+        <MemoryRouter>
+          <Switch>
+            <Route path="/">
+              <PollSelector polls={polls} />
+            </Route>
+          </Switch>
+        </MemoryRouter>
+      </PollProvider>
     );
 
   const setup = () => {
@@ -70,7 +73,7 @@ describe('change password feature', () => {
     expect(screen.getByTestId('ArrowDropUpIcon')).toBeInTheDocument();
   });
 
-  it('items can be selected', () => {
+  it('items can be selected, and poll changed', () => {
     const { title } = setup();
 
     fireEvent.click(title);
@@ -86,5 +89,9 @@ describe('change password feature', () => {
     // then click on item 2
     fireEvent.click(screen.getAllByRole('menuitem')[1]);
     expect(screen.queryAllByRole('menuitem')).toHaveLength(0);
+
+    expect(screen.getByRole('heading', { level: 6 })).toHaveTextContent(
+      'poll.presidential2022'
+    );
   });
 });
