@@ -9,7 +9,7 @@ from rest_framework.test import APIClient
 from core.models import User
 from core.utils.time import time_ago
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.video import VideoFactory
+from tournesol.tests.factories.video import EntityFactory, VideoFactory
 
 from ..models import Comparison, Entity
 
@@ -44,6 +44,8 @@ class StatisticsAPI(TestCase):
             metadata__uploader="uploader2",
             rating_n_ratings=4,
         )
+
+        non_video = EntityFactory(type="another_type", rating_n_ratings=5)
 
         Entity.objects.filter(pk=video_1.pk).update(add_time=time_ago(days=5))
         Entity.objects.filter(pk=video_2.pk).update(add_time=time_ago(days=29))

@@ -8,6 +8,13 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import Entity, EntityCriteriaScore, VideoRateLater
 
 
+class EntityFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Entity
+
+    uid = factory.Sequence(lambda n: 'uid_%s' % n)
+
+
 def generate_youtube_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=11))
 
@@ -23,11 +30,7 @@ class VideoMetadataFactory(factory.DictFactory):
     publication_date = factory.LazyFunction(lambda: datetime.date.today().isoformat())
 
 
-class VideoFactory(factory.django.DjangoModelFactory):
-
-    class Meta:
-        model = Entity
-
+class VideoFactory(EntityFactory):
     type = "video"
     metadata = factory.SubFactory(VideoMetadataFactory)
     uid = factory.LazyAttribute(lambda e: f"yt:{e.metadata['video_id']}")
