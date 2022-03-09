@@ -1,26 +1,20 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import ReplayIcon from '@mui/icons-material/Replay';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Typography } from '@mui/material';
 
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
 import VideoCard, { EmptyVideoCard } from 'src/features/videos/VideoCard';
 
 import { ActionList } from 'src/utils/types';
-import {
-  extractVideoId,
-  getVideoForComparison,
-  idFromUid,
-  isVideoIdValid,
-} from 'src/utils/video';
+import { extractVideoId } from 'src/utils/video';
 import { UsersService, ContributorRating } from 'src/services/openapi';
-import { UID_YT_NAMESPACE } from 'src/utils/constants';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { videoFromRelatedEntity } from '../../utils/entity';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import AutoEntityButton from './AutoEntityButton';
+
+import VideoInput from './VideoInput';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -40,29 +34,32 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  value: VideoSelectorValue;
-  onChange: (newValue: VideoSelectorValue) => void;
-  otherVideo: string | null;
+  title: string;
+  value: SelectorValue;
+  onChange: (newValue: SelectorValue) => void;
+  otherUid: string | null;
   submitted?: boolean;
 }
 
-export interface VideoSelectorValue {
-  videoId: string;
+export interface SelectorValue {
+  uid: string;
   rating: ContributorRating | null;
 }
 
+const isUidValid = (uid: string) => uid.match(/\w+:.+/);
+
 const VideoSelector = ({
+  title,
   value,
   onChange,
-  otherVideo,
+  otherUid,
   submitted = false,
 }: Props) => {
-  const { t } = useTranslation();
-
-  const { videoId, rating } = value;
+  const { uid, rating } = value;
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const { name: pollName } = useCurrentPoll();
+  const [inputValue, setInputValue] = useState(value.uid);
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -70,10 +67,10 @@ const VideoSelector = ({
       const contributorRating =
         await UsersService.usersMeContributorRatingsRetrieve({
           pollName,
-          uid: UID_YT_NAMESPACE + videoId,
+          uid,
         });
       onChange({
-        videoId,
+        uid,
         rating: contributorRating,
       });
     } catch (err) {
@@ -83,12 +80,12 @@ const VideoSelector = ({
             await UsersService.usersMeContributorRatingsCreate({
               pollName,
               requestBody: {
-                uid: UID_YT_NAMESPACE + videoId,
+                uid,
                 is_public: true,
               },
             });
           onChange({
-            videoId,
+            uid,
             rating: contributorRating,
           });
         } catch (err) {
@@ -99,13 +96,13 @@ const VideoSelector = ({
       }
     }
     setLoading(false);
-  }, [pollName, videoId, onChange]);
+  }, [pollName, uid, onChange]);
 
   useEffect(() => {
-    if (isVideoIdValid(videoId) && rating == null) {
+    if (isUidValid(uid) && rating == null) {
       loadRating();
     }
-  }, [loadRating, videoId, rating]);
+  }, [loadRating, uid, rating]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
@@ -114,13 +111,24 @@ const VideoSelector = ({
     }
   }, [loadRating, submitted]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const videoIdFromValue = extractVideoId(e.target.value);
-    const newVideoId = videoIdFromValue
-      ? videoIdFromValue
-      : e.target.value.replace(/[^A-Za-z0-9-_]/g, '').substring(0, 11);
+  const handleChange = (value: string) => {
+    if (value === '') {
+      setInputValue('');
+      onChange({
+        uid: '',
+        rating: null,
+      });
+      return;
+    }
+
+    const videoIdFromValue =
+      pollName === YOUTUBE_POLL_NAME ? extractVideoId(value) : null;
+    const newUid = videoIdFromValue
+      ? UID_YT_NAMESPACE + videoIdFromValue
+      : value.trim();
+    setInputValue(newUid);
     onChange({
-      videoId: newVideoId,
+      uid: newUid,
       rating: null,
     });
   };
@@ -128,35 +136,19 @@ const VideoSelector = ({
   const handleRatingUpdate = useCallback(
     (newValue: ContributorRating) => {
       onChange({
-        videoId: idFromUid(newValue.entity.uid),
+        uid: newValue.entity.uid,
         rating: newValue,
       });
     },
     [onChange]
   );
 
-  const loadNewVideo = async () => {
-    setLoading(true);
-    const newVideoId: string | null = await getVideoForComparison(
-      otherVideo,
-      videoId
-    );
-    if (newVideoId) {
-      onChange({
-        videoId: newVideoId,
-        rating: null,
-      });
-    } else {
-      setLoading(false);
-    }
-  };
-
   const toggleAction: ActionList = useMemo(() => {
     return rating?.is_public != null
       ? [
           <UserRatingPublicToggle
             key="isPublicToggle"
-            videoId={idFromUid(rating.entity.uid)}
+            uid={rating.entity.uid}
             nComparisons={rating.n_comparisons}
             isPublic={rating.is_public}
             onChange={handleRatingUpdate}
@@ -167,29 +159,32 @@ const VideoSelector = ({
 
   return (
     <div className={classes.root}>
-      <div className={classes.controls}>
-        <TextField
-          InputProps={{ classes: { input: classes.input } }}
-          placeholder={t('videoSelector.pasteUrlOrVideoId')}
-          sx={{ flex: 1 }}
-          value={videoId || ''}
-          onChange={handleChange}
-          variant="standard"
+      <Box
+        mx={1}
+        marginTop="4px"
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+      >
+        <Typography variant="h5" color="text.disabled" flexGrow={1}>
+          {title}
+        </Typography>
+        <AutoEntityButton
+          currentUid={uid}
+          otherUid={otherUid}
+          onClick={() => {
+            setInputValue('');
+            setLoading(true);
+          }}
+          onResponse={(uid) => {
+            uid ? onChange({ uid, rating: null }) : setLoading(false);
+          }}
         />
-        <Tooltip
-          title={`${t('videoSelector.newVideo')}`}
-          aria-label="new_video"
-        >
-          <IconButton
-            aria-label="new_video"
-            data-testid="new-video"
-            onClick={loadNewVideo}
-            size="large"
-          >
-            <ReplayIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
+      </Box>
+      <Box mx={1} marginBottom={1}>
+        <VideoInput value={inputValue || uid} onChange={handleChange} />
+      </Box>
+
       {rating ? (
         <VideoCard
           compact

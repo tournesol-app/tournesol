@@ -2,23 +2,15 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import {
-  CircularProgress,
-  Grid,
-  Typography,
-  Card,
-  Box,
-  useTheme,
-} from '@mui/material';
+import { CircularProgress, Grid, Typography, Card } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
 import { UsersService, ComparisonRequest } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import VideoSelector, {
-  VideoSelectorValue,
+  SelectorValue,
 } from 'src/features/video_selector/VideoSelector';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
-import { idFromUid } from 'src/utils/video';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const UID_PARAMS: { vidA: string; vidB: string } = {
@@ -67,8 +59,6 @@ const rewriteLegacyParameters = (
  * these new video ID in the URL parameters.
  */
 const Comparison = () => {
-  const theme = useTheme();
-
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -83,8 +73,6 @@ const Comparison = () => {
   const searchParams = new URLSearchParams(location.search);
   const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
   const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
-  const videoA: string = idFromUid(uidA);
-  const videoB: string = idFromUid(uidB);
 
   // clean the URL by replacing legacy parameters by UIDs
   const legacyA = searchParams.get(LEGACY_PARAMS.vidA);
@@ -98,31 +86,31 @@ const Comparison = () => {
     UID_PARAMS.vidB
   );
 
-  const [selectorA, setSelectorA] = useState<VideoSelectorValue>({
-    videoId: videoA,
+  const [selectorA, setSelectorA] = useState<SelectorValue>({
+    uid: uidA,
     rating: null,
   });
-  const [selectorB, setSelectorB] = useState<VideoSelectorValue>({
-    videoId: videoB,
+  const [selectorB, setSelectorB] = useState<SelectorValue>({
+    uid: uidB,
     rating: null,
   });
 
   const onChange = useCallback(
-    (videoKey: string) => (newValue: VideoSelectorValue) => {
+    (uidKey: string) => (newValue: SelectorValue) => {
       const searchParams = new URLSearchParams(location.search);
-      const videoId = newValue.videoId;
+      const uid = newValue.uid;
 
-      if (idFromUid(searchParams.get(videoKey) || '') !== videoId) {
-        searchParams.delete(videoKey);
+      if ((searchParams.get(uidKey) || '') !== uid) {
+        searchParams.delete(uidKey);
 
-        if (videoId) {
-          searchParams.append(videoKey, UID_YT_NAMESPACE + videoId);
+        if (uid) {
+          searchParams.append(uidKey, uid);
         }
         history.push('?' + searchParams.toString());
       }
-      if (videoKey === UID_PARAMS.vidA) {
+      if (uidKey === UID_PARAMS.vidA) {
         setSelectorA(newValue);
-      } else if (videoKey === UID_PARAMS.vidB) {
+      } else if (uidKey === UID_PARAMS.vidB) {
         setSelectorB(newValue);
       }
       setSubmitted(false);
@@ -136,11 +124,11 @@ const Comparison = () => {
   useEffect(() => {
     setIsLoading(true);
     setInitialComparison(null);
-    if (videoA && videoB)
+    if (uidA && uidB)
       UsersService.usersMeComparisonsRetrieve({
         pollName,
-        uidA: UID_YT_NAMESPACE + videoA,
-        uidB: UID_YT_NAMESPACE + videoB,
+        uidA,
+        uidB,
       })
         .then((comparison) => {
           setInitialComparison(comparison);
@@ -151,7 +139,7 @@ const Comparison = () => {
           setInitialComparison(null);
           setIsLoading(false);
         });
-  }, [videoA, videoB, pollName]);
+  }, [uidA, uidB, pollName]);
 
   const onSubmitComparison = async (c: ComparisonRequest) => {
     if (initialComparison) {
@@ -200,15 +188,11 @@ const Comparison = () => {
           alignSelf: 'start',
         }}
       >
-        <Box m={0.5}>
-          <Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
-            Video 1
-          </Typography>
-        </Box>
         <VideoSelector
+          title="Video 1"
           value={selectorA}
           onChange={onChangeA}
-          otherVideo={videoB}
+          otherUid={uidB}
           submitted={submitted}
         />
       </Grid>
@@ -220,15 +204,11 @@ const Comparison = () => {
           alignSelf: 'start',
         }}
       >
-        <Box m={0.5}>
-          <Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
-            Video 2
-          </Typography>
-        </Box>
         <VideoSelector
+          title="Video 2"
           value={selectorB}
           onChange={onChangeB}
-          otherVideo={videoA}
+          otherUid={uidA}
           submitted={submitted}
         />
       </Grid>

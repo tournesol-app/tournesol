@@ -18,7 +18,6 @@ import {
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 import { videoFromRelatedEntity } from 'src/utils/entity';
 import { scrollToTop } from 'src/utils/ui';
-import { idFromUid } from 'src/utils/video';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
@@ -89,13 +88,10 @@ const VideoRatingsPage = () => {
   const entities = (ratings.results || []).map(
     (rating: ContributorRating) => rating.entity
   );
-  const idToRating = Object.fromEntries(
-    (ratings.results || []).map((rating) => [
-      idFromUid(rating.entity.uid),
-      rating,
-    ])
+  const uidToRating = Object.fromEntries(
+    (ratings.results || []).map((rating) => [rating.entity.uid, rating])
   );
-  const getRating = (videoId: string) => idToRating[videoId];
+  const getRating = (uid: string) => uidToRating[uid];
 
   const onRatingChange = (newRating: ContributorRating | undefined) => {
     if (newRating) {

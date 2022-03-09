@@ -6,7 +6,6 @@ import { ContentHeader, Pagination } from 'src/components';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
-import { UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 function ComparisonsPage() {
@@ -21,7 +20,7 @@ function ComparisonsPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
-  const filteredVideo = String(searchParams.get('video') || '');
+  const filteredUid = String(searchParams.get('uid') || '');
   const limit = 20;
 
   function handleOffsetChange(newOffset: number) {
@@ -31,10 +30,10 @@ function ComparisonsPage() {
 
   useEffect(() => {
     const process = async () => {
-      const comparisonsRequest = await (filteredVideo
+      const comparisonsRequest = await (filteredUid
         ? UsersService.usersMeComparisonsListFiltered({
             pollName,
-            uid: UID_YT_NAMESPACE + filteredVideo,
+            uid: filteredUid,
             limit,
             offset,
           })
