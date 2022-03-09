@@ -41,21 +41,20 @@ const PollSelector = () => {
   return (
     <Box
       sx={{
-        padding: '8px',
-        paddingLeft: 0,
+        padding: '8px 4px',
         '&:hover': { backgroundColor: 'rgba(29, 26, 20, 0.08)' },
       }}
     >
-      <Hidden smDown>
-        {/* use Link to make the area clickable while preserving its accessibility */}
-        <Link
-          onClick={displayMenu}
-          underline="none"
-          sx={{
-            cursor: 'pointer',
-            color: 'text.primary',
-          }}
-        >
+      {/* use Link to make the area clickable while preserving its accessibility */}
+      <Link
+        onClick={displayMenu}
+        underline="none"
+        sx={{
+          cursor: 'pointer',
+          color: 'text.primary',
+        }}
+      >
+        <Hidden smDown>
           <Grid container alignItems="center" spacing={1}>
             <Grid item>
               <img src="/svg/LogoSmall.svg" alt="logo" />
@@ -83,11 +82,11 @@ const PollSelector = () => {
               </Box>
             </Grid>
           </Grid>
-        </Link>
-      </Hidden>
-      <Hidden smUp>
-        <img src="/svg/LogoSmall.svg" alt="logo" />
-      </Hidden>
+        </Hidden>
+        <Hidden smUp>
+          <img src="/svg/LogoSmall.svg" alt="logo" />
+        </Hidden>
+      </Link>
       <Menu
         anchorEl={menuAnchorEl}
         open={Boolean(menuAnchorEl)}
