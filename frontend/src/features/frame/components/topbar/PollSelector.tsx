@@ -59,7 +59,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
         <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
           <Grid container alignItems="center" spacing={1}>
             <Grid item>
-              <img src="/svg/LogoSmall.svg" alt="logo" />
+              <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
             </Grid>
             <Grid item>
               <Typography
@@ -86,7 +86,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
           </Grid>
         </Box>
         <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-          <img src="/svg/LogoSmall.svg" alt="logo" />
+          <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
         </Box>
       </Link>
       <Menu
