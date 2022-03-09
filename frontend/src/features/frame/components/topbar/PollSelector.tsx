@@ -42,8 +42,8 @@ const PollSelector = () => {
 
   return (
     <Box
+      padding="8px 4px"
       sx={{
-        padding: '8px 4px',
         '&:hover': { backgroundColor: 'rgba(29, 26, 20, 0.08)' },
       }}
     >
@@ -72,13 +72,7 @@ const PollSelector = () => {
               >
                 Tournesol
               </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
+              <Box display="flex" flexDirection="row" alignItems="center">
                 <Typography variant="subtitle1">
                   {getPollName(t, currentPoll)}
                 </Typography>
