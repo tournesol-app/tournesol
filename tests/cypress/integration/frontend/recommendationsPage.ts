@@ -3,8 +3,9 @@ describe('Recommendations', () => {
       cy.visit('/');
       cy.location('pathname').should('equal', '/');
       cy.contains('Recommendations').click();
-      cy.location('search').should('contain', 'language=en')
-      cy.go('back')
+      cy.contains('Filters', {matchCase: false}).should('be.visible');
+      cy.location('search').should('contain', 'language=en');
+      cy.go('back');
       cy.location('pathname').should('equal', '/');
     })
   })
