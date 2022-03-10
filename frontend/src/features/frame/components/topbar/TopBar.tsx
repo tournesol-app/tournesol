@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -16,6 +16,8 @@ import { openDrawer, closeDrawer, selectFrame } from '../../drawerOpenSlice';
 import AccountInfo from './AccountInfo';
 import { useTheme } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { polls } from 'src/utils/constants';
+import PollSelector from './PollSelector';
 
 export const topBarHeight = 80;
 
@@ -76,14 +78,7 @@ const Logo = () => {
       >
         <Menu />
       </IconButton>
-      <Link to="/">
-        <Hidden smDown>
-          <img src="/svg/Logo.svg" alt="logo" />
-        </Hidden>
-        <Hidden smUp>
-          <img src="/svg/LogoSmall.svg" alt="logo" />
-        </Hidden>
-      </Link>
+      <PollSelector polls={polls} />
     </Grid>
   );
 };
