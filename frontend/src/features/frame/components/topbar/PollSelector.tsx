@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import {
   Box,
   Grid,
-  Link,
+  Button,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -34,26 +34,28 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
   };
 
   const onItemSelect = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
     setPollName(event.currentTarget.dataset.pollName || '');
     history.push(event.currentTarget.dataset.pollUrl || '');
     onMenuClose();
   };
 
+  const isDisabled = polls.length <= 1;
+
   return (
-    <Box
-      padding="8px 4px"
-      sx={{
-        '&:hover': { backgroundColor: 'rgba(29, 26, 20, 0.08)' },
-      }}
-    >
-      {/* use Link to make the area clickable while preserving its accessibility */}
-      <Link
+    <Box>
+      {/* use Button to make the area clickable while preserving its accessibility */}
+      <Button
+        disabled={isDisabled}
         onClick={displayMenu}
-        underline="none"
         sx={{
           cursor: 'pointer',
           color: 'text.primary',
+          textTransform: 'initial',
+          textAlign: 'left',
+          padding: '8px 4px',
+          minWidth: 0,
+          '&:hover': { backgroundColor: 'rgba(29, 26, 20, 0.08)' },
+          '&:disabled': { color: 'text.primary' },
         }}
       >
         <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
@@ -76,11 +78,12 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
                 <Typography variant="subtitle1">
                   {getPollName(t, currentPoll)}
                 </Typography>
-                {menuAnchorEl ? (
-                  <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
-                ) : (
-                  <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
-                )}
+                {!isDisabled &&
+                  (menuAnchorEl ? (
+                    <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
+                  ) : (
+                    <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
+                  ))}
               </Box>
             </Grid>
           </Grid>
@@ -88,7 +91,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
         <Box sx={{ display: { sm: 'block', md: 'none' } }}>
           <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
         </Box>
-      </Link>
+      </Button>
       <Menu
         anchorEl={menuAnchorEl}
         open={Boolean(menuAnchorEl)}
