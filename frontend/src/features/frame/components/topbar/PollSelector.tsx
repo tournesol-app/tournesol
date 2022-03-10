@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import {
   Box,
-  Grid,
   Button,
+  Grid,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -42,13 +42,12 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
   const isDisabled = polls.length <= 1;
 
   return (
-    <Box>
+    <>
       {/* use Button to make the area clickable while preserving its accessibility */}
       <Button
         disabled={isDisabled}
         onClick={displayMenu}
         sx={{
-          cursor: 'pointer',
           color: 'text.primary',
           textTransform: 'initial',
           textAlign: 'left',
@@ -65,9 +64,10 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
             </Grid>
             <Grid item>
               <Typography
-                variant="h3"
+                variant="h1"
                 sx={{
-                  fontSize: '1.4em !important',
+                  fontSize: '1.5em !important',
+                  fontFamily: 'Poppins-Bold',
                   fontWeight: 'bold',
                   lineHeight: 1,
                 }}
@@ -75,7 +75,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
                 Tournesol
               </Typography>
               <Box display="flex" flexDirection="row" alignItems="center">
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" lineHeight={1.5}>
                   {getPollName(t, currentPoll)}
                 </Typography>
                 {!isDisabled &&
@@ -114,7 +114,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
             </MenuItem>
           ))}
       </Menu>
-    </Box>
+    </>
   );
 };
 
