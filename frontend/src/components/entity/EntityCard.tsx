@@ -14,7 +14,6 @@ import {
 } from '@mui/icons-material';
 
 import EntityCardTitle from './EntityCardTitle';
-import VideoCardScores from 'src/features/videos/VideoCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';

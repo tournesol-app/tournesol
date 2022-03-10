@@ -3,17 +3,16 @@ import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Typography } from '@mui/material';
 
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { UserRatingPublicToggle } from 'src/features/videos/PublicStatusAction';
+import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
-
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
 import { UsersService, ContributorRating } from 'src/services/openapi';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import AutoEntityButton from './AutoEntityButton';
 
-import EntityCard from 'src/components/entity/EntityCard';
+import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -48,7 +47,7 @@ export interface SelectorValue {
 
 const isUidValid = (uid: string) => uid.match(/\w+:.+/);
 
-const VideoSelector = ({
+const EntitySelector = ({
   title,
   value,
   onChange,
@@ -199,4 +198,4 @@ const VideoSelector = ({
   );
 };
 
-export default VideoSelector;
+export default EntitySelector;
