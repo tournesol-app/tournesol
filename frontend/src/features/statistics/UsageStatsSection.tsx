@@ -61,7 +61,7 @@ const StatsSection = () => {
           comparisonCount: value.comparison_count,
           lastMonthUserCount: value.last_month_user_count,
           lastMonthVideoCount: value.last_month_video_count,
-          lastMonthComparisonCount: value.last_month_video_count,
+          lastMonthComparisonCount: value.last_month_comparison_count,
         });
       })
       .catch((error) => {
