@@ -8,10 +8,10 @@ import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { SelectablePolls } from 'src/utils/types';
+import { SelectablePoll } from 'src/utils/types';
 
 describe('change password feature', () => {
-  const polls: SelectablePolls = [
+  const polls: Array<SelectablePoll> = [
     {
       name: PRESIDENTIELLE_2022_POLL_NAME,
       displayOrder: 20,

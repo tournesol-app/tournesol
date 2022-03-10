@@ -100,7 +100,9 @@ const SideBar = () => {
   const dispatch = useAppDispatch();
 
   const { options } = useCurrentPoll();
-  const path = options && options.path ? options.path : '';
+  const path = options && options.path ? options.path : '/';
+  const disabledItems =
+    options && options.disabledMenuItems ? options.disabledMenuItems : [];
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -111,36 +113,47 @@ const SideBar = () => {
     url.split('?')[0] === location.pathname;
 
   const menuItems = [
-    { targetUrl: path, IconComponent: HomeIcon, displayText: t('menu.home') },
     {
+      id: 'home',
+      targetUrl: path,
+      IconComponent: HomeIcon,
+      displayText: t('menu.home'),
+    },
+    {
+      id: 'recommendations',
       targetUrl: `${path}recommendations?date=Month`,
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
     { displayText: 'divider_1' },
     {
+      id: 'comparison',
       targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
     },
     {
+      id: 'myComparisons',
       targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
     },
     {
+      id: 'myRatedVideo',
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.myRatedVideos'),
     },
     {
+      id: 'myRateLater',
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
     },
     { displayText: 'divider_2' },
     {
-      targetUrl: `/about`,
+      id: 'about',
+      targetUrl: '/about',
       IconComponent: InfoIcon,
       displayText: t('menu.about'),
     },
@@ -168,9 +181,12 @@ const SideBar = () => {
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
         sx={{ flexGrow: 1 }}
       >
-        {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
+        {menuItems.map(({ id, targetUrl, IconComponent, displayText }) => {
           if (!IconComponent || !targetUrl)
             return <Divider key={displayText} />;
+          if (id && disabledItems.includes(id)) {
+            return;
+          }
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem
