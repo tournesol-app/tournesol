@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Typography, Button } from '@mui/material';
-import { StatsService } from 'src/services/openapi';
-import type { Statistics } from 'src/services/openapi';
+import { Statistics, StatsService } from 'src/services/openapi';
+
 // PublicDownloadSection is a paragraph displayed on the HomePage
 // that helps users know how to download the public video comparisons available for their use case
 const PublicDownloadSection = () => {
