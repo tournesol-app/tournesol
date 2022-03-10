@@ -9,6 +9,9 @@
     "nextButton": "{{limit}} suiv.",
     "comparisons": "comparaisons"
   },
+  "metrics": {
+    "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
+  },
   "stats": {
     "activeUsers": "Utilisateurs actifs",
     "comparisons": "Comparaisons",

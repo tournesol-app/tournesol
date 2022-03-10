@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Grid } from '@mui/material';
-import { StatsService } from 'src/services/openapi';
-import type { Statistics } from 'src/services/openapi';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/system/Box';
+import { Box, Grid, Tooltip, Typography } from '@mui/material';
+import { Statistics, StatsService } from 'src/services/openapi';
 
 interface statsProp {
   text: string;
@@ -21,9 +18,12 @@ interface statsData {
   lastMonthComparisonCount: number;
 }
 
-const StatsUi = ({ text, count, lastMonthCount }: statsProp) => {
+const Metrics = ({ text, count, lastMonthCount }: statsProp) => {
+  const { t } = useTranslation();
+  const tooltipTitle = t('metrics.evolutionDuringTheLast30Days');
+
   return (
-    <Grid item xs={12} sm={4}>
+    <>
       <Typography component="span" sx={{ fontSize: '24px' }}>
         {text}
       </Typography>
@@ -32,14 +32,12 @@ const StatsUi = ({ text, count, lastMonthCount }: statsProp) => {
         {count}
       </Typography>
       <br />
-      <Typography
-        component="span"
-        title={`New ${text} in the last month`}
-        sx={{ fontSize: '24px' }}
-      >
-        + {lastMonthCount}
-      </Typography>
-    </Grid>
+      <Tooltip title={tooltipTitle}>
+        <Typography component="span" sx={{ fontSize: '24px' }}>
+          + {lastMonthCount}
+        </Typography>
+      </Tooltip>
+    </>
   );
 };
 
@@ -83,22 +81,28 @@ const StatsSection = () => {
         justifyContent: 'center',
       }}
     >
-      <Grid container sx={{ maxWidth: 900 }}>
-        <StatsUi
-          text={t('stats.activeUsers')}
-          count={data.userCount}
-          lastMonthCount={data.lastMonthUserCount}
-        />
-        <StatsUi
-          text={t('stats.comparisons')}
-          count={data.comparisonCount}
-          lastMonthCount={data.lastMonthComparisonCount}
-        />
-        <StatsUi
-          text={t('stats.ratedVideos')}
-          count={data.videoCount}
-          lastMonthCount={data.lastMonthVideoCount}
-        />
+      <Grid container sx={{ maxWidth: 1000 }}>
+        <Grid item xs={12} sm={4}>
+          <Metrics
+            text={t('stats.activeUsers')}
+            count={data.userCount}
+            lastMonthCount={data.lastMonthUserCount}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Metrics
+            text={t('stats.comparisons')}
+            count={data.comparisonCount}
+            lastMonthCount={data.lastMonthComparisonCount}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Metrics
+            text={t('stats.ratedVideos')}
+            count={data.videoCount}
+            lastMonthCount={data.lastMonthVideoCount}
+          />
+        </Grid>
       </Grid>
     </Box>
   );
