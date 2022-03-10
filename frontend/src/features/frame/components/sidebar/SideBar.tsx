@@ -29,10 +29,11 @@ import {
   VideoLibrary,
 } from '@mui/icons-material';
 
-import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
-import Footer from './Footer';
+import { useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import Footer from './Footer';
 
 export const sideBarWidth = 264;
 
@@ -91,13 +92,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const SideBar = () => {
-  const { t } = useTranslation();
   const classes = useStyles();
-  const drawerOpen = useAppSelector(selectFrame);
-  const dispatch = useAppDispatch();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const { t } = useTranslation();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const { options } = useCurrentPoll();
+  const path = options && options.path ? options.path : '';
+
+  const drawerOpen = useAppSelector(selectFrame);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   // parameter 'url', which corresponds to the target url, may contain some url parameters
   // we make sure that we highlight the component the user loaded
@@ -105,36 +111,36 @@ const SideBar = () => {
     url.split('?')[0] === location.pathname;
 
   const menuItems = [
-    { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },
+    { targetUrl: path, IconComponent: HomeIcon, displayText: t('menu.home') },
     {
-      targetUrl: '/recommendations?date=Month',
+      targetUrl: `${path}recommendations?date=Month`,
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
     { displayText: 'divider_1' },
     {
-      targetUrl: '/comparison',
+      targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
     },
     {
-      targetUrl: '/comparisons',
+      targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
     },
     {
-      targetUrl: '/ratings',
+      targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.myRatedVideos'),
     },
     {
-      targetUrl: '/rate_later',
+      targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
     },
     { displayText: 'divider_2' },
     {
-      targetUrl: '/about',
+      targetUrl: `/about`,
       IconComponent: InfoIcon,
       displayText: t('menu.about'),
     },
