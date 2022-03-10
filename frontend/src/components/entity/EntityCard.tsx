@@ -16,6 +16,7 @@ import {
 import EntityCardTitle from './EntityCardTitle';
 import VideoCardScores from 'src/features/videos/VideoCardScores';
 import EntityImagery from './EntityImagery';
+import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
 import { RelatedEntityObject, ActionList } from 'src/utils/types';
 
@@ -60,7 +61,8 @@ const EntityCard = ({
         direction="column"
       >
         <EntityCardTitle title={entity.metadata.name} compact={compact} />
-        {/* TODO implement <EntityMetadata /> */}
+        <EntityMetadata entity={entity} />
+        {/* TODO: implement scores in this entity card}
         {/* {!compact && <VideoCardScores video={video} />} */}
       </Grid>
       <Grid

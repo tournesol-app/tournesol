@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import {
   Grid,
@@ -177,9 +177,6 @@ function VideoCard({
 }
 
 export const RowVideoCard = ({ video }: { video: VideoObject }) => {
-  const { t, i18n } = useTranslation();
-  const classes = useStyles();
-
   return (
     <Box
       display="flex"
@@ -197,26 +194,12 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
       </Box>
       <Box flex={1}>
         <EntityCardTitle title={video.name} titleMaxLines={1} fontSize="1em" />
-        <div className={classes.youtube_complements}>
-          {video.views && (
-            <span className={classes.youtube_complements_p}>
-              <Trans t={t} i18nKey="video.nbViews">
-                {{ nbViews: video.views.toLocaleString(i18n.resolvedLanguage) }}{' '}
-                views
-              </Trans>
-            </span>
-          )}
-          {video.publication_date && (
-            <span className={classes.youtube_complements_p}>
-              {video.publication_date}
-            </span>
-          )}
-          {video.uploader && (
-            <span className={classes.youtube_complements_p}>
-              {video.uploader}
-            </span>
-          )}
-        </div>
+        <VideoMetadata
+          views={video.views}
+          uploader={video.uploader}
+          publicationDate={video.publication_date}
+          withLinks={false}
+        />
       </Box>
     </Box>
   );

@@ -10,7 +10,7 @@ import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import VideoSelector, {
   SelectorValue,
 } from 'src/features/video_selector/VideoSelector';
-import { UID_YT_NAMESPACE } from 'src/utils/constants';
+import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const UID_PARAMS: { vidA: string; vidB: string } = {
@@ -178,6 +178,8 @@ const Comparison = () => {
     );
   }
 
+  const entityName = getEntityName(t, pollName);
+
   return (
     <Grid
       container
@@ -195,7 +197,7 @@ const Comparison = () => {
         }}
       >
         <VideoSelector
-          title="Video 1"
+          title={`${entityName} 1`}
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
@@ -211,7 +213,7 @@ const Comparison = () => {
         }}
       >
         <VideoSelector
-          title="Video 2"
+          title={`${entityName} 2`}
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}

@@ -13,8 +13,8 @@ import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import AutoEntityButton from './AutoEntityButton';
 
-import VideoInput from './VideoInput';
 import EntityCard from 'src/components/entity/EntityCard';
+import EntityInput from './EntityInput';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -166,7 +166,12 @@ const VideoSelector = ({
         flexDirection="row"
         alignItems="center"
       >
-        <Typography variant="h6" color="secondary" flexGrow={1}>
+        <Typography
+          variant="h6"
+          color="secondary"
+          flexGrow={1}
+          sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+        >
           {title}
         </Typography>
         <AutoEntityButton
@@ -182,7 +187,7 @@ const VideoSelector = ({
         />
       </Box>
       <Box mx={1} marginBottom={1}>
-        <VideoInput value={inputValue || uid} onChange={handleChange} />
+        <EntityInput value={inputValue || uid} onChange={handleChange} />
       </Box>
 
       {rating ? (

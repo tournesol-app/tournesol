@@ -97,7 +97,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
         open={Boolean(menuAnchorEl)}
         onClose={onMenuClose}
       >
-        {polls
+        {[...polls] // array order is used by the router, and should not be sorted inplace
           .sort((a, b) => a.displayOrder - b.displayOrder)
           .map((elem: SelectablePoll) => (
             <MenuItem
