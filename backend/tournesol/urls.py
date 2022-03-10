@@ -25,6 +25,7 @@ from .views.stats import StatisticsView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
+from .views.unconnected_entities import UnconnectedEntitiesView
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
@@ -100,6 +101,12 @@ urlpatterns = [
         "users/<str:username>/recommendations/<str:poll_name>",
         PublicContributorRecommendationsView.as_view(),
         name="public_contributor_recommendations",
+    ),
+    # Unconnected entities
+    path(
+        "users/me/unconnected_entities/<str:poll_name>/<str:uid>/",
+        UnconnectedEntitiesView.as_view(),
+        name="unconnected_entities",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),
