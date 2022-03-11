@@ -44,9 +44,10 @@ function addRateLaterButton() {
       !document.getElementById('menu-container') ||
       !document.getElementById('menu-container').children['menu'] ||
       !document.getElementById('menu-container').children['menu'].children[0] ||
-      !document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed']
-    ) return;
-
+      !document.getElementById('menu-container').children['menu'].children[0]
+        .children['top-level-buttons-computed']
+    )
+      return;
 
     // If the button already exists, don't create a new one
     if (document.getElementById('tournesol-rate-button')) {
@@ -73,7 +74,7 @@ function addRateLaterButton() {
     // Text td for better vertical alignment
     const text_td = document.createElement('td');
     text_td.setAttribute('valign', 'middle');
-    text_td_text = document.createTextNode('Rate Later')
+    text_td_text = document.createTextNode('Rate Later');
     text_td.append(text_td_text);
     rateLaterButton.append(text_td);
 
@@ -85,11 +86,11 @@ function addRateLaterButton() {
         chrome.runtime.sendMessage(
           {
             message: 'addRateLater',
-            video_id: videoId
+            video_id: videoId,
           },
           (data) => {
             if (data.success) {
-              text_td_text.replaceWith(document.createTextNode('Done!'))
+              text_td_text.replaceWith(document.createTextNode('Done!'));
               resolve();
             } else {
               rateLaterButton.disabled = false;
@@ -97,16 +98,15 @@ function addRateLaterButton() {
             }
           }
         );
-
       }).catch((reason) => {
-        chrome.runtime.sendMessage({message: "displayModal"});
+        chrome.runtime.sendMessage({ message: 'displayModal' });
       });
-    }
+    };
 
     // Insert after like and dislike buttons
-    const div = document.getElementById(
-      'menu-container'
-    ).children['menu'].children[0].children['top-level-buttons-computed'];
+    const div =
+      document.getElementById('menu-container').children['menu'].children[0]
+        .children['top-level-buttons-computed'];
     div.insertBefore(rateLaterButton, div.children[2]);
   }
 }

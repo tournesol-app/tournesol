@@ -22,19 +22,19 @@ if (document.body) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.message === "hideModal") {
+  if (request.message === 'hideModal') {
     const hidden = hideModal();
-    sendResponse({success: hidden});
+    sendResponse({ success: hidden });
     return;
   }
 
-  if (request.message === "displayModal") {
+  if (request.message === 'displayModal') {
     const displayed = displayModal();
 
     if (displayed) {
-      sendResponse({success: true});
+      sendResponse({ success: true });
     } else {
-      sendResponse({success: false, message: "modal not found in DOM"});
+      sendResponse({ success: false, message: 'modal not found in DOM' });
     }
   }
 });
@@ -66,32 +66,35 @@ function initTournesolModal() {
 
     const iframe = document.createElement('iframe');
     iframe.setAttribute('id', IFRAME_TOURNESOL_LOGIN_ID);
-    iframe.setAttribute('src', chrome.runtime.getURL(
-      'html/tournesol-iframe.html'
-    ));
+    iframe.setAttribute(
+      'src',
+      chrome.runtime.getURL('html/tournesol-iframe.html')
+    );
     modal.append(iframe);
     document.body.prepend(modal);
 
     // hide the modal on click
-    document.onclick = function(event) {
+    document.onclick = function (event) {
       const expectedModal = document.getElementById(EXT_MODAL_ID);
       if (event.target === expectedModal) {
         expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
       }
-    }
+    };
 
     // hide the modal when the escape key is pressed
-    document.onkeydown = function(event) {
+    document.onkeydown = function (event) {
       const expectedModal = document.getElementById(EXT_MODAL_ID);
       const currentDisplay = expectedModal.style.display;
 
-      if ((event.key === 'Escape' || event.code === 'Escape')
-          && currentDisplay !== EXT_MODAL_INVISIBLE_STATE) {
+      if (
+        (event.key === 'Escape' || event.code === 'Escape') &&
+        currentDisplay !== EXT_MODAL_INVISIBLE_STATE
+      ) {
         expectedModal.style.display = EXT_MODAL_INVISIBLE_STATE;
       }
-    }
+    };
   }
-};
+}
 
 /**
  * Single entry point to display the extension modal.
@@ -107,7 +110,7 @@ function displayModal() {
   const display = function display() {
     modal.style.display = EXT_MODAL_VISIBLE_STATE;
     iframe.removeEventListener('load', displayModal);
-  }
+  };
 
   // prevent visual blink while refreshing the iframe
   iframe.addEventListener('load', display);

@@ -8,7 +8,9 @@ function saveRecommendationsLanguages(recommendationsLanguages) {
 }
 
 function updateRecommendationsLanguages() {
-  const recommendationsLanguages = localStorage.getItem('recommendationsLanguages')
+  const recommendationsLanguages = localStorage.getItem(
+    'recommendationsLanguages'
+  );
   saveRecommendationsLanguages(recommendationsLanguages);
 }
 
@@ -21,6 +23,6 @@ function handleRecommendationsLanguagesChange(event) {
 updateRecommendationsLanguages();
 
 document.addEventListener(
-  "tournesol:recommendationsLanguagesChange",
+  'tournesol:recommendationsLanguagesChange',
   handleRecommendationsLanguagesChange
 );

@@ -33,9 +33,12 @@ function process() {
     if (
       !document.getElementById('menu-container') ||
       !document.getElementById('menu-container').children.item('menu') ||
-      !document.getElementById('menu-container').children.item('menu').children[0] ||
-      !document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed']
-    ) return;
+      !document.getElementById('menu-container').children.item('menu')
+        .children[0] ||
+      !document.getElementById('menu-container').children['menu'].children[0]
+        .children['top-level-buttons-computed']
+    )
+      return;
 
     // If the button already exists, don't create a new one
     if (document.getElementById('tournesol-statistics')) {
@@ -45,39 +48,54 @@ function process() {
 
     window.clearInterval(timer);
 
-    browser.runtime.sendMessage({
-      message: 'getVideoStatistics',
-      video_id: videoId
-    }, function(resp) {
-      if (document.getElementById('tournesol-details-button')) {
-        return;
-      }
-
-      if (resp && resp.results && resp.results.length == 1) {
-        details = resp.results[0];
-        if (details.tournesol_score == 0) return;
-        if (details.tournesol_score > 0 && details.tournesol_score < 400) alert("This video was rated below average by Tournesol's contributors", "Ok")
-        if (details.tournesol_score < 0) alert("Be careful! This video was rated very negatively by Tournesol's contributors", "Ok")
-
-        // Create Button
-        var statisticsButton = document.createElement('button');
-        statisticsButton.setAttribute('id', 'tournesol-details-button');
-
-        // Text td for better vertical alignment
-        var statisticsTextTd = document.createElement('td');
-        statisticsTextTd.setAttribute('valign', 'middle');
-        statisticsTextTdText = document.createTextNode(`Score: ${details.tournesol_score.toFixed(0)}`)
-        statisticsTextTd.append(statisticsTextTdText);
-        statisticsButton.append(statisticsTextTd);
-
-        // On click
-        statisticsButton.onclick = () => {
-          open(`https://tournesol.app/video/${videoId}`)
+    browser.runtime.sendMessage(
+      {
+        message: 'getVideoStatistics',
+        video_id: videoId,
+      },
+      function (resp) {
+        if (document.getElementById('tournesol-details-button')) {
+          return;
         }
 
-        var div = document.getElementById('menu-container').children['menu'].children[0].children['top-level-buttons-computed'];
-        div.insertBefore(statisticsButton, div.children[2]);
+        if (resp && resp.results && resp.results.length == 1) {
+          details = resp.results[0];
+          if (details.tournesol_score == 0) return;
+          if (details.tournesol_score > 0 && details.tournesol_score < 400)
+            alert(
+              "This video was rated below average by Tournesol's contributors",
+              'Ok'
+            );
+          if (details.tournesol_score < 0)
+            alert(
+              "Be careful! This video was rated very negatively by Tournesol's contributors",
+              'Ok'
+            );
+
+          // Create Button
+          var statisticsButton = document.createElement('button');
+          statisticsButton.setAttribute('id', 'tournesol-details-button');
+
+          // Text td for better vertical alignment
+          var statisticsTextTd = document.createElement('td');
+          statisticsTextTd.setAttribute('valign', 'middle');
+          statisticsTextTdText = document.createTextNode(
+            `Score: ${details.tournesol_score.toFixed(0)}`
+          );
+          statisticsTextTd.append(statisticsTextTdText);
+          statisticsButton.append(statisticsTextTd);
+
+          // On click
+          statisticsButton.onclick = () => {
+            open(`https://tournesol.app/video/${videoId}`);
+          };
+
+          var div =
+            document.getElementById('menu-container').children['menu']
+              .children[0].children['top-level-buttons-computed'];
+          div.insertBefore(statisticsButton, div.children[2]);
+        }
       }
-    })
+    );
   }
 }
