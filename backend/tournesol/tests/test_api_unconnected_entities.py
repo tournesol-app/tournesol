@@ -9,10 +9,7 @@ from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 
 
-class UnconnectedEntitiesTest(TestCase):
-    """
-    TestCase for the unconnected entities API.
-    """
+class UnconnectedEntitiesGlobalSetupTest(TestCase):
 
     def setUp(self):
         self.client = APIClient()
@@ -22,36 +19,33 @@ class UnconnectedEntitiesTest(TestCase):
             self.poll_videos.name
         )
 
-        self.video_1 = VideoFactory(
-            metadata__uploader="uploader1",
-            rating_n_ratings=2,
-        )
-        video_2 = VideoFactory(
-            metadata__uploader="uploader2",
-            rating_n_ratings=3,
-        )
-        video_3 = VideoFactory(
-            metadata__uploader="uploader2",
-            rating_n_ratings=4,
-        )
+        self.video_1 = VideoFactory()
+
+
+class UnconnectedEntitiesTest(UnconnectedEntitiesGlobalSetupTest):
+    """
+    TestCase for the unconnected entities API.
+    """
+    def setUp(self):
+
+
+        video_2 = VideoFactory()
+        video_3 = VideoFactory()
 
         comparison_1 = ComparisonFactory(
             user=self.user_1,
             entity_1=self.video_1,
             entity_2=video_2,
-            duration_ms=102,
         )
         comparison_2 = ComparisonFactory(
             user=self.user_1,
             entity_1=self.video_1,
             entity_2=video_3,
-            duration_ms=104,
         )
         comparison_3 = ComparisonFactory(
             user=self.user_1,
             entity_1=video_2,
             entity_2=video_3,
-            duration_ms=302,
         )
 
     def test_not_authenticated_cannot_show_unconnected_entities(self):
