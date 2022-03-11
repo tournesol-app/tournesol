@@ -142,6 +142,7 @@ describe('Comparison page', () => {
 
       // only one criteria must be visible by default
       cy.contains('add optional criteria', {matchCase: false})
+        .scrollIntoView()
         .should('be.visible');
       cy.contains('should be largely recommended', {matchCase: false})
         .should('be.visible');
