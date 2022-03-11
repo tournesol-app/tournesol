@@ -1,7 +1,4 @@
-from datetime import timedelta
-
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -9,6 +6,7 @@ from core.models import User
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.models.poll import Poll
+from core.tests.factories.user import UserFactory
 
 
 
@@ -18,7 +16,8 @@ class UnconnectedEntitiesTest(TestCase):
     """
 
     def setUp(self):
-        self.user_1 = User.objects.create(username="username", email="user@test")
+        self.client = APIClient()
+        self.user_1 = UserFactory()
         self.poll_videos = Poll.default_poll()
         self.user_base_url = "/users/me/unconnected_entities/{}".format(
             self.poll_videos.name
@@ -57,9 +56,7 @@ class UnconnectedEntitiesTest(TestCase):
         )
 
     def test_not_authenticated_cannot_show_unconnected_entities(self):
-        client = APIClient()
-        
-        response = client.get(
+        response = self.client.get(
             "{}/{}/".format(self.user_base_url, self.video_1.id),
             format="json",
         )
@@ -67,18 +64,18 @@ class UnconnectedEntitiesTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-    def test_basic_call(self):
+    def test_all_connected_video_shouldnt_return_entities(self):
         """
-        An anonymous user can get statistics about videos.
+        A connecter user have success result
         """
 
-        client = APIClient()
+        self.client.force_authenticate(self.user_1)
 
-        client.force_authenticate(self.user_1)
-
-        response = client.get(
-            "{}/{}/".format(self.user_base_url, self.video_1.id),
+        url =  "{}/{}/".format(self.user_base_url, self.video_1.id)
+        response = self.client.get(
+            url,
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
