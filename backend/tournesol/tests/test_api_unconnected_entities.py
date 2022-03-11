@@ -2,15 +2,16 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models.poll import Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 
 
-class UnconnectedEntitiesGlobalSetupTest(TestCase):
-
+class UnconnectedEntitiesTest(TestCase):
+    """
+    TestCase for the unconnected entities API.
+    """
     def setUp(self):
         self.client = APIClient()
         self.user_1 = UserFactory()
@@ -21,28 +22,20 @@ class UnconnectedEntitiesGlobalSetupTest(TestCase):
 
         self.video_1 = VideoFactory()
 
-
-class UnconnectedEntitiesTest(UnconnectedEntitiesGlobalSetupTest):
-    """
-    TestCase for the unconnected entities API.
-    """
-    def setUp(self):
-
-
         video_2 = VideoFactory()
         video_3 = VideoFactory()
 
-        comparison_1 = ComparisonFactory(
+        ComparisonFactory(
             user=self.user_1,
             entity_1=self.video_1,
             entity_2=video_2,
         )
-        comparison_2 = ComparisonFactory(
+        ComparisonFactory(
             user=self.user_1,
             entity_1=self.video_1,
             entity_2=video_3,
         )
-        comparison_3 = ComparisonFactory(
+        ComparisonFactory(
             user=self.user_1,
             entity_1=video_2,
             entity_2=video_3,
@@ -56,17 +49,11 @@ class UnconnectedEntitiesTest(UnconnectedEntitiesGlobalSetupTest):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-
     def test_all_connected_video_shouldnt_return_entities(self):
-        """
-        A connecter user have success result
-        """
-
         self.client.force_authenticate(self.user_1)
 
-        url =  "{}/{}/".format(self.user_base_url, self.video_1.id)
         response = self.client.get(
-            url,
+            "{}/{}/".format(self.user_base_url, self.video_1.id),
             format="json",
         )
 
