@@ -154,7 +154,7 @@
     "ratedVideos": "Rated videos"
   },
   "videoSelector": {
-    "newVideo": "New Video",
+    "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
