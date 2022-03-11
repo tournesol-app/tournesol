@@ -53,10 +53,10 @@ const rewriteLegacyParameters = (
 /**
  * The comparison UI.
  *
- * Containing two video selectors and the criteria sliders. Note that it
+ * Containing two entity selectors and the criteria sliders. Note that it
  * currently uses the `useLocation` hook to update the URL parameters when
- * a video ID is changed. Adding this component into a page will also add
- * these new video ID in the URL parameters.
+ * a entity uid is changed. Adding this component into a page will also add
+ * these uids in the URL parameters.
  */
 const Comparison = () => {
   const { t } = useTranslation();

@@ -16,7 +16,15 @@ const getCandidates = async () => {
   }
   CANDIDATES = EntitiesService.entitiesList({
     type: TypeEnum.CANDIDATE_FR_2022,
-  }).then((data) => data.results ?? []);
+  }).then((data) => {
+    const candidates = data.results ?? [];
+    return candidates.sort((a, b) => {
+      // Sort by last name
+      const aName: string = a?.metadata?.name.split(' ').slice(1).join(' ');
+      const bName: string = b?.metadata?.name.split(' ').slice(1).join(' ');
+      return aName.localeCompare(bName);
+    });
+  });
   return CANDIDATES;
 };
 
@@ -57,20 +65,18 @@ const CandidateInput = ({ onChange }: Props) => {
   }, []);
 
   return (
-    <Box>
-      <Autocomplete
-        selectOnFocus
-        blurOnSelect
-        onChange={(event, newValue) => {
-          onChange(newValue?.uid ?? '');
-        }}
-        options={options}
-        getOptionLabel={(option) => option.metadata?.name}
-        renderInput={(params) => (
-          <TextField color="secondary" variant="standard" {...params} />
-        )}
-      />
-    </Box>
+    <Autocomplete
+      selectOnFocus
+      blurOnSelect
+      onChange={(event, newValue) => {
+        onChange(newValue?.uid ?? '');
+      }}
+      options={options}
+      getOptionLabel={(option) => option.metadata?.name}
+      renderInput={(params) => (
+        <TextField color="secondary" variant="standard" {...params} />
+      )}
+    />
   );
 };
 

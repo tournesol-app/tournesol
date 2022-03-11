@@ -44,7 +44,6 @@ export const VideoMetadata = ({
       {publicationDate && <Box component="span">{publicationDate}</Box>}
 
       {uploader &&
-        // TODO: allow to disable this link
         (withLinks ? (
           <Tooltip
             title={`${t('video.seeRecommendedVideosSameUploader')}`}
