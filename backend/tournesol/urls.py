@@ -22,10 +22,10 @@ from .views.ratings import (
     ContributorRatingUpdateAll,
 )
 from .views.stats import StatisticsView
+from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
-from .views.unconnected_entities import UnconnectedEntitiesView
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")

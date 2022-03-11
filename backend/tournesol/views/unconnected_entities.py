@@ -1,14 +1,15 @@
 """
 API endpoints to show unconnected entities
 """
-from django.db.models import  Q
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
+from ..models import Comparison, Entity
 from ..serializers.entity import EntitySerializer
-from ..models import Entity, Comparison
 
 
 @extend_schema_view(get=extend_schema(description="Show unconnected entities for the current user"))

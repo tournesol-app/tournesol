@@ -3,11 +3,10 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
+from core.tests.factories.user import UserFactory
+from tournesol.models.poll import Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
-from tournesol.models.poll import Poll
-from core.tests.factories.user import UserFactory
-
 
 
 class UnconnectedEntitiesTest(TestCase):
