@@ -248,7 +248,7 @@ const Comparison = () => {
             />
           )
         ) : (
-          <Typography>{t('comparison.pleaseSelectTwoVideos')}</Typography>
+          <Typography>{t('comparison.pleaseSelectTwoItems')}</Typography>
         )}
       </Grid>
     </Grid>

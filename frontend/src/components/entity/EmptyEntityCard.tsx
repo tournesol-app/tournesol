@@ -29,7 +29,7 @@ const EmptyEntityCard = ({
   const classes = useStyles();
 
   return (
-    <Grid container spacing={1} sx={entityCardMainSx}>
+    <Grid container sx={entityCardMainSx}>
       <Grid
         item
         xs={12}

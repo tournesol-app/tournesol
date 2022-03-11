@@ -32,7 +32,7 @@
   },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
-    "pleaseSelectTwoVideos": "Entrez deux URLs ou deux IDs de vidéo YouTube pour les comparer.",
+    "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
     "videosAreSimilar": "Ces deux vidéos sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
