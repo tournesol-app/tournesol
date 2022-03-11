@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip, IconButton } from '@mui/material';
-import { AutoFixHigh as MagicWandIcon } from '@mui/icons-material';
+import { Tooltip, Button } from '@mui/material';
+import { Autorenew } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { YOUTUBE_POLL_NAME, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { getVideoForComparison, idFromUid } from 'src/utils/video';
@@ -41,9 +41,16 @@ const AutoEntityButton = ({
 
   return (
     <Tooltip title={`${t('videoSelector.newVideo')}`} aria-label="new_video">
-      <IconButton aria-label="new_video" onClick={askNewVideo}>
-        <MagicWandIcon fontSize="small" />
-      </IconButton>
+      <Button
+        color="secondary"
+        variant="outlined"
+        size="small"
+        onClick={askNewVideo}
+        startIcon={<Autorenew />}
+        sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+      >
+        {t('videoSelector.autoEntityButton')}
+      </Button>
     </Tooltip>
   );
 };

@@ -9,14 +9,6 @@
     "nextButton": "{{limit}} suiv.",
     "comparisons": "comparaisons"
   },
-  "metrics": {
-    "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
-  },
-  "stats": {
-    "activeUsers": "Utilisateurs actifs",
-    "comparisons": "Comparaisons",
-    "ratedVideos": "Vidéos notées"
-  },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "pleaseSelectTwoVideos": "Entrez deux URLs ou deux IDs de vidéo YouTube pour les comparer.",
@@ -24,9 +16,9 @@
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
     "changeOneVideo": "Changez l'une des deux vidéos pour faire une nouvelle comparaison.",
-    "editComparison": "Modifier la comparaison",
     "comparisonInPublicDataset": "Cette comparaison fait partie des données publiques.",
     "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
+    "editComparison": "Modifier la comparaison",
     "criteriaSkipped": "ignoré",
     "submitAComparison": "Comparer des vidéos"
   },
@@ -154,9 +146,18 @@
   },
   "username": "Nom d'utilisateur",
   "profile": "Profil",
+  "metrics": {
+    "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
+  },
+  "stats": {
+    "activeUsers": "Utilisateurs actifs",
+    "comparisons": "Comparaisons",
+    "ratedVideos": "Vidéos notées"
+  },
   "videoSelector": {
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
-    "newVideo": "Nouvelle vidéo"
+    "newVideo": "Nouvelle vidéo",
+    "autoEntityButton": "Auto",
+    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
   },
   "video": {
     "nComparisonsByYou_one": "{{count}} comparaison par vous",
@@ -165,10 +166,11 @@
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cette vidéo sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux vidéos comme publiques.",
     "contributionsArePrivateMessage": "Vos contributions impliquant cette vidéo sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer le score agréré public des vidéos.",
-    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
-    "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbViews": "{{nbViews}} vues",
     "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "labelShowSettings": "Voir les paramètres de cette video",
+    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
+    "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
     "nbComparisonsBy_many": "{{count}} comparaisons par",
     "nbComparisonsBy_other": "{{count}} comparaisons par",
@@ -176,8 +178,7 @@
     "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :",
-    "labelShowSettings": "Voir les paramètres de cette video"
+    "criteriaRatedLow": "Noté faiblement :"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",

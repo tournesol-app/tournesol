@@ -166,7 +166,7 @@ const VideoSelector = ({
         flexDirection="row"
         alignItems="center"
       >
-        <Typography variant="h5" color="text.disabled" flexGrow={1}>
+        <Typography variant="h6" color="secondary" flexGrow={1}>
           {title}
         </Typography>
         <AutoEntityButton
