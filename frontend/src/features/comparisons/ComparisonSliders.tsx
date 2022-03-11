@@ -19,14 +19,11 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   centered: {
-    paddingBottom: '32px',
-    width: '880px',
     flex: '0 0 auto',
-    maxWidth: '100%',
-
+    maxWidth: 660,
+    width: 'calc(100% - 64px)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -138,9 +135,11 @@ const ComparisonSliders = ({
             />
           ))}
         <Button
+          fullWidth
+          disabled={!criterias.some((c) => c.optional)}
           onClick={handleCollapseCriterias}
           startIcon={showOptionalCriterias ? <ExpandLess /> : <ExpandMore />}
-          size="small"
+          size="medium"
           color="secondary"
           sx={{
             marginBottom: '8px',
@@ -174,6 +173,26 @@ const ComparisonSliders = ({
             <Typography>{t('comparison.changeOneVideo')}</Typography>
           </div>
         )}
+
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="8px"
+          my={1}
+          color="text.hint"
+          minHeight="40px"
+        >
+          {isComparisonPublic && (
+            <>
+              <InfoIcon fontSize="small" color="inherit" />
+              <Typography variant="caption" color="textSecondary">
+                {initialComparison
+                  ? t('comparison.comparisonInPublicDataset')
+                  : t('comparison.comparisonInPublicDatasetAfterSubmission')}
+              </Typography>
+            </>
+          )}
+        </Box>
         <Button
           variant="contained"
           color="primary"
@@ -183,22 +202,6 @@ const ComparisonSliders = ({
         >
           {submitted ? t('comparison.editComparison') : t('submit')}
         </Button>
-        {isComparisonPublic && (
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="8px"
-            m={2}
-            color="text.hint"
-          >
-            <InfoIcon fontSize="small" color="inherit" />
-            <Typography variant="caption" color="textSecondary">
-              {initialComparison
-                ? t('comparison.comparisonInPublicDataset')
-                : t('comparison.comparisonInPublicDatasetAfterSubmission')}
-            </Typography>
-          </Box>
-        )}
       </div>
     </div>
   );

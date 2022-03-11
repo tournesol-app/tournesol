@@ -3,12 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import Slider from '@mui/material/Slider';
-import Grid from '@mui/material/Grid';
-import Checkbox from '@mui/material/Checkbox';
+import { Box, Slider, Grid, Checkbox, Chip, Divider } from '@mui/material';
 
 import { getWikiBaseUrl } from 'src/utils/url';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { Link } from '@mui/material';
 
 const SLIDER_MIN_STEP = -10;
 const SLIDER_MAX_STEP = 10;
@@ -19,12 +18,12 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    marginBottom: '12px',
   },
   sliderContainer: {
     display: 'flex',
     flexDirection: 'row',
-    maxWidth: 660,
-    width: 'calc(100% - 64px)',
+    width: '100%',
     alignItems: 'center',
   },
   slider: {
@@ -33,10 +32,11 @@ const useStyles = makeStyles(() => ({
   criteriaNameDisplay: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignSelf: 'flex-start',
+    width: '100%',
   },
   img_criteria: {
-    padding: 4,
+    marginRight: '8px',
   },
 }));
 
@@ -84,27 +84,38 @@ const CriteriaSlider = ({
           direction="row"
           justifyContent="center"
           alignItems="center"
+          flexWrap="nowrap"
           container
         >
           {criteria != 'largely_recommended' && (
             <img
               className={classes.img_criteria}
               src={`/svg/${criteria}.svg`}
+              width="18px"
             />
           )}
-          <Typography>
-            <a
+          <Typography fontSize={{ xs: '90%', sm: '100%' }}>
+            <Link
+              color="text.secondary"
               href={`${getWikiBaseUrl()}/wiki/Quality_criteria`}
               id={`id_explanation_${criteria}`}
               target="_blank"
               rel="noreferrer"
+              underline="hover"
             >
               {criteriaLabel}{' '}
-              {criteriaValue === undefined
-                ? `(${t('comparison.criteriaSkipped')})`
-                : ''}
-            </a>
+              {criteriaValue === undefined ? (
+                <Chip
+                  size="small"
+                  label={t('comparison.criteriaSkipped')}
+                  sx={{ height: '100%' }}
+                />
+              ) : (
+                ''
+              )}
+            </Link>
           </Typography>
+          <Box component="span" flexGrow={1} />
           {(criteriaByName[criteria]?.optional ||
             criteriaValue == undefined) && (
             <Checkbox
@@ -114,7 +125,7 @@ const CriteriaSlider = ({
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleSliderChange(criteria, e.target.checked ? 0 : undefined)
               }
-              color="primary"
+              color="secondary"
               sx={{
                 padding: 0,
                 marginLeft: '8px',
@@ -127,7 +138,14 @@ const CriteriaSlider = ({
         <Slider
           sx={{
             [`& span[data-index="${neutralPos}"].MuiSlider-mark`]: {
-              height: '12px',
+              height: '16px',
+            },
+            '& .MuiSlider-thumb:before': {
+              fontSize: '11px',
+              content: '"❰❱"',
+              color: 'white',
+              textAlign: 'center',
+              lineHeight: 1.6,
             },
           }}
           id={`slider_expert_${criteria}`}
@@ -146,6 +164,7 @@ const CriteriaSlider = ({
           }
         />
       </div>
+      <Divider light flexItem sx={{ minHeight: '12px' }} />
     </div>
   );
 };
