@@ -67,21 +67,22 @@ class UnconnectedEntitiesView(
         else:
             return Entity.objects.none()
 
-        related_entities = self.get_related_entities(source_node)
-        all_entities = set()
+        user_related_entities = self.get_related_entities(source_node)
+        user_all_entities = set()
 
-        user_comparaisons = Comparison.objects.filter(
+        # Get all comparison for the user
+        user_comparisons = Comparison.objects.filter(
             poll=self.poll_from_url, user=self.request.user
         )
 
-        for comparison in user_comparaisons.iterator():
-            if comparison.entity_1 not in all_entities:
-                all_entities.add(comparison.entity_1)
-            if comparison.entity_2 not in all_entities:
-                all_entities.add(comparison.entity_2)
+        for comparison in user_comparisons.iterator():
+            if comparison.entity_1 not in user_all_entities:
+                user_all_entities.add(comparison.entity_1)
+            if comparison.entity_2 not in user_all_entities:
+                user_all_entities.add(comparison.entity_2)
 
         return Entity.objects.filter(
-                id__in=map(lambda x: x.id, all_entities)
+                id__in=map(lambda x: x.id, user_all_entities)
                 ).exclude(
-                id__in=map(lambda x: x.id, related_entities)
+                id__in=map(lambda x: x.id, user_related_entities)
             )
