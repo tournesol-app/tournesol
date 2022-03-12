@@ -758,7 +758,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserRecommendationsList'
+                $ref: '#/components/schemas/PaginatedContributorRecommendationsList'
           description: ''
   /users/me/:
     delete:
@@ -1235,8 +1235,8 @@ paths:
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list
-      description: Retrieve a list of entities filtered and sorted by the logged user's
-        rating
+      description: Retrieve a list of recommended videos, sorted by decreasing total
+        score.
       parameters:
       - in: path
         name: poll_name
@@ -1293,10 +1293,6 @@ paths:
               importance: 10
               ignored_criteria: 0
             summary: weights example
-      - in: query
-        name: include_private
-        schema:
-          type: boolean
       tags:
       - users
       security:
@@ -1307,7 +1303,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserRecommendationsList'
+                $ref: '#/components/schemas/PaginatedContributorRecommendationsList'
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -1859,6 +1855,68 @@ components:
           type: boolean
       required:
       - is_public
+    ContributorRecommendations:
+      type: object
+      description: Format the output of the contributor_recommendations views
+      properties:
+        total_score:
+          type: number
+          format: float
+        tournesol_score:
+          type: number
+          format: float
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
+        contributor_ratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorRecommendationsRating'
+        n_contributors:
+          type: integer
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        metadata:
+          type: object
+          additionalProperties: {}
+        n_comparisons:
+          type: integer
+      required:
+      - contributor_ratings
+      - n_comparisons
+      - n_contributors
+      - total_score
+      - uid
+    ContributorRecommendationsRating:
+      type: object
+      properties:
+        is_public:
+          type: boolean
+          description: Should the rating be public?
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorRecommendationsScore'
+      required:
+      - criteria_scores
+    ContributorRecommendationsScore:
+      type: object
+      description: Outputs the recommending contributor's criteria scores for the
+        given entity
+      properties:
+        criteria:
+          type: string
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: float
+          description: Score for the given criteria
+      required:
+      - criteria
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -2298,6 +2356,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContributorRating'
+    PaginatedContributorRecommendationsList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorRecommendations'
     PaginatedEmailDomainList:
       type: object
       properties:
@@ -2358,26 +2436,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Recommendation'
-    PaginatedUserRecommendationsList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRecommendations'
     PaginatedVideoRateLaterList:
       type: object
       properties:
@@ -3729,58 +3787,6 @@ components:
       required:
       - is_trusted
       - username
-    UserRecommendations:
-      type: object
-      description: Format the output of user_recommendations views
-      properties:
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        metadata:
-          type: object
-          additionalProperties: {}
-        n_comparisons:
-          type: integer
-        n_contributors:
-          type: integer
-        total_score:
-          type: number
-          format: float
-        contributorvideoratings:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRecommendationsRating'
-      required:
-      - contributorvideoratings
-      - n_comparisons
-      - n_contributors
-      - total_score
-      - uid
-    UserRecommendationsRating:
-      type: object
-      properties:
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRecommendationsScore'
-      required:
-      - criteria_scores
-    UserRecommendationsScore:
-      type: object
-      description: Outputs the recommending user's criteria scores for the given entity
-      properties:
-        criteria:
-          type: string
-          description: Name of the criteria
-          maxLength: 32
-        score:
-          type: number
-          format: float
-          description: Score for the given criteria
-      required:
-      - criteria
     VerifyEmail:
       type: object
       properties:
