@@ -4,12 +4,12 @@ from rest_framework.test import APIClient
 from core.tests.factories.user import UserFactory
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
 )
-from tournesol.tests.factories.entity import EntityFactory
 
 
 class ContributorRecommendationsApi(TestCase):
