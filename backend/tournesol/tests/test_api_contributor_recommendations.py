@@ -9,7 +9,7 @@ from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
 )
-from tournesol.tests.factories.video import VideoFactory
+from tournesol.tests.factories.entity import EntityFactory
 
 
 class ContributorRecommendationsApi(TestCase):
@@ -24,8 +24,8 @@ class ContributorRecommendationsApi(TestCase):
         self.user1 = UserFactory()
         self.user2 = UserFactory()
 
-        self.entity1 = VideoFactory()
-        self.entity2 = VideoFactory()
+        self.entity1 = EntityFactory()
+        self.entity2 = EntityFactory()
 
         ComparisonFactory(
             user=self.user1,
@@ -125,7 +125,7 @@ class ContributorRecommendationsApi(TestCase):
         client = APIClient()
 
         user = UserFactory()
-        entity = VideoFactory()
+        entity = EntityFactory()
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
@@ -157,7 +157,7 @@ class ContributorRecommendationsApi(TestCase):
         criterion_score = 1.8  # arbitrary
         weight = 2
 
-        entity = VideoFactory()
+        entity = EntityFactory()
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
@@ -208,7 +208,7 @@ class ContributorRecommendationsApi(TestCase):
         scores = [1, -1, 5, 0.5, 0, 2]
         score_to_entity = {}
         for score in scores:
-            entity = VideoFactory()
+            entity = EntityFactory()
             rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
             ContributorRatingCriteriaScoreFactory(
                 contributor_rating=rating,
