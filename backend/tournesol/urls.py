@@ -8,6 +8,10 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
+from .views.contributor_recommendations import (
+    PrivateContributorRecommendations,
+    PublicContributorRecommendations,
+)
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
@@ -19,7 +23,6 @@ from .views.ratings import (
 )
 from .views.stats import StatisticsView
 from .views.user import CurrentUserView
-from .views.user_recommendations import ExternalUserRecommendations, PersonalRecommendations
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 
@@ -90,13 +93,13 @@ urlpatterns = [
     # User recommendations API
     path(
         "users/me/recommendations/<str:poll_name>",
-        PersonalRecommendations.as_view(),
-        name="personal_recommendations",
+        PrivateContributorRecommendations.as_view(),
+        name="private_contributor_recommendations",
     ),
     path(
         "users/<str:username>/recommendations/<str:poll_name>",
-        ExternalUserRecommendations.as_view(),
-        name="external_user_recommendations",
+        PublicContributorRecommendations.as_view(),
+        name="public_contributor_recommendations",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),

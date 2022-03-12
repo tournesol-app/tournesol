@@ -3,25 +3,22 @@ Overrides the Polls API for recommendations specific to one user
 """
 from django.db.models import Case, F, Prefetch, Q, Sum, When
 from django.shortcuts import get_object_or_404
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 
 from core.models import User
-from tournesol.serializers.poll import RecommendationsFilterSerializer
-from tournesol.serializers.user_recommendations import UserRecommendationsSerializer
+from tournesol.serializers.contributor_recommendations import ContributorRecommendationsSerializer
 
-from ..models import ContributorRatingCriteriaScore, Entity
-from ..views import WEIGHTS_PARAMETER, PollsRecommendationsView
+from ..models import ContributorRating, ContributorRatingCriteriaScore, Entity
+from ..views import PollsRecommendationsView
 
 
 class ContributorRecommendations(PollsRecommendationsView):
     """
-    Base class for personal and external-user recommendations.
-    Redefines some recommendations filter functions for a single user.
+    Base class for public and private contributor recommendations.
+    Redefines some recommendations filter functions for a single contributor.
     """
-    serializer_class = UserRecommendationsSerializer
+    serializer_class = ContributorRecommendationsSerializer
     user = None  # defined by child class
 
     def get_scores(self, queryset, request, poll):
@@ -41,6 +38,13 @@ class ContributorRecommendations(PollsRecommendationsView):
             criteria_cases.append(When(contributorvideoratings__criteria_scores__criteria=crit,
                                        then=used_weight))
         criteria_weight = Case(*criteria_cases, default=0)
+
+        queryset = queryset.prefetch_related(
+            Prefetch(
+                "contributorvideoratings",
+                queryset=ContributorRating.objects.filter(poll=poll, user=self.user),
+            )
+        )
 
         queryset = queryset.prefetch_related(
             Prefetch(
@@ -64,25 +68,12 @@ class ContributorRecommendations(PollsRecommendationsView):
             # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the total score
             queryset = queryset.filter(total_score__gt=0)
 
-        return queryset
+        return queryset.distinct()
 
 
-@extend_schema_view(
-    get=extend_schema(
-        description="Retrieve a list of entities filtered and sorted by the logged user's rating",
-        parameters=[
-            RecommendationsFilterSerializer,
-            OpenApiParameter(
-                "include_private",
-                OpenApiTypes.BOOL,
-            ),
-            WEIGHTS_PARAMETER,
-        ],
-    )
-)
-class PersonalRecommendations(ContributorRecommendations):
+class PrivateContributorRecommendations(ContributorRecommendations):
     """
-    View class to access the user's own recommendations
+    View class to access the contributor's own recommendations
     """
     permission_classes = [IsAuthenticated]
 
@@ -90,22 +81,16 @@ class PersonalRecommendations(ContributorRecommendations):
         self.user = self.request.user
         self.kwargs["name"] = self.kwargs["poll_name"]  # parent class calls it 'name'
 
-        if self.request.query_params.get("include_private") == "true":
-            self.queryset = Entity.objects.filter(
-                contributorvideoratings__user=self.user
-            )
-        else:
-            self.queryset = Entity.objects.filter(
-                contributorvideoratings__user=self.user,
-                contributorvideoratings__is_public=True
-            )
+        self.queryset = Entity.objects.filter(
+            contributorvideoratings__user=self.user
+        )
 
         return super().get_queryset()
 
 
-class ExternalUserRecommendations(ContributorRecommendations):
+class PublicContributorRecommendations(ContributorRecommendations):
     """
-    View class to access another user's recommendations
+    View class to access another contributor's recommendations
     """
 
     def get_queryset(self):
@@ -113,7 +98,7 @@ class ExternalUserRecommendations(ContributorRecommendations):
         self.kwargs["name"] = self.kwargs["poll_name"]  # parent class calls it 'name'
 
         self.queryset = Entity.objects.filter(
-            contributorvideoratings__user__username=self.user,
+            contributorvideoratings__user=self.user,
             contributorvideoratings__is_public=True
         )
 

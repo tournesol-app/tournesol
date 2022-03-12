@@ -22,24 +22,6 @@ from tournesol.serializers.poll import (
 
 logger = logging.getLogger(__name__)
 
-WEIGHTS_PARAMETER = OpenApiParameter(
-    "weights",
-    OpenApiTypes.OBJECT,
-    style="deepObject",
-    description="Weights for criteria in this poll."
-                " The default weight is 10 for each criteria.",
-    examples=[
-        OpenApiExample(
-            name="weights example",
-            value={
-                "reliability": 10,
-                "importance": 10,
-                "ignored_criteria": 0,
-            },
-        )
-    ],
-)
-
 
 class PollsView(RetrieveAPIView):
     """
@@ -57,7 +39,23 @@ class PollsView(RetrieveAPIView):
         description="Retrieve a list of recommended videos, sorted by decreasing total score.",
         parameters=[
             RecommendationsFilterSerializer,
-            WEIGHTS_PARAMETER,
+            OpenApiParameter(
+                "weights",
+                OpenApiTypes.OBJECT,
+                style="deepObject",
+                description="Weights for criteria in this poll."
+                            " The default weight is 10 for each criteria.",
+                examples=[
+                    OpenApiExample(
+                        name="weights example",
+                        value={
+                            "reliability": 10,
+                            "importance": 10,
+                            "ignored_criteria": 0,
+                        },
+                    )
+                ],
+            ),
         ],
     )
 )
