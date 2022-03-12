@@ -1,5 +1,4 @@
 import datetime
-import logging
 import random
 import string
 
@@ -8,7 +7,6 @@ import factory
 from core.tests.factories.user import UserFactory
 from tournesol.models import Entity, EntityCriteriaScore, VideoRateLater
 
-logging.getLogger('factory').setLevel(logging.WARN)
 
 def generate_youtube_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=11))
