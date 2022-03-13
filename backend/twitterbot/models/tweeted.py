@@ -12,13 +12,13 @@ BOT_NAME = [
 ]
 
 
-class TweetedVideo(models.Model):
+class TweetInfo(models.Model):
     """One tweeted video."""
 
     video = models.ForeignKey(
         Entity,
         on_delete=models.CASCADE,
-        related_name="video",
+        related_name="tweet_info",
         help_text="Tweeted video",
     )
 

@@ -5,10 +5,10 @@ Defines Tournesol twitter bot backend admin interface
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models.tweeted import TweetedVideo
+from .models.tweeted import TweetInfo
 
 
-@admin.register(TweetedVideo)
+@admin.register(TweetInfo)
 class TwitterBotAdmin(admin.ModelAdmin):
     """Twitter Bot Admin class"""
 
