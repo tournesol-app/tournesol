@@ -10,7 +10,7 @@ djangorestframework==3.13.1
 drf-spectacular==0.21.2
 fuzzysearch==0.7.3
 numpy==1.21.2
-Pillow==9.0.0
+Pillow==9.0.1
 psycopg2-binary==2.9.3
 PyYAML==5.4.1
 tqdm==4.62.1
