@@ -18,7 +18,7 @@ class TweetInfo(models.Model):
     video = models.ForeignKey(
         Entity,
         on_delete=models.CASCADE,
-        related_name="tweet_info",
+        related_name="tweets",
         help_text="Tweeted video",
     )
 

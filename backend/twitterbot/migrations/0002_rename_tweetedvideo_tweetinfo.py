@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tweetinfo',
             name='video',
-            field=models.ForeignKey(help_text='Tweeted video', on_delete=django.db.models.deletion.CASCADE, related_name='tweet_info', to='tournesol.entity'),
+            field=models.ForeignKey(help_text='Tweeted video', on_delete=django.db.models.deletion.CASCADE, related_name='tweets', to='tournesol.entity'),
         ),
     ]
