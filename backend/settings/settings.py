@@ -360,6 +360,14 @@ LOGGING = {
         "handlers": ["console"],
         "level": os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
     },
+    "loggers": {
+        "factory": {
+            "level": "WARN"
+        },
+        "faker": {
+            "level": "INFO"
+        }
+    },
 }
 
 CACHES = {
