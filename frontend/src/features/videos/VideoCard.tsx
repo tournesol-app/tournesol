@@ -126,11 +126,13 @@ function VideoCard({
   actions = [],
   settings = [],
   compact = false,
+  controls = true,
 }: {
   video: VideoObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
+  controls?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -161,6 +163,7 @@ function VideoCard({
           duration={
             !!video.duration && convertDurationToClockDuration(video.duration)
           }
+          controls={controls}
         />
       </Grid>
       <Grid
