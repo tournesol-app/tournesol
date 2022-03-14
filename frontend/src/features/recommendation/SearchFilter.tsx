@@ -32,7 +32,7 @@ function SearchFilter() {
   const isFilterActive = () =>
     Object.entries(defaultRecommendationFilters).some(
       ([key, defaultValue]) =>
-        ![null, defaultValue].includes(filterParams.get(key))
+        ![null, '', defaultValue].includes(filterParams.get(key))
     );
 
   const handleLanguageChange = useCallback(
