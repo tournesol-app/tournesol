@@ -9,8 +9,8 @@ from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.contributor_recommendations import (
-    PublicContributorRecommendationsView,
     PrivateContributorRecommendationsView,
+    PublicContributorRecommendationsView,
 )
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
