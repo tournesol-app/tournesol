@@ -19,7 +19,7 @@
     "comparisonInPublicDataset": "This comparison is included in the public dataset.",
     "comparisonInPublicDatasetAfterSubmission": "After submission, this comparison will be included in the public dataset.",
     "editComparison": "Edit comparison",
-    "criteriaSkipped": "Skipped",
+    "criteriaSkipped": "skipped",
     "submitAComparison": "Submit a comparison"
   },
   "comparisons": {

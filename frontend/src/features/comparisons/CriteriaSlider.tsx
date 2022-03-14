@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import { Box, Slider, Grid, Checkbox, Chip, Divider } from '@mui/material';
+import { Box, Slider, Grid, Checkbox, Chip } from '@mui/material';
 
 import { getWikiBaseUrl } from 'src/utils/url';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: '12px',
+    marginBottom: '16px',
   },
   sliderContainer: {
     display: 'flex',
@@ -120,6 +120,7 @@ const CriteriaSlider = ({
             criteriaValue == undefined) && (
             <Checkbox
               id={`id_checkbox_skip_${criteria}`}
+              size="small"
               disabled={disabled}
               checked={criteriaValue !== undefined}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -164,7 +165,6 @@ const CriteriaSlider = ({
           }
         />
       </div>
-      <Divider light flexItem sx={{ minHeight: '12px' }} />
     </div>
   );
 };
