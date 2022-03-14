@@ -18,7 +18,9 @@ class ContributorRecommendationsApi(TestCase):
     """
 
     def setUp(self):
-        self.poll = Poll.default_poll()  # used by default in all factories
+        self.client = APIClient()
+
+        self.poll = Poll.default_poll()
         self.criterion = self.poll.criterias_list[0]
 
         self.user1 = UserFactory()
@@ -56,24 +58,84 @@ class ContributorRecommendationsApi(TestCase):
             ]
         )
 
-    def test_recommendations_privacy(self):
-        client = APIClient()
-        client.force_authenticate(self.user1)
+    def test_auth_can_list_private_recommendations(self):
+        """An authenticated user can list its private recommendations."""
+        self.client.force_authenticate(self.user1)
+        initial_entity_nbr = ContributorRating.objects.filter(user=self.user1).count()
 
-        response = client.get(
+        response = self.client.get(
+            f"/users/me/recommendations/{self.poll.name}", format="json"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], initial_entity_nbr)
+
+    def test_anon_cant_list_private_recommendations(self):
+        """An anonymous user can't list its private recommendations."""
+        response = self.client.get(
+            f"/users/me/recommendations/{self.poll.name}", format="json"
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_recommendations_privacy_auth(self):
+        """
+        An authenticated user can only see public recommendations when using
+        the public contributor recommendations endpoint.
+        """
+        self.client.force_authenticate(self.user1)
+
+        response = self.client.get(
             f"/users/{self.user1.username}/recommendations/{self.poll.name}",
             format="json",
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 1)  # only 1 public entity
+        self.assertEqual(response.data["count"], 1)
 
-        response = client.get(
-            f"/users/me/recommendations/{self.poll.name}", format="json"
+        for entity in response.data["results"]:
+            for ratings in entity["contributor_ratings"]:
+                self.assertEqual(ratings["is_public"], True)
+
+        response = self.client.get(
+            f"/users/{self.user2.username}/recommendations/{self.poll.name}",
+            format="json",
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 2)  # 1 public and 1 private entity
+        self.assertEqual(response.data["count"], 2)
+
+        for entity in response.data["results"]:
+            for ratings in entity["contributor_ratings"]:
+                self.assertEqual(ratings["is_public"], True)
+
+    def test_recommendations_privacy_anon(self):
+        """
+        An anonumous user can only see public recommendations when using
+        the public contributor recommendations endpoint.
+        """
+        response = self.client.get(
+            f"/users/{self.user1.username}/recommendations/{self.poll.name}",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 1)
+
+        for entity in response.data["results"]:
+            for ratings in entity["contributor_ratings"]:
+                self.assertEqual(ratings["is_public"], True)
+
+        response = self.client.get(
+            f"/users/{self.user2.username}/recommendations/{self.poll.name}",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 2)
+
+        for entity in response.data["results"]:
+            for ratings in entity["contributor_ratings"]:
+                self.assertEqual(ratings["is_public"], True)
 
     def test_polls_filtering(self):
         client = APIClient()
