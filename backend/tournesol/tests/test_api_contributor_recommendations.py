@@ -164,7 +164,8 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 1)
 
         response = self.client.get(
-            f"/users/{self.user1.username}/recommendations/{new_poll.name}", format="json"
+            f"/users/{self.user1.username}/recommendations/{new_poll.name}",
+            format="json",
         )
         # the public endpoint must return one recommendation
         self.assertEqual(response.status_code, 200)
@@ -202,41 +203,54 @@ class ContributorRecommendationsApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_recommendations_unsafe(self):
-        client = APIClient()
-
+    def test_users_can_list_with_param_unsafe(self):
+        """
+        Anonymous and authenticated users can filter recommendations with the
+        `unsafe` URL parameter.
+        """
         user = UserFactory()
         entity = EntityFactory()
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
             criteria=self.criterion,
-            score=-1,  # negative rating
+            score=-1,
         )
 
-        response = client.get(
+        # anonymous checks
+        response = self.client.get(
             f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
         )
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 0)
 
-        response = client.get(
+        response = self.client.get(
             f"/users/{user.username}/recommendations/{self.poll.name}?unsafe=true",
             format="json",
         )
-
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.data["count"], 1
-        )  # Included the negatively rated entity
+        self.assertEqual(response.data["count"], 1)
+
+        # authenticated checks
+        self.client.force_authenticate(self.user1)
+        response = self.client.get(
+            f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 0)
+
+        response = self.client.get(
+            f"/users/{user.username}/recommendations/{self.poll.name}?unsafe=true",
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 1)
 
     def test_recommendations_score_results(self):
-        client = APIClient()
         user = UserFactory()
-        client.force_authenticate(user)
+        self.client.force_authenticate(user)
 
-        criterion_score = 1.8  # arbitrary
+        criterion_score = 1.8
         weight = 2
 
         entity = EntityFactory()
@@ -247,7 +261,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             score=criterion_score,
         )
 
-        response = client.get(
+        response = self.client.get(
             f"/users/me/recommendations/{self.poll.name}?weights%5B{self.criterion}%5D={weight}",
             format="json",
         )
@@ -270,7 +284,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             response.data["results"][0]["total_score"], criterion_score * weight
         )
 
-        # user2's score on this entity should not affect user1's recommendations
+        # user2's score on this entity must not affect user1's recommendations
         rating2 = ContributorRatingFactory(
             user=self.user2, entity=entity, is_public=True
         )
@@ -280,7 +294,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             score=-5,
         )
 
-        response = client.get(
+        response = self.client.get(
             f"/users/me/recommendations/{self.poll.name}?weights%5B{self.criterion}%5D={weight}",
             format="json",
         )
@@ -305,12 +319,11 @@ class ContributorRecommendationsApiTestCase(TestCase):
             response.data["results"][0]["total_score"], criterion_score * weight
         )
 
-    def test_recommendations_scores_filtering_and_ordering(self):
-        client = APIClient()
-
+    def test_recommendations_are_sorted_by_descending_total_score(self):
         user = UserFactory()
         scores = [1, -1, 5, 0.5, 0, 2]
         score_to_entity = {}
+
         for score in scores:
             entity = EntityFactory()
             rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
@@ -321,7 +334,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             )
             score_to_entity[score] = entity
 
-        response = client.get(
+        response = self.client.get(
             f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
         )
 
