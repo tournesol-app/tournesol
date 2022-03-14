@@ -47,24 +47,16 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
             Prefetch(
                 "contributorvideoratings",
                 queryset=ContributorRating.objects.filter(poll=poll, user=user),
-            )
+            ),
+            "contributorvideoratings__criteria_scores",
         )
 
-        queryset = queryset.prefetch_related(
-            Prefetch(
-                "contributorvideoratings__criteria_scores",
-                queryset=ContributorRatingCriteriaScore.objects.filter(
-                    contributor_rating__poll=poll, contributor_rating__user=user
-                ),
-            )
-        )
-
-        return queryset.annotate(
+        return queryset.filter(
+            contributorvideoratings__user=user, contributorvideoratings__poll=poll
+        ).annotate(
             total_score=Sum(
                 F("contributorvideoratings__criteria_scores__score") * criteria_weight,
             ),
-            filter=Q(contributorvideoratings__poll=poll)
-            & Q(contributorvideoratings__user=user),
         )
 
     def filter_unsafe(self, queryset, filters):
