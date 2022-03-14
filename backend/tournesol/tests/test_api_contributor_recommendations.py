@@ -12,7 +12,7 @@ from tournesol.tests.factories.ratings import (
 )
 
 
-class ContributorRecommendationsApi(TestCase):
+class ContributorRecommendationsApiTestCase(TestCase):
     """
     TestCase of the Contributor Recommendations API.
     """
@@ -110,7 +110,7 @@ class ContributorRecommendationsApi(TestCase):
 
     def test_recommendations_privacy_anon(self):
         """
-        An anonumous user can only see public recommendations when using
+        An anonymous user can only see public recommendations when using
         the public contributor recommendations endpoint.
         """
         response = self.client.get(
@@ -137,18 +137,17 @@ class ContributorRecommendationsApi(TestCase):
             for ratings in entity["contributor_ratings"]:
                 self.assertEqual(ratings["is_public"], True)
 
-    def test_polls_filtering(self):
-        client = APIClient()
-        client.force_authenticate(self.user1)
-
+    def test_recommendations_are_filtered_by_pole(self):
         new_poll = PollWithCriteriasFactory()
 
-        response = client.get(
+        self.client.force_authenticate(self.user1)
+        response = self.client.get(
             f"/users/me/recommendations/{new_poll.name}", format="json"
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["count"], 0)  # no entity registered on this poll
+        # no entity must be recommended in this poll
+        self.assertEqual(response.data["count"], 0)
 
         rating = ContributorRatingFactory(
             poll=new_poll, user=self.user1, entity=self.entity1, is_public=True
@@ -157,26 +156,50 @@ class ContributorRecommendationsApi(TestCase):
             contributor_rating=rating, criteria=new_poll.criterias_list[0], score=1
         )
 
-        response = client.get(
+        response = self.client.get(
             f"/users/me/recommendations/{new_poll.name}", format="json"
         )
-
+        # the private endpoint must return one recommendation
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
 
-    def test_recommendations_invalid_url(self):
-        client = APIClient()
-
-        response = client.get(
-            f"/users/missing_username/recommendations/{self.poll.name}", format="json"
+        response = self.client.get(
+            f"/users/{self.user1.username}/recommendations/{new_poll.name}", format="json"
         )
+        # the public endpoint must return one recommendation
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 1)
 
+    def test_users_cant_list_with_non_existing_user(self):
+        """
+        Anonymous and authenticated users can't list recommendations of a
+        non-existing user.
+        """
+        response = self.client.get(
+            f"/users/non-existing/recommendations/{self.poll.name}", format="json"
+        )
         self.assertEqual(response.status_code, 404)
 
-        response = client.get(
-            f"/users/{self.user1.username}/recommendations/invalid_poll", format="json"
+        self.client.force_authenticate(self.user1)
+        response = self.client.get(
+            f"/users/non-existing/recommendations/{self.poll.name}", format="json"
         )
+        self.assertEqual(response.status_code, 404)
 
+    def test_users_cant_list_with_non_existing_poll(self):
+        """
+        Anonymous and authenticated users can't list recommendations of a
+        non-existing poll.
+        """
+        response = self.client.get(
+            f"/users/{self.user1.username}/recommendations/non-existing", format="json"
+        )
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_authenticate(self.user1)
+        response = self.client.get(
+            f"/users/{self.user1.username}/recommendations/non-existing", format="json"
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_recommendations_unsafe(self):
