@@ -23,76 +23,43 @@ from tournesol.serializers.poll import (
 logger = logging.getLogger(__name__)
 
 
-class PollsView(RetrieveAPIView):
+class PollRecommendationsBase:
     """
-    Retrieve a poll and its related criteria.
+    A base class used to factorize behaviours common to all recommendation
+    views.
     """
 
-    permission_classes = []
-    queryset = Poll.objects.prefetch_related("criteriarank_set__criteria")
-    lookup_field = "name"
-    serializer_class = PollSerializer
+    def filter_by_parameters(self, request, queryset, poll: Poll):
+        """
+        Filter the queryset according to the URL parameters.
 
-
-@extend_schema_view(
-    get=extend_schema(
-        description="Retrieve a list of recommended videos, sorted by decreasing total score.",
-        parameters=[
-            RecommendationsFilterSerializer,
-            OpenApiParameter(
-                "weights",
-                OpenApiTypes.OBJECT,
-                style="deepObject",
-                description="Weights for criteria in this poll."
-                            " The default weight is 10 for each criteria.",
-                examples=[
-                    OpenApiExample(
-                        name="weights example",
-                        value={
-                            "reliability": 10,
-                            "importance": 10,
-                            "ignored_criteria": 0,
-                        },
-                    )
-                ],
-            ),
-        ],
-    )
-)
-class PollsRecommendationsView(ListAPIView):
-    permission_classes = []
-    serializer_class = RecommendationSerializer
-
-    queryset = Entity.objects.all()
-
-    def get_queryset(self):
-        queryset = self.queryset
-
-        poll = get_object_or_404(Poll, name=self.kwargs["name"])
-        filter_serializer = RecommendationsFilterSerializer(data=self.request.query_params)
+        The `unsafe` parameter is not processed by this method.
+        """
+        filter_serializer = RecommendationsFilterSerializer(data=request.query_params)
         filter_serializer.is_valid(raise_exception=True)
-        recommendations_filter = filter_serializer.validated_data
+        filters = filter_serializer.validated_data
 
-        search = recommendations_filter["search"]
+        search = filters["search"]
         if search:
             queryset = poll.entity_cls.filter_search(queryset, search)
 
-        date_lte = recommendations_filter["date_lte"]
+        date_lte = filters["date_lte"]
         if date_lte:
             queryset = poll.entity_cls.filter_date_lte(queryset, date_lte)
 
-        date_gte = recommendations_filter["date_gte"]
+        date_gte = filters["date_gte"]
         if date_gte:
             queryset = poll.entity_cls.filter_date_gte(queryset, date_gte)
 
-        queryset = self.get_scores(queryset, self.request, poll)
+        return queryset, filters
 
-        queryset = self.filter_unsafe(queryset, recommendations_filter)
+    def filter_unsafe(self, queryset, filters):
+        """Filter the queryset according to the `unsafe` URL parameters.
 
-        return queryset.order_by("-total_score", "-pk")
-
-    def filter_unsafe(self, queryset, recommendations_filter):
-        show_unsafe = recommendations_filter["unsafe"]
+        This method requires a queryset annotated with the entities weighted
+        total score.
+        """
+        show_unsafe = filters["unsafe"]
         if show_unsafe:
             queryset = queryset.filter(total_score__isnull=False)
         else:
@@ -102,8 +69,7 @@ class PollsRecommendationsView(ListAPIView):
 
         return queryset
 
-    def get_scores(self, queryset, request, poll):
-
+    def annotate_with_total_score(self, queryset, request, poll):
         criteria_cases = []
         for crit in poll.criterias_list:
             raw_weight = request.query_params.get(f"weights[{crit}]")
@@ -132,3 +98,55 @@ class PollsRecommendationsView(ListAPIView):
                 queryset=EntityCriteriaScore.objects.filter(poll=poll),
             )
         )
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="Retrieve a list of recommended videos, sorted by decreasing total score.",
+        parameters=[
+            RecommendationsFilterSerializer,
+            OpenApiParameter(
+                "weights",
+                OpenApiTypes.OBJECT,
+                style="deepObject",
+                description="Weights for criteria in this poll."
+                            " The default weight is 10 for each criteria.",
+                examples=[
+                    OpenApiExample(
+                        name="weights example",
+                        value={
+                            "reliability": 10,
+                            "importance": 10,
+                            "ignored_criteria": 0,
+                        },
+                    )
+                ],
+            ),
+        ],
+    )
+)
+class PollsView(RetrieveAPIView):
+    """
+    Retrieve a poll and its related criteria.
+    """
+
+    permission_classes = []
+    queryset = Poll.objects.prefetch_related("criteriarank_set__criteria")
+    lookup_field = "name"
+    serializer_class = PollSerializer
+
+
+class PollsRecommendationsView(PollRecommendationsBase, ListAPIView):
+    permission_classes = []
+    serializer_class = RecommendationSerializer
+
+    queryset = Entity.objects.all()
+
+    def get_queryset(self):
+        queryset = self.queryset
+        poll = get_object_or_404(Poll, name=self.kwargs["name"])
+
+        queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
+        queryset = self.annotate_with_total_score(queryset, self.request, poll)
+        queryset = self.filter_unsafe(queryset, filters)
+        return queryset.order_by("-total_score", "-pk")

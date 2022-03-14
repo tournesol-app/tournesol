@@ -3,25 +3,26 @@ Overrides the Polls API for recommendations specific to one user
 """
 from django.db.models import Case, F, Prefetch, Q, Sum, When
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers
+from rest_framework import generics, serializers
 from rest_framework.permissions import IsAuthenticated
 
 from core.models import User
 from tournesol.serializers.contributor_recommendations import ContributorRecommendationsSerializer
 
-from ..models import ContributorRating, ContributorRatingCriteriaScore, Entity
-from ..views import PollsRecommendationsView
+from ..models import ContributorRating, ContributorRatingCriteriaScore, Entity, Poll
+from ..views import PollRecommendationsBase
 
 
-class ContributorRecommendations(PollsRecommendationsView):
+class ContributorRecommendationsBase(PollRecommendationsBase):
     """
-    Base class for public and private contributor recommendations.
-    Redefines some recommendations filter functions for a single contributor.
+    A base class used to factorize behaviours common to all contributor
+    recommendations views.
     """
+
+    queryset = Entity.objects.none()
     serializer_class = ContributorRecommendationsSerializer
-    user = None  # defined by child class
 
-    def get_scores(self, queryset, request, poll):
+    def annotate_with_total_score(self, queryset, request, poll, user):
 
         criteria_cases = []
         for crit in poll.criterias_list:
@@ -35,14 +36,18 @@ class ContributorRecommendations(PollsRecommendationsView):
                     ) from error_value
             else:
                 used_weight = 10
-            criteria_cases.append(When(contributorvideoratings__criteria_scores__criteria=crit,
-                                       then=used_weight))
+            criteria_cases.append(
+                When(
+                    contributorvideoratings__criteria_scores__criteria=crit,
+                    then=used_weight,
+                )
+            )
         criteria_weight = Case(*criteria_cases, default=0)
 
         queryset = queryset.prefetch_related(
             Prefetch(
                 "contributorvideoratings",
-                queryset=ContributorRating.objects.filter(poll=poll, user=self.user),
+                queryset=ContributorRating.objects.filter(poll=poll, user=user),
             )
         )
 
@@ -50,56 +55,68 @@ class ContributorRecommendations(PollsRecommendationsView):
             Prefetch(
                 "contributorvideoratings__criteria_scores",
                 queryset=ContributorRatingCriteriaScore.objects.filter(
-                    contributor_rating__poll=poll, contributor_rating__user=self.user),
+                    contributor_rating__poll=poll, contributor_rating__user=user
+                ),
             )
         )
 
         return queryset.annotate(
-            total_score=Sum(F("contributorvideoratings__criteria_scores__score")
-                            * criteria_weight,),
-            filter=Q(contributorvideoratings__poll=poll) &
-            Q(contributorvideoratings__user=self.user),
+            total_score=Sum(
+                F("contributorvideoratings__criteria_scores__score") * criteria_weight,
+            ),
+            filter=Q(contributorvideoratings__poll=poll)
+            & Q(contributorvideoratings__user=user),
         )
 
-    def filter_unsafe(self, queryset, recommendations_filter):
-
-        show_unsafe = recommendations_filter["unsafe"]
+    def filter_unsafe(self, queryset, filters):
+        show_unsafe = filters["unsafe"]
         if not show_unsafe:
-            # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the total score
+            # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the
+            # total score
             queryset = queryset.filter(total_score__gt=0)
 
         return queryset.distinct()
 
 
-class PrivateContributorRecommendations(ContributorRecommendations):
+class PrivateContributorRecommendations(
+    ContributorRecommendationsBase, generics.ListAPIView
+):
     """
-    View class to access the contributor's own recommendations
+    Get the recommendations of the logged user related to a poll.
     """
+
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        self.user = self.request.user
-        self.kwargs["name"] = self.kwargs["poll_name"]  # parent class calls it 'name'
+        poll = get_object_or_404(Poll, name=self.kwargs["poll_name"])
+        user = self.request.user
 
-        self.queryset = Entity.objects.filter(
-            contributorvideoratings__user=self.user
-        )
+        queryset = Entity.objects.filter(contributorvideoratings__user=user)
 
-        return super().get_queryset()
+        queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
+        queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
+        queryset = self.filter_unsafe(queryset, filters)
+        return queryset.order_by("-total_score", "-pk")
 
 
-class PublicContributorRecommendations(ContributorRecommendations):
+class PublicContributorRecommendations(
+    ContributorRecommendationsBase, generics.ListAPIView
+):
     """
-    View class to access another contributor's recommendations
+    Get the public recommendations of a given user related to a poll.
     """
+
+    permission_classes = []
 
     def get_queryset(self):
-        self.user = get_object_or_404(User, username=self.kwargs["username"])
-        self.kwargs["name"] = self.kwargs["poll_name"]  # parent class calls it 'name'
+        poll = get_object_or_404(Poll, name=self.kwargs["poll_name"])
+        user = get_object_or_404(User, username=self.kwargs["username"])
 
-        self.queryset = Entity.objects.filter(
-            contributorvideoratings__user=self.user,
-            contributorvideoratings__is_public=True
+        queryset = Entity.objects.filter(
+            contributorvideoratings__user=user, contributorvideoratings__is_public=True
         )
 
-        return super().get_queryset()
+        queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
+        queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
+        queryset = self.filter_unsafe(queryset, filters)
+        return queryset.order_by("-total_score", "-pk")
