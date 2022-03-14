@@ -1,7 +1,7 @@
 """
 Overrides the Polls API for recommendations specific to one user
 """
-from django.db.models import Case, F, Prefetch, Q, Sum, When
+from django.db.models import Case, F, Prefetch, Sum, When
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
