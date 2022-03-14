@@ -2798,13 +2798,13 @@ components:
     RelatedEntity:
       type: object
       description: |-
-        An Entity serializer that will create the Entity object on validation
-        if it does not exist in the database yet.
+        An Entity serializer that will lookup and possibly create the Entity
+        object on validation, if it does not exist in the database yet.
 
         Only the field `uid` is provided when using write HTTP methods.
 
         Used by ModelSerializer(s) having one or more nested relations with Entity,
-        and having the constraint to ensure that video instances exist before
+        and having the constraint to ensure that entity instances exist before
         they can be saved properly.
       properties:
         uid:
@@ -2825,13 +2825,13 @@ components:
     RelatedEntityRequest:
       type: object
       description: |-
-        An Entity serializer that will create the Entity object on validation
-        if it does not exist in the database yet.
+        An Entity serializer that will lookup and possibly create the Entity
+        object on validation, if it does not exist in the database yet.
 
         Only the field `uid` is provided when using write HTTP methods.
 
         Used by ModelSerializer(s) having one or more nested relations with Entity,
-        and having the constraint to ensure that video instances exist before
+        and having the constraint to ensure that entity instances exist before
         they can be saved properly.
       properties:
         uid:
