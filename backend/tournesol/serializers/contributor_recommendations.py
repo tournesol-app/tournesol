@@ -1,18 +1,12 @@
 from rest_framework.serializers import ModelSerializer
 
-from tournesol.models import ContributorRating, ContributorRatingCriteriaScore
+from tournesol.models import ContributorRating
 from tournesol.serializers.poll import RecommendationSerializer
+from tournesol.serializers.rating import ContributorCriteriaScore
 
 
-class ContributorRecommendationsScore(ModelSerializer):
-    """ Outputs the recommending contributor's criteria scores for the given entity """
-    class Meta:
-        model = ContributorRatingCriteriaScore
-        fields = ["criteria", "score"]
-
-
-class ContributorRecommendationsRating(ModelSerializer):
-    criteria_scores = ContributorRecommendationsScore(many=True)
+class ContributorRecommendationsRatingsSerializer(ModelSerializer):
+    criteria_scores = ContributorCriteriaScore(many=True)
 
     class Meta:
         model = ContributorRating
@@ -20,10 +14,12 @@ class ContributorRecommendationsRating(ModelSerializer):
 
 
 class ContributorRecommendationsSerializer(RecommendationSerializer):
-    """ Format the output of the contributor_recommendations views """
-    contributor_ratings = ContributorRecommendationsRating(many=True,
-                                                           source="contributorvideoratings")
+    contributor_ratings = ContributorRecommendationsRatingsSerializer(
+        many=True, source="contributorvideoratings"
+    )
 
     class Meta(RecommendationSerializer.Meta):
-        fields = list((set(RecommendationSerializer.Meta.fields)
-                      - {"criteria_scores"}) | {"contributor_ratings"})
+        fields = list(
+            (set(RecommendationSerializer.Meta.fields) - {"criteria_scores"})
+            | {"contributor_ratings"}
+        )
