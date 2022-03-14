@@ -429,7 +429,7 @@ paths:
   /polls/{name}/:
     get:
       operationId: polls_retrieve
-      description: Retrieve a poll and its related criteria.
+      description: Fetch a poll and its related criteria.
       parameters:
       - in: path
         name: name
@@ -451,7 +451,8 @@ paths:
   /polls/{name}/recommendations/:
     get:
       operationId: polls_recommendations_list
-      description: Retrieve a list of recommended videos, sorted by decreasing total
+      description: |-
+        List the recommended entities of a given poll sorted by decreasing total
         score.
       parameters:
       - in: path
@@ -685,7 +686,8 @@ paths:
   /users/{username}/recommendations/{poll_name}:
     get:
       operationId: users_recommendations_list
-      description: Retrieve a list of recommended videos, sorted by decreasing total
+      description: |-
+        List the public recommendations of a given user sorted by decreasing total
         score.
       parameters:
       - in: path
@@ -1235,7 +1237,8 @@ paths:
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list
-      description: Retrieve a list of recommended videos, sorted by decreasing total
+      description: |-
+        List the recommendations of the logged user sorted by decreasing total
         score.
       parameters:
       - in: path
@@ -1857,40 +1860,39 @@ components:
       - is_public
     ContributorRecommendations:
       type: object
-      description: Format the output of the contributor_recommendations views
       properties:
         total_score:
           type: number
           format: float
+        contributor_ratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorRecommendationsRatings'
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        contributor_ratings:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorRecommendationsRating'
         n_contributors:
           type: integer
+        n_comparisons:
+          type: integer
+        metadata:
+          type: object
+          additionalProperties: {}
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        metadata:
-          type: object
-          additionalProperties: {}
-        n_comparisons:
-          type: integer
       required:
       - contributor_ratings
       - n_comparisons
       - n_contributors
       - total_score
       - uid
-    ContributorRecommendationsRating:
+    ContributorRecommendationsRatings:
       type: object
       properties:
         is_public:
@@ -1899,24 +1901,9 @@ components:
         criteria_scores:
           type: array
           items:
-            $ref: '#/components/schemas/ContributorRecommendationsScore'
+            $ref: '#/components/schemas/ContributorCriteriaScore'
       required:
       - criteria_scores
-    ContributorRecommendationsScore:
-      type: object
-      description: Outputs the recommending contributor's criteria scores for the
-        given entity
-      properties:
-        criteria:
-          type: string
-          description: Name of the criteria
-          maxLength: 32
-        score:
-          type: number
-          format: float
-          description: Score for the given criteria
-      required:
-      - criteria
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -2502,9 +2489,8 @@ components:
         username:
           type: string
           minLength: 1
-          title: Nom d’utilisateur
-          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
-            et les caractères « @ », « . », « + », « - » et « _ ».
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
         is_demo:
@@ -2745,19 +2731,17 @@ components:
           readOnly: true
         password:
           type: string
-          title: Mot de passe
           maxLength: 128
         username:
           type: string
-          title: Nom d’utilisateur
-          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
-            et les caractères « @ », « . », « + », « - » et « _ ».
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
           format: email
-          title: Adresse e-mail
+          title: Email address
           maxLength: 254
         is_demo:
           type: boolean
@@ -2893,21 +2877,19 @@ components:
         password:
           type: string
           minLength: 1
-          title: Mot de passe
           maxLength: 128
         username:
           type: string
           minLength: 1
-          title: Nom d’utilisateur
-          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
-            et les caractères « @ », « . », « + », « - » et « _ ».
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
           format: email
           minLength: 1
-          title: Adresse e-mail
+          title: Email address
           maxLength: 254
         is_demo:
           type: boolean
@@ -3515,16 +3497,15 @@ components:
           readOnly: true
         username:
           type: string
-          title: Nom d’utilisateur
-          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
-            et les caractères « @ », « . », « + », « - » et « _ ».
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
           format: email
           readOnly: true
-          title: Adresse e-mail
+          title: Email address
         is_demo:
           type: boolean
           description: Is a demo account?
@@ -3662,9 +3643,8 @@ components:
         username:
           type: string
           minLength: 1
-          title: Nom d’utilisateur
-          description: Requis. 150 caractères maximum. Uniquement des lettres, nombres
-            et les caractères « @ », « . », « + », « - » et « _ ».
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
           pattern: ^[\w.@+-]+$
           maxLength: 150
         is_demo:

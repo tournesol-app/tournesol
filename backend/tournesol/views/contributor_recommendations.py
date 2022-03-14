@@ -79,7 +79,8 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
 
 class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
     """
-    List the recommendations of the logged user.
+    List the recommendations of the logged user sorted by decreasing total
+    score.
     """
 
     permission_classes = [IsAuthenticated]
@@ -98,7 +99,8 @@ class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
 
 class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
     """
-    List the public recommendations of a given user.
+    List the public recommendations of a given user sorted by decreasing total
+    score.
     """
 
     permission_classes = []

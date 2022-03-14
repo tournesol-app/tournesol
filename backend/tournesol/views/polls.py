@@ -139,7 +139,8 @@ class PollsView(RetrieveAPIView):
 
 class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     """
-    List the recommended entities of a given poll.
+    List the recommended entities of a given poll sorted by decreasing total
+    score.
     """
 
     # overwrite the default value of `PollScopedViewMixin`
