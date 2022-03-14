@@ -3,17 +3,17 @@ Overrides the Polls API for recommendations specific to one user
 """
 from django.db.models import Case, F, Prefetch, Q, Sum, When
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, serializers
+from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 
 from core.models import User
 from tournesol.serializers.contributor_recommendations import ContributorRecommendationsSerializer
 
 from ..models import ContributorRating, ContributorRatingCriteriaScore, Entity, Poll
-from ..views import PollRecommendationsBase
+from ..views import PollRecommendationsBaseAPIView
 
 
-class ContributorRecommendationsBase(PollRecommendationsBase):
+class ContributorRecommendationsBase(PollRecommendationsBaseAPIView):
     """
     A base class used to factorize behaviours common to all contributor
     recommendations views.
@@ -22,8 +22,7 @@ class ContributorRecommendationsBase(PollRecommendationsBase):
     queryset = Entity.objects.none()
     serializer_class = ContributorRecommendationsSerializer
 
-    def annotate_with_total_score(self, queryset, request, poll, user):
-
+    def annotate_with_total_score(self, queryset, request, poll: Poll, user):
         criteria_cases = []
         for crit in poll.criterias_list:
             url_weight = request.query_params.get(f"weights[{crit}]")
@@ -78,17 +77,15 @@ class ContributorRecommendationsBase(PollRecommendationsBase):
         return queryset.distinct()
 
 
-class PrivateContributorRecommendations(
-    ContributorRecommendationsBase, generics.ListAPIView
-):
+class PrivateContributorRecommendations(ContributorRecommendationsBase):
     """
-    Get the recommendations of the logged user related to a poll.
+    List the recommendations of the logged user.
     """
 
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        poll = get_object_or_404(Poll, name=self.kwargs["poll_name"])
+        poll = self.poll_from_url
         user = self.request.user
 
         queryset = Entity.objects.filter(contributorvideoratings__user=user)
@@ -99,17 +96,15 @@ class PrivateContributorRecommendations(
         return queryset.order_by("-total_score", "-pk")
 
 
-class PublicContributorRecommendations(
-    ContributorRecommendationsBase, generics.ListAPIView
-):
+class PublicContributorRecommendations(ContributorRecommendationsBase):
     """
-    Get the public recommendations of a given user related to a poll.
+    List the public recommendations of a given user.
     """
 
     permission_classes = []
 
     def get_queryset(self):
-        poll = get_object_or_404(Poll, name=self.kwargs["poll_name"])
+        poll = self.poll_from_url
         user = get_object_or_404(User, username=self.kwargs["username"])
 
         queryset = Entity.objects.filter(

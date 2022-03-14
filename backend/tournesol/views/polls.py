@@ -2,7 +2,6 @@ import logging
 
 from django.conf import settings
 from django.db.models import Case, F, Prefetch, Q, Sum, When
-from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -19,14 +18,41 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
+from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
 
 
-class PollRecommendationsBase:
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            RecommendationsFilterSerializer,
+            OpenApiParameter(
+                "weights",
+                OpenApiTypes.OBJECT,
+                style="deepObject",
+                description="Weights for criteria in this poll."
+                " The default weight is 10 for each criteria.",
+                examples=[
+                    OpenApiExample(
+                        name="weights example",
+                        value={
+                            "reliability": 10,
+                            "importance": 10,
+                            "ignored_criteria": 0,
+                        },
+                    )
+                ],
+            ),
+        ],
+    )
+)
+class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
     """
-    A base class used to factorize behaviours common to all recommendation
+    A base view used to factorize behaviours common to all recommendation
     views.
+
+    It doesn't define any serializer, queryset nor permission.
     """
 
     def filter_by_parameters(self, request, queryset, poll: Poll):
@@ -69,7 +95,7 @@ class PollRecommendationsBase:
 
         return queryset
 
-    def annotate_with_total_score(self, queryset, request, poll):
+    def annotate_with_total_score(self, queryset, request, poll: Poll):
         criteria_cases = []
         for crit in poll.criterias_list:
             raw_weight = request.query_params.get(f"weights[{crit}]")
@@ -100,34 +126,9 @@ class PollRecommendationsBase:
         )
 
 
-@extend_schema_view(
-    get=extend_schema(
-        description="Retrieve a list of recommended videos, sorted by decreasing total score.",
-        parameters=[
-            RecommendationsFilterSerializer,
-            OpenApiParameter(
-                "weights",
-                OpenApiTypes.OBJECT,
-                style="deepObject",
-                description="Weights for criteria in this poll."
-                            " The default weight is 10 for each criteria.",
-                examples=[
-                    OpenApiExample(
-                        name="weights example",
-                        value={
-                            "reliability": 10,
-                            "importance": 10,
-                            "ignored_criteria": 0,
-                        },
-                    )
-                ],
-            ),
-        ],
-    )
-)
 class PollsView(RetrieveAPIView):
     """
-    Retrieve a poll and its related criteria.
+    Fetch a poll and its related criteria.
     """
 
     permission_classes = []
@@ -136,15 +137,22 @@ class PollsView(RetrieveAPIView):
     serializer_class = PollSerializer
 
 
-class PollsRecommendationsView(PollRecommendationsBase, ListAPIView):
+class PollsRecommendationsView(PollRecommendationsBaseAPIView):
+    """
+    List the recommended entities of a given poll.
+    """
+
+    # overwrite the default value of `PollScopedViewMixin`
+    poll_parameter = "name"
+
     permission_classes = []
-    serializer_class = RecommendationSerializer
 
     queryset = Entity.objects.all()
+    serializer_class = RecommendationSerializer
 
     def get_queryset(self):
         queryset = self.queryset
-        poll = get_object_or_404(Poll, name=self.kwargs["name"])
+        poll = self.poll_from_url
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll)
