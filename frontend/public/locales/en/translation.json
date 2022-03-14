@@ -9,14 +9,6 @@
     "nextButton": "Next {{limit}}",
     "comparisons": "comparisons"
   },
-  "metrics": {
-    "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
-  },
-  "stats": {
-    "activeUsers": "Active users",
-    "comparisons": "Comparisons",
-    "ratedVideos": "Rated videos"
-  },
   "comparison": {
     "successfullySubmitted": "The comparison has been successfully submitted.",
     "pleaseSelectTwoVideos": "Please, enter two URLs or IDs of YouTube videos to compare them.",
@@ -24,10 +16,10 @@
     "removeOptionalCriterias": "Remove optional criterias",
     "addOptionalCriterias": "Add optional criterias",
     "changeOneVideo": "Change one of the video to submit a new comparison",
-    "editComparison": "Edit comparison",
     "comparisonInPublicDataset": "This comparison is included in the public dataset.",
     "comparisonInPublicDatasetAfterSubmission": "After submission, this comparison will be included in the public dataset.",
-    "criteriaSkipped": "Skipped",
+    "editComparison": "Edit comparison",
+    "criteriaSkipped": "skipped",
     "submitAComparison": "Submit a comparison"
   },
   "comparisons": {
@@ -153,9 +145,18 @@
   },
   "username": "Username",
   "profile": "Profile",
+  "metrics": {
+    "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
+  },
+  "stats": {
+    "activeUsers": "Active users",
+    "comparisons": "Comparisons",
+    "ratedVideos": "Rated videos"
+  },
   "videoSelector": {
-    "pasteUrlOrVideoId": "Paste URL or Video ID",
-    "newVideo": "New Video"
+    "newVideo": "Select a new video automatically",
+    "autoEntityButton": "Auto",
+    "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
   "video": {
     "nComparisonsByYou_one": "{{count}} comparison by you",
@@ -163,17 +164,17 @@
     "notYetComparedByYou": "Not yet compared by you",
     "contributionsArePublicMessage": "Your contributions about this video are currently public. Comparisons appear in the public data associated to your profile only if you tag both videos as public.",
     "contributionsArePrivateMessage": "Your contributions about this video are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores about videos.",
-    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
-    "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
     "nbViews": "{{nbViews}} views",
     "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
+    "labelShowSettings": "Show settings related to this video",
+    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
+    "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparison by",
     "nbComparisonsBy_other": "{{count}} comparisons by",
     "nbContributors_one": "{{count}} contributor",
     "nbContributors_other": "{{count}} contributors",
     "criteriaRatedHigh": "Rated high:",
-    "criteriaRatedLow": "Rated low:",
-    "labelShowSettings": "Show settings related to this video"
+    "criteriaRatedLow": "Rated low:"
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",

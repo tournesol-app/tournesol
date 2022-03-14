@@ -13,6 +13,7 @@ const VideoInput = ({ value, onChange }: Props) => {
   return (
     <Box>
       <TextField
+        color="secondary"
         fullWidth
         value={value}
         placeholder={t('videoSelector.pasteUrlOrVideoId')}

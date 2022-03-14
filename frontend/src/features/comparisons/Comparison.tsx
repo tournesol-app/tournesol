@@ -222,12 +222,14 @@ const Comparison = () => {
         item
         xs={12}
         sx={{
-          marginTop: '16px',
+          marginTop: 2,
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
-          paddingTop: '16px',
+          py: 3,
         }}
+        component={Card}
+        elevation={2}
       >
         {selectorA.rating && selectorB.rating ? (
           isLoading ? (
@@ -244,9 +246,7 @@ const Comparison = () => {
             />
           )
         ) : (
-          <Typography paragraph>
-            {t('comparison.pleaseSelectTwoVideos')}
-          </Typography>
+          <Typography>{t('comparison.pleaseSelectTwoVideos')}</Typography>
         )}
       </Grid>
     </Grid>
