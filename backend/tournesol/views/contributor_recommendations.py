@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import User
 from tournesol.serializers.contributor_recommendations import ContributorRecommendationsSerializer
 
-from ..models import ContributorRating, ContributorRatingCriteriaScore, Entity, Poll
+from ..models import ContributorRating, Entity, Poll
 from ..views import PollRecommendationsBaseAPIView
 
 

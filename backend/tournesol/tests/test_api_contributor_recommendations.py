@@ -93,8 +93,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 1)
 
         for entity in response.data["results"]:
-            for ratings in entity["contributor_ratings"]:
-                self.assertEqual(ratings["is_public"], True)
+            self.assertEqual(entity["is_public"], True)
 
         response = self.client.get(
             f"/users/{self.user2.username}/recommendations/{self.poll.name}",
@@ -105,8 +104,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 2)
 
         for entity in response.data["results"]:
-            for ratings in entity["contributor_ratings"]:
-                self.assertEqual(ratings["is_public"], True)
+            self.assertEqual(entity["is_public"], True)
 
     def test_recommendations_privacy_anon(self):
         """
@@ -122,8 +120,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 1)
 
         for entity in response.data["results"]:
-            for ratings in entity["contributor_ratings"]:
-                self.assertEqual(ratings["is_public"], True)
+            self.assertEqual(entity["is_public"], True)
 
         response = self.client.get(
             f"/users/{self.user2.username}/recommendations/{self.poll.name}",
@@ -134,8 +131,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.assertEqual(response.data["count"], 2)
 
         for entity in response.data["results"]:
-            for ratings in entity["contributor_ratings"]:
-                self.assertEqual(ratings["is_public"], True)
+            self.assertEqual(entity["is_public"], True)
 
     def test_recommendations_are_filtered_by_pole(self):
         new_poll = PollWithCriteriasFactory()
@@ -267,17 +263,12 @@ class ContributorRecommendationsApiTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
-        self.assertEqual(len(response.data["results"][0]["contributor_ratings"]), 1)
         self.assertEqual(
-            len(
-                response.data["results"][0]["contributor_ratings"][0]["criteria_scores"]
-            ),
+            len(response.data["results"][0]["criteria_scores"]),
             1,
         )
         self.assertEqual(
-            response.data["results"][0]["contributor_ratings"][0]["criteria_scores"][0][
-                "score"
-            ],
+            response.data["results"][0]["criteria_scores"][0]["score"],
             criterion_score,
         )
         self.assertEqual(
@@ -301,18 +292,13 @@ class ContributorRecommendationsApiTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
-        self.assertEqual(len(response.data["results"][0]["contributor_ratings"]), 1)
         self.assertEqual(
-            len(
-                response.data["results"][0]["contributor_ratings"][0]["criteria_scores"]
-            ),
+            len(response.data["results"][0]["criteria_scores"]),
             1,
         )
         # It shouldn't have changed, other users' ratings are ignored
         self.assertEqual(
-            response.data["results"][0]["contributor_ratings"][0]["criteria_scores"][0][
-                "score"
-            ],
+            response.data["results"][0]["criteria_scores"][0]["score"],
             criterion_score,
         )
         self.assertEqual(
