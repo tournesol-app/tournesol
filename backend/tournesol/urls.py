@@ -9,8 +9,8 @@ from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.contributor_recommendations import (
-    PrivateContributorRecommendations,
-    PublicContributorRecommendations,
+    PublicContributorRecommendationsView,
+    PrivateContributorRecommendationsView,
 )
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
@@ -93,12 +93,12 @@ urlpatterns = [
     # User recommendations API
     path(
         "users/me/recommendations/<str:poll_name>",
-        PrivateContributorRecommendations.as_view(),
+        PrivateContributorRecommendationsView.as_view(),
         name="private_contributor_recommendations",
     ),
     path(
         "users/<str:username>/recommendations/<str:poll_name>",
-        PublicContributorRecommendations.as_view(),
+        PublicContributorRecommendationsView.as_view(),
         name="public_contributor_recommendations",
     ),
     # Email domain API

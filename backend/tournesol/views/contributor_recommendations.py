@@ -13,7 +13,7 @@ from ..models import ContributorRating, ContributorRatingCriteriaScore, Entity, 
 from ..views import PollRecommendationsBaseAPIView
 
 
-class ContributorRecommendationsBase(PollRecommendationsBaseAPIView):
+class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
     """
     A base class used to factorize behaviours common to all contributor
     recommendations views.
@@ -77,7 +77,7 @@ class ContributorRecommendationsBase(PollRecommendationsBaseAPIView):
         return queryset.distinct()
 
 
-class PrivateContributorRecommendations(ContributorRecommendationsBase):
+class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
     """
     List the recommendations of the logged user.
     """
@@ -96,7 +96,7 @@ class PrivateContributorRecommendations(ContributorRecommendationsBase):
         return queryset.order_by("-total_score", "-pk")
 
 
-class PublicContributorRecommendations(ContributorRecommendationsBase):
+class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
     """
     List the public recommendations of a given user.
     """
