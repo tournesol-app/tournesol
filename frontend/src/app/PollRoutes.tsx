@@ -46,21 +46,25 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
       id: 'myComparisons',
       url: 'comparisons',
       page: ComparisonListPage,
+      type: PrivateRoute,
     },
     {
       id: 'comparison',
       url: 'comparison',
       page: ComparisonPage,
+      type: PrivateRoute,
     },
     {
       id: 'myRateLaterList',
       url: 'rate_later',
       page: RateLaterPage,
+      type: PrivateRoute,
     },
     {
       id: 'myRatedVideos',
       url: 'ratings',
       page: VideoRatingsPage,
+      type: PrivateRoute,
     },
   ] as const;
 
@@ -76,9 +80,9 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
           return;
         }
         return (
-          <PrivateRoute key={route.id} path={`${basePath}/${route.url}`}>
+          <route.type key={route.id} path={`${basePath}/${route.url}`}>
             <route.page />
-          </PrivateRoute>
+          </route.type>
         );
       })}
       <PublicRoute>Page not found</PublicRoute>
