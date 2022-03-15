@@ -23,7 +23,7 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
 
   on('before:browser:launch', (browser, launchOptions) => {
-    launchOptions.extensions.push(path.join(__dirname, '../../../browser-extension'));
+    launchOptions.extensions.push(path.join(__dirname, '../../../browser-extension/src'));
     return launchOptions
   })
 }
