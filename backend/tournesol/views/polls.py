@@ -157,13 +157,12 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
     permission_classes = []
 
-    queryset = Entity.objects.all()
+    queryset = Entity.objects.none()
     serializer_class = RecommendationSerializer
 
     def get_queryset(self):
-        queryset = self.queryset
         poll = self.poll_from_url
-
+        queryset = Entity.objects.filter(criteria_scores__poll=poll)
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
