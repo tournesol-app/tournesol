@@ -31,7 +31,7 @@ export const UserRatingPublicToggle = ({
   onChange?: (rating: ContributorRating) => void;
 }) => {
   const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, baseUrl } = useCurrentPoll();
 
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +51,7 @@ export const UserRatingPublicToggle = ({
           <Link
             color="inherit"
             component={RouterLink}
-            to={`/comparisons/?uid=${uid}`}
+            to={`${baseUrl}/comparisons/?uid=${uid}`}
           >
             <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
               {{ count: nComparisons }} comparison by you

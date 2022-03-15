@@ -7,10 +7,10 @@ import { CircularProgress, Grid, Typography, Card } from '@mui/material';
 import { useNotifications } from 'src/hooks';
 import { UsersService, ComparisonRequest } from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
-import VideoSelector, {
+import EntitySelector, {
   SelectorValue,
-} from 'src/features/video_selector/VideoSelector';
-import { UID_YT_NAMESPACE } from 'src/utils/constants';
+} from 'src/features/entity_selector/EntitySelector';
+import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const UID_PARAMS: { vidA: string; vidB: string } = {
@@ -53,10 +53,10 @@ const rewriteLegacyParameters = (
 /**
  * The comparison UI.
  *
- * Containing two video selectors and the criteria sliders. Note that it
+ * Containing two entity selectors and the criteria sliders. Note that it
  * currently uses the `useLocation` hook to update the URL parameters when
- * a video ID is changed. Adding this component into a page will also add
- * these new video ID in the URL parameters.
+ * a entity uid is changed. Adding this component into a page will also add
+ * these uids in the URL parameters.
  */
 const Comparison = () => {
   const { t } = useTranslation();
@@ -178,6 +178,8 @@ const Comparison = () => {
     );
   }
 
+  const entityName = getEntityName(t, pollName);
+
   return (
     <Grid
       container
@@ -194,8 +196,8 @@ const Comparison = () => {
           alignSelf: 'start',
         }}
       >
-        <VideoSelector
-          title="Video 1"
+        <EntitySelector
+          title={`${entityName} 1`}
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
@@ -210,8 +212,8 @@ const Comparison = () => {
           alignSelf: 'start',
         }}
       >
-        <VideoSelector
-          title="Video 2"
+        <EntitySelector
+          title={`${entityName} 2`}
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
@@ -246,7 +248,7 @@ const Comparison = () => {
             />
           )
         ) : (
-          <Typography>{t('comparison.pleaseSelectTwoVideos')}</Typography>
+          <Typography>{t('comparison.pleaseSelectTwoItems')}</Typography>
         )}
       </Grid>
     </Grid>

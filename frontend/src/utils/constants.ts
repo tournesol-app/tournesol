@@ -67,6 +67,17 @@ export const getPollName = (t: TFunction, pollName: string) => {
   }
 };
 
+export const getEntityName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case PRESIDENTIELLE_2022_POLL_NAME:
+      return t('poll.entityCandidate');
+    case YOUTUBE_POLL_NAME:
+      return t('poll.entityVideo');
+    default:
+      return pollName;
+  }
+};
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.

@@ -48,11 +48,15 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
     useState<PollContextValue>(initPollContext);
 
   const setPollName = useCallback((name: string) => {
-    setContextValue((value) => ({
-      ...value,
-      name: name,
-      poll: undefined,
-    }));
+    setContextValue((value) =>
+      value.name !== name
+        ? {
+            ...value,
+            name: name,
+            poll: undefined,
+          }
+        : value
+    );
   }, []);
 
   useEffect(() => {
@@ -104,6 +108,7 @@ export const useCurrentPoll = () => {
 
   return {
     ...contextValue,
+    baseUrl: pollOptions?.path.replace(/\/+$/g, ''),
     criterias: poll?.criterias ?? [],
     options: pollOptions,
     getCriteriaLabel,

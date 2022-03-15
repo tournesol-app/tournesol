@@ -2,6 +2,24 @@
   "components": {
     "filtersButton": "filters"
   },
+  "video": {
+    "labelShowSettings": "Show settings related to this video",
+    "nbViews": "{{nbViews}} views",
+    "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
+    "nComparisonsByYou_one": "{{count}} comparison by you",
+    "nComparisonsByYou_other": "{{count}} comparisons by you",
+    "notYetComparedByYou": "Not yet compared by you",
+    "contributionsArePublicMessage": "Your contributions about this video are currently public. Comparisons appear in the public data associated to your profile only if you tag both videos as public.",
+    "contributionsArePrivateMessage": "Your contributions about this video are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores about videos.",
+    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
+    "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
+    "nbComparisonsBy_one": "{{count}} comparison by",
+    "nbComparisonsBy_other": "{{count}} comparisons by",
+    "nbContributors_one": "{{count}} contributor",
+    "nbContributors_other": "{{count}} contributors",
+    "criteriaRatedHigh": "Rated high:",
+    "criteriaRatedLow": "Rated low:"
+  },
   "pagination": {
     "videos": "videos",
     "previousButton": "Previous {{limit}}",
@@ -11,7 +29,7 @@
   },
   "comparison": {
     "successfullySubmitted": "The comparison has been successfully submitted.",
-    "pleaseSelectTwoVideos": "Please, enter two URLs or IDs of YouTube videos to compare them.",
+    "pleaseSelectTwoItems": "Please select 2 items to compare them.",
     "videosAreSimilar": "These two videos are very similar, it is probably not useful to compare them.",
     "removeOptionalCriterias": "Remove optional criterias",
     "addOptionalCriterias": "Add optional criterias",
@@ -158,24 +176,6 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
-  "video": {
-    "nComparisonsByYou_one": "{{count}} comparison by you",
-    "nComparisonsByYou_other": "{{count}} comparisons by you",
-    "notYetComparedByYou": "Not yet compared by you",
-    "contributionsArePublicMessage": "Your contributions about this video are currently public. Comparisons appear in the public data associated to your profile only if you tag both videos as public.",
-    "contributionsArePrivateMessage": "Your contributions about this video are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores about videos.",
-    "nbViews": "{{nbViews}} views",
-    "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
-    "labelShowSettings": "Show settings related to this video",
-    "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
-    "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
-    "nbComparisonsBy_one": "{{count}} comparison by",
-    "nbComparisonsBy_other": "{{count}} comparisons by",
-    "nbContributors_one": "{{count}} contributor",
-    "nbContributors_other": "{{count}} contributors",
-    "criteriaRatedHigh": "Rated high:",
-    "criteriaRatedLow": "Rated low:"
-  },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
     "tryAgainLaterOrContactAdministrator": "Please, try again later, or contact an administrator if the issue persists.",
@@ -317,6 +317,8 @@
   },
   "poll": {
     "presidential2022": "election FR 2022",
-    "videos": "videos"
+    "videos": "videos",
+    "entityCandidate": "candidate",
+    "entityVideo": "video"
   }
 }

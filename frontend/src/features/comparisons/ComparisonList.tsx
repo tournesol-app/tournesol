@@ -1,19 +1,17 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Grid, Container, Tooltip, Fab, Box, useTheme } from '@mui/material';
 import { Compare as CompareIcon } from '@mui/icons-material';
 
 import type { Comparison } from 'src/services/openapi';
-import VideoCard from '../videos/VideoCard';
-import { VideoObject } from 'src/utils/types';
-import { videoFromRelatedEntity } from 'src/utils/entity';
+import EntityCard from 'src/components/entity/EntityCard';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
   const { entity_a, entity_b } = comparison;
-
-  const videoA: VideoObject = videoFromRelatedEntity(entity_a);
-  const videoB: VideoObject = videoFromRelatedEntity(entity_b);
 
   return (
     <Box
@@ -26,7 +24,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         gap: '16px',
       }}
     >
-      <VideoCard compact video={videoA} />
+      <EntityCard compact entity={entity_a} />
       <Box
         sx={{
           position: 'relative',
@@ -45,8 +43,8 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         />
         <Tooltip title={`${t('comparisons.goToComparison')}`} placement="top">
           <Fab
-            component="a"
-            href={`/comparison/?uidA=${entity_a.uid}&uidB=${entity_b.uid}`}
+            component={Link}
+            to={`${baseUrl}/comparison/?uidA=${entity_a.uid}&uidB=${entity_b.uid}`}
             sx={{ backgroundColor: '#F1EFE7' }}
             size="small"
           >
@@ -54,7 +52,7 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <VideoCard compact video={videoB} />
+      <EntityCard compact entity={entity_b} />
     </Box>
   );
 };

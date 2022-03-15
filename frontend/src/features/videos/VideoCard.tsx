@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { Link as RouterLink } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import {
   Grid,
@@ -10,8 +9,6 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
-  Tooltip,
-  Link,
   Theme,
 } from '@mui/material';
 
@@ -26,7 +23,11 @@ import {
   videoIdFromEntity,
 } from 'src/utils/video';
 import VideoCardScores from './VideoCardScores';
-import VideoCardTitle from './VideoCardTitle';
+import EntityCardTitle from 'src/components/entity/EntityCardTitle';
+import { entityCardMainSx } from 'src/components/entity/style';
+import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
+import { PlayerWrapper } from 'src/components/entity/EntityImagery';
+import { VideoMetadata } from 'src/components/entity/EntityMetadata';
 
 const useStyles = makeStyles((theme: Theme) => ({
   youtube_complements: {
@@ -51,75 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: 0,
     },
   },
-  '@keyframes scaling': {
-    '0%': {
-      opacity: 0.05,
-      transform: 'scale(70%)',
-    },
-    '100%': {
-      opacity: 1,
-      transform: 'scale(160%)',
-    },
-  },
-  loadingEffect: {
-    animation: '1.2s ease-out infinite alternate $scaling',
-  },
 }));
-
-const mainSx = {
-  margin: 0,
-  width: '100%',
-  maxWidth: 1000,
-  background: '#FFFFFF',
-  border: '1px solid #DCD8CB',
-  boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
-  borderRadius: '4px',
-  alignContent: 'flex-start',
-  overflow: 'hidden',
-  fontSize: {
-    xs: '14px',
-    md: '16px',
-  },
-};
-
-const PlayerWrapper = React.forwardRef(function PlayerWrapper(
-  {
-    duration,
-    children,
-  }: {
-    duration?: string;
-    children: React.ReactNode;
-  },
-  ref
-) {
-  const [isDurationVisible, setIsDurationVisible] = useState(true);
-  return (
-    <Box
-      position="relative"
-      height="100%"
-      onClick={() => setIsDurationVisible(false)}
-      ref={ref}
-    >
-      {isDurationVisible && duration && (
-        <Box
-          position="absolute"
-          bottom={0}
-          right={0}
-          bgcolor="rgba(0,0,0,0.5)"
-          color="#fff"
-          px={1}
-          fontFamily="system-ui, arial, sans-serif"
-          fontSize="0.8em"
-          fontWeight="bold"
-          sx={{ pointerEvents: 'none' }}
-        >
-          {duration}
-        </Box>
-      )}
-      {children}
-    </Box>
-  );
-});
 
 function VideoCard({
   video,
@@ -134,7 +67,7 @@ function VideoCard({
   compact?: boolean;
   controls?: boolean;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
 
@@ -146,7 +79,7 @@ function VideoCard({
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
   return (
-    <Grid container sx={mainSx}>
+    <Grid container sx={entityCardMainSx}>
       <Grid
         item
         xs={12}
@@ -177,38 +110,12 @@ function VideoCard({
         container
         direction="column"
       >
-        <VideoCardTitle video={video} compact={compact} />
-        <div className={classes.youtube_complements}>
-          {video.views && (
-            <span className={classes.youtube_complements_p}>
-              <Trans t={t} i18nKey="video.nbViews">
-                {{ nbViews: video.views.toLocaleString(i18n.resolvedLanguage) }}{' '}
-                views
-              </Trans>
-            </span>
-          )}
-          {video.publication_date && (
-            <span className={classes.youtube_complements_p}>
-              {video.publication_date}
-            </span>
-          )}
-          {video.uploader && (
-            <Tooltip
-              title={`${t('video.seeRecommendedVideosSameUploader')}`}
-              placement="bottom"
-            >
-              <Link
-                color="inherit"
-                component={RouterLink}
-                to={`/recommendations?uploader=${encodeURIComponent(
-                  video.uploader
-                )}`}
-              >
-                {video.uploader}
-              </Link>
-            </Tooltip>
-          )}
-        </div>
+        <EntityCardTitle title={video.name} compact={compact} />
+        <VideoMetadata
+          views={video.views}
+          publicationDate={video.publication_date}
+          uploader={video.uploader}
+        />
         {!compact && <VideoCardScores video={video} />}
       </Grid>
       <Grid
@@ -270,9 +177,6 @@ function VideoCard({
 }
 
 export const RowVideoCard = ({ video }: { video: VideoObject }) => {
-  const { t, i18n } = useTranslation();
-  const classes = useStyles();
-
   return (
     <Box
       display="flex"
@@ -280,7 +184,7 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
       alignItems="center"
       gap={1}
       height="70px"
-      sx={mainSx}
+      sx={entityCardMainSx}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
         <img
@@ -289,27 +193,13 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
         />
       </Box>
       <Box flex={1}>
-        <VideoCardTitle video={video} titleMaxLines={1} fontSize="1em" />
-        <div className={classes.youtube_complements}>
-          {video.views && (
-            <span className={classes.youtube_complements_p}>
-              <Trans t={t} i18nKey="video.nbViews">
-                {{ nbViews: video.views.toLocaleString(i18n.resolvedLanguage) }}{' '}
-                views
-              </Trans>
-            </span>
-          )}
-          {video.publication_date && (
-            <span className={classes.youtube_complements_p}>
-              {video.publication_date}
-            </span>
-          )}
-          {video.uploader && (
-            <span className={classes.youtube_complements_p}>
-              {video.uploader}
-            </span>
-          )}
-        </div>
+        <EntityCardTitle title={video.name} titleMaxLines={1} fontSize="1em" />
+        <VideoMetadata
+          views={video.views}
+          uploader={video.uploader}
+          publicationDate={video.publication_date}
+          withLinks={false}
+        />
       </Box>
     </Box>
   );
@@ -326,7 +216,7 @@ export const VideoCardFromId = ({
 }) => {
   const video = useVideoMetadata(videoId);
   if (video == null || !video.video_id) {
-    return <EmptyVideoCard compact={variant === 'compact'} />;
+    return <EmptyEntityCard compact={variant === 'compact'} />;
   }
   if (variant === 'compact') {
     return <VideoCard video={video} compact {...rest} />;
@@ -335,40 +225,6 @@ export const VideoCardFromId = ({
     return <RowVideoCard video={video} {...rest} />;
   }
   return <VideoCard video={video} {...rest} />;
-};
-
-export const EmptyVideoCard = ({
-  compact,
-  loading = false,
-}: {
-  compact?: boolean;
-  loading?: boolean;
-}) => {
-  const classes = useStyles();
-
-  return (
-    <Grid container spacing={1} sx={mainSx}>
-      <Grid
-        item
-        xs={12}
-        sm={compact ? 12 : 4}
-        sx={{
-          aspectRatio: '16 / 9',
-          backgroundColor: '#fafafa',
-        }}
-        container
-        alignItems="center"
-        justifyContent="center"
-      >
-        <img
-          src="/svg/LogoSmall.svg"
-          alt="logo"
-          className={loading ? classes.loadingEffect : undefined}
-          style={{ opacity: '0.3' }}
-        />
-      </Grid>
-    </Grid>
-  );
 };
 
 export default VideoCard;
