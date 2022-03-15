@@ -174,6 +174,7 @@ const EntitySelector = ({
           {title}
         </Typography>
         <AutoEntityButton
+          disabled={loading}
           currentUid={uid}
           otherUid={otherUid}
           onClick={() => {

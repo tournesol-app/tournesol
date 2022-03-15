@@ -11,6 +11,7 @@ interface Props {
   otherUid: string | null;
   onResponse: (newUid: string | null) => void;
   onClick: () => void;
+  disabled?: boolean;
 }
 
 const AutoEntityButton = ({
@@ -18,6 +19,7 @@ const AutoEntityButton = ({
   otherUid,
   onResponse,
   onClick,
+  disabled = false,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
@@ -41,16 +43,20 @@ const AutoEntityButton = ({
 
   return (
     <Tooltip title={`${t('videoSelector.newVideo')}`} aria-label="new_video">
-      <Button
-        color="secondary"
-        variant="outlined"
-        size="small"
-        onClick={askNewVideo}
-        startIcon={<Autorenew />}
-        sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
-      >
-        {t('videoSelector.autoEntityButton')}
-      </Button>
+      {/* A <span> element is required to allow wrapping a disabled button.  */}
+      <span>
+        <Button
+          disabled={disabled}
+          color="secondary"
+          variant="outlined"
+          size="small"
+          onClick={askNewVideo}
+          startIcon={<Autorenew />}
+          sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
+        >
+          {t('videoSelector.autoEntityButton')}
+        </Button>
+      </span>
     </Tooltip>
   );
 };
