@@ -72,7 +72,7 @@ const EntityImagery = ({ entity }: { entity: RelatedEntityObject }) => {
           },
         }}
       >
-        <img src={entity.metadata.image_url} />
+        <img src={entity.metadata.image_url} alt={entity.metadata.name} />
       </Box>
     );
   }
