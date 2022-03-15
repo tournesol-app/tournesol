@@ -133,7 +133,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         for entity in response.data["results"]:
             self.assertEqual(entity["is_public"], True)
 
-    def test_recommendations_are_filtered_by_pole(self):
+    def test_recommendations_are_filtered_by_poll(self):
         new_poll = PollWithCriteriasFactory()
 
         self.client.force_authenticate(self.user1)
