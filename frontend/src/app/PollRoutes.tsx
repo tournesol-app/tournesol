@@ -19,7 +19,13 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
   const { path } = useRouteMatch();
   const basePath = path.replace(/\/+$/g, '');
 
-  const { setPollName, name: currentPollName, isReady } = useCurrentPoll();
+  const {
+    setPollName,
+    name: currentPollName,
+    options,
+    isReady,
+  } = useCurrentPoll();
+  const disabledItems = options?.disabledRouteIds ?? [];
 
   useEffect(() => {
     if (currentPollName !== pollName || !isReady) {
@@ -35,6 +41,29 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
     );
   }
 
+  const routes = [
+    {
+      id: 'myComparisons',
+      url: 'comparisons',
+      page: ComparisonListPage,
+    },
+    {
+      id: 'comparison',
+      url: 'comparison',
+      page: ComparisonPage,
+    },
+    {
+      id: 'myRateLaterList',
+      url: 'rate_later',
+      page: RateLaterPage,
+    },
+    {
+      id: 'myRatedVideo',
+      url: 'ratings',
+      page: VideoRatingsPage,
+    },
+  ];
+
   return (
     <Switch>
       {!disableRecommendations && (
@@ -42,18 +71,16 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
           <VideoRecommendationPage />
         </PublicRoute>
       )}
-      <PrivateRoute path={`${basePath}/comparisons`}>
-        <ComparisonListPage />
-      </PrivateRoute>
-      <PrivateRoute path={`${basePath}/comparison`}>
-        <ComparisonPage />
-      </PrivateRoute>
-      <PrivateRoute path={`${basePath}/rate_later`}>
-        <RateLaterPage />
-      </PrivateRoute>
-      <PrivateRoute path={`${basePath}/ratings`}>
-        <VideoRatingsPage />
-      </PrivateRoute>
+      {routes.map((route) => {
+        if (disabledItems.includes(route.id)) {
+          return;
+        }
+        return (
+          <PrivateRoute key={route.id} path={`${basePath}/${route.url}`}>
+            <route.page />
+          </PrivateRoute>
+        );
+      })}
       <PublicRoute>Page not found</PublicRoute>
     </Switch>
   );

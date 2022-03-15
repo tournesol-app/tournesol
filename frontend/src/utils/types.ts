@@ -32,8 +32,8 @@ export type SelectablePoll = {
   displayOrder: number;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
-  // a list of id used by `SideBar` items that won't be displayed
-  disabledMenuItems?: Array<string>;
+  // a list route id that will be disable in `PollRoutes` and `SideBar`
+  disabledRouteIds?: Array<string>;
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
   topBarBackground: string | null;

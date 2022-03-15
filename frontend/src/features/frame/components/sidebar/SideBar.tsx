@@ -101,8 +101,7 @@ const SideBar = () => {
 
   const { options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
-  const disabledItems =
-    options && options.disabledMenuItems ? options.disabledMenuItems : [];
+  const disabledItems = options?.disabledRouteIds ?? [];
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -145,7 +144,7 @@ const SideBar = () => {
       displayText: t('menu.myRatedVideos'),
     },
     {
-      id: 'myRateLater',
+      id: 'myRateLaterList',
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
