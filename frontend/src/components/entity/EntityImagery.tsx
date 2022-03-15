@@ -5,17 +5,21 @@ import { TypeEnum } from 'src/services/openapi';
 import { convertDurationToClockDuration } from 'src/utils/video';
 import { RelatedEntityObject } from 'src/utils/types';
 
-export const PlayerWrapper = React.forwardRef(function PlayerWrapper(
+const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   {
     duration,
     children,
   }: {
-    duration?: string;
+    duration?: number;
     children: React.ReactNode;
   },
   ref
 ) {
   const [isDurationVisible, setIsDurationVisible] = useState(true);
+  const formattedDuration: string | null = duration
+    ? convertDurationToClockDuration(duration)
+    : null;
+
   return (
     <Box
       position="relative"
@@ -23,7 +27,7 @@ export const PlayerWrapper = React.forwardRef(function PlayerWrapper(
       onClick={() => setIsDurationVisible(false)}
       ref={ref}
     >
-      {isDurationVisible && duration && (
+      {isDurationVisible && formattedDuration && (
         <Box
           position="absolute"
           bottom={0}
@@ -36,7 +40,7 @@ export const PlayerWrapper = React.forwardRef(function PlayerWrapper(
           fontWeight="bold"
           sx={{ pointerEvents: 'none' }}
         >
-          {duration}
+          {formattedDuration}
         </Box>
       )}
       {children}
@@ -44,18 +48,35 @@ export const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   );
 });
 
+export const VideoPlayer = ({
+  videoId,
+  duration,
+  controls = true,
+}: {
+  videoId: string;
+  duration?: number | null;
+  controls?: boolean;
+}) => {
+  return (
+    <ReactPlayer
+      url={`https://youtube.com/watch?v=${videoId}`}
+      playing
+      light
+      width="100%"
+      height="100%"
+      wrapper={PlayerWrapper}
+      duration={duration}
+      controls={controls}
+    />
+  );
+};
+
 const EntityImagery = ({ entity }: { entity: RelatedEntityObject }) => {
   if (entity.type === TypeEnum.VIDEO) {
-    const duration = entity.metadata.duration;
     return (
-      <ReactPlayer
-        url={`https://youtube.com/watch?v=${entity.metadata.video_id}`}
-        playing
-        light
-        width="100%"
-        height="100%"
-        wrapper={PlayerWrapper}
-        duration={!!duration && convertDurationToClockDuration(duration)}
+      <VideoPlayer
+        videoId={entity.metadata.video_id}
+        duration={entity.metadata.duration}
       />
     );
   }
