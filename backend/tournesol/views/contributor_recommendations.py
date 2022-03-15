@@ -34,9 +34,7 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
             "contributorvideoratings__criteria_scores",
         )
 
-        return queryset.filter(
-            contributorvideoratings__user=user, contributorvideoratings__poll=poll
-        ).annotate(
+        return queryset.annotate(
             total_score=Sum(
                 F("contributorvideoratings__criteria_scores__score") * criteria_weight,
             ),
@@ -64,7 +62,10 @@ class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
         poll = self.poll_from_url
         user = self.request.user
 
-        queryset = Entity.objects.filter(contributorvideoratings__user=user)
+        queryset = Entity.objects.filter(
+            contributorvideoratings__poll=poll,
+            contributorvideoratings__user=user
+        )
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
@@ -85,7 +86,9 @@ class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
         user = get_object_or_404(User, username=self.kwargs["username"])
 
         queryset = Entity.objects.filter(
-            contributorvideoratings__user=user, contributorvideoratings__is_public=True
+            contributorvideoratings__poll=poll,
+            contributorvideoratings__user=user,
+            contributorvideoratings__is_public=True,
         )
 
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
