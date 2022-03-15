@@ -1866,35 +1866,29 @@ components:
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        n_comparisons:
-          type: integer
-        n_contributors:
-          type: integer
-        metadata:
-          type: object
-          additionalProperties: {}
-        total_score:
-          type: number
-          format: float
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        is_public:
+          type: boolean
+          readOnly: true
+        total_score:
+          type: number
+          format: float
+        metadata:
+          type: object
+          additionalProperties: {}
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
       required:
       - criteria_scores
       - is_public
-      - n_comparisons
-      - n_contributors
       - total_score
       - uid
     DefaultSendResetPasswordLink:

@@ -10,7 +10,17 @@ class ContributorRecommendationsSerializer(RecommendationSerializer):
     criteria_scores = SerializerMethodField()
 
     class Meta(RecommendationSerializer.Meta):
-        fields = RecommendationSerializer.Meta.fields + ["is_public"]
+        # By default, `n_comparisons` and `n_contributors` take all
+        # contributors into account, so they are removed here to not add
+        # confusion in the contributor recommendations. We could choose to
+        # display the `n_comparisons` of the selected contributor by computing
+        # it here.
+        fields = list(
+            set(RecommendationSerializer.Meta.fields)
+            - {"n_comparisons"}
+            - {"n_contributors"}
+            | {"is_public"}
+        )
 
     @extend_schema_field(ContributorCriteriaScore(many=True))
     def get_criteria_scores(self, obj):
