@@ -113,45 +113,45 @@ const SideBar = () => {
 
   const menuItems = [
     {
-      id: 'home',
+      id: 'home' as const,
       targetUrl: path,
       IconComponent: HomeIcon,
       displayText: t('menu.home'),
     },
     {
-      id: 'recommendations',
+      id: 'recommendations' as const,
       targetUrl: `${path}recommendations?date=Month`,
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
     { displayText: 'divider_1' },
     {
-      id: 'comparison',
+      id: 'comparison' as const,
       targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
     },
     {
-      id: 'myComparisons',
+      id: 'myComparisons' as const,
       targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
     },
     {
-      id: 'myRatedVideo',
+      id: 'myRatedVideos' as const,
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.myRatedVideos'),
     },
     {
-      id: 'myRateLaterList',
+      id: 'myRateLaterList' as const,
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
     },
     { displayText: 'divider_2' },
     {
-      id: 'about',
+      id: 'about' as const,
       targetUrl: '/about',
       IconComponent: InfoIcon,
       displayText: t('menu.about'),

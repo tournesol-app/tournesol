@@ -58,11 +58,11 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
       page: RateLaterPage,
     },
     {
-      id: 'myRatedVideo',
+      id: 'myRatedVideos',
       url: 'ratings',
       page: VideoRatingsPage,
     },
-  ];
+  ] as const;
 
   return (
     <Switch>
