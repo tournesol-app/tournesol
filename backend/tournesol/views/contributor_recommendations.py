@@ -1,9 +1,8 @@
 """
 Overrides the Polls API for recommendations specific to one user
 """
-from django.db.models import Case, F, Prefetch, Sum, When
+from django.db.models import F, Prefetch, Sum
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 
 from core.models import User
@@ -23,25 +22,9 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
     serializer_class = ContributorRecommendationsSerializer
 
     def annotate_with_total_score(self, queryset, request, poll: Poll, user):
-        criteria_cases = []
-        for crit in poll.criterias_list:
-            url_weight = request.query_params.get(f"weights[{crit}]")
-            if url_weight is not None:
-                try:
-                    used_weight = int(url_weight)
-                except ValueError as error_value:
-                    raise serializers.ValidationError(
-                        f"Invalid weight value for criteria '{crit}'"
-                    ) from error_value
-            else:
-                used_weight = 10
-            criteria_cases.append(
-                When(
-                    contributorvideoratings__criteria_scores__criteria=crit,
-                    then=used_weight,
-                )
-            )
-        criteria_weight = Case(*criteria_cases, default=0)
+        criteria_weight = self._build_criteria_weight_condition(
+            request, poll, when="contributorvideoratings__criteria_scores__criteria"
+        )
 
         queryset = queryset.prefetch_related(
             Prefetch(

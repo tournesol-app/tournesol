@@ -95,7 +95,13 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
         return queryset
 
-    def annotate_with_total_score(self, queryset, request, poll: Poll):
+    def _build_criteria_weight_condition(
+        self, request, poll: Poll, when="criteria_scores__criteria"
+    ):
+        """
+        Return a `Case()` expression associating for each criterion the weight
+        provided in the URL parameters.
+        """
         criteria_cases = []
         for crit in poll.criterias_list:
             raw_weight = request.query_params.get(f"weights[{crit}]")
@@ -108,8 +114,11 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                     ) from value_error
             else:
                 weight = 10
-            criteria_cases.append(When(criteria_scores__criteria=crit, then=weight))
-        criteria_weight = Case(*criteria_cases, default=0)
+            criteria_cases.append(When(**{when: crit}, then=weight))
+        return Case(*criteria_cases, default=0)
+
+    def annotate_with_total_score(self, queryset, request, poll: Poll):
+        criteria_weight = self._build_criteria_weight_condition(request, poll)
 
         queryset = queryset.annotate(
             total_score=Sum(
