@@ -47,7 +47,7 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
             # total score
             queryset = queryset.filter(total_score__gt=0)
 
-        return queryset.distinct()
+        return queryset
 
 
 class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
