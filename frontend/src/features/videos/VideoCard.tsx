@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ReactPlayer from 'react-player/youtube';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -18,15 +17,12 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import {
-  convertDurationToClockDuration,
-  videoIdFromEntity,
-} from 'src/utils/video';
+import { videoIdFromEntity } from 'src/utils/video';
 import VideoCardScores from './VideoCardScores';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import { entityCardMainSx } from 'src/components/entity/style';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
-import { PlayerWrapper } from 'src/components/entity/EntityImagery';
+import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -86,16 +82,9 @@ function VideoCard({
         sm={compact ? 12 : 'auto'}
         sx={{ aspectRatio: '16 / 9', width: '240px !important' }}
       >
-        <ReactPlayer
-          url={`https://youtube.com/watch?v=${videoId}`}
-          playing
-          light
-          width="100%"
-          height="100%"
-          wrapper={PlayerWrapper}
-          duration={
-            !!video.duration && convertDurationToClockDuration(video.duration)
-          }
+        <VideoPlayer
+          videoId={videoId}
+          duration={video.duration}
           controls={controls}
         />
       </Grid>
