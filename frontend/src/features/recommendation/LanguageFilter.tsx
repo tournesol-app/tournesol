@@ -46,9 +46,14 @@ function LanguageFilter({ value, onChange }: Props) {
         multiple
         options={sortedLanguages}
         getOptionLabel={getOptionLabel}
-        renderInput={(params) => <TextField {...params} variant="standard" />}
         value={arrayValue}
         onChange={handleChange}
+        renderInput={(params) => (
+          <TextField {...params} variant="outlined" color="secondary" />
+        )}
+        filterSelectedOptions
+        limitTags={3}
+        disableClearable
         data-testid="autocomplete"
       />
     </TitledSection>
