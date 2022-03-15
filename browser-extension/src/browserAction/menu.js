@@ -12,7 +12,7 @@ function get_current_tab_video_id() {
     }
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, resolve);
   }).then(get_tab_video_id);
 }
@@ -25,7 +25,7 @@ function rate_now(e) {
         url: `https://tournesol.app/comparison/?videoA=${videoId}`,
       });
     },
-    (err) => {
+    () => {
       button.disabled = true;
       button.setAttribute('data-error', 'Not a Youtube video page.');
     }
@@ -59,7 +59,7 @@ function rate_later(e) {
         );
       }
     },
-    (err) => {
+    () => {
       button.disabled = true;
       button.setAttribute('data-error', 'Not a Youtube video page.');
     }
@@ -72,7 +72,7 @@ function details(e) {
     (videoId) => {
       chrome.tabs.create({ url: `https://tournesol.app/video/${videoId}` });
     },
-    (err) => {
+    () => {
       button.disabled = true;
       button.setAttribute('data-error', 'Not a Youtube video page.');
     }

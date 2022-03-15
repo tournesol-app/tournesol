@@ -5,7 +5,6 @@
 
 const videosPerRow = 4;
 const rowsWhenExpanded = 3;
-const totalVideoNumber = videosPerRow * rowsWhenExpanded;
 let isExpanded = false;
 
 let videos = [];
@@ -32,7 +31,7 @@ const convertDurationToClockDuration = (duration) => {
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
-    contents = document
+    const contents = document
       .getElementById('visibility-monitor')
       .parentElement.children['content'].getElementsByTagName(
         'ytd-page-manager'
@@ -49,15 +48,15 @@ const getParentComponent = () => {
 
 const getTournesolComponent = () => {
   // Create new container
-  tournesol_container = document.createElement('div');
+  const tournesol_container = document.createElement('div');
   tournesol_container.id = 'tournesol_container';
 
   // Add inline-block div
-  inline_div = document.createElement('div');
+  const inline_div = document.createElement('div');
   inline_div.setAttribute('class', 'inline_div');
 
   // Add tournesol icon
-  tournesol_icon = document.createElement('img');
+  const tournesol_icon = document.createElement('img');
   tournesol_icon.setAttribute('id', 'tournesol_icon');
   tournesol_icon.setAttribute(
     'src',
@@ -68,20 +67,20 @@ const getTournesolComponent = () => {
   inline_div.append(tournesol_icon);
 
   // Add title
-  tournesol_title = document.createElement('h1');
+  const tournesol_title = document.createElement('h1');
   tournesol_title.id = 'tournesol_title';
   tournesol_title.append('Recommended by Tournesol');
   inline_div.append(tournesol_title);
 
   // Add title
-  tournesol_link = document.createElement('a');
+  const tournesol_link = document.createElement('a');
   tournesol_link.id = 'tournesol_link';
   tournesol_link.href = 'https://tournesol.app';
   tournesol_link.append('learn more');
   inline_div.append(tournesol_link);
 
   // Refresh button
-  refresh_button = document.createElement('button');
+  const refresh_button = document.createElement('button');
   refresh_button.setAttribute('id', 'tournesol_refresh_button');
   fetch(chrome.runtime.getURL('images/sync-alt.svg'))
     .then((r) => r.text())
@@ -94,7 +93,7 @@ const getTournesolComponent = () => {
   };
   inline_div.append(refresh_button);
   // Expand button
-  expand_button = document.createElement('button');
+  const expand_button = document.createElement('button');
   expand_button.setAttribute('id', 'tournesol_expand_button');
   // A new button is created on each video loading, the image must be loaded accordingly
   fetch(
@@ -118,10 +117,6 @@ const getTournesolComponent = () => {
   inline_div.append(expand_button);
 
   tournesol_container.append(inline_div);
-
-  // Push videos into new container
-  video_box_height = contents.children[0].clientHeight;
-  video_box_width = contents.children[0].clientWidth;
 
   function make_video_box(video) {
     // Div whith everything about a video
@@ -216,11 +211,11 @@ function displayRecommendations() {
     window.clearInterval(timer);
 
     // Verify that Tournesol's container has not yet been rendered
-    old_container = document.getElementById('tournesol_container');
+    const old_container = document.getElementById('tournesol_container');
     if (old_container) old_container.remove();
 
     // Generate component to display on Youtube home page
-    tournesol_component = getTournesolComponent();
+    const tournesol_component = getTournesolComponent();
 
     container.insertBefore(tournesol_component, container.children[1]);
   }, 300);
@@ -233,11 +228,7 @@ function process() {
   }
 }
 
-function handleResponse({
-  data: videosReponse,
-  loadVideos: loadVideos,
-  loadAdditionalVideos: loadAdditionalVideos,
-}) {
+function handleResponse({ data: videosReponse }) {
   areRecommandationsLoading = false;
   videos = videosReponse.slice(0, 4);
   additionalVideos = videosReponse.slice(4);

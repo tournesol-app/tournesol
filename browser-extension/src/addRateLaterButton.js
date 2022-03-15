@@ -2,8 +2,6 @@
  * Create the Rate Later button.
  *
  * This content script is meant to be run on each YouTube video page.
- *
- * @require config/const.js
  */
 
 /**
@@ -74,7 +72,7 @@ function addRateLaterButton() {
     // Text td for better vertical alignment
     const text_td = document.createElement('td');
     text_td.setAttribute('valign', 'middle');
-    text_td_text = document.createTextNode('Rate Later');
+    const text_td_text = document.createTextNode('Rate Later');
     text_td.append(text_td_text);
     rateLaterButton.append(text_td);
 
@@ -82,7 +80,7 @@ function addRateLaterButton() {
     rateLaterButton.onclick = () => {
       rateLaterButton.disabled = true;
 
-      const resp = new Promise((resolve, reject) => {
+      new Promise((resolve, reject) => {
         chrome.runtime.sendMessage(
           {
             message: 'addRateLater',
@@ -98,7 +96,7 @@ function addRateLaterButton() {
             }
           }
         );
-      }).catch((reason) => {
+      }).catch(() => {
         chrome.runtime.sendMessage({ message: 'displayModal' });
       });
     };

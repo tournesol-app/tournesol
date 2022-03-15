@@ -59,7 +59,7 @@ function process() {
         }
 
         if (resp && resp.results && resp.results.length == 1) {
-          details = resp.results[0];
+          const details = resp.results[0];
           if (details.tournesol_score == 0) return;
           if (details.tournesol_score > 0 && details.tournesol_score < 400)
             alert(
@@ -79,7 +79,7 @@ function process() {
           // Text td for better vertical alignment
           var statisticsTextTd = document.createElement('td');
           statisticsTextTd.setAttribute('valign', 'middle');
-          statisticsTextTdText = document.createTextNode(
+          const statisticsTextTdText = document.createTextNode(
             `Score: ${details.tournesol_score.toFixed(0)}`
           );
           statisticsTextTd.append(statisticsTextTdText);

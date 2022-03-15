@@ -3,9 +3,17 @@
  * login iframe.
  *
  * This content script is meant to be run on each YouTube page.
- *
- * @require config/const.js
  */
+
+// unique HTML id of the extension modal
+const EXT_MODAL_ID = 'x-tournesol-modal';
+// the value of the CSS property display used to make the modal visible
+const EXT_MODAL_VISIBLE_STATE = 'flex';
+// the value of the CSS property display used to make the modal invisible
+const EXT_MODAL_INVISIBLE_STATE = 'none';
+
+// unique HTML id of the Tournesol login iframe
+const IFRAME_TOURNESOL_LOGIN_ID = 'x-tournesol-iframe-login';
 
 /**
  * Youtube doesnt completely load a page, so content script doesn't
@@ -121,6 +129,7 @@ function displayModal() {
   // outdated token in the chrome.storage.local. Using the iframe
   // without discarding a local outdated token, will erroneously display
   // the Tournesol home page, instead of the login form.
+  // eslint-disable-next-line no-self-assign
   iframe.src = iframe.src;
   return true;
 }

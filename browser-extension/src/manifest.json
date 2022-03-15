@@ -41,12 +41,7 @@
     },
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": [
-        "config/const.js",
-        "addVideoStatistics.js",
-        "addModal.js",
-        "addRateLaterButton.js"
-      ],
+      "js": ["addVideoStatistics.js", "addModal.js", "addRateLaterButton.js"],
       "css": [
         "addVideoStatistics.css",
         "addModal.css",

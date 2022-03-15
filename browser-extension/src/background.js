@@ -30,7 +30,7 @@ const createContextMenu = function createContextMenu() {
     });
   });
 
-  chrome.contextMenus.onClicked.addListener(function (e, tab) {
+  chrome.contextMenus.onClicked.addListener(function (e) {
     var videoId = new URL(e.linkUrl).searchParams.get('v');
     if (!videoId) {
       alertUseOnLinkToYoutube();
