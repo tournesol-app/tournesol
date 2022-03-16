@@ -97,7 +97,10 @@ const Comparison = () => {
 
   const onChange = useCallback(
     (uidKey: string) => (newValue: SelectorValue) => {
-      const searchParams = new URLSearchParams(location.search);
+      // `window.location` is used here, to avoid memoizing the location
+      // defined in component state, which could be obsolete and cause a
+      // race condition when the 2 selectors are updated concurrently.
+      const searchParams = new URLSearchParams(window.location.search);
       const uid = newValue.uid;
 
       if ((searchParams.get(uidKey) || '') !== uid) {
@@ -106,7 +109,7 @@ const Comparison = () => {
         if (uid) {
           searchParams.append(uidKey, uid);
         }
-        history.push('?' + searchParams.toString());
+        history.push({ search: searchParams.toString() });
       }
       if (uidKey === UID_PARAMS.vidA) {
         setSelectorA(newValue);
@@ -115,7 +118,7 @@ const Comparison = () => {
       }
       setSubmitted(false);
     },
-    [history, location.search]
+    [history]
   );
 
   const onChangeA = useMemo(() => onChange(UID_PARAMS.vidA), [onChange]);
