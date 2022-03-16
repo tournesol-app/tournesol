@@ -12,10 +12,9 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 interface Props {
   pollName: string;
-  disableRecommendations?: boolean;
 }
 
-const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
+const PollRoutes = ({ pollName }: Props) => {
   const { path } = useRouteMatch();
   const basePath = path.replace(/\/+$/g, '');
 
@@ -42,6 +41,12 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
   }
 
   const routes = [
+    {
+      id: 'recommendations',
+      url: 'recommendations',
+      page: VideoRecommendationPage,
+      type: PublicRoute,
+    },
     {
       id: 'myComparisons',
       url: 'comparisons',
@@ -70,11 +75,6 @@ const PollRoutes = ({ pollName, disableRecommendations = false }: Props) => {
 
   return (
     <Switch>
-      {!disableRecommendations && (
-        <PublicRoute path={`${basePath}/recommendations`}>
-          <VideoRecommendationPage />
-        </PublicRoute>
-      )}
       {routes.map((route) => {
         if (disabledItems.includes(route.id)) {
           return;
