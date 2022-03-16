@@ -29,10 +29,12 @@ import {
   VideoLibrary,
 } from '@mui/icons-material';
 
-import { useAppDispatch } from '../../../../app/hooks';
 import { closeDrawer } from '../../drawerOpenSlice';
-import Footer from './Footer';
+import { useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { RouteID } from 'src/utils/types';
+import Footer from './Footer';
 
 export const sideBarWidth = 264;
 
@@ -87,17 +89,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listItemText: {
     fontWeight: 'bold',
+    '&:first-letter': {
+      textTransform: 'capitalize',
+    },
   },
 }));
 
 const SideBar = () => {
-  const { t } = useTranslation();
   const classes = useStyles();
-  const drawerOpen = useAppSelector(selectFrame);
-  const dispatch = useAppDispatch();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const { t } = useTranslation();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const { options } = useCurrentPoll();
+  const path = options && options.path ? options.path : '/';
+  const disabledItems = options?.disabledRouteIds ?? [];
+
+  const drawerOpen = useAppSelector(selectFrame);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   // parameter 'url', which corresponds to the target url, may contain some url parameters
   // we make sure that we highlight the component the user loaded
@@ -105,35 +116,46 @@ const SideBar = () => {
     url.split('?')[0] === location.pathname;
 
   const menuItems = [
-    { targetUrl: '/', IconComponent: HomeIcon, displayText: t('menu.home') },
     {
-      targetUrl: '/recommendations?date=Month',
+      id: RouteID.Home,
+      targetUrl: path,
+      IconComponent: HomeIcon,
+      displayText: t('menu.home'),
+    },
+    {
+      id: RouteID.Recommendations,
+      targetUrl: `${path}recommendations?date=Month`,
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
     { displayText: 'divider_1' },
     {
-      targetUrl: '/comparison',
+      id: RouteID.Comparison,
+      targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
     },
     {
-      targetUrl: '/comparisons',
+      id: RouteID.MyComparisons,
+      targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
     },
     {
-      targetUrl: '/ratings',
+      id: RouteID.MyComparedItems,
+      targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
-      displayText: t('menu.myRatedVideos'),
+      displayText: t('menu.comparedItems'),
     },
     {
-      targetUrl: '/rate_later',
+      id: RouteID.MyRateLaterList,
+      targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
     },
     { displayText: 'divider_2' },
     {
+      id: RouteID.About,
       targetUrl: '/about',
       IconComponent: InfoIcon,
       displayText: t('menu.about'),
@@ -162,13 +184,16 @@ const SideBar = () => {
         onClick={isSmallScreen ? () => dispatch(closeDrawer()) : undefined}
         sx={{ flexGrow: 1 }}
       >
-        {menuItems.map(({ targetUrl, IconComponent, displayText }) => {
+        {menuItems.map(({ id, targetUrl, IconComponent, displayText }) => {
           if (!IconComponent || !targetUrl)
             return <Divider key={displayText} />;
+          if (id && disabledItems.includes(id)) {
+            return;
+          }
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem
-              key={displayText}
+              key={id}
               button
               selected={selected}
               className={classes.listItem}

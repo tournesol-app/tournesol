@@ -1,6 +1,6 @@
 import { TFunction } from 'react-i18next';
 import { YouTube } from '@mui/icons-material';
-import { SelectablePolls } from './types';
+import { SelectablePoll } from './types';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -133,13 +133,14 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   The most specific paths should be listed first,
   to be routed correctly.
 */
-export const polls: SelectablePolls = [
+export const polls: Array<SelectablePoll> = [
   /* disable the poll presidentielle2022 for now
      as it doesn't exist in the back end
   {
     name: PRESIDENTIELLE_2022_POLL_NAME,
     displayOrder: 20,
     path: '/presidentielle2022/',
+    disabledRouteIds: [RouteID.MyRateLaterList],
     iconComponent: HowToVote,
     withSearchBar: false,
     topBarBackground:
