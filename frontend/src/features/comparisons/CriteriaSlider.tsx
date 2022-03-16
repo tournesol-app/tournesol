@@ -106,6 +106,7 @@ const CriteriaSlider = ({
               {criteriaLabel}{' '}
               {criteriaValue === undefined ? (
                 <Chip
+                  component="span"
                   size="small"
                   label={t('comparison.criteriaSkipped')}
                   sx={{ height: '100%' }}
