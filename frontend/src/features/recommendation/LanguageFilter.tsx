@@ -34,11 +34,11 @@ function LanguageFilter({ value, onChange }: Props) {
   );
 
   const sortedLanguages = useMemo(() => {
-    const compare = new Intl.Collator(i18n.language).compare;
+    const compare = new Intl.Collator(i18n.resolvedLanguage).compare;
     return availableRecommendationsLanguages.sort((a, b) =>
       compare(getOptionLabel(a), getOptionLabel(b))
     );
-  }, [i18n.language, getOptionLabel]);
+  }, [i18n.resolvedLanguage, getOptionLabel]);
 
   return (
     <TitledSection title={t('filter.language')}>
@@ -49,12 +49,25 @@ function LanguageFilter({ value, onChange }: Props) {
         value={arrayValue}
         onChange={handleChange}
         renderInput={(params) => (
-          <TextField {...params} variant="outlined" color="secondary" />
+          <TextField
+            {...params}
+            variant="outlined"
+            color="secondary"
+            size="small"
+          />
         )}
         filterSelectedOptions
         limitTags={3}
         disableClearable
         data-testid="autocomplete"
+        sx={{
+          '& .MuiAutocomplete-inputRoot': {
+            minHeight: '50px',
+          },
+          '& .MuiAutocomplete-endAdornment': {
+            top: 'calc(100% - 39px)',
+          },
+        }}
       />
     </TitledSection>
   );
