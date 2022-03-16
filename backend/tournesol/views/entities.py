@@ -1,10 +1,9 @@
 from django.db.models import Prefetch
-from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from tournesol.entities import ENTITY_TYPE_CHOICES
-from tournesol.models import Entity, EntityCriteriaScore, Poll
+from tournesol.models import Entity, EntityCriteriaScore
 from tournesol.serializers.entity import EntitySerializer
 
 filter_parameters = [
@@ -43,16 +42,17 @@ class EntitiesViewSet(ReadOnlyModelViewSet):
             queryset = queryset.filter(type=entity_type)
 
         poll_name = request.query_params.get("poll_name")
+
         if poll_name:
             queryset = queryset.filter(
-                type=get_object_or_404(Poll, name=poll_name).entity_type
-            )
+                criteria_scores__poll__name=poll_name
+            ).distinct()
+
             criteria_scores_queryset = EntityCriteriaScore.objects.filter(
                 poll__name=poll_name
             )
         else:
             criteria_scores_queryset = EntityCriteriaScore.objects.all()
-
         return queryset.prefetch_related(
             Prefetch(
                 "criteria_scores",
