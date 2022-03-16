@@ -207,7 +207,7 @@ describe('Comparison page', () => {
       cy.get('input[placeholder="Paste URL or Video ID"]').last()
           .type(videoAId, {delay: 0});
 
-      cy.contains('These two videos are very similar', {matchCase: false})
+      cy.contains('These two items are very similar', {matchCase: false})
           .should('be.visible');
 
       cy.contains('add optional criteria', {matchCase: false})

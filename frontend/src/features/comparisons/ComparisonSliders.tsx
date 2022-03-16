@@ -111,8 +111,8 @@ const ComparisonSliders = ({
   if (uidA == uidB) {
     return (
       <div className={classes.root}>
-        <Typography paragraph sx={{ textAlign: 'center' }}>
-          {t('comparison.videosAreSimilar')}
+        <Typography sx={{ textAlign: 'center' }}>
+          {t('comparison.itemsAreSimilar')}
           {' 🌻'}
         </Typography>
       </div>
@@ -170,7 +170,7 @@ const ComparisonSliders = ({
         </Collapse>
         {submitted && (
           <div id="id_submitted_text_info">
-            <Typography>{t('comparison.changeOneVideo')}</Typography>
+            <Typography>{t('comparison.changeOneItem')}</Typography>
           </div>
         )}
 
