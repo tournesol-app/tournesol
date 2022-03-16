@@ -26,7 +26,11 @@ class EntitiesApi(TestCase):
     def test_anonymous_can_list(self):
         response = self.client.get("/entities/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 4)
+        self.assertEqual(len(response.data["results"]), 16)
+
+        # filter on the type here to ease the check of the response structure
+        response = self.client.get("/entities/?type=video")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(
             response.data["results"][0],
             {
