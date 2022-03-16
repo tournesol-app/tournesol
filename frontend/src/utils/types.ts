@@ -28,16 +28,17 @@ export type VideoObject = Video | VideoSerializerWithCriteria;
 
 /**
  * An exhaustive list of route ids helping to enforce type checking in each
- * place a routeId is required.
+ * place a route id is required.
  */
-export type routeId =
-  | 'home'
-  | 'recommendations'
-  | 'comparison'
-  | 'myComparisons'
-  | 'myRatedVideos'
-  | 'myRateLaterList'
-  | 'about';
+export enum RouteID {
+  Home = 'home',
+  Recommendations = 'recommendations',
+  Comparison = 'comparison',
+  MyComparisons = 'myComparisons',
+  MyComparedItems = 'myComparedItems',
+  MyRateLaterList = 'myRateLaterList',
+  About = 'about',
+}
 
 /**
  * A poll that can be displayed by <PollSelector>
@@ -48,7 +49,7 @@ export type SelectablePoll = {
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
   // a list route id that will be disable in `PollRoutes` and `SideBar`
-  disabledRouteIds?: Array<routeId>;
+  disabledRouteIds?: Array<RouteID>;
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
   topBarBackground: string | null;

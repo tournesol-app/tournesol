@@ -140,7 +140,7 @@ export const polls: Array<SelectablePoll> = [
     name: PRESIDENTIELLE_2022_POLL_NAME,
     displayOrder: 20,
     path: '/presidentielle2022/',
-    disabledRouteIds: ['myRateLaterList'],
+    disabledRouteIds: [RouteID.MyRateLaterList],
     iconComponent: HowToVote,
     withSearchBar: false,
     topBarBackground:

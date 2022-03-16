@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Switch, useRouteMatch } from 'react-router-dom';
-import { CircularProgress, Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
@@ -9,6 +9,7 @@ import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { RouteID } from 'src/utils/types';
 
 interface Props {
   pollName: string;
@@ -42,36 +43,36 @@ const PollRoutes = ({ pollName }: Props) => {
 
   const routes = [
     {
-      id: 'recommendations',
+      id: RouteID.Recommendations,
       url: 'recommendations',
       page: VideoRecommendationPage,
       type: PublicRoute,
     },
     {
-      id: 'myComparisons',
-      url: 'comparisons',
-      page: ComparisonListPage,
-      type: PrivateRoute,
-    },
-    {
-      id: 'comparison',
+      id: RouteID.Comparison,
       url: 'comparison',
       page: ComparisonPage,
       type: PrivateRoute,
     },
     {
-      id: 'myRateLaterList',
-      url: 'rate_later',
-      page: RateLaterPage,
+      id: RouteID.MyComparisons,
+      url: 'comparisons',
+      page: ComparisonListPage,
       type: PrivateRoute,
     },
     {
-      id: 'myRatedVideos',
+      id: RouteID.MyComparedItems,
       url: 'ratings',
       page: VideoRatingsPage,
       type: PrivateRoute,
     },
-  ] as const;
+    {
+      id: RouteID.MyRateLaterList,
+      url: 'rate_later',
+      page: RateLaterPage,
+      type: PrivateRoute,
+    },
+  ];
 
   return (
     <Switch>

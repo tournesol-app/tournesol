@@ -33,6 +33,7 @@ import { closeDrawer } from '../../drawerOpenSlice';
 import { useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { RouteID } from 'src/utils/types';
 import Footer from './Footer';
 
 export const sideBarWidth = 264;
@@ -116,45 +117,45 @@ const SideBar = () => {
 
   const menuItems = [
     {
-      id: 'home' as const,
+      id: RouteID.Home,
       targetUrl: path,
       IconComponent: HomeIcon,
       displayText: t('menu.home'),
     },
     {
-      id: 'recommendations' as const,
+      id: RouteID.Recommendations,
       targetUrl: `${path}recommendations?date=Month`,
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },
     { displayText: 'divider_1' },
     {
-      id: 'comparison' as const,
+      id: RouteID.Comparison,
       targetUrl: `${path}comparison`,
       IconComponent: CompareIcon,
       displayText: t('menu.compare'),
     },
     {
-      id: 'myComparisons' as const,
+      id: RouteID.MyComparisons,
       targetUrl: `${path}comparisons`,
       IconComponent: ListIcon,
       displayText: t('menu.myComparisons'),
     },
     {
-      id: 'myRatedVideos' as const,
+      id: RouteID.MyComparedItems,
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
       displayText: t('menu.comparedItems'),
     },
     {
-      id: 'myRateLaterList' as const,
+      id: RouteID.MyRateLaterList,
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
     },
     { displayText: 'divider_2' },
     {
-      id: 'about' as const,
+      id: RouteID.About,
       targetUrl: '/about',
       IconComponent: InfoIcon,
       displayText: t('menu.about'),
