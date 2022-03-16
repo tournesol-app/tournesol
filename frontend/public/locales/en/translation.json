@@ -58,9 +58,9 @@
   "menu": {
     "home": "Home",
     "recommendations": "Recommendations",
-    "compare": "Compare videos",
+    "compare": "Compare 🌻",
     "myComparisons": "My comparisons",
-    "myRatedVideos": "My rated videos",
+    "comparedItems": "Compared items",
     "myRateLaterList": "My rate later list",
     "about": "About"
   },

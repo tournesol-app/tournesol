@@ -61,9 +61,9 @@
   "menu": {
     "home": "Accueil",
     "recommendations": "Recommandations",
-    "compare": "Comparer des vidéos",
+    "compare": "Comparer 🌻",
     "myComparisons": "Mes comparaisons",
-    "myRatedVideos": "Vidéos comparées",
+    "comparedItems": "Élements comparés",
     "myRateLaterList": "À comparer plus tard",
     "about": "À propos"
   },

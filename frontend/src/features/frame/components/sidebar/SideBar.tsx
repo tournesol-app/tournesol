@@ -88,6 +88,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listItemText: {
     fontWeight: 'bold',
+    '&:first-letter': {
+      textTransform: 'capitalize',
+    },
   },
 }));
 
@@ -141,7 +144,7 @@ const SideBar = () => {
       id: 'myRatedVideos' as const,
       targetUrl: `${path}ratings`,
       IconComponent: StarsIcon,
-      displayText: t('menu.myRatedVideos'),
+      displayText: t('menu.comparedItems'),
     },
     {
       id: 'myRateLaterList' as const,
@@ -189,7 +192,7 @@ const SideBar = () => {
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem
-              key={displayText}
+              key={id}
               button
               selected={selected}
               className={classes.listItem}
