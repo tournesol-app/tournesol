@@ -67,6 +67,10 @@ class EntitiesApi(TestCase):
         self.assertEqual(len(response.data["results"]), 4)
         self.assertEqual(len(response.data["results"][0]["polls"]), 1)
 
+    def test_anonymous_cant_list_non_existing_poll(self):
+        response = self.client.get("/entities/?poll_name=non-existing")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_anonymous_can_get_single_entity(self):
         response = self.client.get(f"/entities/{self.video.uid}/")
         self.assertEqual(response.status_code, 200)
