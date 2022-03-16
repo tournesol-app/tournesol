@@ -12,8 +12,11 @@ import {
   screen,
   fireEvent,
   queryAllByTestId,
+  queryByTestId,
   act,
+  within,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { loadRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
@@ -93,9 +96,7 @@ describe('Filters feature', () => {
     const languageFilter = document.querySelector(
       '[data-testid=search-language-filter]'
     );
-    expect(queryAllByTestId(languageFilter, /checkbox-choice/i)).toHaveLength(
-      3
-    );
+    expect(queryAllByTestId(languageFilter, 'autocomplete')).toHaveLength(1);
 
     // Check criteria filters presence
     // 1 slider per criteria, "Neutral" position by default
@@ -122,20 +123,35 @@ describe('Filters feature', () => {
     });
   }
 
-  // Click on a language checkbox and verify the resulting URL parameters
-  function clickOnLanguageCheckbox({
-    checkbox,
+  // Select or unselect a language and verify the resulting URL parameters
+  function selectLanguage({
+    language,
+    action = 'add',
     expectInUrl,
   }: {
-    checkbox: 'en' | 'fr' | 'de';
+    language: string;
+    action: 'add' | 'remove';
     expectInUrl: string;
   }) {
-    const languageCheckbox = screen.queryByTestId(
-      'checkbox-choice-' + checkbox
-    );
-    expect(languageCheckbox).not.toBeNull();
+    const languageFilter = queryByTestId(document, 'search-language-filter');
+    const autocomplete = queryByTestId(languageFilter, 'autocomplete');
+    expect(autocomplete).not.toBeNull();
+    const input = within(autocomplete).getByRole('textbox');
+    expect(input).not.toBeNull();
 
-    fireEvent.click(languageCheckbox);
+    if (action === 'add') {
+      autocomplete.focus();
+      userEvent.type(input, language);
+      // Select the first item
+      fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
+      fireEvent.keyDown(autocomplete, { key: 'Enter' });
+    } else if (action === 'remove') {
+      const buttons = within(autocomplete).getAllByRole('button');
+      const button = buttons.find((b) => b.textContent === language);
+      expect(button).not.toBeUndefined();
+      const removeButton = within(button).getByTestId('CancelIcon');
+      fireEvent.click(removeButton);
+    }
 
     // Check that it updated the URL with the new language filter
     // Use encodeURI to escape comas (in URL, "," => "%2C")
@@ -182,18 +198,30 @@ describe('Filters feature', () => {
   it('Can check multiple language filters at once', () => {
     clickOnShowMore();
 
-    // click on the checkbox English ("en"), and check that the URL contains "language=en"
-    clickOnLanguageCheckbox({ checkbox: 'en', expectInUrl: 'en' });
+    // select the language English and check that the URL contains "language=en"
+    selectLanguage({ language: 'language.en', expectInUrl: 'en' });
 
-    // click on the checkbox French ("fr"), and check that the URL contains "language=en,fr"
-    clickOnLanguageCheckbox({ checkbox: 'fr', expectInUrl: 'en,fr' });
+    // select the language French and check that the URL contains "language=en,fr"
+    selectLanguage({ language: 'language.fr', expectInUrl: 'en,fr' });
 
-    // click on the checkbox German ("de"), and check that the URL contains "language=de,en,fr"
-    clickOnLanguageCheckbox({ checkbox: 'de', expectInUrl: 'en,fr,de' });
+    // select the language German ("de"), and check that the URL contains "language=de,en,fr"
+    selectLanguage({ language: 'language.de', expectInUrl: 'en,fr,de' });
 
-    // Now remove click again on the checkboxes and verify that it was removed from the URL
-    clickOnLanguageCheckbox({ checkbox: 'fr', expectInUrl: 'en,de' });
-    clickOnLanguageCheckbox({ checkbox: 'en', expectInUrl: 'de' });
-    clickOnLanguageCheckbox({ checkbox: 'de', expectInUrl: '' });
+    // Now remove the languages and verify that it was removed from the URL
+    selectLanguage({
+      action: 'remove',
+      language: 'language.fr',
+      expectInUrl: 'en,de',
+    });
+    selectLanguage({
+      action: 'remove',
+      language: 'language.en',
+      expectInUrl: 'de',
+    });
+    selectLanguage({
+      action: 'remove',
+      language: 'language.de',
+      expectInUrl: '',
+    });
   });
 });

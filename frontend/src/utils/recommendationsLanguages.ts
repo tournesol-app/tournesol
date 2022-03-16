@@ -1,5 +1,16 @@
-import { availableRecommendationsLanguages } from 'src/utils/constants';
+import { TFunction } from 'react-i18next';
+import { recommendationsLanguages } from 'src/utils/constants';
 import { uniq } from 'src/utils/array';
+
+export const availableRecommendationsLanguages = Object.keys(
+  recommendationsLanguages
+);
+
+export const getLanguageName = (t: TFunction, language: string) => {
+  const labelFunction = recommendationsLanguages[language];
+  if (labelFunction === undefined) return language.toUpperCase();
+  return labelFunction(t);
+};
 
 export const saveRecommendationsLanguages = (value: string) => {
   localStorage.setItem('recommendationsLanguages', value);
