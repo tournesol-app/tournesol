@@ -1,6 +1,7 @@
 from urllib.parse import quote
 
 import requests
+from django.conf import settings
 from django.db import migrations
 from django.utils import timezone
 
@@ -156,7 +157,8 @@ def migrate_forward(apps, schema_editor):
 
     for uid in CANDIDATES:
         candidate = Entity(type="candidate_fr_2022", uid=uid)
-        refresh_metadata(candidate)
+        if settings.ENABLE_API_WIKIDATA["MIGRATIONS"]:
+            refresh_metadata(candidate)
         candidate.save()
 
 
