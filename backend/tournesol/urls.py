@@ -8,6 +8,10 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
+from .views.contributor_recommendations import (
+    PrivateContributorRecommendationsView,
+    PublicContributorRecommendationsView,
+)
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
@@ -85,6 +89,17 @@ urlpatterns = [
         "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
+    ),
+    # User recommendations API
+    path(
+        "users/me/recommendations/<str:poll_name>",
+        PrivateContributorRecommendationsView.as_view(),
+        name="private_contributor_recommendations",
+    ),
+    path(
+        "users/<str:username>/recommendations/<str:poll_name>",
+        PublicContributorRecommendationsView.as_view(),
+        name="public_contributor_recommendations",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),

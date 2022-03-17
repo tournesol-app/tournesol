@@ -429,7 +429,7 @@ paths:
   /polls/{name}/:
     get:
       operationId: polls_retrieve
-      description: Retrieve a poll and its related criteria.
+      description: Fetch a poll and its related criteria.
       parameters:
       - in: path
         name: name
@@ -451,7 +451,8 @@ paths:
   /polls/{name}/recommendations/:
     get:
       operationId: polls_recommendations_list
-      description: Retrieve a list of recommended videos, sorted by decreasing total
+      description: |-
+        List the recommended entities of a given poll sorted by decreasing total
         score.
       parameters:
       - in: path
@@ -499,8 +500,8 @@ paths:
         schema:
           type: object
           additionalProperties: {}
-        description: Weights for criterias in this poll. The default weight is 10
-          for each criteria.
+        description: Weights for criteria in this poll. The default weight is 10 for
+          each criteria.
         style: deepObject
         examples:
           WeightsExample:
@@ -681,6 +682,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Statistics'
+          description: ''
+  /users/{username}/recommendations/{poll_name}:
+    get:
+      operationId: users_recommendations_list
+      description: |-
+        List the public recommendations of a given user sorted by decreasing total
+        score.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: date_lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: search
+        schema:
+          type: string
+          minLength: 1
+        description: A search query to filter entities
+      - in: query
+        name: unsafe
+        schema:
+          type: boolean
+          default: false
+        description: If true, entities considered as unsafe recommendations because
+          of a low score or due to too few contributions will be included.
+      - in: query
+        name: weights
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Weights for criteria in this poll. The default weight is 10 for
+          each criteria.
+        style: deepObject
+        examples:
+          WeightsExample:
+            value:
+              reliability: 10
+              importance: 10
+              ignored_criteria: 0
+            summary: weights example
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContributorRecommendationsList'
           description: ''
   /users/me/:
     delete:
@@ -1153,6 +1233,80 @@ paths:
               schema:
                 type: string
                 format: binary
+          description: ''
+  /users/me/recommendations/{poll_name}:
+    get:
+      operationId: users_me_recommendations_list
+      description: |-
+        List the recommendations of the logged user sorted by decreasing total
+        score.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: date_lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: search
+        schema:
+          type: string
+          minLength: 1
+        description: A search query to filter entities
+      - in: query
+        name: unsafe
+        schema:
+          type: boolean
+          default: false
+        description: If true, entities considered as unsafe recommendations because
+          of a low score or due to too few contributions will be included.
+      - in: query
+        name: weights
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Weights for criteria in this poll. The default weight is 10 for
+          each criteria.
+        style: deepObject
+        examples:
+          WeightsExample:
+            value:
+              reliability: 10
+              importance: 10
+              ignored_criteria: 0
+            summary: weights example
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContributorRecommendationsList'
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -1704,6 +1858,39 @@ components:
           type: boolean
       required:
       - is_public
+    ContributorRecommendations:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        tournesol_score:
+          type: number
+          format: float
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
+        is_public:
+          type: boolean
+          readOnly: true
+        total_score:
+          type: number
+          format: float
+        metadata:
+          type: object
+          additionalProperties: {}
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+      required:
+      - criteria_scores
+      - is_public
+      - total_score
+      - uid
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -2143,6 +2330,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContributorRating'
+    PaginatedContributorRecommendationsList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorRecommendations'
     PaginatedEmailDomainList:
       type: object
       properties:

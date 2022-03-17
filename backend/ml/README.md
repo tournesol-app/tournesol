@@ -30,7 +30,7 @@ Calculating video scores from users' comparisons.
 
 # Organisation
 
-* dev/ contains modules ununsed in production.
+* dev/ contains modules unused in production.
 
 * management/commands/ contains ml_train.py and ml_train_dev.py, which are the two Django command modules, one for production and one for dev
 
@@ -46,29 +46,29 @@ Calculating video scores from users' comparisons.
 * handle_data.py uses data_utility.py and provides functions used in core.py to shape data to required format before and after training.
 
 * In between lies the training structure: the Licchavi() class in licchavi.py. The Licchavi class provides the methods set_allnodes(), load_and_update(), output_scores(), save_models() and train() which are called during ml_run().
-core.ml_run() creates a Licchavi object and initializes it with the input data (users' comparisons) using set_allnodes() or load_and_update(), then it trains using train(), and finally outputs using output_scores(). It can optionnally save the training status with save_models() to resume later from it.
+core.ml_run() creates a Licchavi object and initializes it with the input data (users' comparisons) using set_allnodes() or load_and_update(), then it trains using train(), and finally outputs using output_scores(). It can optionally save the training status with save_models() to resume later from it.
 
-* Licchavi objects store the distributed data inside a dictionnary of Node() objects. The Node class is defined in nodes.py.<br />
+* Licchavi objects store the distributed data inside a dictionary of Node() objects. The Node class is defined in nodes.py.<br />
 A Node() contains all user data needed (comparisons, local model, local s parameter, ...).<br />
-Appart from the nodes, a Licchavi object contains a global model for global scores and a history of training monitoring metrics.
+Apart from the nodes, a Licchavi object contains a global model for global scores and a history of training monitoring metrics.
 
 * During training, Licchavi.train() calls functions from losses.py and metrics.py.<br />
-The training phase concists in a parametrable (in hyperparameters.gin) number of epochs. Each epoch is devided in a local step (fitting step), during which all training data is used and a global step, using no input data. The first is an iteration of gradient descent on local parameters, and the second an iteration on global parameters.<br />
+The training phase consists in a parameterizable (in hyperparameters.gin) number of epochs. Each epoch is divided in a local step (fitting step), during which all training data is used and a global step, using no input data. The first is an iteration of gradient descent on local parameters, and the second an iteration on global parameters.<br />
 The gradient descent is done wrt the comparison-Licchavi loss (see paper).
 
 ## The other development modules are in ml/dev/
 
-* experiments.py is used to customize what we want to test, is is made to be edited.
+* experiments.py is used to customize what we want to test, it is made to be edited.
 
 * fake_data.py is used to generate artificial data using random "realistic" distributions. It allows to have "ground truths" to check the quality of the ml algorithm.
 
 * licchavi_dev.py defines LicchaviDev(Licchavi) class allowing, inter alia, to use ground truths of generated data to compute an "error" metric.
 
-* ml_benchmark.py is meant to test the time taken by the different parts of the code, is isn't very developped for now.
+* ml_benchmark.py is meant to test the time taken by the different parts of the code, it isn't very developed for now.
 
 * plots.py is used to save plots in ml/plots/ at the end of training. Plots are describing the training history or the result repartition.
 
-* visualisation.py is a bunch of utilitary functions to be used mainly directly in experiments.py or calling plot.py module.
+* visualisation.py is a bunch of utility functions to be used mainly directly in experiments.py or calling plot.py module.
 
 # Notations:
 - node = user : contributor
@@ -77,9 +77,9 @@ The gradient descent is done wrt the comparison-Licchavi loss (see paper).
 - score : score of a video outputted by the algorithm
 - glob, loc : global, local
 - idx, vidx : index, video index
-- l_someting : list of someting
+- l_something : list of something
 - arr : numpy array
 - tens : torch tensor
-- dic : dictionnary
+- dic : dictionary
 - verb : verbosity level
 - VARIABLE_NAME : global variable
