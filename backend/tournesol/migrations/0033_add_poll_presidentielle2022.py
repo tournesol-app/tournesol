@@ -45,7 +45,7 @@ CRITERIA = [
     {
         "name": "institutions_democracy",
         "label_en": "Institutions & democracy",
-        "label_fr": "Institutions & démocracie",
+        "label_fr": "Institutions & démocratie",
     },
     {
         "name": "labour_economy",
