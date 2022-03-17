@@ -40,7 +40,7 @@ CRITERIA = [
     {
         "name": "health",
         "label_en": "Health & well-being",
-        "label_fr": "Santé et bien-être",
+        "label_fr": "Santé & bien-être",
     },
     {
         "name": "institutions_democracy",
