@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
 import { useLoginState } from './hooks';
-import HomePage from './pages/home/Home';
 import LoginPage from './pages/login/Login';
 import SettingsAccountPage from './pages/settings/account/Account';
 import SettingsProfilePage from './pages/settings/profile/Profile';
@@ -107,10 +106,6 @@ function App() {
           </PublicRoute>
           <PublicRoute path="/reset-password">
             <ResetPassword />
-          </PublicRoute>
-          {/* Home page */}
-          <PublicRoute exact path="/">
-            <HomePage />
           </PublicRoute>
           {/* Polls */}
           {polls.map(({ name, path }) => (
