@@ -109,9 +109,6 @@ class EntityCriteriaScoreAdmin(admin.ModelAdmin):
         'criteria',
         'score'
     )
-    list_editable = (
-        'score',
-    )
     search_fields = (
         'entity__uid',
     )
