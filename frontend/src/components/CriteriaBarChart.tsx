@@ -1,5 +1,13 @@
 import React from 'react';
-import { Bar, BarChart, XAxis, YAxis, Cell } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  Cell,
+  Tooltip,
+  TooltipProps,
+} from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
@@ -42,17 +50,18 @@ const CriteriaBarChart = ({ video }: Props) => {
   }) => {
     return (
       <svg
-        x={x - 42}
-        y={y - 21}
-        width="42"
-        height="42"
-        viewBox="0 0 42 42"
+        x={x - 30 + 250}
+        y={y - 30}
+        width="60"
+        height="60"
+        viewBox="0 0 60 60"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <rect x="0" y="15" width="60" height="30" fill="white" />
         <image
-          x="0"
-          y="0"
+          x="9"
+          y="9"
           width="42"
           height="42"
           href={`/svg/${payload.value}.svg`}
@@ -71,14 +80,17 @@ const CriteriaBarChart = ({ video }: Props) => {
 
   const data = criteria_scores
     .filter((s) => s.criteria != 'largely_recommended')
-    .map((s) => ({
-      ...s,
-      score: between(
+    .map((s) => {
+      const clipped_score = between(
         BAR_CHART_CRITERIA_SCORE_MIN,
         BAR_CHART_CRITERIA_SCORE_MAX,
         s.score
-      ),
-    }));
+      );
+      return {
+        ...s,
+        clipped_score,
+      };
+    });
 
   return (
     <BarChart width={500} height={500} layout="vertical" data={data}>
@@ -87,15 +99,8 @@ const CriteriaBarChart = ({ video }: Props) => {
         domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
         hide={true}
       />
-      <YAxis
-        type="category"
-        dataKey="criteria"
-        tick={renderCustomAxisTick}
-        interval={0}
-        axisLine={false}
-        tickLine={false}
-      />
-      <Bar dataKey="score" barSize={16}>
+
+      <Bar dataKey="clipped_score" barSize={20}>
         {data.map((entry) => (
           <Cell
             key={entry.criteria}
@@ -103,6 +108,30 @@ const CriteriaBarChart = ({ video }: Props) => {
           />
         ))}
       </Bar>
+      <YAxis
+        type="category"
+        dataKey="criteria"
+        tick={renderCustomAxisTick}
+        interval={0}
+        axisLine={false}
+        tickLine={false}
+        width={6}
+      />
+      <Tooltip
+        cursor={{ stroke: 'black', strokeWidth: 2, fill: 'transparent' }}
+        content={(props: TooltipProps<number, string>) => {
+          const payload = props?.payload;
+          if (payload && payload[0]) {
+            const { criteria, score } = payload[0].payload;
+            return (
+              <pre>
+                {criteria}: {(10 * score).toFixed(2)}
+              </pre>
+            );
+          }
+          return null;
+        }}
+      />
     </BarChart>
   );
 };
