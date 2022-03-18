@@ -104,7 +104,17 @@ class EntityAdmin(admin.ModelAdmin):
 
 @admin.register(EntityCriteriaScore)
 class EntityCriteriaScoreAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'entity',
+        'criteria',
+        'score'
+    )
+    list_editable = (
+        'score',
+    )
+    search_fields = (
+        'entity__uid',
+    )
 
 
 @admin.register(ContributorRating)
