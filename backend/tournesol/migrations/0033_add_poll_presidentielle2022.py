@@ -31,16 +31,19 @@ CRITERIA = [
         "name": "energy_environment",
         "label_en": "Energy & environment",
         "label_fr": "Énergie & environnement",
+        "optional": False,
     },
     {
         "name": "education_culture",
         "label_en": "Education, culture & information",
         "label_fr": "Éducation, culture & information",
+        "optional": False,
     },
     {
         "name": "health",
         "label_en": "Health & well-being",
         "label_fr": "Santé & bien-être",
+        "optional": False,
     },
     {
         "name": "institutions_democracy",
