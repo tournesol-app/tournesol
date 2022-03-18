@@ -4,6 +4,7 @@ import { Box, CircularProgress } from '@mui/material';
 import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
+import HomePage from 'src/pages/home/Home';
 import VideoRecommendationPage from 'src/pages/videos/VideoRecommendation';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
@@ -43,6 +44,12 @@ const PollRoutes = ({ pollName }: Props) => {
 
   const routes = [
     {
+      id: RouteID.Home,
+      url: '',
+      page: HomePage,
+      type: PublicRoute,
+    },
+    {
       id: RouteID.Recommendations,
       url: 'recommendations',
       page: VideoRecommendationPage,
@@ -81,7 +88,7 @@ const PollRoutes = ({ pollName }: Props) => {
           return;
         }
         return (
-          <route.type key={route.id} path={`${basePath}/${route.url}`}>
+          <route.type key={route.id} path={`${basePath}/${route.url}`} exact>
             <route.page />
           </route.type>
         );
