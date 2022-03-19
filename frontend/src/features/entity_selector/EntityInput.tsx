@@ -57,7 +57,7 @@ const VideoInput = ({ value, onChange }: Props) => {
   );
 };
 
-const CandidateInput = ({ onChange }: Props) => {
+const CandidateInput = ({ onChange, value }: Props) => {
   const [options, setOptions] = useState<Entity[]>([]);
 
   useEffect(() => {
@@ -66,6 +66,7 @@ const CandidateInput = ({ onChange }: Props) => {
 
   return (
     <Autocomplete
+      value={options.find((opt) => opt.uid == value) || null}
       selectOnFocus
       blurOnSelect
       onChange={(event, newValue) => {
