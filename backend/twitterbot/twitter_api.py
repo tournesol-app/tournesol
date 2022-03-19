@@ -1,5 +1,5 @@
 import tweepy
-from credentials import secrets
+from twitterbot.credentials import secrets
 
 
 class TwitterBot:
