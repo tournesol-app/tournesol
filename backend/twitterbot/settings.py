@@ -1,0 +1,26 @@
+# Quality criteria
+MIN_NB_CONTRIBUTORS = 3
+MIN_NB_RATINGS = 10
+MIN_RELIABILITY_SCORE = 0.1
+MIN_TOURNESOL_SCORE = 10
+
+# Date range for videos to be considered
+DAYS_TOO_RECENT = 7  # min 1 week old
+DAYS_TOO_OLD = 180  # max 6 months old
+
+# Number of days to wait before tweeting the same uploader again
+DAYS_ALREADY_TWEETED_UPLOADER = 7
+
+# Daily tweet text template
+tweet_text_template = {
+    "en": (
+        "Today, I recommend '{title}' by {twitter_account}"
+        ", compared {n_comparison} times on #Tournesol\U0001F33B by {n_contributor}"
+        " contributors, favorite criteria:\n- {crit1}\n- {crit2}\nyoutu.be/{video_id}"
+    ),
+    "fr": (
+        "Aujourd'hui, je recommande '{title}' de {twitter_account}"
+        ", comparée {n_comparison} fois sur #Tournesol\U0001F33B par {n_contributor}"
+        " contributeurs, critères favoris:\n- {crit1}\n- {crit2}\nyoutu.be/{video_id}"
+    ),
+}
