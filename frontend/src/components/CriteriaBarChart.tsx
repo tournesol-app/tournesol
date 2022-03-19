@@ -125,7 +125,7 @@ const CriteriaBarChart = ({ video }: Props) => {
             const { criteria, score } = payload[0].payload;
             return (
               <pre>
-                {criteria}: {(10 * score).toFixed(2)}
+                {getCriteriaLabel(criteria)}: {(10 * score).toFixed(2)}
               </pre>
             );
           }
