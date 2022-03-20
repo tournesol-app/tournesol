@@ -42,13 +42,17 @@ class EntitiesViewSet(ReadOnlyModelViewSet):
             queryset = queryset.filter(type=entity_type)
 
         poll_name = request.query_params.get("poll_name")
+
         if poll_name:
+            queryset = queryset.filter(
+                criteria_scores__poll__name=poll_name
+            ).distinct()
+
             criteria_scores_queryset = EntityCriteriaScore.objects.filter(
                 poll__name=poll_name
             )
         else:
             criteria_scores_queryset = EntityCriteriaScore.objects.all()
-
         return queryset.prefetch_related(
             Prefetch(
                 "criteria_scores",

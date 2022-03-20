@@ -87,3 +87,18 @@ OIDC_RSA_PRIVATE_KEY: |
 # YouTube API is used to fetch metadata about videos (title, description,
 # stats, etc.). Optional in development environments.
 YOUTUBE_API_KEY:
+
+# Wikidata API is used to fetch entities' metadata which are based on wikidata
+# items. Use this setting to enable or disable the calls to this API.
+#
+# Recommendations:
+#
+#   development:
+#       Set MIGRATIONS to False in local development environments to avoid
+#       sending HTTPS each time the tests are run. This will save few seconds.
+#
+#   production & production-like:
+#       Set everything to True to be able to fetch and refresh entities'
+#       metadata.
+ENABLE_API_WIKIDATA:
+    MIGRATIONS: False

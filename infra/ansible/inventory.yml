@@ -19,6 +19,7 @@ all:
           django_database_name: tournesol
           django_database_user: tournesol
           django_email_backend: console
+          django_enable_api_wikidata_migrations: true
           populate_django_db_from_public_dataset: true
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
@@ -69,6 +70,7 @@ all:
           django_database_name: tournesol
           django_database_user: tournesol
           django_email_backend: smtp
+          django_enable_api_wikidata_migrations: true
           populate_django_db_from_public_dataset: false
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
@@ -126,6 +128,7 @@ all:
           django_database_name: tournesol
           django_database_user: tournesol
           django_email_backend: smtp
+          django_enable_api_wikidata_migrations: true
           populate_django_db_from_public_dataset: false
           chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
 
