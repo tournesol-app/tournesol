@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import Comparison from 'src/features/comparisons/Comparison';
 
@@ -23,14 +23,22 @@ const generateSteps = (length: number) => {
 };
 
 const ComparisonSeries = ({ length, messages }: Props) => {
+  const [step, setStep] = useState(0);
+
+  const afterSubmitCallback = () => {
+    if (step < length) {
+      setStep(step + 1);
+    }
+  };
+
   return (
     <>
       <Container maxWidth="md" sx={{ my: 2, mb: 4 }}>
-        <Stepper activeStep={4} alternativeLabel>
+        <Stepper activeStep={step} alternativeLabel>
           {generateSteps(length)}
         </Stepper>
       </Container>
-      <Comparison />
+      <Comparison afterSubmitCallback={afterSubmitCallback} />
     </>
   );
 };

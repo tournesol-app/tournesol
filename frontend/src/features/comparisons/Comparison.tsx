@@ -50,6 +50,10 @@ const rewriteLegacyParameters = (
   return searchParams;
 };
 
+interface Props {
+  afterSubmitCallback?: () => void;
+}
+
 /**
  * The comparison UI.
  *
@@ -58,7 +62,7 @@ const rewriteLegacyParameters = (
  * a entity uid is changed. Adding this component into a page will also add
  * these uids in the URL parameters.
  */
-const Comparison = () => {
+const Comparison = ({ afterSubmitCallback }: Props) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -167,7 +171,10 @@ const Comparison = () => {
       setInitialComparison(c);
       // Refresh ratings statistics after the comparisons have been submitted
       setSubmitted(true);
+
+      if (afterSubmitCallback) afterSubmitCallback();
     }
+
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
