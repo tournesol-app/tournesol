@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        background: #ffc800;
+        width: 120px;
+        display: flex;
+        flex-direction: column;
+      }
+      body > img {
+        margin-bottom: 6px;
+      }
+      button {
+        background-color: #506ad4;
+        color: white;
+        font-size: large;
+        border-width: 0px;
+        border-radius: 4px;
+        margin: 2px;
+        padding: 4px;
+        box-shadow: 2px 2px 3px #506ad488;
+      }
+      button:hover {
+        cursor: pointer;
+        background-color: #6980df;
+      }
+      button:active {
+        background-color: #3f54ab;
+      }
+      button[data-success]::after {
+        display: block;
+        background-color: #4caf50;
+        font-size: 14px;
+        content: attr(data-success);
+      }
+      button[data-error]::after {
+        display: block;
+        background-color: #f44336;
+        font-size: 14px;
+        content: attr(data-error);
+      }
+      button:disabled {
+        cursor: not-allowed;
+        box-shadow: none;
+        background-color: #6980df;
+      }
+    </style>
+    <script type="module" src="menu.js"></script>
+  </head>
+  <body>
+    <img src="https://tournesol.app/svg/Logo.svg" />
+    <button id="rate_now">Rate now</button>
+    <button id="rate_later">Rate later</button>
+    <button id="details">Analysis</button>
+  </body>
+</html>

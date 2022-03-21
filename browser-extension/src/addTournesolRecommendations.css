@@ -19,7 +19,7 @@
 
 #tournesol_title {
   color: var(--yt-spec-text-primary);
-  font-family: "Roboto", "Arial", sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 22px;
   position: absolute;
   left: 32px;
@@ -28,7 +28,7 @@
 
 #tournesol_link {
   color: var(--yt-spec-text-primary);
-  font-family: "Roboto", "Arial", sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   float: right;
   margin-top: 3px;
   margin-left: 2px;
@@ -127,7 +127,7 @@
 .video_title {
   color: var(--yt-spec-text-primary);
   margin-bottom: 6px;
-  font-family: "Roboto", "Arial", sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   letter-spacing: var(--yt-link-letter-spacing, normal);
   white-space: normal;
   -webkit-box-orient: vertical;
@@ -158,7 +158,7 @@
 .video_text {
   padding-top: 5px;
   color: var(--yt-endpoint-color, var(--yt-spec-text-secondary));
-  font-family: "Roboto", "Arial", sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   word-break: break-word;
   font-size: 1.4rem;
   font-weight: 400;

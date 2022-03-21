@@ -1,3 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -eu
 
-zip -r -FS tournesol_extension.zip * -x *.git* *.zip*
+cd src
+zip -r -FS ../tournesol_extension.zip *
