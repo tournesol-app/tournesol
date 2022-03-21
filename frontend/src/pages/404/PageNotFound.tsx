@@ -1,9 +1,15 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Box, Button, Typography } from '@mui/material';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const PageNotFound = () => {
   const { t } = useTranslation();
+
+  const { options } = useCurrentPoll();
+  const path = options?.path ?? '/';
+
   return (
     <Box
       sx={{
@@ -18,7 +24,8 @@ const PageNotFound = () => {
         alignItems="center"
         flexDirection="column"
         justifyContent="center"
-        pt={26}
+        textAlign="center"
+        pt={24}
         pb={2}
       >
         <Typography variant="h2">
@@ -27,13 +34,13 @@ const PageNotFound = () => {
         <Typography variant="subtitle1">
           {t('pageNotFound.theRequestedAddressIsErroneous')}
         </Typography>
+        <Box mt={2}>
+          <Button variant="contained" component={Link} to={path}>
+            {t('pageNotFound.backToHomePage')}
+          </Button>
+        </Box>
       </Box>
-      <Box
-        display="flex"
-        flexDirection="row"
-        justifyContent="center"
-        alignItems="flex-end"
-      >
+      <Box display="flex" flexDirection="row" justifyContent="center">
         <img src="/svg/Watering.svg" height="400px" />
       </Box>
     </Box>

@@ -194,7 +194,8 @@
   },
   "pageNotFound": {
     "sorryPageNotFound": "Désolé, page non trouvée.",
-    "theRequestedAddressIsErroneous": "L'adresse demandée est erronée, ou n'est simplement plus disponible."
+    "theRequestedAddressIsErroneous": "L'adresse demandée est erronée, ou n'est simplement plus disponible.",
+    "backToHomePage": "Retourner à l'accueil"
   },
   "about": {
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
