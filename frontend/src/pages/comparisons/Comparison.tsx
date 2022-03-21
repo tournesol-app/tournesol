@@ -26,7 +26,7 @@ const ComparisonPage = () => {
         }}
       >
         {series === 'true' ? (
-          <ComparisonSeries length={2} messages="it works" />
+          <ComparisonSeries length={7} messages="it works" />
         ) : (
           <Comparison />
         )}
