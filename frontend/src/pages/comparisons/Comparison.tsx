@@ -1,12 +1,18 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
 import Comparison from 'src/features/comparisons/Comparison';
+import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
 
 const ComparisonPage = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const series: string = searchParams.get('series') || 'false';
 
   return (
     <>
@@ -19,7 +25,11 @@ const ComparisonPage = () => {
           py: 2,
         }}
       >
-        <Comparison />
+        {series === 'true' ? (
+          <ComparisonSeries length={2} messages="it works" />
+        ) : (
+          <Comparison />
+        )}
       </Box>
     </>
   );
