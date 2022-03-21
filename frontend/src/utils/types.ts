@@ -53,4 +53,5 @@ export type SelectablePoll = {
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
   topBarBackground: string | null;
+  tutorialLength?: number;
 };

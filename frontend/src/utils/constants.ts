@@ -154,5 +154,6 @@ export const polls: Array<SelectablePoll> = [
     iconComponent: YouTube,
     withSearchBar: true,
     topBarBackground: null,
+    tutorialLength: 7,
   },
 ];

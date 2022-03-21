@@ -4,15 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
 
 const ComparisonPage = () => {
   const { t } = useTranslation();
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-
   const series: string = searchParams.get('series') || 'false';
+
+  const { options } = useCurrentPoll();
+  const tutorialLength = options?.tutorialLength ?? 0;
 
   return (
     <>
@@ -26,7 +30,7 @@ const ComparisonPage = () => {
         }}
       >
         {series === 'true' ? (
-          <ComparisonSeries length={7} messages="it works" />
+          <ComparisonSeries length={tutorialLength} messages="it works" />
         ) : (
           <Comparison />
         )}

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import Comparison from 'src/features/comparisons/Comparison';
 
+const MIN_LENGTH = 2;
+
 interface Props {
   length: number;
   messages: string;
@@ -33,12 +35,18 @@ const ComparisonSeries = ({ length, messages }: Props) => {
 
   return (
     <>
-      <Container maxWidth="md" sx={{ my: 2, mb: 4 }}>
-        <Stepper activeStep={step} alternativeLabel>
-          {generateSteps(length)}
-        </Stepper>
-      </Container>
-      <Comparison afterSubmitCallback={afterSubmitCallback} />
+      {length >= MIN_LENGTH ? (
+        <>
+          <Container maxWidth="md" sx={{ my: 2, mb: 4 }}>
+            <Stepper activeStep={step} alternativeLabel>
+              {generateSteps(length)}
+            </Stepper>
+          </Container>
+          <Comparison afterSubmitCallback={afterSubmitCallback} />
+        </>
+      ) : (
+        <Comparison />
+      )}
     </>
   );
 };
