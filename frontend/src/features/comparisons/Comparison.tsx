@@ -51,7 +51,10 @@ const rewriteLegacyParameters = (
 };
 
 interface Props {
-  afterSubmitCallback?: () => { uid: string; refreshLeft: boolean };
+  afterSubmitCallback?: (
+    uidA: string,
+    uidB: string
+  ) => { uid: string; refreshLeft: boolean };
 }
 
 /**
@@ -174,7 +177,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
       // a comparison series, some state updates are not triggered here to avoid
       // race conditions
       if (afterSubmitCallback) {
-        const nextStep = afterSubmitCallback();
+        const nextStep = afterSubmitCallback(c.entity_a.uid, c.entity_b.uid);
 
         if (nextStep.uid) {
           if (nextStep.refreshLeft) {

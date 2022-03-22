@@ -4,6 +4,7 @@ import Comparison from 'src/features/comparisons/Comparison';
 import { Entity } from 'src/services/openapi';
 
 const MIN_LENGTH = 2;
+const COMPARISON_SEPARATOR = '/';
 
 interface Props {
   getAlternatives?: () => Promise<Array<Entity>>;
@@ -26,8 +27,44 @@ const generateSteps = (length: number) => {
   return content;
 };
 
-const selectNextEntity = (entities: Array<Entity>): Entity => {
-  return entities[Math.floor(Math.random() * entities.length)];
+/**
+ * Return a random entity with uid not included in the `filter` list.
+ *
+ * @param entities
+ * @param filter
+ */
+const selectNextEntity = (
+  entities: Array<Entity>,
+  filter: string[]
+): Entity => {
+  const filtered = entities.filter((entity) => !filter.includes(entity.uid));
+
+  return filtered[Math.floor(Math.random() * filtered.length)];
+};
+
+/**
+ * Return a list of uids already compared with `uid`.
+ *
+ * @param uid
+ * @param comparisons An array of comparisons, represented in the form 'uidA/uidB'
+ */
+const alreadyComparedWith = (uid: string, comparisons: string[]): string[] => {
+  const alreadyCompared: Array<string> = [];
+
+  comparisons.forEach((comparison) => {
+    const split = comparison.split(COMPARISON_SEPARATOR);
+    const index = split.indexOf(uid);
+
+    if (index != -1) {
+      if (index == 0) {
+        alreadyCompared.push(split[1]);
+      } else {
+        alreadyCompared.push(split[0]);
+      }
+    }
+  });
+
+  return alreadyCompared;
 };
 
 const ComparisonSeries = ({ getAlternatives, length, messages }: Props) => {
@@ -37,6 +74,9 @@ const ComparisonSeries = ({ getAlternatives, length, messages }: Props) => {
   const [refreshLeft, setRefreshLeft] = useState(false);
   // a limited list of entities that can be used to suggest new comparisons
   const [alternatives, setAlternatives] = useState<Array<Entity>>([]);
+  // a list of already made comparisons, allowing to not suggest two times the
+  // same comparison to a user
+  const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
 
   /**
    * Build the list of `alternatives`.
@@ -57,14 +97,28 @@ const ComparisonSeries = ({ getAlternatives, length, messages }: Props) => {
     getAlternativesAsync();
   }, [getAlternatives]);
 
-  const afterSubmitCallback = (): { uid: string; refreshLeft: boolean } => {
+  const afterSubmitCallback = (
+    uidA: string,
+    uidB: string
+  ): { uid: string; refreshLeft: boolean } => {
     if (step < length) {
       setStep(step + 1);
     }
 
+    const newComparisons = comparisonsMade.concat([
+      uidA + COMPARISON_SEPARATOR + uidB,
+    ]);
+    setComparisonsMade(newComparisons);
+
+    const keptUid = refreshLeft ? uidB : uidA;
+    const alreadyCompared = alreadyComparedWith(keptUid, newComparisons);
+
     let uid = '';
     if (alternatives.length > 0) {
-      uid = selectNextEntity(alternatives).uid;
+      uid = selectNextEntity(
+        alternatives,
+        alreadyCompared.concat([keptUid])
+      ).uid;
     }
 
     const nextStep = { uid: uid, refreshLeft: refreshLeft };
