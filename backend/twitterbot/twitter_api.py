@@ -1,18 +1,20 @@
 import tweepy
-from twitterbot.credentials import secrets
+from django.conf import settings 
 
-
+CREDENTIALS = settings.TWITTERBOT_CREDENTIALS
 class TwitterBot:
     def __init__(self, account):
 
-        if account not in secrets.keys():
+        if account not in CREDENTIALS:
             raise ValueError(f"No credentials found for {account} account!")
 
-        self.language = secrets[account]["LANGUAGE"]
-        self.consumer_key = secrets[account]["CONSUMER_KEY"]
-        self.consumer_secret = secrets[account]["CONSUMER_SECRET"]
-        self.access_token = secrets[account]["ACCESS_TOKEN"]
-        self.access_token_secret = secrets[account]["ACCESS_TOKEN_SECRET"]
+        account_cred = CREDENTIALS[account]
+
+        self.language = account_cred["LANGUAGE"]
+        self.consumer_key = account_cred["CONSUMER_KEY"]
+        self.consumer_secret = account_cred["CONSUMER_SECRET"]
+        self.access_token = account_cred["ACCESS_TOKEN"]
+        self.access_token_secret = account_cred["ACCESS_TOKEN_SECRET"]
 
     def authenticate(self):
 
