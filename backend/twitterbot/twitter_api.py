@@ -1,7 +1,9 @@
 import tweepy
-from django.conf import settings 
+from django.conf import settings
 
 CREDENTIALS = settings.TWITTERBOT_CREDENTIALS
+
+
 class TwitterBot:
     def __init__(self, account):
 
