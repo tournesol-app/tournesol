@@ -51,7 +51,7 @@ const rewriteLegacyParameters = (
 };
 
 interface Props {
-  afterSubmitCallback?: () => void;
+  afterSubmitCallback?: () => { uid: string; refreshLeft: boolean };
 }
 
 /**
@@ -169,10 +169,24 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         requestBody: c,
       });
       setInitialComparison(c);
-      // Refresh ratings statistics after the comparisons have been submitted
-      setSubmitted(true);
 
-      if (afterSubmitCallback) afterSubmitCallback();
+      // the presence of the `afterSubmitCallback` prop suggests we are in
+      // a comparison series, some state updates are not triggered here to avoid
+      // race conditions
+      if (afterSubmitCallback) {
+        const nextStep = afterSubmitCallback();
+
+        if (nextStep.uid) {
+          if (nextStep.refreshLeft) {
+            onChangeA({ uid: nextStep.uid, rating: null });
+          } else {
+            onChangeB({ uid: nextStep.uid, rating: null });
+          }
+        }
+      } else {
+        // Refresh ratings statistics after the comparisons have been submitted
+        setSubmitted(true);
+      }
     }
 
     showSuccessAlert(t('comparison.successfullySubmitted'));

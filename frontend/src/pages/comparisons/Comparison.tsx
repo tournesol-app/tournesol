@@ -17,6 +17,7 @@ const ComparisonPage = () => {
 
   const { options } = useCurrentPoll();
   const tutorialLength = options?.tutorialLength ?? 0;
+  const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
 
   return (
     <>
@@ -30,7 +31,11 @@ const ComparisonPage = () => {
         }}
       >
         {series === 'true' ? (
-          <ComparisonSeries length={tutorialLength} messages="it works" />
+          <ComparisonSeries
+            getAlternatives={tutorialAlternatives}
+            length={tutorialLength}
+            messages="it works"
+          />
         ) : (
           <Comparison />
         )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { SvgIconComponent } from '@mui/icons-material';
 import {
+  Entity,
   EntityNoExtraField,
   RelatedEntity,
   Video,
@@ -54,4 +55,7 @@ export type SelectablePoll = {
   withSearchBar: boolean;
   topBarBackground: string | null;
   tutorialLength?: number;
+  // can be used by comparison series to limit the pool of entities
+  // that are suggested after each comparison
+  tutorialAlternatives?: () => Promise<Array<Entity>>;
 };
