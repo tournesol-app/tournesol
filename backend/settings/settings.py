@@ -348,6 +348,8 @@ SPECTACULAR_SETTINGS = {
 
 YOUTUBE_API_KEY = server_settings.get("YOUTUBE_API_KEY", "")
 
+TWITTERBOT_CREDENTIALS = server_settings.get("TWITTERBOT_CREDENTIALS", {})
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
