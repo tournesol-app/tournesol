@@ -46,4 +46,31 @@ export const tutorialDialogs: OrderedDialogs = {
         ' complet sur les candidat.es',
     ],
   },
+  '4': {
+    title: 'Commment ça fonctionne ? (1/2)',
+    messages: [
+      'Contrairement au système de vote classique en France, ici vous donnez ' +
+        ' votre avis sur une multitudes de candidat.es.',
+      "Ainsi il est possible d'exprimer son choix préféré, puis son second," +
+        ' puis son troisième, etc.',
+    ],
+  },
+  '5': {
+    title: 'Commment ça fonctionne ? (2/2)',
+    messages: [
+      "C'est en aggrégeant les comparaisons de tous les utilisateurs que" +
+        ' Tournesol est capable de comprendre leurs préférences, et de' +
+        ' déterminer quel candidat.e devrait-être président.e.',
+      "Ce n'est donc pas la personne qui reçoit le plus de vote qui gagne " +
+        ' mais celle dont la somme des avis est la plus favorable.',
+    ],
+  },
+  '6': {
+    title: 'Merci beaucoup !',
+    messages: [
+      'Encore une dernière comparaison et vous pourrez voir vos résultats.',
+      'Nous espérons sincèrement que vous avez apprécié cette nouvelle manière' +
+        ' de voter.',
+    ],
+  },
 };
