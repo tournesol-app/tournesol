@@ -140,17 +140,13 @@ const ComparisonSeries = ({ getAlternatives, length, dialogs }: Props) => {
     setDialogOpen(false);
   };
 
-  const stepHasDialog = () => {
-    return dialogs && step in dialogs;
-  };
-
   return (
     <>
       {length >= MIN_LENGTH ? (
         <>
-          {stepHasDialog() && (
+          {dialogs && step in dialogs && (
             <DialogBox
-              dialog={dialogs![step]}
+              dialog={dialogs[step]}
               open={dialogOpen}
               onClose={closeDialog}
             />
