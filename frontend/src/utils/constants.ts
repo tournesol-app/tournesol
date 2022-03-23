@@ -1,7 +1,10 @@
 import { TFunction } from 'react-i18next';
 import { HowToVote, YouTube } from '@mui/icons-material';
 import { RouteID, SelectablePoll } from './types';
-import { getAllCandidates, tutorialDialogs } from './candidate_fr_2022';
+import {
+  getAllCandidates,
+  tutorialDialogs,
+} from './entities/candidate_fr_2022';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';

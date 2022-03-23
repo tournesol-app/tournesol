@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import Comparison from 'src/features/comparisons/Comparison';
 import { Entity } from 'src/services/openapi';
+import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import DialogBox from './DialogBox';
 
 const MIN_LENGTH = 2;
-const COMPARISON_SEPARATOR = '/';
 
 interface Props {
   dialogs?: { [key: string]: { title: string; messages: Array<string> } };
@@ -26,46 +26,6 @@ const generateSteps = (length: number) => {
     );
   }
   return content;
-};
-
-/**
- * Return a random entity with uid not included in the `filter` list.
- *
- * @param entities
- * @param filter
- */
-const selectNextEntity = (
-  entities: Array<Entity>,
-  filter: string[]
-): Entity => {
-  const filtered = entities.filter((entity) => !filter.includes(entity.uid));
-
-  return filtered[Math.floor(Math.random() * filtered.length)];
-};
-
-/**
- * Return a list of uids already compared with `uid`.
- *
- * @param uid
- * @param comparisons An array of comparisons, represented in the form 'uidA/uidB'
- */
-const alreadyComparedWith = (uid: string, comparisons: string[]): string[] => {
-  const alreadyCompared: Array<string> = [];
-
-  comparisons.forEach((comparison) => {
-    const split = comparison.split(COMPARISON_SEPARATOR);
-    const index = split.indexOf(uid);
-
-    if (index != -1) {
-      if (index == 0) {
-        alreadyCompared.push(split[1]);
-      } else {
-        alreadyCompared.push(split[0]);
-      }
-    }
-  });
-
-  return alreadyCompared;
 };
 
 const ComparisonSeries = ({ getAlternatives, length, dialogs }: Props) => {
@@ -110,9 +70,7 @@ const ComparisonSeries = ({ getAlternatives, length, dialogs }: Props) => {
       setStep(newStep);
     }
 
-    const newComparisons = comparisonsMade.concat([
-      uidA + COMPARISON_SEPARATOR + uidB,
-    ]);
+    const newComparisons = comparisonsMade.concat([uidA + '/' + uidB]);
     setComparisonsMade(newComparisons);
 
     const keptUid = refreshLeft ? uidB : uidA;
@@ -120,7 +78,7 @@ const ComparisonSeries = ({ getAlternatives, length, dialogs }: Props) => {
 
     let uid = '';
     if (alternatives.length > 0) {
-      uid = selectNextEntity(
+      uid = selectRandomEntity(
         alternatives,
         alreadyCompared.concat([keptUid])
       ).uid;
