@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Button, Dialog, DialogTitle, Typography } from '@mui/material';
 
 interface DialogProps {
@@ -8,6 +9,8 @@ interface DialogProps {
 }
 
 const DialogBox = ({ open, onClose, dialog }: DialogProps) => {
+  const { t } = useTranslation();
+
   const handleClose = () => {
     onClose();
   };
@@ -35,7 +38,7 @@ const DialogBox = ({ open, onClose, dialog }: DialogProps) => {
         </Box>
         <Box display="flex" justifyContent="flex-end">
           <Button variant="contained" onClick={handleClose}>
-            Continuer
+            {t('dialogBox.continue')}
           </Button>
         </Box>
       </Box>

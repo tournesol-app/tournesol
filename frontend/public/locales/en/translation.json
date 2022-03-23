@@ -44,6 +44,9 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
+  "dialogBox": {
+    "continue": "continue"
+  },
   "videoSelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",

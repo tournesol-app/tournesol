@@ -47,6 +47,9 @@
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
+  "dialogBox": {
+    "continue": "continuer"
+  },
   "videoSelector": {
     "newVideo": "Selectionner une nouvelle vidéo automatiquement",
     "autoEntityButton": "Auto",
