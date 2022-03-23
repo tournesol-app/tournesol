@@ -50,3 +50,11 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "aws_access_key_id=${AWS_ACCESS_KEY_ID:-""}" \
   -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY:-""}" \
   -e "git_reference=${GIT_REFERENCE}" \
+  -e "consumer_key_twitterbot_fr=${TWBOT_CONSUMER_KEY_FR}" \
+  -e "consumer_secret_twitterbot_fr=${TWBOT_CONSUMER_SECRET_FR}" \
+  -e "access_token_twitterbot_fr=${TWBOT_ACCESS_TOKEN_FR}" \
+  -e "access_token_secret_twitterbot_fr=${TWBOT_ACCESS_TOKEN_SECRET_FR}" \
+  -e "consumer_key_twitterbot_en=${TWBOT_CONSUMER_KEY_EN}" \
+  -e "consumer_secret_twitterbot_en=${TWBOT_CONSUMER_SECRET_EN}" \
+  -e "access_token_twitterbot_en=${TWBOT_ACCESS_TOKEN_EN}" \
+  -e "access_token_secret_twitterbot_en=${TWBOT_ACCESS_TOKEN_SECRET_EN}" \

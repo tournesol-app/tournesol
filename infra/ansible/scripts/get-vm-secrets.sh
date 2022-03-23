@@ -78,3 +78,27 @@ export AWS_ACCESS_KEY_ID
 
 AWS_SECRET_ACCESS_KEY="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/systemd/system/export-backups.service | sed -n 's/^Environment="AWS_SECRET_ACCESS_KEY=\(.*\)"/\1/p')"
 export AWS_SECRET_ACCESS_KEY
+
+TWBOT_CONSUMER_KEY_FR="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"CONSUMER_KEY\": \"\(.*\)\",/\1/p' | sed -n '1p')"
+export TWBOT_CONSUMER_KEY_FR
+
+TWBOT_CONSUMER_SECRET_FR="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"CONSUMER_SECRET\": \"\(.*\)\",/\1/p' | sed -n '1p')"
+export TWBOT_CONSUMER_SECRET_FR
+
+TWBOT_ACCESS_TOKEN_FR="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"ACCESS_TOKEN\": \"\(.*\)\",/\1/p' | sed -n '1p')"
+export TWBOT_ACCESS_TOKEN_FR
+
+TWBOT_ACCESS_TOKEN_SECRET_FR="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"ACCESS_TOKEN_SECRET\": \"\(.*\)\",/\1/p' | sed -n '1p')"
+export TWBOT_ACCESS_TOKEN_SECRET_FR
+
+TWBOT_CONSUMER_KEY_EN="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"CONSUMER_KEY\": \"\(.*\)\",/\1/p' | sed -n '2p')"
+export TWBOT_CONSUMER_KEY_EN
+
+TWBOT_CONSUMER_SECRET_EN="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"CONSUMER_SECRET\": \"\(.*\)\",/\1/p' | sed -n '2p')"
+export TWBOT_CONSUMER_SECRET_EN
+
+TWBOT_ACCESS_TOKEN_EN="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"ACCESS_TOKEN\": \"\(.*\)\",/\1/p' | sed -n '2p')"
+export TWBOT_ACCESS_TOKEN_EN
+
+TWBOT_ACCESS_TOKEN_SECRET_EN="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/tournesol/settings.yaml | sed -n 's/\"ACCESS_TOKEN_SECRET\": \"\(.*\)\",/\1/p' | sed -n '2p')"
+export TWBOT_ACCESS_TOKEN_SECRET_EN
