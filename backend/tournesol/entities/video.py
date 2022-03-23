@@ -70,7 +70,6 @@ class VideoEntity(EntityType):
         are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
         The request can be forced with `.refresh_metadata(force=True)`.
         """
-        return self.instance.last_metadata_request_at is None or (
-            timezone.now() - self.instance.last_metadata_request_at
-            >= timedelta(seconds=settings.VIDEO_METADATA_EXPIRE_SECONDS)
-        )
+        return self.instance.last_metadata_request_at is None \
+               or (timezone.now()-self.instance.last_metadata_request_at
+                   >= timedelta(seconds=settings.VIDEO_METADATA_EXPIRE_SECONDS))
