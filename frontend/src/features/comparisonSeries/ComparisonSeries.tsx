@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import Comparison from 'src/features/comparisons/Comparison';
 import { Entity } from 'src/services/openapi';
+import DialogBox from './Dialog';
 
 const MIN_LENGTH = 2;
 const COMPARISON_SEPARATOR = '/';
 
 interface Props {
+  dialogs?: { [key: string]: { title: string; messages: Array<string> } };
   getAlternatives?: () => Promise<Array<Entity>>;
   length: number;
-  messages: string;
 }
 
 const generateSteps = (length: number) => {
@@ -67,9 +68,11 @@ const alreadyComparedWith = (uid: string, comparisons: string[]): string[] => {
   return alreadyCompared;
 };
 
-const ComparisonSeries = ({ getAlternatives, length, messages }: Props) => {
+const ComparisonSeries = ({ getAlternatives, length, dialogs }: Props) => {
   // the current position in the series
   const [step, setStep] = useState(0);
+  // state of the `Dialog` component
+  const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one
   const [refreshLeft, setRefreshLeft] = useState(false);
   // a limited list of entities that can be used to suggest new comparisons
@@ -101,8 +104,10 @@ const ComparisonSeries = ({ getAlternatives, length, messages }: Props) => {
     uidA: string,
     uidB: string
   ): { uid: string; refreshLeft: boolean } => {
+    const newStep = step + 1;
+
     if (step < length) {
-      setStep(step + 1);
+      setStep(newStep);
     }
 
     const newComparisons = comparisonsMade.concat([
@@ -124,13 +129,32 @@ const ComparisonSeries = ({ getAlternatives, length, messages }: Props) => {
     const nextStep = { uid: uid, refreshLeft: refreshLeft };
     setRefreshLeft(!refreshLeft);
 
+    if (dialogs && newStep in dialogs) {
+      setDialogOpen(true);
+    }
+
     return nextStep;
+  };
+
+  const closeDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const stepHasDialog = () => {
+    return dialogs && step in dialogs;
   };
 
   return (
     <>
       {length >= MIN_LENGTH ? (
         <>
+          {stepHasDialog() && (
+            <DialogBox
+              dialog={dialogs![step]}
+              open={dialogOpen}
+              onClose={closeDialog}
+            />
+          )}
           <Container maxWidth="md" sx={{ my: 2, mb: 4 }}>
             <Stepper activeStep={step} alternativeLabel>
               {generateSteps(length)}
