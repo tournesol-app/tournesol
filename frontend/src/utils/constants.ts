@@ -4,7 +4,7 @@ import { RouteID, SelectablePoll } from './types';
 import {
   getAllCandidates,
   tutorialDialogs,
-} from './entities/candidate_fr_2022';
+} from './polls/presidentielle2022';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
