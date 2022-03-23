@@ -42,7 +42,7 @@ class VideoEntity(EntityType):
         )
 
     @classmethod
-    def get_uid_regex(cls, namespace) -> str:
+    def get_uid_regex(cls, namespace: str) -> str:
         if namespace == YOUTUBE_UID_NAMESPACE:
             return YOUTUBE_UID_REGEX
         return ''
