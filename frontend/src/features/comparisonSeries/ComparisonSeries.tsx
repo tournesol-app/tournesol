@@ -19,8 +19,8 @@ const generateSteps = (length: number) => {
     content.push(
       <Step key={i}>
         <StepLabel>
-          {i === 0 && 'begin'}
-          {i === length - 1 && 'finish!'}
+          {i === 0 && 'start'}
+          {i === length - 1 && 'end!'}
         </StepLabel>
       </Step>
     );
@@ -151,7 +151,7 @@ const ComparisonSeries = ({ getAlternatives, length, dialogs }: Props) => {
               onClose={closeDialog}
             />
           )}
-          <Container maxWidth="md" sx={{ my: 2, mb: 4 }}>
+          <Container maxWidth="md" sx={{ my: 2 }}>
             <Stepper activeStep={step} alternativeLabel>
               {generateSteps(length)}
             </Stepper>
