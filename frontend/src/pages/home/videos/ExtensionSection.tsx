@@ -15,7 +15,6 @@ const ExtensionSection = () => {
     <Box
       display="flex"
       flexDirection="column"
-      color="white"
       maxWidth="640px"
       alignItems="flex-start"
     >
