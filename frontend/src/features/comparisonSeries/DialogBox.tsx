@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Dialog, DialogTitle, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, Typography } from '@mui/material';
 
 interface DialogProps {
   dialog: { title: string; messages: Array<string> };
@@ -23,14 +23,21 @@ const DialogBox = ({ open, onClose, dialog }: DialogProps) => {
       >
         {dialog.title}
       </DialogTitle>
-      <Box pt={2} px={3}>
-        {dialog.messages.map((message, index) => {
-          return (
-            <Typography key={index} paragraph>
-              {message}
-            </Typography>
-          );
-        })}
+      <Box py={2} px={3}>
+        <Box>
+          {dialog.messages.map((message, index) => {
+            return (
+              <Typography key={index} paragraph>
+                {message}
+              </Typography>
+            );
+          })}
+        </Box>
+        <Box display="flex" justifyContent="flex-end">
+          <Button variant="contained" onClick={handleClose}>
+            Continuer
+          </Button>
+        </Box>
       </Box>
     </Dialog>
   );

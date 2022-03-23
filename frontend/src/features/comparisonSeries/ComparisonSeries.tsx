@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import Comparison from 'src/features/comparisons/Comparison';
 import { Entity } from 'src/services/openapi';
-import DialogBox from './Dialog';
+import DialogBox from './DialogBox';
 
 const MIN_LENGTH = 2;
 const COMPARISON_SEPARATOR = '/';
