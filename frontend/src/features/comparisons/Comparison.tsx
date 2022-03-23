@@ -13,7 +13,7 @@ import EntitySelector, {
 import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-const UID_PARAMS: { vidA: string; vidB: string } = {
+export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
   vidB: 'uidB',
 };

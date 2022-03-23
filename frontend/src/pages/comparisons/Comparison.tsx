@@ -34,6 +34,7 @@ const ComparisonPage = () => {
         {series === 'true' ? (
           <ComparisonSeries
             dialogs={tutorialDialogs}
+            generateInitial={true}
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
           />
