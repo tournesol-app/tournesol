@@ -164,13 +164,15 @@ const ComparisonSeries = ({
             Do not display the dialog box while the alternatives array
             is being built, to avoid a blink effect.
           */}
-          {dialogs && step && (!getAlternatives || alternatives.length > 0) && (
-            <DialogBox
-              dialog={dialogs[step]}
-              open={dialogOpen}
-              onClose={closeDialog}
-            />
-          )}
+          {dialogs &&
+            step in dialogs &&
+            (!getAlternatives || alternatives.length > 0) && (
+              <DialogBox
+                dialog={dialogs[step]}
+                open={dialogOpen}
+                onClose={closeDialog}
+              />
+            )}
           <Container maxWidth="md" sx={{ my: 2 }}>
             <Stepper activeStep={step} alternativeLabel>
               {generateSteps(length)}

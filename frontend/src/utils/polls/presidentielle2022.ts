@@ -1,9 +1,9 @@
-import { EntitiesService, Entity } from 'src/services/openapi';
+import { EntitiesService, Entity, TypeEnum } from 'src/services/openapi';
 import { OrderedDialogs } from 'src/utils/types';
 
 export async function getAllCandidates(): Promise<Array<Entity>> {
   const candidates = await EntitiesService.entitiesList({
-    type: 'candidate_fr_2022',
+    type: TypeEnum.CANDIDATE_FR_2022,
   });
 
   return candidates?.results ?? [];
