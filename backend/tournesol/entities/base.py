@@ -37,7 +37,7 @@ class EntityType(ABC):
 
     @classmethod
     @abstractmethod
-    def get_uid_regex(cls, namespace: str):
+    def get_uid_regex(cls, namespace: str) -> str:
         """Get a regex able to validate the entity UID."""
         raise NotImplementedError
 

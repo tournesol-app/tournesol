@@ -42,10 +42,10 @@ class VideoEntity(EntityType):
         )
 
     @classmethod
-    def get_uid_regex(cls, namespace):
+    def get_uid_regex(cls, namespace) -> str:
         if namespace == YOUTUBE_UID_NAMESPACE:
             return YOUTUBE_UID_REGEX
-        return None
+        return ''
 
     def update_metadata_field(self):
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
