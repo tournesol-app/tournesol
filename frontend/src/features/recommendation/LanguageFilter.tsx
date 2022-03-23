@@ -40,6 +40,11 @@ function LanguageFilter({ value, onChange }: Props) {
     );
   }, [i18n.resolvedLanguage, getOptionLabel]);
 
+  const placeholder = useMemo(
+    () => (arrayValue.length === 0 ? t('filter.allLanguages') : undefined),
+    [arrayValue.length, t]
+  );
+
   return (
     <TitledSection title={t('filter.language')}>
       <Autocomplete
@@ -54,6 +59,7 @@ function LanguageFilter({ value, onChange }: Props) {
             variant="outlined"
             color="secondary"
             size="small"
+            placeholder={placeholder}
           />
         )}
         filterSelectedOptions
