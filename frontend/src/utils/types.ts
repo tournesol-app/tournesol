@@ -41,6 +41,10 @@ export enum RouteID {
   About = 'about',
 }
 
+export type OrderedDialogs = {
+  [key: string]: { title: string; messages: Array<string> };
+};
+
 /**
  * A poll that can be displayed by <PollSelector>
  */
@@ -58,4 +62,5 @@ export type SelectablePoll = {
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
+  tutorialDialogs?: OrderedDialogs;
 };

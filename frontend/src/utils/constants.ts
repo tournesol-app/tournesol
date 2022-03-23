@@ -1,7 +1,7 @@
 import { TFunction } from 'react-i18next';
 import { HowToVote, YouTube } from '@mui/icons-material';
 import { RouteID, SelectablePoll } from './types';
-import { getAllCandidates } from './candidate_fr_2022';
+import { getAllCandidates, tutorialDialogs } from './candidate_fr_2022';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -146,6 +146,7 @@ export const polls: Array<SelectablePoll> = [
       'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
     tutorialLength: 7,
     tutorialAlternatives: getAllCandidates,
+    tutorialDialogs: tutorialDialogs,
   },
   {
     name: YOUTUBE_POLL_NAME,
