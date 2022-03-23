@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
+import DialogBox from 'src/components/DialogBox';
 import Comparison from 'src/features/comparisons/Comparison';
 import { Entity } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
-import DialogBox from './DialogBox';
 
 const MIN_LENGTH = 2;
 

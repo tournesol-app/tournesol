@@ -8,6 +8,9 @@ interface DialogProps {
   onClose: () => void;
 }
 
+/**
+ * A dialog box that displays one or more messages.
+ */
 const DialogBox = ({ open, onClose, dialog }: DialogProps) => {
   const { t } = useTranslation();
 
