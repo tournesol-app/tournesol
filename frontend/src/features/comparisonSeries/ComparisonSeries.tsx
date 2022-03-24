@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
@@ -37,6 +37,11 @@ const ComparisonSeries = ({
   length,
   dialogs,
 }: Props) => {
+  // trigger the initialization on the first render only, to allow users to
+  // freely clear entities without being redirected
+  const initialize = useRef(
+    generateInitial != undefined ? generateInitial : false
+  );
   // the current position in the series
   const [step, setStep] = useState(0);
   // state of the `Dialog` component
@@ -142,7 +147,11 @@ const ComparisonSeries = ({
     return newSearchParams.toString();
   };
 
-  if (generateInitial && (uidA === '' || uidB === '')) {
+  if (initialize.current == true && uidA !== '' && uidB !== '') {
+    initialize.current = false;
+  }
+
+  if (initialize.current == true && (uidA === '' || uidB === '')) {
     if (alternatives.length > 0) {
       const initialParams = genInitialComparisonParams(
         alternatives,
