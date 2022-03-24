@@ -27,7 +27,7 @@ class CandidateEntity(EntityType):
         )
 
     @classmethod
-    def get_uid_regex(cls, namespace):
+    def get_uid_regex(cls, namespace: str) -> str:
         return CANDIDATE_UID_REGEX
 
     @property

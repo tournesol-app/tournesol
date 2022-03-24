@@ -42,12 +42,12 @@ class VideoEntity(EntityType):
         )
 
     @classmethod
-    def get_uid_regex(cls, namespace):
+    def get_uid_regex(cls, namespace: str) -> str:
         if namespace == YOUTUBE_UID_NAMESPACE:
             return YOUTUBE_UID_REGEX
-        return None
+        return ''
 
-    def update_metadata_field(self):
+    def update_metadata_field(self) -> None:
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
         try:
             metadata = get_video_metadata(
@@ -64,7 +64,7 @@ class VideoEntity(EntityType):
                 self.instance.metadata[metadata_key] = metadata_value
         self.instance.metadata_timestamp = timezone.now()
 
-    def metadata_needs_to_be_refreshed(self):
+    def metadata_needs_to_be_refreshed(self) -> bool:
         """
         Refresh will be executed only if the current metadata
         are older than `VIDEO_METADATA_EXPIRE_SECONDS`.
