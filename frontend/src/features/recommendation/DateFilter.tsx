@@ -15,6 +15,7 @@ function DateFilter(props: Props) {
     Week: t('filter.thisWeek'),
     Month: t('filter.thisMonth'),
     Year: t('filter.thisYear'),
+    ['']: t('filter.allTime'),
   };
 
   return (

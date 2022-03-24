@@ -90,7 +90,7 @@ describe('Filters feature', () => {
     const dateFilter = document.querySelector(
       '[data-testid=search-date-safe-filter]'
     );
-    expect(queryAllByTestId(dateFilter, /checkbox-choice/i)).toHaveLength(5);
+    expect(queryAllByTestId(dateFilter, /checkbox-choice/i)).toHaveLength(6);
 
     // Check language filters presence
     const languageFilter = document.querySelector(
