@@ -1,10 +1,6 @@
 import { TFunction } from 'react-i18next';
-import { HowToVote, YouTube } from '@mui/icons-material';
-import { RouteID, SelectablePoll } from './types';
-import {
-  getAllCandidates,
-  getTutorialDialogs,
-} from './polls/presidentielle2022';
+import { YouTube } from '@mui/icons-material';
+import { SelectablePoll } from './types';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -138,6 +134,7 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   to be routed correctly.
 */
 export const polls: Array<SelectablePoll> = [
+  /*
   {
     name: PRESIDENTIELLE_2022_POLL_NAME,
     displayOrder: 20,
@@ -151,6 +148,7 @@ export const polls: Array<SelectablePoll> = [
     tutorialAlternatives: getAllCandidates,
     tutorialDialogs: getTutorialDialogs,
   },
+  */
   {
     name: YOUTUBE_POLL_NAME,
     displayOrder: 10,
