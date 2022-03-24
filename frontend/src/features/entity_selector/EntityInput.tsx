@@ -6,27 +6,8 @@ import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { EntitiesService, TypeEnum, Entity } from 'src/services/openapi';
-
-let CANDIDATES: Promise<Entity[]> | null = null;
-
-const getCandidates = async () => {
-  if (CANDIDATES != null) {
-    return CANDIDATES;
-  }
-  CANDIDATES = EntitiesService.entitiesList({
-    type: TypeEnum.CANDIDATE_FR_2022,
-  }).then((data) => {
-    const candidates = data.results ?? [];
-    return candidates.sort((a, b) => {
-      // Sort by last name
-      const aName: string = a?.metadata?.name.split(' ').slice(1).join(' ');
-      const bName: string = b?.metadata?.name.split(' ').slice(1).join(' ');
-      return aName.localeCompare(bName);
-    });
-  });
-  return CANDIDATES;
-};
+import { Entity } from 'src/services/openapi';
+import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 
 interface Props {
   value: string;
@@ -61,7 +42,15 @@ const CandidateInput = ({ onChange, value }: Props) => {
   const [options, setOptions] = useState<Entity[]>([]);
 
   useEffect(() => {
-    getCandidates().then((candidates) => setOptions(candidates));
+    getAllCandidates().then((candidates) => {
+      const sortedCandidates = [...candidates].sort((a, b) => {
+        // Sort by last name
+        const aName: string = a?.metadata?.name.split(' ').slice(1).join(' ');
+        const bName: string = b?.metadata?.name.split(' ').slice(1).join(' ');
+        return aName.localeCompare(bName);
+      });
+      setOptions(sortedCandidates);
+    });
   }, []);
 
   return (

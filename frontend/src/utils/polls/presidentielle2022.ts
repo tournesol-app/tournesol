@@ -1,12 +1,16 @@
 import { EntitiesService, Entity, TypeEnum } from 'src/services/openapi';
 import { OrderedDialogs } from 'src/utils/types';
 
-export async function getAllCandidates(): Promise<Array<Entity>> {
-  const candidates = await EntitiesService.entitiesList({
-    type: TypeEnum.CANDIDATE_FR_2022,
-  });
+let CANDIDATES: Promise<Entity[]> | null = null;
 
-  return candidates?.results ?? [];
+export function getAllCandidates(): Promise<Entity[]> {
+  if (CANDIDATES != null) {
+    return CANDIDATES;
+  }
+  CANDIDATES = EntitiesService.entitiesList({
+    type: TypeEnum.CANDIDATE_FR_2022,
+  }).then((data) => data.results ?? []);
+  return CANDIDATES;
 }
 
 export const tutorialDialogs: OrderedDialogs = {
