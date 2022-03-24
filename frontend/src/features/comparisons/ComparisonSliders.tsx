@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -46,6 +46,7 @@ const ComparisonSliders = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const { criteriaByName, criterias } = useCurrentPoll();
+  const isMounted = useRef(true);
 
   const castToComparison = (c: ComparisonRequest | null): ComparisonRequest => {
     return c
@@ -75,9 +76,19 @@ const ComparisonSliders = ({
     [initialComparison]
   );
 
+  useEffect(() => {
+    // the cleanup function will be called when the component is unmounted
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const submitComparison = async () => {
     await submit(comparison);
-    setSubmitted(true);
+    // avoid a "memory leak" warning if the component is unmounted on submit.
+    if (isMounted.current) {
+      setSubmitted(true);
+    }
   };
 
   const handleSliderChange = (criteria: string, score: number | undefined) => {
