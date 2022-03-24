@@ -1,4 +1,5 @@
 import React from 'react';
+import { TFunction } from 'react-i18next';
 import { SvgIconComponent } from '@mui/icons-material';
 import {
   Entity,
@@ -62,5 +63,5 @@ export type SelectablePoll = {
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
-  tutorialDialogs?: OrderedDialogs;
+  tutorialDialogs?: (t: TFunction) => OrderedDialogs;
 };

@@ -2,6 +2,9 @@
   "components": {
     "filtersButton": "filters"
   },
+  "dialogBox": {
+    "continue": "continue"
+  },
   "video": {
     "labelShowSettings": "Show settings related to this video",
     "nbViews": "{{nbViews}} views",
@@ -44,9 +47,6 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
-  "dialogBox": {
-    "continue": "continue"
-  },
   "videoSelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
@@ -375,5 +375,49 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
+  },
+  "presidentielle2022": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "",
+        "message1": {
+          "p10": "",
+          "p20": "",
+          "p30": "",
+          "p40": ""
+        },
+        "title2": "",
+        "message2": {
+          "p10": "",
+          "p20": ""
+        },
+        "title3": "",
+        "message3": {
+          "p10": ""
+        },
+        "title4": "",
+        "message4": {
+          "p10": "",
+          "p20": ""
+        },
+        "title5": "",
+        "message5": {
+          "p10": "",
+          "p20": "",
+          "p30": ""
+        },
+        "title6": "",
+        "message6": {
+          "p10": "",
+          "p20": "",
+          "p30": ""
+        },
+        "title7": "",
+        "message7": {
+          "p10": "",
+          "p20": ""
+        }
+      }
+    }
   }
 }

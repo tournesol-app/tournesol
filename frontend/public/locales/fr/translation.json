@@ -2,6 +2,9 @@
   "components": {
     "filtersButton": "filtres"
   },
+  "dialogBox": {
+    "continue": "continuer"
+  },
   "video": {
     "labelShowSettings": "Voir les paramètres de cette video",
     "nbViews": "{{nbViews}} vues",
@@ -47,9 +50,6 @@
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
-  "dialogBox": {
-    "continue": "continuer"
-  },
   "videoSelector": {
     "newVideo": "Selectionner une nouvelle vidéo automatiquement",
     "autoEntityButton": "Auto",
@@ -379,5 +379,49 @@
     "videos": "vidéos",
     "entityCandidate": "candidat",
     "entityVideo": "vidéo"
+  },
+  "presidentielle2022": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "Bienvenue dans Tournesol 🌻",
+        "message1": {
+          "p10": "Pour vous familiariser avec ce système de comparaison, des petits messages comme celui-ci apparaîtront pour vous guider pas à pas.",
+          "p20": "Commençons par faire une première comparaison entre deux candidat.es.",
+          "p30": "Faites coulisser la poignée bleu au dessous des candidat.es, puis enregistrez pour indiquer qui d'après vous devrait-être président.e.",
+          "p40": "Plus la poignée est au centre, plus les candidat.es sont considérés comme similaires."
+        },
+        "title2": "Bravo !",
+        "message2": {
+          "p10": "Continuons avec d'autres candidat.es.",
+          "p20": "Notez que vous pouvez choisir manuellement les candidat.es. en utilisant le menu déroulant qui se trouve au dessus de leurs photos."
+        },
+        "title3": "Un conseil",
+        "message3": {
+          "p10": "Ne vous en faites pas trop si vous n'etes pas sûr.e de vous. Il vous sera possible par la suite de modifier toutes vos comparaisons à votre rythme."
+        },
+        "title4": "Avez-vous remarqué ?",
+        "message4": {
+          "p10": "Il y a aussi des critères de comparaison optionnels sous les critères principaux.",
+          "p20": "Essayez de dérouler les critères optionnels pour donner un avis plus complet sur les candidat.es."
+        },
+        "title5": "Mieux que de voter pour une seule personne ?",
+        "message5": {
+          "p10": "Contrairement au système de vote classique en France, ici vous donnez votre avis sur plusieurs candidat.es.",
+          "p20": "Ainsi il est possible d'exprimer son choix préféré, puis son second, puis son troisième, etc.",
+          "p30": "Cela permet d'éviter des problèmes comme « le vote utile », et ne favorise pas la polarisation des opinions politiques."
+        },
+        "title6": "Comment ça fonctionne ?",
+        "message6": {
+          "p10": "C'est en aggrégeant les comparaisons de tous les utilisateurs que Tournesol est capable de comprendre leurs préférences.",
+          "p20": "Ce n'est donc pas la personne qui reçoit le plus de vote qui est élue mais celle dont la somme des avis est la plus favorable.",
+          "p30": "L'objectif est d'obtenir un résultat qui correspond le plus possible à l'opinion globale des utilisateurs."
+        },
+        "title7": "Merci beaucoup !",
+        "message7": {
+          "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos résultats.",
+          "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter."
+        }
+      }
+    }
   }
 }
