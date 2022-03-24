@@ -13,7 +13,7 @@ import EntitySelector, {
 import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-const UID_PARAMS: { vidA: string; vidB: string } = {
+export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
   vidB: 'uidB',
 };
@@ -50,6 +50,13 @@ const rewriteLegacyParameters = (
   return searchParams;
 };
 
+interface Props {
+  afterSubmitCallback?: (
+    uidA: string,
+    uidB: string
+  ) => { uid: string; refreshLeft: boolean };
+}
+
 /**
  * The comparison UI.
  *
@@ -58,7 +65,7 @@ const rewriteLegacyParameters = (
  * a entity uid is changed. Adding this component into a page will also add
  * these uids in the URL parameters.
  */
-const Comparison = () => {
+const Comparison = ({ afterSubmitCallback }: Props) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -165,9 +172,26 @@ const Comparison = () => {
         requestBody: c,
       });
       setInitialComparison(c);
-      // Refresh ratings statistics after the comparisons have been submitted
-      setSubmitted(true);
+
+      // the presence of the `afterSubmitCallback` prop suggests we are in
+      // a comparison series, some state updates are not triggered here to avoid
+      // race conditions
+      if (afterSubmitCallback) {
+        const nextStep = afterSubmitCallback(c.entity_a.uid, c.entity_b.uid);
+
+        if (nextStep.uid) {
+          if (nextStep.refreshLeft) {
+            onChangeA({ uid: nextStep.uid, rating: null });
+          } else {
+            onChangeB({ uid: nextStep.uid, rating: null });
+          }
+        }
+      } else {
+        // Refresh ratings statistics after the comparisons have been submitted
+        setSubmitted(true);
+      }
     }
+
     showSuccessAlert(t('comparison.successfullySubmitted'));
   };
 
