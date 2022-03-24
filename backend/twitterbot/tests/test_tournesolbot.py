@@ -9,7 +9,6 @@ from twitterbot.tournesolbot import (
     get_best_criteria,
     get_video_recommendations,
     prepare_tweet,
-    tweet_video_recommendation,
 )
 
 
