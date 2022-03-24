@@ -110,6 +110,16 @@ const EntitySelector = ({
     }
   }, [loadRating, submitted]);
 
+  useEffect(() => {
+    // Update input value when "uid" has been changed by the parent component
+    setInputValue((previousValue) => {
+      if (previousValue !== uid) {
+        return uid;
+      }
+      return previousValue;
+    });
+  }, [uid]);
+
   const handleChange = (value: string) => {
     if (value === '') {
       setInputValue('');
