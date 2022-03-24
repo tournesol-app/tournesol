@@ -379,43 +379,43 @@
   "presidentielle2022": {
     "dialogs": {
       "tutorial": {
-        "title1": "",
+        "title1": "Welcome on Tournesol \uD83C\uDF3B",
         "message1": {
-          "p10": "",
-          "p20": "",
-          "p30": "",
-          "p40": ""
+          "p10": "In order to familiarize yourself with the comparison system, small messages like this one will be displayed.",
+          "p20": "Let's start with a first comparison between two candidates.",
+          "p30": "Move the blue handle below the candidates, then submit to select the person who should be president.",
+          "p40": "The more the handle is in the center, the more the candidates are considered similar."
         },
-        "title2": "",
+        "title2": "Congratulations !",
         "message2": {
-          "p10": "",
-          "p20": ""
+          "p10": "Let's continue with other candidates.",
+          "p20": "Note that you can manually choose the candidates by using the drop down menu located just above the candidates' photos."
         },
-        "title3": "",
+        "title3": "Tip",
         "message3": {
-          "p10": ""
+          "p10": "Don't worry if you are not confident. You will be able to update all comparisons later, at your own pace."
         },
-        "title4": "",
+        "title4": "Did you see?",
         "message4": {
-          "p10": "",
-          "p20": ""
+          "p10": "There are also optional criteria under the main ones.",
+          "p20": "Try to unfold and use the optional criteria to give a more complete opinion about the candidates."
         },
-        "title5": "",
+        "title5": "Is it better than voting for a single person?",
         "message5": {
-          "p10": "",
-          "p20": "",
-          "p30": ""
+          "p10": "Contrary to the current voting system in France, here you are invited to give your opinion on several candidates.",
+          "p20": "Thus it's possible to express your favourite choice, your second choice, the third one, etc.",
+          "p30": "This system avoids problem like « tactical vote », and doesn't encourage the polarization of political opinions."
         },
-        "title6": "",
+        "title6": "How does it work?",
         "message6": {
-          "p10": "",
-          "p20": "",
-          "p30": ""
+          "p10": "It's by aggregating comparisons of all users that Tournesol is able to understand their preferences.",
+          "p20": "It's not the candidate who received the most voices who is elected, but the one with the most favourable sum of opinions.",
+          "p30": "The objective is to get the results that fits the best the users' global opinion."
         },
-        "title7": "",
+        "title7": "Thanks a lot!",
         "message7": {
-          "p10": "",
-          "p20": ""
+          "p10": "One last comparison and you will be able to see your results.",
+          "p20": "We sincerely hope you've appreciated this new voting system."
         }
       }
     }
