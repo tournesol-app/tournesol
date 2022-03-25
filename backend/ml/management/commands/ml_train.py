@@ -1,18 +1,3 @@
-import logging
-from typing import List, Tuple
-
-from core.models import User
-from django.core.management.base import BaseCommand
-from ml.core import TOURNESOL_DEV, ml_run
-from tournesol.models import (
-    ComparisonCriteriaScore,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    Entity,
-    EntityCriteriaScore,
-    Poll,
-)
-
 """
 Machine Learning main python file
 
@@ -49,6 +34,20 @@ USAGE:
     mode
 - run "python manage.py ml_train"
 """
+import logging
+from typing import List, Tuple
+
+from core.models import User
+from django.core.management.base import BaseCommand
+from ml.core import TOURNESOL_DEV, ml_run
+from tournesol.models import (
+    ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    Entity,
+    EntityCriteriaScore,
+    Poll,
+)
 
 
 def fetch_data(poll, trusted_only=True) -> List[Tuple[int, int, int, str, float, float]]:
