@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 import pandas as pd
 from django.db.models import Case, F, When
 
@@ -6,7 +8,8 @@ from tournesol.models import ComparisonCriteriaScore
 from tournesol.models.ratings import ContributorRating
 
 
-class MlInput:
+class MlInput(ABC):
+    @abstractmethod
     def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
         """Fetch data about comparisons submitted by users
 
@@ -19,8 +22,9 @@ class MlInput:
             * `score`: float
             * `weight`: float
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_ratings_properties(self) -> pd.DataFrame:
         """Fetch data about contributor ratings properties
 
@@ -32,7 +36,7 @@ class MlInput:
             * `is_trusted`: bool
             * `is_supertrusted`: bool
         """
-        raise NotImplementedError
+        pass
 
 
 class MlInputFromPublicDataset(MlInput):
