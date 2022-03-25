@@ -37,10 +37,7 @@ const ComparisonPage = () => {
     Array<string>
   >([]);
 
-  let dialogs;
-  if (tutorialDialogs) {
-    dialogs = tutorialDialogs(t);
-  }
+  const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
   /**
    * If 'series' is present in the URL parameters, retrieve the user's
