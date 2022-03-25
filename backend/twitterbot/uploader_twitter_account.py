@@ -4,7 +4,9 @@ Used for the Tournesol twitter bot.
 """
 
 import re
+
 import requests
+
 from tournesol.utils.api_youtube import get_video_metadata
 
 
@@ -18,7 +20,7 @@ def get_twitter_account_from_channel_id(channel_id):
     twitter_names = re.findall(r"twitter.com\%2F(.*?)\"", resp.text)
     twitter_names = [name for name in twitter_names if name != ""]
 
-    if len(set(name.lower() for name in twitter_names)) == 1:
+    if len({name.lower() for name in twitter_names}) == 1:
         return "@" + twitter_names[0]
 
     print("Error getting the uploader id, Twitter account not found")
