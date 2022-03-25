@@ -50,7 +50,7 @@ class SimpleAllConnectedTest(TestCase):
 
     def test_not_authenticated_cannot_show_unconnected_entities(self):
         response = self.client.get(
-            f"{self.user_base_url}/{self.video_source.id}/",
+            f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
 
@@ -60,7 +60,7 @@ class SimpleAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            f"{self.user_base_url}/{self.video_source.id}/",
+            f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
 
@@ -105,7 +105,7 @@ class AdvancedAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            f"{self.user_base_url}/{self.video_source.id}/",
+            f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
 
@@ -158,7 +158,7 @@ class SimpleNotAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            f"{self.user_base_url}/{self.video_source.id}/",
+            f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
 
@@ -228,7 +228,7 @@ class AdvancedNotAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            f"{self.user_base_url}/{self.video_source.id}/",
+            f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
 

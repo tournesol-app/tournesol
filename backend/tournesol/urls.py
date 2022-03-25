@@ -104,7 +104,7 @@ urlpatterns = [
     ),
     # Unconnected entities
     path(
-        "users/me/unconnected_entities/<str:poll_name>/<int:id>/",
+        "users/me/unconnected_entities/<str:poll_name>/<str:uid>/",
         UnconnectedEntitiesView.as_view(),
         name="unconnected_entities",
     ),

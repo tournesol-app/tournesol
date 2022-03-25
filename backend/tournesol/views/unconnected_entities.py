@@ -61,9 +61,9 @@ class UnconnectedEntitiesView(
         # Get related entities from source
         source_node = Entity.objects.none()
 
-        if self.kwargs.get("id"):
-            entity_id = self.kwargs.get("id")
-            source_node = Entity.objects.get(id=entity_id)
+        if self.kwargs.get("uid"):
+            entity_uid = self.kwargs.get("uid")
+            source_node = Entity.objects.get(uid=entity_uid)
         else:
             return Entity.objects.none()
 
