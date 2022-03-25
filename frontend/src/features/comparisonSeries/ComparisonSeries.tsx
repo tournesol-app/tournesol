@@ -3,18 +3,36 @@ import { Redirect } from 'react-router-dom';
 import { StepLabel, Step, Stepper, Container } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
-import { Entity } from 'src/services/openapi';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import {
+  Entity,
+  Comparison as ComparisonModel,
+  UsersService,
+} from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { OrderedDialogs } from 'src/utils/types';
 
+// this constant controls the render of the series, if the `length` prop of
+// the `ComparisonSeries` component is strictly inferior to this value, a
+// simple `Comparison` component with not extra features will be rendered
+// instead
 const MIN_LENGTH = 2;
 
 interface Props {
-  alreadyMadeComparisons?: Array<string>;
   dialogs?: OrderedDialogs;
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity>>;
   length: number;
+}
+
+export function getUserComparisons(
+  pollName: string
+): Promise<ComparisonModel[]> {
+  const comparisons: Promise<ComparisonModel[]> =
+    UsersService.usersMeComparisonsList({
+      pollName,
+    }).then((data) => data.results ?? []);
+  return comparisons;
 }
 
 const generateSteps = (length: number) => {
@@ -33,12 +51,13 @@ const generateSteps = (length: number) => {
 };
 
 const ComparisonSeries = ({
-  alreadyMadeComparisons,
   dialogs,
   generateInitial,
   getAlternatives,
   length,
 }: Props) => {
+  const { name: pollName } = useCurrentPoll();
+
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected
   const initialize = useRef(
@@ -55,35 +74,58 @@ const ComparisonSeries = ({
   // an array of already made comparisons, allowing to not suggest two times the
   // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
   const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
+  // a string representing the URL parameters of the first comparison that may be suggested
+  const [firstComparisonParams, setFirstComparisonParams] = useState('');
 
   const searchParams = new URLSearchParams(location.search);
   const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
   const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
 
-  useEffect(() => {
-    if (alreadyMadeComparisons !== undefined) {
-      setComparisonsMade(alreadyMadeComparisons);
-    }
-  }, [alreadyMadeComparisons, setComparisonsMade]);
-
   /**
-   * Build the list of `alternatives`.
+   * Retrieve the user's comparisons to avoid suggesting couples of entities
+   * that have already been compared.
    *
-   * After each comparison, an entity from this list can be selected to
-   * replace one of the two compared entities.
+   * Also build the list of `alternatives`. After each comparison, an entity
+   * from this list can be selected to replace one of the two compared
+   * entities.
+   *
+   * If the component has been mounted with `generateInitial` = true, build the
+   * URL parameters that will be used to suggest the first comparison of the
+   * series.
    */
   useEffect(() => {
-    async function getAlternativesAsync() {
-      if (getAlternatives) {
-        const alts = await getAlternatives();
-        if (alts.length > 0) {
-          setAlternatives(alts);
-        }
+    async function getAlternativesAsync(getAlts: () => Promise<Array<Entity>>) {
+      const alts = await getAlts();
+      if (alts.length > 0) {
+        setAlternatives(alts);
+        return alts;
       }
+      return [];
     }
 
-    getAlternativesAsync();
-  }, [getAlternatives]);
+    async function getUserComparisonsAsync(pName: string) {
+      const comparisons = await getUserComparisons(pName);
+      const formattedComparisons = comparisons.map(
+        (c) => c.entity_a.uid + '/' + c.entity_b.uid
+      );
+      setComparisonsMade(formattedComparisons);
+      return formattedComparisons;
+    }
+
+    if (length >= MIN_LENGTH) {
+      getUserComparisonsAsync(pollName).then((comparisons) => {
+        if (getAlternatives) {
+          getAlternativesAsync(getAlternatives).then((entities) => {
+            if (initialize.current == true && (uidA === '' || uidB === '')) {
+              setFirstComparisonParams(
+                genInitialComparisonParams(entities, comparisons, uidA, uidB)
+              );
+            }
+          });
+        }
+      });
+    }
+  }, [getAlternatives, length, pollName, setComparisonsMade, uidA, uidB]);
 
   const afterSubmitCallback = (
     uidA: string,
@@ -123,8 +165,17 @@ const ComparisonSeries = ({
     setDialogOpen(false);
   };
 
+  /**
+   * Build a string representing the URL parameters of a comparison.
+   *
+   * @param from An array of entities from which `uidA` and `uidB` params will be built.
+   * @param comparisons An array of existing comparisons.
+   * @param uidA The current value of the `uidA` URL parameter
+   * @param uidB The current value of the `uidB` URL parameter
+   */
   const genInitialComparisonParams = (
     from: Array<Entity>,
+    comparisons: Array<string>,
     uidA: string,
     uidB: string
   ): string => {
@@ -135,22 +186,31 @@ const ComparisonSeries = ({
     const newSearchParams = new URLSearchParams();
     newSearchParams.append('series', 'true');
 
-    let randomA = '';
-    let randomB = '';
+    let newUidA = '';
+    let newUidB = '';
 
     if (uidA === '') {
-      randomA = selectRandomEntity(from, []).uid;
-      newSearchParams.append(UID_PARAMS.vidA, randomA);
+      if (uidB === '') {
+        newUidA = selectRandomEntity(from, []).uid;
+      } else {
+        // if not `uidA` and `uidB`, select an uid A that hasn't been compared with B
+        newUidA = selectRandomEntity(
+          from,
+          alreadyComparedWith(newUidA, comparisons).concat([uidB])
+        ).uid;
+      }
     } else {
-      newSearchParams.append(UID_PARAMS.vidA, uidA);
+      newUidA = uidA;
     }
+    newSearchParams.append(UID_PARAMS.vidA, newUidA);
 
     if (uidB === '') {
-      randomB = selectRandomEntity(from, [randomA]).uid;
-      newSearchParams.append(UID_PARAMS.vidB, randomB);
+      const comparedWithA = alreadyComparedWith(newUidA, comparisons);
+      newUidB = selectRandomEntity(from, comparedWithA.concat([newUidA])).uid;
     } else {
-      newSearchParams.append(UID_PARAMS.vidB, uidB);
+      newUidB = uidB;
     }
+    newSearchParams.append(UID_PARAMS.vidB, newUidB);
 
     return newSearchParams.toString();
   };
@@ -159,18 +219,12 @@ const ComparisonSeries = ({
     initialize.current = false;
   }
 
-  if (initialize.current == true && (uidA === '' || uidB === '')) {
-    if (alternatives.length > 0) {
-      const initialParams = genInitialComparisonParams(
-        alternatives,
-        uidA,
-        uidB
-      );
-
-      return (
-        <Redirect to={{ pathname: location.pathname, search: initialParams }} />
-      );
-    }
+  if (initialize.current == true && firstComparisonParams) {
+    return (
+      <Redirect
+        to={{ pathname: location.pathname, search: firstComparisonParams }}
+      />
+    );
   }
 
   return (
