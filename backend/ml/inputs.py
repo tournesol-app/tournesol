@@ -7,14 +7,14 @@ from tournesol.models.ratings import ContributorRating
 
 
 class MlInput:
-    def get_comparisons(self, trusted_only=True, criteria=None) -> pd.DataFrame:
+    def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
         """Fetch data about comparisons submitted by users
 
         Returns:
         - comparisons_df: DataFrame with columns
             * `user_id`: int
-            * `entity_a`: int
-            * `entity_b`: int
+            * `entity_a`: int or str
+            * `entity_b`: int or str
             * `criteria`: str
             * `score`: float
             * `weight`: float
@@ -27,8 +27,8 @@ class MlInput:
         Returns:
         - ratings_df: DataFrame with columns
             * `user_id`: int
-            * `entity_id`: int
-            * `is_public`: int
+            * `entity_id`: int or str
+            * `is_public`: bool
             * `is_trusted`: bool
             * `is_supertrusted`: bool
         """
@@ -45,7 +45,7 @@ class MlInputFromPublicDataset(MlInput):
             "public_username"
         ].factorize()
 
-    def get_comparisons(self, trusted_only=True, criteria=None) -> pd.DataFrame:
+    def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
         df = self.public_dataset.copy(deep=False)
         if criteria is not None:
             df = df[df.criteria == criteria]
