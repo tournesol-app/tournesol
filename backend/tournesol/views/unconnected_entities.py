@@ -81,8 +81,6 @@ class UnconnectedEntitiesView(
             if comparison.entity_2 not in user_all_entities:
                 user_all_entities.add(comparison.entity_2)
 
-        return Entity.objects.filter(
-                id__in=map(lambda x: x.id, user_all_entities)
-                ).exclude(
-                id__in=map(lambda x: x.id, user_related_entities)
-            )
+        return Entity.objects \
+                    .filter(id__in=(entity.id for entity in user_all_entities)) \
+                    .exclude(id__in=(entity.id for entity in user_related_entities))

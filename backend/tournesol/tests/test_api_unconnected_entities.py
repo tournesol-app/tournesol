@@ -17,9 +17,7 @@ class SimpleAllConnectedTest(TestCase):
         self.user_1 = UserFactory()
         user_2 = UserFactory()
         self.poll_videos = Poll.default_poll()
-        self.user_base_url = "/users/me/unconnected_entities/{}".format(
-            self.poll_videos.name
-        )
+        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
         video_1 = VideoFactory()
         video_2 = VideoFactory()
@@ -52,7 +50,7 @@ class SimpleAllConnectedTest(TestCase):
 
     def test_not_authenticated_cannot_show_unconnected_entities(self):
         response = self.client.get(
-            "{}/{}/".format(self.user_base_url, self.video_source.id),
+            f"{self.user_base_url}/{self.video_source.id}/",
             format="json",
         )
 
@@ -62,7 +60,7 @@ class SimpleAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            "{}/{}/".format(self.user_base_url, self.video_source.id),
+            f"{self.user_base_url}/{self.video_source.id}/",
             format="json",
         )
 
@@ -78,9 +76,7 @@ class AdvancedAllConnectedTest(TestCase):
         self.client = APIClient()
         self.user_1 = UserFactory()
         self.poll_videos = Poll.default_poll()
-        self.user_base_url = "/users/me/unconnected_entities/{}".format(
-            self.poll_videos.name
-        )
+        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
         video_4 = VideoFactory()
         video_3 = VideoFactory()
@@ -109,7 +105,7 @@ class AdvancedAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            "{}/{}/".format(self.user_base_url, self.video_source.id),
+            f"{self.user_base_url}/{self.video_source.id}/",
             format="json",
         )
 
@@ -125,9 +121,7 @@ class SimpleNotAllConnectedTest(TestCase):
         self.client = APIClient()
         self.user_1 = UserFactory()
         self.poll_videos = Poll.default_poll()
-        self.user_base_url = "/users/me/unconnected_entities/{}".format(
-            self.poll_videos.name
-        )
+        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
         video_1 = VideoFactory()
         video_2 = VideoFactory()
@@ -164,7 +158,7 @@ class SimpleNotAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            "{}/{}/".format(self.user_base_url, self.video_source.id),
+            f"{self.user_base_url}/{self.video_source.id}/",
             format="json",
         )
 
@@ -185,9 +179,7 @@ class AdvancedNotAllConnectedTest(TestCase):
         self.user_1 = UserFactory()
         user_2 = UserFactory()
         self.poll_videos = Poll.default_poll()
-        self.user_base_url = "/users/me/unconnected_entities/{}".format(
-            self.poll_videos.name
-        )
+        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
         video_1 = VideoFactory()
         video_2 = VideoFactory()
@@ -236,13 +228,13 @@ class AdvancedNotAllConnectedTest(TestCase):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
-            "{}/{}/".format(self.user_base_url, self.video_source.id),
+            f"{self.user_base_url}/{self.video_source.id}/",
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-                list(map(lambda x: x["uid"], response.data["results"])),
-                list(map(lambda x: x.uid, self.unrelated_video))
+            [entity['uid'] for entity in response.data["results"]],
+            [entity.uid for entity in self.unrelated_video]
         )
