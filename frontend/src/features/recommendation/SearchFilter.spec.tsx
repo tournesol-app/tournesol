@@ -136,7 +136,7 @@ describe('Filters feature', () => {
     const languageFilter = queryByTestId(document, 'search-language-filter');
     const autocomplete = queryByTestId(languageFilter, 'autocomplete');
     expect(autocomplete).not.toBeNull();
-    const input = within(autocomplete).getByRole('textbox');
+    const input = within(autocomplete).getByRole('combobox');
     expect(input).not.toBeNull();
 
     if (action === 'add') {
