@@ -16,8 +16,11 @@ from pathlib import Path
 import yaml
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 server_settings = {}
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "/etc/django/settings-tournesol.yaml")

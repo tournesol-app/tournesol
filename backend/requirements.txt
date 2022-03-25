@@ -19,3 +19,6 @@ langdetect==1.0.9
 #API Youtube data
 google-api-python-client==2.36.0
 google-auth-httplib2==0.1.0
+
+# dotenv for .env file
+python-dotenv==0.20.0
