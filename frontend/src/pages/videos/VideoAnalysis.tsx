@@ -1,11 +1,13 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
 
 import Card from 'src/components/Card';
 import VideoCard from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import CriteriaRadarChart from 'src/components/CriteriaRadarChart';
+import CriteriaBarChart from 'src/components/CriteriaBarChart';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -26,9 +28,23 @@ function VideoAnalysis() {
   return (
     <div className={classes.root}>
       <VideoCard video={video} />
-      <Card sx={{ marginTop: 3 }}>
-        <CriteriaRadarChart video={video} />
-      </Card>
+      <Grid
+        container
+        spacing={2}
+        justifyContent="center"
+        sx={{ marginTop: 3, marginBottom: 3 }}
+      >
+        <Grid item xs="auto">
+          <Card>
+            <CriteriaRadarChart video={video} />
+          </Card>
+        </Grid>
+        <Grid item xs="auto">
+          <Card>
+            <CriteriaBarChart video={video} />
+          </Card>
+        </Grid>
+      </Grid>
     </div>
   );
 }

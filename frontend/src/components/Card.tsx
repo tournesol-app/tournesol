@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 
 interface Props {
   children: React.ReactNode;
-  sx: object | undefined;
+  sx?: object;
   [props: string]: unknown;
 }
 
