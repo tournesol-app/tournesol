@@ -82,5 +82,5 @@ class UnconnectedEntitiesView(
                 user_all_entities.add(comparison.entity_2)
 
         return Entity.objects \
-                    .filter(id__in=(entity.id for entity in user_all_entities)) \
-                    .exclude(id__in=(entity.id for entity in user_related_entities))
+            .filter(id__in=(entity.id for entity in user_all_entities)) \
+            .exclude(id__in=(entity.id for entity in user_related_entities))
