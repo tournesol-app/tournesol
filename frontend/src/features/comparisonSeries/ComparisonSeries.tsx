@@ -10,6 +10,7 @@ import { OrderedDialogs } from 'src/utils/types';
 const MIN_LENGTH = 2;
 
 interface Props {
+  alreadyMadeComparisons?: Array<string>;
   dialogs?: OrderedDialogs;
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity>>;
@@ -32,10 +33,11 @@ const generateSteps = (length: number) => {
 };
 
 const ComparisonSeries = ({
+  alreadyMadeComparisons,
+  dialogs,
   generateInitial,
   getAlternatives,
   length,
-  dialogs,
 }: Props) => {
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected
@@ -50,13 +52,19 @@ const ComparisonSeries = ({
   const [refreshLeft, setRefreshLeft] = useState(false);
   // a limited list of entities that can be used to suggest new comparisons
   const [alternatives, setAlternatives] = useState<Array<Entity>>([]);
-  // a list of already made comparisons, allowing to not suggest two times the
-  // same comparison to a user
+  // an array of already made comparisons, allowing to not suggest two times the
+  // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
   const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
 
   const searchParams = new URLSearchParams(location.search);
   const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
   const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
+
+  useEffect(() => {
+    if (alreadyMadeComparisons !== undefined) {
+      setComparisonsMade(alreadyMadeComparisons);
+    }
+  }, [alreadyMadeComparisons, setComparisonsMade]);
 
   /**
    * Build the list of `alternatives`.
