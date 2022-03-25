@@ -23,7 +23,8 @@ Main file is "ml_train.py"
 """
 
 
-def select_criteria(comparison_data: Iterable[Tuple[int, int, int, str, float, float]], criteria_name: str):
+def select_criteria(comparison_data: Iterable[Tuple[int, int, int, str, float, float]],
+                    criteria_name: str):
     """Extracts not None comparisons of one criteria
 
     comparison_data: output of fetch_data(), can be an iterable of tuple of size 6
