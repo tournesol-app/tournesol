@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { StepLabel, Step, Stepper, Container } from '@mui/material';
+import { Container, Step, StepLabel, Stepper } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
+import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
-  Entity,
   Comparison as ComparisonModel,
+  Entity,
   UsersService,
 } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
@@ -28,11 +29,9 @@ interface Props {
 export function getUserComparisons(
   pollName: string
 ): Promise<ComparisonModel[]> {
-  const comparisons: Promise<ComparisonModel[]> =
-    UsersService.usersMeComparisonsList({
-      pollName,
-    }).then((data) => data.results ?? []);
-  return comparisons;
+  return UsersService.usersMeComparisonsList({
+    pollName,
+  }).then((data) => data.results ?? []);
 }
 
 const generateSteps = (length: number) => {
@@ -63,6 +62,8 @@ const ComparisonSeries = ({
   const initialize = useRef(
     generateInitial != undefined ? generateInitial : false
   );
+  // load while async requests are made to initialize the component
+  const [isLoading, setIsLoading] = React.useState(true);
   // the current position in the series
   const [step, setStep] = useState(0);
   // state of the `Dialog` component
@@ -116,14 +117,23 @@ const ComparisonSeries = ({
       getUserComparisonsAsync(pollName).then((comparisons) => {
         if (getAlternatives) {
           getAlternativesAsync(getAlternatives).then((entities) => {
-            if (initialize.current == true && (uidA === '' || uidB === '')) {
+            if (initialize.current && (uidA === '' || uidB === '')) {
               setFirstComparisonParams(
                 genInitialComparisonParams(entities, comparisons, uidA, uidB)
               );
             }
+
+            // stop loading after the initial comparison params have been built
+            setIsLoading(false);
           });
+        } else {
+          // stop loading if no alternatives have been provided
+          setIsLoading(false);
         }
       });
+    } else {
+      // stop loading if no series is going to be rendered
+      setIsLoading(false);
     }
   }, [getAlternatives, length, pollName, setComparisonsMade, uidA, uidB]);
 
@@ -186,8 +196,8 @@ const ComparisonSeries = ({
     const newSearchParams = new URLSearchParams();
     newSearchParams.append('series', 'true');
 
-    let newUidA = '';
-    let newUidB = '';
+    let newUidA: string;
+    let newUidB: string;
 
     if (uidA === '') {
       if (uidB === '') {
@@ -196,7 +206,7 @@ const ComparisonSeries = ({
         // if not `uidA` and `uidB`, select an uid A that hasn't been compared with B
         newUidA = selectRandomEntity(
           from,
-          alreadyComparedWith(newUidA, comparisons).concat([uidB])
+          alreadyComparedWith(uidB, comparisons)
         ).uid;
       }
     } else {
@@ -215,11 +225,11 @@ const ComparisonSeries = ({
     return newSearchParams.toString();
   };
 
-  if (initialize.current == true && uidA !== '' && uidB !== '') {
+  if (initialize.current && uidA !== '' && uidB !== '') {
     initialize.current = false;
   }
 
-  if (initialize.current == true && firstComparisonParams) {
+  if (initialize.current && firstComparisonParams) {
     return (
       <Redirect
         to={{ pathname: location.pathname, search: firstComparisonParams }}
@@ -230,12 +240,13 @@ const ComparisonSeries = ({
   return (
     <>
       {length >= MIN_LENGTH ? (
-        <>
+        <LoaderWrapper isLoading={isLoading}>
           {/*
             Do not display the dialog box while the alternatives array
             is being built, to avoid a blink effect.
           */}
-          {dialogs &&
+          {!isLoading &&
+            dialogs &&
             step in dialogs &&
             (!getAlternatives || alternatives.length > 0) && (
               <DialogBox
@@ -250,7 +261,7 @@ const ComparisonSeries = ({
             </Stepper>
           </Container>
           <Comparison afterSubmitCallback={afterSubmitCallback} />
-        </>
+        </LoaderWrapper>
       ) : (
         <Comparison />
       )}
