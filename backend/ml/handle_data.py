@@ -1,8 +1,8 @@
 import logging
+from typing import Iterable, Tuple
 
 import numpy as np
 import torch
-
 from ml.losses import round_loss
 
 from .data_utility import (
@@ -23,19 +23,21 @@ Main file is "ml_train.py"
 """
 
 
-def select_criteria(comparison_data, crit):
+def select_criteria(comparison_data: Iterable[Tuple[int, int, int, str, float, float]], criteria_name: str):
     """Extracts not None comparisons of one criteria
 
-    comparison_data: output of fetch_data()
-    crit: str, name of criteria
+    comparison_data: output of fetch_data(), can be an iterable of tuple of size 6
+    criteria_name: str
 
     Returns:
     - list of all ratings for this criteria
         ie list of [contributor_id: int, video_id_1: int, video_id_2: int,
                     criteria: str (crit), score: float, weight: float]
     """
+    # TODO Check if l_ratings is used as a list, not as an iterable or sequence.
     l_ratings = [
-        comp for comp in comparison_data if (comp[3] == crit and comp[4] is not None)
+        comparison for comparison in comparison_data
+        if comparison[3] == criteria_name and comparison[4] is not None
     ]
     return l_ratings
 

@@ -1,8 +1,8 @@
 import logging
-
-from django.core.management.base import BaseCommand
+from typing import List, Tuple
 
 from core.models import User
+from django.core.management.base import BaseCommand
 from ml.core import TOURNESOL_DEV, ml_run
 from tournesol.models import (
     ComparisonCriteriaScore,
@@ -51,7 +51,7 @@ USAGE:
 """
 
 
-def fetch_data(poll, trusted_only=True):
+def fetch_data(poll, trusted_only=True) -> List[Tuple[int, int, int, str, float, float]]:
     """Fetches the data from the Comparisons model
 
     Returns:
@@ -68,14 +68,14 @@ def fetch_data(poll, trusted_only=True):
         )
 
     comparison_data = [
-        [
+        (
             ccs.comparison.user_id,
             ccs.comparison.entity_1_id,
             ccs.comparison.entity_2_id,
             ccs.criteria,
             ccs.score,
             ccs.weight,
-        ]
+        )
         for ccs in comparisons_queryset
     ]
 

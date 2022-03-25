@@ -1,9 +1,9 @@
 import logging
 import os
 from time import time
+from typing import Iterable, Tuple
 
 import gin
-
 from ml.handle_data import (
     distribute_data,
     distribute_data_from_save,
@@ -54,7 +54,7 @@ def _get_licchavi(
 
 
 def _set_licchavi(
-    comparison_data,
+    comparison_data: Iterable[Tuple[int, int, int, str, float, float]],
     criteria,
     fullpath=None,
     resume=False,
@@ -65,7 +65,7 @@ def _set_licchavi(
 ):
     """Shapes data and inputs it in Licchavi to initialize
 
-    comparison_data (list of lists): output of fetch_data()
+    comparison_data (Iterable of tuple of size 6): output of fetch_data()
     criteria (str): rating criteria
     fullpath (str): path from which to load previous training
     resume (bool): wether to resume previous training or not
@@ -144,7 +144,7 @@ def _train_predict(
 
 @gin.configurable
 def ml_run(
-    comparison_data,
+    comparison_data: Iterable[Tuple[int, int, int, str, float, float]],
     epochs,
     criterias,
     resume=False,
@@ -157,7 +157,7 @@ def ml_run(
 ):
     """Runs the ml algorithm for all criterias
 
-    comparison_data (list of lists): output of fetch_data()
+    comparison_data (Iterable of lists): output of fetch_data()
     epochs (int): number of epochs of gradient descent for Licchavi
     criterias (str list): list of criterias to compute
     resume (bool): wether to resume from save or not
