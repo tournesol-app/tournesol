@@ -37,8 +37,9 @@ USAGE:
 import logging
 from typing import List, Tuple
 
-from core.models import User
 from django.core.management.base import BaseCommand
+
+from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
 from tournesol.models import (
     ComparisonCriteriaScore,

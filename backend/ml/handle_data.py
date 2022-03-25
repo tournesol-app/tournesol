@@ -3,8 +3,8 @@ from typing import Iterable, Tuple
 
 import numpy as np
 import torch
-from ml.losses import round_loss
 
+from ml.losses import round_loss
 from .data_utility import (
     expand_dic,
     get_all_vids,
