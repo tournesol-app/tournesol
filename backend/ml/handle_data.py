@@ -50,7 +50,7 @@ def shape_data(l_ratings):
 
     Returns : one array with 4 columns : userID, vID1, vID2, rating ([-1,1])
     """
-    l_clear = [rating[:3] + (rescale_rating(rating[4]),) for rating in l_ratings]
+    l_clear = (rating[:3] + (rescale_rating(rating[4]),) for rating in l_ratings)
     return np.asarray(l_clear)
 
 
