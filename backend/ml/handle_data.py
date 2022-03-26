@@ -4,7 +4,6 @@ from typing import Iterable, Tuple
 import numpy as np
 import torch
 
-from ml.losses import round_loss
 from ml.data_utility import (
     expand_dic,
     get_all_vids,
@@ -15,6 +14,7 @@ from ml.data_utility import (
     reverse_idxs,
     sort_by_first,
 )
+from ml.losses import round_loss
 
 """
 To prepare data from training and reshape it after training
