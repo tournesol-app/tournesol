@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 from ml.losses import round_loss
-from .data_utility import (
+from ml.data_utility import (
     expand_dic,
     get_all_vids,
     get_batch_r,
