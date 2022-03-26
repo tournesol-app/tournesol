@@ -129,9 +129,9 @@ def test_select_criteria():
 
 def test_shape_data():
     l_ratings = [
-        [0, 100, 101, "test", 10, 0],
-        [0, 100, 101, "test", 0, 0],
-        [0, 100, 101, "test", -10, 0],
+        (0, 100, 101, "test", 10, 0),
+        (0, 100, 101, "test", 0, 0),
+        (0, 100, 101, "test", -10, 0),
     ]
     output = shape_data(l_ratings)
     assert isinstance(output, np.ndarray)
