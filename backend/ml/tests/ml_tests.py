@@ -1,3 +1,8 @@
+"""
+Test module for ml
+
+Main file is "ml_train.py"
+"""
 import numpy as np
 import torch
 
@@ -14,7 +19,13 @@ from ml.data_utility import (
 from ml.dev.fake_data import generate_data
 from ml.handle_data import distribute_data, select_criteria, shape_data
 from ml.licchavi import Licchavi, get_model, get_s
-from ml.losses import _approx_bbt_loss, _bbt_loss, get_s_loss, model_norm, models_dist
+from ml.losses import (
+    _approx_bbt_loss,
+    _bbt_loss,
+    get_s_loss,
+    model_norm,
+    models_dist,
+)
 from ml.metrics import (
     _random_signs,
     check_equilibrium_glob,
@@ -24,25 +35,6 @@ from ml.metrics import (
     get_uncertainty_loc,
     scalar_product,
 )
-
-"""
-Test module for ml
-
-Main file is "ml_train.py"
-"""
-
-
-# TODO convert it to pytest.fixture
-TEST_DATA = [
-    (1, 100, 101, "test", 10, 0),
-    (1, 101, 102, "test", 10, 0),
-    (1, 104, 105, "test", 10, 0),
-    (0, 100, 101, "test", -10, 0),
-    (1, 104, 105, "test", 37/5 - 10, 0),
-    (2, 104, 105, "test", 10, 0),
-    (7, 966, 965, "test", 4 / 5 - 10, 0),
-    (0, 100, 101, "largely_recommended", 10, 0),
-]
 
 
 def _dic_inclusion(a, b):
@@ -117,14 +109,13 @@ def test_expand_dic():
 
 
 # -------- handle_data.py -------------
-def test_select_criteria():
-    comparison_data = TEST_DATA
-    crit = "test"
-    output = select_criteria(comparison_data, crit)
+def test_select_criteria(test_data):
+    output = select_criteria(comparison_data=test_data,
+                             criteria_name="test")
     for comp in output:
         assert len(comp) == 6  # len of each element of output list
     assert isinstance(output, list)
-    assert len(output) == len(TEST_DATA) - 1  # number of comparisons extracted
+    assert len(output) == len(test_data) - 1  # number of comparisons extracted
 
 
 def test_shape_data():
@@ -229,8 +220,8 @@ def test_random_signs():
     assert sum(rd_tens2) < sum(abs(rd_tens2))
 
 
-def test_get_uncertainty_glob():
-    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
+def test_get_uncertainty_glob(test_data):
+    licch, _ = _set_licchavi(test_data, "test", verb=-1)
     licch.train(3, -1)
     uncert_glob = get_uncertainty_glob(licch)
     assert type(uncert_glob) is torch.Tensor
@@ -238,8 +229,8 @@ def test_get_uncertainty_glob():
     assert torch.logical_and(0 < uncert_glob, uncert_glob <= 10).all()
 
 
-def test_get_uncertainty_loc():
-    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
+def test_get_uncertainty_loc(test_data):
+    licch, _ = _set_licchavi(test_data, "test", verb=-1)
     licch.train(3, -1)
     uncert_loc = get_uncertainty_loc(licch)
     assert type(uncert_loc) is list
@@ -249,23 +240,23 @@ def test_get_uncertainty_loc():
             assert 0 <= uncert <= 10
 
 
-def test_check_equilibrium_glob():
+def test_check_equilibrium_glob(test_data):
     """checks equilibrium at initialisation"""
-    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
+    licch, _ = _set_licchavi(test_data, "test", verb=-1)
     eq = check_equilibrium_glob(0.001, licch)
     assert eq == 1.0
 
 
-def test_check_equilibrium_loc():
+def test_check_equilibrium_loc(test_data):
     """checks equilibrium at initialisation"""
-    licch, _ = _set_licchavi(TEST_DATA, "test", verb=-1)
+    licch, _ = _set_licchavi(test_data, "test", verb=-1)
     eq = check_equilibrium_loc(0.01, licch)
     assert 0.4 <= eq <= 1
 
 
 # --------- core.py ------------
-def test_set_licchavi():
-    licch, users_ids = _set_licchavi(TEST_DATA, "test")
+def test_set_licchavi(test_data):
+    licch, users_ids = _set_licchavi(test_data, "test")
     print(type(users_ids))
     print(np.array(licch.nodes.keys()))
     print(licch.nodes.keys() == users_ids)
@@ -279,8 +270,8 @@ def test_set_licchavi():
     assert licch.global_model.sum() == 0
 
 
-def test_train_predict():
-    licch, users_ids = _set_licchavi(TEST_DATA, "test", verb=-1)
+def test_train_predict(test_data):
+    licch, users_ids = _set_licchavi(test_data, "test", verb=-1)
     glob, loc, _ = _train_predict(licch, 1, verb=-1)
     assert len(glob) == len(loc) == 2  # good output shape
     assert len(users_ids) == len(loc[1])  # good nb of users
@@ -293,7 +284,7 @@ def test_train_predict():
 def test_ml_run():
     """checks that outputs of training have normal length"""
     nb_vids, nb_users, vids_per_user = 5, 3, 5
-    _, _, _, comps_fake = generate_data(nb_vids, nb_users, vids_per_user, dens=0.999)
+    *_, comps_fake = generate_data(nb_vids, nb_users, vids_per_user, dens=0.999)
     glob_scores, contributor_scores = ml_run(
         comps_fake,
         epochs=1,
@@ -313,23 +304,10 @@ def _id_score_assert(id, score, glob):
         assert glob[2] == score
 
 
-def test_simple_train():
+def test_simple_train(training_data):
     """test coherency of results for few epochs and very light data"""
-    comparison_data = [
-        (1, 101, 102, "test", 10, 0),
-        (2, 100, 101, "largely_recommended", 10, 0),
-        (1, 104, 105, "test", 30 / 5 - 10, 0),
-        (99, 100, 101, "largely_recommended", 10, 0),
-        (2, 108, 107, "test", 10 / 5 - 10, 0),
-        (0, 100, 102, "test", 70 / 5 - 10, 0),
-        (0, 104, 105, "test", 70 / 5 - 10, 0),
-        (0, 109, 110, "test", 0, 0),
-        (2, 107, 108, "test", 10 / 5 - 10, 0),
-        (1, 100, 101, "test", 10, 0),
-        (3, 200, 201, "test", 85 / 5 - 10, 0),
-    ]
     glob_scores, loc_scores = ml_run(
-        comparison_data,
+        comparison_data=training_data,
         epochs=2,
         criterias=["test"],
         resume=False,
