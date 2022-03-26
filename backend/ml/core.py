@@ -158,7 +158,7 @@ def ml_run(
 ):
     """Runs the ml algorithm for all criterias
 
-    comparison_data (Iterable of lists): output of fetch_data()
+    comparison_data (Iterable of tuple of size 6): output of fetch_data()
     epochs (int): number of epochs of gradient descent for Licchavi
     criterias (str list): list of criterias to compute
     resume (bool): wether to resume from save or not
@@ -176,7 +176,8 @@ def ml_run(
         (list list): list of
         [   contributor_id: int, video_id: int, criteria_name: str,
             score: float, uncertainty: float]
-    """  # FIXME: not better to regroup contributors in same list or smthg ?
+    """
+    # FIXME: not better to regroup contributors in same list or smthg ?
     ml_run_time = time()
     glob_scores, loc_scores = [], []
 
