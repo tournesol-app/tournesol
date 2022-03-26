@@ -160,13 +160,13 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
         {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
     )
 
-    tmp = ContributorRatingCriteriaScore.objects \
+    query = ContributorRatingCriteriaScore.objects \
         .filter(contributor_rating__poll_id=poll.pk)
     if trusted_only:
-        tmp = tmp.filter(contributor_rating__user__in=User.trusted_users())
+        query = query.filter(contributor_rating__user__in=User.trusted_users())
     else:
-        tmp = tmp.exclude(contributor_rating__user__in=User.trusted_users())
-    tmp.delete()
+        query = query.exclude(contributor_rating__user__in=User.trusted_users())
+    query.delete()
 
     ContributorRatingCriteriaScore.objects.bulk_create(
         ContributorRatingCriteriaScore(
