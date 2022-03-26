@@ -43,7 +43,7 @@ def select_criteria(comparison_data: Iterable[Tuple[int, int, int, str, float, f
     return l_ratings
 
 
-def shape_data(l_ratings):
+def shape_data(l_ratings: Iterable[Tuple[int, int, int, str, int, int]]):
     """Shapes data for distribute_data()/distribute_data_from_save()
 
     l_ratings : list of not None ratings ([0,100]) for one criteria, all users
