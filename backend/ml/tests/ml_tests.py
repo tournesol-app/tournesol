@@ -18,14 +18,8 @@ from ml.data_utility import (
 )
 from ml.dev.fake_data import generate_data
 from ml.handle_data import distribute_data, select_criteria, shape_data
-from ml.licchavi import get_model, get_s, Licchavi
-from ml.losses import (
-    _approx_bbt_loss,
-    _bbt_loss,
-    get_s_loss,
-    model_norm,
-    models_dist,
-)
+from ml.licchavi import Licchavi, get_model, get_s
+from ml.losses import _approx_bbt_loss, _bbt_loss, get_s_loss, model_norm, models_dist
 from ml.metrics import (
     _random_signs,
     check_equilibrium_glob,
