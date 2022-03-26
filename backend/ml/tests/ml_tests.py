@@ -43,7 +43,6 @@ TEST_DATA = [
     (7, 966, 965, "test", 4 / 5 - 10, 0),
     (0, 100, 101, "largely_recommended", 10, 0),
 ]
-CRITERIAS = ["test"]
 
 
 def _dic_inclusion(a, b):
