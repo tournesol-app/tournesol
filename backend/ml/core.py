@@ -192,18 +192,21 @@ def ml_run(
             ground_truths, licchavi_class=licchavi_class
         )
 
-        if licch is not None:  # if not 0 data for selected criteria
+        if licch is None:
+            continue
 
-            # training and predicting
-            glob, loc, uncertainties = _train_predict(
-                licch, epochs, fullpath, save, verb,
-                compute_uncertainty=compute_uncertainty
-            )
-            # putting in required shape for output
-            out_glob = format_out_glob(glob, criteria, uncertainties[0])
-            out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
-            glob_scores += out_glob
-            loc_scores += out_loc
+        # if not 0 data for selected criteria
+
+        # training and predicting
+        glob, loc, uncertainties = _train_predict(
+            licch, epochs, fullpath, save, verb,
+            compute_uncertainty=compute_uncertainty,
+        )
+        # putting in required shape for output
+        out_glob = format_out_glob(glob, criteria, uncertainties[0])
+        out_loc = format_out_loc(loc, users_ids, criteria, uncertainties[1])
+        glob_scores += out_glob
+        loc_scores += out_loc
 
     logging.info(f'ml_run() total time : {round(time() - ml_run_time)}')
     if TOURNESOL_DEV:  # return more information in dev mode
