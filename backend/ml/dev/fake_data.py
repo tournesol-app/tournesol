@@ -126,7 +126,7 @@ def _fake_comparisons(l_nodes, s_params, dens=0.5, crit="test"):
             for vidx2 in pick_idxs:  # for each second video drawn
                 r = _get_rd_rate(video[1], node[vidx2][1], s)  # get random r
                 rate = _unscale_rating(r)  # rescale to [0, 100]
-                comp = [uid, video[0], node[vidx2][0], crit, rate, 0]
+                comp = (uid, video[0], node[vidx2][0], crit, rate, 0)
                 all_comps.append(comp)
     return all_comps
 
