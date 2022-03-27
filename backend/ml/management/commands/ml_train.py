@@ -83,6 +83,16 @@ def fetch_data(poll, trusted_only=True):
     return comparison_data
 
 
+def _update_entities_tournesol_score(poll):
+    entities = Entity.objects.filter(criteria_scores__poll=poll) \
+        .distinct() \
+        .prefetch_related("criteria_scores")
+    for entity in entities:
+        entity.tournesol_score = \
+            10 * sum(criterion.score for criterion in entity.criteria_scores.all())
+    Entity.objects.bulk_update(entities, ["tournesol_score"])
+
+
 def _trusted_contributor_score(video_scores, contributor_rating_scores, poll,
                                trusted_user_ids):
     EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
@@ -97,17 +107,7 @@ def _trusted_contributor_score(video_scores, contributor_rating_scores, poll,
         for video_id, criteria, score, uncertainty in video_scores
     )
 
-    entities = []
-    for entity in (
-            Entity.objects.filter(criteria_scores__poll=poll)
-            .distinct()
-            .prefetch_related("criteria_scores")
-    ):
-        entity.tournesol_score = 10 * sum(
-            criterion.score for criterion in entity.criteria_scores.all()
-        )
-        entities.append(entity)
-    Entity.objects.bulk_update(entities, ["tournesol_score"])
+    _update_entities_tournesol_score(poll)
 
     contributor_scores_to_save = [
         (contributor_id, video_id, criteria, score, uncertainty)
@@ -120,6 +120,7 @@ def _trusted_contributor_score(video_scores, contributor_rating_scores, poll,
         ) in contributor_rating_scores
         if contributor_id in trusted_user_ids
     ]
+
     return contributor_scores_to_save
 
 
@@ -161,15 +162,14 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
 
     rating_ids = {
         (contributor_id, video_id): rating_id
-        for rating_id, contributor_id, video_id in ContributorRating.objects.all().values_list(
-            "id", "user_id", "entity_id"
-        )
+        for rating_id, contributor_id, video_id
+        in ContributorRating.objects.all().values_list("id", "user_id", "entity_id")
     }
-    ratings_to_create = set(
+    ratings_to_create = {
         (contributor_id, video_id)
-        for contributor_id, video_id, _, _, _ in contributor_scores_to_save
+        for contributor_id, video_id, *_ in contributor_scores_to_save
         if (contributor_id, video_id) not in rating_ids
-    )
+    }
     created_ratings = ContributorRating.objects.bulk_create(
         ContributorRating(
             poll_id=poll.pk,
@@ -178,9 +178,9 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
         )
         for contributor_id, video_id in ratings_to_create
     )
-    rating_ids.update(
-        {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
-    )
+    rating_ids \
+        .update({(rating.user_id, rating.entity_id): rating.id
+                 for rating in created_ratings})
 
     _delete_unwanted_rating(poll, trusted=trusted_only)
 
@@ -200,8 +200,7 @@ def process(trusted_only=True):
         poll_criterias_list = poll.criterias_list
         poll_comparison_data = fetch_data(poll=poll, trusted_only=trusted_only)
         glob_score, loc_score = ml_run(
-            poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1
-        )
+            poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1)
         save_data(glob_score, loc_score, poll, trusted_only=trusted_only)
 
 
