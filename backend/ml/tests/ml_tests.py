@@ -298,7 +298,7 @@ def _id_score_assert(id, score, glob):
         assert glob[2] == score
 
 
-def test_simple_train(training_data):
+def test_simple_train(comparison_data, training_data):
     """test coherency of results for few epochs and very light data"""
     glob_scores, loc_scores = ml_run(
         comparison_data=training_data,
