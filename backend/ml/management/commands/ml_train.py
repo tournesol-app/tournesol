@@ -1,6 +1,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
@@ -82,6 +83,58 @@ def fetch_data(poll, trusted_only=True):
     return comparison_data
 
 
+def _trusted_only(video_scores, contributor_rating_scores, poll, trusted_user_ids):
+    EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
+    EntityCriteriaScore.objects.bulk_create(
+        EntityCriteriaScore(
+            poll_id=poll.pk,
+            entity_id=video_id,
+            criteria=criteria,
+            score=score,
+            uncertainty=uncertainty,
+        )
+        for video_id, criteria, score, uncertainty in video_scores
+    )
+
+    entities = []
+    for entity in (
+            Entity.objects.filter(criteria_scores__poll=poll)
+            .distinct()
+            .prefetch_related("criteria_scores")
+    ):
+        entity.tournesol_score = 10 * sum(
+            criterion.score for criterion in entity.criteria_scores.all()
+        )
+        entities.append(entity)
+    Entity.objects.bulk_update(entities, ["tournesol_score"])
+
+    contributor_scores_to_save = [
+        (contributor_id, video_id, criteria, score, uncertainty)
+        for (
+            contributor_id,
+            video_id,
+            criteria,
+            score,
+            uncertainty,
+        ) in contributor_rating_scores
+        if contributor_id in trusted_user_ids
+    ]
+    return contributor_scores_to_save
+
+
+def _delete_unwanted_rating(poll, *, trusted: bool):
+    """
+    Delete trusted or untrusted ratings.
+    """
+    rating_poll_filter = Q(contributor_rating__poll_id=poll.pk)
+    trusted_filter = Q(contributor_rating__user__in=User.trusted_users())
+    unwanted_filter = trusted_filter if trusted else ~trusted_filter
+
+    ContributorRatingCriteriaScore.objects \
+        .filter(rating_poll_filter & unwanted_filter) \
+        .delete()
+
+
 def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
     """
     Saves in the scores for Entities and ContributorRatings
@@ -89,41 +142,8 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
     trusted_user_ids = set(User.trusted_users().values_list("id", flat=True))
 
     if trusted_only:
-        EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
-        EntityCriteriaScore.objects.bulk_create(
-            EntityCriteriaScore(
-                poll_id=poll.pk,
-                entity_id=video_id,
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
-            )
-            for video_id, criteria, score, uncertainty in video_scores
-        )
-
-        entities = []
-        for entity in (
-            Entity.objects.filter(criteria_scores__poll=poll)
-            .distinct()
-            .prefetch_related("criteria_scores")
-        ):
-            entity.tournesol_score = 10 * sum(
-                criterion.score for criterion in entity.criteria_scores.all()
-            )
-            entities.append(entity)
-        Entity.objects.bulk_update(entities, ["tournesol_score"])
-
-        contributor_scores_to_save = [
-            (contributor_id, video_id, criteria, score, uncertainty)
-            for (
-                contributor_id,
-                video_id,
-                criteria,
-                score,
-                uncertainty,
-            ) in contributor_rating_scores
-            if contributor_id in trusted_user_ids
-        ]
+        contributor_scores_to_save \
+            = _trusted_only(video_scores, contributor_rating_scores, poll, trusted_user_ids)
     else:
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
@@ -160,13 +180,7 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
         {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
     )
 
-    query = ContributorRatingCriteriaScore.objects \
-        .filter(contributor_rating__poll_id=poll.pk)
-    if trusted_only:
-        query = query.filter(contributor_rating__user__in=User.trusted_users())
-    else:
-        query = query.exclude(contributor_rating__user__in=User.trusted_users())
-    query.delete()
+    _delete_unwanted_rating(poll, trusted=trusted_only)
 
     ContributorRatingCriteriaScore.objects.bulk_create(
         ContributorRatingCriteriaScore(
