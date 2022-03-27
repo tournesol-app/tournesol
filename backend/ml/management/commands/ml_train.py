@@ -83,7 +83,8 @@ def fetch_data(poll, trusted_only=True):
     return comparison_data
 
 
-def _trusted_only(video_scores, contributor_rating_scores, poll, trusted_user_ids):
+def _trusted_contributor_score(video_scores, contributor_rating_scores, poll,
+                               trusted_user_ids):
     EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
     EntityCriteriaScore.objects.bulk_create(
         EntityCriteriaScore(
@@ -143,7 +144,8 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
 
     if trusted_only:
         contributor_scores_to_save \
-            = _trusted_only(video_scores, contributor_rating_scores, poll, trusted_user_ids)
+            = _trusted_contributor_score(video_scores, contributor_rating_scores,
+                                         poll, trusted_user_ids)
     else:
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
