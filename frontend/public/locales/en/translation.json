@@ -405,13 +405,13 @@
         "title5": "Is it better than voting for a single person?",
         "message5": {
           "p10": "Contrary to the current voting system in France, here you are invited to give your opinion on several candidates.",
-          "p20": "Thus it's possible to express your favourite choice, your second choice, the third one, etc."
+          "p20": "Thus it's possible to express your real opinion. This allows to avoid problems like the « tactical vote », and doesn't encourage the polarization of political opinions."
         },
         "title6": "How does it work?",
         "message6": {
-          "p10": "It's by aggregating comparisons of all users that Tournesol is able to understand their preferences.",
-          "p20": "It's not the candidate who received the most voices who is elected, but the one with the most favourable sum of opinions.",
-          "p30": "The objective is to get the results that fits the best the users' global opinion."
+          "p10": "Tournesol classifies the candidates by aggregating the preferences of all contributors.",
+          "p20": "It's not the person who received the highest number of votes who is elected, but the one // to complete //.",
+          "p30": "The objective is to get the results that fits the best the contributors' global opinion."
         },
         "title7": "Thanks a lot!",
         "message7": {
