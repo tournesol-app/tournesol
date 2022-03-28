@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import pandas as pd
 from django.db.models import Case, F, When
@@ -10,7 +11,9 @@ from tournesol.models.ratings import ContributorRating
 
 class MlInput(ABC):
     @abstractmethod
-    def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
+    def get_comparisons(
+        self, trusted_only=False, criteria: Optional[str] = None
+    ) -> pd.DataFrame:
         """Fetch data about comparisons submitted by users
 
         Returns:
@@ -72,7 +75,7 @@ class MlInputFromPublicDataset(MlInput):
 
 
 class MlInputFromDb(MlInput):
-    def __init__(self, poll_name):
+    def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
     def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
@@ -95,22 +98,23 @@ class MlInputFromDb(MlInput):
             entity_b=F("comparison__entity_2_id"),
             user_id=F("comparison__user_id"),
         )
+
         if len(values) > 0:
             df = pd.DataFrame(values)
             return df[
                 ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]
             ]
-        else:
-            return pd.DataFrame(
-                columns=[
-                    "user_id",
-                    "entity_a",
-                    "entity_b",
-                    "criteria",
-                    "score",
-                    "weight",
-                ]
-            )
+
+        return pd.DataFrame(
+            columns=[
+                "user_id",
+                "entity_a",
+                "entity_b",
+                "criteria",
+                "score",
+                "weight",
+            ]
+        )
 
     def get_ratings_properties(self):
         values = (

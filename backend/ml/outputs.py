@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandas as pd
 from django.db import transaction
 
@@ -51,7 +53,10 @@ def save_tournesol_score_as_sum_of_criteria(poll):
 
 
 def save_contributor_scores(
-    poll, contributor_scores, trusted_filter=None, single_criteria=None
+    poll,
+    contributor_scores,
+    trusted_filter: Optional[bool] = None,
+    single_criteria: Optional[str] = None,
 ):
     if isinstance(contributor_scores, pd.DataFrame):
         scores_list = list(
@@ -89,11 +94,11 @@ def save_contributor_scores(
         contributor_rating__poll=poll
     )
     if trusted_filter is not None:
-        if trusted_filter is True:
+        if trusted_filter:
             scores_to_delete = scores_to_delete.filter(
                 contributor_rating__user__in=User.trusted_users()
             )
-        elif trusted_filter is False:
+        else:
             scores_to_delete = scores_to_delete.exclude(
                 contributor_rating__user__in=User.trusted_users()
             )
