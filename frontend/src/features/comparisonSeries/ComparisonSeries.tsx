@@ -31,6 +31,7 @@ async function getUserComparisons(
 ): Promise<ComparisonModel[]> {
   const comparisons = await UsersService.usersMeComparisonsList({
     pollName,
+    limit: 100,
   });
 
   return comparisons.results || [];
