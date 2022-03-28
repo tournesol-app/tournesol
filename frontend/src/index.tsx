@@ -36,10 +36,9 @@ ReactDOM.render(
             <BrowserRouter>
               <SnackbarProvider
                 maxSnack={6}
-                autoHideDuration={6000}
                 anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
               >
                 <Suspense fallback={null}>
