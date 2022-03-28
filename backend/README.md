@@ -46,11 +46,19 @@ a Django application; and how to install and configure a PostgreSQL server.
 
 #### Procedure
 
-- Create a postgres database.
+- Create a postgres
+  database ([windows](https://www.postgresqltutorial.com/install-postgresql/),
+  [macOS](https://www.postgresqltutorial.com/install-postgresql-macos/),
+  [Linux](https://www.postgresqltutorial.com/install-postgresql-linux/)).
 
-- Create a config file in /etc/django/settings-tournesol.yaml. You can find an example in documentation folder.
-
-- You can set a different path with ENV variable SETTINGS_FILE.
+- Create a config file named `settings-tournesol.yaml`. You can find an
+  [example](backend/documentation/settings-tournesol.yaml) in documentation
+  folder. You can put this file in different locations:
+    - `/etc/tournesol/settings-tournesol.yaml` (linux),
+    - Anywhere but add the `path/to/file` in SETTINGS_FILE environment
+      variable,
+    - Anywhere but add the `path/to/file` in SETTINGS_FILE variable `.env`
+      file.
 
 - Create a python env and install the requirements
   `pip install -r requirements.txt`

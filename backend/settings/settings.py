@@ -14,17 +14,15 @@ from collections import OrderedDict
 from pathlib import Path
 
 import yaml
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 server_settings = {}
-SETTINGS_FILE = (
-    "SETTINGS_FILE" in os.environ
-    and os.environ["SETTINGS_FILE"]
-    or "/etc/django/settings-tournesol.yaml"
-)
+SETTINGS_FILE = os.getenv("SETTINGS_FILE", "/etc/django/settings-tournesol.yaml")
 try:
     with open(SETTINGS_FILE, "r") as f:
         server_settings = yaml.full_load(f)
