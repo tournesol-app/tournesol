@@ -50,7 +50,12 @@ USAGE:
 """
 
 
-def save_licchavi_data(entity_scores, contributor_rating_scores, poll, trusted_only=True):
+def save_licchavi_data(
+    entity_scores: list[list],
+    contributor_rating_scores: list[list],
+    poll: Poll,
+    trusted_only=True,
+):
     """
     Saves in the scores for Entities and ContributorRatings
     """
@@ -86,7 +91,7 @@ def save_licchavi_data(entity_scores, contributor_rating_scores, poll, trusted_o
     save_contributor_scores(poll, contributor_scores_to_save, trusted_filter=trusted_only)
 
 
-def process_licchavi(poll, ml_input, trusted_only=True):
+def process_licchavi(poll: Poll, ml_input: MlInputFromDb, trusted_only=True):
     poll_criterias_list = poll.criterias_list
     poll_comparison_df = ml_input.get_comparisons(trusted_only=trusted_only)
 
