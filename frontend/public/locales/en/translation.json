@@ -123,8 +123,8 @@
     "thisYear": "This year",
     "allTime": "All time",
     "uploadDate": "Upload date",
-    "language": "Language",
     "allLanguages": "All languages",
+    "language": "Language",
     "uploader": "Uploader"
   },
   "ratings": {
@@ -379,7 +379,7 @@
   "presidentielle2022": {
     "dialogs": {
       "tutorial": {
-        "title1": "Welcome on Tournesol \uD83C\uDF3B",
+        "title1": "Welcome on Tournesol 🌻",
         "message1": {
           "p10": "In order to familiarize yourself with the comparison system, small messages like this one will be displayed.",
           "p20": "Let's start with a first comparison between two candidates.",
@@ -393,18 +393,19 @@
         },
         "title3": "Tip",
         "message3": {
-          "p10": "Don't worry if you are not confident. You will be able to update all comparisons later, at your own pace."
+          "p10": "Don't worry if you are not confident. You will be able to update all comparisons later, at your own pace.",
+          "p20": ""
         },
         "title4": "Did you see?",
         "message4": {
           "p10": "There are also optional criteria under the main ones.",
-          "p20": "Try to unfold and use the optional criteria to give a more complete opinion about the candidates."
+          "p20": "Try to unfold and use the optional criteria to give a more complete opinion about the candidates.",
+          "p30": ""
         },
         "title5": "Is it better than voting for a single person?",
         "message5": {
           "p10": "Contrary to the current voting system in France, here you are invited to give your opinion on several candidates.",
-          "p20": "Thus it's possible to express your favourite choice, your second choice, the third one, etc.",
-          "p30": "This system avoids problem like « tactical vote », and doesn't encourage the polarization of political opinions."
+          "p20": "Thus it's possible to express your favourite choice, your second choice, the third one, etc."
         },
         "title6": "How does it work?",
         "message6": {
