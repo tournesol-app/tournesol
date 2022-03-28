@@ -26,12 +26,14 @@ interface Props {
   length: number;
 }
 
-export function getUserComparisons(
+async function getUserComparisons(
   pollName: string
 ): Promise<ComparisonModel[]> {
-  return UsersService.usersMeComparisonsList({
+  const comparisons = await UsersService.usersMeComparisonsList({
     pollName,
-  }).then((data) => data.results ?? []);
+  });
+
+  return comparisons.results || [];
 }
 
 const generateSteps = (length: number) => {
@@ -109,6 +111,7 @@ const ComparisonSeries = ({
       const formattedComparisons = comparisons.map(
         (c) => c.entity_a.uid + '/' + c.entity_b.uid
       );
+
       setComparisonsMade(formattedComparisons);
       return formattedComparisons;
     }
