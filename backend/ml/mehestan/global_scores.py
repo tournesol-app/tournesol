@@ -18,32 +18,21 @@ TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT = 2.0  # w_⨯,default
 TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION = 0.1  # f_⨯
 
 
-# def get_user_scaling_weights():
-#     values = (
-#         User.objects.all()
-#         .annotate(
-#             scaling_weight=Case(
-#                 When(
-#                     pk__in=User.supertrusted_users(), then=SCALING_WEIGHT_SUPERTRUSTED
-#                 ),
-#                 When(pk__in=User.trusted_users(), then=SCALING_WEIGHT_TRUSTED),
-#                 default=SCALING_WEIGHT_NONTRUSTED,
-#             )
-#         )
-#         .values("scaling_weight", user_id=F("pk"))
-#     )
-#     return {u["user_id"]: u["scaling_weight"] for u in values}
-
-
 def get_user_scaling_weights(ml_input: MlInput):
     ratings_properties = ml_input.get_ratings_properties()[
         ["user_id", "is_trusted", "is_supertrusted"]
     ]
     df = ratings_properties.groupby("user_id").first()
     df["scaling_weight"] = SCALING_WEIGHT_NONTRUSTED
-    df["scaling_weight"].mask(df.is_trusted, SCALING_WEIGHT_TRUSTED, inplace=True)
     df["scaling_weight"].mask(
-        df.is_supertrusted, SCALING_WEIGHT_SUPERTRUSTED, inplace=True
+        df.is_trusted,
+        SCALING_WEIGHT_TRUSTED,
+        inplace=True,
+    )
+    df["scaling_weight"].mask(
+        df.is_supertrusted,
+        SCALING_WEIGHT_SUPERTRUSTED,
+        inplace=True,
     )
     return df["scaling_weight"].to_dict()
 
@@ -119,7 +108,6 @@ def compute_scaling(
                 ABnm.score_a_n - ABnm.score_b_n
             )
 
-            # To check: is it correct to subtract s_nqmab?
             delta_s_nqmab = (
                 (
                     np.abs(ABnm.score_a_m - ABnm.score_b_m)
@@ -265,14 +253,17 @@ def get_global_scores(ml_input: MlInput, individual_scores: pd.DataFrame):
     df["score"] = df["score"] * df["s"] + df["tau"]
     df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
 
-    df[
-        "voting_weight"
-    ] = 0  # Voting weight for non trusted users will be computed per entity
+    # Voting weight for non trusted users will be computed per entity
+    df["voting_weight"] = 0
     df["voting_weight"].mask(
-        (df.is_trusted) & (df.is_public), VOTE_WEIGHT_TRUSTED_PUBLIC, inplace=True
+        (df.is_trusted) & (df.is_public),
+        VOTE_WEIGHT_TRUSTED_PUBLIC,
+        inplace=True,
     )
     df["voting_weight"].mask(
-        (df.is_trusted) & (~df.is_public), VOTE_WEIGHT_TRUSTED_PRIVATE, inplace=True
+        (df.is_trusted) & (~df.is_public),
+        VOTE_WEIGHT_TRUSTED_PRIVATE,
+        inplace=True,
     )
 
     global_scores = {}
@@ -282,12 +273,8 @@ def get_global_scores(ml_input: MlInput, individual_scores: pd.DataFrame):
             TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT
             + TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION * trusted_weight
         )
-        nb_non_trusted_public = (
-            scores["is_public"] & (scores["voting_weight"] == 0)
-        ).sum()
-        nb_non_trusted_private = (
-            ~scores["is_public"] & (scores["voting_weight"] == 0)
-        ).sum()
+        nb_non_trusted_public = (scores["is_public"] & (~scores["is_trusted"])).sum()
+        nb_non_trusted_private = (~scores["is_public"] & (~scores["is_trusted"])).sum()
 
         if (nb_non_trusted_private > 0) or (nb_non_trusted_public > 0):
             scores["voting_weight"].mask(
@@ -325,6 +312,8 @@ def get_global_scores(ml_input: MlInput, individual_scores: pd.DataFrame):
     if len(global_scores) == 0:
         return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
 
+    all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
+
     result = pd.DataFrame.from_dict(global_scores, orient="index")
     result.index.name = "entity_id"
-    return result.reset_index()
+    return result.reset_index(), all_scalings

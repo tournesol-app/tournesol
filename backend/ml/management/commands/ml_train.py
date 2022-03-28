@@ -136,4 +136,4 @@ class Command(BaseCommand):
                 elif poll.algorithm == ALGORITHM_MEHESTAN:
                     run_mehestan(ml_input=ml_input, poll=poll)
                 else:
-                    raise ValueError(f"unknown algorithm {repr(algorithm)}'")
+                    raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
