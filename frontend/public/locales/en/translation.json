@@ -393,14 +393,14 @@
         },
         "title3": "Tip",
         "message3": {
-          "p10": "Don't worry if you are not confident. You will be able to update all comparisons later, at your own pace.",
-          "p20": ""
+          "p10": "Don't worry if the handles' position doesn't feel exact.",
+          "p20": "You will be able to update all comparisons later, at your own pace"
         },
         "title4": "Did you see?",
         "message4": {
           "p10": "There are also optional criteria under the main ones.",
           "p20": "Try to unfold and use the optional criteria to give a more complete opinion about the candidates.",
-          "p30": ""
+          "p30": "It's also possible to uncheck an optional criterion if you don't want to give your opinion on it."
         },
         "title5": "Is it better than voting for a single person?",
         "message5": {
