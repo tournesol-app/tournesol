@@ -118,23 +118,21 @@ const ComparisonSeries = ({
     }
 
     if (length >= MIN_LENGTH) {
-      getUserComparisonsAsync(pollName).then((comparisons) => {
-        if (getAlternatives) {
-          getAlternativesAsync(getAlternatives).then((entities) => {
-            if (initialize.current && (uidA === '' || uidB === '')) {
-              setFirstComparisonParams(
-                genInitialComparisonParams(entities, comparisons, uidA, uidB)
-              );
-            }
-
-            // stop loading after the initial comparison params have been built
-            setIsLoading(false);
-          });
-        } else {
-          // stop loading if no alternatives have been provided
+      const comparisonsPromise = getUserComparisonsAsync(pollName);
+      const alternativesPromise = getAlternatives
+        ? getAlternativesAsync(getAlternatives)
+        : Promise.resolve();
+      Promise.all([comparisonsPromise, alternativesPromise])
+        .then(([comparisons, entities]) => {
+          if (entities && initialize.current && (uidA === '' || uidB === '')) {
+            setFirstComparisonParams(
+              genInitialComparisonParams(entities, comparisons, uidA, uidB)
+            );
+          }
+        })
+        .then(() => {
           setIsLoading(false);
-        }
-      });
+        });
     } else {
       // stop loading if no series is going to be rendered
       setIsLoading(false);
