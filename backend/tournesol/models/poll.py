@@ -29,10 +29,6 @@ class Poll(models.Model):
         max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
     )
 
-    # @property
-    # def algorithm(self):
-    #     return ALGORITHM_MEHESTAN
-
     @classmethod
     def default_poll(cls) -> "Poll":
         poll, _created = cls.objects.get_or_create(
