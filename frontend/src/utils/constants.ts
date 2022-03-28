@@ -146,7 +146,7 @@ export const polls: Array<SelectablePoll> = [
       'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
     tutorialLength: 7,
     tutorialAlternatives: getAllCandidates,
-    tutorialDialogs: tutorialDialogs,
+    tutorialDialogs: getTutorialDialogs,
   },
   */
   {

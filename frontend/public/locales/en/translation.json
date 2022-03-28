@@ -2,6 +2,9 @@
   "components": {
     "filtersButton": "filters"
   },
+  "dialogBox": {
+    "continue": "continue"
+  },
   "video": {
     "labelShowSettings": "Show settings related to this video",
     "nbViews": "{{nbViews}} views",
@@ -44,9 +47,6 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
-  "dialogBox": {
-    "continue": "continue"
-  },
   "videoSelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
@@ -123,8 +123,8 @@
     "thisYear": "This year",
     "allTime": "All time",
     "uploadDate": "Upload date",
-    "language": "Language",
     "allLanguages": "All languages",
+    "language": "Language",
     "uploader": "Uploader"
   },
   "ratings": {
@@ -375,5 +375,50 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
+  },
+  "presidentielle2022": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "Welcome on Tournesol 🌻",
+        "message1": {
+          "p10": "This tutorial will guide you step by step through a comparison series.",
+          "p20": "First, move the blue handles and adjust your preferences by moving them more or less far. Save when your choice is made.",
+          "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity.",
+          "p40": "If you find candidates similar, the handle should remain close to the center."
+        },
+        "title2": "Congratulations !",
+        "message2": {
+          "p10": "You have made your first comparison \uD83E\uDD73",
+          "p20": "Note that you can manually choose the candidates by using the drop down menus located just above the candidates' photos."
+        },
+        "title3": "Tip",
+        "message3": {
+          "p10": "Don't worry if the handles' position doesn't feel exact.",
+          "p20": "You will be able to update all comparisons later, at your own pace"
+        },
+        "title4": "Did you see?",
+        "message4": {
+          "p10": "There are also optional criteria under the main ones.",
+          "p20": "Try to unfold and use the optional criteria to give a more complete opinion about the candidates.",
+          "p30": "It's also possible to uncheck an optional criterion if you don't want to give your opinion on it."
+        },
+        "title5": "Is it better than voting for a single person?",
+        "message5": {
+          "p10": "Contrary to the current voting system in France, here you are invited to give your opinion on several candidates.",
+          "p20": "Thus it's possible to express your real opinion. This allows to avoid problems like the « tactical vote », and doesn't encourage the polarization of political opinions."
+        },
+        "title6": "How does it work?",
+        "message6": {
+          "p10": "Tournesol classifies the candidates by aggregating the preferences of all contributors.",
+          "p20": "It's not the person who received the highest number of votes who is elected, but the one // to complete //.",
+          "p30": "The objective is to get the results that fits the best the contributors' global opinion."
+        },
+        "title7": "Thanks a lot!",
+        "message7": {
+          "p10": "One last comparison and you will be able to see your current preferences.",
+          "p20": "We sincerely hope you appreciated this new voting system, which may have allowed you to better think about why you support some candidates."
+        }
+      }
+    }
   }
 }

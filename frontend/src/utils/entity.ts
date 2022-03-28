@@ -45,8 +45,8 @@ export const alreadyComparedWith = (
     const split = comparison.split('/');
     const index = split.indexOf(uid);
 
-    if (index != -1) {
-      if (index == 0) {
+    if (index !== -1) {
+      if (index === 0) {
         alreadyCompared.push(split[1]);
       } else {
         alreadyCompared.push(split[0]);

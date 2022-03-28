@@ -20,6 +20,8 @@ const ComparisonPage = () => {
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
 
+  const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
+
   return (
     <>
       <ContentHeader title={t('comparison.submitAComparison')} />
@@ -33,7 +35,7 @@ const ComparisonPage = () => {
       >
         {series === 'true' ? (
           <ComparisonSeries
-            dialogs={tutorialDialogs}
+            dialogs={dialogs}
             generateInitial={true}
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
