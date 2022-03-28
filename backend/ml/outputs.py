@@ -2,6 +2,7 @@ from typing import Optional
 
 import pandas as pd
 from django.db import transaction
+from django.db.models import Q
 
 from core.models import User
 from tournesol.models import (
@@ -94,14 +95,11 @@ def save_contributor_scores(
         contributor_rating__poll=poll
     )
     if trusted_filter is not None:
-        if trusted_filter:
-            scores_to_delete = scores_to_delete.filter(
-                contributor_rating__user__in=User.trusted_users()
-            )
-        else:
-            scores_to_delete = scores_to_delete.exclude(
-                contributor_rating__user__in=User.trusted_users()
-            )
+        trusted_query = Q(contributor_rating__user__in=User.trusted_users())
+        scores_to_delete = scores_to_delete.filter(
+            trusted_query if trusted_filter else ~trusted_query
+        )
+
     if single_criteria is not None:
         scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
 
