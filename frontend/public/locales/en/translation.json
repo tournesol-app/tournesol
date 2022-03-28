@@ -381,15 +381,15 @@
       "tutorial": {
         "title1": "Welcome on Tournesol 🌻",
         "message1": {
-          "p10": "In order to familiarize yourself with the comparison system, small messages like this one will be displayed.",
-          "p20": "Let's start with a first comparison between two candidates.",
-          "p30": "Move the blue handle below the candidates, then submit to select the person who should be president.",
-          "p40": "The more the handle is in the center, the more the candidates are considered similar."
+          "p10": "This tutorial will guide you step by step through a comparison series.",
+          "p20": "First, move the blue handles and adjust your preferences by moving them more or less far. Save when your choice is made.",
+          "p30": "The more your opinion is clear-but on a criterion, the more the handle should be close to the slider extremity.",
+          "p40": "If you find candidates similar, the handle should remain close to the center."
         },
         "title2": "Congratulations !",
         "message2": {
-          "p10": "Let's continue with other candidates.",
-          "p20": "Note that you can manually choose the candidates by using the drop down menu located just above the candidates' photos."
+          "p10": "You have made your first comparison \uD83E\uDD73",
+          "p20": "Note that you can manually choose the candidates by using the drop down menus located just above the candidates' photos."
         },
         "title3": "Tip",
         "message3": {
