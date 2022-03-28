@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
 from ml.inputs import MlInputFromDb
+from ml.mehestan.run import run_mehestan
 from ml.outputs import (
     save_contributor_scores,
     save_entity_scores,
@@ -133,6 +134,6 @@ class Command(BaseCommand):
                         logging.debug("Process on all users")
                         process_licchavi(poll, ml_input, trusted_only=False)
                 elif poll.algorithm == ALGORITHM_MEHESTAN:
-                    raise NotImplementedError
+                    run_mehestan(ml_input=ml_input, poll=poll)
                 else:
-                    raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
+                    raise ValueError(f"unknown algorithm {repr(algorithm)}'")
