@@ -138,7 +138,8 @@ const ComparisonSeries = ({
       // stop loading if no series is going to be rendered
       setIsLoading(false);
     }
-  }, [getAlternatives, length, pollName, setComparisonsMade, uidA, uidB]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const afterSubmitCallback = (
     uidA: string,
