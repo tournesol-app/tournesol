@@ -1,6 +1,7 @@
 # production
 torch==1.9.1
-gin-config==0.4.0 
+gin-config==0.4.0
+pandas==1.4.1
 
 # dev
 matplotlib==3.4.2 
