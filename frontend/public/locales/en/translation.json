@@ -415,8 +415,8 @@
         },
         "title7": "Thanks a lot!",
         "message7": {
-          "p10": "One last comparison and you will be able to see your results.",
-          "p20": "We sincerely hope you've appreciated this new voting system."
+          "p10": "One last comparison and you will be able to see your current preferences.",
+          "p20": "We sincerely hope you appreciated this new voting system, which may have allowed you to better think about why you support some candidates."
         }
       }
     }
