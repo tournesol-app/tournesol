@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 
@@ -218,9 +220,28 @@ def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFr
     return compute_scaling(df, ml_input=ml_input)
 
 
-def get_global_scores(ml_input: MlInput, individual_scores: pd.DataFrame):
+def get_global_scores(
+    ml_input: MlInput, individual_scores: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Returns (global_scores, scalings):
+        - global_scores: Dataframe with columns
+            * `entity_id`
+            * `score`
+            * `uncertainty`
+            * `deviation`
+        - scalings: DataFrame with index `entity_id` and columns:
+            * `s`: scaling factor
+            * `tau`: translation value
+            * `delta_s`: uncertainty on `s`
+            * `delta_tau`: uncertainty on `tau`
+    """
     if len(individual_scores) == 0:
-        return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
+        scores = pd.DataFrame(
+            columns=["entity_id", "score", "uncertainty", "deviation"]
+        )
+        scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
+        return scores, scalings
 
     supertrusted_scaling = get_scaling_for_supertrusted(ml_input, individual_scores)
     rp = ml_input.get_ratings_properties()
@@ -320,10 +341,13 @@ def get_global_scores(ml_input: MlInput, individual_scores: pd.DataFrame):
             "deviation": rho_deviation,
         }
 
-    if len(global_scores) == 0:
-        return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
-
     all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
+
+    if len(global_scores) == 0:
+        scores = pd.DataFrame(
+            columns=["entity_id", "score", "uncertainty", "deviation"]
+        )
+        return scores, all_scalings
 
     result = pd.DataFrame.from_dict(global_scores, orient="index")
     result.index.name = "entity_id"
