@@ -1,6 +1,8 @@
 
 import numpy as np
 from django.http import JsonResponse
+from drf_spectacular.utils import OpenApiResponse, OpenApiTypes, extend_schema
+from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
 from scipy.stats import linregress
 
@@ -40,8 +42,20 @@ def compute_slope(scores_1: dict, scores_2: dict) -> int:
     else:
         return None
 
+
+class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
+    criterias = serializers.ListField(child=serializers.CharField(), default=list)
+    correlations = serializers.ListField(child=serializers.ListField(child=serializers.FloatField(), default=list), default=list)
+    slopes = serializers.ListField(child=serializers.ListField(child=serializers.FloatField(), default=list), default=list)
+    
+
 class ContributorCriteriaCorrelationsView(GenericAPIView):
     
+    @extend_schema(
+        responses={
+            200: ContributorCriteriaCorrelationsSerializer
+        }
+    )
     def get(self, request, poll_name):
         poll = Poll.objects.get(name=poll_name)
         criterias = poll.criterias_list
@@ -54,9 +68,7 @@ class ContributorCriteriaCorrelationsView(GenericAPIView):
             for s in r.criteria_scores.all():
                 scores[s.criteria][r.entity] = s.score
 
-        
-
-        return JsonResponse({
+        serializer = ContributorCriteriaCorrelationsSerializer({
             "criterias": criterias,
             "correlations": [
                 [compute_correlation(scores[c1], scores[c2]) for c1 in criterias]
@@ -67,3 +79,5 @@ class ContributorCriteriaCorrelationsView(GenericAPIView):
                 for c2 in criterias
             ],
         })
+
+        return JsonResponse(serializer.data)
