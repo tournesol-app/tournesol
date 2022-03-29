@@ -54,10 +54,12 @@ const EntitySelector = ({
   otherUid,
   submitted = false,
 }: Props) => {
-  const { uid, rating } = value;
   const classes = useStyles();
+
+  const { name: pollName, options } = useCurrentPoll();
+
+  const { uid, rating } = value;
   const [loading, setLoading] = useState(false);
-  const { name: pollName } = useCurrentPoll();
   const [inputValue, setInputValue] = useState(value.uid);
 
   const loadRating = useCallback(async () => {
@@ -80,7 +82,7 @@ const EntitySelector = ({
               pollName,
               requestBody: {
                 uid,
-                is_public: true,
+                is_public: options?.comparisonsCanBePublic === true,
               },
             });
           onChange({
@@ -95,7 +97,7 @@ const EntitySelector = ({
       }
     }
     setLoading(false);
-  }, [pollName, uid, onChange]);
+  }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   useEffect(() => {
     if (isUidValid(uid) && rating == null) {
