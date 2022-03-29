@@ -40,6 +40,17 @@ export const defaultRecommendationFilters = {
   backfire_risk: '50',
 };
 
+export const criteriaToEmoji: Record<string, string> = {
+  be_president: '🇫🇷',
+  energy_environment: '🌳',
+  international: '🌍',
+  education_culture: '🎓',
+  health: '🏥',
+  institutions_democracy: '🗳️',
+  labour_economy: '🏦',
+  solidarity: '🤝',
+};
+
 export const recommendationsLanguages: {
   [language: string]: (t: TFunction) => string;
 } = {

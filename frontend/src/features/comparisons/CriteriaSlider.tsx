@@ -8,6 +8,7 @@ import { Box, Slider, Grid, Checkbox, Chip } from '@mui/material';
 import { getWikiBaseUrl } from 'src/utils/url';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Link } from '@mui/material';
+import { CriteriaIcon } from 'src/components';
 
 const SLIDER_MIN_STEP = -10;
 const SLIDER_MAX_STEP = 10;
@@ -34,9 +35,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'row',
     alignSelf: 'flex-start',
     width: '100%',
-  },
-  img_criteria: {
-    marginRight: '8px',
   },
 }));
 
@@ -87,13 +85,12 @@ const CriteriaSlider = ({
           flexWrap="nowrap"
           container
         >
-          {criteria != 'largely_recommended' && (
-            <img
-              className={classes.img_criteria}
-              src={`/svg/${criteria}.svg`}
-              width="18px"
-            />
-          )}
+          <CriteriaIcon
+            criteriaName={criteria}
+            sx={{
+              marginRight: '8px',
+            }}
+          />
           <Typography fontSize={{ xs: '90%', sm: '100%' }}>
             <Link
               color="text.secondary"
