@@ -39,6 +39,7 @@ const ComparisonPage = () => {
             generateInitial={true}
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
+            resumable={true}
           />
         ) : (
           <Comparison />

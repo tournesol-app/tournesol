@@ -24,6 +24,7 @@ interface Props {
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity>>;
   length: number;
+  resumable?: boolean;
 }
 
 async function getUserComparisons(
@@ -57,6 +58,7 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
+  resumable,
 }: Props) => {
   const { name: pollName } = useCurrentPoll();
 
@@ -123,8 +125,13 @@ const ComparisonSeries = ({
       const alternativesPromise = getAlternatives
         ? getAlternativesAsync(getAlternatives)
         : Promise.resolve();
+
       Promise.all([comparisonsPromise, alternativesPromise])
         .then(([comparisons, entities]) => {
+          if (resumable && comparisons.length > 0) {
+            setStep(comparisons.length);
+          }
+
           if (entities && initialize.current && (uidA === '' || uidB === '')) {
             setFirstComparisonParams(
               genInitialComparisonParams(entities, comparisons, uidA, uidB)
