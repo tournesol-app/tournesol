@@ -1,11 +1,12 @@
 
-from scipy.stats import linregress
 import numpy as np
 from django.http import JsonResponse
 from rest_framework.generics import GenericAPIView
-from tournesol.models.ratings import ContributorRating
+from scipy.stats import linregress
 
 from tournesol.models.poll import Poll
+from tournesol.models.ratings import ContributorRating
+
 
 def compute_correlation(scores_1: dict, scores_2: dict) -> int:
     """

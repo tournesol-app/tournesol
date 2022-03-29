@@ -3,13 +3,21 @@ import numpy as np
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-from tournesol.views.criteria_correlations import compute_correlation, compute_slope
-from tournesol.models.ratings import ContributorRatingCriteriaScore
-from tournesol.tests.factories.entity import EntityFactory
-from tournesol.tests.factories.poll import CriteriaFactory, CriteriaRankFactory, PollFactory, PollWithCriteriasFactory
-from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory, ContributorRatingFactory
 
 from core.tests.factories.user import UserFactory
+from tournesol.models.ratings import ContributorRatingCriteriaScore
+from tournesol.tests.factories.entity import EntityFactory
+from tournesol.tests.factories.poll import (
+    CriteriaFactory,
+    CriteriaRankFactory,
+    PollFactory,
+    PollWithCriteriasFactory,
+)
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
+from tournesol.views.criteria_correlations import compute_correlation, compute_slope
 
 
 def test_compute_correlation():
