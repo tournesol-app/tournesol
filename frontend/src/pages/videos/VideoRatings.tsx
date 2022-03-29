@@ -48,7 +48,7 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
 };
 
 const VideoRatingsPage = () => {
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, options } = useCurrentPoll();
   const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
@@ -114,6 +114,10 @@ const VideoRatingsPage = () => {
     }
   };
 
+  const comparisonsCanBePublic = () => {
+    return options?.comparisonsCanBePublic === true;
+  };
+
   return (
     <RatingsContext.Provider
       value={{
@@ -123,9 +127,11 @@ const VideoRatingsPage = () => {
     >
       <ContentHeader title={t('myRatedVideosPage.title')} />
       <ContentBox noMinPaddingX maxWidth="md">
-        <Box px={{ xs: 2, sm: 0 }}>
-          <RatingsFilter />
-        </Box>
+        {comparisonsCanBePublic() && (
+          <Box px={{ xs: 2, sm: 0 }}>
+            <RatingsFilter />
+          </Box>
+        )}
         <LoaderWrapper isLoading={isLoading}>
           <VideoList
             videos={entities.map((ent) => videoFromRelatedEntity(ent))}

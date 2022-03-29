@@ -62,11 +62,11 @@ const EntitySelector = ({
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
-  const getDefaultStatus = () => {
-    return options?.comparisonsCanBePublic === true;
-  };
-
   const loadRating = useCallback(async () => {
+    const getDefaultStatus = () => {
+      return options?.comparisonsCanBePublic === true;
+    };
+
     setLoading(true);
     try {
       const contributorRating =
@@ -101,7 +101,7 @@ const EntitySelector = ({
       }
     }
     setLoading(false);
-  }, [pollName, uid, onChange]);
+  }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   useEffect(() => {
     if (isUidValid(uid) && rating == null) {
