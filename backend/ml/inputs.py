@@ -98,7 +98,6 @@ class MlInputFromDb(MlInput):
             entity_b=F("comparison__entity_2_id"),
             user_id=F("comparison__user_id"),
         )
-
         if len(values) > 0:
             df = pd.DataFrame(values)
             return df[
