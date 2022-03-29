@@ -31,6 +31,7 @@ all:
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
+          frontend_presidentielle_2022_enabled: true
 
           mediawiki_domain_name: tournesol-wiki
           mediawiki_scheme: http
@@ -82,6 +83,7 @@ all:
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
+          frontend_presidentielle_2022_enabled: true
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
@@ -140,6 +142,7 @@ all:
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
+          frontend_presidentielle_2022_enabled: false
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
