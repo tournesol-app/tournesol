@@ -194,8 +194,13 @@ class CriteriaLocalesInline(admin.TabularInline):
 class PollAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'algorithm',
         'entity_type',
         'get_n_criterias',
+    )
+    list_filter = (
+        'algorithm',
+        'entity_type'
     )
     inlines = (CriteriasInline,)
 
