@@ -2,9 +2,9 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from backend.ml.inputs import MlInputFromDb
 from ml.core import TOURNESOL_DEV
 from ml.dev.experiments import run_experiment
+from ml.inputs import MlInputFromDb
 
 """
 Machine Learning command file for developpement
