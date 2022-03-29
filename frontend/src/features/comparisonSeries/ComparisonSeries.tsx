@@ -61,15 +61,16 @@ const ComparisonSeries = ({
   const { name: pollName } = useCurrentPoll();
 
   // trigger the initialization on the first render only, to allow users to
-  // freely clear entities without being redirected
+  // freely clear entities without being redirected once the series has started
   const initialize = useRef(
     generateInitial != undefined ? generateInitial : false
   );
-  // load while async requests are made to initialize the component
+  // display a circular progress placeholder while async requests are made to
+  // initialize the component
   const [isLoading, setIsLoading] = React.useState(true);
   // the current position in the series
   const [step, setStep] = useState(0);
-  // state of the `Dialog` component
+  // open/close state of the `Dialog` component
   const [dialogOpen, setDialogOpen] = useState(true);
   // tell the `Comparison` to refresh the left entity, or the right one
   const [refreshLeft, setRefreshLeft] = useState(false);
@@ -144,14 +145,30 @@ const ComparisonSeries = ({
     uidA: string,
     uidB: string
   ): { uid: string; refreshLeft: boolean } => {
-    const newStep = step + 1;
+    const lastComparison = uidA + '/' + uidB;
+    const lastComparisonR = uidB + '/' + uidA;
 
-    if (step < length) {
+    // if the submitted comparison has already been made:
+    //   - do not update the comparisonsMade list
+    //   - do not increment the step
+    //   - do not display the dialog previously displayed
+    //   - simply suggest a new comparison
+    const comparisonIsNew =
+      !comparisonsMade.includes(lastComparison) &&
+      !comparisonsMade.includes(lastComparisonR);
+
+    const newStep = comparisonIsNew ? step + 1 : step;
+    if (step < length && comparisonIsNew) {
       setStep(newStep);
     }
 
-    const newComparisons = comparisonsMade.concat([uidA + '/' + uidB]);
-    setComparisonsMade(newComparisons);
+    const newComparisons = comparisonIsNew
+      ? comparisonsMade.concat([lastComparison])
+      : comparisonsMade;
+
+    if (comparisonIsNew) {
+      setComparisonsMade(newComparisons);
+    }
 
     const keptUid = refreshLeft ? uidB : uidA;
     const alreadyCompared = alreadyComparedWith(keptUid, newComparisons);
@@ -164,14 +181,14 @@ const ComparisonSeries = ({
       ).uid;
     }
 
-    const nextStep = { uid: uid, refreshLeft: refreshLeft };
+    const nextSuggestion = { uid: uid, refreshLeft: refreshLeft };
     setRefreshLeft(!refreshLeft);
 
-    if (dialogs && newStep in dialogs) {
+    if (dialogs && newStep != step && newStep in dialogs) {
       setDialogOpen(true);
     }
 
-    return nextStep;
+    return nextSuggestion;
   };
 
   const closeDialog = () => {

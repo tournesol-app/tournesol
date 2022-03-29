@@ -176,19 +176,21 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
       // the presence of the `afterSubmitCallback` prop suggests we are in
       // a comparison series, some state updates are not triggered here to avoid
       // race conditions
-      if (afterSubmitCallback) {
-        const nextStep = afterSubmitCallback(c.entity_a.uid, c.entity_b.uid);
-
-        if (nextStep.uid) {
-          if (nextStep.refreshLeft) {
-            onChangeA({ uid: nextStep.uid, rating: null });
-          } else {
-            onChangeB({ uid: nextStep.uid, rating: null });
-          }
-        }
-      } else {
+      if (!afterSubmitCallback) {
         // Refresh ratings statistics after the comparisons have been submitted
         setSubmitted(true);
+      }
+    }
+
+    if (afterSubmitCallback) {
+      const suggestion = afterSubmitCallback(c.entity_a.uid, c.entity_b.uid);
+
+      if (suggestion.uid) {
+        if (suggestion.refreshLeft) {
+          onChangeA({ uid: suggestion.uid, rating: null });
+        } else {
+          onChangeB({ uid: suggestion.uid, rating: null });
+        }
       }
     }
 
