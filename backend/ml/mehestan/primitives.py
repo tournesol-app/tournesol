@@ -92,15 +92,15 @@ def QrUnc(
     return (np.exp(-qr_dev) * qr_dev + np.exp(-k) * k) / (np.exp(-qr_dev) + np.exp(-k))
 
 
-def Clip(x: np.ndarray, center, radius):
+def Clip(x: np.ndarray, center: float, radius: float):
     return x.clip(center - radius, center + radius)
 
 
-def ClipMean(w, x: np.ndarray, center, radius):
+def ClipMean(w: np.ndarray, x: np.ndarray, center: float, radius: float):
     return np.sum(w * Clip(x, center, radius)) / np.sum(w)
 
 
-def BrMean(W, w, x, delta):
+def BrMean(W: float, w: Union[float, np.ndarray], x: np.ndarray, delta: np.ndarray):
     """
     Byzantine-robustified mean
     """
