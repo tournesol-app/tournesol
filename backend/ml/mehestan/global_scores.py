@@ -5,6 +5,8 @@ from ml.inputs import MlInput
 
 from .primitives import BrMean, QrDev, QrMed, QrUnc
 
+# `W` is the Byzantine resilience parameter,
+# i.e the number of voting rights needed to modify a global score by 1 unit.
 W = 20.0
 
 SCALING_WEIGHT_SUPERTRUSTED = W
@@ -38,6 +40,11 @@ def get_user_scaling_weights(ml_input: MlInput):
 
 
 def get_significantly_different_pairs(scores: pd.DataFrame):
+    """
+    Find the set of pairs of alternatives
+    that are significantly different, according to the contributor scores.
+    (Used for collaborative preference scaling)
+    """
     scores = scores[["uid", "score", "uncertainty"]]
     left, right = np.triu_indices(len(scores), k=1)
     pairs = (
@@ -137,6 +144,10 @@ def compute_scaling(
                 8 * W * theta_inf, 1, s_weights, s_nqm - 1, delta_s_nqm, qr_med=qr_med
             )
         else:
+            # When dealing with a sufficiently trustworthy set of users
+            # and we don't need to compute uncertainties, `BrMean`can be used
+            # to be closer to the "sparse unanimity conditions" discussed in
+            # [Robust sparse voting](https://arxiv.org/abs/2202.08656)
             s_dict[user_n] = 1 + BrMean(
                 8 * W * theta_inf, s_weights, s_nqm - 1, delta_s_nqm
             )

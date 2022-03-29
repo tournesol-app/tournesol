@@ -4,10 +4,20 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import brentq
 
-EPSILON = 1e-6
+EPSILON = 1e-6  # convergence tolerance
 
 
 def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
+    """
+    Quadratically regularized median
+
+    Parameters:
+        * `W`: Byzantine resilience parameter.
+            The influence of a single contributor 'i' is bounded by (w_i/W)
+        * `w`: voting rights vector
+        * `x`: partial scores vector
+        * `delta`: partial scores uncertainties vector
+    """
     if isinstance(w, pd.Series):
         w = w.to_numpy()
     if isinstance(x, pd.Series):
@@ -28,6 +38,7 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
     while L_prime(m_up) < 0:
         m_up *= 2
 
+    # Brent’s method is used as a faster alternative to usual bisection
     return brentq(L_prime, m_low, m_up, xtol=EPSILON)
 
 
@@ -39,6 +50,10 @@ def QrDev(
     delta: pd.Series,
     qr_med=None,
 ):
+    """
+    Quadratically regularized deviation, between x and their QrMed.
+    Can be understood as a measure of polarization.
+    """
     if qr_med is None:
         qr_med = QrMed(W, w, x, delta)
     return default_dev + QrMed(W, w, np.abs(x - qr_med) - default_dev, delta)
@@ -52,6 +67,9 @@ def QrUnc(
     delta: pd.Series,
     qr_med=None,
 ):
+    """
+    Quadratically regularized uncertainty
+    """
     if isinstance(w, pd.Series):
         w = w.to_numpy()
     if isinstance(x, pd.Series):
@@ -83,6 +101,9 @@ def ClipMean(w, x: np.ndarray, center, radius):
 
 
 def BrMean(W, w, x, delta):
+    """
+    Byzantine-robustified mean
+    """
     if len(x) == 0:
         return 0.0
     if isinstance(w, float):

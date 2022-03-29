@@ -1,11 +1,17 @@
 import numpy as np
 import pandas as pd
 
-R_MAX = 10
-ALPHA = 0.01
+R_MAX = 10  # Maximum score for a comparison in the input
+ALPHA = 0.01  # Signal-to-noise hyperparameter
 
 
-def compute_individual_score(scores):
+def compute_individual_score(scores: pd.DataFrame):
+    """
+    Computation of contributor scores and score uncertainties,
+    based on their comparisons.
+
+    At this stage, scores will not be normalized between contributors.
+    """
     scores = scores[["entity_a", "entity_b", "score"]]
     scores_sym = pd.concat(
         [
@@ -20,6 +26,7 @@ def compute_individual_score(scores):
         ]
     )
 
+    # "Comparison tensor": matrix with all comparisons, values in [-R_MAX, R_MAX]
     r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score")
 
     r_tilde = r / (1.0 + R_MAX)
@@ -38,10 +45,10 @@ def compute_individual_score(scores):
     K = K_diag.sub(k, fill_value=0)
 
     # theta_star = K^-1 * L
-    theta_star = pd.Series(np.linalg.solve(K, L), index=L.index)
+    theta_star_numpy = np.linalg.solve(K, L)
+    theta_star = pd.Series(theta_star_numpy, index=L.index)
 
     # Compute uncertainties
-    theta_star_numpy = theta_star.to_numpy()
     theta_star_ab = pd.DataFrame(
         np.subtract.outer(theta_star_numpy, theta_star_numpy),
         index=theta_star.index,
