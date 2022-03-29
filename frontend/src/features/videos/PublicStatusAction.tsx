@@ -31,7 +31,7 @@ export const UserRatingPublicToggle = ({
   onChange?: (rating: ContributorRating) => void;
 }) => {
   const { t } = useTranslation();
-  const { name: pollName, baseUrl } = useCurrentPoll();
+  const { name: pollName, baseUrl, options } = useCurrentPoll();
 
   const handleChange = React.useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +43,10 @@ export const UserRatingPublicToggle = ({
     },
     [onChange, pollName, uid]
   );
+
+  const comparisonsCanBePublic = () => {
+    return options?.comparisonsCanBePublic === true;
+  };
 
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
@@ -62,35 +66,37 @@ export const UserRatingPublicToggle = ({
         )}
       </Typography>
       <Box flexGrow={1} minWidth="12px" />
-      <Tooltip
-        title={
-          <Typography variant="caption">
-            {isPublic
-              ? t('video.contributionsArePublicMessage')
-              : t('video.contributionsArePrivateMessage')}
-          </Typography>
-        }
-        placement="bottom"
-      >
-        <Box component="label" display="inline-flex" alignItems="center">
-          <Switch
-            checked={isPublic}
-            onChange={handleChange}
-            size="small"
-            color="primary"
-            edge="start"
-          />
-          <Typography
-            variant="caption"
-            sx={{
-              color: isPublic ? '#222' : '#bbb',
-              textTransform: 'capitalize',
-            }}
-          >
-            {t('public')}
-          </Typography>
-        </Box>
-      </Tooltip>
+      {comparisonsCanBePublic() && (
+        <Tooltip
+          title={
+            <Typography variant="caption">
+              {isPublic
+                ? t('video.contributionsArePublicMessage')
+                : t('video.contributionsArePrivateMessage')}
+            </Typography>
+          }
+          placement="bottom"
+        >
+          <Box component="label" display="inline-flex" alignItems="center">
+            <Switch
+              checked={isPublic}
+              onChange={handleChange}
+              size="small"
+              color="primary"
+              edge="start"
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                color: isPublic ? '#222' : '#bbb',
+                textTransform: 'capitalize',
+              }}
+            >
+              {t('public')}
+            </Typography>
+          </Box>
+        </Tooltip>
+      )}
     </Box>
   );
 };

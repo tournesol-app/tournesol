@@ -54,11 +54,17 @@ const EntitySelector = ({
   otherUid,
   submitted = false,
 }: Props) => {
-  const { uid, rating } = value;
   const classes = useStyles();
+
+  const { name: pollName, options } = useCurrentPoll();
+
+  const { uid, rating } = value;
   const [loading, setLoading] = useState(false);
-  const { name: pollName } = useCurrentPoll();
   const [inputValue, setInputValue] = useState(value.uid);
+
+  const getDefaultStatus = () => {
+    return options?.comparisonsCanBePublic === true;
+  };
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -80,7 +86,7 @@ const EntitySelector = ({
               pollName,
               requestBody: {
                 uid,
-                is_public: true,
+                is_public: getDefaultStatus(),
               },
             });
           onChange({

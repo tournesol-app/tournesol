@@ -59,6 +59,9 @@ export type SelectablePoll = {
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
   topBarBackground: string | null;
+  // if true the UI must not allow users to mark their comparisons as public
+  // contributor ratings must be created with is_public = false
+  comparisonsCanBePublic?: boolean;
   tutorialLength?: number;
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison
