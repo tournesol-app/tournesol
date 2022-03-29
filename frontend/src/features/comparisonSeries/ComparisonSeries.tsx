@@ -155,9 +155,7 @@ const ComparisonSeries = ({
     //   - simply suggest a new comparison
     const comparisonIsNew =
       !comparisonsMade.includes(lastComparison) &&
-      !comparisonsMade.includes(lastComparisonR)
-        ? true
-        : false;
+      !comparisonsMade.includes(lastComparisonR);
 
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
