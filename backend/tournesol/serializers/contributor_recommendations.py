@@ -1,6 +1,7 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.serializers import SerializerMethodField
 
+from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.serializers.poll import RecommendationSerializer
 from tournesol.serializers.rating import ContributorCriteriaScore
 
@@ -20,7 +21,9 @@ class ContributorRecommendationsSerializer(RecommendationSerializer):
             - {"n_comparisons"}
             - {"n_contributors"}
             | {"is_public"}
+            | set(EntityNoExtraFieldSerializer.Meta.fields)
         )
+        read_only_fields = fields
 
     @extend_schema_field(ContributorCriteriaScore(many=True))
     def get_criteria_scores(self, obj):

@@ -11,6 +11,7 @@ interface Props {
   actions?: ActionList;
   settings?: ActionList;
   emptyMessage?: React.ReactNode;
+  personalScores?: { [uid: string]: number };
 }
 
 const DEFAULT_MESSAGE = 'No video found.';
@@ -20,6 +21,7 @@ function VideoList({
   actions,
   settings = [],
   emptyMessage = DEFAULT_MESSAGE,
+  personalScores,
 }: Props) {
   const { isLoggedIn } = useLoginState();
 
@@ -36,6 +38,9 @@ function VideoList({
               video={video}
               actions={actions ?? defaultActions}
               settings={settings}
+              personalScore={
+                personalScores ? personalScores[video.uid] : undefined
+              }
             />
           </Box>
         ))

@@ -7,6 +7,7 @@ import {
   RelatedEntity,
   Video,
   VideoSerializerWithCriteria,
+  ContributorRecommendations,
 } from 'src/services/openapi';
 
 export type JSONValue =
@@ -25,7 +26,10 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
-export type RelatedEntityObject = EntityNoExtraField | RelatedEntity;
+export type RelatedEntityObject =
+  | EntityNoExtraField
+  | RelatedEntity
+  | ContributorRecommendations;
 export type VideoObject = Video | VideoSerializerWithCriteria;
 
 /**

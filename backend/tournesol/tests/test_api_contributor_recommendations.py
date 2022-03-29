@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Poll
+from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
@@ -333,3 +334,18 @@ class ContributorRecommendationsApiTestCase(TestCase):
             self.assertEqual(
                 response.data["results"][i]["uid"], score_to_entity[score].uid
             )
+
+    def test_recommendations_include_entity_no_extra_field_fields(self):
+        """The recommendations include EntityNoExtraField fields"""
+        self.client.force_authenticate(self.user1)
+
+        response = self.client.get(
+            f"/users/me/recommendations/{self.poll.name}", format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+
+        entity = self.entity2
+        expected = EntityNoExtraFieldSerializer(entity).data
+        actual = response.data["results"][0]
+        for key in expected:
+            self.assertEqual(actual[key], expected[key])

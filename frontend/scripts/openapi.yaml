@@ -1910,35 +1910,44 @@ components:
     ContributorRecommendations:
       type: object
       properties:
+        is_public:
+          type: boolean
+          readOnly: true
         uid:
           type: string
+          readOnly: true
           description: A unique identifier, build with a namespace and an external
             id.
-          maxLength: 144
-        metadata:
-          type: object
-          additionalProperties: {}
+        total_score:
+          type: number
+          format: float
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        tournesol_score:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        total_score:
-          type: number
-          format: float
-        is_public:
-          type: boolean
+        metadata:
+          type: object
+          additionalProperties: {}
           readOnly: true
-        tournesol_score:
-          type: number
-          format: float
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
       required:
       - criteria_scores
       - is_public
+      - metadata
       - total_score
+      - tournesol_score
+      - type
       - uid
     DefaultSendResetPasswordLink:
       type: object
