@@ -61,11 +61,11 @@ class UnconnectedEntitiesView(
         # Get related entities from source
         source_node = Entity.objects.none()
 
-        if self.kwargs.get("uid"):
-            entity_uid = self.kwargs.get("uid")
-            source_node = Entity.objects.get(uid=entity_uid)
-        else:
+        if not self.kwargs.get("uid"):
             return Entity.objects.none()
+
+        entity_uid = self.kwargs.get("uid")
+        source_node = Entity.objects.get(uid=entity_uid)
 
         user_related_entities = self.get_related_entities(source_node)
         user_all_entities = set()
@@ -76,10 +76,8 @@ class UnconnectedEntitiesView(
         )
 
         for comparison in user_comparisons.iterator():
-            if comparison.entity_1 not in user_all_entities:
-                user_all_entities.add(comparison.entity_1)
-            if comparison.entity_2 not in user_all_entities:
-                user_all_entities.add(comparison.entity_2)
+            user_all_entities.add(comparison.entity_1)
+            user_all_entities.add(comparison.entity_2)
 
         return Entity.objects \
             .filter(id__in=(entity.id for entity in user_all_entities)) \
