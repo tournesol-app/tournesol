@@ -114,10 +114,6 @@ const VideoRatingsPage = () => {
     }
   };
 
-  const comparisonsCanBePublic = () => {
-    return options?.comparisonsCanBePublic === true;
-  };
-
   return (
     <RatingsContext.Provider
       value={{
@@ -127,7 +123,7 @@ const VideoRatingsPage = () => {
     >
       <ContentHeader title={t('myRatedVideosPage.title')} />
       <ContentBox noMinPaddingX maxWidth="md">
-        {comparisonsCanBePublic() && (
+        {options?.comparisonsCanBePublic === true && (
           <Box px={{ xs: 2, sm: 0 }}>
             <RatingsFilter />
           </Box>

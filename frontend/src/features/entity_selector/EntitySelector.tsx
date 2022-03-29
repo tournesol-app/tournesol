@@ -63,10 +63,6 @@ const EntitySelector = ({
   const [inputValue, setInputValue] = useState(value.uid);
 
   const loadRating = useCallback(async () => {
-    const getDefaultStatus = () => {
-      return options?.comparisonsCanBePublic === true;
-    };
-
     setLoading(true);
     try {
       const contributorRating =
@@ -86,7 +82,7 @@ const EntitySelector = ({
               pollName,
               requestBody: {
                 uid,
-                is_public: getDefaultStatus(),
+                is_public: options?.comparisonsCanBePublic === true,
               },
             });
           onChange({

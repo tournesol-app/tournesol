@@ -44,10 +44,6 @@ export const UserRatingPublicToggle = ({
     [onChange, pollName, uid]
   );
 
-  const comparisonsCanBePublic = () => {
-    return options?.comparisonsCanBePublic === true;
-  };
-
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
       <Typography variant="caption" sx={{ fontSize: '11px' }}>
@@ -66,7 +62,7 @@ export const UserRatingPublicToggle = ({
         )}
       </Typography>
       <Box flexGrow={1} minWidth="12px" />
-      {comparisonsCanBePublic() && (
+      {options?.comparisonsCanBePublic === true && (
         <Tooltip
           title={
             <Typography variant="caption">
