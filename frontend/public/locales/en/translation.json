@@ -409,9 +409,9 @@
         },
         "title6": "How does it work?",
         "message6": {
-          "p10": "Tournesol classifies the candidates by aggregating the preferences of all contributors.",
-          "p20": "It's not the person who received the highest number of votes who is elected, but the one // to complete //.",
-          "p30": "The objective is to get the results that fits the best the contributors' global opinion."
+          "p10": "Tournesol computes a score for each candidate, by aggregating contributors' judgements.",
+          "p20": "We can say that each contributor pulls the score up or down by voting.",
+          "p30": "The final score represents a balance, in middle of the different contributors' preferences."
         },
         "title7": "Thanks a lot!",
         "message7": {

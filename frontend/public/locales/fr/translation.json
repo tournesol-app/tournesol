@@ -413,9 +413,9 @@
         },
         "title6": "Comment ça fonctionne ?",
         "message6": {
-          "p10": "Tournesol classe les candidat.es en aggrégeant les préférences de tous les contributeurs.",
-          "p20": "Ce n'est donc pas la personne qui reçoit le plus de votes qui est élue mais celle // à compléter //.",
-          "p30": "L'objectif est d'obtenir un résultat qui correspond le plus possible à l'opinion globale des contributeurs."
+          "p10": "Tournesol calcule un score pour chaque candidat.e, en agrégeant les jugements des contributeurs et contributrices.",
+          "p20": "C'est comme si, en votant, chaque personne tirait le score d'un.e candidat.e vers le haut ou vers le bas.",
+          "p30": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes."
         },
         "title7": "Merci beaucoup !",
         "message7": {
