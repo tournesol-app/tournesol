@@ -2,6 +2,7 @@
 API endpoints to show unconnected entities
 """
 from collections import defaultdict
+
 from django.db.models import ObjectDoesNotExist
 from django.http import Http404
 from drf_spectacular.utils import extend_schema, extend_schema_view
