@@ -2,6 +2,8 @@
 API endpoints to show unconnected entities
 """
 from collections import defaultdict
+from django.db.models import ObjectDoesNotExist
+from django.http import Http404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -45,11 +47,11 @@ class UnconnectedEntitiesView(
         # Get related entities from source
         source_node = Entity.objects.none()
 
-        if not self.kwargs.get("uid"):
-            return Entity.objects.none()
-
-        entity_uid = self.kwargs.get("uid")
-        source_node = Entity.objects.get(uid=entity_uid)
+        try:
+            entity_uid = self.kwargs.get("uid")
+            source_node = Entity.objects.get(uid=entity_uid)
+        except ObjectDoesNotExist:
+            raise Http404
 
         comparisons = list(Comparison.objects.filter(
             poll=self.poll_from_url, user=self.request.user

@@ -56,6 +56,26 @@ class SimpleAllConnectedTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_without_uid_show_not_found(self):
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_with_unknown_uid_show_not_found(self):
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/123456788/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_all_connected_video_shouldnt_return_entities(self):
         self.client.force_authenticate(self.user_1)
 
