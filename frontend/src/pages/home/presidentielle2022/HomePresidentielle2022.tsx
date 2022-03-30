@@ -1,7 +1,6 @@
 import React from 'react';
 
 import ContributeSection from 'src/pages/home/presidentielle2022/ContributeSection';
-import DescriptionSection from 'src/pages/home/DescriptionSection';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
@@ -13,7 +12,6 @@ const HomePresidentielle2022Page = () => {
       secondaryColor="#000000"
     >
       <TitleSection />
-      <DescriptionSection />
       <ContributeSection />
       <PollListSection />
       {/* 

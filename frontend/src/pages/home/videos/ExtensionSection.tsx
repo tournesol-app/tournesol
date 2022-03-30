@@ -18,7 +18,9 @@ const ExtensionSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">{t('home.useOurExtension')}</Typography>
+      <Typography variant="h2" gutterBottom>
+        {t('home.useOurExtension')}
+      </Typography>
       <Typography paragraph>{t('home.webExtensionDescription')}</Typography>
       {webExtensionUrl ? (
         <Button

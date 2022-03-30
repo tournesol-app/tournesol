@@ -73,7 +73,6 @@ const StatsSection = () => {
     <Box
       sx={{
         textAlign: 'center',
-        py: 4,
         width: '100%',
         display: 'flex',
         justifyContent: 'center',

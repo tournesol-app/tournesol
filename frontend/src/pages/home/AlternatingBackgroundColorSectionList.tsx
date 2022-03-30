@@ -6,7 +6,11 @@ const AlternatingBackgroundColorSectionList = ({
   children,
   secondaryBackground = '#1282B2',
   secondaryColor = 'white',
-}: any) => {
+}: {
+  children: React.ReactNode[];
+  secondaryBackground?: string;
+  secondaryColor?: string;
+}) => {
   const theme = useTheme();
 
   return (
@@ -17,8 +21,9 @@ const AlternatingBackgroundColorSectionList = ({
       }}
     >
       <Grid container>
-        {children.map((child: any, i: number) => (
+        {children.map((child: React.ReactNode, i: number) => (
           <Grid
+            key={i}
             item
             xs={12}
             sx={{

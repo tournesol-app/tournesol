@@ -1,13 +1,42 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Grid, Typography, useTheme } from '@mui/material';
+import { useTranslation, Trans } from 'react-i18next';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
 
 const TitleSection = () => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
 
   return (
     <Grid container>
+      <Grid
+        item
+        xs={12}
+        md={4}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          maxWidth: '100%',
+          maxHeight: '400px',
+          [theme.breakpoints.down('md')]: {
+            maxHeight: '300px',
+          },
+          padding: '40px',
+          '& img': {
+            maxWidth: '100%',
+            maxHeight: '100%',
+          },
+        }}
+      >
+        <img
+          src="/svg/Watering.svg"
+          style={{
+            maxWidth: '100%',
+          }}
+        />
+      </Grid>
       <Grid
         item
         xs={12}
@@ -25,45 +54,40 @@ const TitleSection = () => {
         <Typography
           variant="h1"
           sx={{
-            textAlign: 'right',
-            fontSize: '340%',
-            [theme.breakpoints.down('lg')]: {
-              fontSize: '240%',
-            },
-            [theme.breakpoints.down('sm')]: {
-              fontSize: '180%',
-            },
+            fontWeight: 'bold',
+            textAlign: 'left',
             [theme.breakpoints.down('md')]: {
               textAlign: 'center',
             },
             float: 'right',
-            margin: '24px 8px',
-            maxWidth: 1000,
+            marginBottom: '24px',
           }}
         >
           {t('home.collaborativeContentRecommendations')}
         </Typography>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={4}
-        sx={{
-          display: 'flex',
-          justifyContent: 'left',
-          [theme.breakpoints.down('md')]: {
-            justifyContent: 'center',
-          },
-          padding: 2,
-        }}
-      >
-        <img
-          src="/svg/Watering.svg"
-          style={{
-            maxWidth: '100%',
+        <Box
+          display="flex"
+          flexDirection="column"
+          maxWidth="640px"
+          alignItems="flex-start"
+          sx={{
+            [theme.breakpoints.down('md')]: {
+              alignSelf: 'center',
+            },
           }}
-        />
-      </Grid>{' '}
+        >
+          <Typography paragraph>
+            <Trans t={t} i18nKey="home.tournesolPlatformDescription">
+              Tournesol is an <strong>open source</strong> platform which aims
+              to <strong>collaboratively</strong> identify top videos of public
+              utility by eliciting contributors&apos; judgements on content
+              quality. We hope to contribute to making today&apos;s and
+              tomorrow&apos;s large-scale algorithms{' '}
+              <strong>robustly beneficial</strong> for all of humanity.
+            </Trans>
+          </Typography>
+        </Box>
+      </Grid>
     </Grid>
   );
 };

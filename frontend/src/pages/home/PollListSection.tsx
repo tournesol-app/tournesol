@@ -11,7 +11,7 @@ const PollListSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">
+      <Typography variant="h2" gutterBottom>
         Explore Tournesol&apos;s Possibilities
       </Typography>
       <Typography paragraph>

@@ -18,7 +18,9 @@ const ContributeSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">{t('home.contributeTitle')}</Typography>
+      <Typography variant="h2" gutterBottom>
+        {t('home.contributeTitle')}
+      </Typography>
       <Typography paragraph>
         Tournesol evaluates alternatives using comparisons from contributors.
         Comparisons are based on multiple rating criteria in order to help
@@ -33,7 +35,7 @@ const ContributeSection = () => {
         color="primary"
         variant="contained"
         component={Link}
-        to={`/${pollName}/comparison`}
+        to={`/${pollName}/comparison?series=true`}
       >
         Compare Candidates Now
       </Button>
