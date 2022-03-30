@@ -63,7 +63,9 @@ const TitleSection = () => {
             marginBottom: '24px',
           }}
         >
-          {t('home.collaborativeContentRecommendations')}
+          {pollName === PRESIDENTIELLE_2022_POLL_NAME
+            ? t('home.beneficialCollaborativeDecisions')
+            : t('home.collaborativeContentRecommendations')}
         </Typography>
         <Box
           display="flex"
