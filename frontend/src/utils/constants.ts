@@ -1,9 +1,15 @@
 import { TFunction } from 'react-i18next';
-import { YouTube } from '@mui/icons-material';
-import { SelectablePoll } from './types';
+import { YouTube, HowToVote } from '@mui/icons-material';
+import { SelectablePoll, RouteID } from './types';
+import {
+  getAllCandidates,
+  getTutorialDialogs,
+} from './polls/presidentielle2022';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
+const PRESIDENTIELLE_2022_ENABLED =
+  process.env.REACT_APP_POLL_PRESIDENTIELLE_2022_ENABLED === 'true';
 
 const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;
@@ -145,21 +151,23 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   to be routed correctly.
 */
 export const polls: Array<SelectablePoll> = [
-  /*
-  {
-    name: PRESIDENTIELLE_2022_POLL_NAME,
-    displayOrder: 20,
-    path: '/presidentielle2022/',
-    disabledRouteIds: [RouteID.MyRateLaterList],
-    iconComponent: HowToVote,
-    withSearchBar: false,
-    topBarBackground:
-      'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
-    tutorialLength: 7,
-    tutorialAlternatives: getAllCandidates,
-    tutorialDialogs: getTutorialDialogs,
-  },
-  */
+  ...(PRESIDENTIELLE_2022_ENABLED
+    ? [
+        {
+          name: PRESIDENTIELLE_2022_POLL_NAME,
+          displayOrder: 20,
+          path: '/presidentielle2022/',
+          disabledRouteIds: [RouteID.MyRateLaterList, RouteID.Recommendations],
+          iconComponent: HowToVote,
+          withSearchBar: false,
+          topBarBackground:
+            'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
+          tutorialLength: 7,
+          tutorialAlternatives: getAllCandidates,
+          tutorialDialogs: getTutorialDialogs,
+        },
+      ]
+    : []),
   {
     name: YOUTUBE_POLL_NAME,
     displayOrder: 10,
