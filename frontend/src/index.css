@@ -18,7 +18,12 @@ code {
     monospace;
 }
 
-.SnackbarItem-wrappedRoot.belowTopBar {
+/* -- start: third-party packages customization -- */
+
+/* pkg: notistack */
+.SnackbarContainer-root.belowTopBar {
   /* display alerts below the top bar, to avoid hiding buttons */
-  top: 66px;
+  top: 80px;
 }
+
+/* -- end: third-party packages customization -- */
