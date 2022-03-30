@@ -25,7 +25,7 @@ const PageNotFound = () => {
         flexDirection="column"
         justifyContent="center"
         textAlign="center"
-        pt={24}
+        pt={22}
         pb={2}
       >
         <Typography variant="h2">
@@ -41,7 +41,7 @@ const PageNotFound = () => {
         </Box>
       </Box>
       <Box display="flex" flexDirection="row" justifyContent="center">
-        <img src="/svg/Watering.svg" height="400px" />
+        <img src="/svg/Watering.svg" height="380px" />
       </Box>
     </Box>
   );
