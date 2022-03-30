@@ -21,16 +21,7 @@ const ContributeSection = () => {
       <Typography variant="h2" gutterBottom>
         {t('home.contributeTitle')}
       </Typography>
-      <Typography paragraph>
-        Tournesol evaluates alternatives using comparisons from contributors.
-        Comparisons are based on multiple rating criteria in order to help
-        contributors reflect on how to evaluate candidates. By comparing
-        candidates you will be included in the collaborative decisions, you will
-        provide very valuable data to help research on the ethics of algorithms
-        and artificial intelligence and you will receive feedback and insights
-        from Tournesol&apos;s algorithms about your explicited preferences.
-      </Typography>
-      {/* TODO when available this could be replaced by a link to start the tutorial */}
+      <Typography paragraph>{t('home.contributePollPresidential')}</Typography>
       <Button
         color="primary"
         variant="contained"
