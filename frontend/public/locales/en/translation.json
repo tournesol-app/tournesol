@@ -411,7 +411,7 @@
         "message6": {
           "p10": "Tournesol computes a score for each candidate, by aggregating contributors' judgements.",
           "p20": "We can say that each contributor pulls the score up or down by voting.",
-          "p30": "The final score represents a balance, in middle of the different contributors' preferences."
+          "p30": "The final score represents a balance, in the middle of the different contributors' preferences."
         },
         "title7": "Thanks a lot!",
         "message7": {
