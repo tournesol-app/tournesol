@@ -3,6 +3,7 @@ import { Switch, useRouteMatch } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import PublicRoute from 'src/features/login/PublicRoute';
 import PrivateRoute from 'src/features/login/PrivateRoute';
+import PageNotFound from 'src/pages/404/PageNotFound';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
 import HomePage from 'src/pages/home/Home';
 import VideoRecommendationPage from 'src/pages/videos/VideoRecommendation';
@@ -93,7 +94,9 @@ const PollRoutes = ({ pollName }: Props) => {
           </route.type>
         );
       })}
-      <PublicRoute>Page not found</PublicRoute>
+      <PublicRoute>
+        <PageNotFound />
+      </PublicRoute>
     </Switch>
   );
 };

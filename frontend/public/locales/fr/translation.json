@@ -192,6 +192,11 @@
     "pleaseContactAnAdministratorToReportIssue": "S'il vous plaît, contacter un administrateur pour rapporter le problème.",
     "youTemporarilyMadeTooManyRequests": "Désolé, vous avez momentanément fait trop de requêtes. Veuillez réessayer plus tard."
   },
+  "pageNotFound": {
+    "sorryPageNotFound": "Désolé, page non trouvée.",
+    "theRequestedAddressIsErroneous": "L'adresse demandée est erronée, ou n'est simplement plus disponible.",
+    "backToHomePage": "Retourner à l'accueil"
+  },
   "about": {
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
     "introductionTournesol": "Tournesol est une plateforme libre et open source dont le but est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfiques à grande échelle, pour toute l'humanité. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",

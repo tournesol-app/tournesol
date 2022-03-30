@@ -188,6 +188,11 @@
     "pleaseContactAnAdministratorToReportIssue": "Please, contact an administrator to report the issue.",
     "youTemporarilyMadeTooManyRequests": "Sorry, you temporarily made too many requests. Please try again later."
   },
+  "pageNotFound": {
+    "sorryPageNotFound": "Sorry, page not found.",
+    "theRequestedAddressIsErroneous": "The requested address is either erroneous, or not available anymore.",
+    "backToHomePage": "Back to home page"
+  },
   "about": {
     "whatIsTournesol": "What is Tournesol?",
     "introductionTournesol": "Tournesol is an open source platform which aims to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Find out more with our <2>white paper</2>, our <5>wiki</5>, our <8>GitHub</8>, our <11>Discord</11>, or our <14>LinkedIn page</14>.",
