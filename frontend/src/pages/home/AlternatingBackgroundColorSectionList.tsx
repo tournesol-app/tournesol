@@ -29,9 +29,9 @@ const AlternatingBackgroundColorSectionList = ({
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              padding: 4,
+              padding: '32px',
               [theme.breakpoints.down('md')]: {
-                padding: '32px 8px 32px 8px',
+                padding: '32px 16px 32px 16px',
               },
               background: i % 2 == 0 ? secondaryBackground : 'white',
               color: i % 2 == 0 ? secondaryColor : 'black',

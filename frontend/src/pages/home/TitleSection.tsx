@@ -45,10 +45,6 @@ const TitleSection = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: 3,
-          [theme.breakpoints.down('md')]: {
-            padding: 1,
-          },
         }}
       >
         <Typography
@@ -56,8 +52,10 @@ const TitleSection = () => {
           sx={{
             fontWeight: 'bold',
             textAlign: 'left',
+            maxWidth: '1000px',
             [theme.breakpoints.down('md')]: {
               textAlign: 'center',
+              maxWidth: '100%',
             },
             float: 'right',
             marginBottom: '24px',
@@ -70,7 +68,7 @@ const TitleSection = () => {
         <Box
           display="flex"
           flexDirection="column"
-          maxWidth="640px"
+          maxWidth="800px"
           alignItems="flex-start"
           sx={{
             [theme.breakpoints.down('md')]: {

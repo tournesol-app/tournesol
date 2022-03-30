@@ -1,9 +1,12 @@
 import React from 'react';
+import { Typography, Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import PollList from 'src/features/polls/PollList';
-import { Typography, Box } from '@mui/material';
 
 const PollListSection = () => {
+  const { t } = useTranslation();
+
   return (
     <Box
       display="flex"
@@ -11,12 +14,11 @@ const PollListSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h2" gutterBottom>
-        Explore Tournesol&apos;s Possibilities
+      <Typography variant="h4" gutterBottom>
+        {t('home.exploreTournesolPossibilities')}
       </Typography>
       <Typography paragraph>
-        Tournesol is used to compare multiple types of alternatives. See the
-        list below and choose the Tournesol that is best for you
+        {t('home.tournesolToComparedMultipleTypesOfAlternatives')}
       </Typography>
       <PollList />
     </Box>
