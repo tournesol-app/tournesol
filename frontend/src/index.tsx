@@ -35,6 +35,9 @@ ReactDOM.render(
           <ThemeProvider theme={theme}>
             <BrowserRouter>
               <SnackbarProvider
+                classes={{
+                  anchorOriginTopRight: 'belowTopBar',
+                }}
                 maxSnack={6}
                 anchorOrigin={{
                   vertical: 'top',

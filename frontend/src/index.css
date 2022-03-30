@@ -17,3 +17,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.SnackbarItem-wrappedRoot.belowTopBar {
+  /* display alerts below the top bar, to avoid hiding buttons */
+  top: 66px;
+}
