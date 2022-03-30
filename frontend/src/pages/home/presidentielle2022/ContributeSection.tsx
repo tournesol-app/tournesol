@@ -28,7 +28,7 @@ const ContributeSection = () => {
         component={Link}
         to={`/${pollName}/comparison?series=true`}
       >
-        Compare Candidates Now
+        {t('home.compareCandidatesNow')}
       </Button>
     </Box>
   );
