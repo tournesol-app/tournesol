@@ -6,10 +6,7 @@ from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
 from tournesol.tests.factories.entity import EntityFactory
-from tournesol.tests.factories.poll import (
-    CriteriaRankFactory,
-    PollFactory,
-)
+from tournesol.tests.factories.poll import CriteriaRankFactory, PollFactory
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
@@ -66,25 +63,22 @@ class CorrelationAPI(TestCase):
     def test_correlations_no_data(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
-        assert response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_json = response.json()
-        assert "criterias" in response_json
-        assert " ".join(response_json["criterias"]) == "hello world !"
-        assert "correlations" in response_json
-        assert len(response_json["correlations"]) == 3
-        assert response_json["correlations"][0] == [None, None, None]
-        assert "slopes" in response_json
-        assert len(response_json["slopes"]) == 3
-        assert response_json["slopes"][0] == [None, None, None]
+        self.assertEqual(" ".join(response_json["criterias"]), "hello world !")
+        self.assertEqual(len(response_json["correlations"]), 3)
+        self.assertEqual(response_json["correlations"][0], [None, None, None])
+        self.assertEqual(len(response_json["slopes"]), 3)
+        self.assertEqual(response_json["slopes"][0], [None, None, None])
 
     def test_correlations_non_authenticated_401(self):
         response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_correlations_wrong_poll_404(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(f"/users/me/criteria_correlations/this_is_not_a_poll/")
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_correlation_perfect_slope(self):
         self.client.force_authenticate(user=self.user)
@@ -101,16 +95,15 @@ class CorrelationAPI(TestCase):
             )
 
         response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
-        assert response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_json = response.json()
-        assert "correlations" in response_json
-        assert response_json["correlations"] == [
+        self.assertEqual(response_json["correlations"], [
             [1, 1, None],
             [1, 1, None],
             [None, None, None]
-        ]
-        assert response_json["slopes"] == [
+        ])
+        self.assertEqual(response_json["slopes"], [
             [1, 1/2, None],
             [2, 1, None],
             [None, None, None]
-        ]
+        ])

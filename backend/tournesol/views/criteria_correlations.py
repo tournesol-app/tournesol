@@ -6,8 +6,9 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
 from scipy.stats import linregress
-from tournesol.views.mixins.poll import PollScopedViewMixin
+
 from tournesol.models.ratings import ContributorRating
+from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 def compute_correlation(scores_1: dict, scores_2: dict) -> int:
