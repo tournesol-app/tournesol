@@ -16,21 +16,21 @@ import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { useAppSelector } from '../../../../app/hooks';
 import { selectFrame } from '../../drawerOpenSlice';
 import { topBarHeight } from '../topbar/TopBar';
 import {
-  Home as HomeIcon,
   Compare as CompareIcon,
-  WatchLater as WatchLaterIcon,
-  ListAlt as ListIcon,
+  EmojiEvents as EmojiEventsIcon,
+  Home as HomeIcon,
   Info as InfoIcon,
+  ListAlt as ListIcon,
   Stars as StarsIcon,
   VideoLibrary,
+  WatchLater as WatchLaterIcon,
 } from '@mui/icons-material';
 
 import { closeDrawer } from '../../drawerOpenSlice';
-import { useAppDispatch } from 'src/app/hooks';
+import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { RouteID } from 'src/utils/types';
@@ -152,6 +152,12 @@ const SideBar = () => {
       targetUrl: `${path}rate_later`,
       IconComponent: WatchLaterIcon,
       displayText: t('menu.myRateLaterList'),
+    },
+    {
+      id: RouteID.MyFeedback,
+      targetUrl: `${path}personal/feedback`,
+      IconComponent: EmojiEventsIcon,
+      displayText: t('menu.myResults'),
     },
     { displayText: 'divider_2' },
     {

@@ -68,6 +68,7 @@
     "myComparisons": "Mes comparaisons",
     "comparedItems": "Élements comparés",
     "myRateLaterList": "À comparer plus tard",
+    "myResults": "Mes résultats",
     "about": "À propos"
   },
   "frame": {
@@ -299,6 +300,13 @@
     "confirmNewPassword": "Confirmez votre nouveau mot de passe",
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
     "resetPasswordButton": "Réinitialiser le mot de passe"
+  },
+  "myFeedbackPage": {
+    "title": "Mes résultats",
+    "presidentielle2022": {
+      "subtitle": "",
+      "description": ""
+    }
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
