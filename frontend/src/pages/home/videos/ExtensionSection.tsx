@@ -15,11 +15,12 @@ const ExtensionSection = () => {
     <Box
       display="flex"
       flexDirection="column"
-      color="white"
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">{t('home.useOurExtension')}</Typography>
+      <Typography variant="h2" gutterBottom>
+        {t('home.useOurExtension')}
+      </Typography>
       <Typography paragraph>{t('home.webExtensionDescription')}</Typography>
       {webExtensionUrl ? (
         <Button
@@ -32,7 +33,7 @@ const ExtensionSection = () => {
           {t('home.getTheExtensionButton')}
         </Button>
       ) : (
-        <Typography color="primary" paragraph>
+        <Typography color="secondary" paragraph>
           <Trans t={t} i18nKey="home.extensionNotAvailableOnYourBrowser">
             The extension is not available on your webbrowser. You may use it on{' '}
             <b>Firefox</b>, <b>Google Chrome</b> or <b>Chromium</b>.
