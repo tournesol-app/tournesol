@@ -214,6 +214,12 @@ class ComparisonDetailApi(
         if poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
 
+    def perform_destroy(self, instance):
+        super().perform_destroy(instance)
+        poll = self.poll_from_url
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            update_user_scores(poll, user=self.request.user)
+
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""
         return self.retrieve(request, *args, **kwargs)
