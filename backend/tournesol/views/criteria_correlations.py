@@ -50,16 +50,19 @@ class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
     
 
 class ContributorCriteriaCorrelationsView(GenericAPIView):
-    
+
     @extend_schema(
         responses={
             200: ContributorCriteriaCorrelationsSerializer
         }
     )
     def get(self, request, poll_name):
+        """
+        Retrieves the correlation between each pair of criteria
+        of the logged user and the given poll.
+        """
         poll = Poll.objects.get(name=poll_name)
         criterias = poll.criterias_list
-        n = len(criterias)
 
         ratings = ContributorRating.objects.prefetch_related("criteria_scores").filter(user=request.user)
 

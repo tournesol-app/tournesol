@@ -48,7 +48,6 @@ def test_compute_slope():
     ), 3)
 
 
-
 class CorrelationAPI(TestCase):
 
     def setUp(self):
