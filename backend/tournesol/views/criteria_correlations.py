@@ -1,6 +1,7 @@
 
 import numpy as np
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
@@ -61,7 +62,7 @@ class ContributorCriteriaCorrelationsView(GenericAPIView):
         Retrieves the correlation between each pair of criteria
         of the logged user and the given poll.
         """
-        poll = Poll.objects.get(name=poll_name)
+        poll = get_object_or_404(Poll, name=poll_name)
         criterias = poll.criterias_list
 
         ratings = ContributorRating.objects.prefetch_related("criteria_scores").filter(user=request.user)

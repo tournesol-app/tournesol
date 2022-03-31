@@ -81,7 +81,8 @@ class CorrelationAPI(TestCase):
         response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_correlations_wrong_poll_400(self):
+    def test_correlations_wrong_poll_404(self):
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(f"/users/me/criteria_correlations/this_is_not_a_poll/")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
