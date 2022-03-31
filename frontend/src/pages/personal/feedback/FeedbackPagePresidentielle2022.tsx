@@ -3,16 +3,20 @@ import { useTranslation } from 'react-i18next';
 import { Grid, Paper, Typography } from '@mui/material';
 import StackedCandidatesPaper from 'src/features/feedback/StackedCandidatesPaper';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { getUserComparisons } from 'src/utils/comparisons';
 import {
   ContributorRecommendations,
   PollCriteria,
   UsersService,
 } from 'src/services/openapi';
 
+const COMPARISONS_NBR_MAX = 100;
+
 const FeedbackPagePresidentielle2022 = () => {
   const { t } = useTranslation();
   const { name: pollName, criterias } = useCurrentPoll();
 
+  const [comparisonsNbr, setComparisonsNbr] = useState(0);
   const [recommendations, setRecommendations] = useState<
     Array<ContributorRecommendations>
   >([]);
@@ -27,17 +31,28 @@ const FeedbackPagePresidentielle2022 = () => {
   };
 
   useEffect(() => {
-    async function getEntities() {
+    async function getEntities(): Promise<ContributorRecommendations[]> {
       const reco = await UsersService.usersMeRecommendationsList({
         pollName: pollName,
         unsafe: true,
         weights: weightRecommendationCriteria(criterias),
       });
 
-      setRecommendations(reco.results || []);
+      return reco.results || [];
     }
 
-    getEntities();
+    const recoPromise = getEntities();
+    const comparisonsPromise = getUserComparisons(
+      pollName,
+      COMPARISONS_NBR_MAX
+    );
+
+    Promise.all([recoPromise, comparisonsPromise]).then(
+      ([reco, comparisons]) => {
+        setComparisonsNbr(comparisons.length);
+        setRecommendations(reco);
+      }
+    );
   }, [criterias, pollName]);
 
   return (
@@ -53,7 +68,10 @@ const FeedbackPagePresidentielle2022 = () => {
           <Paper sx={{ height: '300px' }}>WIP</Paper>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <StackedCandidatesPaper recommendations={recommendations} />
+          <StackedCandidatesPaper
+            comparisonsNbr={comparisonsNbr}
+            recommendations={recommendations}
+          />
         </Grid>
       </Grid>
     </>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   Avatar,
   Divider,
@@ -12,14 +13,22 @@ import {
 import { ContributorRecommendations } from 'src/services/openapi';
 
 interface Props {
+  comparisonsNbr: number;
   recommendations: ContributorRecommendations[];
 }
 
-const StackedCandidatesPaper = ({ recommendations }: Props) => {
+const StackedCandidatesPaper = ({ comparisonsNbr, recommendations }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <Paper sx={{ p: 2 }}>
-      <Typography variant="h5">
-        Should be president according to your X comparisons
+      <Typography
+        variant="h5"
+        sx={{ color: '#fff', backgroundColor: '#1282B2' }}
+      >
+        <Trans t={t} i18nKey="stackedCandidatesPaper.title">
+          Should be president according to your {{ comparisonsNbr }} comparisons
+        </Trans>
       </Typography>
       <List>
         {recommendations.map((reco) => (

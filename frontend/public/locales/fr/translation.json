@@ -55,6 +55,9 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
   },
+  "stackedCandidatesPaper": {
+    "title": "Should be president according to your {{comparisonsNbr}} comparisons"
+  },
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "politique de confidentialité",
