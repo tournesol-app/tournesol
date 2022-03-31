@@ -11,10 +11,13 @@ from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
 )
-from tournesol.views.criteria_correlations import compute_correlation, compute_slope
+from tournesol.views.criteria_correlations import get_linregress
 
 
 def test_compute_correlation():
+    def compute_correlation(scores_1: dict, scores_2: dict):
+        return getattr(get_linregress(scores_1, scores_2), 'rvalue', None)
+        
     assert compute_correlation({}, {}) == None
     assert compute_correlation({"a": 1}, {"b": 1}) == None
     assert compute_correlation({"a": 1}, {"a": 1}) == None
@@ -26,6 +29,9 @@ def test_compute_correlation():
 
 
 def test_compute_slope():
+    def compute_slope(scores_1: dict, scores_2: dict):
+        return getattr(get_linregress(scores_1, scores_2), 'slope', None)
+
     assert compute_slope({}, {}) == None
     assert compute_slope({"a": 1}, {"b": 1}) == None
     assert compute_slope({"a": 1}, {"a": 1}) == None

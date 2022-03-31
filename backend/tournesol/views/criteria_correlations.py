@@ -23,14 +23,6 @@ def get_linregress(scores_1: dict, scores_2: dict):
         return None
 
 
-def compute_correlation(scores_1: dict, scores_2: dict):
-    return getattr(get_linregress(scores_1, scores_2), 'rvalue', None)
-
-
-def compute_slope(scores_1: dict, scores_2: dict):
-    return getattr(get_linregress(scores_1, scores_2), 'slope', None)
-
-
 class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
     criterias = serializers.ListField(child=serializers.CharField(), default=list)
     correlations = serializers.ListField(
