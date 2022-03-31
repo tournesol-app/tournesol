@@ -270,18 +270,23 @@
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
+    "presidentielle2022": {
+      "title": "Tournesol pour l'élection présidentielle",
+      "tournesolDescription": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif transparent et bénéfique.",
+      "whyCompareCandidates": "Initialement conçue pour la recommendation de vidéos d'utilité publique, Tournesol vous propose aujourd'hui de comparer les candidats à l'élection présidentielle française 2022. Ainsi, vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous exprimez.",
+      "dataUsage": "Les données enregistrées ne seront jamais dévoilées aux autres utilisateurs, et ne serviront  qu'à la recherche dans l'éthique des algorithmes et en intelligence artificielle.",
+      "createAccount": "Créer un compte",
+      "start": "Commencer"
+    },
     "contributeTitle": "Participez !",
-    "contributePollPresidential": "Tournesol évalue des alternatives grâce aux comparaisons effectuées par les contributeurs. Les comparaisons se basent sur plusieurs critères de façon à ce que les contributeurs s'interrogent sur leur manière d'évaluer les candidatures. En comparant des candidats, votre opinion sera intégrée aux processus de décisions collaboratives: vous fournirez des données de grande valeur pour aider la recherche dans l'éthique des algorithmes et en intelligence artificielle, et vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous avez exprimées.",
-    "compareCandidatesNow": "Comparer les candidats",
-    "beneficialCollaborativeDecisions": "Décisions collaboratives bénéfiques",
-    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent et bénéfique. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité.",
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
     "compareButton": "Commencer à comparer",
     "useOurExtension": "Utilisez l'extension !",
     "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
-    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>."
+    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
+    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent et bénéfique. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",

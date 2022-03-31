@@ -1,13 +1,13 @@
 import React from 'react';
-import { useTranslation, Trans } from 'react-i18next';
 import { Box, Grid, Typography, useTheme } from '@mui/material';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
 
-const TitleSection = () => {
+interface Props {
+  title: string;
+  children: React.ReactNode;
+}
+
+const TitleSection = ({ title, children }: Props) => {
   const theme = useTheme();
-  const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
 
   return (
     <Grid container>
@@ -19,11 +19,15 @@ const TitleSection = () => {
           display: 'flex',
           justifyContent: 'center',
           maxWidth: '100%',
-          maxHeight: '400px',
-          [theme.breakpoints.down('md')]: {
-            maxHeight: '300px',
+          maxHeight: '380px',
+          [theme.breakpoints.up('md')]: {
+            py: '20px',
           },
-          padding: '40px',
+          [theme.breakpoints.down('md')]: {
+            maxHeight: '200px',
+            marginBottom: '32px',
+          },
+          px: '40px',
           '& img': {
             maxWidth: '100%',
             maxHeight: '100%',
@@ -61,14 +65,12 @@ const TitleSection = () => {
             marginBottom: '24px',
           }}
         >
-          {pollName === PRESIDENTIELLE_2022_POLL_NAME
-            ? t('home.beneficialCollaborativeDecisions')
-            : t('home.collaborativeContentRecommendations')}
+          {title}
         </Typography>
         <Box
           display="flex"
           flexDirection="column"
-          maxWidth="800px"
+          maxWidth="min(100%, 800px)"
           alignItems="flex-start"
           sx={{
             [theme.breakpoints.down('md')]: {
@@ -76,16 +78,7 @@ const TitleSection = () => {
             },
           }}
         >
-          <Typography paragraph>
-            <Trans t={t} i18nKey="home.tournesolPlatformDescription">
-              Tournesol is an <strong>open source</strong> platform which aims
-              to <strong>collaboratively</strong> identify top videos of public
-              utility by eliciting contributors&apos; judgements on content
-              quality. We hope to contribute to making today&apos;s and
-              tomorrow&apos;s large-scale algorithms{' '}
-              <strong>robustly beneficial</strong> for all of humanity.
-            </Trans>
-          </Typography>
+          {children}
         </Box>
       </Grid>
     </Grid>

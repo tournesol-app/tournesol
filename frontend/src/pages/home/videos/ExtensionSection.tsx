@@ -33,7 +33,7 @@ const ExtensionSection = () => {
           {t('home.getTheExtensionButton')}
         </Button>
       ) : (
-        <Typography color="primary" paragraph>
+        <Typography color="secondary" paragraph>
           <Trans t={t} i18nKey="home.extensionNotAvailableOnYourBrowser">
             The extension is not available on your webbrowser. You may use it on{' '}
             <b>Firefox</b>, <b>Google Chrome</b> or <b>Chromium</b>.
