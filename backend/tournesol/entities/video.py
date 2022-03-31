@@ -62,7 +62,6 @@ class VideoEntity(EntityType):
         for (metadata_key, metadata_value) in metadata.items():
             if metadata_value is not None:
                 self.instance.metadata[metadata_key] = metadata_value
-        self.instance.metadata_timestamp = timezone.now()
 
     def metadata_needs_to_be_refreshed(self) -> bool:
         """
