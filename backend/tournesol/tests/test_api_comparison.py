@@ -965,6 +965,14 @@ class ComparisonWithMehestanTest(TestCase):
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
         self.assertEqual(EntityCriteriaScore.objects.count(), 4)
 
+        # user2 has no contributor scores before the comparison is submitted
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects
+                .filter(contributor_rating__user=self.user2)
+                .count(),
+            0
+        )
+
         self.client.force_authenticate(self.user2)
         resp = self.client.post(
             f"/users/me/comparisons/{self.poll.name}",
