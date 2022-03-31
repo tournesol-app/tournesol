@@ -57,7 +57,6 @@ class CorrelationAPI(TestCase):
     def setUp(self):
         self.user = UserFactory(username="user_test_correlation")
         self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
 
         self.poll = PollFactory()
         criterias = [
@@ -69,6 +68,7 @@ class CorrelationAPI(TestCase):
         self.ratings = [ContributorRatingFactory(user=self.user, entity=entity) for entity in self.entities]
 
     def test_correlations_no_data(self):
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
         assert response.status_code == status.HTTP_200_OK
         response_json = response.json()
@@ -81,7 +81,16 @@ class CorrelationAPI(TestCase):
         assert len(response_json["slopes"]) == 3
         assert response_json["slopes"][0] == [None, None, None]
 
+    def test_correlations_non_authenticated_401(self):
+        response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_correlations_wrong_poll_400(self):
+        response = self.client.get(f"/users/me/criteria_correlations/this_is_not_a_poll/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
     def test_correlation_perfect_slope(self):
+        self.client.force_authenticate(user=self.user)
         for i, rating in enumerate(self.ratings):
             ContributorRatingCriteriaScoreFactory(
                 contributor_rating=rating,
