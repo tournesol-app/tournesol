@@ -12,7 +12,7 @@ from tournesol.models.ratings import ContributorRating
 class MlInput(ABC):
     @abstractmethod
     def get_comparisons(
-        self, trusted_only=False, criteria: Optional[str] = None
+        self, trusted_only=False, criteria: Optional[str] = None, user_id: Optional[int] = None,
     ) -> pd.DataFrame:
         """Fetch data about comparisons submitted by users
 
@@ -52,10 +52,12 @@ class MlInputFromPublicDataset(MlInput):
             "public_username"
         ].factorize()
 
-    def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
+    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
         df = self.public_dataset.copy(deep=False)
         if criteria is not None:
             df = df[df.criteria == criteria]
+        if user_id is not None:
+            df = df[df.user_id == user_id]
         return df[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
     def get_ratings_properties(self):
@@ -78,7 +80,7 @@ class MlInputFromDb(MlInput):
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
-    def get_comparisons(self, trusted_only=False, criteria=None) -> pd.DataFrame:
+    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll_name
         )
@@ -88,6 +90,11 @@ class MlInputFromDb(MlInput):
         if trusted_only:
             scores_queryset = scores_queryset.filter(
                 comparison__user__in=User.trusted_users()
+            )
+
+        if user_id is not None:
+            scores_queryset = scores_queryset.filter(
+                comparison__user_id=user_id
             )
 
         values = scores_queryset.values(

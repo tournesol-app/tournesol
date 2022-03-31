@@ -8,7 +8,9 @@ from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
+from ml.mehestan.run import update_user_scores
 from tournesol.models import Comparison, ContributorRating
+from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
@@ -116,6 +118,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         ContributorRating.objects.get_or_create(
             poll=poll, user=self.request.user, entity=comparison.entity_2
         )
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            update_user_scores(poll, user=self.request.user)
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
@@ -203,6 +207,12 @@ class ComparisonDetailApi(
         context["reverse"] = self.currently_reversed
         context["poll"] = self.poll_from_url
         return context
+
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        poll = self.poll_from_url
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            update_user_scores(poll, user=self.request.user)
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""

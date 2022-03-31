@@ -42,7 +42,9 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
 
     def filter_unsafe(self, queryset, filters):
         show_unsafe = filters["unsafe"]
-        if not show_unsafe:
+        if show_unsafe:
+            queryset = queryset.filter(total_score__isnull=False)
+        else:
             # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the
             # total score
             queryset = queryset.filter(total_score__gt=0)
