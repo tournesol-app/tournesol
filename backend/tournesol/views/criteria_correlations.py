@@ -6,8 +6,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
 from scipy.stats import linregress
-
-from tournesol.models.poll import Poll
+from tournesol.views.mixins.poll import PollScopedViewMixin
 from tournesol.models.ratings import ContributorRating
 
 
@@ -50,20 +49,19 @@ class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
     slopes = serializers.ListField(child=serializers.ListField(child=serializers.FloatField(), default=list), default=list)
     
 
-class ContributorCriteriaCorrelationsView(GenericAPIView):
+class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
 
     @extend_schema(
         responses={
             200: ContributorCriteriaCorrelationsSerializer
         }
     )
-    def get(self, request, poll_name):
+    def get(self, request, **kwargs):
         """
         Retrieves the correlation between each pair of criteria
         of the logged user and the given poll.
         """
-        poll = get_object_or_404(Poll, name=poll_name)
-        criterias = poll.criterias_list
+        criterias = self.poll_from_url.criterias_list
 
         ratings = ContributorRating.objects.prefetch_related("criteria_scores").filter(user=request.user)
 
