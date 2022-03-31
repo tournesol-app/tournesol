@@ -5,13 +5,10 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models.ratings import ContributorRatingCriteriaScore
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import (
-    CriteriaFactory,
     CriteriaRankFactory,
     PollFactory,
-    PollWithCriteriasFactory,
 )
 from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,

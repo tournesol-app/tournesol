@@ -1,7 +1,7 @@
 
 import numpy as np
 from django.http import JsonResponse
-from drf_spectacular.utils import OpenApiResponse, OpenApiTypes, extend_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
 from scipy.stats import linregress
