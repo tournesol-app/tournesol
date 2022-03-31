@@ -41,7 +41,7 @@ const StackedCandidatesPaper = ({ comparisonsNbr, recommendations }: Props) => {
                 />
               </ListItemAvatar>
               <ListItemText
-                primary={reco?.metadata?.name || 'Aucun nom'}
+                primary={reco?.metadata?.name || '??'}
                 secondary={
                   <React.Fragment>
                     <Typography
@@ -50,10 +50,16 @@ const StackedCandidatesPaper = ({ comparisonsNbr, recommendations }: Props) => {
                       variant="body2"
                       color="text.primary"
                     >
-                      with 3 comparisons
+                      <Trans
+                        t={t}
+                        i18nKey="stackedCandidatesPaper.withNComparisons"
+                      >
+                        with X comparisons
+                      </Trans>
                     </Typography>
-                    {' - score '}
-                    {reco.total_score.toFixed(2)}
+                    {' - '}
+                    {t('stackedCandidatesPaper.score')}
+                    {' ' + reco.total_score.toFixed(2)}
                   </React.Fragment>
                 }
               />

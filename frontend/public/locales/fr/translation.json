@@ -56,7 +56,9 @@
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
   },
   "stackedCandidatesPaper": {
-    "title": "Should be president according to your {{comparisonsNbr}} comparisons"
+    "title": "Should be president according to your {{comparisonsNbr}} comparisons",
+    "withNComparisons": "with X comparisons",
+    "score": ""
   },
   "footer": {
     "wiki": "wiki",
