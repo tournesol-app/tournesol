@@ -4,7 +4,7 @@ import { Container } from '@mui/material';
 import { ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
-import Pres2022FeedbackPage from './Pres2022FeedBackPage';
+import FeedbackPagePresidentielle2022 from './FeedbackPagePresidentielle2022';
 
 const FeedbackPage = () => {
   const { t } = useTranslation();
@@ -14,7 +14,9 @@ const FeedbackPage = () => {
     <>
       <ContentHeader title={t('myFeedbackPage.title')} />
       <Container sx={{ py: 2 }}>
-        {pollName === PRESIDENTIELLE_2022_POLL_NAME && <Pres2022FeedbackPage />}
+        {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
+          <FeedbackPagePresidentielle2022 />
+        )}
       </Container>
     </>
   );
