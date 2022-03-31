@@ -19,12 +19,10 @@ def test_compute_correlation():
     assert compute_correlation({"a": 1}, {"b": 1}) == None
     assert compute_correlation({"a": 1}, {"a": 1}) == None
     assert np.allclose(compute_correlation({"a": 1, "b": 2}, {"a": 1, "b": 2}), 1)
-    assert np.allclose(compute_correlation({"a": 1, "b": -2}, {"a": -1, "b": 2}) ,-1)
-    assert np.allclose(compute_correlation({"a": 1, "b": -2, "c": -2, "d": 0}, {"a": -1, "b": 2, "c": 2, "d": 0}) ,-1)
+    assert np.allclose(compute_correlation({"a": 1, "b": -2}, {"a": -1, "b": 2}), -1)
+    assert np.allclose(compute_correlation({"a": 1, "b": -2, "c": -2, "d": 0}, {"a": -1, "b": 2, "c": 2, "d": 0}), -1)
     assert compute_correlation({"a": 1, "b": 2, "c": 0}, {"a": 3, "b": 3, "c": 1}) < 1
-    # correlation is not defined in the below case 
-    # because all scores on one of the criteria are equal
-    assert compute_correlation({"a": 1, "b": 2}, {"a": 3, "b": 3}) == None
+    assert compute_correlation({"a": 1, "b": 2}, {"a": 3, "b": 3}) == 0
 
 
 def test_compute_slope():
