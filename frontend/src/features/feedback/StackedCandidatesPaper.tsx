@@ -3,7 +3,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Avatar,
+  Button,
   Divider,
+  Grid,
   Link,
   List,
   ListItem,
@@ -99,6 +101,22 @@ const StackedCandidatesPaper = ({
           );
         })}
       </List>
+      <Grid container mt={1} spacing={2} justifyContent="center">
+        <Grid item xs={6}>
+          <Button component={RouterLink} to={`${baseUrl}/comparisons`}>
+            {t('stackedCandidatesPaper.seeMyComparisons')}
+          </Button>
+        </Grid>
+        <Grid item xs={6}>
+          <Button
+            component={RouterLink}
+            variant="outlined"
+            to={`${baseUrl}/comparison`}
+          >
+            {t('stackedCandidatesPaper.addNewComparisons')}
+          </Button>
+        </Grid>
+      </Grid>
     </Paper>
   );
 };
