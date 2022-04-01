@@ -21,6 +21,8 @@ interface Props {
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity>>;
   length: number;
+  // redirect to this URL when the series is over
+  redirectTo?: string;
   resumable?: boolean;
 }
 
@@ -44,6 +46,7 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
+  redirectTo,
   resumable,
 }: Props) => {
   const { name: pollName } = useCurrentPoll();
@@ -248,6 +251,10 @@ const ComparisonSeries = ({
         to={{ pathname: location.pathname, search: firstComparisonParams }}
       />
     );
+  }
+
+  if (redirectTo && step >= length) {
+    return <Redirect to={{ pathname: redirectTo }} />;
   }
 
   return (

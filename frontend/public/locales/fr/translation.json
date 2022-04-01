@@ -63,6 +63,7 @@
     "withNComparisons_many": "avec {{nComp}} comparaisons",
     "withNComparisons_other": "avec {{nComp}} comparaisons",
     "score": "score :",
+    "ifYourRankingSeemsOff": "Si votre classement vous semble inadéquat, vous pouvez soit modifier vos comparaisons existantes, soit en ajouter de nouvelles en utilisant les boutons ci-dessous.",
     "seeMyComparisons": "voir mes comparaisons",
     "addNewComparisons": "ajouter des comparaisons"
   },
