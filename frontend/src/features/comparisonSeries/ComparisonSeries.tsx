@@ -5,12 +5,9 @@ import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import {
-  Comparison as ComparisonModel,
-  Entity,
-  UsersService,
-} from 'src/services/openapi';
+import { Entity } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
+import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 
 // this constant controls the render of the series, if the `length` prop of
@@ -25,17 +22,6 @@ interface Props {
   getAlternatives?: () => Promise<Array<Entity>>;
   length: number;
   resumable?: boolean;
-}
-
-async function getUserComparisons(
-  pollName: string
-): Promise<ComparisonModel[]> {
-  const comparisons = await UsersService.usersMeComparisonsList({
-    pollName,
-    limit: 100,
-  });
-
-  return comparisons.results || [];
 }
 
 const generateSteps = (length: number) => {
@@ -111,7 +97,7 @@ const ComparisonSeries = ({
     }
 
     async function getUserComparisonsAsync(pName: string) {
-      const comparisons = await getUserComparisons(pName);
+      const comparisons = await getUserComparisons(pName, 100);
       const formattedComparisons = comparisons.map(
         (c) => c.entity_a.uid + '/' + c.entity_b.uid
       );

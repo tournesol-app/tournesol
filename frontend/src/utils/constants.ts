@@ -176,6 +176,7 @@ export const polls: Array<SelectablePoll> = [
     name: YOUTUBE_POLL_NAME,
     displayOrder: 10,
     path: '/',
+    disabledRouteIds: [RouteID.MyFeedback],
     iconComponent: YouTube,
     withSearchBar: true,
     topBarBackground: null,

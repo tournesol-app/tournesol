@@ -52,6 +52,15 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
+  "stackedCandidatesPaper": {
+    "title_one": "Should be president according to you",
+    "title_other": "Should be president according to your {{comparisonsNbr}} comparisons",
+    "withNComparisons_one": "with {{nComp}} comparison",
+    "withNComparisons_other": "with {{nComp}} comparisons",
+    "score": "score:",
+    "seeMyComparisons": "see my comparisons",
+    "addNewComparisons": "make new comparisons"
+  },
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "privacy policy",
@@ -63,8 +72,9 @@
     "recommendations": "Recommendations",
     "compare": "Compare 🌻",
     "myComparisons": "My comparisons",
-    "comparedItems": "Compared items",
+    "comparedItems": "My compared items",
     "myRateLaterList": "My rate later list",
+    "myResults": "My results",
     "about": "About"
   },
   "frame": {
@@ -295,6 +305,13 @@
     "confirmNewPassword": "Confirm your new password",
     "passwordsDoNotMatch": "Passwords do not match",
     "resetPasswordButton": "Reset password"
+  },
+  "myFeedbackPage": {
+    "title": "My results",
+    "presidentielle2022": {
+      "subtitle": "Thank you for comparing candidates on our platform",
+      "description": "Your opinions will now be included in a global evaluation and ranking of the candidates. After the election we will make the global results public. To protect the privacy and the opinions of all contributors, the individual contributions will remain private."
+    }
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
