@@ -24,6 +24,10 @@ interface Props {
   recommendations: ContributorRecommendations[];
 }
 
+/**
+ * Display an ordered list of candidates, with their total score and their
+ * number of comparisons.
+ */
 const StackedCandidatesPaper = ({
   comparisonsNbr,
   ratings,
