@@ -31,7 +31,7 @@ class CriteriaRankFactory(DjangoModelFactory):
 
 
 class PollWithCriteriasFactory(PollFactory):
-   criterias = factory.RelatedFactory(
+    criterias = factory.RelatedFactory(
         CriteriaRankFactory,
         factory_related_name='poll'
     )

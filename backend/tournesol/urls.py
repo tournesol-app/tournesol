@@ -12,6 +12,7 @@ from .views.contributor_recommendations import (
     PrivateContributorRecommendationsView,
     PublicContributorRecommendationsView,
 )
+from .views.criteria_correlations import ContributorCriteriaCorrelationsView
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
@@ -100,6 +101,12 @@ urlpatterns = [
         "users/<str:username>/recommendations/<str:poll_name>",
         PublicContributorRecommendationsView.as_view(),
         name="public_contributor_recommendations",
+    ),
+    # User statistics
+    path(
+        "users/me/criteria_correlations/<str:poll_name>/",
+        ContributorCriteriaCorrelationsView.as_view(),
+        name="contributor_criteria_correlations",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),
