@@ -62,7 +62,10 @@ class CorrelationAPI(TestCase):
             CriteriaRankFactory(criteria__name="!", poll=self.poll, rank=3)
         ]
         self.entities = EntityFactory.create_batch(10)
-        self.ratings = [ContributorRatingFactory(user=self.user, entity=entity) for entity in self.entities]
+        self.ratings = [
+            ContributorRatingFactory(user=self.user, entity=entity, poll=self.poll)
+            for entity in self.entities
+        ]
 
     def test_correlations_no_data(self):
         self.client.force_authenticate(user=self.user)
@@ -96,6 +99,12 @@ class CorrelationAPI(TestCase):
                 contributor_rating=rating,
                 criteria="world",
                 score=0.2 * i,
+            )
+            # this rating related to another poll should not impact the result
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating__user=self.user,
+                criteria="another_criteria",
+                score=0.3 * i,
             )
 
         response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")

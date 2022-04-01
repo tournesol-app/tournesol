@@ -50,6 +50,7 @@ class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
         criterias = self.poll_from_url.criterias_list
 
         ratings = ContributorRating.objects.prefetch_related("criteria_scores").filter(
+            poll=self.poll_from_url,
             user=request.user
         )
 
