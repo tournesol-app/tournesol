@@ -1794,6 +1794,10 @@ components:
             items:
               type: number
               format: float
+      required:
+      - correlations
+      - criterias
+      - slopes
     ContributorCriteriaScore:
       type: object
       properties:
@@ -1906,24 +1910,24 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        is_public:
-          type: boolean
-          readOnly: true
-        metadata:
-          type: object
-          additionalProperties: {}
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        total_score:
-          type: number
-          format: float
+        metadata:
+          type: object
+          additionalProperties: {}
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        total_score:
+          type: number
+          format: float
+        is_public:
+          type: boolean
           readOnly: true
         tournesol_score:
           type: number
