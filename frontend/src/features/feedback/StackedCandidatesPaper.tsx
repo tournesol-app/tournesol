@@ -101,14 +101,25 @@ const StackedCandidatesPaper = ({
           );
         })}
       </List>
-      <Grid container mt={1} spacing={2} justifyContent="center">
+      <Grid
+        container
+        mt={1}
+        spacing={2}
+        justifyContent="center"
+        sx={{ color: 'secondary.main' }}
+      >
         <Grid item xs={6}>
-          <Button component={RouterLink} to={`${baseUrl}/comparisons`}>
+          <Button
+            color="inherit"
+            component={RouterLink}
+            to={`${baseUrl}/comparisons`}
+          >
             {t('stackedCandidatesPaper.seeMyComparisons')}
           </Button>
         </Grid>
         <Grid item xs={6}>
           <Button
+            color="inherit"
             component={RouterLink}
             variant="outlined"
             to={`${baseUrl}/comparison`}
