@@ -55,7 +55,7 @@
   "stackedCandidatesPaper": {
     "title": "Should be president according to your {{comparisonsNbr}} comparisons",
     "withNComparisons": "with {{nComp}} comparisons",
-    "score": "score"
+    "score": "score:"
   },
   "footer": {
     "wiki": "wiki",

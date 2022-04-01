@@ -1,8 +1,10 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Avatar,
   Divider,
+  Link,
   List,
   ListItem,
   ListItemAvatar,
@@ -10,6 +12,7 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
+import { useCurrentPoll } from 'src/hooks';
 import {
   ContributorRating,
   ContributorRecommendations,
@@ -27,6 +30,7 @@ const StackedCandidatesPaper = ({
   recommendations,
 }: Props) => {
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
 
   const nComparisons = Object.fromEntries(
     ratings.map((rating) => {
@@ -66,12 +70,18 @@ const StackedCandidatesPaper = ({
                         variant="body2"
                         color="text.primary"
                       >
-                        <Trans
-                          t={t}
-                          i18nKey="stackedCandidatesPaper.withNComparisons"
+                        <Link
+                          color="inherit"
+                          component={RouterLink}
+                          to={`${baseUrl}/comparisons/?uid=${reco.uid}`}
                         >
-                          with {{ nComp }} comparisons
-                        </Trans>
+                          <Trans
+                            t={t}
+                            i18nKey="stackedCandidatesPaper.withNComparisons"
+                          >
+                            with {{ nComp }} comparisons
+                          </Trans>
+                        </Link>
                       </Typography>
                       {' - '}
                       {t('stackedCandidatesPaper.score')}
