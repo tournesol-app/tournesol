@@ -310,7 +310,11 @@
   "myFeedbackPage": {
     "title": "My results",
     "presidentielle2022": {
-      "subtitle": "Thank you for comparing candidates on our platform",
+      "welcomeOnYourResultPage": "Welcome on your result page",
+      "notEnoughComparisons_one": "We need at least {{minComparisons}} different comparisons before being able to display your results. One last comparison is required. Click on the button below to continue.",
+      "notEnoughComparisons_other": "We need at least {{minComparisons}} different comparisons before being able to display your results. {{remainingComparisons}} comparisons are still required. Click on the button below, and follow the instructions to continue.",
+      "continueComparisons": "Continue your comparisons",
+      "thanksForComparingCandidates": "Thank you for comparing candidates on our platform",
       "description": "Your opinions will now be included in a global evaluation and ranking of the candidates. After the election we will make the global results public. To protect the privacy and the opinions of all contributors, the individual contributions will remain private."
     }
   },
