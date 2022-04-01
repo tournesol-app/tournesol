@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Grid, Paper, Typography } from '@mui/material';
 import StackedCandidatesPaper from 'src/features/feedback/StackedCandidatesPaper';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { getUserComparisons } from 'src/utils/comparisons';
+import { getUserComparisons } from 'src/utils/api/comparisons';
 import {
   ContributorRating,
   ContributorRecommendations,
