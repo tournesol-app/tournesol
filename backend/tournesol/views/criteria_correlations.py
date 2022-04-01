@@ -15,23 +15,26 @@ def get_linregress(scores_1: dict, scores_2: dict):
     """
     # At least two datapoints are necessary to compute the slope and correlation
     if sum(entity in scores_1 for entity in scores_2) > 1:
-        return linregress(
-            [scores_1[e] for e in scores_1 if e in scores_2],
-            [scores_2[e] for e in scores_1 if e in scores_2],
-        )
+        try:
+            return linregress(
+                [scores_1[e] for e in scores_1 if e in scores_2],
+                [scores_2[e] for e in scores_1 if e in scores_2],
+            )
+        except ValueError:
+            # regression is undefined if all x values are identical
+            # (e.g all scores are 0 for one of the criteria)
+            return None
     else:
         return None
 
 
 class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
-    criterias = serializers.ListField(child=serializers.CharField(), default=list)
+    criterias = serializers.ListField(child=serializers.CharField())
     correlations = serializers.ListField(
-        child=serializers.ListField(child=serializers.FloatField(), default=list),
-        default=list
+        child=serializers.ListField(child=serializers.FloatField())
     )
     slopes = serializers.ListField(
-        child=serializers.ListField(child=serializers.FloatField(), default=list),
-        default=list
+        child=serializers.ListField(child=serializers.FloatField())
     )
 
 
