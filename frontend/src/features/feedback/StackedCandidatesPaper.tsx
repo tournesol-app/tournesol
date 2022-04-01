@@ -50,7 +50,11 @@ const StackedCandidatesPaper = ({
         variant="h5"
         sx={{ color: '#fff', backgroundColor: '#1282B2' }}
       >
-        <Trans t={t} i18nKey="stackedCandidatesPaper.title">
+        <Trans
+          t={t}
+          i18nKey="stackedCandidatesPaper.title"
+          count={comparisonsNbr}
+        >
           Should be president according to your {{ comparisonsNbr }} comparisons
         </Trans>
       </Typography>
@@ -84,6 +88,7 @@ const StackedCandidatesPaper = ({
                           <Trans
                             t={t}
                             i18nKey="stackedCandidatesPaper.withNComparisons"
+                            count={nComp}
                           >
                             with {{ nComp }} comparisons
                           </Trans>

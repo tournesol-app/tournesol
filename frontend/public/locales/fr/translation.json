@@ -56,8 +56,12 @@
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
   },
   "stackedCandidatesPaper": {
-    "title": "Devrait être president.e d'après vos {{comparisonsNbr}} comparaisons",
-    "withNComparisons": "avec {{nComp}} comparaisons",
+    "title_one": "Devrait être président.e d'après vous",
+    "title_many": "Devrait être président.e d'après vos {{comparisonsNbr}} comparaisons",
+    "title_other": "Devrait être président.e d'après vos {{comparisonsNbr}} comparaisons",
+    "withNComparisons_one": "avec {{nComp}} comparaison",
+    "withNComparisons_many": "avec {{nComp}} comparaisons",
+    "withNComparisons_other": "avec {{nComp}} comparaisons",
     "score": "score :",
     "seeMyComparisons": "voir mes comparaisons",
     "addNewComparisons": "ajouter des comparaisons"

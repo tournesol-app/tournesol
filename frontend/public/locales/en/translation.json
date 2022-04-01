@@ -53,8 +53,10 @@
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
   "stackedCandidatesPaper": {
-    "title": "Should be president according to your {{comparisonsNbr}} comparisons",
-    "withNComparisons": "with {{nComp}} comparisons",
+    "title_one": "Should be president according to you",
+    "title_other": "Should be president according to your {{comparisonsNbr}} comparisons",
+    "withNComparisons_one": "with {{nComp}} comparison",
+    "withNComparisons_other": "with {{nComp}} comparisons",
     "score": "score:",
     "seeMyComparisons": "see my comparisons",
     "addNewComparisons": "make new comparisons"
