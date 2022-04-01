@@ -71,8 +71,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const location = useLocation();
   const { showSuccessAlert } = useNotifications();
   const { name: pollName } = useCurrentPoll();
-
-  const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialComparison, setInitialComparison] =
     useState<ComparisonRequest | null>(null);
@@ -123,7 +121,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
       } else if (uidKey === UID_PARAMS.vidB) {
         setSelectorB(newValue);
       }
-      setSubmitted(false);
     },
     [history]
   );
@@ -172,26 +169,22 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
         requestBody: c,
       });
       setInitialComparison(c);
-
-      // the presence of the `afterSubmitCallback` prop suggests we are in
-      // a comparison series, some state updates are not triggered here to avoid
-      // race conditions
-      if (!afterSubmitCallback) {
-        // Refresh ratings statistics after the comparisons have been submitted
-        setSubmitted(true);
-      }
     }
 
     if (afterSubmitCallback) {
       const suggestion = afterSubmitCallback(c.entity_a.uid, c.entity_b.uid);
-
       if (suggestion.uid) {
         if (suggestion.refreshLeft) {
           onChangeA({ uid: suggestion.uid, rating: null });
+          setSelectorB((value) => ({ ...value, ratingIsExpired: true }));
         } else {
           onChangeB({ uid: suggestion.uid, rating: null });
+          setSelectorA((value) => ({ ...value, ratingIsExpired: true }));
         }
       }
+    } else {
+      setSelectorA((value) => ({ ...value, ratingIsExpired: true }));
+      setSelectorB((value) => ({ ...value, ratingIsExpired: true }));
     }
 
     showSuccessAlert(t('comparison.successfullySubmitted'));
@@ -230,7 +223,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
-          submitted={submitted}
         />
       </Grid>
       <Grid
@@ -246,7 +238,6 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
-          submitted={submitted}
         />
       </Grid>
       <Grid
