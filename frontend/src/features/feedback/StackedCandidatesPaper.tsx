@@ -69,7 +69,7 @@ const StackedCandidatesPaper = ({
                 <ListItemText
                   primary={reco?.metadata?.name || '??'}
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: 'inline' }}
                         component="span"
@@ -92,7 +92,7 @@ const StackedCandidatesPaper = ({
                       {' - '}
                       {t('stackedCandidatesPaper.score')}
                       {' ' + reco.total_score.toFixed(2)}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
