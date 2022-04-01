@@ -29,14 +29,12 @@ def get_linregress(scores_1: dict, scores_2: dict):
 
 
 class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
-    criterias = serializers.ListField(child=serializers.CharField(), default=list)
+    criterias = serializers.ListField(child=serializers.CharField())
     correlations = serializers.ListField(
-        child=serializers.ListField(child=serializers.FloatField(), default=list),
-        default=list
+        child=serializers.ListField(child=serializers.FloatField())
     )
     slopes = serializers.ListField(
-        child=serializers.ListField(child=serializers.FloatField(), default=list),
-        default=list
+        child=serializers.ListField(child=serializers.FloatField())
     )
 
 
