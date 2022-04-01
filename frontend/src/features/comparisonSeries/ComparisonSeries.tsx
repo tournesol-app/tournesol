@@ -31,10 +31,7 @@ const generateSteps = (length: number) => {
   for (let i = 0; i < length; i++) {
     content.push(
       <Step key={i}>
-        <StepLabel>
-          {i === 0 && 'start'}
-          {i === length - 1 && 'end!'}
-        </StepLabel>
+        <StepLabel />
       </Step>
     );
   }
@@ -276,7 +273,11 @@ const ComparisonSeries = ({
               />
             )}
           <Container maxWidth="md" sx={{ my: 2 }}>
-            <Stepper activeStep={step} alternativeLabel>
+            <Stepper
+              activeStep={step}
+              alternativeLabel
+              sx={{ marginBottom: 4 }}
+            >
               {generateSteps(length)}
             </Stepper>
           </Container>
