@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Avatar,
+  Box,
   Button,
   Divider,
   Grid,
@@ -106,9 +107,13 @@ const StackedCandidatesPaper = ({
           );
         })}
       </List>
+      <Box pt={2} pb={1} px={2}>
+        <Typography paragraph variant="body2" textAlign="justify">
+          {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}
+        </Typography>
+      </Box>
       <Grid
         container
-        mt={1}
         spacing={2}
         justifyContent="center"
         sx={{ color: 'secondary.main' }}
