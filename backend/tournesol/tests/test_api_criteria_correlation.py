@@ -119,3 +119,32 @@ class CorrelationAPI(TestCase):
             [2, 1, None],
             [None, None, None]
         ])
+
+
+    def test_correlation_with_zeros_on_a_criteria(self):
+        self.client.force_authenticate(user=self.user)
+        for i, rating in enumerate(self.ratings):
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=rating,
+                criteria="hello",
+                score=0.1 * i,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=rating,
+                criteria="world",
+                score=0,
+            )
+
+        response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_json = response.json()
+        self.assertEqual(response_json["correlations"], [
+            [1, None, None],
+            [0.0, None, None],
+            [None, None, None]
+        ])
+        self.assertEqual(response_json["slopes"], [
+            [1, None, None],
+            [0.0, None, None],
+            [None, None, None]
+        ])
