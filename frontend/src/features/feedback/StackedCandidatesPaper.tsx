@@ -10,15 +10,29 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-import { ContributorRecommendations } from 'src/services/openapi';
+import {
+  ContributorRating,
+  ContributorRecommendations,
+} from 'src/services/openapi';
 
 interface Props {
   comparisonsNbr: number;
+  ratings: ContributorRating[];
   recommendations: ContributorRecommendations[];
 }
 
-const StackedCandidatesPaper = ({ comparisonsNbr, recommendations }: Props) => {
+const StackedCandidatesPaper = ({
+  comparisonsNbr,
+  ratings,
+  recommendations,
+}: Props) => {
   const { t } = useTranslation();
+
+  const nComparisons = Object.fromEntries(
+    ratings.map((rating) => {
+      return [rating.entity.uid, rating.n_comparisons];
+    })
+  );
 
   return (
     <Paper sx={{ p: 2 }}>
@@ -31,42 +45,45 @@ const StackedCandidatesPaper = ({ comparisonsNbr, recommendations }: Props) => {
         </Trans>
       </Typography>
       <List>
-        {recommendations.map((reco) => (
-          <>
-            <ListItem key={reco.uid} alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar
-                  alt={reco?.metadata?.name || ''}
-                  src={reco?.metadata?.image_url || ''}
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary={reco?.metadata?.name || '??'}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      <Trans
-                        t={t}
-                        i18nKey="stackedCandidatesPaper.withNComparisons"
+        {recommendations.map((reco) => {
+          const nComp = nComparisons[reco.uid] || 0;
+          return (
+            <>
+              <ListItem key={reco.uid} alignItems="flex-start">
+                <ListItemAvatar>
+                  <Avatar
+                    alt={reco?.metadata?.name || ''}
+                    src={reco?.metadata?.image_url || ''}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={reco?.metadata?.name || '??'}
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        sx={{ display: 'inline' }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
                       >
-                        with X comparisons
-                      </Trans>
-                    </Typography>
-                    {' - '}
-                    {t('stackedCandidatesPaper.score')}
-                    {' ' + reco.total_score.toFixed(2)}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-            <Divider variant="inset" component="li" />
-          </>
-        ))}
+                        <Trans
+                          t={t}
+                          i18nKey="stackedCandidatesPaper.withNComparisons"
+                        >
+                          with {{ nComp }} comparisons
+                        </Trans>
+                      </Typography>
+                      {' - '}
+                      {t('stackedCandidatesPaper.score')}
+                      {' ' + reco.total_score.toFixed(2)}
+                    </React.Fragment>
+                  }
+                />
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </>
+          );
+        })}
       </List>
     </Paper>
   );

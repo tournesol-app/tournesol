@@ -5,6 +5,7 @@ import StackedCandidatesPaper from 'src/features/feedback/StackedCandidatesPaper
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { getUserComparisons } from 'src/utils/comparisons';
 import {
+  ContributorRating,
   ContributorRecommendations,
   PollCriteria,
   UsersService,
@@ -17,6 +18,7 @@ const FeedbackPagePresidentielle2022 = () => {
   const { name: pollName, criterias } = useCurrentPoll();
 
   const [comparisonsNbr, setComparisonsNbr] = useState(0);
+  const [ratings, setRatings] = useState<ContributorRating[]>([]);
   const [recommendations, setRecommendations] = useState<
     Array<ContributorRecommendations>
   >([]);
@@ -31,7 +33,16 @@ const FeedbackPagePresidentielle2022 = () => {
   };
 
   useEffect(() => {
-    async function getEntities(): Promise<ContributorRecommendations[]> {
+    async function getUserRatings(): Promise<ContributorRating[]> {
+      const ratings = await UsersService.usersMeContributorRatingsList({
+        pollName: pollName,
+      });
+      return ratings.results || [];
+    }
+
+    async function getUserRecommendations(): Promise<
+      ContributorRecommendations[]
+    > {
       const reco = await UsersService.usersMeRecommendationsList({
         pollName: pollName,
         unsafe: true,
@@ -41,18 +52,22 @@ const FeedbackPagePresidentielle2022 = () => {
       return reco.results || [];
     }
 
-    const recoPromise = getEntities();
+    const ratingsPromise = getUserRatings();
+    const recommendationsPromise = getUserRecommendations();
     const comparisonsPromise = getUserComparisons(
       pollName,
       COMPARISONS_NBR_MAX
     );
 
-    Promise.all([recoPromise, comparisonsPromise]).then(
-      ([reco, comparisons]) => {
-        setComparisonsNbr(comparisons.length);
-        setRecommendations(reco);
-      }
-    );
+    Promise.all([
+      ratingsPromise,
+      recommendationsPromise,
+      comparisonsPromise,
+    ]).then(([contributorRatings, contributorRecommendation, comparisons]) => {
+      setComparisonsNbr(comparisons.length);
+      setRatings(contributorRatings);
+      setRecommendations(contributorRecommendation);
+    });
   }, [criterias, pollName]);
 
   return (
@@ -70,6 +85,7 @@ const FeedbackPagePresidentielle2022 = () => {
         <Grid item xs={12} sm={12} md={6}>
           <StackedCandidatesPaper
             comparisonsNbr={comparisonsNbr}
+            ratings={ratings}
             recommendations={recommendations}
           />
         </Grid>
