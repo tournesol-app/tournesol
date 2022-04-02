@@ -240,7 +240,7 @@
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
-    "partenershipWithEpflDetail": "Aujourd'hui notre contributeur principal est l'École Polytechique Fédérale de Lausanne (EPFL). En particulier Adrien Matissart, ingénieur de recherche au Laboratoire de Calcul Distribué de la Faculté d'Informatique et Communications de l'EPFL, se consacre pleinement au développement de la plateforme Tournesol. Plusieurs autres chercheurs et chercheuses du laboratoire s'occupent quant à eux de concevoir et d'étudier les algorithmes de Tournesol.",
+    "partenershipWithEpflDetail": "Aujourd'hui notre contributeur principal est l'École Polytechnique Fédérale de Lausanne (EPFL). En particulier Adrien Matissart, ingénieur de recherche au Laboratoire de Calcul Distribué de la Faculté d'Informatique et Communications de l'EPFL, se consacre pleinement au développement de la plateforme Tournesol. Plusieurs autres chercheurs et chercheuses du laboratoire s'occupent quant à eux de concevoir et d'étudier les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
     "partnershipWithPolyconseilDetail": "Nous sommes également accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Depuis août 2021, Polyconseil met à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous apporte chaque mois des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
     "partnershipWithKleis": "Partenariat avec Kleis Technology",
@@ -372,6 +372,15 @@
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard."
   },
+  "criteriaTooltips": {
+    "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",
+    "international": "Les sujets liés à l'Europe, à la diplomatie internationale, à la defense, au terrorisme et à l'immigration",
+    "education_culture": "Les sujets liés au système éducatif, aux média, à la culture, aux  réseaux sociaux et à l'éthique des algorithmes",
+    "health": "Les sujets liés au système de santé, à la santé mentale, aux sports, à l'éthique de fin de vie, au COVID-19 et aux vaccins",
+    "institutions_democracy": "Les sujets liés à l'organisation de la vie politique, à la démocratie, aux territoires et collectivités, à la fonction publique et à l'Outre-mer",
+    "labour_economy": "Les sujets liés aux emplois, au chômage, au pouvoir d'achat, à la fiscalité, au déficits publiques et la dette",
+    "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration"
+},
   "language": {
     "af": "Afrikaans",
     "ar": "Arabe",

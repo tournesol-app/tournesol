@@ -57,6 +57,33 @@ export const criteriaToEmoji: Record<string, string> = {
   solidarity: '🤝',
 };
 
+export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
+  return {
+    energy_environment: t('criteriaTooltips.energy_environment'),
+    international: t('criteriaTooltips.international'),
+    education_culture: t('criteriaTooltips.education_culture'),
+    health: t('criteriaTooltips.health'),
+    institutions_democracy: t('criteriaTooltips.institutions_democracy'),
+    labour_economy: t('criteriaTooltips.labour_economy'),
+    solidarity: t('criteriaTooltips.solidarity'),
+  }[criteria];
+};
+
+export const criteriaLinks: Record<string, string> = {
+  reliability: 'https://wiki.tournesol.app/wiki/Reliable_and_not_misleading',
+  pedagogy: 'https://wiki.tournesol.app/wiki/Clear_and_pedagogical',
+  importance: 'https://wiki.tournesol.app/wiki/Important_and_actionable',
+  layman_friendly: 'https://wiki.tournesol.app/wiki/Layman-friendly',
+  entertaining_relaxing:
+    'https://wiki.tournesol.app/wiki/Entertaining_and_relaxing',
+  engaging: 'https://wiki.tournesol.app/wiki/Engaging_and_thought-provoking',
+  diversity_inclusion:
+    'https://wiki.tournesol.app/wiki/Diversity_and_inclusion',
+  better_habits: 'https://wiki.tournesol.app/wiki/Encourages_better_habits',
+  backfire_risk:
+    'https://wiki.tournesol.app/wiki/Resilience_to_backfiring_risks',
+};
+
 export const recommendationsLanguages: {
   [language: string]: (t: TFunction) => string;
 } = {
