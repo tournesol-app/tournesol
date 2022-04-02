@@ -26,6 +26,8 @@ const CriteriaCorrelationListItem = (correlation: {
   criterion: string;
   value: number;
 }) => {
+  const { getCriteriaLabel } = useCurrentPoll();
+
   return (
     <ListItem key={correlation.criterion} alignItems="flex-start">
       <ListItemAvatar
@@ -39,7 +41,7 @@ const CriteriaCorrelationListItem = (correlation: {
         {criteriaToEmoji[correlation.criterion]}
       </ListItemAvatar>
       <ListItemText
-        primary={correlation.criterion}
+        primary={getCriteriaLabel(correlation.criterion)}
         secondary={`Coefficient de correlation ${correlation.value.toFixed(2)}`}
       />
     </ListItem>
@@ -80,7 +82,12 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
           Criteria most correlated to who you think should be president
         </Typography>
       }
-      items={orderedCriteriaCorrelations.map(CriteriaCorrelationListItem)}
+      items={orderedCriteriaCorrelations.map((correlation) => (
+        <CriteriaCorrelationListItem
+          key={correlation.criterion}
+          {...correlation}
+        />
+      ))}
       actions={
         <>
           <Box pt={2} pb={1} px={2}>

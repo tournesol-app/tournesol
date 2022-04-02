@@ -28,11 +28,11 @@ const StackedCard = ({ title, items, actions }: Props) => {
       />
       <CardContent sx={{ p: 2, py: 0 }}>
         <List sx={{ py: 0 }}>
-          {items.slice(0, 3).map((item) => (
-            <>
+          {items.slice(0, 3).map((item, i) => (
+            <React.Fragment key={i}>
               {item}
               <Divider variant="inset" component="li" />
-            </>
+            </React.Fragment>
           ))}
           {!showAll && (
             <Button
@@ -49,11 +49,11 @@ const StackedCard = ({ title, items, actions }: Props) => {
             </Button>
           )}
           <Collapse in={showAll} timeout="auto" sx={{ width: '100%' }}>
-            {items.slice(3).map((item) => (
-              <>
+            {items.slice(3).map((item, i) => (
+              <React.Fragment key={i}>
                 {item}
                 <Divider variant="inset" component="li" />
-              </>
+              </React.Fragment>
             ))}
           </Collapse>
         </List>
