@@ -1,4 +1,6 @@
-from django.http import JsonResponse
+import numpy as np
+
+from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
@@ -40,6 +42,10 @@ class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
 
 class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
 
+    @staticmethod
+    def clean(value):
+        return None if value is None or np.isnan(value) else value
+
     @extend_schema(
         responses={
             200: ContributorCriteriaCorrelationsSerializer
@@ -66,16 +72,17 @@ class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
             c1: {c2: get_linregress(scores[c1], scores[c2]) for c2 in criterias}
             for c1 in criterias
         }
+
         serializer = ContributorCriteriaCorrelationsSerializer({
             "criterias": criterias,
             "correlations": [
-                [getattr(linear_regressions[c1][c2], 'rvalue', None) for c1 in criterias]
+                [self.clean(getattr(linear_regressions[c1][c2], 'rvalue', None)) for c1 in criterias]
                 for c2 in criterias
             ],
             "slopes": [
-                [getattr(linear_regressions[c1][c2], 'slope', None) for c1 in criterias]
+                [self.clean(getattr(linear_regressions[c1][c2], 'slope', None)) for c1 in criterias]
                 for c2 in criterias
             ],
         })
 
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
