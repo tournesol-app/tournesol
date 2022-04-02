@@ -86,6 +86,34 @@ class CorrelationAPI(TestCase):
         response = self.client.get(f"/users/me/criteria_correlations/this_is_not_a_poll/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_correlation_all_zeros(self):
+        self.client.force_authenticate(user=self.user)
+        for i, rating in enumerate(self.ratings):
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=rating,
+                criteria="hello",
+                score=0,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=rating,
+                criteria="world",
+                score=0,
+            )
+        response = self.client.get(f"/users/me/criteria_correlations/{self.poll.name}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_json = response.json()
+        self.assertEqual(response_json["correlations"], [
+            [None, None, None],
+            [None, None, None],
+            [None, None, None]
+        ])
+        self.assertEqual(response_json["slopes"], [
+            [None, None, None],
+            [None, None, None],
+            [None, None, None]
+        ])
+
+
     def test_correlation_perfect_slope(self):
         self.client.force_authenticate(user=self.user)
         for i, rating in enumerate(self.ratings):
