@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { LoaderWrapper } from 'src/components';
 import StackedCandidatesPaper from 'src/features/feedback/StackedCandidatesPaper';
+import StackedCriteriaPaper from 'src/features/feedback/StackedCriteriaPaper';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import {
@@ -21,6 +22,11 @@ const FeedbackPagePresidentielle2022 = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonsNbr, setComparisonsNbr] = useState(0);
+
+  const [criteriaSlopes, setCriteriaSlopes] = useState<{
+    criteria: string[];
+    slopes: Array<number | null>;
+  }>({ criteria: [], slopes: [] });
   const [ratings, setRatings] = useState<ContributorRating[]>([]);
   const [recommendations, setRecommendations] = useState<
     Array<ContributorRecommendations>
@@ -39,6 +45,7 @@ const FeedbackPagePresidentielle2022 = () => {
   };
 
   useEffect(() => {
+    // ratings are used to know how many times a candidate has been compared
     async function getUserRatings(): Promise<ContributorRating[]> {
       const ratings = await UsersService.usersMeContributorRatingsList({
         pollName: pollName,
@@ -46,6 +53,24 @@ const FeedbackPagePresidentielle2022 = () => {
       return ratings.results || [];
     }
 
+    // used to display an ordered list of criteria
+    async function getUserCriteriaCorrelation() {
+      const correlations =
+        await UsersService.usersMeCriteriaCorrelationsRetrieve({
+          pollName: pollName,
+        });
+
+      const criteria = correlations.criterias || [];
+
+      let slopes: Array<number | null> = [];
+      if (correlations.slopes && correlations.slopes.length > 0) {
+        slopes = [...correlations.slopes[0]];
+      }
+
+      return { criteria: criteria, slopes: slopes };
+    }
+
+    // used to display an ordered list of candidates, according to be_president
     async function getUserRecommendations(): Promise<
       ContributorRecommendations[]
     > {
@@ -59,6 +84,7 @@ const FeedbackPagePresidentielle2022 = () => {
     }
 
     const ratingsPromise = getUserRatings();
+    const criteriaCorrelationPromise = getUserCriteriaCorrelation();
     const recommendationsPromise = getUserRecommendations();
     const comparisonsPromise = getUserComparisons(
       pollName,
@@ -67,14 +93,23 @@ const FeedbackPagePresidentielle2022 = () => {
 
     Promise.all([
       ratingsPromise,
+      criteriaCorrelationPromise,
       recommendationsPromise,
       comparisonsPromise,
-    ]).then(([contributorRatings, contributorRecommendation, comparisons]) => {
-      setComparisonsNbr(comparisons.length);
-      setRatings(contributorRatings);
-      setRecommendations(contributorRecommendation);
-      setIsLoading(false);
-    });
+    ]).then(
+      ([
+        contributorRatings,
+        criteriaCorrelation,
+        contributorRecommendation,
+        comparisons,
+      ]) => {
+        setComparisonsNbr(comparisons.length);
+        setCriteriaSlopes(criteriaCorrelation);
+        setRatings(contributorRatings);
+        setRecommendations(contributorRecommendation);
+        setIsLoading(false);
+      }
+    );
   }, [criterias, pollName]);
 
   return (
@@ -119,7 +154,7 @@ const FeedbackPagePresidentielle2022 = () => {
             </Typography>
             <Grid container spacing={2} textAlign="center">
               <Grid item xs={12} sm={12} md={6}>
-                <Paper sx={{ height: '300px' }}>WIP</Paper>
+                <StackedCriteriaPaper criteriaSlopes={criteriaSlopes} />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
                 <StackedCandidatesPaper
