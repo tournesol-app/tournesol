@@ -292,6 +292,7 @@
   },
   "clickToDownload": "Click to Download",
   "myComparisonsPage": {
+    "noComparisonYet": "No comparison",
     "title": "My comparisons"
   },
   "home": {

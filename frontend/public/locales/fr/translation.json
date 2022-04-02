@@ -298,6 +298,7 @@
   },
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
+    "noComparisonYet": "Aucune comparaison",
     "title": "Mes comparaisons"
   },
   "home": {
