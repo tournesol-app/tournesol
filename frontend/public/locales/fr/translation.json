@@ -33,6 +33,9 @@
     "nextButton": "{{limit}} suiv.",
     "comparisons": "comparaisons"
   },
+  "stackedCard": {
+    "showAll": "Tout montrer"
+  },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
@@ -55,9 +58,6 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
   },
-  "stackedCard": {
-    "showAll": "Tout montrer"
-  },
   "stackedCandidatesPaper": {
     "title_one": "Devrait être président.e d'après vous",
     "title_many": "Devrait être président.e d'après vos {{comparisonsNbr}} comparaisons",
@@ -71,11 +71,15 @@
     "addNewComparisons": "ajouter des comparaisons"
   },
   "stackedCriteriaPaper": {
-    "title": "Les critères les plus corrélés avec qui devrait être président.e selon vous",
     "score": "Coéfficient de corrélation :",
+    "tweet": {
+      "intro": "J'ai comparé les candidat·e·s à la présidentielle sur @TournesolApp. Selon moi les critères les plus importants pour être président·e sont :",
+      "conclusion": "Allez vous aussi tester cette manière différente de voter !"
+    },
+    "title": "Les critères les plus corrélés avec qui devrait être président.e selon vous",
     "ifYourRankingSeemsOff": "Si ces corrélations vous semblent incorrectes, vous pouvez ajouter de nouvelles comparaisons.",
-    "shareOnTwitter": "Partager sur Twitter",
-    "addNewComparisons": "ajouter des comparaisons"
+    "addNewComparisons": "ajouter des comparaisons",
+    "shareOnTwitter": "Partager sur Twitter"
   },
   "footer": {
     "wiki": "wiki",
