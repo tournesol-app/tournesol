@@ -5,14 +5,11 @@ import {
   Avatar,
   Box,
   Button,
-  Divider,
   Grid,
   Link,
-  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Paper,
   Typography,
 } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks';
@@ -20,6 +17,7 @@ import {
   ContributorRating,
   ContributorRecommendations,
 } from 'src/services/openapi';
+import StackedCard from 'src/components/StackedCard';
 
 interface Props {
   comparisonsNbr: number;
@@ -46,99 +44,98 @@ const StackedCandidatesPaper = ({
   );
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography
-        variant="h5"
-        sx={{ color: '#fff', backgroundColor: '#1282B2' }}
-      >
-        <Trans
-          t={t}
-          i18nKey="stackedCandidatesPaper.title"
-          count={comparisonsNbr}
-        >
-          Should be president according to your {{ comparisonsNbr }} comparisons
-        </Trans>
-      </Typography>
-      <List>
-        {recommendations.map((reco) => {
-          const nComp = nComparisons[reco.uid] || 0;
-          return (
-            <>
-              <ListItem key={reco.uid} alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar
-                    alt={reco?.metadata?.name || ''}
-                    src={reco?.metadata?.image_url || ''}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={reco?.metadata?.name || '??'}
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: 'inline' }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        <Link
-                          color="inherit"
-                          component={RouterLink}
-                          to={`${baseUrl}/comparisons/?uid=${reco.uid}`}
-                        >
-                          <Trans
-                            t={t}
-                            i18nKey="stackedCandidatesPaper.withNComparisons"
-                            count={nComp}
-                          >
-                            with {{ nComp }} comparisons
-                          </Trans>
-                        </Link>
-                      </Typography>
-                      {' - '}
-                      {t('stackedCandidatesPaper.score')}
-                      {' ' + reco.total_score.toFixed(2)}
-                    </>
-                  }
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-            </>
-          );
-        })}
-      </List>
-      <Box pt={2} pb={1} px={2}>
-        <Typography paragraph variant="body2" textAlign="justify">
-          {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}
+    <StackedCard
+      title={
+        <Typography variant="h5">
+          <Trans
+            t={t}
+            i18nKey="stackedCandidatesPaper.title"
+            count={comparisonsNbr}
+          >
+            Should be president according to your {{ comparisonsNbr }}{' '}
+            comparisons
+          </Trans>
         </Typography>
-      </Box>
-      <Grid
-        container
-        spacing={2}
-        justifyContent="center"
-        sx={{ color: 'secondary.main' }}
-      >
-        <Grid item xs={6}>
-          <Button
-            color="inherit"
-            component={RouterLink}
-            to={`${baseUrl}/comparisons`}
-          >
-            {t('stackedCandidatesPaper.seeMyComparisons')}
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Button
-            color="inherit"
-            component={RouterLink}
-            variant="outlined"
-            to={`${baseUrl}/comparison`}
-          >
-            {t('stackedCandidatesPaper.addNewComparisons')}
-          </Button>
-        </Grid>
-      </Grid>
-    </Paper>
+      }
+      items={recommendations.map((reco) => {
+        const nComp = nComparisons[reco.uid] || 0;
+        return (
+          <ListItem key={reco.uid} alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar
+                alt={reco?.metadata?.name || ''}
+                src={reco?.metadata?.image_url || ''}
+              />
+            </ListItemAvatar>
+            <ListItemText
+              primary={reco?.metadata?.name || '??'}
+              secondary={
+                <>
+                  <Typography
+                    sx={{ display: 'inline' }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    <Link
+                      color="inherit"
+                      component={RouterLink}
+                      to={`${baseUrl}/comparisons/?uid=${reco.uid}`}
+                    >
+                      <Trans
+                        t={t}
+                        i18nKey="stackedCandidatesPaper.withNComparisons"
+                        count={nComp}
+                      >
+                        with {{ nComp }} comparisons
+                      </Trans>
+                    </Link>
+                  </Typography>
+                  {' - '}
+                  {t('stackedCandidatesPaper.score')}
+                  {' ' + reco.total_score.toFixed(2)}
+                </>
+              }
+            />
+          </ListItem>
+        );
+      })}
+      actions={
+        <>
+          <Box pt={2} pb={1} px={2}>
+            <Typography paragraph variant="body2" textAlign="justify">
+              {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}
+            </Typography>
+          </Box>
+          <Grid container>
+            <Grid item xs={6} sx={{ px: 1 }}>
+              <Button
+                color="secondary"
+                variant="outlined"
+                component={RouterLink}
+                to={`${baseUrl}/comparisons`}
+                sx={{ height: '100%' }}
+                fullWidth
+              >
+                {t('stackedCandidatesPaper.seeMyComparisons')}
+              </Button>
+            </Grid>
+            <Grid item xs={6} sx={{ px: 1 }}>
+              <Button
+                color="secondary"
+                component={RouterLink}
+                variant="contained"
+                to={`${baseUrl}/comparison`}
+                sx={{ height: '100%' }}
+                fullWidth
+              >
+                {t('stackedCandidatesPaper.addNewComparisons')}
+              </Button>
+            </Grid>
+          </Grid>
+        </>
+      }
+    />
   );
 };
 

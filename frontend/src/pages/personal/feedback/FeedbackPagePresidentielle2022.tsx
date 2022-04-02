@@ -23,10 +23,10 @@ const FeedbackPagePresidentielle2022 = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonsNbr, setComparisonsNbr] = useState(0);
 
-  const [criteriaSlopes, setCriteriaSlopes] = useState<{
+  const [criteriaCorrelations, setCriteriaCorrelations] = useState<{
     criteria: string[];
-    slopes: Array<number | null>;
-  }>({ criteria: [], slopes: [] });
+    correlations: Array<number | null>;
+  }>({ criteria: [], correlations: [] });
   const [ratings, setRatings] = useState<ContributorRating[]>([]);
   const [recommendations, setRecommendations] = useState<
     Array<ContributorRecommendations>
@@ -55,19 +55,19 @@ const FeedbackPagePresidentielle2022 = () => {
 
     // used to display an ordered list of criteria
     async function getUserCriteriaCorrelation() {
-      const correlations =
+      const correlationsObj =
         await UsersService.usersMeCriteriaCorrelationsRetrieve({
           pollName: pollName,
         });
 
-      const criteria = correlations.criterias || [];
+      const criteria = correlationsObj.criterias || [];
 
-      let slopes: Array<number | null> = [];
-      if (correlations.slopes && correlations.slopes.length > 0) {
-        slopes = [...correlations.slopes[0]];
-      }
+      const correlations =
+        correlationsObj.correlations && correlationsObj.correlations.length > 0
+          ? [...correlationsObj.correlations[0]]
+          : [];
 
-      return { criteria: criteria, slopes: slopes };
+      return { criteria, correlations };
     }
 
     // used to display an ordered list of candidates, according to be_president
@@ -104,7 +104,7 @@ const FeedbackPagePresidentielle2022 = () => {
         comparisons,
       ]) => {
         setComparisonsNbr(comparisons.length);
-        setCriteriaSlopes(criteriaCorrelation);
+        setCriteriaCorrelations(criteriaCorrelation);
         setRatings(contributorRatings);
         setRecommendations(contributorRecommendation);
         setIsLoading(false);
@@ -154,7 +154,9 @@ const FeedbackPagePresidentielle2022 = () => {
             </Typography>
             <Grid container spacing={2} textAlign="center">
               <Grid item xs={12} sm={12} md={6}>
-                <StackedCriteriaPaper criteriaSlopes={criteriaSlopes} />
+                <StackedCriteriaPaper
+                  criteriaCorrelations={criteriaCorrelations}
+                />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
                 <StackedCandidatesPaper

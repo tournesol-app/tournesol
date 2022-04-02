@@ -58,7 +58,7 @@
     "withNComparisons_one": "with {{nComp}} comparison",
     "withNComparisons_other": "with {{nComp}} comparisons",
     "score": "score:",
-    "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or add new comparisons using the buttons below.",
+    "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or make new comparisons using the buttons below.",
     "seeMyComparisons": "see my comparisons",
     "addNewComparisons": "make new comparisons"
   },
