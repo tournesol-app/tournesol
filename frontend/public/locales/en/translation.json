@@ -52,6 +52,9 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
+  "stackedCard": {
+    "showAll": "Show all"
+  },
   "stackedCandidatesPaper": {
     "title_one": "Should be president according to you",
     "title_other": "Should be president according to your {{comparisonsNbr}} comparisons",

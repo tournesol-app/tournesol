@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Divider,
@@ -9,7 +10,7 @@ import {
   CardActions,
   Collapse,
 } from '@mui/material';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import { ExpandMore } from '@mui/icons-material';
 
 type Props = {
   title: React.ReactElement;
@@ -19,7 +20,7 @@ type Props = {
 
 const StackedCard = ({ title, items, actions }: Props) => {
   const [showAll, setShowAll] = useState(false);
-
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader
@@ -38,14 +39,14 @@ const StackedCard = ({ title, items, actions }: Props) => {
             <Button
               fullWidth
               onClick={() => setShowAll(!showAll)}
-              startIcon={showAll ? <ExpandLess /> : <ExpandMore />}
+              startIcon={<ExpandMore />}
               size="medium"
               color="secondary"
               sx={{
                 marginBottom: '8px',
               }}
             >
-              {showAll ? 'Show Less' : 'Show All'}
+              {t('stackedCard.showAll')}
             </Button>
           )}
           <Collapse in={showAll} timeout="auto" sx={{ width: '100%' }}>
