@@ -52,15 +52,25 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
+  "stackedCard": {
+    "showAll": "Show all"
+  },
   "stackedCandidatesPaper": {
     "title_one": "Should be president according to you",
     "title_other": "Should be president according to your {{comparisonsNbr}} comparisons",
     "withNComparisons_one": "with {{nComp}} comparison",
     "withNComparisons_other": "with {{nComp}} comparisons",
     "score": "score:",
-    "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or add new comparisons using the buttons below.",
+    "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or make new comparisons using the buttons below.",
     "seeMyComparisons": "see my comparisons",
     "addNewComparisons": "make new comparisons"
+  },
+  "stackedCriteriaPaper": {
+    "title": "Criteria most correlated with who you think should be president",
+    "score": "Correlation coefficient:",
+    "ifYourRankingSeemsOff": "If theses results seem off, you should submit additional comparison to improve them.",
+    "shareOnTwitter": "Share on Twitter",
+    "addNewComparisons": "make new comparaisons"
   },
   "footer": {
     "wiki": "wiki",
