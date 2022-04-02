@@ -70,22 +70,18 @@ export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
 };
 
 export const criteriaLinks: Record<string, string> = {
-  reliability:
-    'https://wiki.staging.tournesol.app/wiki/Reliable_and_not_misleading',
-  pedagogy: 'https://wiki.staging.tournesol.app/wiki/Clear_and_pedagogical',
-  importance:
-    'https://wiki.staging.tournesol.app/wiki/Important_and_actionable',
-  layman_friendly: 'https://wiki.staging.tournesol.app/wiki/Layman-friendly',
+  reliability: 'https://wiki.tournesol.app/wiki/Reliable_and_not_misleading',
+  pedagogy: 'https://wiki.tournesol.app/wiki/Clear_and_pedagogical',
+  importance: 'https://wiki.tournesol.app/wiki/Important_and_actionable',
+  layman_friendly: 'https://wiki.tournesol.app/wiki/Layman-friendly',
   entertaining_relaxing:
-    'https://wiki.staging.tournesol.app/wiki/Entertaining_and_relaxing',
-  engaging:
-    'https://wiki.staging.tournesol.app/wiki/Engaging_and_thought-provoking',
+    'https://wiki.tournesol.app/wiki/Entertaining_and_relaxing',
+  engaging: 'https://wiki.tournesol.app/wiki/Engaging_and_thought-provoking',
   diversity_inclusion:
-    'https://wiki.staging.tournesol.app/wiki/Diversity_and_inclusion',
-  better_habits:
-    'https://wiki.staging.tournesol.app/wiki/Encourages_better_habits',
+    'https://wiki.tournesol.app/wiki/Diversity_and_inclusion',
+  better_habits: 'https://wiki.tournesol.app/wiki/Encourages_better_habits',
   backfire_risk:
-    'https://wiki.staging.tournesol.app/wiki/Resilience_to_backfiring_risks',
+    'https://wiki.tournesol.app/wiki/Resilience_to_backfiring_risks',
 };
 
 export const recommendationsLanguages: {
