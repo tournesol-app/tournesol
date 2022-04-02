@@ -1,9 +1,8 @@
 import numpy as np
-
-from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 from scipy.stats import linregress
 
 from tournesol.models.ratings import ContributorRating
@@ -76,11 +75,15 @@ class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
         serializer = ContributorCriteriaCorrelationsSerializer({
             "criterias": criterias,
             "correlations": [
-                [self.clean(getattr(linear_regressions[c1][c2], 'rvalue', None)) for c1 in criterias]
+                [self.clean(getattr(
+                    linear_regressions[c1][c2], 'rvalue', None
+                )) for c1 in criterias]
                 for c2 in criterias
             ],
             "slopes": [
-                [self.clean(getattr(linear_regressions[c1][c2], 'slope', None)) for c1 in criterias]
+                [self.clean(getattr(
+                    linear_regressions[c1][c2], 'slope', None
+                )) for c1 in criterias]
                 for c2 in criterias
             ],
         })
