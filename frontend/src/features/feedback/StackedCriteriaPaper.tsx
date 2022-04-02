@@ -26,6 +26,7 @@ const CriteriaCorrelationListItem = (correlation: {
   criterion: string;
   value: number;
 }) => {
+  const { t } = useTranslation();
   const { getCriteriaLabel } = useCurrentPoll();
 
   return (
@@ -42,7 +43,9 @@ const CriteriaCorrelationListItem = (correlation: {
       </ListItemAvatar>
       <ListItemText
         primary={getCriteriaLabel(correlation.criterion)}
-        secondary={`Coefficient de correlation ${correlation.value.toFixed(2)}`}
+        secondary={`${t(
+          'stackedCriteriaPaper.score'
+        )} ${correlation.value.toFixed(2)}`}
       />
     </ListItem>
   );
@@ -77,10 +80,7 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
   return (
     <StackedCard
       title={
-        <Typography variant="h5">
-          {/* TODO Add translation*/}
-          Criteria most correlated to who you think should be president
-        </Typography>
+        <Typography variant="h5">{t('stackedCriteriaPaper.title')}</Typography>
       }
       items={orderedCriteriaCorrelations.map((correlation) => (
         <CriteriaCorrelationListItem
@@ -92,9 +92,7 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
         <>
           <Box pt={2} pb={1} px={2}>
             <Typography paragraph variant="body2" textAlign="justify">
-              If these results seem off to you, you can either modify your
-              existing comparisons or make new comparisons. Otherwise we welcome
-              you to share your experience on Twitter
+              {t('stackedCriteriaPaper.ifYourRankingSeemsOff')}
             </Typography>
           </Box>
           <Grid container spacing={1}>
@@ -107,7 +105,7 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
                 sx={{ height: '100%' }}
                 fullWidth
               >
-                {t('stackedCandidatesPaper.addNewComparisons')}
+                {t('stackedCriteriaPaper.addNewComparisons')}
               </Button>
             </Grid>
             <Grid item xs={6} sx={{ px: 1 }}>
@@ -118,7 +116,7 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
                 sx={{ height: '100%' }}
                 fullWidth
               >
-                Share On Twitter
+                {t('stackedCriteriaPaper.shareOnTwitter')}
               </Button>
             </Grid>
           </Grid>

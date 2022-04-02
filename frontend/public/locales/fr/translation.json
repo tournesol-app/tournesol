@@ -67,6 +67,13 @@
     "seeMyComparisons": "voir mes comparaisons",
     "addNewComparisons": "ajouter des comparaisons"
   },
+  "stackedCriteriaPaper": {
+    "title": "Les critères les plus corrélés avec qui devrait être président.e selon vous",
+    "score": "Coéfficient de corrélation :",
+    "ifYourRankingSeemsOff": "Si ces corrélations vous semblent incorrectes, vous pouvez ajouter de nouvelles comparaisons.",
+    "shareOnTwitter": "Partager sur Twitter",
+    "addNewComparisons": "ajouter des comparaisons"
+  },
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "politique de confidentialité",

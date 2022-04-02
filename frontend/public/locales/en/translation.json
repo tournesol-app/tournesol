@@ -62,6 +62,13 @@
     "seeMyComparisons": "see my comparisons",
     "addNewComparisons": "make new comparisons"
   },
+  "stackedCriteriaPaper": {
+    "title": "Criteria most correlated with who you think should be president",
+    "score": "Correlation coefficient:",
+    "ifYourRankingSeemsOff": "If theses results seem off, you should submit additional comparison to improve them.",
+    "shareOnTwitter": "Share on Twitter",
+    "addNewComparisons": "make new comparaisons"
+  },
   "footer": {
     "wiki": "wiki",
     "privacyPolicy": "privacy policy",
