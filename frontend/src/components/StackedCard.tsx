@@ -35,7 +35,7 @@ const StackedCard = ({ title, items, actions }: Props) => {
               <Divider variant="inset" component="li" />
             </React.Fragment>
           ))}
-          {!showAll && (
+          {!showAll && items.length > 3 && (
             <Button
               fullWidth
               onClick={() => setShowAll(!showAll)}

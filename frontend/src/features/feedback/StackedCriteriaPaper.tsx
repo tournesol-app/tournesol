@@ -63,18 +63,15 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
     .map((criterion, idx) => {
       return {
         criterion: criterion,
-        value: criteriaCorrelations.correlations[idx] || -100, // TODO change this default of -100
+        value: criteriaCorrelations.correlations[idx],
       };
     })
     .filter(({ criterion }) => criterion != 'be_president')
+    .filter(({ value }) => value != null)
+    .map(({ value, criterion }) => ({ criterion, value: value as number }))
     .sort((a, b) => {
-      if (a.value < b.value) {
-        return 1;
-      }
-      if (a.value > b.value) {
-        return -1;
-      }
-      return 0;
+      if (b.value === a.value) return 0;
+      return a.value < b.value ? 1 : -1;
     });
 
   return (
