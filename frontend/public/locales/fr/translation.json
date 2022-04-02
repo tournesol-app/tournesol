@@ -332,7 +332,7 @@
       "notEnoughComparisons_other": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
       "continueComparisons": "Continuer vos comparaisons",
       "thanksForComparingCandidates": "Merci d'avoir comparé des candidat.es sur notre plateforme",
-      "description": "Vos avis seront pris en compte dans l'évaluation et le classement global des candidat.es. Après les élections nous rendront public les résultats globaux. Pour protéger la vie privée des contributeurs et contributrices, les résultats individuels resteront privés."
+      "description": "Vos avis seront pris en compte dans l'évaluation et le classement global des candidat.es. Après les élections nous rendrons public les résultats globaux. Pour protéger la vie privée des contributeurs et contributrices, les résultats individuels resteront privés."
     }
   },
   "myRateLaterListPage": {
