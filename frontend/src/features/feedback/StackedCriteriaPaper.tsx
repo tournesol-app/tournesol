@@ -11,6 +11,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import { Twitter } from '@mui/icons-material';
 import { criteriaToEmoji } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks';
 import StackedCard from 'src/components/StackedCard';
@@ -21,6 +22,14 @@ interface Props {
     correlations: Array<number | null>;
   };
 }
+
+const openTwitterPopup = (text: string) => {
+  window.open(
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+    '',
+    'menubar=no,toolbar=no,scrollbars=yes,height=600,width=800'
+  );
+};
 
 const CriteriaCorrelationListItem = (correlation: {
   criterion: string;
@@ -74,6 +83,19 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
       return a.value < b.value ? 1 : -1;
     });
 
+  const getTweet = () => {
+    const getEmojis = (correlation: { criterion: string; value: number }) => {
+      const nbEmojis = Math.max(1, 1 + correlation.value / 0.2);
+      return criteriaToEmoji[correlation.criterion].repeat(nbEmojis);
+    };
+    const emojis = orderedCriteriaCorrelations.slice(0, 3).map(getEmojis);
+    return (
+      `${t('stackedCriteriaPaper.tweet.intro')}\n${emojis.join('\n')}\n\n` +
+      `${t('stackedCriteriaPaper.tweet.conclusion')}` +
+      `🌻\nhttps://tournesol.app${baseUrl}`
+    );
+  };
+
   return (
     <StackedCard
       title={
@@ -108,9 +130,10 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
             <Grid item xs={6} sx={{ px: 1 }}>
               <Button
                 color="secondary"
-                onClick={() => 'TODO'}
+                onClick={() => openTwitterPopup(getTweet())}
                 variant="contained"
                 sx={{ height: '100%' }}
+                startIcon={<Twitter />}
                 fullWidth
               >
                 {t('stackedCriteriaPaper.shareOnTwitter')}

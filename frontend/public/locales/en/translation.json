@@ -30,6 +30,9 @@
     "nextButton": "Next {{limit}}",
     "comparisons": "comparisons"
   },
+  "stackedCard": {
+    "showAll": "Show all"
+  },
   "comparison": {
     "successfullySubmitted": "The comparison has been successfully submitted.",
     "pleaseSelectTwoItems": "Please select 2 items to compare them.",
@@ -52,9 +55,6 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
-  "stackedCard": {
-    "showAll": "Show all"
-  },
   "stackedCandidatesPaper": {
     "title_one": "Should be president according to you",
     "title_other": "Should be president according to your {{comparisonsNbr}} comparisons",
@@ -66,11 +66,15 @@
     "addNewComparisons": "make new comparisons"
   },
   "stackedCriteriaPaper": {
-    "title": "Criteria most correlated with who you think should be president",
     "score": "Correlation coefficient:",
+    "tweet": {
+      "intro": "I have just compared the candidates in France's presidential election on @TournesolApp. According to me, here are the most important criteria to become president:",
+      "conclusion": "Have a look at this different voting system!"
+    },
+    "title": "Criteria most correlated with who you think should be president",
     "ifYourRankingSeemsOff": "If theses results seem off, you should submit additional comparison to improve them.",
-    "shareOnTwitter": "Share on Twitter",
-    "addNewComparisons": "make new comparaisons"
+    "addNewComparisons": "make new comparaisons",
+    "shareOnTwitter": "Share on Twitter"
   },
   "footer": {
     "wiki": "wiki",
