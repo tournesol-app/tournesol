@@ -14,12 +14,14 @@ import {
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+
+import StackedCard from 'src/components/StackedCard';
 import { useCurrentPoll } from 'src/hooks';
 import {
   ContributorRating,
   ContributorRecommendations,
 } from 'src/services/openapi';
-import StackedCard from 'src/components/StackedCard';
+import { criteriaToEmoji } from 'src/utils/constants';
 
 interface Props {
   comparisonsNbr: number;
@@ -138,7 +140,7 @@ const StackedCandidatesPaper = ({
             >
               {[...allCriteria].map((criteria) => (
                 <MenuItem key={criteria} value={criteria}>
-                  {getCriteriaLabel(criteria)}
+                  {criteriaToEmoji[criteria]} {getCriteriaLabel(criteria)}
                 </MenuItem>
               ))}
             </Select>
