@@ -228,7 +228,7 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
 
-        <Grid item xs={12} sm={4} lg={3} className={classes.container}>
+        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
           <PeopleCard
             name="Lê Nguyên Hoang"
             image="/people/Le.jpeg"
@@ -239,7 +239,7 @@ const AboutPage = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={4} lg={3} className={classes.container}>
+        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
           <PeopleCard
             name="Louis Faucon"
             image="/people/Louis.jpeg"
@@ -250,7 +250,7 @@ const AboutPage = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={4} lg={3} className={classes.container}>
+        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
           <PeopleCard
             name="Aidan Jungo"
             image="/people/Aidan.jpg"
@@ -258,6 +258,17 @@ const AboutPage = () => {
             role={t('about.roleSecretary')}
             title="Master of Science"
             job="Research Scientist"
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
+          <PeopleCard
+            name="Romain"
+            image="/people/Tournecat.jpeg"
+            institution="Association Tournesol"
+            role="Developper"
+            title="Cat lover"
+            job="Senior Software Engineer"
           />
         </Grid>
       </Grid>
