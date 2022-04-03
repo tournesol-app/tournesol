@@ -12,6 +12,7 @@ import EntitySelector, {
 } from 'src/features/entity_selector/EntitySelector';
 import { getEntityName, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import ComparisonHelper from './ComparisonHelper';
 
 export const UID_PARAMS: { vidA: string; vidB: string } = {
   vidA: 'uidA',
@@ -239,6 +240,20 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           onChange={onChangeB}
           otherUid={uidA}
         />
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          mt: 1,
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+        component={Card}
+        elevation={2}
+      >
+        <ComparisonHelper />
       </Grid>
       <Grid
         item
