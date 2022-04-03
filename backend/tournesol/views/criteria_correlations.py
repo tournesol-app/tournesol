@@ -5,7 +5,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from scipy.stats import linregress
 
-from tournesol.models.ratings import ContributorRating
+from tournesol.models.comparisons import Comparison
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
@@ -15,11 +15,11 @@ def get_linregress(scores_1: dict, scores_2: dict):
     for a given user and a given rating criteria
     """
     # At least two datapoints are necessary to compute the slope and correlation
-    if sum(entity in scores_1 for entity in scores_2) > 1:
+    if sum(comp in scores_1 for comp in scores_2) > 1:
         try:
             return linregress(
-                [scores_1[e] for e in scores_1 if e in scores_2],
-                [scores_2[e] for e in scores_1 if e in scores_2],
+                [scores_1[comp] for comp in scores_1 if comp in scores_2],
+                [scores_2[comp] for comp in scores_1 if comp in scores_2],
             )
         except ValueError:
             # regression is undefined if all x values are identical
@@ -57,15 +57,15 @@ class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
         """
         criterias = self.poll_from_url.criterias_list
 
-        ratings = ContributorRating.objects.prefetch_related("criteria_scores").filter(
+        comparisons = Comparison.objects.prefetch_related("criteria_scores").filter(
             poll=self.poll_from_url,
             user=request.user
         )
 
         scores = {criteria: {} for criteria in criterias}
-        for r in ratings:
-            for s in r.criteria_scores.all():
-                scores[s.criteria][r.entity] = s.score
+        for comp in comparisons:
+            for s in comp.criteria_scores.all():
+                scores[s.criteria][comp.id] = s.score
 
         linear_regressions = {
             c1: {c2: get_linregress(scores[c1], scores[c2]) for c2 in criterias}

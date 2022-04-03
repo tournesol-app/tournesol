@@ -4,12 +4,9 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import CriteriaRankFactory, PollFactory
-from tournesol.tests.factories.ratings import (
-    ContributorRatingCriteriaScoreFactory,
-    ContributorRatingFactory,
-)
 from tournesol.views.criteria_correlations import get_linregress
 
 
@@ -61,8 +58,8 @@ class CorrelationAPI(TestCase):
             CriteriaRankFactory(criteria__name="!", poll=self.poll, rank=3)
         ]
         self.entities = EntityFactory.create_batch(10)
-        self.ratings = [
-            ContributorRatingFactory(user=self.user, entity=entity, poll=self.poll)
+        self.comparisons = [
+            ComparisonFactory(user=self.user, poll=self.poll)
             for entity in self.entities
         ]
 
@@ -88,14 +85,14 @@ class CorrelationAPI(TestCase):
 
     def test_correlation_all_zeros(self):
         self.client.force_authenticate(user=self.user)
-        for i, rating in enumerate(self.ratings):
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=rating,
+        for i, comparison in enumerate(self.comparisons):
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
                 criteria="hello",
                 score=0,
             )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=rating,
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
                 criteria="world",
                 score=0,
             )
@@ -116,20 +113,20 @@ class CorrelationAPI(TestCase):
 
     def test_correlation_perfect_slope(self):
         self.client.force_authenticate(user=self.user)
-        for i, rating in enumerate(self.ratings):
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=rating,
+        for i, comparison in enumerate(self.comparisons):
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
                 criteria="hello",
                 score=0.1 * i,
             )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=rating,
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
                 criteria="world",
                 score=0.2 * i,
             )
-            # this rating related to another poll should not impact the result
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating__user=self.user,
+            # this comparison related to another poll should not impact the result
+            ComparisonCriteriaScoreFactory(
+                comparison__user=self.user,
                 criteria="another_criteria",
                 score=0.3 * i,
             )
@@ -151,14 +148,14 @@ class CorrelationAPI(TestCase):
 
     def test_correlation_with_zeros_on_a_criteria(self):
         self.client.force_authenticate(user=self.user)
-        for i, rating in enumerate(self.ratings):
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=rating,
+        for i, comparison in enumerate(self.comparisons):
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
                 criteria="hello",
                 score=0.1 * i,
             )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=rating,
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
                 criteria="world",
                 score=0,
             )
