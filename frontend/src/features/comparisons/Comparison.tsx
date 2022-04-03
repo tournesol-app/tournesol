@@ -249,6 +249,9 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
+          '&:empty': {
+            display: 'none',
+          },          
         }}
         component={Card}
         elevation={2}
