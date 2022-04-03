@@ -92,9 +92,8 @@ const ComparisonHelperPresidentielle2022 = () => {
               <li>
                 <Link
                   color="text.secondary"
-                  href={`https://fr.wikipedia.org/w/index.php?search=${metadata.name.replace(
-                    ' ',
-                    '+'
+                  href={`https://fr.wikipedia.org/wiki/${encodeURIComponent(
+                    metadata.frwiki_title
                   )}`}
                   rel="noopener"
                   target="_blank"
