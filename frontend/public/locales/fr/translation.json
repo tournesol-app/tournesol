@@ -49,6 +49,10 @@
     "criteriaSkipped": "ignoré",
     "submitAComparison": "Soumettre une comparaison"
   },
+  "comparisonHelper": {
+    "hideHelp": "Cacher l'aide",
+    "showHelp": "Montrer l'aide pour les comparaisons"
+  },
   "comparisons": {
     "goToComparison": "Voir la comparaison"
   },
@@ -380,7 +384,7 @@
     "institutions_democracy": "Les sujets liés à l'organisation de la vie politique, à la démocratie, aux territoires et collectivités, à la fonction publique et à l'Outre-mer",
     "labour_economy": "Les sujets liés aux emplois, au chômage, au pouvoir d'achat, à la fiscalité, au déficits publiques et la dette",
     "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration"
-},
+  },
   "language": {
     "af": "Afrikaans",
     "ar": "Arabe",

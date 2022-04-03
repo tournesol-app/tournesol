@@ -18,7 +18,6 @@ const ComparisonHelperPresidentielle2022 = () => {
       setCandidates(sortedCandidates);
     });
   }, []);
-  console.log(candidates);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
       <Typography variant="h3">Aide pour effectuer les comparaisons</Typography>
