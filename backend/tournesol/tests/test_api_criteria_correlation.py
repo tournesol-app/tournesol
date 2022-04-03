@@ -4,12 +4,9 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import CriteriaRankFactory, PollFactory
-from tournesol.tests.factories.comparison import (
-    ComparisonCriteriaScoreFactory,
-    ComparisonFactory,
-)
 from tournesol.views.criteria_correlations import get_linregress
 
 
