@@ -63,16 +63,17 @@
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
   },
   "stackedCandidatesPaper": {
-    "title_one": "Devrait être président.e d'après vous",
-    "title_many": "Devrait être président.e d'après vos {{comparisonsNbr}} comparaisons",
-    "title_other": "Devrait être président.e d'après vos {{comparisonsNbr}} comparaisons",
+    "title_one": "Votre classement des candidat.e.s",
+    "title_many": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
+    "title_other": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
     "withNComparisons_one": "avec {{nComp}} comparaison",
     "withNComparisons_many": "avec {{nComp}} comparaisons",
     "withNComparisons_other": "avec {{nComp}} comparaisons",
     "score": "score :",
     "ifYourRankingSeemsOff": "Si votre classement vous semble inadéquat, vous pouvez soit modifier vos comparaisons existantes, soit en ajouter de nouvelles en utilisant les boutons ci-dessous.",
     "seeMyComparisons": "voir mes comparaisons",
-    "addNewComparisons": "ajouter des comparaisons"
+    "addNewComparisons": "ajouter des comparaisons",
+    "onCriteria": "Selon le critère :"
   },
   "stackedCriteriaPaper": {
     "score": "Coéfficient de corrélation :",
