@@ -56,14 +56,15 @@
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
   "stackedCandidatesPaper": {
-    "title_one": "Should be president according to you",
-    "title_other": "Should be president according to your {{comparisonsNbr}} comparisons",
+    "title_one": "Your ranking of the candidates",
+    "title_other": "Your ranking of the candidates according to your {{comparisonsNbr}} comparisons",
     "withNComparisons_one": "with {{nComp}} comparison",
     "withNComparisons_other": "with {{nComp}} comparisons",
     "score": "score:",
     "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or make new comparisons using the buttons below.",
     "seeMyComparisons": "see my comparisons",
-    "addNewComparisons": "make new comparisons"
+    "addNewComparisons": "make new comparisons",
+    "onCriteria": "On the criterion:"
   },
   "stackedCriteriaPaper": {
     "score": "Correlation coefficient:",
