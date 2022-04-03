@@ -57,7 +57,7 @@ const StackedCandidatesPaper = ({
       (entityWithScores) =>
         entityWithScores.criteria_scores.find(
           ({ criteria }) => criteria == sortingCriteria
-        )?.score
+        )?.score != null
     )
     .map((entityWithScores) => ({
       entity: entityWithScores,
