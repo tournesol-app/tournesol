@@ -46,6 +46,10 @@
     "criteriaSkipped": "skipped",
     "submitAComparison": "Submit a comparison"
   },
+  "comparisonHelper": {
+    "hideHelp": "Hide the help",
+    "showHelp": "Show help for comparisons"
+  },
   "comparisons": {
     "goToComparison": "Go to comparison"
   },
@@ -365,7 +369,7 @@
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list."
   },
-  "criteriaTooltips": {  
+  "criteriaTooltips": {
     "energy_environment": "Topic related to climate change, energy transition, biodiversity and protection of the environment",
     "international": "Topics related to Europe, international diplomacy, defense, terrorism and immigration",
     "education_culture": "Topics related to the education system, media, culture, social networks and the ethics of algorithms",
