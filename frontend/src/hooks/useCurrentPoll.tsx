@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PollsService, Poll } from 'src/services/openapi';
-import { polls } from 'src/utils/constants';
+import { LAST_POLL_NAME_STORAGE_KEY, polls } from 'src/utils/constants';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const pollsCache: Record<string, Promise<Poll>> = {};
@@ -67,6 +67,13 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
       setPollName,
     }));
   }, [setPollName]);
+
+  useEffect(() => {
+    // Persist the last poll in localStorage for future sessions (after signup, etc.)
+    if (localStorage) {
+      localStorage.setItem(LAST_POLL_NAME_STORAGE_KEY, contextValue.name);
+    }
+  }, [contextValue.name]);
 
   useEffect(() => {
     // Fetch poll details from API, whenever the current context relates to another poll,

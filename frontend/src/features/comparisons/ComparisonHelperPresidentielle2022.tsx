@@ -27,7 +27,7 @@ const ComparisonHelperPresidentielle2022 = () => {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
         <Typography paragraph>
-          Si vous ne connaissez pas suffisemment bien les candidat.es et leurs
+          Si vous ne connaissez pas suffisamment bien les candidat.es et leurs
           programmes, nous (l&apos;Association Tournesol) vous proposons
           ci-dessous differentes sources d&apos;information que nous avons
           trouvées utiles.

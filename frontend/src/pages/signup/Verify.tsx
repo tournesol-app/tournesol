@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CircularProgress, Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { CircularProgress, Typography, Box, Button } from '@mui/material';
 import {
   AccountsService,
   VerifyRegistration,
   VerifyEmail,
 } from 'src/services/openapi';
 import { ContentHeader, ContentBox } from 'src/components';
-import { useSearchParams } from 'src/hooks';
+import { useCurrentPoll, useSearchParams } from 'src/hooks';
+import useLastPoll from 'src/hooks/useLastPoll';
 
 const executeVerifyUser = async (searchParams: Record<string, string>) => {
   const { user_id, timestamp, signature } = searchParams;
@@ -35,7 +37,9 @@ const executeVerifyEmail = async (searchParams: Record<string, string>) => {
 };
 
 const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
+  useLastPoll();
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
   const searchParams = useSearchParams();
   const [verificationState, setVerificationState] = useState<
     'loading' | 'fail' | 'success'
@@ -76,11 +80,23 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
     <>
       <ContentHeader title={title} />
       <ContentBox maxWidth="sm">
-        <Typography>
+        <Typography paragraph>
           {verificationState == 'loading' && <CircularProgress />}
           {verificationState == 'fail' && t('verify.verificationFailed')}
           {verificationState == 'success' && successMessage}
         </Typography>
+        {verify === 'user' && verificationState === 'success' && (
+          <Box display="flex" justifyContent="center">
+            <Button
+              component={RouterLink}
+              to={`${baseUrl}/comparison?series=true`}
+              variant="contained"
+              color="primary"
+            >
+              {t('home.compareButton')}
+            </Button>
+          </Box>
+        )}
       </ContentBox>
     </>
   );
