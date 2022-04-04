@@ -1,4 +1,9 @@
-from rest_framework.throttling import AnonRateThrottle, ScopedRateThrottle, UserRateThrottle
+from rest_framework.throttling import (
+    AnonRateThrottle,
+    ScopedRateThrottle,
+    SimpleRateThrottle,
+    UserRateThrottle,
+)
 
 
 class BurstAnonRateThrottle(AnonRateThrottle):
@@ -56,3 +61,16 @@ class PostScopeRateThrottle(ScopedRateThrottle):
         if request.method != "POST":
             return True
         return super().allow_request(request, view)
+
+
+class RegisterThrottle(SimpleRateThrottle):
+    """
+    A global rate limit for account register, shared by all clients
+    """
+
+    scope = "register"
+
+    def get_cache_key(self, request, view):
+        if request.method != "POST":
+            return None
+        return "register_throttle"
