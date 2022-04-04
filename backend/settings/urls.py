@@ -18,7 +18,7 @@ from django.http import HttpResponseForbidden
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_registration.api.urls import urlpatterns as original_registration_urlpatterns
-from rest_registration.api.views import register, send_reset_password_link, register_email
+from rest_registration.api.views import register, register_email, send_reset_password_link
 
 from tournesol.throttling import EmailThrottle
 
