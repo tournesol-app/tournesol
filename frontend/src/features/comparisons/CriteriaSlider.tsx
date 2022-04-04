@@ -48,7 +48,9 @@ const CriteriaLabelWithTooltip = ({ children, criteria }: Props) => {
   const tooltip = getCriteriaTooltips(t, criteria) || '';
   return tooltip ? (
     <Tooltip title={tooltip} placement="top">
-      <Box sx={{ cursor: 'help' }}>{children}</Box>
+      <Box component="span" sx={{ cursor: 'help' }}>
+        {children}
+      </Box>
     </Tooltip>
   ) : (
     <>{children}</>
@@ -144,15 +146,13 @@ const CriteriaSlider = ({
           />
           <Typography fontSize={{ xs: '90%', sm: '100%' }}>
             <CriteriaLabel criteria={criteria} criteriaLabel={criteriaLabel} />
-            {criteriaValue === undefined ? (
+            {criteriaValue === undefined && (
               <Chip
                 component="span"
                 size="small"
                 label={t('comparison.criteriaSkipped')}
-                sx={{ height: '100%', ml: 2 }}
+                sx={{ height: '100%', ml: 1 }}
               />
-            ) : (
-              ''
             )}
           </Typography>
           <Box component="span" flexGrow={1} />
