@@ -18,13 +18,14 @@ from django.http import HttpResponseForbidden
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_registration.api.urls import urlpatterns as original_registration_urlpatterns
-from rest_registration.api.views import register, reset_password
+from rest_registration.api.views import register, send_reset_password_link, register_email
 
 from tournesol.throttling import EmailThrottle
 
 # Override throttle_classes on views defined by rest_registration
 register.cls.throttle_classes = [EmailThrottle]
-reset_password.cls.throttle_classes = [EmailThrottle]
+send_reset_password_link.cls.throttle_classes = [EmailThrottle]
+register_email.cls.throttle_classes = [EmailThrottle]
 
 exclude_patterns = ["login", "logout"]
 filtered_registration_urls = [pattern for pattern in original_registration_urlpatterns if pattern.name not in exclude_patterns]
