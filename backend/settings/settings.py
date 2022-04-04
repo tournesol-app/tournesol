@@ -292,8 +292,8 @@ REST_FRAMEWORK = {
         "api_video_post": "50/min",
         "api_users_me_export": "10/min",
         "api_export_comparisons": "10/min",
-        # global throttle on account registrations
-        "register": server_settings.get("THROTTLE_REGISTER_GLOBAL", "15/min"),
+        # global throttle on account registrations and password reset
+        "email": server_settings.get("THROTTLE_EMAIL_GLOBAL", "15/min"),
     },
 }
 

@@ -63,14 +63,15 @@ class PostScopeRateThrottle(ScopedRateThrottle):
         return super().allow_request(request, view)
 
 
-class RegisterThrottle(SimpleRateThrottle):
+class EmailThrottle(SimpleRateThrottle):
     """
-    A global rate limit for account register, shared by all clients
+    A global rate limit for account register, password reset, etc,
+    shared by all clients.
     """
 
-    scope = "register"
+    scope = "email"
 
     def get_cache_key(self, request, view):
         if request.method != "POST":
             return None
-        return "register_throttle"
+        return "email_throttle"
