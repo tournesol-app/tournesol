@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from core.models import EmailDomain, User
 from core.tests.factories.user import UserFactory
-from tournesol.throttling import RegisterThrottle
+from tournesol.throttling import EmailThrottle
 
 
 class UserDeletionTestCase(TestCase):
@@ -88,7 +88,7 @@ class UserRegistrationTest(TestCase):
             status_code=400
         )
 
-    @patch.object(RegisterThrottle, "get_rate", new=lambda *_: "2/min")
+    @patch.object(EmailThrottle, "get_rate", new=lambda *_: "2/min")
     def test_register_throttle(self):
         """
         Throttle should be triggered on the 3rd request
