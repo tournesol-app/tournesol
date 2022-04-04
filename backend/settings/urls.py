@@ -18,11 +18,18 @@ from django.http import HttpResponseForbidden
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_registration.api.urls import urlpatterns as original_registration_urlpatterns
+from rest_registration.api.views import register
 
-exclude_patterns = ["login", "logout"]
+from tournesol.throttling import RegisterThrottle
+
+# Override throttle_classes on view defined by rest_registration
+register.cls.throttle_classes = [RegisterThrottle]
+
+exclude_patterns = ["login", "logout", "register"]
 filtered_registration_urls = [pattern for pattern in original_registration_urlpatterns if pattern.name not in exclude_patterns]
 
 urlpatterns = [
+    path('accounts/register/', register, name="register"),
     path('accounts/', include(filtered_registration_urls)),
     path("admin/", admin.site.urls),
     path("monitoring/", include("django_prometheus.urls")),
