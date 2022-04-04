@@ -70,10 +70,10 @@
     "withNComparisons_many": "avec {{nComp}} comparaisons",
     "withNComparisons_other": "avec {{nComp}} comparaisons",
     "score": "score :",
+    "onCriteria": "Selon le critère :",
     "ifYourRankingSeemsOff": "Si votre classement vous semble inadéquat, vous pouvez soit modifier vos comparaisons existantes, soit en ajouter de nouvelles en utilisant les boutons ci-dessous.",
     "seeMyComparisons": "voir mes comparaisons",
-    "addNewComparisons": "ajouter des comparaisons",
-    "onCriteria": "Selon le critère :"
+    "addNewComparisons": "ajouter des comparaisons"
   },
   "stackedCriteriaPaper": {
     "score": "Coéfficient de corrélation :",
@@ -244,6 +244,7 @@
     "rolePresident": "Président",
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
+    "roleDeveloper": "Développeur",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
     "partenershipWithEpflDetail": "Aujourd'hui notre contributeur principal est l'École Polytechnique Fédérale de Lausanne (EPFL). En particulier Adrien Matissart, ingénieur de recherche au Laboratoire de Calcul Distribué de la Faculté d'Informatique et Communications de l'EPFL, se consacre pleinement au développement de la plateforme Tournesol. Plusieurs autres chercheurs et chercheuses du laboratoire s'occupent quant à eux de concevoir et d'étudier les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
