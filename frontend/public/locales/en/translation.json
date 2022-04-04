@@ -308,7 +308,7 @@
     },
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
-    "compareButton": "Compare videos now",
+    "compareButton": "Compare now",
     "useOurExtension": "Use our extension!",
     "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your YouTube home page. You can also add a video in your rate later list or immediately rate the video with just a few clicks.",
     "getTheExtensionButton": "Get the extension",

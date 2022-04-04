@@ -8,8 +8,10 @@ import {
 } from 'src/services/openapi';
 import { ContentHeader, ContentBox, FormTextField } from 'src/components';
 import { useLoginState, useNotifications, useSearchParams } from 'src/hooks';
+import useLastPoll from 'src/hooks/useLastPoll';
 
 function ResetPassword() {
+  useLastPoll();
   const { t } = useTranslation();
   const history = useHistory();
   const searchParams = useSearchParams();

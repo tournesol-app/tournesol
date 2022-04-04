@@ -210,3 +210,5 @@ export const polls: Array<SelectablePoll> = [
     comparisonsCanBePublic: true,
   },
 ];
+
+export const LAST_POLL_NAME_STORAGE_KEY = 'last_poll_name';
