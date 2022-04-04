@@ -39,7 +39,7 @@ const ComparisonPage = () => {
           py: 2,
         }}
       >
-        {series === 'true' ? (
+        {series === 'true' && tutorialLength > 0 ? (
           <ComparisonSeries
             dialogs={dialogs}
             generateInitial={true}

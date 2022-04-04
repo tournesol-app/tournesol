@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { ContentHeader, Pagination } from 'src/components';
+import { Box, Button, Typography } from '@mui/material';
+import { ContentHeader, LoaderWrapper, Pagination } from 'src/components';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
@@ -10,7 +11,7 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 function ComparisonsPage() {
   const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, baseUrl } = useCurrentPoll();
   const [comparisons, setComparisons]: [
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
@@ -50,28 +51,53 @@ function ComparisonsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
+  const noComparisonMessage = (
+    <>
+      <Typography variant="h5" paragraph>
+        {t('myComparisonsPage.noComparisonYet')}
+      </Typography>
+      <Box display="flex" justifyContent="center">
+        <Button
+          component={Link}
+          to={`${baseUrl}/comparison?series=true`}
+          variant="contained"
+          color="primary"
+        >
+          {t('menu.compare')}
+        </Button>
+      </Box>
+    </>
+  );
+
   return (
     <>
       <ContentHeader title={t('myComparisonsPage.title')} />
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
-          paddingBottom: 16,
-          paddingTop: 16,
-          gap: 16,
+          py: 2,
+          gap: 2,
         }}
       >
-        <Pagination
-          offset={offset}
-          count={count}
-          onOffsetChange={handleOffsetChange}
-          limit={limit}
-          itemType={t('pagination.comparisons')}
-        />
-        <ComparisonList comparisons={comparisons} />
-      </div>
+        <LoaderWrapper isLoading={comparisons == undefined}>
+          {count === 0 ? (
+            noComparisonMessage
+          ) : (
+            <>
+              <Pagination
+                offset={offset}
+                count={count}
+                onOffsetChange={handleOffsetChange}
+                limit={limit}
+                itemType={t('pagination.comparisons')}
+              />
+              <ComparisonList comparisons={comparisons} />
+            </>
+          )}
+        </LoaderWrapper>
+      </Box>
     </>
   );
 }
