@@ -65,10 +65,10 @@
     "withNComparisons_one": "with {{nComp}} comparison",
     "withNComparisons_other": "with {{nComp}} comparisons",
     "score": "score:",
+    "onCriteria": "On the criterion:",
     "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or make new comparisons using the buttons below.",
     "seeMyComparisons": "see my comparisons",
-    "addNewComparisons": "make new comparisons",
-    "onCriteria": "On the criterion:"
+    "addNewComparisons": "make new comparisons"
   },
   "stackedCriteriaPaper": {
     "score": "Correlation coefficient:",
@@ -238,6 +238,7 @@
     "rolePresident": "President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
+    "roleDeveloper": "Developer",
     "partnershipWithEpfl": "Partnership with EPFL",
     "partenershipWithEpflDetail": "Today, our main contributor is École Polytechnique Fédérale de Lausanne (EPFL). In particular, Adrien Matissart is a research scientist from the Distributed Computing Laboratory of the School of Computer and Communication Sciences who is fully dedicated to the development of the Tournesol platform, while many researchers from the Laboratory are designing and studying the Tournesol algorithms.",
     "partnershipWithPolyconseil": "Partnership with Polyconseil",

@@ -266,7 +266,7 @@ const AboutPage = () => {
             name="Romain"
             image="/people/Tournecat.jpeg"
             institution="Association Tournesol"
-            role="Developper"
+            role={t('about.roleDeveloper')}
             title="Cat lover"
             job="Senior Software Engineer"
           />
