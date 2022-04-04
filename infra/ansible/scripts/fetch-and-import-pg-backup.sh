@@ -18,6 +18,7 @@ declare -A ansible_host_to_domain_name=(
     ["tournesol-vm"]="tournesol-vm"
     ["tournesol-staging"]="staging.tournesol.app"
     ["tournesol-prod"]="tournesol.app"
+    ["tournesol-prod-new"]="new.tournesol.app"
 )
 
 set +u
