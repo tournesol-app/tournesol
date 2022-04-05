@@ -4,7 +4,7 @@ Defines Tournesol's backend admin interface
 
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
-from django.db.models import Q, QuerySet
+from django.db.models import Count, Q, QuerySet
 
 from .models import (
     Comparison,
@@ -143,7 +143,17 @@ class ContributorRatingAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorRatingCriteriaScore)
 class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
-    pass
+    list_filter = (
+        "contributor_rating__poll__name",
+    )
+    list_display = (
+        'id',
+        'criteria',
+        'score'
+    )
+    readonly_fields = (
+        'contributor_rating',
+    )
 
 
 @admin.register(Comparison)
@@ -177,7 +187,17 @@ class ComparisonAdmin(admin.ModelAdmin):
 
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
-    pass
+    list_filter = (
+        "comparison__poll__name",
+    )
+    list_display = (
+        'id',
+        'criteria',
+        'score'
+    )
+    readonly_fields = (
+        'comparison',
+    )
 
 
 class CriteriasInline(admin.TabularInline):
@@ -197,6 +217,8 @@ class PollAdmin(admin.ModelAdmin):
         'algorithm',
         'entity_type',
         'get_n_criterias',
+        'get_n_comparisons',
+        'get_n_comparisons_per_criteria',
     )
     list_filter = (
         'algorithm',
@@ -204,9 +226,17 @@ class PollAdmin(admin.ModelAdmin):
     )
     inlines = (CriteriasInline,)
 
-    @admin.display(description="Nb of criterias")
+    @admin.display(description="# criterias")
     def get_n_criterias(self, obj):
         return obj.criterias.count()
+
+    @admin.display(description="# comparisons")
+    def get_n_comparisons(self, obj):
+        return obj.comparisons.count()
+
+    @admin.display(description="# comparisons (x criteria)")
+    def get_n_comparisons_per_criteria(self, obj):
+        return obj.comparisons.aggregate(Count("criteria_scores"))['criteria_scores__count']
 
 
 @admin.register(Criteria)
