@@ -336,7 +336,12 @@
       "notEnoughComparisons_other": "We need at least {{minComparisons}} different comparisons before being able to display your results. {{remainingComparisons}} comparisons are still required. Click on the button below, and follow the instructions to continue.",
       "continueComparisons": "Continue your comparisons",
       "thanksForComparingCandidates": "Thank you for comparing candidates on our platform",
-      "description": "Your opinions will now be included in a global evaluation and ranking of the candidates. After the election we will make the global results public. To protect the privacy and the opinions of all contributors, the individual contributions will remain private."
+      "description": "Your opinions will now be included in a global evaluation and ranking of the candidates. After the election we will make the global results public. To protect the privacy and the opinions of all contributors, the individual contributions will remain private.",
+      "opinionsOnOnlineSharedContent": "We think your opinions on online shared contents are at least as equally important as your opinions on candidates.",
+      "discoverTournesolVideos": "Discover Tournesol videos. A place where you can give your opinion on the YouTube videos you watch, to improve everyone's recommendations."
+    },
+    "generic": {
+      "whatsNext": "What's next?"
     }
   },
   "myRateLaterListPage": {
