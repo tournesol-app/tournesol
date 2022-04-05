@@ -103,7 +103,7 @@ REST_REGISTRATION = {
         "html_body": "accounts/reset_password/body.html",
         "subject": "accounts/reset_password/subject.txt",
     },
-    "VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER": "core.utils.converters.html_to_text",
+    "VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER": "rest_registration.utils.html.convert_html_to_text",
 }
 
 EMAIL_BACKEND = server_settings.get(
