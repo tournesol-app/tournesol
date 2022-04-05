@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  Typography,
+} from '@mui/material';
 import { LoaderWrapper } from 'src/components';
 import StackedCandidatesPaper from 'src/features/feedback/StackedCandidatesPaper';
 import StackedCriteriaPaper from 'src/features/feedback/StackedCriteriaPaper';
@@ -13,12 +21,17 @@ import {
   PollCriteria,
   UsersService,
 } from 'src/services/openapi';
+import { getPollName, polls, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { SelectablePoll } from 'src/utils/types';
 
 const COMPARISONS_NBR_MAX = 100;
 
 const FeedbackPagePresidentielle2022 = () => {
   const { t } = useTranslation();
   const { baseUrl, criterias, name: pollName, options } = useCurrentPoll();
+  const videoPoll = polls.find(
+    (poll) => poll.name === YOUTUBE_POLL_NAME
+  ) as SelectablePoll;
 
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonsNbr, setComparisonsNbr] = useState(0);
@@ -135,7 +148,7 @@ const FeedbackPagePresidentielle2022 = () => {
             <Box mt={2} display="flex" justifyContent="center">
               <Button
                 variant="contained"
-                component={Link}
+                component={RouterLink}
                 to={`${baseUrl}/comparison?series=true`}
               >
                 {t('myFeedbackPage.presidentielle2022.continueComparisons')}
@@ -152,7 +165,12 @@ const FeedbackPagePresidentielle2022 = () => {
             <Typography paragraph mt={2} textAlign="justify">
               {t('myFeedbackPage.presidentielle2022.description')}
             </Typography>
-            <Grid container spacing={2} textAlign="center">
+            <Grid
+              container
+              spacing={2}
+              justifyContent="center"
+              textAlign="center"
+            >
               <Grid item xs={12} sm={12} md={6}>
                 <StackedCriteriaPaper
                   criteriaCorrelations={criteriaCorrelations}
@@ -164,6 +182,44 @@ const FeedbackPagePresidentielle2022 = () => {
                   ratings={ratings}
                   recommendations={recommendations}
                 />
+              </Grid>
+              <Grid item textAlign="left">
+                <Card>
+                  <CardHeader
+                    sx={{
+                      color: '#000',
+                      backgroundColor: '#eee',
+                      p: 1,
+                      textAlign: 'center',
+                    }}
+                    title={t('myFeedbackPage.generic.whatsNext')}
+                  />
+                  <CardContent>
+                    <Typography paragraph>
+                      {t(
+                        'myFeedbackPage.presidentielle2022.opinionsOnOnlineSharedContent'
+                      )}
+                    </Typography>
+                    <Typography paragraph>
+                      {t(
+                        'myFeedbackPage.presidentielle2022.discoverTournesolVideos'
+                      )}
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button
+                        color="secondary"
+                        component={RouterLink}
+                        to={videoPoll.path}
+                        variant="outlined"
+                        startIcon={<videoPoll.iconComponent />}
+                        sx={{ height: '100%' }}
+                      >
+                        {t('myFeedbackPage.generic.discoverTournesol')}{' '}
+                        {getPollName(t, videoPoll.name)}
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
               </Grid>
             </Grid>
           </>
