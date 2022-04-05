@@ -12,7 +12,7 @@ If this wasn't you, please just ignore this email.
 {% else %}
 <p>{% blocktranslate %}You can verify the email {{ email }} by clicking on this link:{% endblocktranslate %}<p>
 <br>
-<p><a href="{{ verification_url | safe }}">{{ verification_url | safe }}</a></p>
+<p><a href="{{ verification_url | safe }}">{{ verification_url }}</a></p>
 {% endif %}
 </body>
 </html>
