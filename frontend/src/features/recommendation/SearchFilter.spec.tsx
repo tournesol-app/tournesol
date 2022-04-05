@@ -108,7 +108,7 @@ describe('Filters feature', () => {
     checkbox,
     expectInUrl,
   }: {
-    checkbox: 'Today' | 'Week' | 'Month' | 'Year';
+    checkbox: 'Today' | 'Week' | 'Month' | 'Year' | '';
     expectInUrl: string;
   }) {
     const dateCheckbox = screen.queryByTestId('checkbox-choice-' + checkbox);
@@ -191,8 +191,11 @@ describe('Filters feature', () => {
     clickOnDateCheckbox({ checkbox: 'Today', expectInUrl: 'Today' });
     clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: 'Year' });
 
-    // Uncheck the last option, and verify that there is no date filter in the URL
-    clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: '' });
+    // Click again on "This year", and verify that there is no change in the URL
+    clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: 'Year' });
+
+    // Set it to "All time", and verify that there is no filter in the URL
+    clickOnDateCheckbox({ checkbox: '', expectInUrl: '' });
   });
 
   it('Can check multiple language filters at once', () => {
