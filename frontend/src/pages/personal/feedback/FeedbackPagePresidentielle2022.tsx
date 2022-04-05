@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -21,8 +21,7 @@ import {
   PollCriteria,
   UsersService,
 } from 'src/services/openapi';
-import PollLargeButton from 'src/features/polls/PollLargeButton';
-import { polls, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { getPollName, polls, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { SelectablePoll } from 'src/utils/types';
 
 const COMPARISONS_NBR_MAX = 100;
@@ -149,7 +148,7 @@ const FeedbackPagePresidentielle2022 = () => {
             <Box mt={2} display="flex" justifyContent="center">
               <Button
                 variant="contained"
-                component={Link}
+                component={RouterLink}
                 to={`${baseUrl}/comparison?series=true`}
               >
                 {t('myFeedbackPage.presidentielle2022.continueComparisons')}
@@ -184,10 +183,15 @@ const FeedbackPagePresidentielle2022 = () => {
                   recommendations={recommendations}
                 />
               </Grid>
-              <Grid item xs={12} sm={12} md={6}>
+              <Grid item textAlign="left">
                 <Card>
                   <CardHeader
-                    sx={{ color: '#000', backgroundColor: '#eee', p: 1 }}
+                    sx={{
+                      color: '#000',
+                      backgroundColor: '#eee',
+                      p: 1,
+                      textAlign: 'center',
+                    }}
                     title={t('myFeedbackPage.generic.whatsNext')}
                   />
                   <CardContent>
@@ -201,10 +205,18 @@ const FeedbackPagePresidentielle2022 = () => {
                         'myFeedbackPage.presidentielle2022.discoverTournesolVideos'
                       )}
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                      <Box maxWidth="min(300px, 40vw)">
-                        <PollLargeButton poll={videoPoll} />
-                      </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button
+                        color="secondary"
+                        component={RouterLink}
+                        to={videoPoll.path}
+                        variant="outlined"
+                        startIcon={<videoPoll.iconComponent />}
+                        sx={{ height: '100%' }}
+                      >
+                        {t('myFeedbackPage.generic.discoverTournesol')}{' '}
+                        {getPollName(t, videoPoll.name)}
+                      </Button>
                     </Box>
                   </CardContent>
                 </Card>

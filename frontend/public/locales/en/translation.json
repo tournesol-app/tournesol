@@ -341,7 +341,8 @@
       "discoverTournesolVideos": "Discover Tournesol videos. A place where you can give your opinion on the YouTube videos you watch, to improve everyone's recommendations."
     },
     "generic": {
-      "whatsNext": "What's next?"
+      "whatsNext": "What's next?",
+      "discoverTournesol": "Discover Tournesol"
     }
   },
   "myRateLaterListPage": {
