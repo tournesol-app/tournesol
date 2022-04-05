@@ -1,0 +1,8 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<body>
+<p>{% translate "Please verify your Tournesol account by clicking on this link:" %}</p>
+<p><a href={{ verification_url | safe }}>{{ verification_url | safe }}</a></p>
+</body>
+</html>

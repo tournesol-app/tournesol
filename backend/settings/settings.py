@@ -92,17 +92,18 @@ REST_REGISTRATION = {
     "PROFILE_SERIALIZER_CLASS": "core.serializers.user.UserProfileSerializer",
     "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
     "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
-        "body": "accounts/register/body.txt",
+        "html_body": "accounts/register/body.html",
         "subject": "accounts/register/subject.txt",
     },
     "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
-        "body": "accounts/register_email/body.txt",
+        "html_body": "accounts/register_email/body.html",
         "subject": "accounts/register_email/subject.txt",
     },
     "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES": {
-        "body": "accounts/reset_password/body.txt",
+        "html_body": "accounts/reset_password/body.html",
         "subject": "accounts/reset_password/subject.txt",
     },
+    "VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER": "core.utils.converters.html_to_text",
 }
 
 EMAIL_BACKEND = server_settings.get(

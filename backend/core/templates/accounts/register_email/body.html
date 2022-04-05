@@ -1,0 +1,19 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<body>
+{% if email_already_used %}
+<p>
+{% blocktranslate %}You or someone else requested change to this e-mail for which there is an existing account.
+You need to either remove this account assigned to this e-mail or change the e-mail of it.
+</p>
+
+<p>If this wasn't you, please just ignore this email.</p>
+{% endblocktranslate %}
+{% else %}
+<p>{% blocktranslate %}You can verify the email {{ email }} by clicking on this link:{% endblocktranslate %}<p>
+
+<p><a href={{ verification_url | safe }}>{{ verification_url | safe }}</a></p>
+{% endif %}
+</body>
+</html>
