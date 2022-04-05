@@ -42,7 +42,7 @@ const ComparisonHelperPresidentielle2022 = () => {
               {candidates.map(
                 ({ metadata }) =>
                   metadata && (
-                    <li>
+                    <li key={metadata.name}>
                       <Link
                         color="text.secondary"
                         href={metadata.website_url}
@@ -123,7 +123,7 @@ const ComparisonHelperPresidentielle2022 = () => {
           {candidates.map(
             ({ metadata }) =>
               metadata && (
-                <li>
+                <li key={metadata.name}>
                   <Link
                     color="text.secondary"
                     href={`https://fr.wikipedia.org/wiki/${encodeURIComponent(
