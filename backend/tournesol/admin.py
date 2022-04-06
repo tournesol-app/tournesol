@@ -148,11 +148,15 @@ class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
     )
     list_display = (
         'id',
+        'contributor_rating',
         'criteria',
         'score'
     )
     readonly_fields = (
         'contributor_rating',
+    )
+    search_fields = (
+        'contributor_rating__entity__uid',
     )
 
 
