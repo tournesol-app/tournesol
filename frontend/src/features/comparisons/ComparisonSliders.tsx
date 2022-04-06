@@ -86,8 +86,12 @@ const ComparisonSliders = ({
 
   const submitComparison = async () => {
     setDisableSubmit(true);
-    await submit(comparison);
-    setDisableSubmit(false);
+
+    try {
+      await submit(comparison);
+    } finally {
+      setDisableSubmit(false);
+    }
 
     // avoid a "memory leak" warning if the component is unmounted on submit.
     if (isMounted.current) {
