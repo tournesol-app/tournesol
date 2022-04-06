@@ -188,15 +188,21 @@ class ComparisonAdmin(admin.ModelAdmin):
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
     list_filter = (
-        "comparison__poll__name",
+        'comparison__poll__name',
     )
     list_display = (
         'id',
+        'comparison',
         'criteria',
         'score'
     )
     readonly_fields = (
         'comparison',
+    )
+    search_fields = (
+        'criteria',
+        'comparison__entity_1__uid',
+        'comparison__entity_2__uid',
     )
 
 
