@@ -8,7 +8,7 @@ from rest_framework.throttling import (
 
 class BurstAnonRateThrottle(AnonRateThrottle):
     """
-    Limit the rate of API calls that may be made by an anonymous users.
+    Limit the rate of API calls that may be made by an anonymous user.
 
     Should be used to define a rate for a short period of time.
     """
@@ -18,7 +18,7 @@ class BurstAnonRateThrottle(AnonRateThrottle):
 
 class BurstUserRateThrottle(UserRateThrottle):
     """
-    Limit the rate of API calls that may be made by an authenticated users.
+    Limit the rate of API calls that may be made by an authenticated user.
 
     Should be used to define a rate for a short period of time.
     """
@@ -28,7 +28,7 @@ class BurstUserRateThrottle(UserRateThrottle):
 
 class SustainedAnonRateThrottle(AnonRateThrottle):
     """
-    Limit the rate of API calls that may be made by an anonymous users.
+    Limit the rate of API calls that may be made by an anonymous user.
 
     Should be used in addition to `BurstAnonRateThrottle` to define a rate
     that can be sustained for a longer period.
@@ -39,7 +39,7 @@ class SustainedAnonRateThrottle(AnonRateThrottle):
 
 class SustainedUserRateThrottle(UserRateThrottle):
     """
-    Limit the rate of API calls that may be made by an authenticated users.
+    Limit the rate of API calls that may be made by an authenticated user.
 
     Should be used in addition to `BurstUserRateThrottle` to define a rate
     that can be sustained for a longer period.
@@ -50,8 +50,8 @@ class SustainedUserRateThrottle(UserRateThrottle):
 
 class PostScopeRateThrottle(ScopedRateThrottle):
     """
-    Limit the rate of only HTTP POST by different amounts for various parts
-    of the API.
+    Limit the rate of only HTTP POST requests made by an authenticated or
+    an anonymous user.
 
     All other HTTP methods are authorized, and passed to the next throttle
     in the chain.
@@ -63,10 +63,12 @@ class PostScopeRateThrottle(ScopedRateThrottle):
         return super().allow_request(request, view)
 
 
-class EmailThrottle(SimpleRateThrottle):
+class GlobalEmailScopeThrottle(SimpleRateThrottle):
     """
-    A global rate limit for account register, password reset, etc,
-    shared by all clients.
+    A global rate limit for POST requests involving email sending like the
+    account creations, password reset, etc.
+
+    This limit is shared by all clients.
     """
 
     scope = "email"
