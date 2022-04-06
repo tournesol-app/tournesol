@@ -133,7 +133,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
           django_enable_api_wikidata_migrations: true
-          django_api_throttle_email: "5/min"
+          django_api_throttle_email: "12/min"
           populate_django_db_from_public_dataset: false
           chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
 
