@@ -225,7 +225,7 @@
 - name: Copy Tournesol API delete-inactive-users service
   template:
     dest: /etc/systemd/system/tournesol-api-delete-inactive-users.service
-    src: tournesol-api-cleartokens.service.j2
+    src: tournesol-api-delete-inactive-users.service.j2
 
 - name: Copy Tournesol API delete-inactive-users timer
   template:
