@@ -161,6 +161,14 @@ const RateLaterPage = () => {
             </Typography>
           )}
 
+          <Box width="100%" textAlign="center">
+            <LoaderWrapper isLoading={isLoading}>
+              <VideoList
+                videos={videos}
+                actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
+              />
+            </LoaderWrapper>
+          </Box>
           {!!videoCount && (
             <div className={classes.stickyPagination}>
               <Pagination
@@ -171,15 +179,6 @@ const RateLaterPage = () => {
               />
             </div>
           )}
-
-          <Box width="100%" textAlign="center">
-            <LoaderWrapper isLoading={isLoading}>
-              <VideoList
-                videos={videos}
-                actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
-              />
-            </LoaderWrapper>
-          </Box>
         </div>
       </ContentBox>
     </>
