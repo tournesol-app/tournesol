@@ -39,6 +39,8 @@ class Command(BaseCommand):
                     f"{n_users_to_delete - deleted[0]} users were NOT deleted"
                 )
             )
+            self.stdout.write(self.style.WARNING("warning partial success"))
         else:
             self.stdout.write(self.style.SUCCESS(f"{deleted[0]} users deleted"))
+            self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
