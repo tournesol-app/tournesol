@@ -3,7 +3,7 @@ Delete users that have not activated their account.
 """
 import datetime
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from core.models.user import User
@@ -31,4 +31,4 @@ class Command(BaseCommand):
 
         deleted = User.objects.filter(is_active=False).delete()
         self.stdout.write(self.style.SUCCESS(f"{deleted[0]} users deleted"))
-        self.stdout.write(self.style.SUCCESS(f"end"))
+        self.stdout.write(self.style.SUCCESS("end"))
