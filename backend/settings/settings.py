@@ -374,3 +374,18 @@ CACHES = {
 VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
+
+# Configuration of the app `core`
+# See the documentation for the complete description.
+APP_CORE = {
+    "MGMT_DELETE_INACTIVE_USERS_PERIOD":
+        server_settings.get(
+            "CORE_DELETE_INACTIVE_USERS_PERIOD",
+            # if no configuration has been provided, align the value with the
+            # validity of the validation emails.
+            REST_REGISTRATION.get(
+                "REGISTER_VERIFICATION_PERIOD",
+                7
+            )
+        )
+}
