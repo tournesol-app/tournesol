@@ -5,6 +5,7 @@ Administration interface of the `tournesol` app
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Count, Q, QuerySet
+from sql_util.utils import SubqueryCount
 
 from .models import (
     Comparison,
@@ -235,11 +236,11 @@ class PollAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qst = super().get_queryset(request)
-        qst = qst.annotate(_n_criteria=Count("criterias", distinct=True))
-        qst = qst.annotate(_n_comparisons=Count("comparisons", distinct=True))
+        qst = qst.annotate(_n_criteria=SubqueryCount("criterias"))
+        qst = qst.annotate(_n_comparisons=SubqueryCount("comparisons"))
         qst = qst.annotate(
-            _n_comparisons_per_criteria=Count(
-                "comparisons__criteria_scores", distinct=True
+            _n_comparisons_per_criteria=SubqueryCount(
+                "comparisons__criteria_scores"
             )
         )
         return qst
