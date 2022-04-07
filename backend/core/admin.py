@@ -120,8 +120,10 @@ class EmailDomainAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qst = super().get_queryset(request)
         qst = qst.annotate(
-            _user_number=Count(
-                User.objects.filter(email__contains=OuterRef("domain")).values("id")
+            _user_number=Subquery(
+                User.objects.filter(email__iendswith=OuterRef("domain"))
+                .annotate(count=Func("id", function="Count"))
+                .values("count")
             )
         )
         return qst
