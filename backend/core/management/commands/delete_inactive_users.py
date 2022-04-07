@@ -29,6 +29,8 @@ class Command(BaseCommand):
         ).count()
         self.stdout.write(self.style.SUCCESS(f"{n_users} inactive users found"))
 
-        deleted = User.objects.filter(is_active=False).delete()
+        deleted = User.objects.filter(
+            is_active=False, date_joined__lt=delete_before
+        ).delete()
         self.stdout.write(self.style.SUCCESS(f"{deleted[0]} users deleted"))
         self.stdout.write(self.style.SUCCESS("end"))
