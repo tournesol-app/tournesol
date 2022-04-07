@@ -39,8 +39,9 @@ class DeleteInactiveUsersTestCase(TestCase):
         output = out.getvalue()
         n_users_after = User.objects.count()
 
-        self.assertIn("2 inactive users found", output)
+        self.assertIn("2 old inactive users found", output)
         self.assertIn("2 users deleted", output)
+        self.assertNotIn("were NOTE deleted", output)
         self.assertEqual(n_users_after, n_users_before - n_users_to_delete)
 
         # check no exception is raised by retrieving the expected users
@@ -63,5 +64,5 @@ class DeleteInactiveUsersTestCase(TestCase):
         self.assertIn(
             f"MGMT_DELETE_INACTIVE_USERS_PERIOD: {self.default_period}", output
         )
-        self.assertIn("0 inactive users found", output)
+        self.assertIn("0 old inactive users found", output)
         self.assertIn("0 users deleted", output)
