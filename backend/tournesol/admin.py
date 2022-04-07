@@ -1,10 +1,11 @@
 """
-Defines Tournesol's backend admin interface
+Administration interface of the `tournesol` app
 """
 
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
-from django.db.models import Count, Q, QuerySet
+from django.db.models import Q, QuerySet
+from sql_util.utils import SubqueryCount
 
 from .models import (
     Comparison,
@@ -226,31 +227,40 @@ class PollAdmin(admin.ModelAdmin):
         'name',
         'algorithm',
         'entity_type',
-        'get_n_criterias',
+        'get_n_criteria',
         'get_n_comparisons',
         'get_n_comparisons_per_criteria',
     )
-    list_filter = (
-        'algorithm',
-        'entity_type'
-    )
+    list_filter = ("algorithm", "entity_type")
     inlines = (CriteriasInline,)
 
-    @admin.display(description="# criterias")
-    def get_n_criterias(self, obj):
-        return obj.criterias.count()
+    def get_queryset(self, request):
+        qst = super().get_queryset(request)
+        qst = qst.annotate(_n_criteria=SubqueryCount("criterias"))
+        qst = qst.annotate(_n_comparisons=SubqueryCount("comparisons"))
+        qst = qst.annotate(
+            _n_comparisons_per_criteria=SubqueryCount(
+                "comparisons__criteria_scores"
+            )
+        )
+        return qst
 
-    @admin.display(description="# comparisons")
+    @admin.display(description="# criterias", ordering="-_n_criteria")
+    def get_n_criteria(self, obj):
+        return obj._n_criteria
+
+    @admin.display(description="# comparisons", ordering="-_n_comparisons")
     def get_n_comparisons(self, obj):
-        return obj.comparisons.count()
+        return obj._n_comparisons
 
-    @admin.display(description="# comparisons (x criteria)")
+    @admin.display(
+        description="# comparisons (x criteria)",
+        ordering="-_n_comparisons_per_criteria",
+    )
     def get_n_comparisons_per_criteria(self, obj):
-        return obj.comparisons.aggregate(Count("criteria_scores"))['criteria_scores__count']
+        return obj._n_comparisons_per_criteria
 
 
 @admin.register(Criteria)
 class CriteriaAdmin(admin.ModelAdmin):
-    inlines = (
-        CriteriaLocalesInline,
-    )
+    inlines = (CriteriaLocalesInline,)
