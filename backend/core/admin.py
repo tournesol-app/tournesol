@@ -7,7 +7,7 @@ from typing import List, Tuple
 from django.contrib import admin
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.db.models import Count, OuterRef
+from django.db.models import Func, OuterRef, Subquery
 from django.db.models.query import QuerySet
 
 from .models import Degree, EmailDomain, Expertise, ExpertiseKeyword, User, VerifiableEmail
@@ -122,8 +122,8 @@ class EmailDomainAdmin(admin.ModelAdmin):
         qst = qst.annotate(
             _user_number=Subquery(
                 User.objects.filter(email__iendswith=OuterRef("domain"))
-                .annotate(count=Func("id", function="Count"))
-                .values("count")
+                    .annotate(count=Func("id", function="Count"))
+                    .values("count")
             )
         )
         return qst
