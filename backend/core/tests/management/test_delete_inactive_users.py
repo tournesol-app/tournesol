@@ -43,6 +43,25 @@ class DeleteInactiveUsersTestCase(TestCase):
         self.assertIn("2 users deleted", output)
         self.assertEqual(n_users_after, n_users_before - n_users_to_delete)
 
-        # check not exception is raised by retrieving the expected users
+        # check no exception is raised by retrieving the expected users
         for i in range(4):
             User.objects.get(username=f"still_there_{i+1}")
+
+    def test_cmd_verbosity_levels(self):
+        # verbosity 1
+        out = StringIO()
+        call_command("delete_inactive_users", stdout=out)
+        output = out.getvalue()
+        self.assertNotIn(
+            f"MGMT_DELETE_INACTIVE_USERS_PERIOD: {self.default_period}", output
+        )
+
+        # verbosity 2
+        out = StringIO()
+        call_command("delete_inactive_users", verbosity=2, stdout=out)
+        output = out.getvalue()
+        self.assertIn(
+            f"MGMT_DELETE_INACTIVE_USERS_PERIOD: {self.default_period}", output
+        )
+        self.assertIn("0 inactive users found", output)
+        self.assertIn("0 users deleted", output)
