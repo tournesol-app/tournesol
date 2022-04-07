@@ -4,7 +4,7 @@ Administration interface of the `tournesol` app
 
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
-from django.db.models import Count, Q, QuerySet
+from django.db.models import Q, QuerySet
 from sql_util.utils import SubqueryCount
 
 from .models import (
