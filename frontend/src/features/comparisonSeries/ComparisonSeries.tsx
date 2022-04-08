@@ -5,12 +5,9 @@ import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import {
-  Comparison as ComparisonModel,
-  Entity,
-  UsersService,
-} from 'src/services/openapi';
+import { Entity } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
+import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 
 // this constant controls the render of the series, if the `length` prop of
@@ -24,18 +21,9 @@ interface Props {
   generateInitial?: boolean;
   getAlternatives?: () => Promise<Array<Entity>>;
   length: number;
+  // redirect to this URL when the series is over
+  redirectTo?: string;
   resumable?: boolean;
-}
-
-async function getUserComparisons(
-  pollName: string
-): Promise<ComparisonModel[]> {
-  const comparisons = await UsersService.usersMeComparisonsList({
-    pollName,
-    limit: 100,
-  });
-
-  return comparisons.results || [];
 }
 
 const generateSteps = (length: number) => {
@@ -43,10 +31,7 @@ const generateSteps = (length: number) => {
   for (let i = 0; i < length; i++) {
     content.push(
       <Step key={i}>
-        <StepLabel>
-          {i === 0 && 'start'}
-          {i === length - 1 && 'end!'}
-        </StepLabel>
+        <StepLabel />
       </Step>
     );
   }
@@ -58,6 +43,7 @@ const ComparisonSeries = ({
   generateInitial,
   getAlternatives,
   length,
+  redirectTo,
   resumable,
 }: Props) => {
   const { name: pollName } = useCurrentPoll();
@@ -111,7 +97,7 @@ const ComparisonSeries = ({
     }
 
     async function getUserComparisonsAsync(pName: string) {
-      const comparisons = await getUserComparisons(pName);
+      const comparisons = await getUserComparisons(pName, 100);
       const formattedComparisons = comparisons.map(
         (c) => c.entity_a.uid + '/' + c.entity_b.uid
       );
@@ -264,6 +250,10 @@ const ComparisonSeries = ({
     );
   }
 
+  if (redirectTo && step >= length) {
+    return <Redirect to={{ pathname: redirectTo }} />;
+  }
+
   return (
     <>
       {length >= MIN_LENGTH ? (
@@ -283,7 +273,11 @@ const ComparisonSeries = ({
               />
             )}
           <Container maxWidth="md" sx={{ my: 2 }}>
-            <Stepper activeStep={step} alternativeLabel>
+            <Stepper
+              activeStep={step}
+              alternativeLabel
+              sx={{ marginBottom: 4 }}
+            >
               {generateSteps(length)}
             </Stepper>
           </Container>

@@ -251,6 +251,12 @@ class User(AbstractUser):
             self.ensure_email_domain_exists()
         return super().save(*args, **kwargs)
 
+    def set_password(self, raw_password):
+        super().set_password(raw_password)
+        # Temporary workaround to force user activation
+        # when a user asks for password reset
+        self.is_active = True
+
 
 class VerifiableEmail(models.Model):
     """One verified e-mail for a user."""

@@ -94,5 +94,11 @@
     dest: /home/react/tournesol-frontend/.env
     owner: react
     group: react
+  notify:
+    - Yarn install
+    - Yarn build
+    - Generate Client from OpenAPI Specification
+    - Copy frontend files
+    - Notify frontend upgrade
 
 - meta: flush_handlers

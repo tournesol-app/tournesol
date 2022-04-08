@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import { Box, Slider, Grid, Checkbox, Chip } from '@mui/material';
+import { Box, Slider, Grid, Checkbox, Chip, Tooltip } from '@mui/material';
 
-import { getWikiBaseUrl } from 'src/utils/url';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Link } from '@mui/material';
+import { CriteriaIcon } from 'src/components';
+import { criteriaLinks, getCriteriaTooltips } from 'src/utils/constants';
 
 const SLIDER_MIN_STEP = -10;
 const SLIDER_MAX_STEP = 10;
@@ -35,10 +36,60 @@ const useStyles = makeStyles(() => ({
     alignSelf: 'flex-start',
     width: '100%',
   },
-  img_criteria: {
-    marginRight: '8px',
-  },
 }));
+
+type Props = {
+  children: React.ReactNode;
+  criteria: string;
+};
+
+const CriteriaLabelWithTooltip = ({ children, criteria }: Props) => {
+  const { t } = useTranslation();
+  const tooltip = getCriteriaTooltips(t, criteria) || '';
+  return tooltip ? (
+    <Tooltip title={tooltip} placement="top">
+      <Box component="span" sx={{ cursor: 'help' }}>
+        {children}
+      </Box>
+    </Tooltip>
+  ) : (
+    <>{children}</>
+  );
+};
+
+const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
+  return criteriaLinks[criteria] ? (
+    <Link
+      color="text.secondary"
+      href={criteriaLinks[criteria]}
+      id={`id_explanation_${criteria}`}
+      target="_blank"
+      rel="noreferrer"
+      underline="hover"
+      sx={{ cursor: 'help' }}
+    >
+      {children}
+    </Link>
+  ) : (
+    <>{children}</>
+  );
+};
+
+const CriteriaLabel = ({
+  criteria,
+  criteriaLabel,
+}: {
+  criteria: string;
+  criteriaLabel: string;
+}) => {
+  return (
+    <CriteriaLabelWithTooltip criteria={criteria}>
+      <CriteriaLabelWithLink criteria={criteria}>
+        {criteriaLabel}
+      </CriteriaLabelWithLink>
+    </CriteriaLabelWithTooltip>
+  );
+};
 
 const CriteriaSlider = ({
   criteria,
@@ -87,34 +138,22 @@ const CriteriaSlider = ({
           flexWrap="nowrap"
           container
         >
-          {criteria != 'largely_recommended' && (
-            <img
-              className={classes.img_criteria}
-              src={`/svg/${criteria}.svg`}
-              width="18px"
-            />
-          )}
+          <CriteriaIcon
+            criteriaName={criteria}
+            sx={{
+              marginRight: '8px',
+            }}
+          />
           <Typography fontSize={{ xs: '90%', sm: '100%' }}>
-            <Link
-              color="text.secondary"
-              href={`${getWikiBaseUrl()}/wiki/Quality_criteria`}
-              id={`id_explanation_${criteria}`}
-              target="_blank"
-              rel="noreferrer"
-              underline="hover"
-            >
-              {criteriaLabel}{' '}
-              {criteriaValue === undefined ? (
-                <Chip
-                  component="span"
-                  size="small"
-                  label={t('comparison.criteriaSkipped')}
-                  sx={{ height: '100%' }}
-                />
-              ) : (
-                ''
-              )}
-            </Link>
+            <CriteriaLabel criteria={criteria} criteriaLabel={criteriaLabel} />
+            {criteriaValue === undefined && (
+              <Chip
+                component="span"
+                size="small"
+                label={t('comparison.criteriaSkipped')}
+                sx={{ height: '100%', ml: 1 }}
+              />
+            )}
           </Typography>
           <Box component="span" flexGrow={1} />
           {(criteriaByName[criteria]?.optional ||

@@ -15,7 +15,9 @@ const ContributeSection = () => {
       maxWidth="640px"
       alignItems="flex-start"
     >
-      <Typography variant="h1">{t('home.contributeTitle')}</Typography>
+      <Typography variant="h2" gutterBottom>
+        {t('home.contributeTitle')}
+      </Typography>
       <Typography paragraph>{t('home.contributeDetail')}</Typography>
       <Button
         color="primary"

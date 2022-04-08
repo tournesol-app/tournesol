@@ -30,6 +30,9 @@
     "nextButton": "Next {{limit}}",
     "comparisons": "comparisons"
   },
+  "stackedCard": {
+    "showAll": "Show all"
+  },
   "comparison": {
     "successfullySubmitted": "The comparison has been successfully submitted.",
     "pleaseSelectTwoItems": "Please select 2 items to compare them.",
@@ -43,6 +46,10 @@
     "criteriaSkipped": "skipped",
     "submitAComparison": "Submit a comparison"
   },
+  "comparisonHelper": {
+    "hideHelp": "Hide the help",
+    "showHelp": "Show help for comparisons"
+  },
   "comparisons": {
     "goToComparison": "Go to comparison"
   },
@@ -51,6 +58,28 @@
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
+  },
+  "stackedCandidatesPaper": {
+    "title_one": "Your ranking of the candidates",
+    "title_other": "Your ranking of the candidates according to your {{comparisonsNbr}} comparisons",
+    "withNComparisons_one": "with {{nComp}} comparison",
+    "withNComparisons_other": "with {{nComp}} comparisons",
+    "score": "score:",
+    "onCriteria": "On the criterion:",
+    "ifYourRankingSeemsOff": "If your ranking seems off, you can either modify your existing comparisons or make new comparisons using the buttons below.",
+    "seeMyComparisons": "see my comparisons",
+    "addNewComparisons": "make new comparisons"
+  },
+  "stackedCriteriaPaper": {
+    "score": "Correlation coefficient:",
+    "tweet": {
+      "intro": "I have just compared the candidates in France's presidential election on @TournesolApp. According to me, here are the most important criteria to become president:",
+      "conclusion": "Have a look at this different voting system!"
+    },
+    "title": "Criteria most correlated with who you think should be president",
+    "ifYourRankingSeemsOff": "If these results seem off, you should submit additional comparisons to improve them.",
+    "addNewComparisons": "make new comparaisons",
+    "shareOnTwitter": "Share on Twitter"
   },
   "footer": {
     "wiki": "wiki",
@@ -63,8 +92,9 @@
     "recommendations": "Recommendations",
     "compare": "Compare 🌻",
     "myComparisons": "My comparisons",
-    "comparedItems": "Compared items",
+    "comparedItems": "My compared items",
     "myRateLaterList": "My rate later list",
+    "myResults": "My results",
     "about": "About"
   },
   "frame": {
@@ -188,9 +218,14 @@
     "pleaseContactAnAdministratorToReportIssue": "Please, contact an administrator to report the issue.",
     "youTemporarilyMadeTooManyRequests": "Sorry, you temporarily made too many requests. Please try again later."
   },
+  "pageNotFound": {
+    "sorryPageNotFound": "Sorry, page not found.",
+    "theRequestedAddressIsErroneous": "The requested address is either erroneous, or not available anymore.",
+    "backToHomePage": "Back to home page"
+  },
   "about": {
     "whatIsTournesol": "What is Tournesol?",
-    "introductionTournesol": "Tournesol is an open source platform which aims to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Find out more with our <2>white paper</2>, our <5>wiki</5>, our <8>GitHub</8>, our <11>Discord</11>, or our <14>LinkedIn page</14>.",
+    "introductionTournesol": "Tournesol is an open source platform which provides a tool for collaborative decisions. The main aim of the Tournesol project is to collaboratively identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Another application of Tournesol's algorithm that we are currently exploring is to collaboratively evaluate candidates in an election. Find out more with our <2>white paper</2>, our <5>wiki</5>, our <8>GitHub</8>, our <11>Discord</11>, or our <14>LinkedIn page</14>.",
     "tournesolVision": "We seek to build the foundations of a robust and beneficial algorithmic governance of information at scale",
     "tournesolVisionRaisingAwareness": "Through raising awareness of the global information crisis",
     "tournesolVisionCollaborativePlatform": "Through the development of a collaborative platform for evaluation and recommendation of online content",
@@ -203,8 +238,9 @@
     "rolePresident": "President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
+    "roleDeveloper": "Developer",
     "partnershipWithEpfl": "Partnership with EPFL",
-    "partenershipWithEpflDetail": "Today, our main contributor is École Polytechique Fédérale de Lausanne (EPFL). In particular, Adrien Matissart is a research scientist from the Distributed Computing Laboratory of the School of Computer and Communication Sciences who is fully dedicated to the development of the Tournesol platform, while many researchers from the Laboratory are designing and studying the Tournesol algorithms.",
+    "partenershipWithEpflDetail": "Today, our main contributor is École Polytechnique Fédérale de Lausanne (EPFL). In particular, Adrien Matissart is a research scientist from the Distributed Computing Laboratory of the School of Computer and Communication Sciences who is fully dedicated to the development of the Tournesol platform, while many researchers from the Laboratory are designing and studying the Tournesol algorithms.",
     "partnershipWithPolyconseil": "Partnership with Polyconseil",
     "partnershipWithPolyconseilDetail": "We are also supported by the technology and consulting company Polyconseil, in the context of their #Tech4Good program. Since August 2021, Polyconseil allocated a software engineering intern one day per week to the technical development of Tournesol and supported us on a monthly basis through organizational support and UX/UI designs. We are very grateful for their help.",
     "partnershipWithKleis": "Partnership with Kleis Technology",
@@ -230,45 +266,55 @@
     "privacyPolicy": "Privacy Policy",
     "whatPersonalDataTournesolCollectAndWhy": "What personal data Tournesol collects and why?",
     "ratings": "Ratings",
-    "whyTournesolCollectsRatings": "Our mission is to elicit, infer and aggregate contributors' judgments on the quality of online videos. To do so, Tournesol collects the data provided by the contributors when they compare pairs of content.",
+    "whyTournesolCollectsRatings": "Tournesol is a tool for collaborative decisions. This tool requires to elicit, infer and aggregate contributors' judgments on the quality of multiple types of alternatives. These alternatives can for example be online videos or candidates to a presidential election. We want to make sure that the users of the plateform are well aware that political opinions are sensitive personnal information and that Tournesol collects and uses the data provided and saved on the plateform. To do so, Tournesol collects the data provided by the contributors when they compare pairs of content.",
     "search": "Search",
     "whyTournesolCollectsSearchQueries": "Even if the contributor is not logged in, Tournesol collects the parameters of their search queries in order to better understand most users' needs. We believe that such data can also have a scientific and ethical value to help make recommendation systems more robustly beneficial to humanity.",
     "contributorProfile": "Contributor profile",
     "whyTournesolCollectsContributorProfile": "In order to distinguish different contributors' expertise, Tournesol asks contributors to certify their emails, to report their fields of expertise and to link to their public profiles. We believe that such data have an important scientific and ethical value and will help make recommendation systems more robustly beneficial to humanity.",
     "contactForm": "Contact form",
     "thereIsNoContactForm": "There is no contact form. If you need to contact us, please use the following email: tournesol.application(at)gmail.com",
-    "cookies": "Cookies",
-    "whyTournesolCollectscookies": "If a contributor has an account and logs in Tournesol, Tournesol will set a temporary cookie to determine if their browser accepts cookies. This cookie contains no personal data and is discarded when the contributor closes their browser. When the contributor logs in, Tournesol will also set up several cookies to save their login information and their screen display choices. Login cookies last for two days, and screen options cookies last for a year. If the contributor selects “Remember Me”, their login will persist for two weeks. If they log out of their account, the login cookies will be removed. Tournesol does not use cookies for tracking purposes.",
+    "loginInformation": "Login information",
+    "loginInformationDetails": "If a contributor has an account and logs in Tournesol, Tournesol will set a unique and temporary token to authenticate the user session when connecting to the Tournesol servers. This token contains no personal data, and is used only for authentication purposes. Moreover, Tournesol may also persist locally on the browser some data related to the platform features, such as display and language preferences. If they log out of their account, the login data will be removed. Tournesol does not use cookies (or any other measures) for tracking purposes.",
     "embeddedContentFromOtherWebsites": "Embedded content from other websites",
-    "whatDataCollectEmbeddedWebsites": "Tournesol embeds video content from YouTube. Embedded content from other websites behaves in the exact same way as if the visitor had visited the other website. These websites may collect data about the users, use cookies, and embed additional third-party tracking. They may monitor the users' interaction with that embedded content, including tracking their interaction with the embedded content if they have an account and are logged in to that website.",
+    "whatDataCollectEmbeddedWebsites": "Tournesol embeds video content from YouTube and images content from Wikimedia. Embedded content from other websites behaves in the exact same way as if the visitor had visited the other website. These websites may collect data about the users, use cookies, and embed additional third-party tracking. They may monitor the users' interaction with that embedded content, including tracking their interaction with the embedded content if they have an account and are logged in to that website.",
     "whoTournesolSharesUsersNContributorsDataWith": "Who Tournesol shares users' and contributors' data with?",
     "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol highly values the protection of users' and contributors' data. In particular, Tournesol knows that some of the contributors' judgments may conflict with the agendas of some political leaders or of their employer. We want contributors to express judgments without the fear of any consequence for their personal life. This is why Tournesol has the option of providing judgments privately or anonymously. Privately provided raw judgments will not be shared with any third party.",
     "publicData": "Public data",
-    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties.",
+    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties. Additionally, comparisons between election candidates will all be considered private and Tournesol will not enable users to make these information public on the plateform.",
     "aggregateData": "Aggregate data",
-    "whereGoAggregateData": "Our algorithms combine contributors’ public and private data to provide aggregate statistics, which are made public. This is typically the case of the Tournesol scores given to different videos. Tournesol also plans to release statistics about subsets of contributors, e.g. to determine how pedagogical a physics video is according to biologists. In any such case, we apply the principles of differential privacy, by adding randomness to the actual aggregation, in order to increase the privacy of your data.",
+    "whereGoAggregateData": "Our algorithms combine contributors’ public and private data to provide aggregate statistics, which are made public. This is typically the case of the Tournesol scores given to different videos or to different candidates to an election. Tournesol also plans to release statistics about subsets of contributors, e.g. to determine how pedagogical a physics video is according to biologists. In any such case, we apply the principles of differential privacy, by adding randomness to the actual aggregation, in order to increase the privacy of your data. The aggregated statistics are likely to be used in scientific articles about the ethics of large scale algorithms and artificial intelligence.",
     "researchPurposes": "Research purposes",
     "researchPurposesParagraph": "We believe that contributors’ data have an important scientific and ethical value to help make recommendation systems more robustly beneficial to humanity. This is why the data publicly provided by contributors will be easily downloadable by any user. We hope that this can stimulate academic and private research on more robustly beneficial recommendation algorithms.",
     "howLongTournesolRetainsContributorsData": "How long Tournesol retains contributors' data?",
-    "howLongTournesolRetainsContributorsDataParagraph": "If a user makes a search or compares videos, their data will be retained indefinitely, along with metadata. Tournesol does so to fulfill its mission to identify the top quality content that contributors want to see promoted at scale. All contributors can see, edit, or delete the personal information provided in their contributor page at any time. Website administrators can also see and edit that information.",
+    "howLongTournesolRetainsContributorsDataParagraph": "If a user makes a search or compares alternatives, their data will be retained indefinitely, along with metadata. Tournesol does so to fulfill its mission to identify the top quality content that contributors want to see promoted at scale. All contributors can see, edit, or delete the personal information provided in their contributor page at any time. Website administrators can also see and edit that information.",
     "whatRightsContributorsHaveOverTheirData": "What rights contributors have over their data?",
     "whatRightsContributorsHaveOverTheirDataParagraph": "By going to their contributor page, contributors can download the data they submitted to their platform. They can also request that Tournesol erases any personal data Tournesol recorded about them. This does not include the data that Tournesol is obliged to keep for administrative, legal, or security purposes."
   },
   "clickToDownload": "Click to Download",
   "myComparisonsPage": {
+    "noComparisonYet": "No comparison",
     "title": "My comparisons"
   },
   "home": {
+    "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
+    "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",
+    "presidentielle2022": {
+      "title": "Tournesol for France's presidential elections",
+      "tournesolDescription": "Tournesol is an open source platform which proposes a tool for collaborative decision.",
+      "whyCompareCandidates": "Initially developped to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about your explicited preferences.",
+      "dataUsage": "Submitted data will never be revealed to other users, and will only be used to help research on the ethics of algorithms and artificial intelligence.",
+      "createAccount": "Create account",
+      "start": "Start"
+    },
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
-    "compareButton": "Compare videos now",
+    "compareButton": "Compare now",
     "useOurExtension": "Use our extension!",
     "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your YouTube home page. You can also add a video in your rate later list or immediately rate the video with just a few clicks.",
     "getTheExtensionButton": "Get the extension",
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "whatIsTournesol": "What is Tournesol?",
-    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which aims to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
@@ -281,6 +327,23 @@
     "confirmNewPassword": "Confirm your new password",
     "passwordsDoNotMatch": "Passwords do not match",
     "resetPasswordButton": "Reset password"
+  },
+  "myFeedbackPage": {
+    "title": "My results",
+    "presidentielle2022": {
+      "welcomeOnYourResultPage": "Welcome on your result page",
+      "notEnoughComparisons_one": "We need at least {{minComparisons}} different comparisons before being able to display your results. One last comparison is required. Click on the button below to continue.",
+      "notEnoughComparisons_other": "We need at least {{minComparisons}} different comparisons before being able to display your results. {{remainingComparisons}} comparisons are still required. Click on the button below, and follow the instructions to continue.",
+      "continueComparisons": "Continue your comparisons",
+      "thanksForComparingCandidates": "Thank you for comparing candidates on our platform",
+      "description": "Your opinions will now be included in a global evaluation and ranking of the candidates. After the election we will make the global results public. To protect the privacy and the opinions of all contributors, the individual contributions will remain private.",
+      "opinionsOnOnlineSharedContent": "We think your opinions on online shared contents are at least as equally important as your opinions on candidates.",
+      "discoverTournesolVideos": "Discover Tournesol videos. A place where you can give your opinion on the YouTube videos you watch, to improve everyone's recommendations."
+    },
+    "generic": {
+      "whatsNext": "What's next?",
+      "discoverTournesol": "Discover Tournesol"
+    }
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
@@ -314,6 +377,15 @@
     "rateLater": "Rate later",
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list."
+  },
+  "criteriaTooltips": {
+    "energy_environment": "Topic related to climate change, energy transition, biodiversity and protection of the environment",
+    "international": "Topics related to Europe, international diplomacy, defense, terrorism and immigration",
+    "education_culture": "Topics related to the education system, media, culture, social networks and the ethics of algorithms",
+    "health": "Topics related to the health system, mental health, sports, end-of-life ethics, COVID-19 and vaccines",
+    "institutions_democracy": "Topics related to the organization of political life, democracy, territories and collectivities, public service and overseas",
+    "labour_economy": "Topics related to jobs, unemployment, purchasing power, taxation, public deficits and debt",
+    "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration"
   },
   "language": {
     "af": "Afrikaans",
@@ -388,7 +460,7 @@
         },
         "title2": "Congratulations !",
         "message2": {
-          "p10": "You have made your first comparison \uD83E\uDD73",
+          "p10": "You have made your first comparison 🥳",
           "p20": "Note that you can manually choose the candidates by using the drop down menus located just above the candidates' photos."
         },
         "title3": "Tip",
@@ -411,7 +483,7 @@
         "message6": {
           "p10": "Tournesol computes a score for each candidate, by aggregating contributors' judgements.",
           "p20": "We can say that each contributor pulls the score up or down by voting.",
-          "p30": "The final score represents a balance, in middle of the different contributors' preferences."
+          "p30": "The final score represents a balance, in the middle of the different contributors' preferences."
         },
         "title7": "Thanks a lot!",
         "message7": {

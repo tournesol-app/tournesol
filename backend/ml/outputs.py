@@ -58,6 +58,7 @@ def save_contributor_scores(
     contributor_scores,
     trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
+    single_user_id: Optional[int] = None,
 ):
     if isinstance(contributor_scores, pd.DataFrame):
         scores_list = list(
@@ -68,11 +69,15 @@ def save_contributor_scores(
     else:
         scores_list = list(contributor_scores)
 
+    ratings = ContributorRating.objects.filter(poll=poll)
+    if single_user_id is not None:
+        ratings = ratings.filter(user_id=single_user_id)
+
     rating_ids = {
         (contributor_id, video_id): rating_id
-        for rating_id, contributor_id, video_id in ContributorRating.objects.filter(
-            poll=poll
-        ).values_list("id", "user_id", "entity_id")
+        for rating_id, contributor_id, video_id in ratings.values_list(
+            "id", "user_id", "entity_id"
+        )
     }
     ratings_to_create = set(
         (contributor_id, video_id)
@@ -102,6 +107,11 @@ def save_contributor_scores(
 
     if single_criteria is not None:
         scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
+
+    if single_user_id is not None:
+        scores_to_delete = scores_to_delete.filter(
+            contributor_rating__user_id=single_user_id
+        )
 
     with transaction.atomic():
         scores_to_delete.delete()

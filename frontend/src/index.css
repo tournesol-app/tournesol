@@ -17,3 +17,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* -- start: third-party packages customization -- */
+
+/* pkg: notistack */
+.SnackbarContainer-root.belowTopBar {
+  /* display alerts below the top bar, to avoid hiding buttons */
+  top: 80px;
+}
+
+/* -- end: third-party packages customization -- */

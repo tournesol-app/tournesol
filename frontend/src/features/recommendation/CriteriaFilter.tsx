@@ -6,7 +6,7 @@ import { Grid, Typography, Slider, Tooltip } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 
-import { TitledSection } from 'src/components';
+import { TitledSection, CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const useStyles = makeStyles(() => ({
@@ -27,9 +27,6 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  criteria_img: {
-    marginRight: 6,
   },
 }));
 
@@ -114,13 +111,11 @@ function CriteriaFilter({
                     alignItems="center"
                     container
                   >
-                    <img
-                      className={classes.criteria_img}
-                      src={`/svg/${criteria.name}.svg`}
-                      onError={(e) => {
-                        e.currentTarget.src = '/svg/LogoSmall.svg';
+                    <CriteriaIcon
+                      criteriaName={criteria.name}
+                      sx={{
+                        marginRight: '6px',
                       }}
-                      width="16px"
                     />
                     <Typography
                       sx={{

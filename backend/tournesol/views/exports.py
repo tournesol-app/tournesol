@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.models import Comparison, ContributorRating
+from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 
@@ -55,13 +56,16 @@ def write_public_comparisons_file(request, write_target):
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
-    public_data = ContributorRating.objects.filter(is_public=True).select_related(
-        "user", "entity"
+    public_data = (
+        ContributorRating.objects
+        .filter(is_public=True, poll__name=DEFAULT_POLL_NAME)
+        .select_related("user", "entity")
     )
     serialized_comparisons = []
     public_videos = set((rating.user, rating.entity) for rating in public_data)
     comparisons = (
-        Comparison.objects.all()
+        Comparison.objects
+        .filter(poll__name=DEFAULT_POLL_NAME)
         .select_related("entity_1", "entity_2", "user")
         .prefetch_related("criteria_scores")
     )

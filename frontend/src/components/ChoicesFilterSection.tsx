@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { TitledSection } from 'src/components';
 import {
@@ -13,6 +13,8 @@ import {
   CheckCircleOutline,
   CheckBox,
   CheckBoxOutlineBlank,
+  RadioButtonUnchecked,
+  RadioButtonChecked,
 } from '@mui/icons-material';
 
 interface Props {
@@ -20,6 +22,7 @@ interface Props {
   value: string;
   choices: Record<string, string>;
   multipleChoice?: boolean;
+  radio?: boolean;
   tooltip?: string;
   onChange: (value: string) => void;
 }
@@ -29,6 +32,7 @@ const ChoicesFilterSection = ({
   value,
   choices,
   multipleChoice = false,
+  radio = false,
   tooltip = '',
   onChange,
 }: Props) => {
@@ -50,12 +54,28 @@ const ChoicesFilterSection = ({
       if (event.target.checked) {
         onChange(event.target.name);
       } else {
+        // Radio buttons are not cleared when clicked and already checked
+        if (radio) return;
+
         onChange('');
       }
     }
   };
 
   const valuesList = multipleChoice ? value.split(',') : [value];
+
+  const { icon, checkedIcon } = useMemo(() => {
+    if (multipleChoice) {
+      return { icon: <CheckBoxOutlineBlank />, checkedIcon: <CheckBox /> };
+    } else if (radio) {
+      return {
+        icon: <RadioButtonUnchecked />,
+        checkedIcon: <RadioButtonChecked />,
+      };
+    } else {
+      return { icon: <CheckCircleOutline />, checkedIcon: <CheckCircle /> };
+    }
+  }, [multipleChoice, radio]);
 
   return (
     <TitledSection title={title}>
@@ -68,14 +88,8 @@ const ChoicesFilterSection = ({
               control={
                 <Checkbox
                   color="secondary"
-                  icon={
-                    multipleChoice ? (
-                      <CheckBoxOutlineBlank />
-                    ) : (
-                      <CheckCircleOutline />
-                    )
-                  }
-                  checkedIcon={multipleChoice ? <CheckBox /> : <CheckCircle />}
+                  icon={icon}
+                  checkedIcon={checkedIcon}
                   checked={checked}
                   onChange={handleChange}
                   name={choiceValue}

@@ -35,11 +35,13 @@ ReactDOM.render(
           <ThemeProvider theme={theme}>
             <BrowserRouter>
               <SnackbarProvider
+                classes={{
+                  containerAnchorOriginTopRight: 'belowTopBar',
+                }}
                 maxSnack={6}
-                autoHideDuration={6000}
                 anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
               >
                 <Suspense fallback={null}>
