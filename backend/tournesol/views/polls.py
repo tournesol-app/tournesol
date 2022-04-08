@@ -180,6 +180,4 @@ class PollsCriteraScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     def get_object(self):
         """ Get object based on the entity uid """
         entity_uid = self.kwargs.get("uid")
-        # TODO Lucas : The poll shouldn't be here but instead used inside the model of the entity
-        poll = self.poll_from_url
         return Entity.objects.get(uid=entity_uid)
