@@ -23,8 +23,6 @@ from tournesol.serializers.metadata import VideoMetadata
 LANGUAGES = settings.LANGUAGES
 
 
-
-
 class Entity(models.Model):
     """
     A generic entity that can be compared with another one.
@@ -180,7 +178,11 @@ class Entity(models.Model):
                 scores_dict[element.criteria] = []
             scores_dict[element.criteria].append(element.score)
         # TODO Lucas : Return the scores with the distribution linked to the current entity
-        return None
+
+        criteria_distributions = []
+        for key, value in scores_dict.items():
+            criteria_distributions.append(CriteraDistributionScore(key, sum(value)/len(value)))
+        return criteria_distributions
 
     @staticmethod
     def recompute_quantiles():
@@ -294,6 +296,7 @@ class VideoRateLater(models.Model):
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"
+
 
 class CriteraDistributionScore:
     def __init__(self, criteria, score):
