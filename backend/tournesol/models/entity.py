@@ -163,7 +163,7 @@ class Entity(models.Model):
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
         )
 
-    @property
+    @ property
     def criteria_scores_distributions(self):
         """Returns the distribution of critera score for the entities"""
 
@@ -177,14 +177,15 @@ class Entity(models.Model):
             if element.criteria not in scores_dict:
                 scores_dict[element.criteria] = []
             scores_dict[element.criteria].append(element.score)
-        # TODO Lucas : Return the scores with the distribution linked to the current entity
 
         criteria_distributions = []
         for key, value in scores_dict.items():
-            criteria_distributions.append(CriteraDistributionScore(key, sum(value)/len(value)))
+            distribution, bins = np.histogram(np.array(value))
+            criteria_distributions.append(CriteraDistributionScore(
+                key, distribution, bins))
         return criteria_distributions
 
-    @staticmethod
+    @ staticmethod
     def recompute_quantiles():
         """
         WARNING: This implementation is obsolete, and relies on non-existing
@@ -218,7 +219,7 @@ class Entity(models.Model):
             video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
         )
 
-    @classmethod
+    @ classmethod
     def create_from_video_id(cls, video_id):
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
@@ -299,6 +300,7 @@ class VideoRateLater(models.Model):
 
 
 class CriteraDistributionScore:
-    def __init__(self, criteria, score):
+    def __init__(self, criteria, distribution, bins):
         self.criteria = criteria
-        self.score = score
+        self.distribution = distribution
+        self.bins = bins

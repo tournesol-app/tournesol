@@ -5,8 +5,8 @@ from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.fields import CharField, RegexField
-from rest_framework.serializers import ModelSerializer
+from rest_framework.fields import CharField, RegexField, ListField, FloatField
+from rest_framework.serializers import ModelSerializer, Serializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities.base import UID_DELIMITER
@@ -183,12 +183,19 @@ class EntitySerializer(ModelSerializer):
         return EntityPollSerializer(items, many=True).data
 
 
-class EntityCriteraDistribution(EntitySerializer):
+class CriteraDistributionScoreSerializer(Serializer):
+
+    criteria = CharField()
+    distribution = ListField(child=FloatField())
+    bins = ListField(child=FloatField())
+
+
+class EntityCriteraDistributionSerializer(EntitySerializer):
     """
     An Entity serializer that show distribution of score for a given entity
     """
 
-    criteria_scores_distributions = EntityCriteriaScoreSerializer(many=True)
+    criteria_scores_distributions = CriteraDistributionScoreSerializer(many=True)
 
     class Meta:
         model = Entity
@@ -206,6 +213,7 @@ class EntityCriteraDistribution(EntitySerializer):
             "metadata",
             "tournesol_score",
             "rating_n_contributors",
+            "criteria_scores_distributions"
         ]
 
 

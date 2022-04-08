@@ -18,7 +18,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
-from tournesol.serializers.entity import EntityCriteraDistribution
+from tournesol.serializers.entity import EntityCriteraDistributionSerializer
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
@@ -175,7 +175,7 @@ class PollsCriteraScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
 
     permission_classes = []
     queryset = Entity.objects.none()
-    serializer_class = EntityCriteraDistribution
+    serializer_class = EntityCriteraDistributionSerializer
 
     def get_object(self):
         """ Get object based on the entity uid """
