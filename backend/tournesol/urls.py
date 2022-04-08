@@ -15,7 +15,7 @@ from .views.contributor_recommendations import (
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
-from .views.polls import PollsRecommendationsView, PollsView
+from .views.polls import PollsRecommendationsView, PollsView, PollsCriteraScoreDistributionView
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -111,5 +111,11 @@ urlpatterns = [
         "polls/<str:name>/recommendations/",
         PollsRecommendationsView.as_view(),
         name="polls_recommendations",
+    ),
+    # TODO Lucas: See if the path is the one we want to use
+    path(
+        "polls/<str:name>/entities/<str:uid>/criteria_scores_distributions",
+        PollsCriteraScoreDistributionView.as_view(),
+        name="polls_score_distribution",
     ),
 ]

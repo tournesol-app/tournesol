@@ -114,12 +114,6 @@ class RelatedVideoSerializer(VideoSerializer):
         return value
 
 
-class EntityCriteriaScoreSerializer(ModelSerializer):
-    class Meta:
-        model = EntityCriteriaScore
-        fields = ["criteria", "score"]
-
-
 class VideoSerializerWithCriteria(VideoSerializer):
     criteria_scores = EntityCriteriaScoreSerializer(many=True)
 
@@ -181,6 +175,38 @@ class EntitySerializer(ModelSerializer):
             for (name, scores) in poll_to_scores.items()
         ]
         return EntityPollSerializer(items, many=True).data
+
+
+class EntityCriteriaScoreSerializer(ModelSerializer):
+    class Meta:
+        model = EntityCriteriaScore
+        fields = ["criteria", "score"]
+
+
+class EntityCriteraDistribution(EntitySerializer):
+    """
+    An Entity serializer that show distribution of score for a given entity
+    """
+
+    criteria_scores_distributions = EntityCriteriaScoreSerializer(many=True)
+
+    class Meta:
+        model = Entity
+        fields = [
+            "uid",
+            "type",
+            "metadata",
+            "tournesol_score",
+            "rating_n_contributors",
+            "criteria_scores_distributions"
+        ]
+        read_only_fields = [
+            "uid",
+            "type",
+            "metadata",
+            "tournesol_score",
+            "rating_n_contributors",
+        ]
 
 
 class EntityNoExtraFieldSerializer(EntitySerializer):

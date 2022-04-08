@@ -18,6 +18,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
+from tournesol.serializers.entity import EntityCriteraDistribution
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
@@ -167,3 +168,18 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         queryset = self.annotate_with_total_score(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
         return queryset.order_by("-total_score", "-pk")
+
+
+class PollsCriteraScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
+    poll_parameter = "name"
+
+    permission_classes = []
+    queryset = Entity.objects.none()
+    serializer_class = EntityCriteraDistribution
+
+    def get_object(self):
+        """ Get object based on the entity uid """
+        entity_uid = self.kwargs.get("uid")
+        # TODO Lucas : The poll shouldn't be here but instead used inside the model of the entity
+        poll = self.poll_from_url
+        return Entity.objects.get(uid=entity_uid)
