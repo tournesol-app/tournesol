@@ -4,6 +4,7 @@ Entity and closely related models.
 
 import logging
 from functools import cached_property
+from multiprocessing import pool
 
 import numpy as np
 from django.conf import settings
@@ -163,13 +164,14 @@ class Entity(models.Model):
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
         )
 
-    @property
-    def criteria_scores_distributions(self):
+    def criteria_scores_distributions(self, poll):
         """Returns the distribution of critera score for the entities"""
 
         # Fetch data witg QuerySet
-        contributor_rating_criteria_score_list = list(
-            list(y for y in x.criteria_scores.all()) for x in self.contributorvideoratings.all())
+        contributor_rating_criteria_score_list = [
+            [y for y in x.criteria_scores.all()]
+            for x in self.contributorvideoratings.filter(poll=poll)]
+
         contributor_rating_criteria_score_flatten_list = [
             val for _list in contributor_rating_criteria_score_list for val in _list]
 

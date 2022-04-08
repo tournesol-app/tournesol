@@ -6,7 +6,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.fields import CharField, RegexField, ListField, FloatField
-from rest_framework.serializers import ModelSerializer, Serializer
+from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities.base import UID_DELIMITER
@@ -195,7 +195,7 @@ class EntityCriteraDistributionSerializer(EntitySerializer):
     An Entity serializer that show distribution of score for a given entity
     """
 
-    criteria_scores_distributions = CriteraDistributionScoreSerializer(many=True)
+    criteria_scores_distributions = SerializerMethodField()
 
     class Meta:
         model = Entity
@@ -215,6 +215,12 @@ class EntityCriteraDistributionSerializer(EntitySerializer):
             "rating_n_contributors",
             "criteria_scores_distributions"
         ]
+
+    @extend_schema_field(CriteraDistributionScoreSerializer(many=True))
+    def get_criteria_scores_distributions(self, obj):
+        return CriteraDistributionScoreSerializer(
+            obj.criteria_scores_distributions(poll=self.context["poll"]),
+            many=True).data
 
 
 class EntityNoExtraFieldSerializer(EntitySerializer):
