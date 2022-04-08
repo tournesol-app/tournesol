@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Paper, Typography } from '@mui/material';
 import { useTranslation, Trans } from 'react-i18next';
+import { scrollToTop } from 'src/utils/ui';
 
 interface PaginationProps {
   limit: number;
@@ -42,6 +43,7 @@ const Pagination = ({
         size="small"
         id="id_rate_later_prev"
         onClick={() => {
+          scrollToTop();
           onOffsetChange(Math.max(offset - limit, 0));
         }}
       >
@@ -63,6 +65,7 @@ const Pagination = ({
         size="small"
         id="id_rate_later_next"
         onClick={() => {
+          scrollToTop();
           onOffsetChange(Math.min(count, offset + limit));
         }}
       >

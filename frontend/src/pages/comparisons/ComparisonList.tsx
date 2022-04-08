@@ -86,6 +86,7 @@ function ComparisonsPage() {
             noComparisonMessage
           ) : (
             <>
+              <ComparisonList comparisons={comparisons} />
               <Pagination
                 offset={offset}
                 count={count}
@@ -93,7 +94,6 @@ function ComparisonsPage() {
                 limit={limit}
                 itemType={t('pagination.comparisons')}
               />
-              <ComparisonList comparisons={comparisons} />
             </>
           )}
         </LoaderWrapper>
