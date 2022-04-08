@@ -163,21 +163,24 @@ class Entity(models.Model):
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
         )
 
-    @ property
+    @property
     def criteria_scores_distributions(self):
         """Returns the distribution of critera score for the entities"""
 
+        # Fetch data witg QuerySet
         contributor_rating_criteria_score_list = list(
             list(y for y in x.criteria_scores.all()) for x in self.contributorvideoratings.all())
         contributor_rating_criteria_score_flatten_list = [
             val for _list in contributor_rating_criteria_score_list for val in _list]
 
+        # Format data into dictionnary
         scores_dict = dict()
         for element in contributor_rating_criteria_score_flatten_list:
             if element.criteria not in scores_dict:
                 scores_dict[element.criteria] = []
             scores_dict[element.criteria].append(element.score)
 
+        # Create object
         criteria_distributions = []
         for key, value in scores_dict.items():
             distribution, bins = np.histogram(np.array(value))
@@ -185,7 +188,7 @@ class Entity(models.Model):
                 key, distribution, bins))
         return criteria_distributions
 
-    @ staticmethod
+    @staticmethod
     def recompute_quantiles():
         """
         WARNING: This implementation is obsolete, and relies on non-existing
@@ -219,7 +222,7 @@ class Entity(models.Model):
             video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
         )
 
-    @ classmethod
+    @classmethod
     def create_from_video_id(cls, video_id):
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
