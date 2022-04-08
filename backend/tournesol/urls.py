@@ -15,7 +15,7 @@ from .views.contributor_recommendations import (
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
-from .views.polls import PollsRecommendationsView, PollsView, PollsCriteraScoreDistributionView
+from .views.polls import PollsCriteraScoreDistributionView, PollsRecommendationsView, PollsView
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,

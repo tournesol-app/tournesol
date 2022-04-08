@@ -13,12 +13,12 @@ from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from tournesol.models import Entity, EntityCriteriaScore, Poll
+from tournesol.serializers.entity import EntityCriteraDistributionSerializer
 from tournesol.serializers.poll import (
     PollSerializer,
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
-from tournesol.serializers.entity import EntityCriteraDistributionSerializer
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)

@@ -5,7 +5,7 @@ from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.fields import CharField, RegexField, ListField, FloatField
+from rest_framework.fields import CharField, FloatField, ListField, RegexField
 from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX

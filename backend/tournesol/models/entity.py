@@ -4,7 +4,6 @@ Entity and closely related models.
 
 import logging
 from functools import cached_property
-from multiprocessing import pool
 
 import numpy as np
 from django.conf import settings
