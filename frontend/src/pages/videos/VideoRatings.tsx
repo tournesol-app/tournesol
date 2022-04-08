@@ -17,7 +17,6 @@ import {
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
 import { videoFromRelatedEntity } from 'src/utils/entity';
-import { scrollToTop } from 'src/utils/ui';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
@@ -63,7 +62,6 @@ const VideoRatingsPage = () => {
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
-    scrollToTop();
   };
 
   const loadData = useCallback(async () => {
