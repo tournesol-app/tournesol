@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import pandas as pd
@@ -13,6 +14,8 @@ from tournesol.models import Poll
 
 from .global_scores import get_global_scores
 from .individual import compute_individual_score
+
+logger = logging.getLogger(__name__)
 
 
 def get_individual_scores(
@@ -37,9 +40,11 @@ def get_individual_scores(
 
 def compute_mehestan_scores(ml_input, criteria):
     indiv_scores = get_individual_scores(ml_input, criteria=criteria)
+    logger.debug("Individual scores computed for crit '%s'", criteria)
     global_scores, scalings = get_global_scores(
         ml_input, individual_scores=indiv_scores
     )
+    logger.debug("Global scores computed for crit '%s'", criteria)
     indiv_scores["criteria"] = criteria
     global_scores["criteria"] = criteria
     return indiv_scores, global_scores, scalings
@@ -54,10 +59,27 @@ def update_user_scores(poll: Poll, user: User):
 
 
 def run_mehestan(ml_input: MlInput, poll: Poll):
+    logger.info("Mehestan for poll '%s': Start", poll.name)
     for criteria in poll.criterias_list:
+        logger.info(
+            "Mehestan for poll '%s': computing scores for crit '%s'",
+            poll.name,
+            criteria,
+        )
         indiv_scores, global_scores, _ = compute_mehestan_scores(
             ml_input, criteria=criteria
         )
+        logger.info(
+            "Mehestan for poll '%s': scores computed for crit '%s'",
+            poll.name,
+            criteria,
+        )
         save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
         save_entity_scores(poll, global_scores, single_criteria=criteria)
+        logger.info(
+            "Mehestan for poll '%s': scores saved for crit '%s'",
+            poll.name,
+            criteria,
+        )
     save_tournesol_score_as_sum_of_criteria(poll)
+    logger.info("Mehestan for poll '%s': Done", poll.name)

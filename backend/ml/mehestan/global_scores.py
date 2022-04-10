@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple
 
 import numpy as np
@@ -262,6 +263,11 @@ def get_global_scores(
     df["uncertainty"] *= df["s"]
     df.drop(["s", "tau"], axis=1, inplace=True)
 
+    logging.debug(
+        "Computing scaling for %s non_supertrusted, based on %s supertrusted",
+        len(non_supertrusted_users),
+        len(supertrusted_users),
+    )
     non_supertrusted_scaling = compute_scaling(
         df,
         ml_input=ml_input,
