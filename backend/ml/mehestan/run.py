@@ -37,10 +37,10 @@ def get_individual_scores(
 
 def compute_mehestan_scores(ml_input, criteria):
     indiv_scores = get_individual_scores(ml_input, criteria=criteria)
-    indiv_scores["criteria"] = criteria
     global_scores, scalings = get_global_scores(
         ml_input, individual_scores=indiv_scores
     )
+    indiv_scores["criteria"] = criteria
     global_scores["criteria"] = criteria
     return indiv_scores, global_scores, scalings
 

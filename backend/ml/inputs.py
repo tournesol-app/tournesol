@@ -2,17 +2,21 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 import pandas as pd
-from django.db.models import Case, F, When
+from django.db.models import Case, F, QuerySet, When
+from django.db.models.expressions import RawSQL
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore
+from tournesol.models import ComparisonCriteriaScore, Entity
 from tournesol.models.ratings import ContributorRating
 
 
 class MlInput(ABC):
     @abstractmethod
     def get_comparisons(
-        self, trusted_only=False, criteria: Optional[str] = None, user_id: Optional[int] = None,
+        self,
+        trusted_only=False,
+        criteria: Optional[str] = None,
+        user_id: Optional[int] = None,
     ) -> pd.DataFrame:
         """Fetch data about comparisons submitted by users
 
@@ -52,7 +56,9 @@ class MlInputFromPublicDataset(MlInput):
             "public_username"
         ].factorize()
 
-    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
+    def get_comparisons(
+        self, trusted_only=False, criteria=None, user_id=None
+    ) -> pd.DataFrame:
         df = self.public_dataset.copy(deep=False)
         if criteria is not None:
             df = df[df.criteria == criteria]
@@ -80,7 +86,39 @@ class MlInputFromDb(MlInput):
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
-    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
+    def get_supertrusted_users(self) -> QuerySet[User]:
+        n_alternatives = (
+            Entity.objects.filter(comparisons_entity_1__poll__name=self.poll_name)
+            .union(
+                Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name)
+            )
+            .count()
+        )
+        if n_alternatives <= 20:
+            # The number of alternatives is low enough to consider as supertrusted
+            # all trusted users who have compared all alternatives.
+            have_compared_all_alternatives = User.objects.alias(
+                n_compared_entities=RawSQL(
+                    """
+                    SELECT COUNT(DISTINCT e.id)
+                    FROM tournesol_entity e
+                    INNER JOIN tournesol_comparison c
+                        ON (c.entity_1_id = e.id OR c.entity_2_id = e.id)
+                    INNER JOIN tournesol_poll p
+                        ON (p.id = c.poll_id AND p.name = %s)
+                    WHERE c.user_id = "core_user"."id"
+                    """,
+                    (self.poll_name,),
+                )
+            ).filter(n_compared_entities__gte=n_alternatives)
+            return User.trusted_users().filter(pk__in=have_compared_all_alternatives)
+
+        # TODO Implement algorithm to extend supertrusted seed in the general case
+        return User.supertrusted_seed_users()
+
+    def get_comparisons(
+        self, trusted_only=False, criteria=None, user_id=None
+    ) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll_name
         )
@@ -93,9 +131,7 @@ class MlInputFromDb(MlInput):
             )
 
         if user_id is not None:
-            scores_queryset = scores_queryset.filter(
-                comparison__user_id=user_id
-            )
+            scores_queryset = scores_queryset.filter(comparison__user_id=user_id)
 
         values = scores_queryset.values(
             "score",
@@ -132,7 +168,8 @@ class MlInputFromDb(MlInput):
                     When(user__in=User.trusted_users(), then=True), default=False
                 ),
                 is_supertrusted=Case(
-                    When(user__in=User.supertrusted_users(), then=True), default=False
+                    When(user__in=self.get_supertrusted_users(), then=True),
+                    default=False,
                 ),
             )
             .values(

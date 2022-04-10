@@ -223,7 +223,7 @@ class User(AbstractUser):
         )
 
     @classmethod
-    def supertrusted_users(cls) -> QuerySet["User"]:
+    def supertrusted_seed_users(cls) -> QuerySet["User"]:
         return cls.trusted_users().filter(is_staff=True)
 
     @property

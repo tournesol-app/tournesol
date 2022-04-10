@@ -246,10 +246,8 @@ def get_global_scores(
     supertrusted_scaling = get_scaling_for_supertrusted(ml_input, individual_scores)
     rp = ml_input.get_ratings_properties()
 
-    non_supertrusted = rp["user_id"][~rp.is_supertrusted].unique()
-    trusted_and_supertrusted = rp["user_id"][
-        (rp.is_supertrusted) | (rp.is_trusted)
-    ].unique()
+    non_supertrusted_users = rp["user_id"][~rp.is_supertrusted].unique()
+    supertrusted_users = rp["user_id"][rp.is_supertrusted].unique()
 
     rp.set_index(["user_id", "entity_id"], inplace=True)
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="left")
@@ -267,8 +265,8 @@ def get_global_scores(
     non_supertrusted_scaling = compute_scaling(
         df,
         ml_input=ml_input,
-        users_to_compute=non_supertrusted,
-        reference_users=trusted_and_supertrusted,
+        users_to_compute=non_supertrusted_users,
+        reference_users=supertrusted_users,
         compute_uncertainties=True,
     )
 
