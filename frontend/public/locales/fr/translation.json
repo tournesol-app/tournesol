@@ -15,6 +15,7 @@
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
     "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
+    "personalScore": "Score personnel\u00a0: {{score}}",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
@@ -24,8 +25,7 @@
     "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :",
-    "personalScore": "Score personnel\u00a0: {{score}}"
+    "criteriaRatedLow": "Noté faiblement :"
   },
   "pagination": {
     "videos": "vidéos",
@@ -172,8 +172,7 @@
     "markAllAsPrivate": "Tout marquer comme <1>privé</1>",
     "noVideoCorrespondsToFilter": "Aucune vidéo de correspond à votre filtre.",
     "noVideoComparedYet": "Vous n'avez pas encore comparé de vidéo",
-    "compareVideosButton": "Comparer des vidéos",
-    "sortByPersonalScores": "Trier par score personnel"
+    "compareVideosButton": "Comparer des vidéos"
   },
   "options": "Options",
   "settings": {
