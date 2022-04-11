@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Collapse, Grid, Box, Checkbox, FormControlLabel } from '@mui/material';
+import { Box, Collapse, Grid } from '@mui/material';
 
 import { CollapseButton } from 'src/components';
 import { useListFilter } from 'src/hooks';
@@ -32,6 +32,7 @@ function RatingsFilter() {
           <Grid item xs={12} sm={6} md={5}>
             <MarkAllRatingsMenu />
           </Grid>
+          {/*
           <Grid item xs={12} sm={6} md={5}>
             <FormControlLabel
               control={
@@ -42,9 +43,10 @@ function RatingsFilter() {
                   }}
                 />
               }
-              label={t<string>('ratings.sortByPersonalScores')}
+              label={t<string>('ratings.sortByPersonalScore')}
             />
           </Grid>
+          */}
         </Grid>
       </Collapse>
     </Box>

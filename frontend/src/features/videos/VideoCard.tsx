@@ -109,7 +109,7 @@ function VideoCard({
         />
         {!compact && <VideoCardScores video={video} />}
         {personalScore !== undefined &&
-          t('video.personalScore', { score: Math.round(personalScore) })}
+          t('video.personalScore', { score: personalScore.toFixed(0) })}
       </Grid>
       <Grid
         item
