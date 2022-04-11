@@ -13,6 +13,8 @@ all:
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: true
 
+          maintenance: false
+
           django_debug: "True"
           django_log_level: "DEBUG"
           django_main_url: "http://{{api_domain_name}}"
@@ -65,6 +67,8 @@ all:
 
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: true
+
+          maintenance: false
 
           django_debug: "False"
           django_log_level: "INFO"
@@ -125,6 +129,8 @@ all:
 
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: false # to be set to true after upgrade tests in staging in order to upgrade prod
+
+          maintenance: false
 
           django_debug: "False"
           django_log_level: "INFO"

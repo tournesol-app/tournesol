@@ -16,8 +16,19 @@ server {
 
     keepalive_timeout 5;
 
+    error_page 503 @503;
+
     location / {
-        root /srv/tournesol-frontend;
+        {%- if maintenance %}
+            return 503;
+        {% else %}
+            root /srv/tournesol-frontend;
+            try_files $uri /index.html;
+        {% endif %}
+    }
+
+    location @503 {
+        root /srv/maintenance;
         try_files $uri /index.html;
     }
 
@@ -36,6 +47,7 @@ server {
 {% endif %}
 }
 
+{%- if not maintenance %}
 server {
     client_max_body_size 100M;
 
@@ -87,6 +99,7 @@ server {
     listen 80;
 {% endif %}
 }
+{% endif %}
 
 {% if letsencrypt_email is defined %}
 server {
