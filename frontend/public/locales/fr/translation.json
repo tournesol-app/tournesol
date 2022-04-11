@@ -24,7 +24,8 @@
     "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :"
+    "criteriaRatedLow": "Noté faiblement :",
+    "personalScore": "Score personnel\u00a0: {{score}}"
   },
   "pagination": {
     "videos": "vidéos",
@@ -171,7 +172,8 @@
     "markAllAsPrivate": "Tout marquer comme <1>privé</1>",
     "noVideoCorrespondsToFilter": "Aucune vidéo de correspond à votre filtre.",
     "noVideoComparedYet": "Vous n'avez pas encore comparé de vidéo",
-    "compareVideosButton": "Comparer des vidéos"
+    "compareVideosButton": "Comparer des vidéos",
+    "sortByPersonalScores": "Trier par score personnel"
   },
   "options": "Options",
   "settings": {
