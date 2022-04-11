@@ -39,14 +39,14 @@ class Comparison(models.Model):
     entity_1 = models.ForeignKey(
         'Entity',
         on_delete=models.CASCADE,
-        related_name="comparisons_video_1",
-        help_text="Left video to compare",
+        related_name="comparisons_entity_1",
+        help_text="Left entity to compare",
     )
     entity_2 = models.ForeignKey(
         'Entity',
         on_delete=models.CASCADE,
-        related_name="comparisons_video_2",
-        help_text="Right video to compare",
+        related_name="comparisons_entity_2",
+        help_text="Right entity to compare",
     )
     duration_ms = models.FloatField(
         null=True,

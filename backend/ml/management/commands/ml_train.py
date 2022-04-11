@@ -126,12 +126,12 @@ class Command(BaseCommand):
 
                 if poll.algorithm == ALGORITHM_LICCHAVI:
                     # Run for trusted users
-                    logging.debug("Process on trusted users")
+                    logging.info("Licchavi for poll %s: Process on trusted users", poll.name)
                     process_licchavi(poll, ml_input, trusted_only=True)
 
                     if not skip_untrusted:
                         # Run for all users including non trusted users
-                        logging.debug("Process on all users")
+                        logging.info("Licchavi for poll %s: Process on all users", poll.name)
                         process_licchavi(poll, ml_input, trusted_only=False)
                 elif poll.algorithm == ALGORITHM_MEHESTAN:
                     run_mehestan(ml_input=ml_input, poll=poll)
