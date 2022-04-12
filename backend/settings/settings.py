@@ -9,9 +9,9 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-from collections import OrderedDict
 import datetime
 import os
+from collections import OrderedDict
 from pathlib import Path
 
 import yaml
