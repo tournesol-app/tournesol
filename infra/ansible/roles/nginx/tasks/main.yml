@@ -75,4 +75,11 @@
     # Make sure that systemd reloads any changes
     - Reload Nginx
 
+- name: Copy Maintenance directory
+  copy:
+    src: maintenance/
+    dest: /srv/maintenance
+    owner: www-data
+    group: www-data
+
 - meta: flush_handlers
