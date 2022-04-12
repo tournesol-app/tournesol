@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import os
 from collections import OrderedDict
+import datetime
+import os
 from pathlib import Path
 
 import yaml
@@ -379,13 +380,9 @@ RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
 # See the documentation for the complete description.
 APP_CORE = {
     "MGMT_DELETE_INACTIVE_USERS_PERIOD":
-        server_settings.get(
-            "CORE_DELETE_INACTIVE_USERS_PERIOD",
-            # if no configuration has been provided, align the value with the
-            # validity of the validation emails.
-            REST_REGISTRATION.get(
-                "REGISTER_VERIFICATION_PERIOD",
-                7
-            )
+        # sync the value with the validity period of the validation emails
+        REST_REGISTRATION.get(
+            "REGISTER_VERIFICATION_PERIOD",
+            datetime.timedelta(days=7)
         )
 }

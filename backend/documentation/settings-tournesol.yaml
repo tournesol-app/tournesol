@@ -102,17 +102,3 @@ YOUTUBE_API_KEY:
 #       metadata.
 ENABLE_API_WIKIDATA:
     MIGRATIONS: False
-
-# Configuration of the app `core`.
-APP_CORE = {
-    # The management command `delete_inactive_users` will keep the inactive
-    # users created during this number of past days.
-    #
-    # If no configuration has been provided, the default implementation uses
-    # the value of REST_REGISTRATION.REGISTER_VERIFICATION_PERIOD to keep
-    # it synced with the validation email lifetime.
-    #
-    # If REST_REGISTRATION.REGISTER_VERIFICATION_PERIOD has not been
-    # configured, use 7 days.
-    "MGMT_DELETE_INACTIVE_USERS_PERIOD": 7
-}

@@ -42,7 +42,7 @@ class DeleteInactiveUsersTestCase(TestCase):
         self.assertIn("2 old inactive users found", output)
         self.assertIn("2 users deleted", output)
         self.assertIn("success", output)
-        self.assertNotIn("were NOTE deleted", output)
+        self.assertNotIn("were NOT deleted", output)
         self.assertEqual(n_users_after, n_users_before - n_users_to_delete)
 
         # check no exception is raised by retrieving the expected users

@@ -16,8 +16,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(f"start command: {__name__}")
 
-        days_to_keep = settings.APP_CORE["MGMT_DELETE_INACTIVE_USERS_PERIOD"]
-        delete_before = timezone.now() - datetime.timedelta(days=days_to_keep)
+        delta_to_keep = settings.APP_CORE["MGMT_DELETE_INACTIVE_USERS_PERIOD"]
+        delete_before = timezone.now() - delta_to_keep
 
         n_users_to_delete = User.objects.filter(
             is_active=False, date_joined__lt=delete_before
