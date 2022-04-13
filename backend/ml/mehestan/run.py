@@ -1,4 +1,6 @@
 import logging
+import os
+from multiprocessing import Pool
 from typing import Optional
 
 import pandas as pd
@@ -60,7 +62,8 @@ def update_user_scores(poll: Poll, user: User):
 
 def run_mehestan(ml_input: MlInput, poll: Poll):
     logger.info("Mehestan for poll '%s': Start", poll.name)
-    for criteria in poll.criterias_list:
+
+    def _process(criteria):
         logger.info(
             "Mehestan for poll '%s': computing scores for crit '%s'",
             poll.name,
@@ -81,5 +84,9 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
             poll.name,
             criteria,
         )
+
+    with Pool(processes=os.cpu_count() - 1) as pool:
+        pool.imap_unordered(_process, poll.criterias_list)
+
     save_tournesol_score_as_sum_of_criteria(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)
