@@ -83,6 +83,9 @@ class MlInputFromPublicDataset(MlInput):
 
 
 class MlInputFromDb(MlInput):
+    SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE = 20
+    MAX_SUPERTRUSTED_USERS = 100
+
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
@@ -94,27 +97,39 @@ class MlInputFromDb(MlInput):
             )
             .count()
         )
-        if n_alternatives <= 20:
+        users = User.objects.alias(
+            n_compared_entities=RawSQL(
+                """
+                SELECT COUNT(DISTINCT e.id)
+                FROM tournesol_entity e
+                INNER JOIN tournesol_comparison c
+                    ON (c.entity_1_id = e.id OR c.entity_2_id = e.id)
+                INNER JOIN tournesol_poll p
+                    ON (p.id = c.poll_id AND p.name = %s)
+                WHERE c.user_id = "core_user"."id"
+                """,
+                (self.poll_name,),
+            )
+        )
+        if n_alternatives <= self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE:
             # The number of alternatives is low enough to consider as supertrusted
             # all trusted users who have compared all alternatives.
-            have_compared_all_alternatives = User.objects.alias(
-                n_compared_entities=RawSQL(
-                    """
-                    SELECT COUNT(DISTINCT e.id)
-                    FROM tournesol_entity e
-                    INNER JOIN tournesol_comparison c
-                        ON (c.entity_1_id = e.id OR c.entity_2_id = e.id)
-                    INNER JOIN tournesol_poll p
-                        ON (p.id = c.poll_id AND p.name = %s)
-                    WHERE c.user_id = "core_user"."id"
-                    """,
-                    (self.poll_name,),
-                )
-            ).filter(n_compared_entities__gte=n_alternatives)
+            have_compared_all_alternatives = users.filter(
+                n_compared_entities__gte=n_alternatives
+            )
             return User.trusted_users().filter(pk__in=have_compared_all_alternatives)
 
-        # TODO Implement algorithm to extend supertrusted seed in the general case
-        return User.supertrusted_seed_users()
+        n_supertrusted_seed = User.supertrusted_seed_users().count()
+        return User.supertrusted_seed_users().union(
+            users.filter(
+                pk__in=User.trusted_users(),
+                n_compared_entities__gte=self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE,
+            )
+            .exclude(pk__in=User.supertrusted_seed_users())
+            .order_by("-n_compared_entities")[
+                : self.MAX_SUPERTRUSTED_USERS - n_supertrusted_seed
+            ]
+        )
 
     def get_comparisons(
         self, trusted_only=False, criteria=None, user_id=None
@@ -168,7 +183,7 @@ class MlInputFromDb(MlInput):
                     When(user__in=User.trusted_users(), then=True), default=False
                 ),
                 is_supertrusted=Case(
-                    When(user__in=self.get_supertrusted_users(), then=True),
+                    When(user__in=self.get_supertrusted_users().values("id"), then=True),
                     default=False,
                 ),
             )
