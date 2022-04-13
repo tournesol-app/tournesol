@@ -84,16 +84,27 @@ def save_contributor_scores(
         for contributor_id, video_id, _, _, _ in scores_list
         if (contributor_id, video_id) not in rating_ids
     )
-    created_ratings = ContributorRating.objects.bulk_create(
-        ContributorRating(
-            poll_id=poll.pk,
-            entity_id=video_id,
-            user_id=contributor_id,
-        )
-        for contributor_id, video_id in ratings_to_create
+    ContributorRating.objects.bulk_create(
+        (
+            ContributorRating(
+                poll_id=poll.pk,
+                entity_id=video_id,
+                user_id=contributor_id,
+            )
+            for contributor_id, video_id in ratings_to_create
+        ),
+        ignore_conflicts=True,
     )
+    # Refresh the `ratings_id` with the newly created `ContributorRating`s.
     rating_ids.update(
-        {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
+        {
+            (contributor_id, entity_id): rating_id
+            for rating_id, contributor_id, entity_id in ContributorRating.objects.filter(
+                poll_id=poll.pk,
+            ).values_list(
+                "id", "user_id", "entity_id"
+            )
+        }
     )
 
     scores_to_delete = ContributorRatingCriteriaScore.objects.filter(

@@ -120,7 +120,7 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
 
     # compute each criterion in parallel
     with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
-        for i in pool.imap_unordered(
+        for _ in pool.imap_unordered(
             partial(_run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
             criteria,
         ):
