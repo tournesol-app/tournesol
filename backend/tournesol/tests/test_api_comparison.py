@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.core.management import call_command
 from django.db.models import ObjectDoesNotExist, Q
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -934,7 +934,7 @@ class ComparisonApiTestCase(TestCase):
         )
 
 
-class ComparisonWithMehestanTest(TestCase):
+class ComparisonWithMehestanTest(TransactionTestCase):
     def setUp(self):
         self.poll = PollFactory(algorithm=ALGORITHM_MEHESTAN)
         CriteriaRankFactory(poll=self.poll, criteria__name="criteria1")
