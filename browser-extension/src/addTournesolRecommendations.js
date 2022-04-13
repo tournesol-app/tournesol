@@ -37,7 +37,7 @@ const getParentComponent = () => {
       .parentElement.children['content'].getElementsByTagName(
         'ytd-page-manager'
       )[0]
-      .getElementsByTagName('ytd-browse')[0]
+      .querySelector('ytd-browse:not([hidden])')
       .getElementsByTagName('ytd-two-column-browse-results-renderer')[0]
       .children['primary'].getElementsByTagName('ytd-rich-grid-renderer')[0];
     if (!contents || !contents.children[1]) return;
