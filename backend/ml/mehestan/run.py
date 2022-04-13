@@ -119,7 +119,7 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
     os.register_at_fork(before=db.connections.close_all)
 
     # compute each criterion in parallel
-    with Pool(processes=os.cpu_count() - 1) as pool:
+    with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
         for i in pool.imap_unordered(
             partial(_run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
             criteria,
