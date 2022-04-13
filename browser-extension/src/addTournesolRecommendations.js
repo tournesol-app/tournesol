@@ -11,6 +11,7 @@ let videos = [];
 let additionalVideos = [];
 let isPageLoaded = false;
 let areRecommandationsLoading = false;
+let areRecommendationsLoaded = false;
 
 loadRecommandations();
 
@@ -225,11 +226,17 @@ function process() {
   isPageLoaded = true;
   if (videos.length > 0) {
     displayRecommendations();
+  } else if (!areRecommendationsLoaded) {
+    // If the content script is loaded on a non-root URL the recommendations
+    // are not loaded. So if the user then goes to the root URL and the content
+    // script is not reloaded, we need to load the recommendations.
+    loadRecommandations();
   }
 }
 
 function handleResponse({ data: videosReponse }) {
   areRecommandationsLoading = false;
+  areRecommendationsLoaded = true;
   videos = videosReponse.slice(0, 4);
   additionalVideos = videosReponse.slice(4);
 
