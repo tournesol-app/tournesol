@@ -1,5 +1,6 @@
 import logging
 import os
+from functools import partial
 from multiprocessing import Pool
 from typing import Optional
 
@@ -57,37 +58,44 @@ def update_user_scores(poll: Poll, user: User):
     for criteria in poll.criterias_list:
         scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
         scores["criteria"] = criteria
-        save_contributor_scores(poll, scores, single_criteria=criteria, single_user_id=user.pk)
+        save_contributor_scores(
+            poll, scores, single_criteria=criteria, single_user_id=user.pk
+        )
+
+
+def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll: Poll):
+    logger.info(
+        "Mehestan for poll '%s': computing scores for crit '%s'",
+        poll.name,
+        criteria,
+    )
+    indiv_scores, global_scores, _ = compute_mehestan_scores(
+        ml_input, criteria=criteria
+    )
+    logger.info(
+        "Mehestan for poll '%s': scores computed for crit '%s'",
+        poll.name,
+        criteria,
+    )
+    save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
+    save_entity_scores(poll, global_scores, single_criteria=criteria)
+    logger.info(
+        "Mehestan for poll '%s': scores saved for crit '%s'",
+        poll.name,
+        criteria,
+    )
 
 
 def run_mehestan(ml_input: MlInput, poll: Poll):
     logger.info("Mehestan for poll '%s': Start", poll.name)
 
-    def _process(criteria: str):
-        logger.info(
-            "Mehestan for poll '%s': computing scores for crit '%s'",
-            poll.name,
-            criteria,
-        )
-        indiv_scores, global_scores, _ = compute_mehestan_scores(
-            ml_input, criteria=criteria
-        )
-        logger.info(
-            "Mehestan for poll '%s': scores computed for crit '%s'",
-            poll.name,
-            criteria,
-        )
-        save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
-        save_entity_scores(poll, global_scores, single_criteria=criteria)
-        logger.info(
-            "Mehestan for poll '%s': scores saved for crit '%s'",
-            poll.name,
-            criteria,
-        )
-
     # compute each criterion in parallel
     with Pool(processes=os.cpu_count() - 1) as pool:
-        pool.imap_unordered(_process, poll.criterias_list)
+        for i in pool.imap_unordered(
+            partial(_run_mehestan_for_criterion, ml_input=ml_input, poll=poll),
+            poll.criterias_list,
+        ):
+            pass
 
     save_tournesol_score_as_sum_of_criteria(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)
