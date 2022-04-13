@@ -63,7 +63,8 @@ def update_user_scores(poll: Poll, user: User):
         )
 
 
-def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll: Poll):
+def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
+    poll = Poll.objects.get(pk=poll_pk)
     logger.info(
         "Mehestan for poll '%s': computing scores for crit '%s'",
         poll.name,
@@ -89,11 +90,23 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll: Poll):
 def run_mehestan(ml_input: MlInput, poll: Poll):
     logger.info("Mehestan for poll '%s': Start", poll.name)
 
+    # This function use multiprocessing
+    #
+    # Thus the model instances used by the child processes must be passed from
+    # the parent process. Child processes must retrieve the objects using
+    # their own database connection.
+    poll_pk = poll.pk
+    criteria = poll.criterias_list
+
+    from django import db
+
+    os.register_at_fork(before=db.connections.close_all)
+
     # compute each criterion in parallel
     with Pool(processes=os.cpu_count() - 1) as pool:
         for i in pool.imap_unordered(
-            partial(_run_mehestan_for_criterion, ml_input=ml_input, poll=poll),
-            poll.criterias_list,
+            partial(_run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
+            criteria,
         ):
             pass
 
