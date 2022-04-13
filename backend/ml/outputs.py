@@ -88,10 +88,10 @@ def save_contributor_scores(
         (
             ContributorRating(
                 poll_id=poll.pk,
-                entity_id=video_id,
+                entity_id=entity_id,
                 user_id=contributor_id,
             )
-            for contributor_id, video_id in ratings_to_create
+            for contributor_id, entity_id in ratings_to_create
         ),
         ignore_conflicts=True,
     )
@@ -99,9 +99,7 @@ def save_contributor_scores(
     rating_ids.update(
         {
             (contributor_id, entity_id): rating_id
-            for rating_id, contributor_id, entity_id in ContributorRating.objects.filter(
-                poll_id=poll.pk,
-            ).values_list(
+            for rating_id, contributor_id, entity_id in ratings.values_list(
                 "id", "user_id", "entity_id"
             )
         }

@@ -67,13 +67,9 @@ def update_user_scores(poll: Poll, user: User):
 def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
     """
     Run Mehestan for the given criterion, in the given poll.
-
-    This function must not use any model instance as parameter, but instead
-    must query the database to retrieve the desired instances. This allows to
-    use this function in a forked process, without sharing database
-    connections with the parent process, which may lead to exceptions or
-    undesirable effects.
     """
+    # Retrieving the poll instance here allows this function to be run in a
+    # forked process. See the function `run_mehestan`.
     poll = Poll.objects.get(pk=poll_pk)
     logger.info(
         "Mehestan for poll '%s': computing scores for crit '%s'",
@@ -98,21 +94,31 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
 
 
 def run_mehestan(ml_input: MlInput, poll: Poll):
+    """
+    This function use multiprocessing.
+
+        1. Always close all database connections in the main process before
+           creating forks. Django will automatically re-create new database
+           connections when needed.
+
+        2. Do not pass Django model's instances as arguments to the function
+           run by child processes. Using such instances in child processes
+           will raise an exception: connection already closed.
+
+        3. Do not fork the main process within a code block managed by
+           a single database transaction.
+
+    See the indications to close the database connections:
+        - https://www.psycopg.org/docs/usage.html#thread-and-process-safety
+        - https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT
+
+    See how django handles database connections:
+        - https://docs.djangoproject.com/en/4.0/ref/databases/#connection-management
+    """
     logger.info("Mehestan for poll '%s': Start", poll.name)
 
-    # This function use multiprocessing.
-    #
-    # Thus, the model instances used by the child processes MUST NOT come from
-    # the parent process. Child processes must autonomously retrieve the
-    # objects using their own database connection.
-    #
-    # See the indications to close the database connections before forking
-    # a process:
-    #   https://www.psycopg.org/docs/usage.html#thread-and-process-safety
-    #   https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT
-    #
-    # See how django handles database connections:
-    #   https://docs.djangoproject.com/en/4.0/ref/databases/#connection-management
+    # Avoid passing model's instances as arguments to the function run by the
+    # child processes. See this method docstring.
     poll_pk = poll.pk
     criteria = poll.criterias_list
 
