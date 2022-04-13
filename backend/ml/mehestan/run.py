@@ -90,16 +90,22 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
 def run_mehestan(ml_input: MlInput, poll: Poll):
     logger.info("Mehestan for poll '%s': Start", poll.name)
 
-    # This function use multiprocessing
+    # This function use multiprocessing.
     #
-    # Thus the model instances used by the child processes must be passed from
-    # the parent process. Child processes must retrieve the objects using
-    # their own database connection.
+    # Thus, the model instances used by the child processes MUST NOT be passed
+    # from the parent process. Child processes must autonomously retrieve the
+    # objects using their own database connection.
+    #
+    # See the indications to close the database connections before forking:
+    # https://www.psycopg.org/docs/usage.html#thread-and-process-safety
+    # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT
+    #
+    # See how django handles database connections:
+    # https://docs.djangoproject.com/en/4.0/ref/databases/#connection-management
     poll_pk = poll.pk
     criteria = poll.criterias_list
 
     from django import db
-
     os.register_at_fork(before=db.connections.close_all)
 
     # compute each criterion in parallel
