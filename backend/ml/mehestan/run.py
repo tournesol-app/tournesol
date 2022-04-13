@@ -63,7 +63,7 @@ def update_user_scores(poll: Poll, user: User):
 def run_mehestan(ml_input: MlInput, poll: Poll):
     logger.info("Mehestan for poll '%s': Start", poll.name)
 
-    def _process(criteria):
+    def _process(criteria: str):
         logger.info(
             "Mehestan for poll '%s': computing scores for crit '%s'",
             poll.name,
@@ -85,6 +85,7 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
             criteria,
         )
 
+    # compute each criterion in parallel
     with Pool(processes=os.cpu_count() - 1) as pool:
         pool.imap_unordered(_process, poll.criterias_list)
 
