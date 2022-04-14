@@ -37,8 +37,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": self._existing_email,
-            "password": "password",
-            "password_confirm": "password",
+            "password": "uncommon_password",
+            "password_confirm": "uncommon_password",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -54,8 +54,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": self._existing_email_alt,
-            "password": "password",
-            "password_confirm": "password",
+            "password": "uncommon_password",
+            "password_confirm": "uncommon_password",
         }
         response = self.client.post(
             "/accounts/register/",
