@@ -36,7 +36,7 @@ def validate_email_uniqueness_iexact(value: str) -> str:
     except User.DoesNotExist:
         pass
     else:
-        raise ValidationError("A user with this email address already exists.")
+        raise ValidationError(_("A user with this email address already exists."))
 
     return value
 
@@ -56,7 +56,7 @@ class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
         validators=[
             UniqueValidator(
                 queryset=User.objects.all(),
-                message="A user with this email address already exists.",
+                message=_("A user with this email address already exists."),
                 lookup="iexact",
             ),
         ]

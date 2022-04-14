@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-05 15:08+0000\n"
+"POT-Creation-Date: 2022-04-14 09:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,14 +22,18 @@ msgstr ""
 msgid "email address"
 msgstr "adresse e-mail"
 
-#: core/serializers/user.py:18
+#: core/serializers/user.py:19
 #, python-format
 msgid "'%(name)s' is a reserved username"
 msgstr "'%(name)s' est un nom d'utilisateur reservé"
 
-#: core/serializers/user.py:20
+#: core/serializers/user.py:21
 msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
+
+#: core/serializers/user.py:39 core/serializers/user.py:59
+msgid "A user with this email address already exists."
+msgstr "Un utilisateur avec cet e-mail existe déjà."
 
 #: core/templates/accounts/register/body.html:5
 msgid "Please verify your Tournesol account by clicking on this link:"
