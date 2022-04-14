@@ -7,6 +7,7 @@ from rest_registration.api.serializers import (
     DefaultRegisterUserSerializer,
     DefaultUserProfileSerializer,
 )
+from rest_registration.utils.validation import wrap_validation_error_with_field
 
 from core.models.user import User
 
@@ -21,18 +22,35 @@ def _validate_username(value):
     return value
 
 
+@wrap_validation_error_with_field("email")
+def validate_email(value):
+    try:
+        User.objects.get(email__iexact=value.lower())
+    except User.DoesNotExist:
+        pass
+    else:
+        raise ValidationError("A user with this email address already exists.")
+
+
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
     def validate_username(self, value):
         return _validate_username(value)
 
+    def validate(self, data):
+        validate_email(data["email"])
+        super(RegisterUserSerializer, self).validate(data)
+        return data
+
 
 class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
-    email = EmailField(validators=[
-        UniqueValidator(
-            queryset=User.objects.all(),
-            message="A user with this email address already exists."
-        ),
-    ])
+    email = EmailField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A user with this email address already exists.",
+            ),
+        ]
+    )
 
 
 class UserProfileSerializer(DefaultUserProfileSerializer):
@@ -40,7 +58,7 @@ class UserProfileSerializer(DefaultUserProfileSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        extra_fields = ('is_trusted',)
+        extra_fields = ("is_trusted",)
         self.Meta.fields += extra_fields
         self.Meta.read_only_fields += extra_fields
 
