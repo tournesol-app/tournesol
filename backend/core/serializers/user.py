@@ -23,7 +23,14 @@ def _validate_username(value):
 
 
 @wrap_validation_error_with_field("email")
-def validate_email(value):
+def validate_email_lower_uniqueness(value: str) -> str:
+    """Raise an error if an email is considered already in use.
+
+    Even if emails are considered case-sensitive by the RFC 5321, several
+    email providers don't follow this specification. This validator ensures
+    users won't be able to create several accounts with the same address
+    by changing only the case.
+    """
     try:
         User.objects.get(email__iexact=value.lower())
     except User.DoesNotExist:
@@ -31,13 +38,15 @@ def validate_email(value):
     else:
         raise ValidationError("A user with this email address already exists.")
 
+    return value
+
 
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
     def validate_username(self, value):
         return _validate_username(value)
 
     def validate(self, data):
-        validate_email(data["email"])
+        validate_email_lower_uniqueness(data["email"])
         super(RegisterUserSerializer, self).validate(data)
         return data
 
