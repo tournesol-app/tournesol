@@ -7,11 +7,20 @@ from rest_registration.api.serializers import (
     DefaultRegisterUserSerializer,
     DefaultUserProfileSerializer,
 )
-from rest_registration.utils.validation import wrap_validation_error_with_field
 
 from core.models.user import User
 
 RESERVED_USERNAMES = ["me"]
+
+iunique_email = EmailField(
+    validators=[
+        UniqueValidator(
+            queryset=User.objects.all(),
+            message=_("A user with this email address already exists."),
+            lookup="iexact",
+        ),
+    ]
+)
 
 
 def _validate_username(value):
@@ -22,45 +31,15 @@ def _validate_username(value):
     return value
 
 
-@wrap_validation_error_with_field("email")
-def validate_email_uniqueness_iexact(value: str) -> str:
-    """Raise an error if an email is considered already in use.
-
-    Even if emails are considered case-sensitive by the RFC 5321, several
-    email providers don't follow this specification. This validator ensures
-    users won't be able to create several accounts with the same address
-    by changing only the case.
-    """
-    try:
-        User.objects.get(email__iexact=value.lower())
-    except User.DoesNotExist:
-        pass
-    else:
-        raise ValidationError(_("A user with this email address already exists."))
-
-    return value
-
-
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
+    email = iunique_email
+
     def validate_username(self, value):
         return _validate_username(value)
 
-    def validate(self, data):
-        validate_email_uniqueness_iexact(data["email"])
-        super(RegisterUserSerializer, self).validate(data)
-        return data
-
 
 class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
-    email = EmailField(
-        validators=[
-            UniqueValidator(
-                queryset=User.objects.all(),
-                message=_("A user with this email address already exists."),
-                lookup="iexact",
-            ),
-        ]
-    )
+    email = iunique_email
 
 
 class UserProfileSerializer(DefaultUserProfileSerializer):
