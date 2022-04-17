@@ -21,6 +21,6 @@ google-api-python-client==2.36.0
 google-auth-httplib2==0.1.0
 
 # TwitterBot 
-requests==2.25.1 
+requests==2.27.1
 tweepy==3.10.0
 
