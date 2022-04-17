@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
         parser.add_argument(
             "-n",
-            "--bot_name",
+            "--bot-name",
             type=str,
             help="Name of the bot '@TournesolBot' or '@TournesolBotFR'",
         )
