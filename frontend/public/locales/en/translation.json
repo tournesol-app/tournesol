@@ -294,7 +294,10 @@
   "clickToDownload": "Click to Download",
   "myComparisonsPage": {
     "noComparisonYet": "No comparison",
-    "title": "My comparisons"
+    "title": "My comparisons",
+    "listHasNbComparisons_one": "You already did <1>{{comparisonCount}}</1> comparison.",
+    "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons.",
+    "listHasNbComparisons_other": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
