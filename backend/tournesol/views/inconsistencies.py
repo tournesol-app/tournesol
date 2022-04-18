@@ -146,7 +146,6 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
         return response
 
-
     @staticmethod
     def _calculate_inconsistency(entity_1_calculated_rating,
                                  entity_2_calculated_rating,
