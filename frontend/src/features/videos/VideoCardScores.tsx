@@ -5,6 +5,7 @@ import { Warning as WarningIcon } from '@mui/icons-material';
 import { VideoObject } from 'src/utils/types';
 import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { displayScore} from 'src/utils/criteria'
 
 interface Props {
   video: VideoObject;
@@ -150,19 +151,21 @@ const VideoCardScores = ({ video }: Props) => {
             gap: '6px',
           }}
         >
-          <span>{t('video.criteriaRatedHigh')}</span>
-          <img
-            src={`/svg/${max_criteria}.svg`}
-            alt={max_criteria}
-            title={getCriteriaLabel(max_criteria)}
-          />
+          {max_score > 0 && (
+          <><span>{t('video.criteriaRatedHigh')}</span><img
+              src={`/svg/${max_criteria}.svg`}
+              alt={max_criteria}
+              title={`${getCriteriaLabel(max_criteria)}: ${displayScore(max_score)}`} /></>
+              )}
           <span />
-          <span>{t('video.criteriaRatedLow')}</span>
+          {min_score < 0 && (
+            <><span>{t('video.criteriaRatedLow')}</span>
           <img
             src={`/svg/${min_criteria}.svg`}
             alt={min_criteria}
-            title={getCriteriaLabel(min_criteria)}
-          />
+            title={`${getCriteriaLabel(min_criteria)}: ${displayScore(min_score)}`}
+          /></>
+          )}
         </Box>
       )}
     </Box>
