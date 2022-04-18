@@ -1,6 +1,5 @@
 from math import sqrt
 
-from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -42,70 +41,108 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         contributor_comparisons_criteria = ComparisonCriteriaScore.objects.filter(
             comparison__user=user,
             comparison__poll=poll,
-        ).select_related("comparison")
+        )
 
         if filters["date_gte"]:
             contributor_comparisons_criteria = contributor_comparisons_criteria.filter(
                 comparison__datetime_lastedit__gte=filters["date_gte"]
             )
+        contributor_comparisons_criteria = list(
+            contributor_comparisons_criteria.values(
+                "comparison__entity_1__uid",
+                "comparison__entity_2__uid",
+                "criteria",
+                "score",
+            )
+        )
 
-        ratings = ContributorRatingCriteriaScore.objects.filter(
-            contributor_rating__user=user,
-            contributor_rating__poll=poll,
-        ).select_related("contributor_rating")
+        ratings = list(
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=user,
+                contributor_rating__poll=poll,
+            ).values(
+                "contributor_rating__entity__uid",
+                "criteria",
+                "uncertainty",
+                "score",
+            )
+        )
 
-        comparisons_count = 0
+        response = self._list_inconsistent_comparisons(contributor_comparisons_criteria,
+                                                       ratings,
+                                                       filters["inconsistency_threshold"])
+
+        return Response(ScoreInconsistenciesSerializer(response).data)
+
+    @staticmethod
+    def _list_inconsistent_comparisons(criteria_comparisons: list,
+                                       criteria_ratings: list,
+                                       threshold: float) -> dict:
+        """
+        For each comparison criterion, search the corresponding rating,
+        calculate the inconsistency, and check if it crosses the threshold.
+        Then prepare the HTTP response.
+        """
+
+        count_comparisons_analysed = 0
         inconsistency_sum = 0.0
-        inconsistencies_count = 0
         inconsistent_criterion_comparisons = []
 
-        for comparison_criterion in contributor_comparisons_criteria:
-            comparisons_count += 1
+        for comparison_criterion in criteria_comparisons:
 
-            entity_1 = comparison_criterion.comparison.entity_1
-            entity_2 = comparison_criterion.comparison.entity_2
+            entity_1 = comparison_criterion["comparison__entity_1__uid"]
+            entity_2 = comparison_criterion["comparison__entity_2__uid"]
+            criterion = comparison_criterion["criteria"]
+            comparison_score = comparison_criterion["score"]
 
-            try:
-                entity_1_rating = ratings.get(
-                    contributor_rating__entity=entity_1,
-                    criteria=comparison_criterion.criteria,
-                )
-                entity_2_rating = ratings.get(
-                    contributor_rating__entity=entity_2,
-                    criteria=comparison_criterion.criteria,
-                )
-            except ObjectDoesNotExist:
+            entity_1_score = None
+            entity_2_score = None
+            entity_1_uncertainty = None
+            entity_2_uncertainty = None
+            # TODO: after passing to Python 3.10, sort criteria_ratings and optimize with bisect
+            for criterion_rating in criteria_ratings:
+                if criterion_rating["criteria"] == criterion:
+                    if criterion_rating["contributor_rating__entity__uid"] == entity_1:
+                        entity_1_score = criterion_rating["score"]
+                        entity_1_uncertainty = criterion_rating["uncertainty"]
+                    elif criterion_rating["contributor_rating__entity__uid"] == entity_2:
+                        entity_2_score = criterion_rating["score"]
+                        entity_2_uncertainty = criterion_rating["uncertainty"]
+
+            if entity_1_score is None or entity_2_score is None:
                 continue
 
-            uncertainty = entity_1_rating.uncertainty + entity_2_rating.uncertainty
+            uncertainty = entity_1_uncertainty + entity_2_uncertainty
 
-            inconsistency = self._calculate_inconsistency(entity_1_rating.score,
-                                                          entity_2_rating.score,
-                                                          comparison_criterion.score,
-                                                          uncertainty)
+            inconsistency = ScoreInconsistencies._calculate_inconsistency(entity_1_score,
+                                                                          entity_2_score,
+                                                                          comparison_score,
+                                                                          uncertainty)
 
-            if inconsistency >= filters["inconsistency_threshold"]:
-                inconsistencies_count += 1
+            count_comparisons_analysed += 1
+            if inconsistency >= threshold:
                 inconsistency_sum += inconsistency
-                criterion_comparison = {
-                    "inconsistency": inconsistency,
-                    "entity_1_uid": entity_1,
-                    "entity_2_uid": entity_2,
-                    "criteria": comparison_criterion.criteria,
-                    "comparison_score": comparison_criterion.score,
-                    "entity_1_rating": entity_1_rating.score,
-                    "entity_2_rating": entity_2_rating.score,
-                }
-                inconsistent_criterion_comparisons.append(criterion_comparison)
+
+                inconsistent_criterion_comparisons.append(
+                    {
+                        "inconsistency": inconsistency,
+                        "entity_1_uid": entity_1,
+                        "entity_2_uid": entity_2,
+                        "criteria": criterion,
+                        "comparison_score": comparison_score,
+                        "entity_1_rating": entity_1_score,
+                        "entity_2_rating": entity_2_score,
+                    }
+                )
+
+        mean_inconsistency = 0
+        if count_comparisons_analysed > 0:
+            mean_inconsistency = inconsistency_sum / count_comparisons_analysed
 
         inconsistent_criterion_comparisons.sort(key=lambda d: d['inconsistency'], reverse=True)
 
         # No need to return everything, return at most 100 elements
         inconsistent_criterion_comparisons = inconsistent_criterion_comparisons[:100]
-
-        mean_inconsistency = 0
-        if comparisons_count > 0:
-            mean_inconsistency = inconsistency_sum / comparisons_count
 
         response = {
             "mean_inconsistency": mean_inconsistency,
@@ -113,13 +150,13 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
             "results": inconsistent_criterion_comparisons,
         }
 
-        return Response(ScoreInconsistenciesSerializer(response).data)
+        return response
 
     @staticmethod
     def _calculate_inconsistency(entity_1_calculated_rating,
                                  entity_2_calculated_rating,
                                  comparison_score,
-                                 uncertainty):
+                                 uncertainty) -> float:
         """
         Calculate the inconsistency between the comparison
         criterion score and the general rating of the entity.
@@ -148,9 +185,8 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
         base_rating_difference = entity_2_calculated_rating - entity_1_calculated_rating
 
-        def inconsistency_calculation(rating_difference):
-            return abs(comparison_score - 10 * rating_difference /
-                       sqrt((rating_difference**2) + 1))
+        def inconsistency_calculation(rating_diff):
+            return abs(comparison_score - 10 * rating_diff / sqrt((rating_diff**2) + 1))
 
         min_rating_difference = base_rating_difference - uncertainty
         max_rating_difference = base_rating_difference + uncertainty
