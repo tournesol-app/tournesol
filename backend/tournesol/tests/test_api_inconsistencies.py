@@ -378,10 +378,42 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         comparison_score = -6
         rating_difference = comparison_score / sqrt(100 - comparison_score**2)
         self._create_comparison_and_rating(comparison_score=comparison_score,
-                                          rating_score_2=rating_difference)
+                                           rating_score_2=rating_difference)
 
         response = self.client.get(self.url + "?inconsistency_threshold=0", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.data["results"][0]["inconsistency"], 0)
 
+    def test_missing_rating(self):
+        """
+        It can happen that the ratings are not already computed
+        for recent comparisons. The corresponding comparison should
+        be ignored, and the API should still return a result.
+
+        Create 1 inconsistency and one comparison for which the entities ratings
+        don't exist, and check that the API returns 1 inconsistency.
+        """
+        self.client.force_authenticate(self.user)
+
+        self._create_comparison_and_rating()
+
+        entity_1 = EntityFactory()
+        entity_2 = EntityFactory()
+
+        comparison = ComparisonFactory(
+            poll=self.poll,
+            user=self.user,
+            entity_1=entity_1,
+            entity_2=entity_2,
+        )
+
+        ComparisonCriteriaScoreFactory(
+            comparison=comparison,
+            criteria=self.criterion,
+            score=10.0,
+        )
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)

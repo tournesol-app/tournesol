@@ -88,6 +88,11 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         inconsistency_sum = 0.0
         inconsistent_criterion_comparisons = []
 
+        ratings_map = {
+            (rating["contributor_rating__entity__uid"], rating["criteria"]): rating
+            for rating in criteria_ratings
+        }
+
         for comparison_criterion in criteria_comparisons:
 
             entity_1 = comparison_criterion["comparison__entity_1__uid"]
@@ -95,27 +100,16 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
             criterion = comparison_criterion["criteria"]
             comparison_score = comparison_criterion["score"]
 
-            entity_1_score = None
-            entity_2_score = None
-            entity_1_uncertainty = None
-            entity_2_uncertainty = None
-            # TODO: after passing to Python 3.10, sort criteria_ratings and optimize with bisect
-            for criterion_rating in criteria_ratings:
-                if criterion_rating["criteria"] == criterion:
-                    if criterion_rating["contributor_rating__entity__uid"] == entity_1:
-                        entity_1_score = criterion_rating["score"]
-                        entity_1_uncertainty = criterion_rating["uncertainty"]
-                    elif criterion_rating["contributor_rating__entity__uid"] == entity_2:
-                        entity_2_score = criterion_rating["score"]
-                        entity_2_uncertainty = criterion_rating["uncertainty"]
-
-            if entity_1_score is None or entity_2_score is None:
+            try:
+                rating_1 = ratings_map[(entity_1, criterion)]
+                rating_2 = ratings_map[(entity_2, criterion)]
+            except KeyError:
                 continue
 
-            uncertainty = entity_1_uncertainty + entity_2_uncertainty
+            uncertainty = rating_1["uncertainty"] + rating_2["uncertainty"]
 
-            inconsistency = ScoreInconsistencies._calculate_inconsistency(entity_1_score,
-                                                                          entity_2_score,
+            inconsistency = ScoreInconsistencies._calculate_inconsistency(rating_1["score"],
+                                                                          rating_2["score"],
                                                                           comparison_score,
                                                                           uncertainty)
 
@@ -130,8 +124,8 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                         "entity_2_uid": entity_2,
                         "criteria": criterion,
                         "comparison_score": comparison_score,
-                        "entity_1_rating": entity_1_score,
-                        "entity_2_rating": entity_2_score,
+                        "entity_1_rating": rating_1["score"],
+                        "entity_2_rating": rating_2["score"],
                     }
                 )
 
@@ -151,6 +145,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         }
 
         return response
+
 
     @staticmethod
     def _calculate_inconsistency(entity_1_calculated_rating,
@@ -184,19 +179,20 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         """
 
         base_rating_difference = entity_2_calculated_rating - entity_1_calculated_rating
+        comparison_max = 10
 
         def inconsistency_calculation(rating_diff):
-            return abs(comparison_score - 10 * rating_diff / sqrt((rating_diff**2) + 1))
+            return abs(comparison_score - comparison_max * rating_diff / sqrt(rating_diff**2 + 1))
 
         min_rating_difference = base_rating_difference - uncertainty
         max_rating_difference = base_rating_difference + uncertainty
 
-        if comparison_score <= -10:
+        if comparison_score <= -comparison_max:
             min_inconsistency = inconsistency_calculation(min_rating_difference)
-        elif comparison_score >= 10:
+        elif comparison_score >= comparison_max:
             min_inconsistency = inconsistency_calculation(max_rating_difference)
         else:
-            root = comparison_score / sqrt(100 - comparison_score**2)
+            root = comparison_score / sqrt(comparison_max**2 - comparison_score**2)
             if max_rating_difference < root:
                 # The inconsistency is decreasing with the rating_difference
                 min_inconsistency = inconsistency_calculation(max_rating_difference)
