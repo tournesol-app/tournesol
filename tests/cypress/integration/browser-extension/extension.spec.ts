@@ -34,7 +34,13 @@ onlyOn('headed', () => {
       it('shows "Rate later" button on video page', () => {
         cy.visit('https://www.youtube.com/watch?v=6jK9bFWE--g');
         consent();
-        cy.contains('button', 'Rate later', {matchCase: false}).should('be.visible');
+        cy.get('body').then($body => {
+          if ($body.text().includes('dismiss')) {
+            // Dismiss Youtube Ad if present
+            cy.contains('button', 'dismiss', {matchCase: false}).click();
+          }
+          cy.contains('button', 'Rate later', {matchCase: false}).should('be.visible');
+        })
       })
     })
 })
