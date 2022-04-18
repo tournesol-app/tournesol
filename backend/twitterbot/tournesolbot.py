@@ -94,7 +94,7 @@ def get_video_recommendations(language):
     # Exclude video recently tweeted by the same uploader
     exclude_uploader = TweetInfo.objects.filter(
         datetime_tweet__gte=time_ago(days=settings.DAYS_ALREADY_TWEETED_UPLOADER)
-    ).values_list("video__metadata__uploader", flat=True)
+    ).values("video__metadata__uploader")
 
     tweetable_videos = tweetable_videos.exclude(metadata__uploader__in=exclude_uploader)
 
