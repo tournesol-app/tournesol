@@ -83,7 +83,7 @@ def get_video_recommendations(language):
             days=settings.DAYS_TOO_OLD
         ).isoformat(),
         rating_n_contributors__gt=settings.MIN_NB_CONTRIBUTORS,
-        rating_n_ratings__gt=settings.MIN_NB_RATINGS,
+        rating_n_ratings__gte=settings.MIN_NB_RATINGS,
         metadata__language=language,
         tournesol_score__gte=settings.MIN_TOURNESOL_SCORE,
         criteria_scores__criteria="reliability",
