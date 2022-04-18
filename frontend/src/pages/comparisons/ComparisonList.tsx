@@ -16,7 +16,7 @@ function ComparisonsPage() {
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
   ] = useState();
-  const [count, setCount] = useState(0);
+  const [comparisonCount, setCount] = useState(0);
   const history = useHistory();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -33,16 +33,16 @@ function ComparisonsPage() {
     const process = async () => {
       const comparisonsRequest = await (filteredUid
         ? UsersService.usersMeComparisonsListFiltered({
-            pollName,
-            uid: filteredUid,
-            limit,
-            offset,
-          })
+          pollName,
+          uid: filteredUid,
+          limit,
+          offset,
+        })
         : UsersService.usersMeComparisonsList({
-            pollName,
-            limit,
-            offset,
-          }));
+          pollName,
+          limit,
+          offset,
+        }));
       setComparisons(comparisonsRequest.results);
       setCount(comparisonsRequest.count || 0);
     };
@@ -82,14 +82,14 @@ function ComparisonsPage() {
         }}
       >
         <LoaderWrapper isLoading={comparisons == undefined}>
-          {count === 0 ? (
+          {comparisonCount === 0 ? (
             noComparisonMessage
           ) : (
             <>
               <ComparisonList comparisons={comparisons} />
               <Pagination
                 offset={offset}
-                count={count}
+                count={comparisonCount}
                 onOffsetChange={handleOffsetChange}
                 limit={limit}
                 itemType={t('pagination.comparisons')}
