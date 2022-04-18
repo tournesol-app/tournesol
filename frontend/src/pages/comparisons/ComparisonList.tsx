@@ -33,16 +33,16 @@ function ComparisonsPage() {
     const process = async () => {
       const comparisonsRequest = await (filteredUid
         ? UsersService.usersMeComparisonsListFiltered({
-          pollName,
-          uid: filteredUid,
-          limit,
-          offset,
-        })
+            pollName,
+            uid: filteredUid,
+            limit,
+            offset,
+          })
         : UsersService.usersMeComparisonsList({
-          pollName,
-          limit,
-          offset,
-        }));
+            pollName,
+            limit,
+            offset,
+          }));
       setComparisons(comparisonsRequest.results);
       setComparisonCount(comparisonsRequest.count || 0);
     };
@@ -70,17 +70,16 @@ function ComparisonsPage() {
   );
 
   const nbComparisonsMessage = (
-    <Typography variant="subtitle1" sx={{ textAlign: "center", pt: 2 }}>
+    <Typography variant="subtitle1" sx={{ textAlign: 'center', pt: 2 }}>
       <Trans
         t={t}
         i18nKey="myComparisonsPage.listHasNbComparisons"
         count={comparisonCount}
       >
-        You already made <strong>{{ comparisonCount }}</strong>{' '}
-        comparison(s).
+        You already made <strong>{{ comparisonCount }}</strong> comparison(s).
       </Trans>
     </Typography>
-  )
+  );
 
   return (
     <>
