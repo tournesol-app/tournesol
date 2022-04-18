@@ -139,7 +139,7 @@ const VideoCardScores = ({ video }: Props) => {
         </Box>
       )}
 
-      {max_criteria !== '' && min_criteria !== max_criteria && (
+      {max_criteria !== '' && (
         <Box
           data-testid="video-card-minmax-criterias"
           display="flex"
