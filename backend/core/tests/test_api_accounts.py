@@ -18,7 +18,7 @@ class AccountsRegisterTestCase(TestCase):
 
     _existing_username = "existing"
     _existing_email = "existing@example.org"
-    _existing_email_alt = "Existing@example.org"
+    _existing_email_alt = "EXISTING@example.org"
 
     _non_existing_username = "non-existing"
     _non_existing_email = "non-existing@example.org"
@@ -84,6 +84,106 @@ class AccountsRegisterTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.all().count(), n_users + 1)
+
+    def test_register_with_symbol_plus(self) -> None:
+        """
+        An anonymous user can't register with an email containing one or several
+        plus symbols, if a similar address without plus is already in use.
+        """
+        n_users = User.objects.all().count()
+
+        for email in [
+            "existing+@example.org",
+            "existing+@EXAMPLE.org",
+            "existing+tournesol@example.org",
+            "EXISTING+tournesol@example.org",
+            "existing+TOURNESOL@example.org",
+            "existing+foo+bar@example.org",
+        ]:
+
+            invalid_payload = {
+                "username": self._non_existing_username,
+                "email": email,
+                "password": "very_uncommon_password",
+                "password_confirm": "very_uncommon_password",
+            }
+            response = self.client.post(
+                "/accounts/register/",
+                invalid_payload,
+                format="json",
+            )
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_400_BAD_REQUEST,
+                f"{email} was unexpectedly authorized even if {self._existing_email} was in DB",
+            )
+            self.assertIn("email", response.data)
+            self.assertEqual(User.objects.all().count(), n_users)
+
+    def test_register_with_symbol_plus_reverse(self) -> None:
+        """
+        An anonymous user can't register with an email containing no plus
+        symbol, if a similar address with plus is already in use.
+        """
+        already_used = "email_with_plus+tournesol@example.org"
+        UserFactory(email="email_with_plus+tournesol@example.org")
+        n_users = User.objects.all().count()
+
+        already_used_alt = "email_with_plus@example.org"
+        invalid_payload = {
+            "username": self._non_existing_username,
+            "email": already_used_alt,
+            "password": "very_uncommon_password",
+            "password_confirm": "very_uncommon_password",
+        }
+        response = self.client.post(
+            "/accounts/register/",
+            invalid_payload,
+            format="json",
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            f"{already_used_alt} was unexpectedly authorized even if {already_used} was in DB",
+        )
+        self.assertIn("email", response.data)
+        self.assertEqual(User.objects.all().count(), n_users)
+
+    def test_register_with_symbol_plus_different(self) -> None:
+        """
+        An anonymous user can't register with an email containing one or several
+        plus symbols, if a similar address with plus is already in use.
+        """
+        already_used = "email_with_plus+tournesol@example.org"
+        UserFactory(email="email_with_plus+tournesol@example.org")
+        n_users = User.objects.all().count()
+
+        for email in [
+            "email_with_plus+@example.org",
+            "email_with_plus+@EXAMPLE.org",
+            "email_with_plus+TOURNESOL@example.org",
+            "email_with_plus+different@example.org",
+            "email_with_plus+foo+bar@example.org",
+        ]:
+
+            invalid_payload = {
+                "username": self._non_existing_username,
+                "email": email,
+                "password": "very_uncommon_password",
+                "password_confirm": "very_uncommon_password",
+            }
+            response = self.client.post(
+                "/accounts/register/",
+                invalid_payload,
+                format="json",
+            )
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_400_BAD_REQUEST,
+                f"{email} was unexpectedly authorized even if {already_used} was in DB",
+            )
+            self.assertIn("email", response.data)
+            self.assertEqual(User.objects.all().count(), n_users)
 
     def test_register_email_with_already_used_email(self) -> None:
         """

@@ -262,13 +262,19 @@ class User(AbstractUser):
 
         if username:
             users = User.objects.filter(
-                email__istartswith=f"{local_part_split[0]}+",
-                email__iendswith=f"@{email_split[-1]}",
+                Q(email__istartswith=f"{local_part_split[0]}@")
+                | (
+                    Q(email__istartswith=f"{local_part_split[0]}+")
+                    & Q(email__iendswith=f"@{email_split[-1]}")
+                ),
             ).exclude(username=username)
         else:
             users = User.objects.filter(
-                email__istartswith=f"{local_part_split[0]}+",
-                email__iendswith=f"@{email_split[-1]}",
+                Q(email__istartswith=f"{local_part_split[0]}@")
+                | (
+                    Q(email__istartswith=f"{local_part_split[0]}+")
+                    & Q(email__iendswith=f"@{email_split[-1]}")
+                ),
             )
 
         if users.exists():
@@ -276,8 +282,7 @@ class User(AbstractUser):
                 {
                     "email": _(
                         "A user with an email starting with '%(email)s' already exists"
-                        " in this domain."
-                        % {"email": f"{local_part_split[0]}+"}
+                        " in this domain." % {"email": f"{local_part_split[0]}+"}
                     )
                 }
             )
