@@ -28,7 +28,7 @@ msgstr "adresse e-mail"
 msgid ""
 "A user with an email starting with '%(email)s' already exists in this domain."
 msgstr ""
-"Un utilisateur avec un e-mail commençant par %(email) existe déjà dans ce "
+"Un utilisateur avec un e-mail commençant par '%(email)' existe déjà dans ce "
 "domaine."
 
 #: core/models/user.py:312 core/serializers/user.py:19

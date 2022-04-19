@@ -260,22 +260,16 @@ class User(AbstractUser):
         local_part = email_split[0]
         local_part_split = local_part.split("+")
 
+        users = User.objects.filter(
+            Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
+            | (
+                    Q(email__istartswith=f"{local_part_split[0]}+")
+                    & Q(email__iendswith=f"@{email_split[-1]}")
+            ),
+        )
+
         if username:
-            users = User.objects.filter(
-                Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
-                | (
-                    Q(email__istartswith=f"{local_part_split[0]}+")
-                    & Q(email__iendswith=f"@{email_split[-1]}")
-                ),
-            ).exclude(username=username)
-        else:
-            users = User.objects.filter(
-                Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
-                | (
-                    Q(email__istartswith=f"{local_part_split[0]}+")
-                    & Q(email__iendswith=f"@{email_split[-1]}")
-                ),
-            )
+            users.exclude(username=username)
 
         if users.exists():
             raise ValidationError(
