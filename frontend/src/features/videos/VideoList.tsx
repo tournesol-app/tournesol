@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Typography, Box } from '@mui/material';
 import VideoCard from '../videos/VideoCard';
-import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
+import { CompareNowAction, AddToRateLaterList, AddDetailedConsultation } from 'src/utils/action';
 import { useLoginState } from 'src/hooks';
 import { ActionList, VideoObject } from 'src/utils/types';
 
@@ -26,7 +26,7 @@ function VideoList({
   const { isLoggedIn } = useLoginState();
 
   const defaultActions = isLoggedIn
-    ? [CompareNowAction, AddToRateLaterList]
+    ? [CompareNowAction, AddToRateLaterList, AddDetailedConsultation]
     : [];
 
   return (
