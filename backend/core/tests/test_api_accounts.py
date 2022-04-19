@@ -40,8 +40,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": self._existing_email,
-            "password": "very_uncommon_password",
-            "password_confirm": "very_uncommon_password",
+            "password": "very_uncommon_pwd",
+            "password_confirm": "very_uncommon_pwd",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -57,8 +57,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": self._existing_email_alt,
-            "password": "very_uncommon_password",
-            "password_confirm": "very_uncommon_password",
+            "password": "very_uncommon_pwd",
+            "password_confirm": "very_uncommon_pwd",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -73,8 +73,8 @@ class AccountsRegisterTestCase(TestCase):
         valid_payload = {
             "username": self._non_existing_username,
             "email": self._non_existing_email,
-            "password": "very_uncommon_password",
-            "password_confirm": "very_uncommon_password",
+            "password": "very_uncommon_pwd",
+            "password_confirm": "very_uncommon_pwd",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -104,8 +104,8 @@ class AccountsRegisterTestCase(TestCase):
             invalid_payload = {
                 "username": self._non_existing_username,
                 "email": email,
-                "password": "very_uncommon_password",
-                "password_confirm": "very_uncommon_password",
+                "password": "very_uncommon_pwd",
+                "password_confirm": "very_uncommon_pwd",
             }
             response = self.client.post(
                 "/accounts/register/",
@@ -134,8 +134,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": used_email_noplus,
-            "password": "very_uncommon_password",
-            "password_confirm": "very_uncommon_password",
+            "password": "very_uncommon_pwd",
+            "password_confirm": "very_uncommon_pwd",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -171,8 +171,8 @@ class AccountsRegisterTestCase(TestCase):
             invalid_payload = {
                 "username": self._non_existing_username,
                 "email": email,
-                "password": "very_uncommon_password",
-                "password_confirm": "very_uncommon_password",
+                "password": "very_uncommon_pwd",
+                "password_confirm": "very_uncommon_pwd",
             }
             response = self.client.post(
                 "/accounts/register/",
