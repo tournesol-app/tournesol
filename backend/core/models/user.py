@@ -260,10 +260,6 @@ class User(AbstractUser):
         local_part = email_split[0]
         local_part_split = local_part.split("+")
 
-        # if there is no `+` symbol, do nothing
-        if len(local_part_split) == 1:
-            return email
-
         if username:
             users = User.objects.filter(
                 email__istartswith=f"{local_part_split[0]}+",
@@ -279,8 +275,8 @@ class User(AbstractUser):
             raise ValidationError(
                 {
                     "email": _(
-                        "A user with an email starting with '%(email)+' already exists with this domain."
-                        % {"email": local_part_split[0]}
+                        "A user with an email starting with '%(email)s' already exists in this domain."
+                        % {"email": f"{local_part_split[0]}+"}
                     )
                 }
             )
