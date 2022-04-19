@@ -300,7 +300,10 @@
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
-    "title": "Mes comparaisons"
+    "title": "Mes comparaisons",
+    "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
+    "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
+    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
