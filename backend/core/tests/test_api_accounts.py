@@ -123,7 +123,7 @@ class AccountsRegisterTestCase(TestCase):
     def test_register_account_with_symbol_plus_reverse(self) -> None:
         """
         An anonymous user can't register with an email containing no plus
-        symbol, if a similar address with plus is already in use.
+        symbol, if a similar address with a plus is already in use.
         """
         used_email = "already_USED+tournesol@example.org"
         used_email_noplus = "already_used@example.org"
@@ -226,6 +226,11 @@ class AccountsRegisterTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_register_email_with_symbol_plus(self) -> None:
+        """
+        An authenticated user can't update its email with one containing one
+        or several plus symbols, if a similar address without plus is already
+        in use by another user.
+        """
         used_email = "already_USED@example.org"
         UserFactory(email=used_email)
 
@@ -251,6 +256,11 @@ class AccountsRegisterTestCase(TestCase):
             self.assertIn("email", response.data)
 
     def test_register_email_with_symbol_plus_reverse(self) -> None:
+        """
+        An authenticated user can't update its email with one containing no
+        plus symbol, if a similar address with a plus is already in use by
+        another user.
+        """
         used_email = "already_USED+tournesol@example.org"
         used_email_noplus = "already_used@example.org"
         UserFactory(email=used_email)
@@ -270,6 +280,11 @@ class AccountsRegisterTestCase(TestCase):
         self.assertIn("email", response.data)
 
     def test_register_email_with_symbol_plus_different(self) -> None:
+        """
+        An authenticated user can't update its email with one containing one
+        or several plus symbols, if a similar address with plus is already in
+        use by another user.
+        """
         used_email = "already_USED+tournesol@example.org"
         UserFactory(email=used_email)
 
