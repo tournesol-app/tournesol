@@ -296,6 +296,10 @@ class AccountsRegisterTestCase(TestCase):
             self.assertIn("email", response.data)
 
     def test_register_email_with_symbol_plus_must_exclude_self(self) -> None:
+        """
+        An authenticated user can update its own email, even if the new email
+        is similar to the previous one.
+        """
         self.client.force_authenticate(user=self.existing_user)
 
         for email in [
