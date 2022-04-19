@@ -26,7 +26,7 @@ class User(AbstractUser):
     # Used by reset password mechanism.
     LOGIN_FIELDS = ("username", "email")
 
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_("email address"), unique=True)
     is_demo = models.BooleanField(default=False, help_text="Is a demo account?")
     first_name = models.CharField(
         max_length=100, blank=True, null=True, help_text="First name"
@@ -228,7 +228,7 @@ class User(AbstractUser):
         return cls.trusted_users().filter(is_staff=True)
 
     @classmethod
-    def validate_email_localpart_noplus(email: str, username="") -> str:
+    def validate_email_localpart_noplus(cls, email: str, username="") -> str:
         email_split = email.split("@")
         """Raise ValidationError when similar emails are found in the database.
 
@@ -276,10 +276,16 @@ class User(AbstractUser):
             )
 
         if users.exists():
-            raise ValidationError(_("A user with this email address already exists."))
+            raise ValidationError(
+                {
+                    "email": _(
+                        "A user with an email starting with '%(email)+' already exists with this domain."
+                        % {"email": local_part_split[0]}
+                    )
+                }
+            )
 
         return email
-
 
     @property
     def is_trusted(self):
@@ -288,14 +294,15 @@ class User(AbstractUser):
     def ensure_email_domain_exists(self):
         if not self.email:
             return
-        if '@' not in self.email:
+        if "@" not in self.email:
             # Should never happen, as the address format is validated by the field.
             logger.warning(
                 'Cannot find email domain for user "%s" with email "%s".',
-                self.username, self.email
+                self.username,
+                self.email,
             )
             return
-        _, domain_part = self.email.rsplit('@', 1)
+        _, domain_part = self.email.rsplit("@", 1)
         domain = f"@{domain_part}".lower()
         EmailDomain.objects.get_or_create(domain=domain)
 
@@ -312,9 +319,9 @@ class User(AbstractUser):
         User.validate_email_localpart_noplus(value, self.username)
 
     def save(self, *args, **kwargs):
-        update_fields = kwargs.get('update_fields')
+        update_fields = kwargs.get("update_fields")
         # No need to create the EmailDomain, if email is unchanged
-        if update_fields is None or 'email' in update_fields:
+        if update_fields is None or "email" in update_fields:
             self.ensure_email_domain_exists()
         return super().save(*args, **kwargs)
 
