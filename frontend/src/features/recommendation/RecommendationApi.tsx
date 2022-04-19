@@ -9,7 +9,8 @@ export const getRecommendedVideos = async (
   const conversionTime = new Map();
   const params = new URLSearchParams(searchString);
   conversionTime.set('Any', 1);
-  conversionTime.set('Today', dayInMillisecondes);
+  // "Today" is 36 hours to get most of the videos from the previous day
+  conversionTime.set('Today', dayInMillisecondes * 1.5);
   conversionTime.set('Week', dayInMillisecondes * 7);
   conversionTime.set('Month', dayInMillisecondes * 31);
   conversionTime.set('Year', dayInMillisecondes * 365);
