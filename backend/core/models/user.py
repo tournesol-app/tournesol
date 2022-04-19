@@ -229,7 +229,6 @@ class User(AbstractUser):
 
     @classmethod
     def validate_email_unique_with_plus(cls, email: str, username="") -> str:
-        email_split = email.split("@")
         """Raise ValidationError when similar emails are found in the database.
 
         Keyword arguments:
@@ -252,6 +251,7 @@ class User(AbstractUser):
             - BOB+HELLO@example.org
             - etc.
         """
+        email_split = email.split("@")
 
         # if there is no `@`, do nothing
         if len(email_split) == 1:
