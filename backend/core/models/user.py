@@ -15,8 +15,8 @@ from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 
-from ..utils.models import WithDynamicFields, enum_list
-from ..utils.validators import validate_avatar
+from core.utils.models import WithDynamicFields, enum_list
+from core.utils.validators import validate_avatar
 
 logger = logging.getLogger(__name__)
 
@@ -227,6 +227,60 @@ class User(AbstractUser):
     def supertrusted_seed_users(cls) -> QuerySet["User"]:
         return cls.trusted_users().filter(is_staff=True)
 
+    @classmethod
+    def validate_email_localpart_noplus(email: str, username="") -> str:
+        email_split = email.split("@")
+        """Raise ValidationError when similar emails are found in the database.
+
+        Keyword arguments:
+        email -- An email that is going to be written in the database.
+        username -- The logged user's username, used to exclude him/herself from
+                    the validation when updating its own email. Empty for
+                    anonymous users.
+
+        Emails considered similar when:
+            - they share the same non-case-sensitive domain ;
+            - they share, in the local part, the same non case-sensitive string
+              before the `+` symbol.
+
+        Examples of emails considered similar:
+            - bob@example.org
+            - bob+@example.org
+            - bob+tournesol@example.org
+            - BOB+tournesol@example.org
+            - bob+hello@example.org
+            - BOB+HELLO@example.org
+            - etc.
+        """
+
+        # if there is no `@`, do nothing
+        if len(email_split) == 1:
+            return email
+
+        local_part = email_split[0]
+        local_part_split = local_part.split("+")
+
+        # if there is no `+` symbol, do nothing
+        if len(local_part_split) == 1:
+            return email
+
+        if username:
+            users = User.objects.filter(
+                email__istartswith=f"{local_part_split[0]}+",
+                email__iendswith=f"@{email_split[-1]}",
+            ).exclude(username=username)
+        else:
+            users = User.objects.filter(
+                email__istartswith=f"{local_part_split[0]}+",
+                email__iendswith=f"@{email_split[-1]}",
+            )
+
+        if users.exists():
+            raise ValidationError(_("A user with this email address already exists."))
+
+        return email
+
+
     @property
     def is_trusted(self):
         return User.trusted_users().filter(pk=self.pk).exists()
@@ -254,6 +308,8 @@ class User(AbstractUser):
             raise ValidationError(
                 {"email": _("A user with this email address already exists.")}
             )
+
+        User.validate_email_localpart_noplus(value, self.username)
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get('update_fields')
