@@ -269,6 +269,32 @@ class AccountsRegisterTestCase(TestCase):
         )
         self.assertIn("email", response.data)
 
+    def test_register_email_with_symbol_plus_different(self) -> None:
+        used_email = "already_USED+tournesol@example.org"
+        UserFactory(email=used_email)
+
+        self.client.force_authenticate(user=self.existing_user)
+
+        for email in [
+            "already_used+@example.org",
+            "already_used+@EXAMPLE.org",
+            "ALREADY_USED+tournesol@example.org",
+            "already_used+TOURNESOL@example.org",
+            "already_used+different@example.org",
+            "already_used+foo+bar@example.org",
+        ]:
+            response = self.client.post(
+                "/accounts/register-email/",
+                {"email": email},
+                format="json",
+            )
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_400_BAD_REQUEST,
+                f"{email} was unexpectedly authorized even if {used_email} was in DB",
+            )
+            self.assertIn("email", response.data)
+
 
 class AccountsResetPasswordTestCase(TestCase):
     """
