@@ -7,7 +7,7 @@ from typing import List, Tuple
 from django.contrib import admin
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.db.models import Func, OuterRef, Subquery
+from django.db.models import Count, Func, OuterRef, Subquery
 from django.db.models.query import QuerySet
 
 from .models import Degree, EmailDomain, Expertise, ExpertiseKeyword, User, VerifiableEmail
@@ -46,7 +46,7 @@ class IsTrustedFilter(admin.SimpleListFilter):
 class UserAdmin(DjangoUserAdmin):
     ordering = ["-date_joined"]
     list_filter = DjangoUserAdmin.list_filter + (IsTrustedFilter,)
-    list_display = DjangoUserAdmin.list_display + ("is_trusted",)
+    list_display = ("username", "email", "is_trusted","is_active", "get_n_comparisons", "date_joined")
     add_fieldsets = (
         (
             None,
@@ -56,6 +56,19 @@ class UserAdmin(DjangoUserAdmin):
             },
         ),
     )
+    
+    @staticmethod
+    @admin.display(description="# comparisons", ordering="n_comparisons")
+    def get_n_comparisons(user):
+        return user.n_comparisons
+    
+    def get_queryset(self, request):
+        """
+        Return a QuerySet of all model instances that can be edited by the
+        admin site. This is used by changelist_view.
+        """
+        qs = super().get_queryset(request)
+        return qs.annotate(n_comparisons=Count("comparisons"))
 
     def get_fieldsets(self, request, obj) -> List[Tuple]:
         fieldsets = super().get_fieldsets(request, obj=obj)
