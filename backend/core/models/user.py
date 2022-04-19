@@ -248,13 +248,12 @@ class User(AbstractUser):
     def clean(self):
         value = self.email
 
-        similar = User.objects.filter(email__iexact=value)
-        n_similar = similar.count()
+        similar_email = User.objects.filter(email__iexact=value).exclude(pk=self.pk)
 
-        if n_similar > 1:
-            raise ValidationError(_("A user with this email address already exists."))
-        elif n_similar == 1 and similar[0].pk != self.pk:
-            raise ValidationError(_("A user with this email address already exists."))
+        if similar_email.exists():
+            raise ValidationError(
+                {"email": _("A user with this email address already exists.")}
+            )
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get('update_fields')
