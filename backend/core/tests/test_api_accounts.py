@@ -29,7 +29,7 @@ class AccountsRegisterTestCase(TestCase):
             username=self._existing_username, email=self._existing_email
         )
 
-    def test_register_with_already_used_email(self) -> None:
+    def test_register_account_with_already_used_email(self) -> None:
         """
         An anonymous user can't register with a variant of an email address
         already in use.
@@ -40,8 +40,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": self._existing_email,
-            "password": "uncommon_password",
-            "password_confirm": "uncommon_password",
+            "password": "very_uncommon_password",
+            "password_confirm": "very_uncommon_password",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -57,8 +57,8 @@ class AccountsRegisterTestCase(TestCase):
         invalid_payload = {
             "username": self._non_existing_username,
             "email": self._existing_email_alt,
-            "password": "uncommon_password",
-            "password_confirm": "uncommon_password",
+            "password": "very_uncommon_password",
+            "password_confirm": "very_uncommon_password",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -73,8 +73,8 @@ class AccountsRegisterTestCase(TestCase):
         valid_payload = {
             "username": self._non_existing_username,
             "email": self._non_existing_email,
-            "password": "uncommon_password",
-            "password_confirm": "uncommon_password",
+            "password": "very_uncommon_password",
+            "password_confirm": "very_uncommon_password",
         }
         response = self.client.post(
             "/accounts/register/",
@@ -85,7 +85,7 @@ class AccountsRegisterTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.all().count(), n_users + 1)
 
-    def test_register_with_symbol_plus(self) -> None:
+    def test_register_account_with_symbol_plus(self) -> None:
         """
         An anonymous user can't register with an email containing one or several
         plus symbols, if a similar address without plus is already in use.
@@ -120,19 +120,20 @@ class AccountsRegisterTestCase(TestCase):
             self.assertIn("email", response.data)
             self.assertEqual(User.objects.all().count(), n_users)
 
-    def test_register_with_symbol_plus_reverse(self) -> None:
+    def test_register_account_with_symbol_plus_reverse(self) -> None:
         """
         An anonymous user can't register with an email containing no plus
         symbol, if a similar address with plus is already in use.
         """
-        already_used = "email_with_plus+tournesol@example.org"
-        UserFactory(email="email_with_plus+tournesol@example.org")
+        used_email = "already_used+tournesol@example.org"
+        used_email_noplus = "already_used@example.org"
+        UserFactory(email=used_email)
+
         n_users = User.objects.all().count()
 
-        already_used_alt = "email_with_plus@example.org"
         invalid_payload = {
             "username": self._non_existing_username,
-            "email": already_used_alt,
+            "email": used_email_noplus,
             "password": "very_uncommon_password",
             "password_confirm": "very_uncommon_password",
         }
@@ -144,26 +145,27 @@ class AccountsRegisterTestCase(TestCase):
         self.assertEqual(
             response.status_code,
             status.HTTP_400_BAD_REQUEST,
-            f"{already_used_alt} was unexpectedly authorized even if {already_used} was in DB",
+            f"{used_email_noplus} was unexpectedly authorized even if {used_email} was in DB",
         )
         self.assertIn("email", response.data)
         self.assertEqual(User.objects.all().count(), n_users)
 
-    def test_register_with_symbol_plus_different(self) -> None:
+    def test_register_account_with_symbol_plus_different(self) -> None:
         """
         An anonymous user can't register with an email containing one or several
         plus symbols, if a similar address with plus is already in use.
         """
-        already_used = "email_with_plus+tournesol@example.org"
-        UserFactory(email="email_with_plus+tournesol@example.org")
+        already_used = "already_used+tournesol@example.org"
+        UserFactory(email=already_used)
         n_users = User.objects.all().count()
 
         for email in [
-            "email_with_plus+@example.org",
-            "email_with_plus+@EXAMPLE.org",
-            "email_with_plus+TOURNESOL@example.org",
-            "email_with_plus+different@example.org",
-            "email_with_plus+foo+bar@example.org",
+            "already_used+@example.org",
+            "already_used+@EXAMPLE.org",
+            "ALREADY_USED+tournesol@example.org",
+            "already_used+TOURNESOL@example.org",
+            "already_used+different@example.org",
+            "already_used+foo+bar@example.org",
         ]:
 
             invalid_payload = {
@@ -187,13 +189,13 @@ class AccountsRegisterTestCase(TestCase):
 
     def test_register_email_with_already_used_email(self) -> None:
         """
-        An authenticated user can't register with a variant of an email
-        address already in use.
+        An authenticated user can't update its email with a variant already
+        in use.
         """
-        used_email = "also_used@example.org"
-        used_email_alt = "also_USED@example.org"
-
+        used_email = "already_used@example.org"
+        used_email_alt = "already_USED@example.org"
         UserFactory(email=used_email)
+
         self.client.force_authenticate(user=self.existing_user)
 
         # a user cannot use an email address already in use
@@ -222,6 +224,50 @@ class AccountsRegisterTestCase(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_register_email_with_symbol_plus(self) -> None:
+        used_email = "already_used@example.org"
+        UserFactory(email=used_email)
+
+        self.client.force_authenticate(user=self.existing_user)
+
+        for email in [
+            "already_used+@example.org",
+            "already_used+@EXAMPLE.org",
+            "ALREADY_USED+tournesol@example.org",
+            "already_used+TOURNESOL@example.org",
+            "alreadt_used+foo+bar@example.org",
+        ]:
+            response = self.client.post(
+                "/accounts/register-email/",
+                {"email": email},
+                format="json",
+            )
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_400_BAD_REQUEST,
+                f"{email} was unexpectedly authorized even if {self._existing_email} was in DB",
+            )
+            self.assertIn("email", response.data)
+
+    def test_register_email_with_symbol_plus_reverse(self) -> None:
+        used_email = "already_used+tournesol@example.org"
+        used_email_noplus = "already_used@example.org"
+        UserFactory(email=used_email)
+
+        self.client.force_authenticate(user=self.existing_user)
+
+        response = self.client.post(
+            "/accounts/register-email/",
+            {"email": used_email_noplus},
+            format="json",
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            f"{used_email_noplus} was unexpectedly authorized even if {used_email} was in DB",
+        )
+        self.assertIn("email", response.data)
 
 
 class AccountsResetPasswordTestCase(TestCase):
