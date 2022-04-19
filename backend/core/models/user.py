@@ -262,7 +262,7 @@ class User(AbstractUser):
 
         if username:
             users = User.objects.filter(
-                Q(email__istartswith=f"{local_part_split[0]}@")
+                Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
                 | (
                     Q(email__istartswith=f"{local_part_split[0]}+")
                     & Q(email__iendswith=f"@{email_split[-1]}")
@@ -270,7 +270,7 @@ class User(AbstractUser):
             ).exclude(username=username)
         else:
             users = User.objects.filter(
-                Q(email__istartswith=f"{local_part_split[0]}@")
+                Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
                 | (
                     Q(email__istartswith=f"{local_part_split[0]}+")
                     & Q(email__iendswith=f"@{email_split[-1]}")
