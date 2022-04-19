@@ -46,7 +46,14 @@ class IsTrustedFilter(admin.SimpleListFilter):
 class UserAdmin(DjangoUserAdmin):
     ordering = ["-date_joined"]
     list_filter = DjangoUserAdmin.list_filter + (IsTrustedFilter,)
-    list_display = ("username", "email", "is_trusted","is_active", "get_n_comparisons", "date_joined")
+    list_display = (
+        "username",
+        "email",
+        "is_trusted",
+        "is_active",
+        "get_n_comparisons",
+        "date_joined",
+    )
     add_fieldsets = (
         (
             None,
@@ -56,12 +63,12 @@ class UserAdmin(DjangoUserAdmin):
             },
         ),
     )
-    
+
     @staticmethod
     @admin.display(description="# comparisons", ordering="n_comparisons")
     def get_n_comparisons(user):
         return user.n_comparisons
-    
+
     def get_queryset(self, request):
         """
         Return a QuerySet of all model instances that can be edited by the
@@ -135,8 +142,8 @@ class EmailDomainAdmin(admin.ModelAdmin):
         qst = qst.annotate(
             _user_number=Subquery(
                 User.objects.filter(email__iendswith=OuterRef("domain"))
-                    .annotate(count=Func("id", function="Count"))
-                    .values("count")
+                .annotate(count=Func("id", function="Count"))
+                .values("count")
             )
         )
         return qst
