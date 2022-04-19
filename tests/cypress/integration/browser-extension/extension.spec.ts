@@ -35,9 +35,9 @@ onlyOn('headed', () => {
         cy.visit('https://www.youtube.com/watch?v=6jK9bFWE--g');
         consent();
         cy.get('body').then($body => {
-          if ($body.text().includes('dismiss')) {
+          if ($body.find("button:contains('Dismiss')") {
             // Dismiss Youtube Ad if present
-            cy.contains('button', 'dismiss', {matchCase: false}).click();
+            cy.contains('button', 'Dismiss', {matchCase: false}).click();
           }
           cy.contains('button', 'Rate later', {matchCase: false}).should('be.visible');
         })
