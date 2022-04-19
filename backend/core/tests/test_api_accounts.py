@@ -125,7 +125,7 @@ class AccountsRegisterTestCase(TestCase):
         An anonymous user can't register with an email containing no plus
         symbol, if a similar address with plus is already in use.
         """
-        used_email = "already_used+tournesol@example.org"
+        used_email = "already_USED+tournesol@example.org"
         used_email_noplus = "already_used@example.org"
         UserFactory(email=used_email)
 
@@ -155,7 +155,7 @@ class AccountsRegisterTestCase(TestCase):
         An anonymous user can't register with an email containing one or several
         plus symbols, if a similar address with plus is already in use.
         """
-        already_used = "already_used+tournesol@example.org"
+        already_used = "already_USED+tournesol@example.org"
         UserFactory(email=already_used)
         n_users = User.objects.all().count()
 
@@ -226,7 +226,7 @@ class AccountsRegisterTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_register_email_with_symbol_plus(self) -> None:
-        used_email = "already_used@example.org"
+        used_email = "already_USED@example.org"
         UserFactory(email=used_email)
 
         self.client.force_authenticate(user=self.existing_user)
@@ -236,7 +236,7 @@ class AccountsRegisterTestCase(TestCase):
             "already_used+@EXAMPLE.org",
             "ALREADY_USED+tournesol@example.org",
             "already_used+TOURNESOL@example.org",
-            "alreadt_used+foo+bar@example.org",
+            "already_used+foo+bar@example.org",
         ]:
             response = self.client.post(
                 "/accounts/register-email/",
@@ -251,7 +251,7 @@ class AccountsRegisterTestCase(TestCase):
             self.assertIn("email", response.data)
 
     def test_register_email_with_symbol_plus_reverse(self) -> None:
-        used_email = "already_used+tournesol@example.org"
+        used_email = "already_USED+tournesol@example.org"
         used_email_noplus = "already_used@example.org"
         UserFactory(email=used_email)
 
