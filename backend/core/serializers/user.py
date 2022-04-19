@@ -9,6 +9,7 @@ from rest_registration.api.serializers import (
 )
 
 from core.models.user import User
+from core.validators import validate_email_localpart_noplus
 
 RESERVED_USERNAMES = ["me"]
 
@@ -38,8 +39,20 @@ class RegisterUserSerializer(DefaultRegisterUserSerializer):
         return _validate_username(value)
 
 
+    def validate(self, data):
+        validate_email_localpart_noplus(data["email"])
+        return data
+
+
 class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
     email = iunique_email
+
+    def validate(self, data):
+        validate_email_localpart_noplus(
+            data["email"],
+            self.context["request"].user.username
+        )
+        return data
 
 
 class UserProfileSerializer(DefaultUserProfileSerializer):
