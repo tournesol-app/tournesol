@@ -2,6 +2,14 @@
   "components": {
     "filtersButton": "filtres"
   },
+  "personalCriteriaScores": {
+    "chartTooltip": "Score personnel: {{score}}",
+    "reasonWhyItCannotBeActivated": {
+      "notLoggedIn": "Vous devez être connecté pour afficher les scores personnels.",
+      "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
+    },
+    "activatePersonalScores": "Afficher les scores personnels"
+  },
   "dialogBox": {
     "continue": "continuer"
   },

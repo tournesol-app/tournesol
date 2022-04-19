@@ -11,6 +11,8 @@ import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import VideoCard from 'src/features/videos/VideoCard';
 import { useLoginState } from 'src/hooks';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
+import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 
 export const VideoAnalysis = ({
@@ -21,6 +23,9 @@ export const VideoAnalysis = ({
   const { t } = useTranslation();
   const entityId = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
+
+  const { criteria_scores: criteriaScores } = video;
+  const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
 
   return (
     <Box display="flex" justifyContent="center">
@@ -43,40 +48,47 @@ export const VideoAnalysis = ({
         </Grid>
 
         {/* data visualization */}
-        <Grid item xs={12} sm={12} md={6}>
-          <Paper>
-            <Box
-              p={1}
-              bgcolor="rgb(238, 238, 238)"
-              display="flex"
-              justifyContent="center"
-            >
-              <Typography variant="h5">
-                {t('entityAnalysisPage.chart.criteriaScores.title')}
-              </Typography>
-            </Box>
-            <Box p={1}>
-              <CriteriaBarChart video={video} />
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <Paper>
-            <Box
-              p={1}
-              bgcolor="rgb(238, 238, 238)"
-              display="flex"
-              justifyContent="center"
-            >
-              <Typography variant="h5">
-                {t('criteriaScoresDistribution.title')}
-              </Typography>
-            </Box>
-            <Box p={1}>
-              <CriteriaScoresDistribution uid={entityId} />
-            </Box>
-          </Paper>
-        </Grid>
+        {shouldDisplayCharts && (
+          <>
+            <Grid item xs={12} sm={12} md={6}>
+              <Paper>
+                <Box
+                  p={1}
+                  bgcolor="rgb(238, 238, 238)"
+                  display="flex"
+                  justifyContent="center"
+                >
+                  <Typography variant="h5">
+                    {t('entityAnalysisPage.chart.criteriaScores.title')}
+                  </Typography>
+                </Box>
+                <Box p={1}>
+                  <PersonalCriteriaScoresContextProvider video={video}>
+                    <PersonalScoreCheckbox />
+                    <CriteriaBarChart video={video} />
+                  </PersonalCriteriaScoresContextProvider>
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6}>
+              <Paper>
+                <Box
+                  p={1}
+                  bgcolor="rgb(238, 238, 238)"
+                  display="flex"
+                  justifyContent="center"
+                >
+                  <Typography variant="h5">
+                    {t('criteriaScoresDistribution.title')}
+                  </Typography>
+                </Box>
+                <Box p={1}>
+                  <CriteriaScoresDistribution uid={entityId} />
+                </Box>
+              </Paper>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Box>
   );

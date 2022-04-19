@@ -1,0 +1,129 @@
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
+import { ContributorCriteriaScore } from 'src/services/openapi';
+import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { UsersService } from 'src/services/openapi';
+import { useLoginState } from 'src/hooks';
+
+type ReasonWhyPersonalScoresCannotBeActivated =
+  | undefined
+  | 'notLoggedIn'
+  | 'noPersonalScore'
+  | 'noVideoId'
+  | 'contextProviderMissing'
+  | 'unknownError';
+
+interface PersonalCriteriaScoresValue {
+  canActivatePersonalScores: boolean;
+  reasonWhyPersonalScoresCannotBeActivated: ReasonWhyPersonalScoresCannotBeActivated;
+  personalScoresActivated: boolean;
+  setPersonalScoresActivated: (activated: boolean) => void;
+  personalCriteriaScores?: ContributorCriteriaScore[];
+}
+
+const PersonalCriteriaScoresContext =
+  createContext<PersonalCriteriaScoresValue>({
+    canActivatePersonalScores: false,
+    reasonWhyPersonalScoresCannotBeActivated: 'contextProviderMissing',
+    personalScoresActivated: false,
+    setPersonalScoresActivated: () => undefined,
+  });
+
+export const PersonalCriteriaScoresContextProvider = ({
+  video,
+  children,
+}: {
+  video: VideoSerializerWithCriteria;
+  children: React.ReactNode;
+}) => {
+  const { name: pollName } = useCurrentPoll();
+  const { isLoggedIn } = useLoginState();
+  const { uid } = video;
+  const [contextValue, setContextValue] = useState<PersonalCriteriaScoresValue>(
+    {
+      canActivatePersonalScores: false,
+      reasonWhyPersonalScoresCannotBeActivated: undefined,
+      personalScoresActivated: false,
+      setPersonalScoresActivated: (activated: boolean) =>
+        setContextValue((value) => ({
+          ...value,
+          personalScoresActivated: activated,
+        })),
+    }
+  );
+
+  const { personalScoresActivated } = contextValue;
+
+  const setCannotActivatePersonalScores = useCallback(
+    (reason: ReasonWhyPersonalScoresCannotBeActivated) => {
+      setContextValue((value) => ({
+        ...value,
+        canActivatePersonalScores: false,
+        personalScoresActivated: false,
+        reasonWhyPersonalScoresCannotBeActivated: reason,
+        personalCriteriaScores: undefined,
+      }));
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (pollName === undefined || uid === undefined) {
+      setCannotActivatePersonalScores('noVideoId');
+      return;
+    }
+    if (!isLoggedIn) {
+      setCannotActivatePersonalScores('notLoggedIn');
+      return;
+    }
+    const load = async () => {
+      let contributorRating;
+      try {
+        contributorRating =
+          await UsersService.usersMeContributorRatingsRetrieve({
+            pollName,
+            uid,
+          });
+      } catch (e) {
+        const reason = e.status === 404 ? 'noPersonalScore' : 'unknownError';
+        setCannotActivatePersonalScores(reason);
+        return;
+      }
+      const { criteria_scores: personalCriteriaScores } = contributorRating;
+      if (personalCriteriaScores.length === 0) {
+        setCannotActivatePersonalScores('noPersonalScore');
+        return;
+      }
+      setContextValue((value) => ({
+        ...value,
+        canActivatePersonalScores: true,
+        reasonWhyPersonalScoresCannotBeActivated: undefined,
+        personalCriteriaScores,
+      }));
+    };
+    load();
+  }, [
+    personalScoresActivated,
+    pollName,
+    uid,
+    isLoggedIn,
+    setCannotActivatePersonalScores,
+  ]);
+
+  return (
+    <PersonalCriteriaScoresContext.Provider value={contextValue}>
+      {children}
+    </PersonalCriteriaScoresContext.Provider>
+  );
+};
+
+const usePersonalCriteriaScores = () =>
+  useContext(PersonalCriteriaScoresContext);
+
+export default usePersonalCriteriaScores;
