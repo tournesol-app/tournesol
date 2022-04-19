@@ -228,7 +228,7 @@ class User(AbstractUser):
         return cls.trusted_users().filter(is_staff=True)
 
     @classmethod
-    def validate_email_localpart_noplus(cls, email: str, username="") -> str:
+    def validate_email_unique_with_plus(cls, email: str, username="") -> str:
         email_split = email.split("@")
         """Raise ValidationError when similar emails are found in the database.
 
@@ -275,7 +275,8 @@ class User(AbstractUser):
             raise ValidationError(
                 {
                     "email": _(
-                        "A user with an email starting with '%(email)s' already exists in this domain."
+                        "A user with an email starting with '%(email)s' already exists"
+                        " in this domain."
                         % {"email": f"{local_part_split[0]}+"}
                     )
                 }
@@ -312,7 +313,7 @@ class User(AbstractUser):
                 {"email": _("A user with this email address already exists.")}
             )
 
-        User.validate_email_localpart_noplus(value, self.username)
+        User.validate_email_unique_with_plus(value, self.username)
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")
