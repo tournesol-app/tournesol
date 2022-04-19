@@ -295,6 +295,28 @@ class AccountsRegisterTestCase(TestCase):
             )
             self.assertIn("email", response.data)
 
+    def test_register_email_with_symbol_plus_must_exclude_self(self) -> None:
+        self.client.force_authenticate(user=self.existing_user)
+
+        for email in [
+            "new_email+@example.org",
+            "new_email+@EXAMPLE.org",
+            "NEW_EMAIL+tournesol@example.org",
+            "new_email+TOURNESOL@example.org",
+            "new_email+different@example.org",
+            "new_email+foo+bar@example.org",
+        ]:
+            response = self.client.post(
+                "/accounts/register-email/",
+                {"email": email},
+                format="json",
+            )
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_200_OK,
+                f"{email} was unexpectedly refused",
+            )
+
 
 class AccountsResetPasswordTestCase(TestCase):
     """
