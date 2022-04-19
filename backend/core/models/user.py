@@ -5,6 +5,7 @@ Defines Tournesol's User model and user preferences
 import logging
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, F, Func, Q, Value
@@ -243,6 +244,16 @@ class User(AbstractUser):
         _, domain_part = self.email.rsplit('@', 1)
         domain = f"@{domain_part}".lower()
         EmailDomain.objects.get_or_create(domain=domain)
+
+    def clean(self):
+        value = self.email
+
+        similar_email = User.objects.filter(email__iexact=value).exclude(pk=self.pk)
+
+        if similar_email.exists():
+            raise ValidationError(
+                {"email": _("A user with this email address already exists.")}
+            )
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get('update_fields')
