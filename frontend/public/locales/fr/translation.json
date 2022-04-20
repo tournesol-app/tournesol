@@ -387,7 +387,8 @@
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
     "remove": "Supprimer",
-    "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard."
+    "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
+    "analysis": "Analyse détaillée"
   },
   "criteriaTooltips": {
     "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",

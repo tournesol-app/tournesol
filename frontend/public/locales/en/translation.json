@@ -380,7 +380,8 @@
     "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
     "rateLater": "Rate later",
     "remove": "Remove",
-    "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list."
+    "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list.",
+    "analysis": "Detailed analysis"
   },
   "criteriaTooltips": {
     "energy_environment": "Topic related to climate change, energy transition, biodiversity and protection of the environment",
