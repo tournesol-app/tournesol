@@ -269,7 +269,7 @@ class User(AbstractUser):
         )
 
         if username:
-            users.exclude(username=username)
+            users = users.exclude(username=username)
 
         if users.exists():
             raise ValidationError(
