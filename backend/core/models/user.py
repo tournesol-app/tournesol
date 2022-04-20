@@ -15,8 +15,8 @@ from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 
-from ..utils.models import WithDynamicFields, enum_list
-from ..utils.validators import validate_avatar
+from core.utils.models import WithDynamicFields, enum_list
+from core.utils.validators import validate_avatar
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class User(AbstractUser):
     # Used by reset password mechanism.
     LOGIN_FIELDS = ("username", "email")
 
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_("email address"), unique=True)
     is_demo = models.BooleanField(default=False, help_text="Is a demo account?")
     first_name = models.CharField(
         max_length=100, blank=True, null=True, help_text="First name"
@@ -227,6 +227,60 @@ class User(AbstractUser):
     def supertrusted_seed_users(cls) -> QuerySet["User"]:
         return cls.trusted_users().filter(is_staff=True)
 
+    @classmethod
+    def validate_email_unique_with_plus(cls, email: str, username="") -> str:
+        """Raise ValidationError when similar emails are found in the database.
+
+        Keyword arguments:
+        email -- An email that is going to be written in the database.
+        username -- The logged user's username, used to exclude him/herself from
+                    the validation when updating its own email. Empty for
+                    anonymous users.
+
+        Emails considered similar when:
+            - they share the same non-case-sensitive domain ;
+            - they share, in the local part, the same non case-sensitive string
+              before the `+` symbol.
+
+        Examples of emails considered similar:
+            - bob@example.org
+            - bob+@example.org
+            - bob+tournesol@example.org
+            - BOB+tournesol@example.org
+            - bob+hello@example.org
+            - BOB+HELLO@example.org
+            - etc.
+        """
+        email_split = email.rsplit("@", 1)
+
+        # if there is no `@`, do nothing
+        if len(email_split) == 1:
+            return email
+
+        local_part = email_split[0]
+        local_part_split = local_part.split("+")
+
+        users = User.objects.filter(
+            Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
+            | (
+                Q(email__istartswith=f"{local_part_split[0]}+")
+                & Q(email__iendswith=f"@{email_split[-1]}")
+            ),
+        )
+
+        if username:
+            users = users.exclude(username=username)
+
+        if users.exists():
+            raise ValidationError(
+                _(
+                    "A user with an email starting with '%(email)s' already exists"
+                    " in this domain." % {"email": f"{local_part_split[0]}+"}
+                )
+            )
+
+        return email
+
     @property
     def is_trusted(self):
         return User.trusted_users().filter(pk=self.pk).exists()
@@ -234,14 +288,15 @@ class User(AbstractUser):
     def ensure_email_domain_exists(self):
         if not self.email:
             return
-        if '@' not in self.email:
+        if "@" not in self.email:
             # Should never happen, as the address format is validated by the field.
             logger.warning(
                 'Cannot find email domain for user "%s" with email "%s".',
-                self.username, self.email
+                self.username,
+                self.email,
             )
             return
-        _, domain_part = self.email.rsplit('@', 1)
+        _, domain_part = self.email.rsplit("@", 1)
         domain = f"@{domain_part}".lower()
         EmailDomain.objects.get_or_create(domain=domain)
 
@@ -255,10 +310,18 @@ class User(AbstractUser):
                 {"email": _("A user with this email address already exists.")}
             )
 
+        try:
+            User.validate_email_unique_with_plus(value, self.username)
+        except ValidationError as err:
+            # Catching the exception here allows us to add the email key, and
+            # makes the message display near the email field in the admin
+            # interface.
+            raise ValidationError({"email": err.message})
+
     def save(self, *args, **kwargs):
-        update_fields = kwargs.get('update_fields')
+        update_fields = kwargs.get("update_fields")
         # No need to create the EmailDomain, if email is unchanged
-        if update_fields is None or 'email' in update_fields:
+        if update_fields is None or "email" in update_fields:
             self.ensure_email_domain_exists()
         return super().save(*args, **kwargs)
 
