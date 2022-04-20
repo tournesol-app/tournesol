@@ -16,7 +16,7 @@ def get_best_criteria(video, n):
         "-score"
     )[:n]
 
-    if criteria_list < n:
+    if len(criteria_list) < n:
         raise ValueError("Not enough criteria to show!")
 
     return [(crit.criteria, crit.score) for crit in criteria_list]
