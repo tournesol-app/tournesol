@@ -327,24 +327,25 @@ class AccountsRegisterTestCase(TestCase):
         #   - "new_email+@EXAMPLE.org"
         #   - "new_email+TOURNESOL@example.org"
 
-        for email in [
-            "new_email+@example.org",
-            "NEW_EMAIL+tournesol@example.org",
-            "new_email+different@example.org",
-            "new_email+foo+bar@example.org",
+        for current, want in [
+            ("new_email@example.org", "new_email+@example.org"),
+            ("new_email+@example.org", "NEW_EMAIL+tournesol@example.org"),
+            ("NEW_EMAIL+tournesol@example.org", "new_email+different@example.org"),
+            ("new_email+different@example.org", "new_email+foo+bar@example.org"),
         ]:
+            self.existing_user.email = current
+            self.existing_user.save()
+
             response = self.client.post(
                 "/accounts/register-email/",
-                {"email": email},
+                {"email": want},
                 format="json",
             )
             self.assertEqual(
                 response.status_code,
                 status.HTTP_200_OK,
-                f"{email} was unexpectedly refused",
+                f"{want} was unexpectedly refused even if {current} was in DB",
             )
-            self.existing_user.email = email
-            self.existing_user.save()
 
 
 class AccountsResetPasswordTestCase(TestCase):
