@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -152,8 +153,9 @@ class AccountsRegisterTestCase(TestCase):
 
     def test_register_account_with_symbol_plus_different(self) -> None:
         """
-        An anonymous user can't register with an email containing one or several
-        plus symbols, if a similar address with plus is already in use.
+        An anonymous user can't register with an email containing one or
+        several plus symbols, if a similar address with a plus is already in
+        use.
         """
         already_used = "already_USED+tournesol@example.org"
         UserFactory(email=already_used)
@@ -186,6 +188,31 @@ class AccountsRegisterTestCase(TestCase):
             )
             self.assertIn("email", response.data)
             self.assertEqual(User.objects.all().count(), n_users)
+
+    def test_register_account_with_symbol_plus_rsplit(self) -> None:
+        """
+        An anonymous user can't register with an email containing one or
+        several plus symbols, if a similar address with a plus is already in
+        use, even if this address contains more than one `@` character.
+
+        As the default Django's email field considers email addresses with
+        more than one `@` invalid, making any call to /accounts/register/ an
+        invalid request. To be able to reach our custom validation method this
+        test directly checks its behaviour without calling the API.
+        """
+        already_used = "already@USED+tournesol@example.org"
+        UserFactory(email=already_used)
+
+        for email in [
+            "already@used+@example.org",
+            "already@used+@EXAMPLE.org",
+            "ALREADY@USED+tournesol@example.org",
+            "already@used+TOURNESOL@example.org",
+            "already@used+different@example.org",
+            "already@used+foo+bar@example.org",
+        ]:
+            with self.assertRaises(ValidationError):
+                User.validate_email_unique_with_plus(email)
 
     def test_register_email_with_already_used_email(self) -> None:
         """

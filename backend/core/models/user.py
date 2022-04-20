@@ -251,7 +251,7 @@ class User(AbstractUser):
             - BOB+HELLO@example.org
             - etc.
         """
-        email_split = email.split("@")
+        email_split = email.rsplit("@", 1)
 
         # if there is no `@`, do nothing
         if len(email_split) == 1:
