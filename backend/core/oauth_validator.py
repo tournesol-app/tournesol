@@ -1,5 +1,5 @@
 """
-Defines additional validators for Tournesol's authentication
+Additional validators for the Tournesol's authentication
 """
 
 from django.contrib.auth import get_user_model
@@ -24,15 +24,25 @@ class CustomOAuth2Validator(OAuth2Validator):
         return claims
 
     def validate_user(self, username, password, client, request, *args, **kwargs):
-        user_found = super().validate_user(username, password, client, request, *args, **kwargs)
+        user_found = super().validate_user(
+            username, password, client, request, *args, **kwargs
+        )
 
         # Support authentication with email used as username
         if not user_found and username and "@" in username:
+            user_model = get_user_model()
+
             try:
-                user = get_user_model().objects.get(email=username)
+                user = user_model.objects.get(email=username)
             except ObjectDoesNotExist:
-                return False
-            return super().validate_user(user.username, password, client, request, *args, **kwargs)
+                try:
+                    user = user_model.objects.get(email__iexact=username)
+                except user_model.MultipleObjectsReturned:
+                    return False
+
+            return super().validate_user(
+                user.username, password, client, request, *args, **kwargs
+            )
 
         return user_found
 
