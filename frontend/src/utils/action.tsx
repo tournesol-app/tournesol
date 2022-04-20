@@ -79,17 +79,17 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   return RemoveFromRateLaterComponnent;
 };
 
-export const AddDetailedConsultation = ({ uid }: { uid: string }) => {
+export const AnalysisPageLink = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
   return (
-    <Tooltip title={`${t('actions.detailed')}`} placement="left">
+    <Tooltip title={`${t('actions.analysis')}`} placement="left">
       <IconButton
         size="medium"
         href={`/video/${uid.slice(3)}`}
         sx={{ color: '#CDCABC' }}
       >
         <QueryStatsIcon />
-        </IconButton>
+      </IconButton>
     </Tooltip>
   );
 };
