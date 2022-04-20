@@ -13,6 +13,8 @@ all:
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: true
 
+          maintenance: false
+
           django_debug: "True"
           django_log_level: "DEBUG"
           django_main_url: "http://{{api_domain_name}}"
@@ -20,6 +22,7 @@ all:
           django_database_user: tournesol
           django_email_backend: console
           django_enable_api_wikidata_migrations: true
+          django_api_throttle_email: "5/min"
           populate_django_db_from_public_dataset: true
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
@@ -31,6 +34,7 @@ all:
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
+          frontend_presidentielle_2022_enabled: true
 
           mediawiki_domain_name: tournesol-wiki
           mediawiki_scheme: http
@@ -46,6 +50,7 @@ all:
           grafana_scheme: http
 
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
+          tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
 
@@ -64,6 +69,8 @@ all:
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: true
 
+          maintenance: false
+
           django_debug: "False"
           django_log_level: "INFO"
           django_main_url: https://{{api_domain_name}}
@@ -71,6 +78,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
           django_enable_api_wikidata_migrations: true
+          django_api_throttle_email: "5/min"
           populate_django_db_from_public_dataset: false
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
@@ -82,6 +90,7 @@ all:
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
+          frontend_presidentielle_2022_enabled: true
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
@@ -100,6 +109,7 @@ all:
           grafana_scheme: https
 
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
+          tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
 
@@ -122,6 +132,8 @@ all:
           buster_mirror: http://debian.ethz.ch/debian/
           upgrade_packages: false # to be set to true after upgrade tests in staging in order to upgrade prod
 
+          maintenance: false
+
           django_debug: "False"
           django_log_level: "INFO"
           django_main_url: https://{{api_domain_name}}
@@ -129,6 +141,7 @@ all:
           django_database_user: tournesol
           django_email_backend: smtp
           django_enable_api_wikidata_migrations: true
+          django_api_throttle_email: "12/min"
           populate_django_db_from_public_dataset: false
           chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
 
@@ -140,6 +153,7 @@ all:
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
           frontend_csp_script_src: "https://www.youtube.com/iframe_api https://www.youtube.com/s/player/"
+          frontend_presidentielle_2022_enabled: true
 
           # Setting this triggers TLS configuration
           letsencrypt_email: tournesol.application@gmail.com
@@ -158,6 +172,7 @@ all:
           grafana_scheme: https
 
           tournesol_api_cleartokens_schedule: "*-*-* 02:00:00" # daily at 2am
+          tournesol_api_deleteinactiveusers_schedule: "*-*-* 02:20:00" # daily at 2:20am
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
 

@@ -1,10 +1,11 @@
 """
-Defines Tournesol's backend admin interface
+Administration interface of the `tournesol` app
 """
 
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
+from sql_util.utils import SubqueryCount
 
 from .models import (
     Comparison,
@@ -143,7 +144,21 @@ class ContributorRatingAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorRatingCriteriaScore)
 class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
-    pass
+    list_filter = (
+        "contributor_rating__poll__name",
+    )
+    list_display = (
+        'id',
+        'contributor_rating',
+        'criteria',
+        'score'
+    )
+    readonly_fields = (
+        'contributor_rating',
+    )
+    search_fields = (
+        'contributor_rating__entity__uid',
+    )
 
 
 @admin.register(Comparison)
@@ -177,7 +192,23 @@ class ComparisonAdmin(admin.ModelAdmin):
 
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
-    pass
+    list_filter = (
+        'comparison__poll__name',
+    )
+    list_display = (
+        'id',
+        'comparison',
+        'criteria',
+        'score'
+    )
+    readonly_fields = (
+        'comparison',
+    )
+    search_fields = (
+        'criteria',
+        'comparison__entity_1__uid',
+        'comparison__entity_2__uid',
+    )
 
 
 class CriteriasInline(admin.TabularInline):
@@ -194,18 +225,42 @@ class CriteriaLocalesInline(admin.TabularInline):
 class PollAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'algorithm',
         'entity_type',
-        'get_n_criterias',
+        'get_n_criteria',
+        'get_n_comparisons',
+        'get_n_comparisons_per_criteria',
     )
+    list_filter = ("algorithm", "entity_type")
     inlines = (CriteriasInline,)
 
-    @admin.display(description="Nb of criterias")
-    def get_n_criterias(self, obj):
-        return obj.criterias.count()
+    def get_queryset(self, request):
+        qst = super().get_queryset(request)
+        qst = qst.annotate(_n_criteria=SubqueryCount("criterias"))
+        qst = qst.annotate(_n_comparisons=SubqueryCount("comparisons"))
+        qst = qst.annotate(
+            _n_comparisons_per_criteria=SubqueryCount(
+                "comparisons__criteria_scores"
+            )
+        )
+        return qst
+
+    @admin.display(description="# criterias", ordering="-_n_criteria")
+    def get_n_criteria(self, obj):
+        return obj._n_criteria
+
+    @admin.display(description="# comparisons", ordering="-_n_comparisons")
+    def get_n_comparisons(self, obj):
+        return obj._n_comparisons
+
+    @admin.display(
+        description="# comparisons (x criteria)",
+        ordering="-_n_comparisons_per_criteria",
+    )
+    def get_n_comparisons_per_criteria(self, obj):
+        return obj._n_comparisons_per_criteria
 
 
 @admin.register(Criteria)
 class CriteriaAdmin(admin.ModelAdmin):
-    inlines = (
-        CriteriaLocalesInline,
-    )
+    inlines = (CriteriaLocalesInline,)

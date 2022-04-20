@@ -47,6 +47,7 @@ const ComparisonSliders = ({
   const classes = useStyles();
   const { criteriaByName, criterias } = useCurrentPoll();
   const isMounted = useRef(true);
+  const [disableSubmit, setDisableSubmit] = useState(false);
 
   const castToComparison = (c: ComparisonRequest | null): ComparisonRequest => {
     return c
@@ -84,7 +85,14 @@ const ComparisonSliders = ({
   }, []);
 
   const submitComparison = async () => {
-    await submit(comparison);
+    setDisableSubmit(true);
+
+    try {
+      await submit(comparison);
+    } finally {
+      setDisableSubmit(false);
+    }
+
     // avoid a "memory leak" warning if the component is unmounted on submit.
     if (isMounted.current) {
       setSubmitted(true);
@@ -205,6 +213,7 @@ const ComparisonSliders = ({
           )}
         </Box>
         <Button
+          disabled={disableSubmit}
           variant="contained"
           color="primary"
           size="large"

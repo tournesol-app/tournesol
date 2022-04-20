@@ -7,6 +7,14 @@ from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS, V
 
 DEFAULT_POLL_NAME = "videos"
 
+ALGORITHM_LICCHAVI = "licchavi"
+ALGORITHM_MEHESTAN = "mehestan"
+
+ALGORITHM_CHOICES = (
+    (ALGORITHM_LICCHAVI, "Licchavi"),
+    (ALGORITHM_MEHESTAN, "Mehestan"),
+)
+
 
 class Poll(models.Model):
     """
@@ -17,6 +25,9 @@ class Poll(models.Model):
     name = models.SlugField(unique=True)
     entity_type = models.CharField(max_length=32, choices=ENTITY_TYPE_CHOICES)
     criterias = models.ManyToManyField("Criteria", through="CriteriaRank")
+    algorithm = models.CharField(
+        max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
+    )
 
     @classmethod
     def default_poll(cls) -> "Poll":
@@ -28,7 +39,7 @@ class Poll(models.Model):
 
     @classmethod
     def default_poll_pk(cls):
-        return cls.default_poll().pk
+        return cls.objects.only("pk").get(name=DEFAULT_POLL_NAME).pk
 
     @cached_property
     def criterias_list(self) -> List[str]:

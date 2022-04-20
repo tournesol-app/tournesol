@@ -5,6 +5,7 @@ Defines Tournesol's User model and user preferences
 import logging
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, F, Func, Q, Value
@@ -222,6 +223,10 @@ class User(AbstractUser):
             .filter(is_trusted=True)
         )
 
+    @classmethod
+    def supertrusted_seed_users(cls) -> QuerySet["User"]:
+        return cls.trusted_users().filter(is_staff=True)
+
     @property
     def is_trusted(self):
         return User.trusted_users().filter(pk=self.pk).exists()
@@ -240,12 +245,28 @@ class User(AbstractUser):
         domain = f"@{domain_part}".lower()
         EmailDomain.objects.get_or_create(domain=domain)
 
+    def clean(self):
+        value = self.email
+
+        similar_email = User.objects.filter(email__iexact=value).exclude(pk=self.pk)
+
+        if similar_email.exists():
+            raise ValidationError(
+                {"email": _("A user with this email address already exists.")}
+            )
+
     def save(self, *args, **kwargs):
         update_fields = kwargs.get('update_fields')
         # No need to create the EmailDomain, if email is unchanged
         if update_fields is None or 'email' in update_fields:
             self.ensure_email_domain_exists()
         return super().save(*args, **kwargs)
+
+    def set_password(self, raw_password):
+        super().set_password(raw_password)
+        # Temporary workaround to force user activation
+        # when a user asks for password reset
+        self.is_active = True
 
 
 class VerifiableEmail(models.Model):

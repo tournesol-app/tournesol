@@ -72,10 +72,7 @@ const StatsSection = () => {
   return (
     <Box
       sx={{
-        background: '#1282B2',
-        color: 'white',
         textAlign: 'center',
-        py: 4,
         width: '100%',
         display: 'flex',
         justifyContent: 'center',

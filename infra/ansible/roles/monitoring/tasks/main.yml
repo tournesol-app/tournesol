@@ -302,6 +302,13 @@
     update_cache: yes
   when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
 
+- name: Set permissions on Grafana plugins directory
+  file:
+    path: /var/lib/grafana/plugins
+    state: directory
+    owner: grafana
+    group: grafana
+
 - name: Install Grafana plugins
   community.grafana.grafana_plugin:
     name: "{{item.name}}"

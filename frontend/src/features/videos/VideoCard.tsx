@@ -56,12 +56,14 @@ function VideoCard({
   settings = [],
   compact = false,
   controls = true,
+  personalScore,
 }: {
   video: VideoObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
   controls?: boolean;
+  personalScore?: number;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -106,6 +108,8 @@ function VideoCard({
           uploader={video.uploader}
         />
         {!compact && <VideoCardScores video={video} />}
+        {personalScore !== undefined &&
+          t('video.personalScore', { score: personalScore.toFixed(0) })}
       </Grid>
       <Grid
         item

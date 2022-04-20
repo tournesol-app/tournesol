@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import EmailDomain, User
 from core.tests.factories.user import UserFactory
+from tournesol.throttling import GlobalEmailScopeThrottle
 
 
 class UserDeletionTestCase(TestCase):
@@ -84,6 +87,23 @@ class UserRegistrationTest(TestCase):
             text="email address already exists",
             status_code=400
         )
+
+    @patch.object(GlobalEmailScopeThrottle, "get_rate", new=lambda *_: "2/min")
+    def test_register_throttle(self):
+        """
+        Throttle should be triggered on the 3rd request
+        """
+        client = APIClient()
+
+        response = client.post("/accounts/register/", data={}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = client.post("/accounts/register/", data={}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = client.post("/accounts/register/", data={}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
 
 class UserRegisterNewEmailTest(TestCase):
     def setUp(self) -> None:

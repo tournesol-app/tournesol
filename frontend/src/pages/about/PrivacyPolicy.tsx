@@ -50,9 +50,11 @@ const PrivacyPolicyPage = () => {
           <Typography paragraph>
             {t('privacyPolicy.thereIsNoContactForm')}
           </Typography>
-          <Typography variant="h5">{t('privacyPolicy.cookies')}</Typography>
+          <Typography variant="h5">
+            {t('privacyPolicy.loginInformation')}
+          </Typography>
           <Typography paragraph>
-            {t('privacyPolicy.whyTournesolCollectscookies')}
+            {t('privacyPolicy.loginInformationDetails')}
           </Typography>
           <Typography variant="h5">
             {t('privacyPolicy.embeddedContentFromOtherWebsites')}

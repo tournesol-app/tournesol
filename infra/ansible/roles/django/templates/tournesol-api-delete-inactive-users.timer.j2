@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol API inactive users clean-up
+
+[Timer]
+OnCalendar={{tournesol_api_deleteinactiveusers_schedule}}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target

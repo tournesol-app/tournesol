@@ -1,4 +1,0 @@
-{% load i18n %}
-{% translate "Please verify your Tournesol account by clicking on this link:" %}
-
-{{ verification_url | safe }}

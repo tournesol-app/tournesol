@@ -4,8 +4,7 @@ from django.core.management.base import BaseCommand
 
 from ml.core import TOURNESOL_DEV
 from ml.dev.experiments import run_experiment
-
-from .ml_train import fetch_data
+from ml.inputs import MlInputFromDb
 
 """
 Machine Learning command file for developpement
@@ -26,10 +25,9 @@ class Command(BaseCommand):
     help = 'Runs the ml'
 
     def handle(self, *args, **options):
-        comparison_data_trusted = fetch_data()
-        comparison_data_not_trusted = fetch_data(trusted=False)
+        ml_input = MlInputFromDb(poll_name="videos")
+        comparison_data_trusted = ml_input.get_comparisons(trusted_only=True)
         if TOURNESOL_DEV:
             run_experiment(comparison_data_trusted)
-            run_experiment(comparison_data_not_trusted)
         else:
             logging.error('You must turn TOURNESOL_DEV to 1 to run this')

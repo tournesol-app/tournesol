@@ -79,7 +79,7 @@ const Comparisons = ({
           {comparisons &&
             comparisons.map((c) => (
               <ComparisonThumbnail
-                key={`${c.entity_a.metadata.video_id}${c.entity_b.metadata.video_id}`}
+                key={`${c.entity_a.uid}${c.entity_b.uid}`}
                 comparison={c}
               />
             ))}

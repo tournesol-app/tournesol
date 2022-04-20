@@ -16,3 +16,4 @@ settings-tournesol.yaml
 pytest.ini
 ml/ml_logs.log
 report.html
+.env

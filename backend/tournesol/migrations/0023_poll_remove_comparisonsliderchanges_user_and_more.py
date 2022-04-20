@@ -6,7 +6,16 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.db.models.expressions
 import tournesol.models.poll
+from tournesol.models.poll import DEFAULT_POLL_NAME, VideoEntity
 import uuid
+
+
+def create_default_poll(apps, schema_editor):
+    Poll = apps.get_model("tournesol", "Poll")
+    Poll.objects.get_or_create(
+        name=DEFAULT_POLL_NAME,
+        defaults={"entity_type": VideoEntity.name}
+    )
 
 
 class Migration(migrations.Migration):
@@ -25,6 +34,7 @@ class Migration(migrations.Migration):
                 ('entity_type', models.CharField(choices=[('video', 'Video')], max_length=32)),
             ],
         ),
+        migrations.RunPython(create_default_poll, migrations.RunPython.noop),
         migrations.RemoveField(
             model_name='comparisonsliderchanges',
             name='user',

@@ -37,27 +37,23 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  submitted?: boolean;
 }
 
 export interface SelectorValue {
   uid: string;
   rating: ContributorRating | null;
+  ratingIsExpired?: boolean;
 }
 
 const isUidValid = (uid: string) => uid.match(/\w+:.+/);
 
-const EntitySelector = ({
-  title,
-  value,
-  onChange,
-  otherUid,
-  submitted = false,
-}: Props) => {
-  const { uid, rating } = value;
+const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
   const classes = useStyles();
+
+  const { name: pollName, options } = useCurrentPoll();
+
+  const { uid, rating, ratingIsExpired } = value;
   const [loading, setLoading] = useState(false);
-  const { name: pollName } = useCurrentPoll();
   const [inputValue, setInputValue] = useState(value.uid);
 
   const loadRating = useCallback(async () => {
@@ -71,6 +67,7 @@ const EntitySelector = ({
       onChange({
         uid,
         rating: contributorRating,
+        ratingIsExpired: false,
       });
     } catch (err) {
       if (err?.status === 404) {
@@ -80,12 +77,13 @@ const EntitySelector = ({
               pollName,
               requestBody: {
                 uid,
-                is_public: true,
+                is_public: options?.comparisonsCanBePublic === true,
               },
             });
           onChange({
             uid,
             rating: contributorRating,
+            ratingIsExpired: false,
           });
         } catch (err) {
           console.error('Failed to initialize contributor rating.', err);
@@ -95,7 +93,7 @@ const EntitySelector = ({
       }
     }
     setLoading(false);
-  }, [pollName, uid, onChange]);
+  }, [onChange, options?.comparisonsCanBePublic, pollName, uid]);
 
   useEffect(() => {
     if (isUidValid(uid) && rating == null) {
@@ -105,10 +103,10 @@ const EntitySelector = ({
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
-    if (submitted) {
+    if (ratingIsExpired) {
       loadRating();
     }
-  }, [loadRating, submitted]);
+  }, [loadRating, ratingIsExpired]);
 
   useEffect(() => {
     // Update input value when "uid" has been changed by the parent component

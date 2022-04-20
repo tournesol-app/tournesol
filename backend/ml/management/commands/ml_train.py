@@ -4,14 +4,15 @@ from django.core.management.base import BaseCommand
 
 from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
-from tournesol.models import (
-    ComparisonCriteriaScore,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    Entity,
-    EntityCriteriaScore,
-    Poll,
+from ml.inputs import MlInputFromDb
+from ml.mehestan.run import run_mehestan
+from ml.outputs import (
+    save_contributor_scores,
+    save_entity_scores,
+    save_tournesol_score_as_sum_of_criteria,
 )
+from tournesol.models import Poll
+from tournesol.models.poll import ALGORITHM_LICCHAVI, ALGORITHM_MEHESTAN
 
 """
 Machine Learning main python file
@@ -38,7 +39,6 @@ Notations:
 - VARIABLE_NAME : global variable
 
 Structure:
-- fetch_data() provides data from the database
 - ml_run() uses this data as input, trains via shape_train_predict()
      and returns video scores
 - save_data() takes these scores and save them to the database
@@ -51,68 +51,20 @@ USAGE:
 """
 
 
-def fetch_data(poll, trusted_only=True):
-    """Fetches the data from the Comparisons model
-
-    Returns:
-    - comparison_data: list of
-        [   contributor_id: int, video_id_1: int, video_id_2: int,
-            criteria: str, score: float, weight: float  ]
-    """
-    comparisons_queryset = ComparisonCriteriaScore.objects.filter(
-        comparison__poll=poll
-    ).prefetch_related("comparison")
-    if trusted_only:
-        comparisons_queryset = comparisons_queryset.filter(
-            comparison__user__in=User.trusted_users()
-        )
-
-    comparison_data = [
-        [
-            ccs.comparison.user_id,
-            ccs.comparison.entity_1_id,
-            ccs.comparison.entity_2_id,
-            ccs.criteria,
-            ccs.score,
-            ccs.weight,
-        ]
-        for ccs in comparisons_queryset
-    ]
-
-    return comparison_data
-
-
-def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
+def save_licchavi_data(
+    entity_scores: list[list],
+    contributor_rating_scores: list[list],
+    poll: Poll,
+    trusted_only=True,
+):
     """
     Saves in the scores for Entities and ContributorRatings
     """
     trusted_user_ids = set(User.trusted_users().values_list("id", flat=True))
 
     if trusted_only:
-        EntityCriteriaScore.objects.filter(poll_id=poll.pk).delete()
-        EntityCriteriaScore.objects.bulk_create(
-            EntityCriteriaScore(
-                poll_id=poll.pk,
-                entity_id=video_id,
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
-            )
-            for video_id, criteria, score, uncertainty in video_scores
-        )
-
-        entities = []
-        for entity in (
-            Entity.objects.filter(criteria_scores__poll=poll)
-            .distinct()
-            .prefetch_related("criteria_scores")
-        ):
-            entity.tournesol_score = 10 * sum(
-                criterion.score for criterion in entity.criteria_scores.all()
-            )
-            entities.append(entity)
-        Entity.objects.bulk_update(entities, ["tournesol_score"])
-
+        save_entity_scores(poll, entity_scores)
+        save_tournesol_score_as_sum_of_criteria(poll)
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
             for (
@@ -137,57 +89,21 @@ def save_data(video_scores, contributor_rating_scores, poll, trusted_only=True):
             if contributor_id not in trusted_user_ids
         ]
 
-    rating_ids = {
-        (contributor_id, video_id): rating_id
-        for rating_id, contributor_id, video_id in ContributorRating.objects.all().values_list(
-            "id", "user_id", "entity_id"
-        )
-    }
-    ratings_to_create = set(
-        (contributor_id, video_id)
-        for contributor_id, video_id, _, _, _ in contributor_scores_to_save
-        if (contributor_id, video_id) not in rating_ids
-    )
-    created_ratings = ContributorRating.objects.bulk_create(
-        ContributorRating(
-            poll_id=poll.pk,
-            entity_id=video_id,
-            user_id=contributor_id,
-        )
-        for contributor_id, video_id in ratings_to_create
-    )
-    rating_ids.update(
-        {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
-    )
-
-    if trusted_only:
-        ContributorRatingCriteriaScore.objects.filter(
-            contributor_rating__poll_id=poll.pk
-        ).filter(contributor_rating__user__in=User.trusted_users()).delete()
-    else:
-        ContributorRatingCriteriaScore.objects.filter(
-            contributor_rating__poll_id=poll.pk
-        ).exclude(contributor_rating__user__in=User.trusted_users()).delete()
-
-    ContributorRatingCriteriaScore.objects.bulk_create(
-        ContributorRatingCriteriaScore(
-            contributor_rating_id=rating_ids[(contributor_id, video_id)],
-            criteria=criteria,
-            score=score,
-            uncertainty=uncertainty,
-        )
-        for contributor_id, video_id, criteria, score, uncertainty in contributor_scores_to_save
-    )
+    save_contributor_scores(poll, contributor_scores_to_save, trusted_filter=trusted_only)
 
 
-def process(trusted_only=True):
-    for poll in Poll.objects.all():
-        poll_criterias_list = poll.criterias_list
-        poll_comparison_data = fetch_data(poll=poll, trusted_only=trusted_only)
-        glob_score, loc_score = ml_run(
-            poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1
-        )
-        save_data(glob_score, loc_score, poll, trusted_only=trusted_only)
+def process_licchavi(poll: Poll, ml_input: MlInputFromDb, trusted_only=True):
+    poll_criterias_list = poll.criterias_list
+    poll_comparison_df = ml_input.get_comparisons(trusted_only=trusted_only)
+
+    # Transform DataFrame into list of lists
+    poll_comparison_data = list(map(list, poll_comparison_df.itertuples(index=False)))
+
+    glob_score, loc_score = ml_run(
+        poll_comparison_data, criterias=poll_criterias_list, save=True, verb=-1
+    )
+
+    save_licchavi_data(glob_score, loc_score, poll, trusted_only=trusted_only)
 
 
 class Command(BaseCommand):
@@ -197,7 +113,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--skip-untrusted",
             action="store_true",
-            help="Skip ML run on untrusted users",
+            help="Skip ML run on untrusted users (for Licchavi only)",
         )
 
     def handle(self, *args, **options):
@@ -205,11 +121,19 @@ class Command(BaseCommand):
         if TOURNESOL_DEV:
             logging.error("You must turn TOURNESOL_DEV to 0 to use this")
         else:  # production
-            # Run for trusted users
-            logging.debug("Process on trusted users")
-            process()
+            for poll in Poll.objects.all():
+                ml_input = MlInputFromDb(poll_name=poll.name)
 
-            if not skip_untrusted:
-                # Run for all users including non trusted users
-                logging.debug("Process on all users")
-                process(trusted_only=False)
+                if poll.algorithm == ALGORITHM_LICCHAVI:
+                    # Run for trusted users
+                    logging.info("Licchavi for poll %s: Process on trusted users", poll.name)
+                    process_licchavi(poll, ml_input, trusted_only=True)
+
+                    if not skip_untrusted:
+                        # Run for all users including non trusted users
+                        logging.info("Licchavi for poll %s: Process on all users", poll.name)
+                        process_licchavi(poll, ml_input, trusted_only=False)
+                elif poll.algorithm == ALGORITHM_MEHESTAN:
+                    run_mehestan(ml_input=ml_input, poll=poll)
+                else:
+                    raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")

@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { displayScore } from 'src/utils/criteria';
 
 const BAR_CHART_CRITERIA_SCORE_MIN = -1;
 const BAR_CHART_CRITERIA_SCORE_MAX = 1;
@@ -125,7 +126,7 @@ const CriteriaBarChart = ({ video }: Props) => {
             const { criteria, score } = payload[0].payload;
             return (
               <pre>
-                {getCriteriaLabel(criteria)}: {(10 * score).toFixed(2)}
+                {getCriteriaLabel(criteria)}: {displayScore(score)}
               </pre>
             );
           }

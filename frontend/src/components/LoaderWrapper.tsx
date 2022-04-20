@@ -15,7 +15,7 @@ const LoaderWrapper = ({ isLoading, children }: LoaderProps) => {
   return (
     <>
       {isLoading && (
-        <Box position="relative">
+        <Box position="relative" width="100%">
           <Box
             position="absolute"
             display="flex"

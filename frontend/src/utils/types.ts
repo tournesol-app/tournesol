@@ -1,4 +1,5 @@
 import React from 'react';
+import { TFunction } from 'react-i18next';
 import { SvgIconComponent } from '@mui/icons-material';
 import {
   Entity,
@@ -38,6 +39,7 @@ export enum RouteID {
   MyComparisons = 'myComparisons',
   MyComparedItems = 'myComparedItems',
   MyRateLaterList = 'myRateLaterList',
+  MyFeedback = 'myFeedback',
   About = 'about',
 }
 
@@ -58,9 +60,13 @@ export type SelectablePoll = {
   iconComponent: SvgIconComponent;
   withSearchBar: boolean;
   topBarBackground: string | null;
+  // if false or undefined, the UI must not allow users to mark their
+  // comparisons as public, and contributor ratings must be created with
+  // is_public = false
+  comparisonsCanBePublic?: boolean;
   tutorialLength?: number;
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
-  tutorialDialogs?: OrderedDialogs;
+  tutorialDialogs?: (t: TFunction) => OrderedDialogs;
 };

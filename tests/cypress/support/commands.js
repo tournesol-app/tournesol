@@ -29,7 +29,7 @@ Cypress.Commands.add('sql', (query) =>
 )
 
 Cypress.Commands.add('getEmailLink', () =>
-  cy.exec('docker logs tournesol-dev-api --since=10s 2>&1 | grep "http://localhost:3000" | tail -1')
+  cy.exec('docker logs tournesol-dev-api --since=10s 2>&1 | egrep "^http://localhost:3000" | tail -1')
     .then(result => result.stdout)
 )
 

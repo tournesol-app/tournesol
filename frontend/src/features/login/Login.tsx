@@ -18,7 +18,7 @@ import { getTokenAsync, selectLogin } from './loginSlice';
 import { hasValidToken } from './loginUtils';
 import { LoginState } from './LoginState.model';
 import RedirectState from './RedirectState';
-import { useNotifications } from 'src/hooks';
+import { useCurrentPoll, useNotifications } from 'src/hooks';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -29,6 +29,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [validToken, setValidToken] = useState(hasValidToken(login));
+  const { baseUrl } = useCurrentPoll();
   const location = useLocation();
   const { from: fromUrl } = (location?.state ?? {}) as RedirectState;
 
@@ -60,7 +61,7 @@ const Login = () => {
     if (fromUrl) {
       return <Redirect to={fromUrl} />;
     } else {
-      return <Redirect to="/" />;
+      return <Redirect to={baseUrl ?? '/'} />;
     }
   }
 

@@ -2,17 +2,26 @@ import datetime
 from copy import deepcopy
 from unittest.mock import patch
 
+from django.core.management import call_command
 from django.db.models import ObjectDoesNotExist, Q
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
-from tournesol.models import Comparison, Entity, Poll
-from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.models import (
+    Comparison,
+    ContributorRatingCriteriaScore,
+    Entity,
+    EntityCriteriaScore,
+    Poll,
+)
+from tournesol.models.poll import ALGORITHM_MEHESTAN
+from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.poll import CriteriaRankFactory, PollFactory
 
 
 class ComparisonApiTestCase(TestCase):
@@ -923,3 +932,84 @@ class ComparisonApiTestCase(TestCase):
         self.assertContains(
             response, "not a valid criteria", status_code=status.HTTP_400_BAD_REQUEST
         )
+
+
+class ComparisonWithMehestanTest(TransactionTestCase):
+    def setUp(self):
+        self.poll = PollFactory(algorithm=ALGORITHM_MEHESTAN)
+        CriteriaRankFactory(poll=self.poll, criteria__name="criteria1")
+        CriteriaRankFactory(poll=self.poll, criteria__name="criteria2", optional=True)
+
+        self.entities = VideoFactory.create_batch(3)
+        self.user1, self.user2 = UserFactory.create_batch(2)
+
+        comparison = ComparisonFactory(
+            poll=self.poll,
+            user=self.user1,
+            entity_1=self.entities[0],
+            entity_2=self.entities[1],
+        )
+
+        for (criteria, score) in [("criteria1", 1), ("criteria2", 2)]:
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
+                criteria=criteria,
+                score=score,
+            )
+
+        self.client = APIClient()
+
+    def test_update_individual_scores_after_new_comparison(self):
+        call_command("ml_train")
+
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
+        self.assertEqual(EntityCriteriaScore.objects.count(), 4)
+
+        # user2 has no contributor scores before the comparison is submitted
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects
+                .filter(contributor_rating__user=self.user2)
+                .count(),
+            0
+        )
+
+        self.client.force_authenticate(self.user2)
+        resp = self.client.post(
+            f"/users/me/comparisons/{self.poll.name}",
+            data={
+                "entity_a":{
+                    "uid": self.entities[0].uid
+                },
+                "entity_b": {
+                    "uid": self.entities[2].uid
+                },
+                "criteria_scores": [
+                    {
+                        "criteria": "criteria1",
+                        "score": 3
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(resp.status_code, 201, resp.content)
+
+        # Individual scores related to the new comparison have been computed
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects
+                .filter(contributor_rating__user=self.user2)
+                .count(),
+            2
+        )
+        # The score related to the less prefered entity is negative
+        user_score = ContributorRatingCriteriaScore.objects.get(
+            contributor_rating__user=self.user2,
+            contributor_rating__entity=self.entities[0],
+            criteria="criteria1",
+        )
+        self.assertLess(user_score.score, 0)
+
+        # Global scores and individual scores related to other users are unchanged
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
+        self.assertEqual(EntityCriteriaScore.objects.count(), 4)
