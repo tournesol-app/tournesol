@@ -132,17 +132,16 @@ def tweet_video_recommendation(bot_name, debug=True):
     video = select_a_video(tweetable_videos)
     tweet_text = prepare_tweet(video)
 
-    if not debug:
-        return
+    if debug:
+        print("Today's video to tweet will be:")
+        print(tweet_text)
 
-    print("Today's video to tweet will be:")
-    print(tweet_text)
+        confirmation = input("\nWould you like to tweet that? (y/n)")
 
-    confirmation = input("\nWould you like to tweet that? (y/n)")
+        if confirmation not in ["y", "yes"]:
+            return
 
-    if confirmation not in ["y", "yes"]:
-        return
-
+    # Tweet the video
     resp = twitterbot.api.update_status(tweet_text)
 
     # Add the video to the TweetInfo table

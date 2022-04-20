@@ -52,4 +52,8 @@ class Command(BaseCommand):
                     video.tournesol_score,
                 )
 
+        # Temporary, to avoid to tweet anything if not in debug mode
+        if not options["debug"]:
+            return
+
         tweet_video_recommendation(bot_name, debug=options["debug"])
