@@ -15,7 +15,7 @@ def get_best_criteria(video, n):
     criteria_list = video.criteria_scores.filter(poll__name="videos").order_by(
         "-score"
     )[:n]
-    
+
     if criteria_list < n:
         raise ValueError("Not enough criteria to show!")
 
