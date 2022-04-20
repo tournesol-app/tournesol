@@ -263,8 +263,8 @@ class User(AbstractUser):
         users = User.objects.filter(
             Q(email__iexact=f"{local_part_split[0]}@{email_split[-1]}")
             | (
-                    Q(email__istartswith=f"{local_part_split[0]}+")
-                    & Q(email__iendswith=f"@{email_split[-1]}")
+                Q(email__istartswith=f"{local_part_split[0]}+")
+                & Q(email__iendswith=f"@{email_split[-1]}")
             ),
         )
 
@@ -273,12 +273,10 @@ class User(AbstractUser):
 
         if users.exists():
             raise ValidationError(
-                {
-                    "email": _(
-                        "A user with an email starting with '%(email)s' already exists"
-                        " in this domain." % {"email": f"{local_part_split[0]}+"}
-                    )
-                }
+                _(
+                    "A user with an email starting with '%(email)s' already exists"
+                    " in this domain." % {"email": f"{local_part_split[0]}+"}
+                )
             )
 
         return email
@@ -312,7 +310,13 @@ class User(AbstractUser):
                 {"email": _("A user with this email address already exists.")}
             )
 
-        User.validate_email_unique_with_plus(value, self.username)
+        try:
+            User.validate_email_unique_with_plus(value, self.username)
+        except ValidationError as err:
+            # Catching the exception here allows us to add the email key, and
+            # makes the message display near the email field in the admin
+            # interface.
+            raise ValidationError({"email": err.message})
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")

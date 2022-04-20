@@ -37,20 +37,17 @@ class RegisterUserSerializer(DefaultRegisterUserSerializer):
     def validate_username(self, value):
         return _validate_username(value)
 
-    def validate(self, data):
-        User.validate_email_unique_with_plus(data["email"])
-        return data
+    def validate_email(self, value):
+        return User.validate_email_unique_with_plus(value)
 
 
 class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
     email = iunique_email
 
-    def validate(self, data):
-        User.validate_email_unique_with_plus(
-            data["email"],
-            self.context["request"].user.username
+    def validate_email(self, value):
+        return User.validate_email_unique_with_plus(
+            value, self.context["request"].user.username
         )
-        return data
 
 
 class UserProfileSerializer(DefaultUserProfileSerializer):
