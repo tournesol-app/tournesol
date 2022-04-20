@@ -23,8 +23,6 @@ msgid "email address"
 msgstr "adresse e-mail"
 
 #: core/models/user.py:278
-#, fuzzy, python-format
-#| msgid "A user with this email address already exists."
 msgid ""
 "A user with an email starting with '%(email)s' already exists in this domain."
 msgstr ""
