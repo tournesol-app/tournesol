@@ -26,25 +26,25 @@ class VideoApi(TestCase):
         User.objects.create(username=self._user, email="user@test")
 
         self.video_1 = VideoFactory(
-            metadata__publication_date="2021-01-01",
+            metadata__publication_date="2021-01-01T19:44:24.686532",
             metadata__uploader="uploader1",
             tournesol_score=1.1,
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
-            metadata__publication_date="2021-01-02",
+            metadata__publication_date="2021-01-02T19:44:24.686532",
             metadata__uploader="uploader2",
             tournesol_score=2.2,
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
-            metadata__publication_date="2021-01-03",
+            metadata__publication_date="2021-01-03T00:00:00.000000",
             metadata__uploader="uploader2",
             tournesol_score=3.3,
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
-            metadata__publication_date="2021-01-04",
+            metadata__publication_date="2021-01-04T19:44:24.686532",
             metadata__uploader="uploader3",
             tournesol_score=4.4,
             rating_n_contributors=5,
@@ -311,18 +311,18 @@ class VideoApi(TestCase):
         self.assertEqual(resp.status_code, 200, resp.data)
         self.assertEqual(resp.data["count"], 1)
 
-        resp = client.get("/video/?date_lte=2021-01-03T00:00:00")
+        resp = client.get("/video/?date_lte=2021-01-02T00:00:00")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 3)
 
     def test_get_video_date_filters_legacy_format(self):
         client = APIClient()
 
-        resp = client.get("/video/?date_gte=04-01-21-00-00-00")
+        resp = client.get("/video/?date_gte=04-01-21T00:00:00")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 1)
 
-        resp = client.get("/video/?date_lte=03-01-21-00-00-00")
+        resp = client.get("/video/?date_lte=03-01-21T00:00:00")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 3)
 

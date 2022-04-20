@@ -56,8 +56,7 @@ def get_video_metadata(video_id, compute_language=True):
     yt_info = yt_items[0]
     title = yt_info["snippet"]["title"]
     nb_views = yt_info.get("statistics", {}).get("viewCount")
-    published_date = str(yt_info["snippet"]["publishedAt"])
-    published_date = published_date.split("T")[0]
+    published_date = str(yt_info["snippet"]["publishedAt"]) # example : '2022-04-19T19:44:24.686532'
     # we could truncate description to spare some space
     description = str(yt_info["snippet"]["description"])
     uploader = yt_info["snippet"]["channelTitle"]

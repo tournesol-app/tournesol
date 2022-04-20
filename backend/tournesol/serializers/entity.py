@@ -32,7 +32,7 @@ class VideoSerializer(ModelSerializer):
         allow_null=True,
         help_text="Video description, from YouTube",
     )
-    publication_date = serializers.DateField(
+    publication_date = serializers.DateTimeField(
         source="metadata.publication_date",
         read_only=True,
         allow_null=True,

@@ -30,22 +30,22 @@ class PollsRecommendationsApi(TestCase):
         self.client = APIClient()
 
         self.video_1 = VideoFactory(
-            metadata__publication_date="2021-01-01",
+            metadata__publication_date="2021-01-01T11:44:24.686532",
             tournesol_score=1.1,
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
-            metadata__publication_date="2021-01-02",
+            metadata__publication_date="2021-01-02T13:44:24.686532",
             tournesol_score=2.2,
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
-            metadata__publication_date="2021-01-03",
+            metadata__publication_date="2021-01-03T19:09:24.686532",
             tournesol_score=3.3,
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
-            metadata__publication_date="2021-01-04",
+            metadata__publication_date="2021-01-04T19:44:56.686532",
             tournesol_score=4.4,
             rating_n_contributors=5,
         )
@@ -70,7 +70,7 @@ class PollsRecommendationsApi(TestCase):
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")
         video_5 = VideoFactory(
-            metadata__publication_date="2021-01-05",
+            metadata__publication_date="2021-01-05T19:44:24.686532",
             rating_n_contributors=6,
         )
         VideoCriteriaScoreFactory(poll=other_poll, entity=video_5, criteria="importance", score=0.5)
