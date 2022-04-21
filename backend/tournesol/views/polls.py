@@ -52,18 +52,15 @@ logger = logging.getLogger(__name__)
                 examples=[
                     OpenApiExample(
                         name="Some filters available for videos.",
-                        value={
-                            "language": "fr,pt",
-                            "uploader": "kurzgesagtES"
-                        },
+                        value={"language": "fr,pt", "uploader": "kurzgesagtES"},
                     ),
                     OpenApiExample(
                         name="Some filters available for candidates.",
                         value={
                             "name": "A candidate full name",
-                            "youtube_channel_id": "channel ID"
+                            "youtube_channel_id": "channel ID",
                         },
-                    )
+                    ),
                 ],
             ),
         ],
@@ -81,7 +78,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         _metadata_from_filter("metadata[language]") -> "language"
         """
-        return filtr.split('[')[1][:-1]
+        return filtr.split("[")[1][:-1]
 
     def filter_by_parameters(self, request, queryset, poll: Poll):
         """
@@ -105,10 +102,11 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         if date_gte:
             queryset = poll.entity_cls.filter_date_gte(queryset, date_gte)
 
-        metadata_filters = [(self._metadata_from_filter(key), value)
-                            for (key, value)
-                            in request.query_params.items()
-                            if key.startswith('metadata[')]
+        metadata_filters = [
+            (self._metadata_from_filter(key), value)
+            for (key, value) in request.query_params.lists()
+            if key.startswith("metadata[")
+        ]
 
         if metadata_filters:
             queryset = poll.entity_cls.filter_metadata(queryset, metadata_filters)

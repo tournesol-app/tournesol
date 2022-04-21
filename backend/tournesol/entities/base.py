@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.serializers import Serializer
@@ -31,11 +32,22 @@ class EntityType(ABC):
         return qs.filter(add_time__gte=dt)
 
     @classmethod
-    def filter_metadata(cls, qs, filters):
+    def filter_metadata(cls, qst, filters):
         for fil in filters:
-            qs = qs.filter(**{'metadata__' + fil[0]: fil[1]})
+            key, values = fil
 
-        return qs
+            # add several OR expressions if multiple values are provided
+            if len(values) > 1:
+                expression = Q(**{"metadata__" + key: values[0]})
+
+                for val in values[1:]:
+                    expression = expression | Q(**{"metadata__" + key: val})
+
+                qst = qst.filter(expression)
+            else:
+                qst = qst.filter(**{"metadata__" + key: values[0]})
+
+        return qst
 
     @classmethod
     @abstractmethod
