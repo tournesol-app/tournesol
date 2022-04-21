@@ -17,25 +17,30 @@ import {
 } from 'src/utils/recommendationsLanguages';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
-function VideoRecommendationPage() {
+function RecommendationsPage() {
   const { t } = useTranslation();
+
+  const history = useHistory();
+  const location = useLocation();
+  const { criterias } = useCurrentPoll();
+  const [isLoading, setIsLoading] = useState(true);
+
   const prov: PaginatedVideoSerializerWithCriteriaList = {
     count: 0,
     results: [],
   };
-  const [videos, setVideos] = useState(prov);
-  const [isLoading, setIsLoading] = useState(true);
-  const location = useLocation();
-  const history = useHistory();
+
+  const [entities, setVideos] = useState(prov);
+  const videoCount = entities.count || 0;
+
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
   );
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
-  const videoCount = videos.count || 0;
+
   const locationSearchRef = useRef<string>();
-  const { criterias } = useCurrentPoll();
 
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
@@ -80,7 +85,7 @@ function VideoRecommendationPage() {
         </Box>
         <LoaderWrapper isLoading={isLoading}>
           <VideoList
-            videos={videos.results || []}
+            videos={entities.results || []}
             emptyMessage={
               isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
             }
@@ -99,4 +104,4 @@ function VideoRecommendationPage() {
   );
 }
 
-export default VideoRecommendationPage;
+export default RecommendationsPage;

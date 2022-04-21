@@ -11,7 +11,7 @@ import {
 } from 'src/utils/recommendationsLanguages';
 import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
 
-import VideoRecommendationPage from './VideoRecommendation';
+import RecommendationPage from './RecommendationPage';
 
 const VideoList = () => null;
 jest.mock('src/features/videos/VideoList', () => VideoList);
@@ -33,7 +33,7 @@ describe('VideoRecommendationPage', () => {
     render(
       <Router history={history}>
         <ThemeProvider theme={theme}>
-          <VideoRecommendationPage />
+          <RecommendationPage />
         </ThemeProvider>
       </Router>
     );
