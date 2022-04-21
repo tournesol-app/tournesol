@@ -37,6 +37,8 @@ class CustomOAuth2Validator(OAuth2Validator):
             except ObjectDoesNotExist:
                 try:
                     user = user_model.objects.get(email__iexact=username)
+                except ObjectDoesNotExist:
+                    return False
                 except user_model.MultipleObjectsReturned:
                     return False
 
