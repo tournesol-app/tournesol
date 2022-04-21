@@ -51,10 +51,17 @@ logger = logging.getLogger(__name__)
                 description="Filter by one or more metadata.",
                 examples=[
                     OpenApiExample(
-                        name="metadata example",
+                        name="Some filters available for videos.",
                         value={
                             "language": "fr,pt",
                             "uploader": "kurzgesagtES"
+                        },
+                    ),
+                    OpenApiExample(
+                        name="Some filters available for candidates.",
+                        value={
+                            "name": "A candidate full name",
+                            "youtube_channel_id": "channel ID"
                         },
                     )
                 ],
@@ -71,6 +78,9 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
     """
 
     def _metadata_from_filter(self, filtr: str):
+        """
+        _metadata_from_filter("metadata[language]") -> "language"
+        """
         return filtr.split('[')[1][:-1]
 
     def filter_by_parameters(self, request, queryset, poll: Poll):
