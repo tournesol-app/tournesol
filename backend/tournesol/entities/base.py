@@ -31,6 +31,13 @@ class EntityType(ABC):
         return qs.filter(add_time__gte=dt)
 
     @classmethod
+    def filter_metadata(cls, qs, filters):
+        for fil in filters:
+            qs = qs.filter(**{'metadata__' + fil[0]: fil[1]})
+
+        return qs
+
+    @classmethod
     @abstractmethod
     def filter_search(cls, qs, query: str):
         raise NotImplementedError
