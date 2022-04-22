@@ -12,6 +12,7 @@ class SimpleAllConnectedTest(TestCase):
     """
     TestCase for the unconnected entities API.
     """
+
     def setUp(self):
         self.client = APIClient()
         self.user_1 = UserFactory()
@@ -88,10 +89,40 @@ class SimpleAllConnectedTest(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
+class NonConnectedEntityTest(TestCase):
+    """
+    TestCase for the unconnected entities API where an entity don't have any comparison
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user_1 = UserFactory()
+        self.poll_videos = Poll.default_poll()
+        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
+
+        # Create video without comparison
+        self.video_source = VideoFactory()
+        VideoFactory()
+        VideoFactory()
+        VideoFactory()
+
+    def test_no_link_should_return_all(self):
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 3)
+
+
 class AdvancedAllConnectedTest(TestCase):
     """
     TestCase for the unconnected entities API.
     """
+
     def setUp(self):
         self.client = APIClient()
         self.user_1 = UserFactory()
@@ -137,6 +168,7 @@ class SimpleNotAllConnectedTest(TestCase):
     """
     TestCase for the unconnected entities API.
     """
+
     def setUp(self):
         self.client = APIClient()
         self.user_1 = UserFactory()
@@ -185,8 +217,8 @@ class SimpleNotAllConnectedTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-                list(map(lambda x: x["uid"], response.data["results"])),
-                list(map(lambda x: x.uid, self.unrelated_video))
+            list(map(lambda x: x["uid"], response.data["results"])),
+            list(map(lambda x: x.uid, self.unrelated_video))
         )
 
 
@@ -194,6 +226,7 @@ class AdvancedNotAllConnectedTest(TestCase):
     """
     TestCase for the unconnected entities API.
     """
+
     def setUp(self):
         self.client = APIClient()
         self.user_1 = UserFactory()
