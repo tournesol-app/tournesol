@@ -16,10 +16,6 @@ import { displayScore } from 'src/utils/criteria';
 const BAR_CHART_CRITERIA_SCORE_MIN = -1;
 const BAR_CHART_CRITERIA_SCORE_MAX = 1;
 
-interface Props {
-  video: VideoSerializerWithCriteria;
-}
-
 const between = (a: number, b: number, x: number | undefined): number => {
   // clips x between a and b
   return Math.min(b, Math.max(a, x || 0));
@@ -38,7 +34,15 @@ const criteriaColors: { [criteria: string]: string } = {
   default: '#000000',
 };
 
-const CriteriaBarChart = ({ video }: Props) => {
+const SizedBarChart = ({
+  video,
+  width,
+  height,
+}: {
+  video: VideoSerializerWithCriteria;
+  width?: number;
+  height?: number;
+}) => {
   const { getCriteriaLabel } = useCurrentPoll();
 
   const renderCustomAxisTick = ({
@@ -52,7 +56,7 @@ const CriteriaBarChart = ({ video }: Props) => {
   }) => {
     return (
       <svg
-        x={x - 30 + 250}
+        x={x - 30 + (width || 0) / 2}
         y={y - 30}
         width="60"
         height="60"
@@ -95,47 +99,57 @@ const CriteriaBarChart = ({ video }: Props) => {
     });
 
   return (
-    <ResponsiveContainer width="100%" height={500}>
-      <BarChart layout="vertical" data={data}>
-        <XAxis
-          type="number"
-          domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
-          hide={true}
-        />
+    <BarChart layout="vertical" width={width} height={height} data={data}>
+      <XAxis
+        type="number"
+        domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
+        hide={true}
+      />
 
-        <Bar dataKey="clipped_score" barSize={20}>
-          {data.map((entry) => (
-            <Cell
-              key={entry.criteria}
-              fill={criteriaColors[entry.criteria] || criteriaColors['default']}
-            />
-          ))}
-        </Bar>
-        <YAxis
-          type="category"
-          dataKey="criteria"
-          tick={renderCustomAxisTick}
-          interval={0}
-          axisLine={false}
-          tickLine={false}
-          width={6}
-        />
-        <Tooltip
-          cursor={{ stroke: 'black', strokeWidth: 2, fill: 'transparent' }}
-          content={(props: TooltipProps<number, string>) => {
-            const payload = props?.payload;
-            if (payload && payload[0]) {
-              const { criteria, score } = payload[0].payload;
-              return (
-                <pre>
-                  {getCriteriaLabel(criteria)}: {displayScore(score)}
-                </pre>
-              );
-            }
-            return null;
-          }}
-        />
-      </BarChart>
+      <Bar dataKey="clipped_score" barSize={20}>
+        {data.map((entry) => (
+          <Cell
+            key={entry.criteria}
+            fill={criteriaColors[entry.criteria] || criteriaColors['default']}
+          />
+        ))}
+      </Bar>
+      <YAxis
+        type="category"
+        dataKey="criteria"
+        tick={renderCustomAxisTick}
+        interval={0}
+        axisLine={false}
+        tickLine={false}
+        width={6}
+      />
+      <Tooltip
+        cursor={{ stroke: 'black', strokeWidth: 2, fill: 'transparent' }}
+        content={(props: TooltipProps<number, string>) => {
+          const payload = props?.payload;
+          if (payload && payload[0]) {
+            const { criteria, score } = payload[0].payload;
+            return (
+              <pre>
+                {getCriteriaLabel(criteria)}: {displayScore(score)}
+              </pre>
+            );
+          }
+          return null;
+        }}
+      />
+    </BarChart>
+  );
+};
+
+interface Props {
+  video: VideoSerializerWithCriteria;
+}
+
+const CriteriaBarChart = ({ video }: Props) => {
+  return (
+    <ResponsiveContainer width="100%" height={500}>
+      <SizedBarChart video={video} />
     </ResponsiveContainer>
   );
 };
