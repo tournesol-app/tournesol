@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
 import Card from 'src/components/Card';
 import VideoCard from 'src/features/videos/VideoCard';
@@ -28,23 +29,27 @@ function VideoAnalysis() {
   return (
     <div className={classes.root}>
       <VideoCard video={video} />
-      <Grid
-        container
-        spacing={2}
-        justifyContent="center"
-        sx={{ marginTop: 3, marginBottom: 3 }}
+      <Box
+        sx={{
+          marginTop: 3,
+          marginBottom: 3,
+          width: '100%',
+          maxWidth: 1000,
+        }}
       >
-        <Grid item xs="auto">
-          <Card>
-            <CriteriaRadarChart video={video} />
-          </Card>
+        <Grid container spacing={2} justifyContent="center">
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CriteriaRadarChart video={video} />
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CriteriaBarChart video={video} />
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs="auto">
-          <Card>
-            <CriteriaBarChart video={video} />
-          </Card>
-        </Grid>
-      </Grid>
+      </Box>
     </div>
   );
 }

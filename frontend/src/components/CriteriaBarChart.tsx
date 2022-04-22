@@ -7,6 +7,7 @@ import {
   Cell,
   Tooltip,
   TooltipProps,
+  ResponsiveContainer,
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -94,46 +95,48 @@ const CriteriaBarChart = ({ video }: Props) => {
     });
 
   return (
-    <BarChart width={500} height={500} layout="vertical" data={data}>
-      <XAxis
-        type="number"
-        domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
-        hide={true}
-      />
+    <ResponsiveContainer width="100%" height={500}>
+      <BarChart layout="vertical" data={data}>
+        <XAxis
+          type="number"
+          domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
+          hide={true}
+        />
 
-      <Bar dataKey="clipped_score" barSize={20}>
-        {data.map((entry) => (
-          <Cell
-            key={entry.criteria}
-            fill={criteriaColors[entry.criteria] || criteriaColors['default']}
-          />
-        ))}
-      </Bar>
-      <YAxis
-        type="category"
-        dataKey="criteria"
-        tick={renderCustomAxisTick}
-        interval={0}
-        axisLine={false}
-        tickLine={false}
-        width={6}
-      />
-      <Tooltip
-        cursor={{ stroke: 'black', strokeWidth: 2, fill: 'transparent' }}
-        content={(props: TooltipProps<number, string>) => {
-          const payload = props?.payload;
-          if (payload && payload[0]) {
-            const { criteria, score } = payload[0].payload;
-            return (
-              <pre>
-                {getCriteriaLabel(criteria)}: {displayScore(score)}
-              </pre>
-            );
-          }
-          return null;
-        }}
-      />
-    </BarChart>
+        <Bar dataKey="clipped_score" barSize={20}>
+          {data.map((entry) => (
+            <Cell
+              key={entry.criteria}
+              fill={criteriaColors[entry.criteria] || criteriaColors['default']}
+            />
+          ))}
+        </Bar>
+        <YAxis
+          type="category"
+          dataKey="criteria"
+          tick={renderCustomAxisTick}
+          interval={0}
+          axisLine={false}
+          tickLine={false}
+          width={6}
+        />
+        <Tooltip
+          cursor={{ stroke: 'black', strokeWidth: 2, fill: 'transparent' }}
+          content={(props: TooltipProps<number, string>) => {
+            const payload = props?.payload;
+            if (payload && payload[0]) {
+              const { criteria, score } = payload[0].payload;
+              return (
+                <pre>
+                  {getCriteriaLabel(criteria)}: {displayScore(score)}
+                </pre>
+              );
+            }
+            return null;
+          }}
+        />
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
 

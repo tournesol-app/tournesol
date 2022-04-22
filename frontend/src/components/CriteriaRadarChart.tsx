@@ -5,6 +5,7 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
+  ResponsiveContainer,
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -74,25 +75,27 @@ const CriteriaRadarChart = ({ video }: Props) => {
     }));
 
   return (
-    <RadarChart width={300} height={300} outerRadius="80%" data={data}>
-      <PolarGrid />
-      <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
-      {/* An invisible PolarRadiusAxis used to enforce the axis between 0 and 1 */}
-      <PolarRadiusAxis
-        domain={[
-          RADAR_CHART_CRITERIA_SCORE_MIN,
-          RADAR_CHART_CRITERIA_SCORE_MAX,
-        ]}
-        axisLine={false}
-        tick={false}
-      />
-      <Radar
-        dataKey="score"
-        stroke="#8884d8"
-        fill="#8884d8"
-        fillOpacity={0.6}
-      />
-    </RadarChart>
+    <ResponsiveContainer width="100%" height={500}>
+      <RadarChart outerRadius="80%" data={data}>
+        <PolarGrid />
+        <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
+        {/* An invisible PolarRadiusAxis used to enforce the axis between 0 and 1 */}
+        <PolarRadiusAxis
+          domain={[
+            RADAR_CHART_CRITERIA_SCORE_MIN,
+            RADAR_CHART_CRITERIA_SCORE_MAX,
+          ]}
+          axisLine={false}
+          tick={false}
+        />
+        <Radar
+          dataKey="score"
+          stroke="#8884d8"
+          fill="#8884d8"
+          fillOpacity={0.6}
+        />
+      </RadarChart>
+    </ResponsiveContainer>
   );
 };
 
