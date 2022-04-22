@@ -28,28 +28,6 @@ function VideoAnalysis() {
 
   return (
     <div className={classes.root}>
-<<<<<<< HEAD
-      <VideoCard video={video} />
-      <Box
-        sx={{
-          marginTop: 3,
-          marginBottom: 3,
-          width: '100%',
-          maxWidth: 1000,
-        }}
-      >
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CriteriaRadarChart video={video} />
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CriteriaBarChart video={video} />
-            </Card>
-          </Grid>
-=======
      {/* <VideoCard video={video} widthVideo={960} />*/}
      <VideoCardAnalysis video={video} />
       <Grid
@@ -62,7 +40,6 @@ function VideoAnalysis() {
           {/* <Card>
             <CriteriaRadarChart video={video} />
           </Card> */}
->>>>>>> d8ac3bab ([draft] front: Remove radar chart and bigger VideoPlayer on VideoAnalysis (#829))
         </Grid>
       </Box>
     </div>
