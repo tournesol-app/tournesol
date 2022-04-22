@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 import { Box, Button, Typography } from '@mui/material';
 import { ContentHeader, LoaderWrapper, Pagination } from 'src/components';
@@ -16,7 +16,7 @@ function ComparisonsPage() {
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
   ] = useState();
-  const [count, setCount] = useState(0);
+  const [comparisonCount, setComparisonCount] = useState(0);
   const history = useHistory();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -44,7 +44,7 @@ function ComparisonsPage() {
             offset,
           }));
       setComparisons(comparisonsRequest.results);
-      setCount(comparisonsRequest.count || 0);
+      setComparisonCount(comparisonsRequest.count || 0);
     };
     process();
 
@@ -69,6 +69,18 @@ function ComparisonsPage() {
     </>
   );
 
+  const nbComparisonsMessage = (
+    <Typography variant="subtitle1" sx={{ textAlign: 'center', pt: 2 }}>
+      <Trans
+        t={t}
+        i18nKey="myComparisonsPage.listHasNbComparisons"
+        count={comparisonCount}
+      >
+        You already made <strong>{{ comparisonCount }}</strong> comparison(s).
+      </Trans>
+    </Typography>
+  );
+
   return (
     <>
       <ContentHeader title={t('myComparisonsPage.title')} />
@@ -82,14 +94,15 @@ function ComparisonsPage() {
         }}
       >
         <LoaderWrapper isLoading={comparisons == undefined}>
-          {count === 0 ? (
+          {comparisonCount === 0 ? (
             noComparisonMessage
           ) : (
             <>
+              {nbComparisonsMessage}
               <ComparisonList comparisons={comparisons} />
               <Pagination
                 offset={offset}
-                count={count}
+                count={comparisonCount}
                 onOffsetChange={handleOffsetChange}
                 limit={limit}
                 itemType={t('pagination.comparisons')}

@@ -15,6 +15,7 @@
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
     "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
+    "personalScore": "Score personnel\u00a0: {{score}}",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
@@ -153,12 +154,12 @@
     "important": "Important",
     "crucial": "Crucial",
     "criteria": "Critères",
-    "today": "Aujourd'hui",
-    "thisWeek": "Cette semaine",
-    "thisMonth": "Ce mois-ci",
-    "thisYear": "Cette année",
-    "allTime": "Depuis le début",
-    "uploadDate": "Mises en ligne",
+    "today": "Un jour",
+    "thisWeek": "Une semaine",
+    "thisMonth": "Un mois",
+    "thisYear": "Une année",
+    "allTime": "Toujours",
+    "uploadDate": "Mises en ligne depuis",
     "allLanguages": "Toutes",
     "language": "Langues",
     "uploader": "Chaîne"
@@ -299,7 +300,10 @@
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
-    "title": "Mes comparaisons"
+    "title": "Mes comparaisons",
+    "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
+    "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
+    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
@@ -383,7 +387,8 @@
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
     "remove": "Supprimer",
-    "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard."
+    "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
+    "analysis": "Analyse détaillée"
   },
   "criteriaTooltips": {
     "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",

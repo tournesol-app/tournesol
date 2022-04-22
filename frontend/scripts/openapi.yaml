@@ -1910,35 +1910,40 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        metadata:
-          type: object
-          additionalProperties: {}
+        total_score:
+          type: number
+          format: float
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        total_score:
-          type: number
-          format: float
-        is_public:
-          type: boolean
-          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        is_public:
+          type: boolean
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
       required:
       - criteria_scores
       - is_public
+      - metadata
       - total_score
+      - type
       - uid
     DefaultSendResetPasswordLink:
       type: object
@@ -2706,6 +2711,8 @@ components:
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
+        type:
+          $ref: '#/components/schemas/TypeEnum'
         n_comparisons:
           type: integer
         n_contributors:
@@ -2713,6 +2720,7 @@ components:
         metadata:
           type: object
           additionalProperties: {}
+          readOnly: true
         total_score:
           type: number
           format: float
@@ -2728,9 +2736,11 @@ components:
             $ref: '#/components/schemas/EntityCriteriaScore'
       required:
       - criteria_scores
+      - metadata
       - n_comparisons
       - n_contributors
       - total_score
+      - type
       - uid
     RegisterEmail:
       type: object

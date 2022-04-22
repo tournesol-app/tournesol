@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import datetime
 import os
 from collections import OrderedDict
 from pathlib import Path
@@ -374,3 +375,14 @@ CACHES = {
 VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
+
+# Configuration of the app `core`
+# See the documentation for the complete description.
+APP_CORE = {
+    "MGMT_DELETE_INACTIVE_USERS_PERIOD":
+        # sync the value with the validity period of the validation emails
+        REST_REGISTRATION.get(
+            "REGISTER_VERIFICATION_PERIOD",
+            datetime.timedelta(days=7)
+        )
+}

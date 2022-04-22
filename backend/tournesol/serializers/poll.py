@@ -32,6 +32,7 @@ class RecommendationSerializer(ModelSerializer):
         model = Entity
         fields = [
             "uid",
+            "type",
             "n_comparisons",
             "n_contributors",
             "metadata",
@@ -41,6 +42,9 @@ class RecommendationSerializer(ModelSerializer):
             # between Entity and Poll
             "tournesol_score",
             "criteria_scores",
+        ]
+        read_only_fields = [
+            "metadata",
         ]
 
 

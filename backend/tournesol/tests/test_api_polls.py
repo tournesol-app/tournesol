@@ -65,6 +65,8 @@ class PollsRecommendationsApi(TestCase):
         self.assertEqual(results[1]["tournesol_score"], 3.3)
         self.assertEqual(results[2]["tournesol_score"], 2.2)
 
+        self.assertEqual(results[0]["type"], "video")
+
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")
         video_5 = VideoFactory(

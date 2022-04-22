@@ -14,6 +14,7 @@
     "notYetComparedByYou": "Not yet compared by you",
     "contributionsArePublicMessage": "Your contributions about this item are currently public. Comparisons appear in the public data associated to your profile only if you tag both items as public.",
     "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
+    "personalScore": "Personal score: {{score}}",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
     "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparison by",
@@ -147,12 +148,12 @@
     "important": "Important",
     "crucial": "Crucial",
     "criteria": "Criteria",
-    "today": "Today",
-    "thisWeek": "This week",
-    "thisMonth": "This month",
-    "thisYear": "This year",
+    "today": "A day ago",
+    "thisWeek": "A week ago",
+    "thisMonth": "A month ago",
+    "thisYear": "A year ago",
     "allTime": "All time",
-    "uploadDate": "Upload date",
+    "uploadDate": "Uploaded",
     "allLanguages": "All languages",
     "language": "Language",
     "uploader": "Uploader"
@@ -293,7 +294,10 @@
   "clickToDownload": "Click to Download",
   "myComparisonsPage": {
     "noComparisonYet": "No comparison",
-    "title": "My comparisons"
+    "title": "My comparisons",
+    "listHasNbComparisons_one": "You already did <1>{{comparisonCount}}</1> comparison.",
+    "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons.",
+    "listHasNbComparisons_other": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
@@ -376,7 +380,8 @@
     "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
     "rateLater": "Rate later",
     "remove": "Remove",
-    "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list."
+    "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list.",
+    "analysis": "Detailed analysis"
   },
   "criteriaTooltips": {
     "energy_environment": "Topic related to climate change, energy transition, biodiversity and protection of the environment",
