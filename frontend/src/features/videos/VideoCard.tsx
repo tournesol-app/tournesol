@@ -57,6 +57,7 @@ function VideoCard({
   compact = false,
   controls = true,
   personalScore,
+  showPlayer = true,
 }: {
   video: VideoObject;
   actions?: ActionList;
@@ -64,6 +65,7 @@ function VideoCard({
   compact?: boolean;
   controls?: boolean;
   personalScore?: number;
+  showPlayer?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -78,18 +80,20 @@ function VideoCard({
 
   return (
     <Grid container sx={entityCardMainSx}>
-      <Grid
-        item
-        xs={12}
-        sm={compact ? 12 : 'auto'}
-        sx={{ aspectRatio: '16 / 9', width: '240px !important' }}
-      >
-        <VideoPlayer
-          videoId={videoId}
-          duration={video.duration}
-          controls={controls}
-        />
-      </Grid>
+      {showPlayer && (
+        <Grid
+          item
+          xs={12}
+          sm={compact ? 12 : 'auto'}
+          sx={{ aspectRatio: '16 / 9', width: '240px !important' }}
+        >
+          <VideoPlayer
+            videoId={videoId}
+            duration={video.duration}
+            controls={controls}
+          />
+        </Grid>
+      )}
       <Grid
         item
         xs={12}
