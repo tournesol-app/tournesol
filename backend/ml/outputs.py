@@ -1,5 +1,6 @@
 from typing import Iterable, Optional, Union
 
+import numpy as np
 import pandas as pd
 from django.db import transaction
 from django.db.models import Q
@@ -8,8 +9,10 @@ from core.models import User
 from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
+    ContributorScaling,
     Entity,
     EntityCriteriaScore,
+    Poll,
 )
 
 
@@ -141,4 +144,30 @@ def save_contributor_scores(
                 uncertainty=uncertainty,
             )
             for contributor_id, video_id, criteria, score, uncertainty in scores_list
+        )
+
+
+def save_contributor_scalings(poll: Poll, criteria: str, scalings: pd.DataFrame):
+    scalings_iterator = (
+        scalings[["s", "delta_s", "tau", "delta_tau"]]
+        .replace({np.nan: None})
+        .itertuples(index=True)
+    )
+
+    with transaction.atomic():
+        ContributorScaling.objects.filter(poll=poll, criteria=criteria).delete()
+        ContributorScaling.objects.bulk_create(
+            (
+                ContributorScaling(
+                    poll=poll,
+                    criteria=criteria,
+                    user_id=user_id,
+                    scale=s,
+                    scale_uncertainty=delta_s,
+                    translation=tau,
+                    translation_uncertainty=delta_tau,
+                )
+                for user_id, s, delta_s, tau, delta_tau in scalings_iterator
+            ),
+            batch_size=10000,
         )

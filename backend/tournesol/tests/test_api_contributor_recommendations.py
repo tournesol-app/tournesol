@@ -29,6 +29,11 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.entity1 = EntityFactory()
         self.entity2 = EntityFactory()
 
+        ContributorRatingFactory(user=self.user1, entity=self.entity1, is_public=True)
+        ContributorRatingFactory(user=self.user1, entity=self.entity2, is_public=False)
+        ContributorRatingFactory(user=self.user2, entity=self.entity1, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=self.entity2, is_public=True)
+
         ComparisonFactory(
             user=self.user1,
             entity_1=self.entity1,
@@ -39,11 +44,6 @@ class ContributorRecommendationsApiTestCase(TestCase):
             entity_1=self.entity1,
             entity_2=self.entity2,
         )
-
-        ContributorRatingFactory(user=self.user1, entity=self.entity1, is_public=True)
-        ContributorRatingFactory(user=self.user1, entity=self.entity2, is_public=False)
-        ContributorRatingFactory(user=self.user2, entity=self.entity1, is_public=True)
-        ContributorRatingFactory(user=self.user2, entity=self.entity2, is_public=True)
 
         # Entities for which the score is 0 are filtered, so set a positive score
         ContributorRatingCriteriaScore.objects.bulk_create(

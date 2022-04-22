@@ -10,6 +10,7 @@ from django import db
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
+    save_contributor_scalings,
     save_contributor_scores,
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
@@ -76,7 +77,7 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
         poll.name,
         criteria,
     )
-    indiv_scores, global_scores, _ = compute_mehestan_scores(
+    indiv_scores, global_scores, scalings = compute_mehestan_scores(
         ml_input, criteria=criteria
     )
     logger.info(
@@ -84,6 +85,8 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
         poll.name,
         criteria,
     )
+
+    save_contributor_scalings(poll, criteria, scalings)
     save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
     save_entity_scores(poll, global_scores, single_criteria=criteria)
     logger.info(
