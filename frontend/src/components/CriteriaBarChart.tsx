@@ -147,6 +147,8 @@ interface Props {
 }
 
 const CriteriaBarChart = ({ video }: Props) => {
+  // ResponsiveContainer adds the width and height props to its child component.
+  // We need the width to position the icons.
   return (
     <ResponsiveContainer width="100%" height={500}>
       <SizedBarChart video={video} />
