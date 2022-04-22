@@ -112,7 +112,6 @@ urlpatterns = [
         PollsRecommendationsView.as_view(),
         name="polls_recommendations",
     ),
-    # TODO Lucas: See if the path is the one we want to use
     path(
         "polls/<str:name>/entities/<str:uid>/criteria_scores_distributions",
         PollsCriteraScoreDistributionView.as_view(),

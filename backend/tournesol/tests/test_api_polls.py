@@ -5,8 +5,11 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from tournesol.models import Poll
+from core.models import User
 
-from .factories.entity import VideoCriteriaScoreFactory, VideoFactory
+
+from .factories.entity import VideoCriteriaScoreFactory, VideoFactory, EntityFactory
+from .factories.ratings import ContributorRatingFactory, ContributorRatingCriteriaScoreFactory
 
 
 class PollsApi(TestCase):
@@ -71,7 +74,8 @@ class PollsRecommendationsApi(TestCase):
             metadata__publication_date="2021-01-05",
             rating_n_contributors=6,
         )
-        VideoCriteriaScoreFactory(poll=other_poll, entity=video_5, criteria="importance", score=0.5)
+        VideoCriteriaScoreFactory(poll=other_poll, entity=video_5,
+                                  criteria="importance", score=0.5)
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 3)
@@ -89,7 +93,6 @@ class PollsRecommendationsApi(TestCase):
         response = self.client.get("/polls/videos/recommendations/?offset=2")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 1)
-
 
     def test_list_videos_with_criteria_weights(self):
         # Default weights: all criterias contribute equally
@@ -120,3 +123,32 @@ class PollsRecommendationsApi(TestCase):
             [r["uid"] for r in resp.data["results"]],
             [self.video_2.uid, self.video_4.uid, self.video_3.uid],
         )
+
+
+class EntityPollDistributorTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.poll_videos = Poll.default_poll()
+
+        self.user = User.objects.create(email="user@test")
+
+        self.entity1 = EntityFactory()
+
+        self.contributor_ratings = ContributorRatingFactory(user=self.user, entity=self.entity1)
+
+    def test_basic_api_call_is_successfull(self):
+        response = self.client.get(
+            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_one_criteria_score_should_have_base_distribution(self):
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings, criteria="reliability", score=5)
+        response = self.client.get(
+            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+
+        self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
+        self.assertEqual(response.data["criteria_scores_distributions"]
+                         [0]["criteria"], "reliability")
+        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

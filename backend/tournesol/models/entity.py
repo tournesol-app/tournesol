@@ -166,7 +166,7 @@ class Entity(models.Model):
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of critera score for the entities"""
 
-        # Fetch data witg QuerySet
+        # Fetch data with QuerySet
         contributor_rating_criteria_score_list = [
             [y for y in x.criteria_scores.all()]
             for x in self.contributorvideoratings.filter(poll=poll)]
