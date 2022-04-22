@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Iterable, Optional, Union
 
 import pandas as pd
 from django.db import transaction
@@ -13,13 +13,18 @@ from tournesol.models import (
 )
 
 
-def save_entity_scores(poll, entity_scores, single_criteria=None):
+def save_entity_scores(
+    poll, entity_scores: Union[pd.DataFrame, Iterable[tuple]], single_criteria=None
+):
     if isinstance(entity_scores, pd.DataFrame):
         scores_iterator = entity_scores[
-            ["entity_id", "criteria", "score", "uncertainty"]
+            ["entity_id", "criteria", "score", "uncertainty", "deviation"]
         ].itertuples(index=False)
     else:
         scores_iterator = entity_scores
+
+    # Support scores iterator without deviation
+    scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
 
     with transaction.atomic():
         scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll)
@@ -28,14 +33,18 @@ def save_entity_scores(poll, entity_scores, single_criteria=None):
         scores_to_delete.delete()
 
         EntityCriteriaScore.objects.bulk_create(
-            EntityCriteriaScore(
-                poll=poll,
-                entity_id=entity_id,
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
-            )
-            for entity_id, criteria, score, uncertainty in scores_iterator
+            (
+                EntityCriteriaScore(
+                    poll=poll,
+                    entity_id=entity_id,
+                    criteria=criteria,
+                    score=score,
+                    uncertainty=uncertainty,
+                    deviation=deviation,
+                )
+                for entity_id, criteria, score, uncertainty, deviation in scores_iterator
+            ),
+            batch_size=10000,
         )
 
 

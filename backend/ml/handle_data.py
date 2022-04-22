@@ -158,12 +158,12 @@ def format_out_glob(glob, crit, uncerts):
                 score: float, uncertainty: float]
     """
     return [
-        [
+        (
             int(vid),
             crit,
             round_loss(score, 2),
             0 if uncerts is None else round_loss(uncerts[vidx], 2),
-        ]
+        )
         for vid, score, vidx in zip(*glob, range(len(glob[0])))
     ]
 
@@ -186,13 +186,13 @@ def format_out_loc(loc, users_ids, crit, uncerts):
         users_ids, vids, scores, range(len(loc[0]))
     ):
         for i in range(len(user_vids)):
-            out = [
+            out = (
                 int(user_id),
                 int(user_vids[i].item()),
                 crit,
                 round_loss(user_scores[i], 2),
                 0 if uncerts is None else round_loss(uncerts[uidx][i], 2),
-            ]
+            )
             l_out.append(out)
 
     return l_out
