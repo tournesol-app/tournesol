@@ -2,12 +2,11 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from tournesol.models import Poll
 from core.models import User
+from tournesol.models import Poll
 
-
-from .factories.entity import VideoCriteriaScoreFactory, VideoFactory, EntityFactory
-from .factories.ratings import ContributorRatingFactory, ContributorRatingCriteriaScoreFactory
+from .factories.entity import EntityFactory, VideoCriteriaScoreFactory, VideoFactory
+from .factories.ratings import ContributorRatingCriteriaScoreFactory, ContributorRatingFactory
 
 
 class PollsApi(TestCase):
