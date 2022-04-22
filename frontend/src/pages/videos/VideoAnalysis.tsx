@@ -4,9 +4,9 @@ import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 
 import Card from 'src/components/Card';
-import VideoCard from 'src/features/videos/VideoCard';
+import VideoCardAnalysis from 'src/features/videos/VideoCardAnalysis';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
-import CriteriaRadarChart from 'src/components/CriteriaRadarChart';
+{/*import CriteriaRadarChart from 'src/components/CriteriaRadarChart';*/}
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 
 const useStyles = makeStyles(() => ({
@@ -27,7 +27,8 @@ function VideoAnalysis() {
 
   return (
     <div className={classes.root}>
-      <VideoCard video={video} />
+     {/* <VideoCard video={video} widthVideo={960} />*/}
+     <VideoCardAnalysis video={video} />
       <Grid
         container
         spacing={2}
@@ -35,9 +36,9 @@ function VideoAnalysis() {
         sx={{ marginTop: 3, marginBottom: 3 }}
       >
         <Grid item xs="auto">
-          <Card>
+          {/* <Card>
             <CriteriaRadarChart video={video} />
-          </Card>
+          </Card> */}
         </Grid>
         <Grid item xs="auto">
           <Card>
