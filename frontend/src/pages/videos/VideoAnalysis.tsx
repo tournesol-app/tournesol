@@ -5,9 +5,9 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
 import Card from 'src/components/Card';
-import VideoCard from 'src/features/videos/VideoCard';
+import VideoCardAnalysis from 'src/features/videos/VideoCardAnalysis';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
-import CriteriaRadarChart from 'src/components/CriteriaRadarChart';
+{/*import CriteriaRadarChart from 'src/components/CriteriaRadarChart';*/}
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 
 const useStyles = makeStyles(() => ({
@@ -28,6 +28,7 @@ function VideoAnalysis() {
 
   return (
     <div className={classes.root}>
+<<<<<<< HEAD
       <VideoCard video={video} />
       <Box
         sx={{
@@ -48,6 +49,20 @@ function VideoAnalysis() {
               <CriteriaBarChart video={video} />
             </Card>
           </Grid>
+=======
+     {/* <VideoCard video={video} widthVideo={960} />*/}
+     <VideoCardAnalysis video={video} />
+      <Grid
+        container
+        spacing={2}
+        justifyContent="center"
+        sx={{ marginTop: 3, marginBottom: 3 }}
+      >
+        <Grid item xs="auto">
+          {/* <Card>
+            <CriteriaRadarChart video={video} />
+          </Card> */}
+>>>>>>> d8ac3bab ([draft] front: Remove radar chart and bigger VideoPlayer on VideoAnalysis (#829))
         </Grid>
       </Box>
     </div>
