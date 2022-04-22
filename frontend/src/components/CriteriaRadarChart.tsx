@@ -63,15 +63,15 @@ const CriteriaRadarChart = ({ video }: Props) => {
         <PolarRadiusAxis domain={domain} axisLine={false} tick={false} />
         <Radar
           dataKey="clippedScore"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.6}
+          stroke="#DFC642"
+          fill="rgb(255,200,0)"
+          fillOpacity={0.3}
         />
         <Radar
           dataKey="clippedPersonalScore"
-          stroke="#82ca9d"
-          fill="#82ca9d"
-          fillOpacity={0.6}
+          stroke="#0a0"
+          fill="#4BB061"
+          fillOpacity={0.3}
         />
       </RadarChart>
     </ResponsiveContainer>
