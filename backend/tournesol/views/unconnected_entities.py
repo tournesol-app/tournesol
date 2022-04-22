@@ -58,8 +58,8 @@ class UnconnectedEntitiesView(
         self._entities_without_comparison_ = set(
             Entity.objects.filter(
                 type=self.poll_from_url.entity_type,
-                comparisons_video_1=None,
-                comparisons_video_2=None).values_list('id', flat=True)
+                comparisons_entity_1=None,
+                comparisons_entity_2=None).values_list('id', flat=True)
             .exclude(id=source_node.id))
 
         for c in comparisons:
