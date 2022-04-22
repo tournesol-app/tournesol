@@ -1,5 +1,3 @@
-from datetime import date
-
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -130,11 +128,13 @@ class EntityPollDistributorTestCase(TestCase):
         self.client = APIClient()
         self.poll_videos = Poll.default_poll()
 
-        self.user = User.objects.create(email="user@test")
+        user1 = User.objects.create_user(username="user1", email="test1@example.test")
+        user2 = User.objects.create_user(username="user2", email="test2@example.test")
 
         self.entity1 = EntityFactory()
 
-        self.contributor_ratings = ContributorRatingFactory(user=self.user, entity=self.entity1)
+        self.contributor_ratings_1 = ContributorRatingFactory(user=user1, entity=self.entity1)
+        self.contributor_ratings_2 = ContributorRatingFactory(user=user2, entity=self.entity1)
 
     def test_basic_api_call_is_successfull(self):
         response = self.client.get(
@@ -143,12 +143,42 @@ class EntityPollDistributorTestCase(TestCase):
 
     def test_one_criteria_score_should_have_base_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings, criteria="reliability", score=5)
+            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=5)
         response = self.client.get(
             f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(response.data["criteria_scores_distributions"]
                          [0]["criteria"], "reliability")
         self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
+
+    def test_two_criteria_score_should_have_right_distribution(self):
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=2)
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
+
+        response = self.client.get(
+            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
+        self.assertEqual(response.data["criteria_scores_distributions"]
+                         [0]["criteria"], "reliability")
+        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][0], 1)
+        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][9], 1)
+        self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), 2)
+        self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 6)
+
+    def test_all_criteria_ratings_should_be_in_distribution(self):
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_1, criteria="better_habits", score=2)
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
+
+        response = self.client.get(
+            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["criteria_scores_distributions"]), 2)
