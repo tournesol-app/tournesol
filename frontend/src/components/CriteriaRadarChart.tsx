@@ -75,7 +75,7 @@ const CriteriaRadarChart = ({ video }: Props) => {
     }));
 
   return (
-    <ResponsiveContainer width="100%" height={500}>
+    <ResponsiveContainer width="100%" aspect={1}>
       <RadarChart outerRadius="80%" data={data}>
         <PolarGrid />
         <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
