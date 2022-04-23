@@ -3,6 +3,7 @@ Entity and closely related models.
 """
 
 import logging
+from collections import defaultdict
 from functools import cached_property
 
 import numpy as np
