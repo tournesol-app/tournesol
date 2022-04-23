@@ -181,3 +181,18 @@ class EntityPollDistributorTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 2)
+
+    def test_value_in_minus_1_plus_1_should_have_default_bins(self):
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_1, criteria="better_habits", score=0.6)
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_2, criteria="better_habits", score=-0.6)
+
+        response = self.client.get(
+            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
+        self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)
+        self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 1)
+

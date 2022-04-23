@@ -166,6 +166,8 @@ class Entity(models.Model):
 
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of critera score for the entities"""
+        min_score_base = -1.0
+        max_score_base = 1.0
 
         # Fetch data with QuerySet
         contributor_rating_criteria_score_list = [
@@ -186,7 +188,12 @@ class Entity(models.Model):
         # Create object
         criteria_distributions = []
         for key, value in scores_dict.items():
-            distribution, bins = np.histogram(np.array(value))
+            if min(value) > min_score_base and max(value) < max_score_base:
+                range = (min_score_base, max_score_base)
+                distribution, bins = np.histogram(np.array(value), range=range)
+            else:
+                distribution, bins = np.histogram(np.array(value))
+
             criteria_distributions.append(CriteraDistributionScore(
                 key, distribution, bins))
         return criteria_distributions
