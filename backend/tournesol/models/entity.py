@@ -169,16 +169,17 @@ class Entity(models.Model):
         # Fetch data with QuerySet
         contributor_rating_criteria_score_list = [
             [y for y in x.criteria_scores.all()]
-            for x in self.contributorvideoratings.filter(poll=poll)]
+            for x in self.contributorvideoratings.filter(poll=poll).prefetch_related(
+                "criteria_scores"
+            )
+        ]
 
         contributor_rating_criteria_score_flatten_list = [
             val for _list in contributor_rating_criteria_score_list for val in _list]
 
         # Format data into dictionnary
-        scores_dict = dict()
+        scores_dict = defaultdict(list)
         for element in contributor_rating_criteria_score_flatten_list:
-            if element.criteria not in scores_dict:
-                scores_dict[element.criteria] = []
             scores_dict[element.criteria].append(element.score)
 
         # Create object
