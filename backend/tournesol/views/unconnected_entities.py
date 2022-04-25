@@ -28,7 +28,6 @@ class UnconnectedEntitiesView(
     permission_classes = [IsAuthenticated]
 
     _already_visited_node_ = set()
-    _entities_without_comparison_ = set()
     _all_connections_ = defaultdict(set)
 
     def get_related_entities(self, entity_id):
