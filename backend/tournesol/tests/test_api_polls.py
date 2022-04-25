@@ -142,7 +142,7 @@ class EntityPollDistributorTestCase(TestCase):
 
     def test_one_criteria_score_should_have_base_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=5)
+            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=0.2)
         response = self.client.get(
             f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
 
@@ -150,11 +150,12 @@ class EntityPollDistributorTestCase(TestCase):
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(response.data["criteria_scores_distributions"]
                          [0]["criteria"], "reliability")
+        #  The sixth position represente 0.2 value with 10 values between [-1,1]
         self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
 
     def test_two_criteria_score_should_have_right_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=2)
+            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=0.2)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
 
@@ -165,10 +166,14 @@ class EntityPollDistributorTestCase(TestCase):
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(response.data["criteria_scores_distributions"]
                          [0]["criteria"], "reliability")
-        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][0], 1)
+        #  The sixth position represente 0.2 value with 10 values between [-1,1]
+        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
+        #  The tenth position represente 1 value with 10 values between [-1,1]
+        # (with value above the range included)
         self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][9], 1)
-        self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), 2)
-        self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 6)
+        # Distribution is always in a range [-1,1]
+        self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)
+        self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 1)
 
     def test_all_criteria_ratings_should_be_in_distribution(self):
         ContributorRatingCriteriaScoreFactory(
@@ -195,4 +200,3 @@ class EntityPollDistributorTestCase(TestCase):
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)
         self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 1)
-
