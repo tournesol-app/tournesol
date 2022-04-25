@@ -60,12 +60,7 @@ class UnconnectedEntitiesView(
         user_related_entities = self.get_related_entities(source_node.id)
         user_all_entities = set()
 
-        # Get all comparison for the user
-        user_comparisons = Comparison.objects.filter(
-            poll=self.poll_from_url, user=self.request.user
-        )
-
-        for comparison in user_comparisons.iterator():
+        for comparison in comparisons:
             user_all_entities.add(comparison.entity_1_id)
             user_all_entities.add(comparison.entity_2_id)
 
