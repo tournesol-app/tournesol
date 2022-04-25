@@ -34,15 +34,9 @@ class EntityType(ABC):
     @classmethod
     def filter_metadata(cls, qst, filters):
         for key, values in filters:
-
             # add several OR expressions if multiple values are provided
             if len(values) > 1:
-                expression = Q(**{"metadata__" + key: values[0]})
-
-                for val in values[1:]:
-                    expression = expression | Q(**{"metadata__" + key: val})
-
-                qst = qst.filter(expression)
+                qst = qst.filter(**{"metadata__" + key + "__in": values})
             else:
                 qst = qst.filter(**{"metadata__" + key: values[0]})
 
