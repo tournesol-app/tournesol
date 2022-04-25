@@ -16,12 +16,7 @@ import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import {
-  Entity,
-  UsersService,
-  VideoRequest,
-  VideoService,
-} from 'src/services/openapi';
+import { Entity, UsersService } from 'src/services/openapi';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 
@@ -49,27 +44,6 @@ const VideoInput = ({ value, onChange }: Props) => {
     inputRef.current?.blur();
     setSuggestionsOpen(false);
   };
-
-  const [options, setOptions] = React.useState<VideoRequest[]>([]);
-  const optionsLoading = options.length === 0;
-
-  React.useEffect(() => {
-    let active = true;
-    if (!optionsLoading) {
-      return undefined;
-    }
-
-    (async () => {
-      const response = await VideoService.videoList({ limit: 10 });
-      if (active) {
-        setOptions(response.results ?? []);
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [optionsLoading]);
 
   const toggleSuggestions = () => setSuggestionsOpen((open) => !open);
 
