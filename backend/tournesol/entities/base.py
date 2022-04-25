@@ -2,7 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.serializers import Serializer
