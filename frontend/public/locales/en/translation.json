@@ -82,6 +82,9 @@
     "autoEntityButton": "Auto",
     "pasteUrlOrVideoId": "Paste URL or Video ID"
   },
+  "tabsBox": {
+    "emptyList": "This list is empty"
+  },
   "stackedCandidatesPaper": {
     "title_one": "Your ranking of the candidates",
     "title_other": "Your ranking of the candidates according to your {{comparisonsNbr}} comparisons",

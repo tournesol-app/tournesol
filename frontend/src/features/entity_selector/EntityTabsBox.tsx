@@ -99,7 +99,7 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
         </ul>
       ) : (
         <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
-          {t('listbox.empty_list')}
+          {t('tabsBox.emptyList')}
         </Typography>
       )}
     </Paper>
