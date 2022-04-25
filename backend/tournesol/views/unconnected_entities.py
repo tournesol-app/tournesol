@@ -3,7 +3,6 @@ API endpoints to show unconnected entities
 """
 from collections import defaultdict
 
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
@@ -55,13 +54,6 @@ class UnconnectedEntitiesView(
             poll=self.poll_from_url, user=self.request.user
         ))
 
-        self._entities_without_comparison_ = set(
-            Entity.objects.filter(
-                type=self.poll_from_url.entity_type,
-                comparisons_entity_1=None,
-                comparisons_entity_2=None).values_list('id', flat=True)
-            .exclude(id=source_node.id))
-
         for c in comparisons:
             self._all_connections_[c.entity_1_id].add(c.entity_2_id)
             self._all_connections_[c.entity_2_id].add(c.entity_1_id)
@@ -79,5 +71,4 @@ class UnconnectedEntitiesView(
             user_all_entities.add(comparison.entity_2_id)
 
         return Entity.objects \
-            .filter(Q(id__in=user_all_entities) | Q(id__in=self._entities_without_comparison_)) \
-            .exclude(id__in=(entity_id for entity_id in user_related_entities))
+            .filter(id__in=user_all_entities - user_related_entities)

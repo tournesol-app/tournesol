@@ -10,7 +10,8 @@ from tournesol.tests.factories.entity import VideoFactory
 
 class SimpleAllConnectedTest(TestCase):
     """
-    TestCase for the unconnected entities API.
+    TestCase for the unconnected entities API. ``
+    In this simple test, all video are connected to the user
     """
 
     def setUp(self):
@@ -101,10 +102,24 @@ class NonConnectedEntityTest(TestCase):
         self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
         # Create video without comparison
-        self.video_source = VideoFactory()
+        video_1 = VideoFactory()
+        video_2 = VideoFactory()
+        video_3 = VideoFactory()
+        video_4 = VideoFactory()
         VideoFactory()
-        VideoFactory()
-        VideoFactory()
+
+        self.video_source = video_1
+
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_2,
+            entity_2=video_3,
+        )
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_3,
+            entity_2=video_4,
+        )
 
     def test_no_link_should_return_all(self):
         self.client.force_authenticate(self.user_1)
@@ -120,7 +135,8 @@ class NonConnectedEntityTest(TestCase):
 
 class AdvancedAllConnectedTest(TestCase):
     """
-    TestCase for the unconnected entities API.
+    TestCase for the unconnected entities API. 
+    In this Advanced test, all video are not necessary connecter to the user
     """
 
     def setUp(self):
