@@ -23,6 +23,7 @@ from .views.ratings import (
     ContributorRatingUpdateAll,
 )
 from .views.stats import StatisticsView
+from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
 from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
@@ -101,6 +102,12 @@ urlpatterns = [
         "users/<str:username>/recommendations/<str:poll_name>",
         PublicContributorRecommendationsView.as_view(),
         name="public_contributor_recommendations",
+    ),
+    # Unconnected entities
+    path(
+        "users/me/unconnected_entities/<str:poll_name>/<str:uid>/",
+        UnconnectedEntitiesView.as_view(),
+        name="unconnected_entities",
     ),
     # User statistics
     path(
