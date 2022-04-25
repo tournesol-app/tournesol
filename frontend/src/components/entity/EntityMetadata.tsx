@@ -60,7 +60,7 @@ export const VideoMetadata = ({
             </Link>
           </Tooltip>
         ) : (
-          { uploader }
+          uploader
         ))}
     </Box>
   );
