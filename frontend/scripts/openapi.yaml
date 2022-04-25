@@ -510,6 +510,24 @@ paths:
               importance: 10
               ignored_criteria: 0
             summary: weights example
+      - in: query
+        name: metadata
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Filter by one or more metadata.
+        style: deepObject
+        examples:
+          SomeFiltersAvailableForVideos.:
+            value:
+              language: fr,pt
+              uploader: kurzgesagtES
+            summary: Some filters available for videos.
+          SomeFiltersAvailableForCandidates.:
+            value:
+              name: A candidate full name
+              youtube_channel_id: channel ID
+            summary: Some filters available for candidates.
       tags:
       - polls
       security:
@@ -750,6 +768,24 @@ paths:
               importance: 10
               ignored_criteria: 0
             summary: weights example
+      - in: query
+        name: metadata
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Filter by one or more metadata.
+        style: deepObject
+        examples:
+          SomeFiltersAvailableForVideos.:
+            value:
+              language: fr,pt
+              uploader: kurzgesagtES
+            summary: Some filters available for videos.
+          SomeFiltersAvailableForCandidates.:
+            value:
+              name: A candidate full name
+              youtube_channel_id: channel ID
+            summary: Some filters available for candidates.
       tags:
       - users
       security:
@@ -1320,6 +1356,24 @@ paths:
               importance: 10
               ignored_criteria: 0
             summary: weights example
+      - in: query
+        name: metadata
+        schema:
+          type: object
+          additionalProperties: {}
+        description: Filter by one or more metadata.
+        style: deepObject
+        examples:
+          SomeFiltersAvailableForVideos.:
+            value:
+              language: fr,pt
+              uploader: kurzgesagtES
+            summary: Some filters available for videos.
+          SomeFiltersAvailableForCandidates.:
+            value:
+              name: A candidate full name
+              youtube_channel_id: channel ID
+            summary: Some filters available for candidates.
       tags:
       - users
       security:
@@ -1331,6 +1385,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedContributorRecommendationsList'
+          description: ''
+  /users/me/unconnected_entities/{poll_name}/{uid}/:
+    get:
+      operationId: users_me_unconnected_entities_list
+      description: Show unconnected entities for the current user
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntityList'
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -1910,16 +2003,18 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        total_score:
-          type: number
-          format: float
+        is_public:
+          type: boolean
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
         tournesol_score:
           type: number
           format: float
@@ -1931,13 +2026,11 @@ components:
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        is_public:
-          type: boolean
-          readOnly: true
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        total_score:
+          type: number
+          format: float
       required:
       - criteria_scores
       - is_public
@@ -2787,8 +2880,6 @@ components:
         email:
           type: string
           format: email
-          title: Email address
-          maxLength: 254
         is_demo:
           type: boolean
           description: Is a demo account?
@@ -2935,8 +3026,6 @@ components:
           type: string
           format: email
           minLength: 1
-          title: Email address
-          maxLength: 254
         is_demo:
           type: boolean
           description: Is a demo account?
