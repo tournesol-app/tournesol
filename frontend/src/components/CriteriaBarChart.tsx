@@ -7,6 +7,7 @@ import {
   Cell,
   Tooltip,
   TooltipProps,
+  ResponsiveContainer,
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -14,10 +15,6 @@ import { displayScore } from 'src/utils/criteria';
 
 const BAR_CHART_CRITERIA_SCORE_MIN = -1;
 const BAR_CHART_CRITERIA_SCORE_MAX = 1;
-
-interface Props {
-  video: VideoSerializerWithCriteria;
-}
 
 const between = (a: number, b: number, x: number | undefined): number => {
   // clips x between a and b
@@ -37,7 +34,15 @@ const criteriaColors: { [criteria: string]: string } = {
   default: '#000000',
 };
 
-const CriteriaBarChart = ({ video }: Props) => {
+const SizedBarChart = ({
+  video,
+  width,
+  height,
+}: {
+  video: VideoSerializerWithCriteria;
+  width?: number;
+  height?: number;
+}) => {
   const { getCriteriaLabel } = useCurrentPoll();
 
   const renderCustomAxisTick = ({
@@ -51,7 +56,7 @@ const CriteriaBarChart = ({ video }: Props) => {
   }) => {
     return (
       <svg
-        x={x - 30 + 250}
+        x={x - 30 + (width || 0) / 2}
         y={y - 30}
         width="60"
         height="60"
@@ -94,7 +99,7 @@ const CriteriaBarChart = ({ video }: Props) => {
     });
 
   return (
-    <BarChart width={500} height={500} layout="vertical" data={data}>
+    <BarChart layout="vertical" width={width} height={height} data={data}>
       <XAxis
         type="number"
         domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
@@ -134,6 +139,20 @@ const CriteriaBarChart = ({ video }: Props) => {
         }}
       />
     </BarChart>
+  );
+};
+
+interface Props {
+  video: VideoSerializerWithCriteria;
+}
+
+const CriteriaBarChart = ({ video }: Props) => {
+  // ResponsiveContainer adds the width and height props to its child component.
+  // We need the width to position the icons.
+  return (
+    <ResponsiveContainer width="100%" aspect={1}>
+      <SizedBarChart video={video} />
+    </ResponsiveContainer>
   );
 };
 
