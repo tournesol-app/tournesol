@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { displayScore } from 'src/utils/criteria';
+import { displayScore, criteriaIcon } from 'src/utils/criteria';
 
 const BAR_CHART_CRITERIA_SCORE_MIN = -1;
 const BAR_CHART_CRITERIA_SCORE_MAX = 1;
@@ -31,7 +31,7 @@ const criteriaColors: { [criteria: string]: string } = {
   backfire_risk: '#D37A80',
   better_habits: '#9DD654',
   entertaining_relaxing: '#D8B36D',
-  default: '#000000',
+  default: '#506ad4',
 };
 
 const SizedBarChart = ({
@@ -54,6 +54,8 @@ const SizedBarChart = ({
     y: number;
     payload: { value: string };
   }) => {
+    const criteriaName = payload.value;
+    const { emoji, imagePath } = criteriaIcon(criteriaName);
     return (
       <svg
         x={x - 30 + (width || 0) / 2}
@@ -64,15 +66,16 @@ const SizedBarChart = ({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <style>{'.emoji { font-size: 42px; fill: black; }'}</style>
         <rect x="0" y="15" width="60" height="30" fill="white" />
-        <image
-          x="9"
-          y="9"
-          width="42"
-          height="42"
-          href={`/svg/${payload.value}.svg`}
-        />
-        <title>{getCriteriaLabel(payload.value)}</title>
+        {emoji ? (
+          <text x="9" y="9" dominantBaseline="hanging" className="emoji">
+            {emoji}
+          </text>
+        ) : (
+          <image x="9" y="9" width="42" height="42" href={imagePath} />
+        )}
+        <title>{getCriteriaLabel(criteriaName)}</title>
       </svg>
     );
   };

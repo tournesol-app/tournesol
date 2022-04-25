@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, SxProps } from '@mui/material';
-import { criteriaToEmoji } from 'src/utils/constants';
+import { criteriaIcon } from 'src/utils/criteria';
 
 const CriteriaIcon = ({
   criteriaName,
@@ -11,12 +11,7 @@ const CriteriaIcon = ({
   width?: string;
   sx?: SxProps;
 }) => {
-  const emoji =
-    criteriaName in criteriaToEmoji ? criteriaToEmoji[criteriaName] : undefined;
-  const imagePath =
-    criteriaName === 'largely_recommended'
-      ? '/svg/LogoSmall.svg'
-      : `/svg/${criteriaName}.svg`;
+  const { emoji, imagePath } = criteriaIcon(criteriaName);
   return (
     <Box
       sx={{
