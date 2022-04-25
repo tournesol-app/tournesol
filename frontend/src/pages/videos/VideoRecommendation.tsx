@@ -10,7 +10,6 @@ import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 import { ContentBox, ContentHeader } from 'src/components';
 import LoaderWrapper from 'src/components/LoaderWrapper';
-import { scrollToTop } from 'src/utils/ui';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
@@ -41,7 +40,6 @@ function VideoRecommendationPage() {
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
-    scrollToTop();
   }
 
   useEffect(() => {

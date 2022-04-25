@@ -39,15 +39,12 @@ class RatingApi(TestCase):
             entity_1=self.video1,
             entity_2=self.video2,
         )
+        ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
         ComparisonFactory(
             user=self.user2,
             entity_1=self.video1,
             entity_2=self.video2,
         )
-        ContributorRatingFactory(user=self.user1, entity=self.video1)
-        ContributorRatingFactory(user=self.user1, entity=self.video2)
-        ContributorRatingFactory(user=self.user2, entity=self.video1)
-        ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
 
     def test_anonymous_cant_create(self):
         """

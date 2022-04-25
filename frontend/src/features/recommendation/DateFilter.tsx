@@ -22,6 +22,7 @@ function DateFilter(props: Props) {
     <ChoicesFilterSection
       title={t('filter.uploadDate')}
       choices={dateChoices}
+      radio
       {...props}
     />
   );

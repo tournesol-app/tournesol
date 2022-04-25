@@ -18,11 +18,14 @@ class PollsApi(TestCase):
         response_data = response.json()
         self.assertEqual(response_data["name"], "videos")
         self.assertEqual(len(response_data["criterias"]), 10)
-        self.assertEqual(response_data["criterias"][0], {
-            "name": "largely_recommended",
-            "label": "Devrait être largement recommandé",
-            "optional": False,
-        })
+        self.assertEqual(
+            response_data["criterias"][0],
+            {
+                "name": "largely_recommended",
+                "label": "Devrait être largement recommandé",
+                "optional": False,
+            },
+        )
 
 
 class PollsRecommendationsApi(TestCase):
@@ -31,21 +34,29 @@ class PollsRecommendationsApi(TestCase):
 
         self.video_1 = VideoFactory(
             metadata__publication_date="2021-01-01",
+            metadata__uploader="_test_uploader_1",
+            metadata__language="es",
             tournesol_score=1.1,
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
             metadata__publication_date="2021-01-02",
+            metadata__uploader="_test_uploader_2",
+            metadata__language="fr",
             tournesol_score=2.2,
             rating_n_contributors=3,
         )
         self.video_3 = VideoFactory(
             metadata__publication_date="2021-01-03",
+            metadata__uploader="_test_uploader_2",
+            metadata__language="pt",
             tournesol_score=3.3,
             rating_n_contributors=4,
         )
         self.video_4 = VideoFactory(
             metadata__publication_date="2021-01-04",
+            metadata__uploader="_test_uploader_3",
+            metadata__language="it",
             tournesol_score=4.4,
             rating_n_contributors=5,
         )
@@ -64,6 +75,8 @@ class PollsRecommendationsApi(TestCase):
         self.assertEqual(results[0]["tournesol_score"], 4.4)
         self.assertEqual(results[1]["tournesol_score"], 3.3)
         self.assertEqual(results[2]["tournesol_score"], 2.2)
+
+        self.assertEqual(results[0]["type"], "video")
 
     def test_ignore_score_attached_to_another_poll(self):
         other_poll = Poll.objects.create(name="other")
@@ -121,6 +134,75 @@ class PollsRecommendationsApi(TestCase):
             [self.video_2.uid, self.video_4.uid, self.video_3.uid],
         )
 
+    def test_anon_can_list_videos_filtered_by_metadata_single(self):
+        """
+        Anonymous users can filter the recommended videos using a single
+        value filter.
+        """
+        resp = self.client.get(
+            "/polls/videos/recommendations/?metadata[uploader]=_test_uploader_2"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [video["uid"] for video in resp.data["results"]],
+            [self.video_3.uid, self.video_2.uid],
+        )
+
+        resp = self.client.get(
+            "/polls/videos/recommendations/?metadata[uploader]=_test_uploader_3"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data["results"][0]["uid"], self.video_4.uid)
+
+        # filtering by an unknown single value metadata must return an empty list
+        resp = self.client.get(
+            "/polls/videos/recommendations/?metadata[uploader]=unknown_uploader"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data["count"], 0)
+        self.assertEqual(resp.data["results"], [])
+
+    def test_anon_can_list_videos_filtered_by_metadata_multiple(self):
+        """
+        Anonymous users can filter the recommended videos using a multiple
+        values filter.
+        """
+        resp = self.client.get("/polls/videos/recommendations/?metadata[language]=fr")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data["results"][0]["uid"], self.video_2.uid)
+
+        resp = self.client.get(
+            "/polls/videos/recommendations/?metadata[language]=fr"
+            "&metadata[language]=pt""&metadata[language]=it"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [video["uid"] for video in resp.data["results"]],
+            [self.video_4.uid, self.video_3.uid, self.video_2.uid],
+        )
+
+    def test_anon_can_list_videos_filtered_by_metadata_mixed(self):
+        """
+        Anonymous users can filter the recommended videos using a combination
+        of single value and multiple values metadata filters.
+        """
+        resp = self.client.get(
+            "/polls/videos/recommendations/?metadata[uploader]=_test_uploader_2"
+            "&metadata[language]=fr&metadata[language]=pt&metadata[language]=it"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [video["uid"] for video in resp.data["results"]],
+            [self.video_3.uid, self.video_2.uid],
+        )
+
+        resp = self.client.get(
+            "/polls/videos/recommendations/?metadata[uploader]=unknown_uploader"
+            "&metadata[language]=fr&metadata[language]=pt&metadata[language]=it"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.data["count"], 0)
+        self.assertEqual(resp.data["results"], [])
 
 class EntityPollDistributorTestCase(TestCase):
     def setUp(self):

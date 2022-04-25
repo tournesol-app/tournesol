@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import datetime
 import os
 from collections import OrderedDict
 from pathlib import Path
@@ -92,17 +93,18 @@ REST_REGISTRATION = {
     "PROFILE_SERIALIZER_CLASS": "core.serializers.user.UserProfileSerializer",
     "VERIFICATION_FROM_EMAIL": "noreply@tournesol.app",
     "REGISTER_VERIFICATION_EMAIL_TEMPLATES": {
-        "body": "accounts/register/body.txt",
+        "html_body": "accounts/register/body.html",
         "subject": "accounts/register/subject.txt",
     },
     "REGISTER_EMAIL_VERIFICATION_EMAIL_TEMPLATES": {
-        "body": "accounts/register_email/body.txt",
+        "html_body": "accounts/register_email/body.html",
         "subject": "accounts/register_email/subject.txt",
     },
     "RESET_PASSWORD_VERIFICATION_EMAIL_TEMPLATES": {
-        "body": "accounts/reset_password/body.txt",
+        "html_body": "accounts/reset_password/body.html",
         "subject": "accounts/reset_password/subject.txt",
     },
+    "VERIFICATION_EMAIL_HTML_TO_TEXT_CONVERTER": "rest_registration.utils.html.convert_html_to_text",
 }
 
 EMAIL_BACKEND = server_settings.get(
@@ -273,25 +275,16 @@ REST_FRAMEWORK = {
         "tournesol.throttling.SustainedUserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        # TOFIX
-        #
-        # `user_burst` has been temporarily set to 1200 because the front end
-        # currently makes 1 request per video in its /comparisons/ page. The
-        # authenticated users are able to make up to 21 requests for each
-        # click on the pagintion buttons, exceeding quickly the 120 limit.
-        #
-        # one option is to refactor the GET /users/me/comparisons/ view to
-        # include the video metadata in the response, allowing the users to
-        # get all comparisons + videos information in only one request
-        # default rates applied to all requests
         "anon_burst": "120/min",
-        "user_burst": "1200/min",
+        "user_burst": "120/min",
         "anon_sustained": "3600/hour",
         "user_sustained": "3600/hour",
         # specific rates for specific parts of the API
         "api_video_post": "50/min",
         "api_users_me_export": "10/min",
         "api_export_comparisons": "10/min",
+        # global throttle on account registrations and password reset
+        "email": server_settings.get("THROTTLE_EMAIL_GLOBAL", "15/min"),
     },
 }
 
@@ -373,9 +366,23 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "default_cache_table",
+        "OPTIONS": {
+            "MAX_ENTRIES": 3000, # default value is 300
+        }
     }
 }
 
 VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
+
+# Configuration of the app `core`
+# See the documentation for the complete description.
+APP_CORE = {
+    "MGMT_DELETE_INACTIVE_USERS_PERIOD":
+        # sync the value with the validity period of the validation emails
+        REST_REGISTRATION.get(
+            "REGISTER_VERIFICATION_PERIOD",
+            datetime.timedelta(days=7)
+        )
+}

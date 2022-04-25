@@ -148,6 +148,20 @@ wfLoadSkin( 'Vector' );
 # End of automatically generated settings.
 # Add more configuration options below.
 
+#
+# start: Authorizations --
+# documentation:
+#   https://www.mediawiki.org/wiki/Manual:User_rights
+#   https://www.mediawiki.org/wiki/Manual:Preventing_access
+
+# disable anonymous editing
+$wgGroupPermissions['*']['edit'] = false;
+# prevent new user registrations except by sysops
+$wgGroupPermissions['*']['createaccount'] = false;
+
+# end: Authorizations --
+#
+
 wfLoadExtension( 'Babel' );
 
 wfLoadExtension( 'cldr' );

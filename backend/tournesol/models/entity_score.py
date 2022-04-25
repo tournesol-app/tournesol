@@ -10,6 +10,7 @@ class EntityCriteriaScore(models.Model):
     The score of an Entity for a given Criteria, in the scope of a given
     Poll.
     """
+
     entity = models.ForeignKey(
         to=Entity,
         on_delete=models.CASCADE,
@@ -20,7 +21,7 @@ class EntityCriteriaScore(models.Model):
         Poll,
         on_delete=models.CASCADE,
         related_name="scores",
-        default=Poll.default_poll_pk
+        default=Poll.default_poll_pk,
     )
     criteria = models.TextField(
         max_length=32,
@@ -36,6 +37,13 @@ class EntityCriteriaScore(models.Model):
         default=0,
         blank=False,
         help_text="Uncertainty about the video's score for the given criteria",
+    )
+    deviation = models.FloatField(
+        default=None,
+        null=True,
+        blank=True,
+        help_text="A measure of deviation between the individual scores and the global 'score'. "
+        "May also be understood as a measure of polarization",
     )
     # TODO: ensure that the following works:
     # quantiles are computed in the Entity.recompute_quantiles(),

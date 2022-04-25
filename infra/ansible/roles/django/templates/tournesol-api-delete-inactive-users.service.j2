@@ -1,0 +1,11 @@
+[Unit]
+Description=Tournesol API inactive users clean-up
+
+[Service]
+Type=oneshot
+User=gunicorn
+Group=gunicorn
+WorkingDirectory=/srv/tournesol-backend
+Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
+ExecStart=/usr/bin/bash -c "source venv/bin/activate && python manage.py delete_inactive_users"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-tournesolapi-deleteinactiveusers-fail-alert.sh; fi"

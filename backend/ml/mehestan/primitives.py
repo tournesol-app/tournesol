@@ -18,6 +18,8 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
         * `x`: partial scores vector
         * `delta`: partial scores uncertainties vector
     """
+    if len(x) == 0:
+        return 0.0
     if isinstance(w, pd.Series):
         w = w.to_numpy()
     if isinstance(x, pd.Series):

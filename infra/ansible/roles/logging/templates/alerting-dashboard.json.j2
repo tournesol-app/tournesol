@@ -57,7 +57,7 @@
         "frequency": "1m",
         "handler": 1,
         "message": "Requests latency too high",
-        "name": "{{ansible_host}} 95th percentile of Request Time alert",
+        "name": "{{domain_name}} 95th percentile of Request Time alert",
         "noDataState": "ok",
         "notifications": []
       },
@@ -204,7 +204,7 @@
         "frequency": "1m",
         "handler": 1,
         "message": "Too many 5xx errors",
-        "name": "{{ansible_host}} Too Many 5xx Errors in Django During the Last Minute",
+        "name": "{{domain_name}} Too Many 5xx Errors in Django During the Last Minute",
         "noDataState": "no_data",
         "notifications": [
           {
@@ -334,7 +334,7 @@
         "frequency": "1m",
         "handler": 1,
         "message": "Free space on RootFS above threshold",
-        "name": "{{ansible_host}} Disk Usage on RootFS alert",
+        "name": "{{domain_name}} Disk Usage on RootFS alert",
         "noDataState": "alerting",
         "notifications": []
       },

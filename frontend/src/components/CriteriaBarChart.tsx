@@ -7,16 +7,14 @@ import {
   Cell,
   Tooltip,
   TooltipProps,
+  ResponsiveContainer,
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { displayScore, criteriaIcon } from 'src/utils/criteria';
 
 const BAR_CHART_CRITERIA_SCORE_MIN = -1;
 const BAR_CHART_CRITERIA_SCORE_MAX = 1;
-
-interface Props {
-  video: VideoSerializerWithCriteria;
-}
 
 const between = (a: number, b: number, x: number | undefined): number => {
   // clips x between a and b
@@ -33,10 +31,18 @@ const criteriaColors: { [criteria: string]: string } = {
   backfire_risk: '#D37A80',
   better_habits: '#9DD654',
   entertaining_relaxing: '#D8B36D',
-  default: '#000000',
+  default: '#506ad4',
 };
 
-const CriteriaBarChart = ({ video }: Props) => {
+const SizedBarChart = ({
+  video,
+  width,
+  height,
+}: {
+  video: VideoSerializerWithCriteria;
+  width?: number;
+  height?: number;
+}) => {
   const { getCriteriaLabel } = useCurrentPoll();
 
   const renderCustomAxisTick = ({
@@ -48,9 +54,11 @@ const CriteriaBarChart = ({ video }: Props) => {
     y: number;
     payload: { value: string };
   }) => {
+    const criteriaName = payload.value;
+    const { emoji, imagePath } = criteriaIcon(criteriaName);
     return (
       <svg
-        x={x - 30 + 250}
+        x={x - 30 + (width || 0) / 2}
         y={y - 30}
         width="60"
         height="60"
@@ -58,15 +66,16 @@ const CriteriaBarChart = ({ video }: Props) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <style>{'.emoji { font-size: 42px; fill: black; }'}</style>
         <rect x="0" y="15" width="60" height="30" fill="white" />
-        <image
-          x="9"
-          y="9"
-          width="42"
-          height="42"
-          href={`/svg/${payload.value}.svg`}
-        />
-        <title>{getCriteriaLabel(payload.value)}</title>
+        {emoji ? (
+          <text x="9" y="9" dominantBaseline="hanging" className="emoji">
+            {emoji}
+          </text>
+        ) : (
+          <image x="9" y="9" width="42" height="42" href={imagePath} />
+        )}
+        <title>{getCriteriaLabel(criteriaName)}</title>
       </svg>
     );
   };
@@ -93,7 +102,7 @@ const CriteriaBarChart = ({ video }: Props) => {
     });
 
   return (
-    <BarChart width={500} height={500} layout="vertical" data={data}>
+    <BarChart layout="vertical" width={width} height={height} data={data}>
       <XAxis
         type="number"
         domain={[BAR_CHART_CRITERIA_SCORE_MIN, BAR_CHART_CRITERIA_SCORE_MAX]}
@@ -125,7 +134,7 @@ const CriteriaBarChart = ({ video }: Props) => {
             const { criteria, score } = payload[0].payload;
             return (
               <pre>
-                {getCriteriaLabel(criteria)}: {(10 * score).toFixed(2)}
+                {getCriteriaLabel(criteria)}: {displayScore(score)}
               </pre>
             );
           }
@@ -133,6 +142,20 @@ const CriteriaBarChart = ({ video }: Props) => {
         }}
       />
     </BarChart>
+  );
+};
+
+interface Props {
+  video: VideoSerializerWithCriteria;
+}
+
+const CriteriaBarChart = ({ video }: Props) => {
+  // ResponsiveContainer adds the width and height props to its child component.
+  // We need the width to position the icons.
+  return (
+    <ResponsiveContainer width="100%" aspect={1}>
+      <SizedBarChart video={video} />
+    </ResponsiveContainer>
   );
 };
 

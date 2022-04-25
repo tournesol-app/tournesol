@@ -12,6 +12,16 @@ from core.models.user import User
 
 RESERVED_USERNAMES = ["me"]
 
+iunique_email = EmailField(
+    validators=[
+        UniqueValidator(
+            queryset=User.objects.all(),
+            message=_("A user with this email address already exists."),
+            lookup="iexact",
+        ),
+    ]
+)
+
 
 def _validate_username(value):
     if value in RESERVED_USERNAMES:
@@ -22,17 +32,22 @@ def _validate_username(value):
 
 
 class RegisterUserSerializer(DefaultRegisterUserSerializer):
+    email = iunique_email
+
     def validate_username(self, value):
         return _validate_username(value)
 
+    def validate_email(self, value):
+        return User.validate_email_unique_with_plus(value)
+
 
 class RegisterEmailSerializer(DefaultRegisterEmailSerializer):
-    email = EmailField(validators=[
-        UniqueValidator(
-            queryset=User.objects.all(),
-            message="A user with this email address already exists."
-        ),
-    ])
+    email = iunique_email
+
+    def validate_email(self, value):
+        return User.validate_email_unique_with_plus(
+            value, self.context["request"].user.username
+        )
 
 
 class UserProfileSerializer(DefaultUserProfileSerializer):
@@ -40,7 +55,7 @@ class UserProfileSerializer(DefaultUserProfileSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        extra_fields = ('is_trusted',)
+        extra_fields = ("is_trusted",)
         self.Meta.fields += extra_fields
         self.Meta.read_only_fields += extra_fields
 

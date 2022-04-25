@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useLocation, useHistory, Link } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 
-import { ContentHeader, Pagination } from 'src/components';
+import { Box, Button, Typography } from '@mui/material';
+import { ContentHeader, LoaderWrapper, Pagination } from 'src/components';
 import ComparisonList from 'src/features/comparisons/ComparisonList';
 import type { Comparison } from 'src/services/openapi';
 import { UsersService } from 'src/services/openapi';
@@ -10,12 +11,12 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 function ComparisonsPage() {
   const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, baseUrl } = useCurrentPoll();
   const [comparisons, setComparisons]: [
     Comparison[] | undefined,
     (l: Comparison[] | undefined) => void
   ] = useState();
-  const [count, setCount] = useState(0);
+  const [comparisonCount, setComparisonCount] = useState(0);
   const history = useHistory();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -43,35 +44,73 @@ function ComparisonsPage() {
             offset,
           }));
       setComparisons(comparisonsRequest.results);
-      setCount(comparisonsRequest.count || 0);
+      setComparisonCount(comparisonsRequest.count || 0);
     };
     process();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
+  const noComparisonMessage = (
+    <>
+      <Typography variant="h5" paragraph>
+        {t('myComparisonsPage.noComparisonYet')}
+      </Typography>
+      <Box display="flex" justifyContent="center">
+        <Button
+          component={Link}
+          to={`${baseUrl}/comparison?series=true`}
+          variant="contained"
+          color="primary"
+        >
+          {t('menu.compare')}
+        </Button>
+      </Box>
+    </>
+  );
+
+  const nbComparisonsMessage = (
+    <Typography variant="subtitle1" sx={{ textAlign: 'center', pt: 2 }}>
+      <Trans
+        t={t}
+        i18nKey="myComparisonsPage.listHasNbComparisons"
+        count={comparisonCount}
+      >
+        You already made <strong>{{ comparisonCount }}</strong> comparison(s).
+      </Trans>
+    </Typography>
+  );
+
   return (
     <>
       <ContentHeader title={t('myComparisonsPage.title')} />
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
-          paddingBottom: 16,
-          paddingTop: 16,
-          gap: 16,
+          py: 2,
+          gap: 2,
         }}
       >
-        <Pagination
-          offset={offset}
-          count={count}
-          onOffsetChange={handleOffsetChange}
-          limit={limit}
-          itemType={t('pagination.comparisons')}
-        />
-        <ComparisonList comparisons={comparisons} />
-      </div>
+        <LoaderWrapper isLoading={comparisons == undefined}>
+          {comparisonCount === 0 ? (
+            noComparisonMessage
+          ) : (
+            <>
+              {nbComparisonsMessage}
+              <ComparisonList comparisons={comparisons} />
+              <Pagination
+                offset={offset}
+                count={comparisonCount}
+                onOffsetChange={handleOffsetChange}
+                limit={limit}
+                itemType={t('pagination.comparisons')}
+              />
+            </>
+          )}
+        </LoaderWrapper>
+      </Box>
     </>
   );
 }

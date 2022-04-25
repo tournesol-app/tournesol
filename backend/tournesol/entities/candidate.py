@@ -2,7 +2,6 @@ from urllib.parse import quote
 
 import requests
 from django.db.models import Q
-from django.utils import timezone
 
 from tournesol.serializers.metadata import CandidateMetadata
 
@@ -36,11 +35,7 @@ class CandidateEntity(EntityType):
             raise AttributeError(f"{self.instance} is not a wikidata entity")
         return self.instance.uid[3:]
 
-    def refresh_metadata(self, force=False, save=True):
-        self.instance.last_metadata_request_at = timezone.now()
-        if save:
-            self.instance.save(update_fields=["last_metadata_request_at"])
-
+    def update_metadata_field(self):
         resp = requests.get(
             WIKIDATA_API_BASE_URL,
             params={
@@ -88,6 +83,3 @@ class CandidateEntity(EntityType):
             metadata["twitter_username"] = get_property_value("P2002")
 
         self.instance.metadata = metadata
-        self.instance.metadata_timestamp = timezone.now()
-        if save:
-            self.instance.save(update_fields=["metadata", "metadata_timestamp"])

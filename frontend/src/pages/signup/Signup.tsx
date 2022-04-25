@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Grid, Button, Typography, Checkbox } from '@mui/material';
 import {
-  Alert,
   ContentHeader,
   ContentBox,
   Lines,
   FormTextField,
 } from 'src/components';
+import { useNotifications } from 'src/hooks';
 import {
   AccountsService,
   ApiError,
@@ -35,6 +35,7 @@ const Signup = () => {
   );
   const [acceptPolicy, setAcceptPolicy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { displayErrorsFrom } = useNotifications();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -49,13 +50,14 @@ const Signup = () => {
       setSuccessEmailAddress(createdUser.email || '');
     } catch (err) {
       setApiError(err as ApiError);
+      if (err?.status !== 400) {
+        displayErrorsFrom(err);
+      }
     }
     setIsLoading(false);
   };
 
   const formError = apiError?.status === 400 ? apiError.body : null;
-  const genericError =
-    apiError?.status !== 400 ? apiError?.message || '' : null;
 
   return (
     <>
@@ -137,7 +139,6 @@ const Signup = () => {
                 </Button>
               </Grid>
             </Grid>
-            {genericError && <Alert>❌ {genericError}</Alert>}
           </form>
         )}
       </ContentBox>

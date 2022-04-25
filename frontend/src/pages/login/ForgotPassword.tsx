@@ -30,7 +30,7 @@ const ResetSuccess = () => {
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
-  const { showErrorAlert } = useNotifications();
+  const { displayErrorsFrom } = useNotifications();
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {
-        showErrorAlert(err?.message || 'Server error');
+        displayErrorsFrom(err);
       }
     } finally {
       setIsLoading(false);

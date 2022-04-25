@@ -189,7 +189,7 @@
     enabled: yes
     daemon_reload: yes
 
-# set up a daily API refresh token clean-up
+# scheduled task: refresh token clean-up
 
 - name: Copy Discord Tournesol API cleartokens failure alert
   template:
@@ -210,6 +210,31 @@
 - name: Enable and start Tournesol API cleartokens timer
   systemd:
     name: tournesol-api-cleartokens.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: inactive users clean-up
+
+- name: Copy Discord Tournesol API delete-inactive-users failure alert
+  template:
+    dest: /usr/local/bin/discord-tournesolapi-deleteinactiveusers-fail-alert.sh
+    src: discord-tournesolapi-deleteinactiveusers-fail-alert.sh.j2
+    mode: a=rx
+
+- name: Copy Tournesol API delete-inactive-users service
+  template:
+    dest: /etc/systemd/system/tournesol-api-delete-inactive-users.service
+    src: tournesol-api-delete-inactive-users.service.j2
+
+- name: Copy Tournesol API delete-inactive-users timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-delete-inactive-users.timer
+    src: tournesol-api-delete-inactive-users.timer.j2
+
+- name: Enable and start Tournesol API delete-inactive-users timer
+  systemd:
+    name: tournesol-api-delete-inactive-users.timer
     state: started
     enabled: yes
     daemon_reload: yes

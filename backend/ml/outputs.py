@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Iterable, Optional, Union
 
+import numpy as np
 import pandas as pd
 from django.db import transaction
 from django.db.models import Q
@@ -8,18 +9,25 @@ from core.models import User
 from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
+    ContributorScaling,
     Entity,
     EntityCriteriaScore,
+    Poll,
 )
 
 
-def save_entity_scores(poll, entity_scores, single_criteria=None):
+def save_entity_scores(
+    poll, entity_scores: Union[pd.DataFrame, Iterable[tuple]], single_criteria=None
+):
     if isinstance(entity_scores, pd.DataFrame):
         scores_iterator = entity_scores[
-            ["entity_id", "criteria", "score", "uncertainty"]
+            ["entity_id", "criteria", "score", "uncertainty", "deviation"]
         ].itertuples(index=False)
     else:
         scores_iterator = entity_scores
+
+    # Support scores iterator without deviation
+    scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
 
     with transaction.atomic():
         scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll)
@@ -28,14 +36,18 @@ def save_entity_scores(poll, entity_scores, single_criteria=None):
         scores_to_delete.delete()
 
         EntityCriteriaScore.objects.bulk_create(
-            EntityCriteriaScore(
-                poll=poll,
-                entity_id=entity_id,
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
-            )
-            for entity_id, criteria, score, uncertainty in scores_iterator
+            (
+                EntityCriteriaScore(
+                    poll=poll,
+                    entity_id=entity_id,
+                    criteria=criteria,
+                    score=score,
+                    uncertainty=uncertainty,
+                    deviation=deviation,
+                )
+                for entity_id, criteria, score, uncertainty, deviation in scores_iterator
+            ),
+            batch_size=10000,
         )
 
 
@@ -58,6 +70,7 @@ def save_contributor_scores(
     contributor_scores,
     trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
+    single_user_id: Optional[int] = None,
 ):
     if isinstance(contributor_scores, pd.DataFrame):
         scores_list = list(
@@ -68,27 +81,40 @@ def save_contributor_scores(
     else:
         scores_list = list(contributor_scores)
 
+    ratings = ContributorRating.objects.filter(poll=poll)
+    if single_user_id is not None:
+        ratings = ratings.filter(user_id=single_user_id)
+
     rating_ids = {
         (contributor_id, video_id): rating_id
-        for rating_id, contributor_id, video_id in ContributorRating.objects.filter(
-            poll=poll
-        ).values_list("id", "user_id", "entity_id")
+        for rating_id, contributor_id, video_id in ratings.values_list(
+            "id", "user_id", "entity_id"
+        )
     }
     ratings_to_create = set(
         (contributor_id, video_id)
         for contributor_id, video_id, _, _, _ in scores_list
         if (contributor_id, video_id) not in rating_ids
     )
-    created_ratings = ContributorRating.objects.bulk_create(
-        ContributorRating(
-            poll_id=poll.pk,
-            entity_id=video_id,
-            user_id=contributor_id,
-        )
-        for contributor_id, video_id in ratings_to_create
+    ContributorRating.objects.bulk_create(
+        (
+            ContributorRating(
+                poll_id=poll.pk,
+                entity_id=entity_id,
+                user_id=contributor_id,
+            )
+            for contributor_id, entity_id in ratings_to_create
+        ),
+        ignore_conflicts=True,
     )
+    # Refresh the `ratings_id` with the newly created `ContributorRating`s.
     rating_ids.update(
-        {(rating.user_id, rating.entity_id): rating.id for rating in created_ratings}
+        {
+            (contributor_id, entity_id): rating_id
+            for rating_id, contributor_id, entity_id in ratings.values_list(
+                "id", "user_id", "entity_id"
+            )
+        }
     )
 
     scores_to_delete = ContributorRatingCriteriaScore.objects.filter(
@@ -103,6 +129,11 @@ def save_contributor_scores(
     if single_criteria is not None:
         scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
 
+    if single_user_id is not None:
+        scores_to_delete = scores_to_delete.filter(
+            contributor_rating__user_id=single_user_id
+        )
+
     with transaction.atomic():
         scores_to_delete.delete()
         ContributorRatingCriteriaScore.objects.bulk_create(
@@ -113,4 +144,30 @@ def save_contributor_scores(
                 uncertainty=uncertainty,
             )
             for contributor_id, video_id, criteria, score, uncertainty in scores_list
+        )
+
+
+def save_contributor_scalings(poll: Poll, criteria: str, scalings: pd.DataFrame):
+    scalings_iterator = (
+        scalings[["s", "delta_s", "tau", "delta_tau"]]
+        .replace({np.nan: None})
+        .itertuples(index=True)
+    )
+
+    with transaction.atomic():
+        ContributorScaling.objects.filter(poll=poll, criteria=criteria).delete()
+        ContributorScaling.objects.bulk_create(
+            (
+                ContributorScaling(
+                    poll=poll,
+                    criteria=criteria,
+                    user_id=user_id,
+                    scale=s,
+                    scale_uncertainty=delta_s,
+                    translation=tau,
+                    translation_uncertainty=delta_tau,
+                )
+                for user_id, s, delta_s, tau, delta_tau in scalings_iterator
+            ),
+            batch_size=10000,
         )

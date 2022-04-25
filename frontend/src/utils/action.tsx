@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { IconButton, Tooltip } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Video, UsersService } from 'src/services/openapi';
@@ -76,4 +77,19 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
     );
   };
   return RemoveFromRateLaterComponnent;
+};
+
+export const AnalysisPageLink = ({ uid }: { uid: string }) => {
+  const { t } = useTranslation();
+  return (
+    <Tooltip title={`${t('actions.analysis')}`} placement="left">
+      <IconButton
+        size="medium"
+        href={`/video/${uid.slice(3)}`}
+        sx={{ color: '#CDCABC' }}
+      >
+        <QueryStatsIcon />
+      </IconButton>
+    </Tooltip>
+  );
 };

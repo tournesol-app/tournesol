@@ -1,11 +1,73 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Stack, Button, Typography } from '@mui/material';
+
+import TitleSection from 'src/pages/home/TitleSection';
+import PollListSection from 'src/pages/home/PollListSection';
+import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 
 const HomePresidentielle2022Page = () => {
+  const { t } = useTranslation();
+  const { isLoggedIn } = useLoginState();
+  const { baseUrl } = useCurrentPoll();
+
   return (
-    <Box display="flex" justifyContent="center" my={2}>
-      <Typography variant="h1">It works!</Typography>
-    </Box>
+    <AlternatingBackgroundColorSectionList
+      secondaryBackground="rgba(0, 0, 0, 0.08)"
+      secondaryColor="#000000"
+    >
+      <TitleSection title={t('home.presidentielle2022.title')}>
+        <Typography paragraph>
+          {t('home.presidentielle2022.tournesolDescription')}
+        </Typography>
+        <Typography paragraph>
+          {t('home.presidentielle2022.whyCompareCandidates')}
+        </Typography>
+        <Typography paragraph>
+          {t('home.presidentielle2022.dataUsage')}
+        </Typography>
+
+        <Stack spacing={2} direction="row">
+          {!isLoggedIn && (
+            <Button
+              size="large"
+              color="inherit"
+              variant="outlined"
+              component={Link}
+              to={`/signup`}
+              sx={{
+                px: 4,
+                textAlign: 'center',
+                fontSize: '120%',
+              }}
+            >
+              {t('home.presidentielle2022.createAccount')}
+            </Button>
+          )}
+          <Button
+            size="large"
+            color="primary"
+            variant="contained"
+            component={Link}
+            to={`${baseUrl}/comparison?series=true`}
+            sx={{
+              px: 4,
+              fontSize: '120%',
+            }}
+          >
+            {t('home.presidentielle2022.start')}
+          </Button>
+        </Stack>
+      </TitleSection>
+      <PollListSection />
+      {/* 
+        <UsageStatsSection /> 
+        TODO: Stats are specific to videos. This component and the api 
+        endpoint may be adapted to work for all Polls.
+      */}
+    </AlternatingBackgroundColorSectionList>
   );
 };
 

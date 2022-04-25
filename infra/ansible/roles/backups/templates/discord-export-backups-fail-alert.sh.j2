@@ -2,7 +2,7 @@
 
 {% if discord_alerting_webhook is defined and discord_alerting_webhook != "" %}
 wget -qO /dev/null \
---post-data='{"content": "Backups export failed for {{ansible_host}}"}' \
+--post-data='{"content": "Backups export failed for {{domain_name}}"}' \
 --header='Content-Type:application/json' \
 '{{discord_alerting_webhook}}?wait=true'
 echo "alert sent"

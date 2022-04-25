@@ -39,6 +39,7 @@ export enum RouteID {
   MyComparisons = 'myComparisons',
   MyComparedItems = 'myComparedItems',
   MyRateLaterList = 'myRateLaterList',
+  MyFeedback = 'myFeedback',
   About = 'about',
 }
 

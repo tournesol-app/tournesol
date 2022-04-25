@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-18 17:28+0100\n"
+"POT-Creation-Date: 2022-04-19 09:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,20 +18,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: core/models/user.py:28
+#: core/models/user.py:29
 msgid "email address"
 msgstr "adresse e-mail"
 
-#: core/serializers/user.py:18
+#: core/models/user.py:278
+msgid ""
+"A user with an email starting with '%(email)s' already exists in this domain."
+msgstr ""
+"Un utilisateur avec un e-mail commençant par '%(email)' existe déjà dans ce "
+"domaine."
+
+#: core/models/user.py:312 core/serializers/user.py:19
+msgid "A user with this email address already exists."
+msgstr "Un utilisateur avec cet e-mail existe déjà."
+
+#: core/serializers/user.py:28
 #, python-format
 msgid "'%(name)s' is a reserved username"
 msgstr "'%(name)s' est un nom d'utilisateur reservé"
 
-#: core/serializers/user.py:20
+#: core/serializers/user.py:30
 msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
 
-#: core/templates/accounts/register/body.txt:2
+#: core/templates/accounts/register/body.html:5
 msgid "Please verify your Tournesol account by clicking on this link:"
 msgstr ""
 "Veuillez confirmer la création de votre compte Tournesol en cliquant sur ce "
@@ -41,7 +52,7 @@ msgstr ""
 msgid "Please verify your Tournesol account"
 msgstr "Activation de votre compte Tournesol"
 
-#: core/templates/accounts/register_email/body.txt:3
+#: core/templates/accounts/register_email/body.html:7
 msgid ""
 "You or someone else requested change to this e-mail for which there is an "
 "existing account.\n"
@@ -57,7 +68,7 @@ msgstr ""
 "\n"
 "Si cette demande ne provient pas de vous, vous pouvez ignorer ce message.\n"
 
-#: core/templates/accounts/register_email/body.txt:9
+#: core/templates/accounts/register_email/body.html:13
 #, python-format
 msgid "You can verify the email %(email)s by clicking on this link:"
 msgstr "Veuillez confirmer l'adresse e-mail %(email)s en cliquant sur ce lien:"
@@ -70,7 +81,7 @@ msgstr "Votre adresse e-mail est déjà utilisée sur Tournesol"
 msgid "Please verify new e-mail on Tournesol"
 msgstr "Veuillez confirmer votre nouvelle adresse e-mail sur Tournesol"
 
-#: core/templates/accounts/reset_password/body.txt:2
+#: core/templates/accounts/reset_password/body.html:6
 msgid "You can reset your password on Tournesol by clicking on this link:"
 msgstr ""
 "Vous pouvez réinitialiser votre mot de passe sur Tournesol en cliquant sur "
