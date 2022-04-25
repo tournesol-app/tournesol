@@ -28,7 +28,7 @@ function VideoAnalysis() {
         <Grid item xs={12}>
           <VideoCard video={video} showPlayer={false} />
         </Grid>
-        <Grid item xs="auto">
+        <Grid item xs={12} md={6}>
           <Card>
             <CriteriaBarChart video={video} />
           </Card>
