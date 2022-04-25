@@ -33,8 +33,7 @@ class EntityType(ABC):
 
     @classmethod
     def filter_metadata(cls, qst, filters):
-        for fil in filters:
-            key, values = fil
+        for key, values in filters:
 
             # add several OR expressions if multiple values are provided
             if len(values) > 1:
