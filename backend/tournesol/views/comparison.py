@@ -9,7 +9,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
 from ml.mehestan.run import update_user_scores
-from tournesol.models import Comparison, ContributorRating
+from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -112,12 +112,6 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_1.inner.refresh_metadata()
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.inner.refresh_metadata()
-        ContributorRating.objects.get_or_create(
-            poll=poll, user=self.request.user, entity=comparison.entity_1
-        )
-        ContributorRating.objects.get_or_create(
-            poll=poll, user=self.request.user, entity=comparison.entity_2
-        )
         if poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
 

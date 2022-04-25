@@ -52,8 +52,8 @@ USAGE:
 
 
 def save_licchavi_data(
-    entity_scores: list[list],
-    contributor_rating_scores: list[list],
+    entity_scores: list[tuple],
+    contributor_rating_scores: list[tuple],
     poll: Poll,
     trusted_only=True,
 ):

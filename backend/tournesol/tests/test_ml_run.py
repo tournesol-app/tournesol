@@ -1,5 +1,5 @@
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 from core.models import EmailDomain
 from core.tests.factories.user import UserFactory
@@ -10,6 +10,7 @@ from tournesol.models import (
     EntityCriteriaScore,
     Poll,
 )
+from tournesol.models.scaling import ContributorScaling
 
 from .factories.comparison import ComparisonCriteriaScoreFactory, VideoFactory
 from .factories.poll import PollWithCriteriasFactory
@@ -119,3 +120,49 @@ class TestMlTrain(TestCase):
         self.video2.refresh_from_db()
         self.assertEqual(self.video1.tournesol_score, -4.1)
         self.assertEqual(self.video2.tournesol_score, 4.1)
+
+
+class TestMlTrainMehestan(TransactionTestCase):
+    def setUp(self) -> None:
+        self.poll = PollWithCriteriasFactory(algorithm="mehestan")
+        self.video1 = VideoFactory()
+        self.video2 = VideoFactory()
+
+        EmailDomain.objects.create(
+            domain="@verified.test",
+            status=EmailDomain.STATUS_ACCEPTED
+        )
+
+        # User 1 will belong to supertrusted users (as staff member)
+        self.user1 = UserFactory(email="user1@verified.test", is_staff=True)
+
+        ComparisonCriteriaScoreFactory.create_batch(10, comparison__user=self.user1, comparison__poll=self.poll)
+
+        for i in range(10):
+            not_trusted_user = UserFactory(email=f"not_trusted_user{i}@not_verified.test")
+            ComparisonCriteriaScoreFactory(
+                comparison__poll=self.poll,
+                comparison__user=not_trusted_user,
+                comparison__entity_1=self.video1,
+                comparison__entity_2=self.video2,
+                score=-10
+            )
+
+    def test_ml_train(self):
+        self.assertEqual(EntityCriteriaScore.objects.count(), 0)
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
+        self.assertEqual(ContributorScaling.objects.count(), 0)
+
+        call_command("ml_train")
+
+        self.assertEqual(EntityCriteriaScore.objects.count(), 22)
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 40)
+        self.assertEqual(ContributorScaling.objects.count(), 11)
+
+        # Check scaling values
+        scaling = ContributorScaling.objects.get(user=self.user1)
+        self.assertAlmostEqual(scaling.scale, 1.0)
+        self.assertAlmostEqual(scaling.translation, 0.0)
+        # Scaling uncertainties are not defined for supertrusted users
+        self.assertIsNone(scaling.scale_uncertainty)
+        self.assertIsNone(scaling.translation_uncertainty)
