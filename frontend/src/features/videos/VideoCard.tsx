@@ -10,6 +10,7 @@ import {
   useMediaQuery,
   useTheme,
   Theme,
+  Stack,
 } from '@mui/material';
 
 import { ActionList, VideoObject } from 'src/utils/types';
@@ -220,7 +221,7 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
           src={`https://i.ytimg.com/vi/${video.video_id}/mqdefault.jpg`}
         />
       </Box>
-      <Box flex={1}>
+      <Stack gap="4px">
         <EntityCardTitle
           uid={video.uid}
           title={video.name}
@@ -233,7 +234,7 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
           publicationDate={video.publication_date}
           withLinks={false}
         />
-      </Box>
+      </Stack>
     </Box>
   );
 };

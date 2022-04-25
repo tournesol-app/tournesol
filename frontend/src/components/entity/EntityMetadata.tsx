@@ -21,14 +21,14 @@ export const VideoMetadata = ({
   return (
     <Box
       sx={{
-        marginBottom: '8px',
         display: 'flex',
         flexWrap: 'wrap',
         alignContent: 'space-between',
         fontFamily: 'Poppins',
         fontSize: '0.8em',
         color: 'neutral.main',
-        gap: '12px',
+        columnGap: '12px',
+        lineHeight: '1.3',
       }}
     >
       {views && (

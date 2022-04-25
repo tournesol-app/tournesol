@@ -1,6 +1,6 @@
-import { VideoService, UsersService } from 'src/services/openapi';
+import { VideoService, UsersService, TypeEnum } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from './constants';
-import { VideoObject } from './types';
+import { RelatedEntityObject, VideoObject } from './types';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -173,3 +173,17 @@ export const convertDurationToClockDuration = (duration: number) => {
   const seconds = roundToTwoDigits(duration % 60);
   return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
 };
+
+export const videoToEntity = (video: VideoObject): RelatedEntityObject => ({
+  uid: video.uid,
+  type: TypeEnum.VIDEO,
+  metadata: {
+    name: video.name,
+    description: video.description,
+    publication_data: video.publication_date,
+    uploader: video.uploader,
+    language: video.language,
+    duration: video.duration,
+    video_id: video.video_id,
+  },
+});
