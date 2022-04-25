@@ -103,8 +103,8 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             queryset = poll.entity_cls.filter_date_gte(queryset, date_gte)
 
         metadata_filters = [
-            (self._metadata_from_filter(key), value)
-            for (key, value) in request.query_params.lists()
+            (self._metadata_from_filter(key), values)
+            for (key, values) in request.query_params.lists()
             if key.startswith("metadata[")
         ]
 
