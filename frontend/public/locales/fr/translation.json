@@ -83,10 +83,14 @@
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
-  "videoSelector": {
+  "entitySelector": {
     "newVideo": "Selectionner une nouvelle vidéo automatiquement",
     "autoEntityButton": "Auto",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
+    "rateLater": "À comparer plus tard",
+    "recentlyCompared": "Comparé recemment",
+    "recommendations": "Recommandations",
+    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "backButton": "Retour"
   },
   "tabsBox": {
     "emptyList": "Cette liste est vide"

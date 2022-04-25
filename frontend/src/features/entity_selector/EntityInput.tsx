@@ -1,13 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { Autocomplete, Box, TextField } from '@mui/material';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import {
+  Autocomplete,
+  Box,
+  TextField,
+  ClickAwayListener,
+  InputAdornment,
+  IconButton,
+  useMediaQuery,
+  Theme,
+} from '@mui/material';
+import { ArrowDropDown } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
-import { Entity } from 'src/services/openapi';
+import {
+  Entity,
+  UsersService,
+  VideoRequest,
+  VideoService,
+} from 'src/services/openapi';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
+import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
+
+import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
+import SelectorPopper from './SelectorPopper';
+import { videoToEntity } from 'src/utils/video';
+import { useLoginState } from 'src/hooks';
 
 interface Props {
   value: string;
@@ -16,25 +37,131 @@ interface Props {
 
 const VideoInput = ({ value, onChange }: Props) => {
   const { t } = useTranslation();
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const inputRef = useRef<HTMLDivElement>(null);
+  const { isLoggedIn } = useLoginState();
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm')
+  );
+
+  const handleOptionClick = (uid: string) => {
+    onChange(uid);
+    inputRef.current?.blur();
+    setSuggestionsOpen(false);
+  };
+
+  const [options, setOptions] = React.useState<VideoRequest[]>([]);
+  const optionsLoading = options.length === 0;
+
+  React.useEffect(() => {
+    let active = true;
+    if (!optionsLoading) {
+      return undefined;
+    }
+
+    (async () => {
+      const response = await VideoService.videoList({ limit: 10 });
+      if (active) {
+        setOptions(response.results ?? []);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [optionsLoading]);
+
+  const toggleSuggestions = () => setSuggestionsOpen((open) => !open);
+
+  const tabs: EntitiesTab[] = useMemo(
+    () => [
+      {
+        name: 'rate-later',
+        label: t('entitySelector.rateLater'),
+        fetch: async () => {
+          const response = await UsersService.usersMeVideoRateLaterList({
+            limit: 20,
+          });
+          return (response.results ?? []).map((rl) => videoToEntity(rl.video));
+        },
+        disabled: !isLoggedIn,
+      },
+      {
+        name: 'recently-compared',
+        label: t('entitySelector.recentlyCompared'),
+        fetch: async () => {
+          const response = await UsersService.usersMeContributorRatingsList({
+            pollName: YOUTUBE_POLL_NAME,
+            limit: 20,
+          });
+          return (response.results ?? []).map((rating) => rating.entity);
+        },
+        disabled: !isLoggedIn,
+      },
+      {
+        name: 'recommendations',
+        label: t('entitySelector.recommendations'),
+        fetch: async () => {
+          const response = await getRecommendedVideos('?date=Month', []);
+          return (response.results ?? []).map(videoToEntity);
+        },
+      },
+    ],
+    [t, isLoggedIn]
+  );
 
   return (
-    <Box>
-      <TextField
-        color="secondary"
-        fullWidth
-        value={value}
-        placeholder={t('videoSelector.pasteUrlOrVideoId')}
-        onChange={(e) => onChange(e.target.value)}
-        variant="standard"
-        InputProps={{
-          sx: (theme) => ({
-            [theme.breakpoints.down('sm')]: {
-              fontSize: '0.7rem',
-            },
-          }),
-        }}
-      />
-    </Box>
+    <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
+      <Box>
+        <TextField
+          color="secondary"
+          fullWidth
+          ref={inputRef}
+          value={value}
+          placeholder={t('entitySelector.pasteUrlOrVideoId')}
+          onChange={(e) => onChange(e.target.value)}
+          variant="standard"
+          onFocus={(e) => {
+            e.target.select();
+          }}
+          onClick={() => {
+            if (!isSmallScreen && !suggestionsOpen) {
+              setSuggestionsOpen(true);
+            }
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={toggleSuggestions}
+                  size="small"
+                  sx={{
+                    ...(suggestionsOpen && {
+                      transform: 'rotate(180deg)',
+                    }),
+                  }}
+                >
+                  <ArrowDropDown />
+                </IconButton>
+              </InputAdornment>
+            ),
+            sx: (theme) => ({
+              [theme.breakpoints.down('sm')]: {
+                fontSize: '0.7rem',
+              },
+            }),
+          }}
+        />
+        <SelectorPopper
+          modal={isSmallScreen}
+          open={suggestionsOpen}
+          anchorEl={inputRef.current}
+          onClose={() => setSuggestionsOpen(false)}
+        >
+          <SelectorListBox tabs={tabs} onSelectEntity={handleOptionClick} />
+        </SelectorPopper>
+      </Box>
+    </ClickAwayListener>
   );
 };
 

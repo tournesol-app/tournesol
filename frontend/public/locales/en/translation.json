@@ -80,10 +80,14 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
-  "videoSelector": {
+  "entitySelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
-    "pasteUrlOrVideoId": "Paste URL or Video ID"
+    "rateLater": "Rate later",
+    "recentlyCompared": "Recently compared",
+    "recommendations": "Recommendations",
+    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "backButton": "Back"
   },
   "tabsBox": {
     "emptyList": "This list is empty"
