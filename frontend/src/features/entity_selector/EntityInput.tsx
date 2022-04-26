@@ -35,13 +35,13 @@ const VideoInput = ({ value, onChange }: Props) => {
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const inputRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useLoginState();
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm')
+  const fullScreenModal = useMediaQuery(
+    (theme: Theme) => `${theme.breakpoints.down('sm')} or (pointer: coarse)`,
+    { noSsr: true }
   );
 
   const handleOptionClick = (uid: string) => {
     onChange(uid);
-    inputRef.current?.blur();
     setSuggestionsOpen(false);
   };
 
@@ -93,13 +93,16 @@ const VideoInput = ({ value, onChange }: Props) => {
           ref={inputRef}
           value={value}
           placeholder={t('entitySelector.pasteUrlOrVideoId')}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            setSuggestionsOpen(false);
+            onChange(e.target.value);
+          }}
           variant="standard"
           onFocus={(e) => {
             e.target.select();
           }}
           onClick={() => {
-            if (!isSmallScreen && !suggestionsOpen) {
+            if (!fullScreenModal && !suggestionsOpen) {
               setSuggestionsOpen(true);
             }
           }}
@@ -127,7 +130,7 @@ const VideoInput = ({ value, onChange }: Props) => {
           }}
         />
         <SelectorPopper
-          modal={isSmallScreen}
+          modal={fullScreenModal}
           open={suggestionsOpen}
           anchorEl={inputRef.current}
           onClose={() => setSuggestionsOpen(false)}
