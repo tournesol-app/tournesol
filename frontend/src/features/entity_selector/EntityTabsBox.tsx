@@ -16,15 +16,9 @@ export interface EntitiesTab {
   disabled?: boolean;
 }
 
-enum SelectorTabs {
-  RateLater = 'rate-later',
-  Recommendations = 'recommendations',
-  RecentlyCompared = 'recently-compared',
-}
-
 const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
   const { t } = useTranslation();
-  const [tabValue, setTabValue] = useState(SelectorTabs.RateLater);
+  const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
 
   useEffect(() => {
@@ -45,10 +39,9 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
           flexGrow: 1,
           listStyleType: 'none',
           p: 0,
+          m: 0,
           overflowY: 'scroll',
           maxHeight: '40vh',
-          marginTop: 1,
-          marginBottom: 0,
           '.MuiModal-root &': {
             maxHeight: 'none',
           },
@@ -56,12 +49,16 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
         li: {
           cursor: 'pointer',
           '&:hover': {
-            bgcolor: 'action.selected',
+            bgcolor: 'grey.50',
+          },
+          '&:first-of-type': {
+            marginTop: 1,
           },
         },
         width: 'min(700px, 100vw)',
         bgcolor: 'white',
         overflow: 'hidden',
+        flexGrow: 1,
       }}
     >
       <Tabs
