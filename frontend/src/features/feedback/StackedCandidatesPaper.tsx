@@ -12,8 +12,6 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 
 import StackedCard from 'src/components/StackedCard';
 import { useCurrentPoll } from 'src/hooks';
@@ -21,7 +19,7 @@ import {
   ContributorRating,
   ContributorRecommendations,
 } from 'src/services/openapi';
-import { criteriaToEmoji } from 'src/utils/constants';
+import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 
 interface Props {
   comparisonsNbr: number;
@@ -40,13 +38,7 @@ const StackedCandidatesPaper = ({
 }: Props) => {
   const [sortingCriteria, setSortingCriteria] = useState('be_president');
   const { t } = useTranslation();
-  const { baseUrl, getCriteriaLabel } = useCurrentPoll();
-
-  const allCriteria = new Set(
-    recommendations.flatMap((entityScore) =>
-      entityScore.criteria_scores.map((cs) => cs.criteria)
-    )
-  );
+  const { baseUrl } = useCurrentPoll();
 
   const nComparisons = Object.fromEntries(
     ratings.map((rating) => {
@@ -131,19 +123,10 @@ const StackedCandidatesPaper = ({
         <>
           <Box pt={2} pb={1} px={2}>
             <Typography>{t('stackedCandidatesPaper.onCriteria')}</Typography>
-            <Select
-              fullWidth
-              color="secondary"
-              size="small"
-              value={sortingCriteria}
-              onChange={(v) => setSortingCriteria(v.target.value)}
-            >
-              {[...allCriteria].map((criteria) => (
-                <MenuItem key={criteria} value={criteria}>
-                  {criteriaToEmoji[criteria]} {getCriteriaLabel(criteria)}
-                </MenuItem>
-              ))}
-            </Select>
+            <CriteriaSelector
+              criteria={sortingCriteria}
+              setCriteria={setSortingCriteria}
+            />
           </Box>
           <Box pt={2} pb={1} px={2}>
             <Typography paragraph variant="body2" textAlign="justify">
