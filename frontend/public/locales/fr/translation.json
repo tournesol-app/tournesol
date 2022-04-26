@@ -1,508 +1,509 @@
 {
-  "components": {
-    "filtersButton": "filtres"
-  },
-  "dialogBox": {
-    "continue": "continuer"
-  },
-  "video": {
-    "labelShowSettings": "Voir les paramètres de cette video",
-    "nbViews": "{{nbViews}} vues",
-    "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
-    "nComparisonsByYou_one": "{{count}} comparaison par vous",
-    "nComparisonsByYou_many": "{{count}} comparaisons par vous",
-    "nComparisonsByYou_other": "{{count}} comparaisons par vous",
-    "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
-    "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
-    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
-    "personalScore": "Score personnel\u00a0: {{score}}",
-    "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
-    "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
-    "nbComparisonsBy_one": "{{count}} comparaison par",
-    "nbComparisonsBy_many": "{{count}} comparaisons par",
-    "nbComparisonsBy_other": "{{count}} comparaisons par",
-    "nbContributors_one": "{{count}} contributeur",
-    "nbContributors_many": "{{count}} contributeurs",
-    "nbContributors_other": "{{count}} contributeurs",
-    "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :"
-  },
-  "pagination": {
-    "videos": "vidéos",
-    "previousButton": "{{limit}} prec.",
-    "showingCounts": "de {{firstShowing}} à {{lastShowing}} sur un total de {{total}} {{itemTypeText}}",
-    "nextButton": "{{limit}} suiv.",
-    "comparisons": "comparaisons"
-  },
-  "stackedCard": {
-    "showAll": "Tout montrer"
-  },
-  "comparison": {
-    "successfullySubmitted": "Comparaison bien enregistrée.",
-    "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
-    "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
-    "removeOptionalCriterias": "Supprimer les critères optionnels",
-    "addOptionalCriterias": "Ajouter les critères optionnels",
-    "changeOneItem": "Changez l'un des deux éléments pour faire une nouvelle comparaison.",
-    "comparisonInPublicDataset": "Cette comparaison fait partie des données publiques.",
-    "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
-    "editComparison": "Modifier la comparaison",
-    "criteriaSkipped": "ignoré",
-    "submitAComparison": "Soumettre une comparaison"
-  },
-  "comparisonHelper": {
-    "hideHelp": "Cacher l'aide",
-    "showHelp": "Montrer l'aide pour les comparaisons"
-  },
-  "comparisons": {
-    "goToComparison": "Voir la comparaison"
-  },
-  "submit": "enregistrer",
-  "videoSelector": {
-    "newVideo": "Selectionner une nouvelle vidéo automatiquement",
-    "autoEntityButton": "Auto",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
-  },
-  "stackedCandidatesPaper": {
-    "title_one": "Votre classement des candidat.e.s",
-    "title_many": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
-    "title_other": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
-    "withNComparisons_one": "avec {{nComp}} comparaison",
-    "withNComparisons_many": "avec {{nComp}} comparaisons",
-    "withNComparisons_other": "avec {{nComp}} comparaisons",
-    "score": "score :",
-    "onCriteria": "Selon le critère :",
-    "ifYourRankingSeemsOff": "Si votre classement vous semble inadéquat, vous pouvez soit modifier vos comparaisons existantes, soit en ajouter de nouvelles en utilisant les boutons ci-dessous.",
-    "seeMyComparisons": "voir mes comparaisons",
-    "addNewComparisons": "ajouter des comparaisons"
-  },
-  "stackedCriteriaPaper": {
-    "score": "Coéfficient de corrélation :",
-    "tweet": {
-      "intro": "J'ai comparé les candidat·e·s à la présidentielle sur @TournesolApp. Selon moi les critères les plus importants pour être président·e sont :",
-      "conclusion": "Vous aussi, allez tester cette manière différente de voter !"
+    "components": {
+        "filtersButton": "filtres"
     },
-    "title": "Les critères les plus corrélés avec qui devrait être président.e selon vous",
-    "ifYourRankingSeemsOff": "Si ces corrélations vous semblent incorrectes, vous pouvez ajouter de nouvelles comparaisons.",
-    "addNewComparisons": "ajouter des comparaisons",
-    "shareOnTwitter": "Partager sur Twitter"
-  },
-  "footer": {
-    "wiki": "wiki",
-    "privacyPolicy": "politique de confidentialité",
-    "donate": "faire un don",
-    "whitePaper": "white paper"
-  },
-  "menu": {
-    "home": "Accueil",
-    "recommendations": "Recommandations",
-    "compare": "Comparer 🌻",
-    "myComparisons": "Mes comparaisons",
-    "comparedItems": "Élements comparés",
-    "myRateLaterList": "À comparer plus tard",
-    "myResults": "Mes résultats",
-    "about": "À propos"
-  },
-  "frame": {
-    "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",
-    "addWebsiteToChromeExceptions": "Sur la page de paramètres concernant les Cookies et autres données des sites (<1>{{page}}</1>), ajoutez <4>{{host}}</4> à la liste des <7>\"Sites autorisés à utiliser des cookies\"</7>.",
-    "findMoreDetailsOnPage": "Plus de détails sur <2>cette page</2>.",
-    "onFirefox": "Sur Firefox",
-    "addWebsiteToFirefoxExceptions": "Sur la page de paramètres Vie Privée et sécurité (<1>{{page}}</1>), dans la section concernant les <3>Cookies et données de sites</3>, cliquez sur <6>Gérer les exceptions</6>.<8></8>Ajoutez alors <10>{{host}}</10> à la liste des sites web qui sont toujours autorisés à utiliser des cookies ou des données de site.",
-    "tournesolInFrameIsCurrentlyBlocked": "L'intégration de Tournesol est bloquée sur ce site",
-    "thirdPartyStorageIsBlockedAddException": "Il semble que l'utilisation d'un stockage intersite est bloquée sur votre navigateur. Afin d'accéder à l'ensemble des fonctionnalités de l'extension Tournesol, y compris l'intégration avec YouTube, vous pouvez simplement ajouter une exception concernant le site <1>{{host}}</1> dans les paramètres de votre navigateur en suivant les instructions ci-dessous.",
-    "storageErrorReloadPageAfterApplyingChanges": "Après avoir appliqué ces changements, veuillez rafraîchir cette page."
-  },
-  "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
-  "logoutButton": "Se déconnecter",
-  "loginButton": "Se connecter",
-  "joinUsButton": "S'inscrire",
-  "topbar": {
-    "search": "Rechercher"
-  },
-  "login": {
-    "loginToTournesol": "Se connecter à Tournesol",
-    "logInAction": "Connexion",
-    "forgotYourPassword": "Mot de passe oublié ?",
-    "noAccountYet": "Pas encore de compte sur Tournesol ?",
-    "signUp": "Inscription"
-  },
-  "usernameOrEmail": "Nom d'utilisateur ou E-mail",
-  "password": "Mot de passe",
-  "ratelater": {
-    "videoIdOrURL": "ID de vidéo ou URL",
-    "addToMyRateLaterList": "Ajouter à ma liste",
-    "errorOccurredCannotAddVideo": "Désolé, une erreur est survenue. Impossible d'ajouter la vidéo à votre liste.",
-    "videoAlreadyInList": "La video est déjà dans votre liste.",
-    "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
-    "addVideosToRateLaterList": "Ajouter des videos à votre liste",
-    "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent ensuite être comparées.",
-    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
-    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos.",
-    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos."
-  },
-  "public": "publique",
-  "private": "privée",
-  "filter": {
-    "filterByVisibility": "Filtrer par visibilité",
-    "includeAllVideos": "Inclure toutes les vidéos",
-    "advanced": "Avancés",
-    "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
-    "ignore": "Ignoré",
-    "notImportant": "Pas important",
-    "neutral": "Neutre",
-    "important": "Important",
-    "crucial": "Crucial",
-    "criteria": "Critères",
-    "today": "Un jour",
-    "thisWeek": "Une semaine",
-    "thisMonth": "Un mois",
-    "thisYear": "Une année",
-    "allTime": "Toujours",
-    "uploadDate": "Mises en ligne depuis",
-    "allLanguages": "Toutes",
-    "language": "Langues",
-    "uploader": "Chaîne"
-  },
-  "ratings": {
-    "allRatingsMarkedPublic": "Toutes vos comparaisons sont maintenant publiques.",
-    "allRatingsMarkedPrivate": "Toutes vos comparaisons sont maintenant privées.",
-    "updateVisibility": "Changer la visibilité",
-    "markAllAsPublic": "Tout marquer comme <1>public</1>",
-    "markAllAsPrivate": "Tout marquer comme <1>privé</1>",
-    "noVideoCorrespondsToFilter": "Aucune vidéo de correspond à votre filtre.",
-    "noVideoComparedYet": "Vous n'avez pas encore comparé de vidéo",
-    "compareVideosButton": "Comparer des vidéos"
-  },
-  "options": "Options",
-  "settings": {
-    "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
-    "deleteYourAccount": "Supprimer votre compte",
-    "emailStatus": "Statut de l'adresse",
-    "emailTrusted": "Fiable",
-    "emailNonTrusted": "Non-fiable",
-    "learnMoreAboutTrustedDomains": "À propos des domaines fiables",
-    "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
-    "currentEmailAddressIs": "Votre adresse actuelle est",
-    "newEmailAddress": "Nouvelle adresse e-mail",
-    "sendVerificationEmail": "Envoyer un courriel de confirmation",
-    "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
-    "downloadFile": "Télécharger le fichier",
-    "prepareExport": "Préparer l'export",
-    "errorOccurredDuringPasswordUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
-    "passwordChangedSuccessfully": "Mot de passe bien mis à jour.",
-    "oldPassword": "Ancien mot de passe",
-    "newPassword": "Nouveau mot de passe",
-    "confirmNewPassword": "Confirmez le mot de passe",
-    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
-    "updatePassword": "Mettre à jour le mot de passe",
-    "errorOccurredWhenRetrievingProfile": "Désolé, une erreur est survenue, impossible de récupérer votre profil.",
-    "errorOccurredWhenUpdatingProfile": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
-    "profileChangedSuccessfully": "Profil bien mis à jour.",
-    "captionUsernameWillAppearInPublicDatabase": "Votre nom d'utilisateur apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
-    "updateProfile": "Mettre à jour le profil",
-    "account": "Compte",
-    "title": "Paramètres",
-    "changeEmailAddress": "Changer d'adresse e-mail",
-    "changePassword": "Changer de mot de passe",
-    "exportAllData": "Télécharger vos données",
-    "deleteAccount": "Supprimer votre compte"
-  },
-  "username": "Nom d'utilisateur",
-  "profile": "Profil",
-  "metrics": {
-    "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
-  },
-  "stats": {
-    "activeUsers": "Utilisateurs actifs",
-    "comparisons": "Comparaisons",
-    "ratedVideos": "Vidéos notées"
-  },
-  "notifications": {
-    "errorOccurred": "Désolé, une erreur est survenue.",
-    "tryAgainLaterOrContactAdministrator": "Veuillez réessayer plus tard, ou contacter un administrateur si le problème persiste.",
-    "nonImpactingError": "Oups, une erreur non impactante est survenue.",
-    "pleaseContactAnAdministratorToReportIssue": "S'il vous plaît, contacter un administrateur pour rapporter le problème.",
-    "youTemporarilyMadeTooManyRequests": "Désolé, vous avez momentanément fait trop de requêtes. Veuillez réessayer plus tard."
-  },
-  "pageNotFound": {
-    "sorryPageNotFound": "Désolé, page non trouvée.",
-    "theRequestedAddressIsErroneous": "L'adresse demandée est erronée, ou n'est simplement plus disponible.",
-    "backToHomePage": "Retourner à l'accueil"
-  },
-  "about": {
-    "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "introductionTournesol": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif. Le but principal de cet outil est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfiques à grande échelle, pour toute l'humanité. Une autre application que nous explorons en ce moment est d'utiliser l'algorithme de Tournesol pour évaluer des candidats à une élection. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
-    "tournesolVision": "Nous souhaitons construire les fondations d'une gouvernance algorithmique robuste et bénéfique à grande l'échelle pour l'information",
-    "tournesolVisionRaisingAwareness": "À travers la sensibilisation à la crise globale de l'information",
-    "tournesolVisionCollaborativePlatform": "À travers le développement d'une plateforme collaborative pour l'évaluation et la recommandation de contenu en ligne",
-    "tournesolVisionResearchOnEthicsOfAlgorithms": "À travers la recherche sur l'éthique des algorithmes en construisant une grande base de données fiable de jugements humains",
-    "whoBuildsTournesol": "Qui fabrique Tournesol ?",
-    "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub ; la description des concepts importants et la vision du projet sont consultables sur notre Wiki ; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
-    "considerHelpingWithDonation": "Si vous en avez la possibilité, n'hésitez pas à nous aider <2>en faisant un don</2>.",
-    "tournesolAssociation": "L'association Tournesol",
-    "tournesolAssociationDetail": "Le projet est porté par l'association à but not lucratif « Association Tournesol » basée à Lausanne en Suisse.",
-    "rolePresident": "Président",
-    "roleTreasurer": "Trésorier",
-    "roleSecretary": "Secrétaire",
-    "roleDeveloper": "Développeur",
-    "partnershipWithEpfl": "Partenariat avec l'EPFL",
-    "partenershipWithEpflDetail": "Aujourd'hui notre contributeur principal est l'École Polytechnique Fédérale de Lausanne (EPFL). En particulier Adrien Matissart, ingénieur de recherche au Laboratoire de Calcul Distribué de la Faculté d'Informatique et Communications de l'EPFL, se consacre pleinement au développement de la plateforme Tournesol. Plusieurs autres chercheurs et chercheuses du laboratoire s'occupent quant à eux de concevoir et d'étudier les algorithmes de Tournesol.",
-    "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
-    "partnershipWithPolyconseilDetail": "Nous sommes également accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Depuis août 2021, Polyconseil met à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous apporte chaque mois des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
-    "partnershipWithKleis": "Partenariat avec Kleis Technology",
-    "partnershipWithKleisDetail": "Nous avons pu bénéficier de l'accompagnement de l'entreprise Kleis Technology pour définir nos processus organisationnels, et adopter des pratiques de développement efficaces. Notre partenariat avec Kleis est extrêmement structurant pour le développement de la vision de notre produit et nous apporte des solutions pour réaliser des choix techniques essentiels. Merci beaucoup !",
-    "openSourceContributions": "Contributions Bénévoles",
-    "openSourceContributors": "Tournesol étant un projet de développement ouvert, nous avons la chance de pouvoir bénéficier des contributions de nombreux volontaires. Consultez la liste de nos merveilleux contributeurs sur <2>leur page Github</2>.",
-    "donateWeAreASmallTeam": "Du fait que notre équipe soit petite, composée majoritairement de bénévole, le développement de Tournesol est plus lent que ce que nous voudrions. Si vous en avez la possibilité, n'hésitez pas à nous aider avec un don en utilisant une des méthodes ci-dessous. Vous pouvez aussi nous aider en participant au developpement de notre code open source. Consultez notre <2>code source libre ici</2>, et rejoignez nous sur <5>Discord</5>.",
-    "donateHowTo": "Comment faire un don ?",
-    "donateWithUtipTitle": "Avec uTip",
-    "donateWithUtipDescription": "uTip est une plateforme de financement participatif. Visitez notre <2>page uTip</2> pour faire un don unique ou recurrent.",
-    "donateByDirectTransferEUR": "Par virement direct en Euros (EUR)",
-    "donateByDirectTransferCHF": "Par virement direct en Francs Suisses (CHF)",
-    "donateByPaypal": "Par PayPal",
-    "publicDatabase": "Base de données publique",
-    "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
-    "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{videoCount}} vidéos. ❤️",
-    "trustedEmailDomains": "Noms de domaine fiables",
-    "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
-    "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
-    "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
-  },
-  "privacyPolicy": {
-    "privacyPolicy": "Politique de confidentialité",
-    "whatPersonalDataTournesolCollectAndWhy": "Quelles données sont collectées par Tournesol et dans quel but ?",
-    "ratings": "Notes",
-    "whyTournesolCollectsRatings": "La plateforme Tournesol est un outil de décision collaboratif. Le fonctionnement de cet outil nécessite de récolter, déduire et agréger les jugements de contributeurs sur la qualité de multiples alternatives. Les alternatives peuvent être par exemple des vidéos en ligne ou bien des candidats à une élection présidentielle. Nous attirons l'attention des utilisateurs sur le fait que les opinions politiques sont des données sensibles et que Tournesol collecte et utilise les données renseignées et sauvegardées sur la plateforme. Pour ce faire, Tournesol collecte les données renseignées par les contributeurs lorsqu'ils comparent des contenus par paire.",
-    "search": "Requêtes",
-    "whyTournesolCollectsSearchQueries": "Y compris quand un contributeur n'est pas connecté à son compte, Tournesol collecte les paramètres des requêtes effectuées, de manière à mieux comprendre le besoin des utilisateurs. Nous pensons que de telles données peuvent avoir un intérêt scientifique et éthique pour construire des systèmes de recommandations plus robustement bénéfiques pour l'humanité.",
-    "contributorProfile": "Profils des contributeurs",
-    "whyTournesolCollectsContributorProfile": "Afin de distinguer l'expertise des différents contributeurs, Tournesol demande à ce que les contributeurs certifient leur adresse e-mail, décrivent leurs domaines de compétences et ajoutent des liens vers leurs profils publics. Nous pensons que de telles données peuvent avoir un intérêt scientifique et éthique pour construire des systèmes de recommandations plus robustement bénéfiques pour l'humanité.",
-    "contactForm": "Formulaire de contact",
-    "thereIsNoContactForm": "Il n'y a actuellement pas de formulaire de contact. Pour nous contacter, veuillez utiliser l'adresse e-mail suivante: tournesol.application(at)gmail.com",
-    "loginInformation": "Données de connexion",
-    "loginInformationDetails": "Si un contributeur possède un compte et se connecte à Tournesol, Tournesol déposera un jeton unique et temporaire afin d'authentifier la session de l'utilisateur auprès des serveurs de Tournesol. Ce jeton ne contient aucune données personnelle, et est utilisé exclusivement à but d'authentification. De plus, Tournesol peut également persister localement sur le navigateur des données relatives aux fonctionnalités de la plateforme, telles que des préférences d'affichage ou de langues. Lors de la déconnexion, les données de connexion sont supprimées. Tournesol n'utilise aucun cookie (ou autre dispositif) à des fins de pistage.",
-    "embeddedContentFromOtherWebsites": "Contenu intégré provenant d'autres sites",
-    "whatDataCollectEmbeddedWebsites": "Tournesol intègre du contenu vidéo provenant de YouTube et des images provenant de Wikimedia. Le contenu intégré d'autres sites se comporte de la même façon que lorsque l'utilisateur visite le site en question. Ces sites tiers sont susceptibles de collecter des données sur l'utilisateur, d'utiliser leurs propres cookies et intégrer des outils tiers à des fins de pistage. Ils peuvent suivre l'interaction des utilisateurs avec le contenu intégré, y compris en les associant à leur compte existant sur ce site externe si l'utilisateur y est connecté.",
-    "whoTournesolSharesUsersNContributorsDataWith": "Avec qui Tournesol partage-t-il les données des utilisateurs et des contributeurs ?",
-    "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol accorde beaucoup d'importance à la protection des données de ses utilisateurs et contributeurs. En particulier, Tournesol sait que les jugements des contributeurs peuvent entrer en conflit avec les opinions de leaders politiques et d'employeurs. Nous souhaitons que des contributeurs puissent exprimer leurs jugements sans craindre de conséquences sur leur vie personnelle. C'est pourquoi Tournesol offre la possibilité de soumettre des jugements de manière privée ou anonyme. Ces jugements privés ne sont partagés avec aucune tierce partie.",
-    "publicData": "Données publiques",
-    "whereGoPublicData": "Les contributeurs sont encouragés, si possible, à comparer des vidéos publiquement. Cela nous permettra de constituer une base de données publique, qui, nous l'espérons, stimulera la recherche menée sur des algorithmes de recommandations plus bénéfiques. Cette base de données comprend le detail des contributions publiques, associées aux noms d'utilisateur des contributeurs qui les ont transmises. Les jugements privés, c'est-à-dire les comparaisons pour lesquelles au moins l'une des vidéos est évaluée en privé par le contributeur, ne sont jamais rendues publiques, et ne sont partagées avec aucune tierce partie. En plus de cela les comparaisons de candidats à une élection présidentielles sont toutes considérés privées et Tournesol n'offre pas la possibilité aux utilisateurs de rendre ces données publiques.",
-    "aggregateData": "Données aggrégées",
-    "whereGoAggregateData": "Nos algorithmes combinent les contributions publiques et privées pour produire des statistiques agrégées, qui sont rendues publiques. Cela est notamment le cas des scores Tournesol associés aux différentes vidéos et candidats à une élection. Tournesol prévoit également de mettre à disposition des statistiques sur des sous-ensembles de contributeurs, pour par exemple déterminer dans quelle mesure une vidéo traitant de physique est considérée comme pédagogique pour les biologistes. Dans ce cas de figure, nous appliquons les principes de confidentialité différentielle, en ajoutant un degré d'aléa au résultat agrégé, de façon à renforcer le caractère privé de ces données. Les statistiques agrégées sont suceptibles d'être utilisées dans des articles de recherche scientifiques sur l'éthique des algorithmes et de l'intelligence artificielle.",
-    "researchPurposes": "Objectifs de recherche",
-    "researchPurposesParagraph": "Nous croyons que les données produites par les contributeurs ont un important intérêt scientifique et éthique pour rendre les systèmes de recommandations plus robustement bénéfiques pour l'humanité. C'est pourquoi les données publiquement transmises par les contributeurs seront aisément téléchargeables par toute personne. Nous espérons que cela pourra stimuler la recherche académique et privée dans le domaine des algorithmes de recommandations robustement bénéfiques.",
-    "howLongTournesolRetainsContributorsData": "Pendant combien de temps les données des contributeurs sont-elles conservées par Tournesol ?",
-    "howLongTournesolRetainsContributorsDataParagraph": "Si un utilisateur fait une recherche ou compare des alternatives, ses données seront conservées indéfiniment et accompagnées de métadonnées. Tournesol fait cela pour accomplir sa mission visant à identifier le contenu de plus haute qualité, que les contributeurs souhaitent voir être promu à grande échelle. Tous les contributeurs peuvent voir, modifier, et supprimer les informations les concernant sur leur page de contribution. Les administrateurs de la plateforme peuvent également accéder et modifier ces informations.",
-    "whatRightsContributorsHaveOverTheirData": "Quels droits les contributeurs possèdent-ils sur leur données ?",
-    "whatRightsContributorsHaveOverTheirDataParagraph": "En accédant à la page de leur compte, les contributeurs peuvent télécharger les données transmises à la plateforme. Ils ont également la possibilité de demander la suppression de toutes les données personnelles les concernant que Tournesol conserve. Cela n'inclut pas les données que Tournesol a l'obligation de conserver pour des raisons administratives, légales ou à des fins de sécurité."
-  },
-  "clickToDownload": "Télécharger",
-  "myComparisonsPage": {
-    "noComparisonYet": "Aucune comparaison",
-    "title": "Mes comparaisons",
-    "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
-    "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
-    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
-  },
-  "home": {
-    "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
-    "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
-    "presidentielle2022": {
-      "title": "Tournesol pour l'élection présidentielle",
-      "tournesolDescription": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif transparent.",
-      "whyCompareCandidates": "Initialement conçue pour la recommendation de vidéos d'utilité publique, Tournesol vous propose aujourd'hui de comparer les candidats à l'élection présidentielle française 2022. Ainsi, vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous exprimez.",
-      "dataUsage": "Les données enregistrées ne seront jamais dévoilées aux autres utilisateurs, et ne serviront  qu'à la recherche dans l'éthique des algorithmes et en intelligence artificielle.",
-      "createAccount": "Créer un compte",
-      "start": "Commencer"
+    "dialogBox": {
+        "continue": "continuer"
     },
-    "contributeTitle": "Participez !",
-    "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
-    "compareButton": "Commencer à comparer",
-    "useOurExtension": "Utilisez l'extension !",
-    "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
-    "getTheExtensionButton": "Installer l'extension",
-    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
-    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
-  },
-  "reset": {
-    "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
-    "resetYourPassword": "Réinitialisez votre mot de passe",
-    "failToSendResetLink": "L'envoi du courriel a échoué.",
-    "sendResetEmailButton": "Envoyer un courriel de réinitialisation",
-    "backToLogIn": "Retourner à la page de connexion",
-    "passwordModifiedSuccessfully": "Mot de passe bien modifié. Vous pouvez maintenant vous connecter.",
-    "newPassword": "Nouveau mot de passe",
-    "confirmNewPassword": "Confirmez votre nouveau mot de passe",
-    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
-    "resetPasswordButton": "Réinitialiser le mot de passe"
-  },
-  "myFeedbackPage": {
-    "title": "Mes résultats",
-    "presidentielle2022": {
-      "welcomeOnYourResultPage": "Bienvenue sur votre page de résultat",
-      "notEnoughComparisons_one": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre une dernière à faire. Cliquez sur le bouton ci-dessous pour continuer.",
-      "notEnoughComparisons_many": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
-      "notEnoughComparisons_other": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
-      "continueComparisons": "Continuer vos comparaisons",
-      "thanksForComparingCandidates": "Merci d'avoir comparé des candidat.es sur notre plateforme",
-      "description": "Vos avis seront pris en compte dans l'évaluation et le classement global des candidat.es. Après les élections nous rendrons public les résultats globaux. Pour protéger la vie privée des contributeurs et contributrices, les résultats individuels resteront privés.",
-      "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat.es.",
-      "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
+    "video": {
+        "labelShowSettings": "Voir les paramètres de cette video",
+        "nbViews": "{{nbViews}} vues",
+        "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+        "nComparisonsByYou_one": "{{count}} comparaison par vous",
+        "nComparisonsByYou_many": "{{count}} comparaisons par vous",
+        "nComparisonsByYou_other": "{{count}} comparaisons par vous",
+        "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
+        "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
+        "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
+        "personalScore": "Score personnel\u00a0: {{score}}",
+        "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
+        "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
+        "nbComparisonsBy_one": "{{count}} comparaison par",
+        "nbComparisonsBy_many": "{{count}} comparaisons par",
+        "nbComparisonsBy_other": "{{count}} comparaisons par",
+        "nbContributors_one": "{{count}} contributeur",
+        "nbContributors_many": "{{count}} contributeurs",
+        "nbContributors_other": "{{count}} contributeurs",
+        "criteriaRatedHigh": "Noté fortement :",
+        "criteriaRatedLow": "Noté faiblement :"
     },
-    "generic": {
-      "whatsNext": "Et maintenant ?",
-      "discoverTournesol": "Découvrez Tournesol"
-    }
-  },
-  "myRateLaterListPage": {
-    "title": "À comparer plus tard"
-  },
-  "signup": {
-    "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
-    "title": "Inscription",
-    "accountCreationFailed": "Création du compte échouée.",
-    "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>."
-  },
-  "emailAddress": "Adresse e-mail",
-  "confirmYourPassword": "Confirmez votre mot de passe",
-  "signUpButton": "S'inscrire",
-  "verify": {
-    "verifyRegistration": "Vérifier l'inscription",
-    "yourAccountIsNowVerified": "Votre compte est maintenant vérifié.",
-    "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse e-mail est maintenant vérifiée.",
-    "verificationFailed": "La vérification a échoué"
-  },
-  "myRatedVideosPage": {
-    "title": "Mes vidéos comparées"
-  },
-  "recommendationsPage": {
-    "title": "Recommandations"
-  },
-  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
-  "actions": {
-    "compareNow": "Comparer !",
-    "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
-    "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
-    "rateLater": "Comparer plus tard",
-    "remove": "Supprimer",
-    "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
-    "analysis": "Analyse détaillée"
-  },
-  "criteriaTooltips": {
-    "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",
-    "international": "Les sujets liés à l'Europe, à la diplomatie internationale, à la defense, au terrorisme et à l'immigration",
-    "education_culture": "Les sujets liés au système éducatif, aux média, à la culture, aux  réseaux sociaux et à l'éthique des algorithmes",
-    "health": "Les sujets liés au système de santé, à la santé mentale, aux sports, à l'éthique de fin de vie, au COVID-19 et aux vaccins",
-    "institutions_democracy": "Les sujets liés à l'organisation de la vie politique, à la démocratie, aux territoires et collectivités, à la fonction publique et à l'Outre-mer",
-    "labour_economy": "Les sujets liés aux emplois, au chômage, au pouvoir d'achat, à la fiscalité, au déficits publiques et la dette",
-    "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration"
-  },
-  "language": {
-    "af": "Afrikaans",
-    "ar": "Arabe",
-    "bg": "Bulgare",
-    "bn": "Bengali",
-    "ca": "Catalan",
-    "cs": "Tchèque",
-    "cy": "Gallois",
-    "da": "Danois",
-    "de": "Allemand",
-    "el": "Grec",
-    "en": "Anglais",
-    "es": "Espagnol",
-    "et": "Estonien",
-    "fa": "Perse",
-    "fi": "Finlandais",
-    "fr": "Français",
-    "gu": "Gujarati",
-    "he": "Hébreu",
-    "hi": "Hindi",
-    "hr": "Croate",
-    "hu": "Hongrois",
-    "id": "Indonésien",
-    "it": "Italien",
-    "ja": "Japonais",
-    "kn": "Kannada",
-    "ko": "Coréen",
-    "lt": "Lituanien",
-    "lv": "Letton",
-    "mk": "Macédonien",
-    "ml": "Malayalam",
-    "mr": "Marathi",
-    "ne": "Népalais",
-    "nl": "Hollandais",
-    "no": "Norvégien",
-    "pa": "Penjabi",
-    "pl": "Polonais",
-    "pt": "Portugais",
-    "ro": "Roumain",
-    "ru": "Russe",
-    "sk": "Slovaque",
-    "sl": "Slovène",
-    "so": "Somali",
-    "sq": "Albanais",
-    "sv": "Suédois",
-    "sw": "Swahili",
-    "ta": "Tamoul",
-    "te": "Télougou",
-    "th": "Thaï",
-    "tl": "Tagalog",
-    "tr": "Turc",
-    "uk": "Ukrainien",
-    "ur": "Ourdou",
-    "vi": "Vietnamien"
-  },
-  "poll": {
-    "presidential2022": "présidentielle FR 2022",
-    "videos": "vidéos",
-    "entityCandidate": "candidat",
-    "entityVideo": "vidéo"
-  },
-  "presidentielle2022": {
-    "dialogs": {
-      "tutorial": {
-        "title1": "Bienvenue dans Tournesol 🌻",
-        "message1": {
-          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de comparaisons.",
-          "p20": "D'abord, déplacez les curseurs bleus et ajustez vos préférences en les positionnant plus ou moins loin, puis enregistrez quand votre choix est fait.",
-          "p30": "Plus votre avis est tranché sur un critère plus le curseur devrait être proche de l'extrémité.",
-          "p40": "Si vous trouvez les candidat.es similaires, le curseur devrait rester proche du centre."
+    "pagination": {
+        "videos": "vidéos",
+        "previousButton": "{{limit}} prec.",
+        "showingCounts": "de {{firstShowing}} à {{lastShowing}} sur un total de {{total}} {{itemTypeText}}",
+        "nextButton": "{{limit}} suiv.",
+        "comparisons": "comparaisons"
+    },
+    "stackedCard": {
+        "showAll": "Tout montrer"
+    },
+    "comparison": {
+        "successfullySubmitted": "Comparaison bien enregistrée.",
+        "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",
+        "itemsAreSimilar": "Ces deux éléments sont très similaires, ce n'est probablement pas une bonne idée de les comparer.",
+        "removeOptionalCriterias": "Supprimer les critères optionnels",
+        "addOptionalCriterias": "Ajouter les critères optionnels",
+        "changeOneItem": "Changez l'un des deux éléments pour faire une nouvelle comparaison.",
+        "comparisonInPublicDataset": "Cette comparaison fait partie des données publiques.",
+        "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
+        "editComparison": "Modifier la comparaison",
+        "criteriaSkipped": "ignoré",
+        "submitAComparison": "Soumettre une comparaison"
+    },
+    "comparisonHelper": {
+        "hideHelp": "Cacher l'aide",
+        "showHelp": "Montrer l'aide pour les comparaisons"
+    },
+    "comparisons": {
+        "goToComparison": "Voir la comparaison"
+    },
+    "submit": "enregistrer",
+    "videoSelector": {
+        "newVideo": "Selectionner une nouvelle vidéo automatiquement",
+        "autoEntityButton": "Auto",
+        "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
+    },
+    "stackedCandidatesPaper": {
+        "title_one": "Votre classement des candidat.e.s",
+        "title_many": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
+        "title_other": "Votre classement des candidat.e.s d'après vos {{comparisonsNbr}} comparaisons",
+        "withNComparisons_one": "avec {{nComp}} comparaison",
+        "withNComparisons_many": "avec {{nComp}} comparaisons",
+        "withNComparisons_other": "avec {{nComp}} comparaisons",
+        "score": "score :",
+        "onCriteria": "Selon le critère :",
+        "ifYourRankingSeemsOff": "Si votre classement vous semble inadéquat, vous pouvez soit modifier vos comparaisons existantes, soit en ajouter de nouvelles en utilisant les boutons ci-dessous.",
+        "seeMyComparisons": "voir mes comparaisons",
+        "addNewComparisons": "ajouter des comparaisons"
+    },
+    "stackedCriteriaPaper": {
+        "score": "Coéfficient de corrélation :",
+        "tweet": {
+            "intro": "J'ai comparé les candidat·e·s à la présidentielle sur @TournesolApp. Selon moi les critères les plus importants pour être président·e sont :",
+            "conclusion": "Vous aussi, allez tester cette manière différente de voter !"
         },
-        "title2": "Bravo !",
-        "message2": {
-          "p10": "Vous avez effectué votre première comparaison 🥳.",
-          "p20": "Notez que vous pouvez choisir vous même les candidat.es. en utilisant les menus déroulants qui se trouvent au dessus de leurs photos."
+        "title": "Les critères les plus corrélés avec qui devrait être président.e selon vous",
+        "ifYourRankingSeemsOff": "Si ces corrélations vous semblent incorrectes, vous pouvez ajouter de nouvelles comparaisons.",
+        "addNewComparisons": "ajouter des comparaisons",
+        "shareOnTwitter": "Partager sur Twitter"
+    },
+    "footer": {
+        "wiki": "wiki",
+        "privacyPolicy": "politique de confidentialité",
+        "donate": "faire un don",
+        "whitePaper": "white paper"
+    },
+    "menu": {
+        "home": "Accueil",
+        "recommendations": "Recommandations",
+        "compare": "Comparer 🌻",
+        "myComparisons": "Mes comparaisons",
+        "comparedItems": "Élements comparés",
+        "myRateLaterList": "À comparer plus tard",
+        "myResults": "Mes résultats",
+        "about": "À propos"
+    },
+    "frame": {
+        "onChromeOrDerivatives": "Sur Chrome, Chromium, ou dérivés",
+        "addWebsiteToChromeExceptions": "Sur la page de paramètres concernant les Cookies et autres données des sites (<1>{{page}}</1>), ajoutez <4>{{host}}</4> à la liste des <7>\"Sites autorisés à utiliser des cookies\"</7>.",
+        "findMoreDetailsOnPage": "Plus de détails sur <2>cette page</2>.",
+        "onFirefox": "Sur Firefox",
+        "addWebsiteToFirefoxExceptions": "Sur la page de paramètres Vie Privée et sécurité (<1>{{page}}</1>), dans la section concernant les <3>Cookies et données de sites</3>, cliquez sur <6>Gérer les exceptions</6>.<8></8>Ajoutez alors <10>{{host}}</10> à la liste des sites web qui sont toujours autorisés à utiliser des cookies ou des données de site.",
+        "tournesolInFrameIsCurrentlyBlocked": "L'intégration de Tournesol est bloquée sur ce site",
+        "thirdPartyStorageIsBlockedAddException": "Il semble que l'utilisation d'un stockage intersite est bloquée sur votre navigateur. Afin d'accéder à l'ensemble des fonctionnalités de l'extension Tournesol, y compris l'intégration avec YouTube, vous pouvez simplement ajouter une exception concernant le site <1>{{host}}</1> dans les paramètres de votre navigateur en suivant les instructions ci-dessous.",
+        "storageErrorReloadPageAfterApplyingChanges": "Après avoir appliqué ces changements, veuillez rafraîchir cette page."
+    },
+    "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
+    "logoutButton": "Se déconnecter",
+    "loginButton": "Se connecter",
+    "joinUsButton": "S'inscrire",
+    "topbar": {
+        "search": "Rechercher"
+    },
+    "login": {
+        "loginToTournesol": "Se connecter à Tournesol",
+        "logInAction": "Connexion",
+        "forgotYourPassword": "Mot de passe oublié ?",
+        "noAccountYet": "Pas encore de compte sur Tournesol ?",
+        "signUp": "Inscription"
+    },
+    "usernameOrEmail": "Nom d'utilisateur ou E-mail",
+    "password": "Mot de passe",
+    "ratelater": {
+        "videoIdOrURL": "ID de vidéo ou URL",
+        "addToMyRateLaterList": "Ajouter à ma liste",
+        "errorOccurredCannotAddVideo": "Désolé, une erreur est survenue. Impossible d'ajouter la vidéo à votre liste.",
+        "videoAlreadyInList": "La video est déjà dans votre liste.",
+        "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
+        "addVideosToRateLaterList": "Ajouter des videos à votre liste",
+        "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent ensuite être comparées.",
+        "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
+        "listHasNbVideos_many": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos.",
+        "listHasNbVideos_other": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos."
+    },
+    "public": "publique",
+    "private": "privée",
+    "filter": {
+        "filterByVisibility": "Filtrer par visibilité",
+        "includeAllVideos": "Inclure toutes les vidéos",
+        "advanced": "Avancés",
+        "unsafeTooltip": "Afficher aussi les vidéos avec peu de contributeurs et les vidéos avec des scores négatifs.",
+        "ignore": "Ignoré",
+        "notImportant": "Pas important",
+        "neutral": "Neutre",
+        "important": "Important",
+        "crucial": "Crucial",
+        "criteria": "Critères",
+        "today": "Un jour",
+        "thisWeek": "Une semaine",
+        "thisMonth": "Un mois",
+        "thisYear": "Une année",
+        "allTime": "Toujours",
+        "uploadDate": "Mises en ligne depuis",
+        "allLanguages": "Toutes",
+        "language": "Langues",
+        "uploader": "Chaîne",
+        "multipleCriteria": "Plusieurs critères"
+    },
+    "ratings": {
+        "allRatingsMarkedPublic": "Toutes vos comparaisons sont maintenant publiques.",
+        "allRatingsMarkedPrivate": "Toutes vos comparaisons sont maintenant privées.",
+        "updateVisibility": "Changer la visibilité",
+        "markAllAsPublic": "Tout marquer comme <1>public</1>",
+        "markAllAsPrivate": "Tout marquer comme <1>privé</1>",
+        "noVideoCorrespondsToFilter": "Aucune vidéo de correspond à votre filtre.",
+        "noVideoComparedYet": "Vous n'avez pas encore comparé de vidéo",
+        "compareVideosButton": "Comparer des vidéos"
+    },
+    "options": "Options",
+    "settings": {
+        "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
+        "deleteYourAccount": "Supprimer votre compte",
+        "emailStatus": "Statut de l'adresse",
+        "emailTrusted": "Fiable",
+        "emailNonTrusted": "Non-fiable",
+        "learnMoreAboutTrustedDomains": "À propos des domaines fiables",
+        "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
+        "currentEmailAddressIs": "Votre adresse actuelle est",
+        "newEmailAddress": "Nouvelle adresse e-mail",
+        "sendVerificationEmail": "Envoyer un courriel de confirmation",
+        "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
+        "downloadFile": "Télécharger le fichier",
+        "prepareExport": "Préparer l'export",
+        "errorOccurredDuringPasswordUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
+        "passwordChangedSuccessfully": "Mot de passe bien mis à jour.",
+        "oldPassword": "Ancien mot de passe",
+        "newPassword": "Nouveau mot de passe",
+        "confirmNewPassword": "Confirmez le mot de passe",
+        "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+        "updatePassword": "Mettre à jour le mot de passe",
+        "errorOccurredWhenRetrievingProfile": "Désolé, une erreur est survenue, impossible de récupérer votre profil.",
+        "errorOccurredWhenUpdatingProfile": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
+        "profileChangedSuccessfully": "Profil bien mis à jour.",
+        "captionUsernameWillAppearInPublicDatabase": "Votre nom d'utilisateur apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
+        "updateProfile": "Mettre à jour le profil",
+        "account": "Compte",
+        "title": "Paramètres",
+        "changeEmailAddress": "Changer d'adresse e-mail",
+        "changePassword": "Changer de mot de passe",
+        "exportAllData": "Télécharger vos données",
+        "deleteAccount": "Supprimer votre compte"
+    },
+    "username": "Nom d'utilisateur",
+    "profile": "Profil",
+    "metrics": {
+        "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
+    },
+    "stats": {
+        "activeUsers": "Utilisateurs actifs",
+        "comparisons": "Comparaisons",
+        "ratedVideos": "Vidéos notées"
+    },
+    "notifications": {
+        "errorOccurred": "Désolé, une erreur est survenue.",
+        "tryAgainLaterOrContactAdministrator": "Veuillez réessayer plus tard, ou contacter un administrateur si le problème persiste.",
+        "nonImpactingError": "Oups, une erreur non impactante est survenue.",
+        "pleaseContactAnAdministratorToReportIssue": "S'il vous plaît, contacter un administrateur pour rapporter le problème.",
+        "youTemporarilyMadeTooManyRequests": "Désolé, vous avez momentanément fait trop de requêtes. Veuillez réessayer plus tard."
+    },
+    "pageNotFound": {
+        "sorryPageNotFound": "Désolé, page non trouvée.",
+        "theRequestedAddressIsErroneous": "L'adresse demandée est erronée, ou n'est simplement plus disponible.",
+        "backToHomePage": "Retourner à l'accueil"
+    },
+    "about": {
+        "whatIsTournesol": "Qu'est-ce que Tournesol ?",
+        "introductionTournesol": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif. Le but principal de cet outil est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfiques à grande échelle, pour toute l'humanité. Une autre application que nous explorons en ce moment est d'utiliser l'algorithme de Tournesol pour évaluer des candidats à une élection. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>wiki</5>, notre <8>dépôt GitHub</8>, notre <11>serveur Discord</11>, et notre <14>page LinkedIn </14>.",
+        "tournesolVision": "Nous souhaitons construire les fondations d'une gouvernance algorithmique robuste et bénéfique à grande l'échelle pour l'information",
+        "tournesolVisionRaisingAwareness": "À travers la sensibilisation à la crise globale de l'information",
+        "tournesolVisionCollaborativePlatform": "À travers le développement d'une plateforme collaborative pour l'évaluation et la recommandation de contenu en ligne",
+        "tournesolVisionResearchOnEthicsOfAlgorithms": "À travers la recherche sur l'éthique des algorithmes en construisant une grande base de données fiable de jugements humains",
+        "whoBuildsTournesol": "Qui fabrique Tournesol ?",
+        "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub ; la description des concepts importants et la vision du projet sont consultables sur notre Wiki ; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
+        "considerHelpingWithDonation": "Si vous en avez la possibilité, n'hésitez pas à nous aider <2>en faisant un don</2>.",
+        "tournesolAssociation": "L'association Tournesol",
+        "tournesolAssociationDetail": "Le projet est porté par l'association à but not lucratif « Association Tournesol » basée à Lausanne en Suisse.",
+        "rolePresident": "Président",
+        "roleTreasurer": "Trésorier",
+        "roleSecretary": "Secrétaire",
+        "roleDeveloper": "Développeur",
+        "partnershipWithEpfl": "Partenariat avec l'EPFL",
+        "partenershipWithEpflDetail": "Aujourd'hui notre contributeur principal est l'École Polytechnique Fédérale de Lausanne (EPFL). En particulier Adrien Matissart, ingénieur de recherche au Laboratoire de Calcul Distribué de la Faculté d'Informatique et Communications de l'EPFL, se consacre pleinement au développement de la plateforme Tournesol. Plusieurs autres chercheurs et chercheuses du laboratoire s'occupent quant à eux de concevoir et d'étudier les algorithmes de Tournesol.",
+        "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
+        "partnershipWithPolyconseilDetail": "Nous sommes également accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Depuis août 2021, Polyconseil met à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous apporte chaque mois des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
+        "partnershipWithKleis": "Partenariat avec Kleis Technology",
+        "partnershipWithKleisDetail": "Nous avons pu bénéficier de l'accompagnement de l'entreprise Kleis Technology pour définir nos processus organisationnels, et adopter des pratiques de développement efficaces. Notre partenariat avec Kleis est extrêmement structurant pour le développement de la vision de notre produit et nous apporte des solutions pour réaliser des choix techniques essentiels. Merci beaucoup !",
+        "openSourceContributions": "Contributions Bénévoles",
+        "openSourceContributors": "Tournesol étant un projet de développement ouvert, nous avons la chance de pouvoir bénéficier des contributions de nombreux volontaires. Consultez la liste de nos merveilleux contributeurs sur <2>leur page Github</2>.",
+        "donateWeAreASmallTeam": "Du fait que notre équipe soit petite, composée majoritairement de bénévole, le développement de Tournesol est plus lent que ce que nous voudrions. Si vous en avez la possibilité, n'hésitez pas à nous aider avec un don en utilisant une des méthodes ci-dessous. Vous pouvez aussi nous aider en participant au developpement de notre code open source. Consultez notre <2>code source libre ici</2>, et rejoignez nous sur <5>Discord</5>.",
+        "donateHowTo": "Comment faire un don ?",
+        "donateWithUtipTitle": "Avec uTip",
+        "donateWithUtipDescription": "uTip est une plateforme de financement participatif. Visitez notre <2>page uTip</2> pour faire un don unique ou recurrent.",
+        "donateByDirectTransferEUR": "Par virement direct en Euros (EUR)",
+        "donateByDirectTransferCHF": "Par virement direct en Francs Suisses (CHF)",
+        "donateByPaypal": "Par PayPal",
+        "publicDatabase": "Base de données publique",
+        "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
+        "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{videoCount}} vidéos. ❤️",
+        "trustedEmailDomains": "Noms de domaine fiables",
+        "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
+        "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
+        "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
+    },
+    "privacyPolicy": {
+        "privacyPolicy": "Politique de confidentialité",
+        "whatPersonalDataTournesolCollectAndWhy": "Quelles données sont collectées par Tournesol et dans quel but ?",
+        "ratings": "Notes",
+        "whyTournesolCollectsRatings": "La plateforme Tournesol est un outil de décision collaboratif. Le fonctionnement de cet outil nécessite de récolter, déduire et agréger les jugements de contributeurs sur la qualité de multiples alternatives. Les alternatives peuvent être par exemple des vidéos en ligne ou bien des candidats à une élection présidentielle. Nous attirons l'attention des utilisateurs sur le fait que les opinions politiques sont des données sensibles et que Tournesol collecte et utilise les données renseignées et sauvegardées sur la plateforme. Pour ce faire, Tournesol collecte les données renseignées par les contributeurs lorsqu'ils comparent des contenus par paire.",
+        "search": "Requêtes",
+        "whyTournesolCollectsSearchQueries": "Y compris quand un contributeur n'est pas connecté à son compte, Tournesol collecte les paramètres des requêtes effectuées, de manière à mieux comprendre le besoin des utilisateurs. Nous pensons que de telles données peuvent avoir un intérêt scientifique et éthique pour construire des systèmes de recommandations plus robustement bénéfiques pour l'humanité.",
+        "contributorProfile": "Profils des contributeurs",
+        "whyTournesolCollectsContributorProfile": "Afin de distinguer l'expertise des différents contributeurs, Tournesol demande à ce que les contributeurs certifient leur adresse e-mail, décrivent leurs domaines de compétences et ajoutent des liens vers leurs profils publics. Nous pensons que de telles données peuvent avoir un intérêt scientifique et éthique pour construire des systèmes de recommandations plus robustement bénéfiques pour l'humanité.",
+        "contactForm": "Formulaire de contact",
+        "thereIsNoContactForm": "Il n'y a actuellement pas de formulaire de contact. Pour nous contacter, veuillez utiliser l'adresse e-mail suivante: tournesol.application(at)gmail.com",
+        "loginInformation": "Données de connexion",
+        "loginInformationDetails": "Si un contributeur possède un compte et se connecte à Tournesol, Tournesol déposera un jeton unique et temporaire afin d'authentifier la session de l'utilisateur auprès des serveurs de Tournesol. Ce jeton ne contient aucune données personnelle, et est utilisé exclusivement à but d'authentification. De plus, Tournesol peut également persister localement sur le navigateur des données relatives aux fonctionnalités de la plateforme, telles que des préférences d'affichage ou de langues. Lors de la déconnexion, les données de connexion sont supprimées. Tournesol n'utilise aucun cookie (ou autre dispositif) à des fins de pistage.",
+        "embeddedContentFromOtherWebsites": "Contenu intégré provenant d'autres sites",
+        "whatDataCollectEmbeddedWebsites": "Tournesol intègre du contenu vidéo provenant de YouTube et des images provenant de Wikimedia. Le contenu intégré d'autres sites se comporte de la même façon que lorsque l'utilisateur visite le site en question. Ces sites tiers sont susceptibles de collecter des données sur l'utilisateur, d'utiliser leurs propres cookies et intégrer des outils tiers à des fins de pistage. Ils peuvent suivre l'interaction des utilisateurs avec le contenu intégré, y compris en les associant à leur compte existant sur ce site externe si l'utilisateur y est connecté.",
+        "whoTournesolSharesUsersNContributorsDataWith": "Avec qui Tournesol partage-t-il les données des utilisateurs et des contributeurs ?",
+        "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol accorde beaucoup d'importance à la protection des données de ses utilisateurs et contributeurs. En particulier, Tournesol sait que les jugements des contributeurs peuvent entrer en conflit avec les opinions de leaders politiques et d'employeurs. Nous souhaitons que des contributeurs puissent exprimer leurs jugements sans craindre de conséquences sur leur vie personnelle. C'est pourquoi Tournesol offre la possibilité de soumettre des jugements de manière privée ou anonyme. Ces jugements privés ne sont partagés avec aucune tierce partie.",
+        "publicData": "Données publiques",
+        "whereGoPublicData": "Les contributeurs sont encouragés, si possible, à comparer des vidéos publiquement. Cela nous permettra de constituer une base de données publique, qui, nous l'espérons, stimulera la recherche menée sur des algorithmes de recommandations plus bénéfiques. Cette base de données comprend le detail des contributions publiques, associées aux noms d'utilisateur des contributeurs qui les ont transmises. Les jugements privés, c'est-à-dire les comparaisons pour lesquelles au moins l'une des vidéos est évaluée en privé par le contributeur, ne sont jamais rendues publiques, et ne sont partagées avec aucune tierce partie. En plus de cela les comparaisons de candidats à une élection présidentielles sont toutes considérés privées et Tournesol n'offre pas la possibilité aux utilisateurs de rendre ces données publiques.",
+        "aggregateData": "Données aggrégées",
+        "whereGoAggregateData": "Nos algorithmes combinent les contributions publiques et privées pour produire des statistiques agrégées, qui sont rendues publiques. Cela est notamment le cas des scores Tournesol associés aux différentes vidéos et candidats à une élection. Tournesol prévoit également de mettre à disposition des statistiques sur des sous-ensembles de contributeurs, pour par exemple déterminer dans quelle mesure une vidéo traitant de physique est considérée comme pédagogique pour les biologistes. Dans ce cas de figure, nous appliquons les principes de confidentialité différentielle, en ajoutant un degré d'aléa au résultat agrégé, de façon à renforcer le caractère privé de ces données. Les statistiques agrégées sont suceptibles d'être utilisées dans des articles de recherche scientifiques sur l'éthique des algorithmes et de l'intelligence artificielle.",
+        "researchPurposes": "Objectifs de recherche",
+        "researchPurposesParagraph": "Nous croyons que les données produites par les contributeurs ont un important intérêt scientifique et éthique pour rendre les systèmes de recommandations plus robustement bénéfiques pour l'humanité. C'est pourquoi les données publiquement transmises par les contributeurs seront aisément téléchargeables par toute personne. Nous espérons que cela pourra stimuler la recherche académique et privée dans le domaine des algorithmes de recommandations robustement bénéfiques.",
+        "howLongTournesolRetainsContributorsData": "Pendant combien de temps les données des contributeurs sont-elles conservées par Tournesol ?",
+        "howLongTournesolRetainsContributorsDataParagraph": "Si un utilisateur fait une recherche ou compare des alternatives, ses données seront conservées indéfiniment et accompagnées de métadonnées. Tournesol fait cela pour accomplir sa mission visant à identifier le contenu de plus haute qualité, que les contributeurs souhaitent voir être promu à grande échelle. Tous les contributeurs peuvent voir, modifier, et supprimer les informations les concernant sur leur page de contribution. Les administrateurs de la plateforme peuvent également accéder et modifier ces informations.",
+        "whatRightsContributorsHaveOverTheirData": "Quels droits les contributeurs possèdent-ils sur leur données ?",
+        "whatRightsContributorsHaveOverTheirDataParagraph": "En accédant à la page de leur compte, les contributeurs peuvent télécharger les données transmises à la plateforme. Ils ont également la possibilité de demander la suppression de toutes les données personnelles les concernant que Tournesol conserve. Cela n'inclut pas les données que Tournesol a l'obligation de conserver pour des raisons administratives, légales ou à des fins de sécurité."
+    },
+    "clickToDownload": "Télécharger",
+    "myComparisonsPage": {
+        "noComparisonYet": "Aucune comparaison",
+        "title": "Mes comparaisons",
+        "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
+        "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
+        "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
+    },
+    "home": {
+        "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
+        "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
+        "presidentielle2022": {
+            "title": "Tournesol pour l'élection présidentielle",
+            "tournesolDescription": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif transparent.",
+            "whyCompareCandidates": "Initialement conçue pour la recommendation de vidéos d'utilité publique, Tournesol vous propose aujourd'hui de comparer les candidats à l'élection présidentielle française 2022. Ainsi, vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous exprimez.",
+            "dataUsage": "Les données enregistrées ne seront jamais dévoilées aux autres utilisateurs, et ne serviront  qu'à la recherche dans l'éthique des algorithmes et en intelligence artificielle.",
+            "createAccount": "Créer un compte",
+            "start": "Commencer"
         },
-        "title3": "Un conseil",
-        "message3": {
-          "p10": "Ne vous en faites pas, ce n'est pas grave si la position des curseurs n'est pas exacte.",
-          "p20": "Il vous sera possible par la suite de modifier toutes vos comparaisons à votre rythme."
+        "contributeTitle": "Participez !",
+        "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
+        "compareButton": "Commencer à comparer",
+        "useOurExtension": "Utilisez l'extension !",
+        "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
+        "getTheExtensionButton": "Installer l'extension",
+        "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
+        "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
+        "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
+    },
+    "reset": {
+        "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
+        "resetYourPassword": "Réinitialisez votre mot de passe",
+        "failToSendResetLink": "L'envoi du courriel a échoué.",
+        "sendResetEmailButton": "Envoyer un courriel de réinitialisation",
+        "backToLogIn": "Retourner à la page de connexion",
+        "passwordModifiedSuccessfully": "Mot de passe bien modifié. Vous pouvez maintenant vous connecter.",
+        "newPassword": "Nouveau mot de passe",
+        "confirmNewPassword": "Confirmez votre nouveau mot de passe",
+        "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+        "resetPasswordButton": "Réinitialiser le mot de passe"
+    },
+    "myFeedbackPage": {
+        "title": "Mes résultats",
+        "presidentielle2022": {
+            "welcomeOnYourResultPage": "Bienvenue sur votre page de résultat",
+            "notEnoughComparisons_one": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre une dernière à faire. Cliquez sur le bouton ci-dessous pour continuer.",
+            "notEnoughComparisons_many": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
+            "notEnoughComparisons_other": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
+            "continueComparisons": "Continuer vos comparaisons",
+            "thanksForComparingCandidates": "Merci d'avoir comparé des candidat.es sur notre plateforme",
+            "description": "Vos avis seront pris en compte dans l'évaluation et le classement global des candidat.es. Après les élections nous rendrons public les résultats globaux. Pour protéger la vie privée des contributeurs et contributrices, les résultats individuels resteront privés.",
+            "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat.es.",
+            "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
         },
-        "title4": "Avez-vous remarqué ?",
-        "message4": {
-          "p10": "Il y a aussi des critères de comparaison optionnels sous les critères principaux.",
-          "p20": "Essayez de dérouler les critères optionnels pour donner un avis plus complet sur les candidat.es.",
-          "p30": "Il est tout a fait possible de décocher un ou plusieurs critères optionnels si vous ne souhaitez pas vous exprimer à leurs sujets."
-        },
-        "title5": "Mieux que de voter pour une seule personne ?",
-        "message5": {
-          "p10": "Contrairement au système de vote classique en France, ici vous donnez votre avis sur plusieurs candidat.es.",
-          "p20": "Ainsi il est possible d'exprimer ses véritables préférences. Cela permet d'éviter des problèmes comme « le vote utile », et ne favorise pas la polarisation des opinions politiques."
-        },
-        "title6": "Comment ça fonctionne ?",
-        "message6": {
-          "p10": "Tournesol calcule un score pour chaque candidat.e, en agrégeant les jugements des contributeurs et contributrices.",
-          "p20": "C'est comme si, en votant, chaque personne tirait le score d'un.e candidat.e vers le haut ou vers le bas.",
-          "p30": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes."
-        },
-        "title7": "Merci beaucoup !",
-        "message7": {
-          "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos préférences actuelles.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lequelles vous soutenez certains candidat.es."
+        "generic": {
+            "whatsNext": "Et maintenant ?",
+            "discoverTournesol": "Découvrez Tournesol"
         }
-      }
+    },
+    "myRateLaterListPage": {
+        "title": "À comparer plus tard"
+    },
+    "signup": {
+        "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
+        "title": "Inscription",
+        "accountCreationFailed": "Création du compte échouée.",
+        "iAgreeWithThePrivacyPolicy": "J'ai lu et j'accepte la <2>politique de confidentialité</2>."
+    },
+    "emailAddress": "Adresse e-mail",
+    "confirmYourPassword": "Confirmez votre mot de passe",
+    "signUpButton": "S'inscrire",
+    "verify": {
+        "verifyRegistration": "Vérifier l'inscription",
+        "yourAccountIsNowVerified": "Votre compte est maintenant vérifié.",
+        "yourNewEmailAddressIsNowVerified": "Votre nouvelle adresse e-mail est maintenant vérifiée.",
+        "verificationFailed": "La vérification a échoué"
+    },
+    "myRatedVideosPage": {
+        "title": "Mes vidéos comparées"
+    },
+    "recommendationsPage": {
+        "title": "Recommandations"
+    },
+    "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
+    "actions": {
+        "compareNow": "Comparer !",
+        "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
+        "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
+        "rateLater": "Comparer plus tard",
+        "remove": "Supprimer",
+        "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
+        "analysis": "Analyse détaillée"
+    },
+    "criteriaTooltips": {
+        "energy_environment": "Les sujets liés au changement climatique, à la transition énergétique, à la biodiversité, et à la protection de l'environnement",
+        "international": "Les sujets liés à l'Europe, à la diplomatie internationale, à la defense, au terrorisme et à l'immigration",
+        "education_culture": "Les sujets liés au système éducatif, aux média, à la culture, aux  réseaux sociaux et à l'éthique des algorithmes",
+        "health": "Les sujets liés au système de santé, à la santé mentale, aux sports, à l'éthique de fin de vie, au COVID-19 et aux vaccins",
+        "institutions_democracy": "Les sujets liés à l'organisation de la vie politique, à la démocratie, aux territoires et collectivités, à la fonction publique et à l'Outre-mer",
+        "labour_economy": "Les sujets liés aux emplois, au chômage, au pouvoir d'achat, à la fiscalité, au déficits publiques et la dette",
+        "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration"
+    },
+    "language": {
+        "af": "Afrikaans",
+        "ar": "Arabe",
+        "bg": "Bulgare",
+        "bn": "Bengali",
+        "ca": "Catalan",
+        "cs": "Tchèque",
+        "cy": "Gallois",
+        "da": "Danois",
+        "de": "Allemand",
+        "el": "Grec",
+        "en": "Anglais",
+        "es": "Espagnol",
+        "et": "Estonien",
+        "fa": "Perse",
+        "fi": "Finlandais",
+        "fr": "Français",
+        "gu": "Gujarati",
+        "he": "Hébreu",
+        "hi": "Hindi",
+        "hr": "Croate",
+        "hu": "Hongrois",
+        "id": "Indonésien",
+        "it": "Italien",
+        "ja": "Japonais",
+        "kn": "Kannada",
+        "ko": "Coréen",
+        "lt": "Lituanien",
+        "lv": "Letton",
+        "mk": "Macédonien",
+        "ml": "Malayalam",
+        "mr": "Marathi",
+        "ne": "Népalais",
+        "nl": "Hollandais",
+        "no": "Norvégien",
+        "pa": "Penjabi",
+        "pl": "Polonais",
+        "pt": "Portugais",
+        "ro": "Roumain",
+        "ru": "Russe",
+        "sk": "Slovaque",
+        "sl": "Slovène",
+        "so": "Somali",
+        "sq": "Albanais",
+        "sv": "Suédois",
+        "sw": "Swahili",
+        "ta": "Tamoul",
+        "te": "Télougou",
+        "th": "Thaï",
+        "tl": "Tagalog",
+        "tr": "Turc",
+        "uk": "Ukrainien",
+        "ur": "Ourdou",
+        "vi": "Vietnamien"
+    },
+    "poll": {
+        "presidential2022": "présidentielle FR 2022",
+        "videos": "vidéos",
+        "entityCandidate": "candidat",
+        "entityVideo": "vidéo"
+    },
+    "presidentielle2022": {
+        "dialogs": {
+            "tutorial": {
+                "title1": "Bienvenue dans Tournesol 🌻",
+                "message1": {
+                    "p10": "Ce tutoriel va vous guider pas à pas à travers une série de comparaisons.",
+                    "p20": "D'abord, déplacez les curseurs bleus et ajustez vos préférences en les positionnant plus ou moins loin, puis enregistrez quand votre choix est fait.",
+                    "p30": "Plus votre avis est tranché sur un critère plus le curseur devrait être proche de l'extrémité.",
+                    "p40": "Si vous trouvez les candidat.es similaires, le curseur devrait rester proche du centre."
+                },
+                "title2": "Bravo !",
+                "message2": {
+                    "p10": "Vous avez effectué votre première comparaison 🥳.",
+                    "p20": "Notez que vous pouvez choisir vous même les candidat.es. en utilisant les menus déroulants qui se trouvent au dessus de leurs photos."
+                },
+                "title3": "Un conseil",
+                "message3": {
+                    "p10": "Ne vous en faites pas, ce n'est pas grave si la position des curseurs n'est pas exacte.",
+                    "p20": "Il vous sera possible par la suite de modifier toutes vos comparaisons à votre rythme."
+                },
+                "title4": "Avez-vous remarqué ?",
+                "message4": {
+                    "p10": "Il y a aussi des critères de comparaison optionnels sous les critères principaux.",
+                    "p20": "Essayez de dérouler les critères optionnels pour donner un avis plus complet sur les candidat.es.",
+                    "p30": "Il est tout a fait possible de décocher un ou plusieurs critères optionnels si vous ne souhaitez pas vous exprimer à leurs sujets."
+                },
+                "title5": "Mieux que de voter pour une seule personne ?",
+                "message5": {
+                    "p10": "Contrairement au système de vote classique en France, ici vous donnez votre avis sur plusieurs candidat.es.",
+                    "p20": "Ainsi il est possible d'exprimer ses véritables préférences. Cela permet d'éviter des problèmes comme « le vote utile », et ne favorise pas la polarisation des opinions politiques."
+                },
+                "title6": "Comment ça fonctionne ?",
+                "message6": {
+                    "p10": "Tournesol calcule un score pour chaque candidat.e, en agrégeant les jugements des contributeurs et contributrices.",
+                    "p20": "C'est comme si, en votant, chaque personne tirait le score d'un.e candidat.e vers le haut ou vers le bas.",
+                    "p30": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes."
+                },
+                "title7": "Merci beaucoup !",
+                "message7": {
+                    "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos préférences actuelles.",
+                    "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lequelles vous soutenez certains candidat.es."
+                }
+            }
+        }
     }
-  }
 }
