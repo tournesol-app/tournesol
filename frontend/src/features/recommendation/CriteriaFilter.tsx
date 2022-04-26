@@ -90,6 +90,7 @@ function SingleCriteriaFilter({ setFilter }: FilterProps) {
     />
   );
 }
+
 function MultipleCriteriaFilter({ setFilter }: FilterProps) {
   const { t } = useTranslation();
   const classes = useStyles();
