@@ -10,7 +10,6 @@ import type {
 } from 'src/services/openapi';
 import type { RelatedEntityObject } from 'src/utils/types';
 import Pagination from 'src/components/Pagination';
-import VideoList from 'src/features/videos/VideoList';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import {
@@ -18,8 +17,8 @@ import {
   RatingsContext,
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
-import { videoFromRelatedEntity } from 'src/utils/entity';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import EntityList from 'src/features/entities/EntityList';
 
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
   const { t } = useTranslation();
@@ -164,8 +163,9 @@ const VideoRatingsPage = () => {
           </Box>
         )}
         <LoaderWrapper isLoading={isLoading}>
-          <VideoList
-            videos={entities.map((ent) => videoFromRelatedEntity(ent))}
+          <EntityList
+            entities={entities}
+            isRecommendation={false}
             settings={[PublicStatusAction]}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
             personalScores={personalScores}

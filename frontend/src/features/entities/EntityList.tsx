@@ -1,23 +1,23 @@
 import React from 'react';
 
-import { useTranslation } from 'react-i18next';
-
 import VideoList from 'src/features/videos/VideoList';
 import { useCurrentPoll } from 'src/hooks';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { Video, VideoSerializerWithCriteria } from 'src/services/openapi';
 import { Recommendation } from 'src/services/openapi/models/Recommendation';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
-import { videoWithCriteriaFromRecommendation } from 'src/utils/entity';
-import { ActionList } from 'src/utils/types';
+import {
+  videoFromRelatedEntity,
+  videoWithCriteriaFromRecommendation,
+} from 'src/utils/entity';
+import { ActionList, RelatedEntityObject, VideoObject } from 'src/utils/types';
 
 interface Props {
-  // entities are only Recommendation[] for now but we should also allow
-  // "pure" entities, without data related to the current poll
-  entities: Recommendation[] | undefined;
+  entities: RelatedEntityObject[] | Recommendation[] | undefined;
+  isRecommendation: boolean;
   actions?: ActionList;
   settings?: ActionList;
+  emptyMessage?: React.ReactNode;
   personalScores?: { [uid: string]: number };
-  isLoading: boolean;
 }
 
 /**
@@ -42,18 +42,40 @@ interface Props {
  */
 function EntityList({
   entities,
+  isRecommendation,
   actions,
   settings = [],
   personalScores,
-  isLoading,
+  emptyMessage,
 }: Props) {
-  const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+
+  const fromEntitiesToVideos = (
+    entities: RelatedEntityObject[] | Recommendation[] | undefined,
+    isRecommendation: boolean
+  ): VideoObject[] => {
+    if (isRecommendation) {
+      return _getResultsAsVideoWithCriteria(entities as Recommendation[]);
+    }
+    return _getResultsAsVideo(entities);
+  };
+
+  /**
+   * Return Video[] from RelatedEntityObject[]
+   */
+  const _getResultsAsVideo = (
+    results: RelatedEntityObject[] | undefined
+  ): Video[] => {
+    if (!results) {
+      return [];
+    }
+    return results.map((entity) => videoFromRelatedEntity(entity));
+  };
 
   /**
    * Return VideoSerializerWithCriteria[] from Recommendation[]
    */
-  const getResultsAsVideoWithCriteria = (
+  const _getResultsAsVideoWithCriteria = (
     results: Recommendation[] | undefined
   ): VideoSerializerWithCriteria[] => {
     if (!results) {
@@ -65,11 +87,11 @@ function EntityList({
   if (pollName === YOUTUBE_POLL_NAME) {
     return (
       <VideoList
-        videos={getResultsAsVideoWithCriteria(entities)}
+        videos={fromEntitiesToVideos(entities, isRecommendation)}
         actions={actions}
         settings={settings}
         personalScores={personalScores}
-        emptyMessage={isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')}
+        emptyMessage={emptyMessage}
       />
     );
   }
