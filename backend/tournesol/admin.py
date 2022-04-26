@@ -164,6 +164,10 @@ class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorScaling)
 class ContributorScalingAdmin(admin.ModelAdmin):
+    search_fields = (
+        'criteria',
+        'user__username',
+    )
     list_filter = (
         "poll__name",
     )
