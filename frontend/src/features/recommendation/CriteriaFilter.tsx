@@ -227,6 +227,7 @@ function CriteriaFilter({ setFilter }: FilterProps) {
               />
             }
             label={t('filter.multipleCriteria') as string}
+            aria-label="multiple criteria"
           />
         </FormGroup>
         {isMultipleFilter ? (

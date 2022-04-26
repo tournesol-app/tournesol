@@ -99,8 +99,7 @@ describe('Filters feature', () => {
     expect(queryAllByTestId(languageFilter, 'autocomplete')).toHaveLength(1);
 
     // Check criteria filters presence
-    // 1 slider per criteria, "Neutral" position by default
-    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(3);
+    expect(screen.queryByLabelText('multiple criteria')).not.toBeNull();
   }
 
   // Click on a date filter checkbox and verify the resulting URL parameters
