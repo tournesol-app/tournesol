@@ -214,7 +214,7 @@ function MultipleCriteriaFilter({ setFilter }: FilterProps) {
 }
 
 function CriteriaFilter({ setFilter }: FilterProps) {
-  const [isMultipleFilter, setIsMultipleFilter] = React.useState(false);
+  const [isMultipleFilter, setIsMultipleFilter] = useState(false);
   const { t } = useTranslation();
   return (
     <>
