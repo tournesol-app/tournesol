@@ -12,6 +12,7 @@ from .models import (
     ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
+    ContributorScaling,
     Criteria,
     CriteriaLocale,
     CriteriaRank,
@@ -158,6 +159,27 @@ class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
     )
     search_fields = (
         'contributor_rating__entity__uid',
+    )
+
+
+@admin.register(ContributorScaling)
+class ContributorScalingAdmin(admin.ModelAdmin):
+    search_fields = (
+        'criteria',
+        'user__username',
+    )
+    list_filter = (
+        "poll__name",
+    )
+    list_display = (
+        'id',
+        'user',
+        'criteria',
+        'translation',
+        'scale'
+    )
+    readonly_fields = (
+        'user',
     )
 
 
