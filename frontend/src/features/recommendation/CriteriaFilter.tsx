@@ -54,6 +54,7 @@ const CustomSlider = withStyles({
     backgroundColor: 'currentColor',
   },
 })(Slider);
+
 interface ValueLabelProps {
   children: React.ReactElement;
   open: boolean;
