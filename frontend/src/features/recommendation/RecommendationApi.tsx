@@ -1,10 +1,14 @@
-import { PollCriteria, VideoService } from 'src/services/openapi';
-import { snakeToCamel } from 'src/utils/string';
+import {
+  PaginatedRecommendationList,
+  PollCriteria,
+  PollsService,
+} from 'src/services/openapi';
 
 export const getRecommendedVideos = async (
+  limit: number,
   searchString: string,
   criterias: PollCriteria[]
-) => {
+): Promise<PaginatedRecommendationList> => {
   const dayInMillisecondes = 1000 * 60 * 60 * 24;
   const conversionTime = new Map();
   const params = new URLSearchParams(searchString);
@@ -51,17 +55,29 @@ export const getRecommendedVideos = async (
     return value ? Number(value) : undefined;
   };
 
+  const metadata: Record<string, string | string[]> = {};
+  const languageFilter = params.get('language');
+  const uploaderFilter = params.get('uploader');
+
+  if (languageFilter) {
+    metadata['language'] = languageFilter.split(',');
+  }
+
+  if (uploaderFilter) {
+    metadata['uploader'] = uploaderFilter;
+  }
+
   try {
-    return await VideoService.videoList({
-      limit: 20,
+    return await PollsService.pollsRecommendationsList({
+      name: 'videos',
+      limit: limit,
       offset: getNumberValue('offset'),
       search: params.get('search') ?? undefined,
-      language: params.get('language') ?? undefined,
-      uploader: params.get('uploader') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
       unsafe: params.get('unsafe') === 'true' ?? undefined,
-      ...Object.fromEntries(
-        criterias.map((c) => [snakeToCamel(c.name), getNumberValue(c.name)])
+      metadata: metadata,
+      weights: Object.fromEntries(
+        criterias.map((c) => [c.name, getNumberValue(c.name)])
       ),
     });
   } catch (err) {

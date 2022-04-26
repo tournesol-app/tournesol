@@ -3,7 +3,10 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 
-import type { PaginatedVideoSerializerWithCriteriaList } from 'src/services/openapi';
+import type {
+  PaginatedRecommendationList,
+  Recommendation,
+} from 'src/services/openapi';
 import Pagination from 'src/components/Pagination';
 import VideoList from 'src/features/videos/VideoList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
@@ -16,6 +19,7 @@ import {
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { videoWithCriteriaFromRecommendation } from 'src/utils/entity';
 
 function RecommendationsPage() {
   const { t } = useTranslation();
@@ -25,13 +29,13 @@ function RecommendationsPage() {
   const { criterias } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
 
-  const prov: PaginatedVideoSerializerWithCriteriaList = {
+  const prov: PaginatedRecommendationList = {
     count: 0,
     results: [],
   };
 
   const [entities, setVideos] = useState(prov);
-  const videoCount = entities.count || 0;
+  const entitiesCount = entities.count || 0;
 
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -70,11 +74,20 @@ function RecommendationsPage() {
 
     const fetchVideos = async () => {
       setIsLoading(true);
-      setVideos(await getRecommendedVideos(location.search, criterias));
+      setVideos(
+        (await getRecommendedVideos(limit, location.search, criterias)) || []
+      );
       setIsLoading(false);
     };
     fetchVideos();
   }, [location.search, history, searchParams, criterias]);
+
+  const getResultsAsVideos = (results: Recommendation[] | undefined) => {
+    if (!results) {
+      return [];
+    }
+    return results.map((entity) => videoWithCriteriaFromRecommendation(entity));
+  };
 
   return (
     <>
@@ -85,16 +98,16 @@ function RecommendationsPage() {
         </Box>
         <LoaderWrapper isLoading={isLoading}>
           <VideoList
-            videos={entities.results || []}
+            videos={getResultsAsVideos(entities.results)}
             emptyMessage={
               isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
             }
           />
         </LoaderWrapper>
-        {!isLoading && videoCount > 0 && (
+        {!isLoading && entitiesCount > 0 && (
           <Pagination
             offset={offset}
-            count={videoCount}
+            count={entitiesCount}
             onOffsetChange={handleOffsetChange}
             limit={limit}
           />
