@@ -3,23 +3,20 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 
-import type {
-  PaginatedRecommendationList,
-  Recommendation,
-} from 'src/services/openapi';
+import type { PaginatedRecommendationList } from 'src/services/openapi';
+import LoaderWrapper from 'src/components/LoaderWrapper';
 import Pagination from 'src/components/Pagination';
-import VideoList from 'src/features/videos/VideoList';
+import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
 import { ContentBox, ContentHeader } from 'src/components';
-import LoaderWrapper from 'src/components/LoaderWrapper';
+
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { videoWithCriteriaFromRecommendation } from 'src/utils/entity';
 
 function RecommendationsPage() {
   const { t } = useTranslation();
@@ -82,13 +79,6 @@ function RecommendationsPage() {
     fetchVideos();
   }, [location.search, history, searchParams, criterias]);
 
-  const getResultsAsVideos = (results: Recommendation[] | undefined) => {
-    if (!results) {
-      return [];
-    }
-    return results.map((entity) => videoWithCriteriaFromRecommendation(entity));
-  };
-
   return (
     <>
       <ContentHeader title={t('recommendationsPage.title')} />
@@ -97,12 +87,7 @@ function RecommendationsPage() {
           <SearchFilter />
         </Box>
         <LoaderWrapper isLoading={isLoading}>
-          <VideoList
-            videos={getResultsAsVideos(entities.results)}
-            emptyMessage={
-              isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
-            }
-          />
+          <EntityList entities={entities.results} isLoading={isLoading} />
         </LoaderWrapper>
         {!isLoading && entitiesCount > 0 && (
           <Pagination
