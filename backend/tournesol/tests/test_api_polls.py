@@ -204,6 +204,7 @@ class PollsRecommendationsApi(TestCase):
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
 
+
 class EntityPollDistributorTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -222,8 +223,8 @@ class EntityPollDistributorTestCase(TestCase):
             f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-   def test_basic_call_missing_entity(self):
-        response = self.client.get(f"/polls/videos/entities/XYZ/criteria_scores_distributions")
+    def test_basic_call_missing_entity(self):
+        response = self.client.get("/polls/videos/entities/XYZ/criteria_scores_distributions")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_one_criteria_score_should_have_base_distribution(self):

@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.db.models import Case, F, Prefetch, Q, Sum, When
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -205,6 +206,10 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
 
 class PollsCriteraScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
+    """
+    Get the distribution of criteria_scores between for an entity.
+    """
+
     poll_parameter = "name"
 
     permission_classes = []
@@ -214,4 +219,4 @@ class PollsCriteraScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     def get_object(self):
         """ Get object based on the entity uid """
         entity_uid = self.kwargs.get("uid")
-        return Entity.objects.get(uid=entity_uid)
+        return get_object_or_404(Entity, uid=entity_uid)
