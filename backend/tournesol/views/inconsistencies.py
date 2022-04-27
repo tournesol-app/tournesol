@@ -70,22 +70,28 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
         response = self._list_inconsistent_comparisons(contributor_comparisons_criteria,
                                                        ratings,
-                                                       filters["inconsistency_threshold"])
+                                                       filters["inconsistency_threshold"],
+                                                       poll.criterias_list)
 
         return Response(ScoreInconsistenciesSerializer(response).data)
 
     @staticmethod
     def _list_inconsistent_comparisons(criteria_comparisons: list,
                                        criteria_ratings: list,
-                                       threshold: float) -> dict:
+                                       threshold: float,
+                                       criteria_list: list) -> dict:
         """
         For each comparison criterion, search the corresponding rating,
         calculate the inconsistency, and check if it crosses the threshold.
         Then prepare the HTTP response.
         """
+        response = {}
 
-        count_comparisons_analysed = 0
-        inconsistency_sum = 0.0
+        comparisons_analysed_count = dict.fromkeys(criteria_list, 0)
+        inconsistent_comparisons_count = dict.fromkeys(criteria_list, 0)
+        inconsistency_sum = dict.fromkeys(criteria_list, 0.0)
+        mean_inconsistency = dict.fromkeys(criteria_list, 0.0)
+
         inconsistent_criterion_comparisons = []
 
         ratings_map = {
@@ -113,36 +119,37 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                                                                           comparison_score,
                                                                           uncertainty)
 
-            count_comparisons_analysed += 1
+            comparisons_analysed_count[criterion] += 1
+            inconsistency_sum[criterion] += inconsistency
+            mean_inconsistency[criterion] = inconsistency_sum[criterion] / \
+                comparisons_analysed_count[criterion]
+
             if inconsistency >= threshold:
-                inconsistency_sum += inconsistency
+                inconsistent_comparisons_count[criterion] += 1
 
                 inconsistent_criterion_comparisons.append(
                     {
                         "inconsistency": inconsistency,
+                        "criterion": criterion,
                         "entity_1_uid": entity_1,
                         "entity_2_uid": entity_2,
-                        "criteria": criterion,
                         "comparison_score": comparison_score,
                         "entity_1_rating": rating_1["score"],
                         "entity_2_rating": rating_2["score"],
                     }
                 )
 
-        mean_inconsistency = 0
-        if count_comparisons_analysed > 0:
-            mean_inconsistency = inconsistency_sum / count_comparisons_analysed
-
         inconsistent_criterion_comparisons.sort(key=lambda d: d['inconsistency'], reverse=True)
 
-        # No need to return everything, return at most 100 elements
-        inconsistent_criterion_comparisons = inconsistent_criterion_comparisons[:100]
-
-        response = {
-            "mean_inconsistency": mean_inconsistency,
-            "count": len(inconsistent_criterion_comparisons),
-            "results": inconsistent_criterion_comparisons,
-        }
+        response["count"] = len(inconsistent_criterion_comparisons)
+        response["results"] = inconsistent_criterion_comparisons
+        response["stats"] = {}
+        for criterion in criteria_list:
+            response["stats"][criterion] = {
+                "mean_inconsistency": mean_inconsistency[criterion],
+                "inconsistent_comparisons_count": inconsistent_comparisons_count[criterion],
+                "comparisons_count": comparisons_analysed_count[criterion],
+            }
 
         return response
 
@@ -172,9 +179,10 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         helps in case 2 to know if the minimum is 0 by checking if this root
         is in [R - U, R + U].
 
-        There is also an imprecision of 0.5 on the comparison,
-        since the comparisons are made on floats and not integers,
-        which is subtracted on the result of the previous calculation.
+        There is also an imprecision of 0.5 on the comparisons,
+        since the comparisons are made on integers (considering that contributors
+        have to "mentally round" their preferences to the nearest integer).
+        This imprecision is subtracted on the result of the previous calculation.
         """
 
         base_rating_difference = entity_2_calculated_rating - entity_1_calculated_rating

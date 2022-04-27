@@ -61,15 +61,11 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         entity_1 = EntityFactory()
         entity_2 = EntityFactory()
 
-        comparison = ComparisonFactory(
-            poll=self.poll,
-            user=user,
-            entity_1=entity_1,
-            entity_2=entity_2,
-        )
-
         ComparisonCriteriaScoreFactory(
-            comparison=comparison,
+            comparison__poll=self.poll,
+            comparison__user=user,
+            comparison__entity_1=entity_1,
+            comparison__entity_2=entity_2,
             criteria=criterion,
             score=comparison_score,
         )
@@ -97,9 +93,9 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-    def test_with_multiple_criteria(self):
+    def test_response_format(self):
         """
-        Test with multiple criteria of the same comparison,
+        Test with an inconsistent comparison for each criterion,
         and verify the API output format.
         """
 
@@ -151,17 +147,22 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         self.assertEqual(response.data["count"], nb_criteria)
         self.assertEqual(response.data["count"], len(response.data["results"]))
 
-        for dictionary in response.data["results"]:
-            self.assertTrue("inconsistency" in dictionary)
-            self.assertTrue("criteria" in dictionary)
+        for results in response.data["results"]:
+            self.assertIn(results["criterion"], self.poll.criterias_list)
+            self.assertGreater(results["inconsistency"], default_inconsistency_threshold)
+            self.assertEqual(results["entity_1_uid"], entity1.uid)
+            self.assertEqual(results["entity_2_uid"], entity2.uid)
+            self.assertEqual(results["comparison_score"], comparison_score)
+            self.assertEqual(results["entity_1_rating"], rating_1_score)
+            self.assertEqual(results["entity_2_rating"], rating_2_score)
 
-            self.assertTrue(dictionary["criteria"] in self.poll.criterias_list)
-
-            self.assertEqual(dictionary["entity_1_uid"], entity1.uid)
-            self.assertEqual(dictionary["entity_2_uid"], entity2.uid)
-            self.assertEqual(dictionary["comparison_score"], comparison_score)
-            self.assertEqual(dictionary["entity_1_rating"], rating_1_score)
-            self.assertEqual(dictionary["entity_2_rating"], rating_2_score)
+        for criterion in self.poll.criterias_list:
+            self.assertIn(criterion, response.data["stats"])
+            stat = response.data["stats"][criterion]
+            self.assertEqual(stat["mean_inconsistency"],
+                             response.data["results"][0]["inconsistency"])
+            self.assertEqual(stat["inconsistent_comparisons_count"], 1)
+            self.assertEqual(stat["comparisons_count"], 1)
 
 
     def test_date_filter(self):
@@ -236,7 +237,7 @@ class ScoreInconsistenciesApiTestCase(TestCase):
 
 
     def test_ignore_other_polls(self):
-        """ Test the inconsistency calculation"""
+        """Test that the result is not affected by other polls"""
         self.client.force_authenticate(self.user)
 
         self._create_comparison_and_rating()
@@ -251,7 +252,7 @@ class ScoreInconsistenciesApiTestCase(TestCase):
 
 
     def test_ignore_other_contributors(self):
-        """ Test the inconsistency calculation"""
+        """Test that the result is not affected by or contributor's comparisons"""
         self.client.force_authenticate(self.user)
 
         user = UserFactory()
@@ -281,8 +282,27 @@ class ScoreInconsistenciesApiTestCase(TestCase):
             inconsistencies_sum += inconsistency
             self.assertAlmostEqual(inconsistency, comparison_score - 0.5)
 
-        self.assertAlmostEqual(response.data["mean_inconsistency"],
-                               inconsistencies_sum / len(comparison_scores_list))
+
+    def test_results_stats(self):
+        """
+        Test that the returned statistics
+        """
+        self.client.force_authenticate(self.user)
+        comparison_scores_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        expected_inconsistencies_count = 4
+        for comparison_score in comparison_scores_list:
+            self._create_comparison_and_rating(comparison_score=comparison_score)
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], expected_inconsistencies_count)
+
+        self.assertIn(self.criterion, response.data["stats"])
+        stat = response.data["stats"][self.criterion]
+        self.assertAlmostEqual(stat["mean_inconsistency"],
+                               (sum(comparison_scores_list) / len(comparison_scores_list)) - 0.5)
+        self.assertEqual(stat["inconsistent_comparisons_count"], expected_inconsistencies_count)
+        self.assertEqual(stat["comparisons_count"], len(comparison_scores_list))
 
 
     def test_inconsistency_good_rating(self):
@@ -378,42 +398,10 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         comparison_score = -6
         rating_difference = comparison_score / sqrt(100 - comparison_score**2)
         self._create_comparison_and_rating(comparison_score=comparison_score,
-                                           rating_score_2=rating_difference)
+                                          rating_score_2=rating_difference)
 
         response = self.client.get(self.url + "?inconsistency_threshold=0", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.data["results"][0]["inconsistency"], 0)
 
-    def test_missing_rating(self):
-        """
-        It can happen that the ratings are not already computed
-        for recent comparisons. The corresponding comparison should
-        be ignored, and the API should still return a result.
-
-        Create 1 inconsistency and one comparison for which the entities ratings
-        don't exist, and check that the API returns 1 inconsistency.
-        """
-        self.client.force_authenticate(self.user)
-
-        self._create_comparison_and_rating()
-
-        entity_1 = EntityFactory()
-        entity_2 = EntityFactory()
-
-        comparison = ComparisonFactory(
-            poll=self.poll,
-            user=self.user,
-            entity_1=entity_1,
-            entity_2=entity_2,
-        )
-
-        ComparisonCriteriaScoreFactory(
-            comparison=comparison,
-            criteria=self.criterion,
-            score=10.0,
-        )
-
-        response = self.client.get(self.url, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], 1)
