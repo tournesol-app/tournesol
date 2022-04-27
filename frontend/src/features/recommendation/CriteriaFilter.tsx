@@ -186,6 +186,7 @@ function MultipleCriteriaFilter({ setFilter }: FilterProps) {
                   container
                 >
                   <CustomSlider
+                    data-testid={'filter-criterion-slider-' + criteria.name}
                     name={criteria.name}
                     defaultValue={parseInt(
                       searchParams.get(criteria.name) || '50'
