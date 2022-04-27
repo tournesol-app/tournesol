@@ -171,8 +171,8 @@ class Entity(models.Model):
 
         # Fetch data with QuerySet
         contributor_rating_criteria_score_list = [
-            [y for y in x.criteria_scores.all()]
-            for x in self.contributorvideoratings.filter(poll=poll).prefetch_related(
+            list(contributor_rating.criteria_scores.all())
+            for contributor_rating in self.contributorvideoratings.filter(poll=poll).prefetch_related(
                 "criteria_scores"
             )
         ]
