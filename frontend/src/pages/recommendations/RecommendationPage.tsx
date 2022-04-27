@@ -8,7 +8,7 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 import Pagination from 'src/components/Pagination';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
-import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
+import { getRecommendations } from 'src/features/recommendation/RecommendationApi';
 import { ContentBox, ContentHeader } from 'src/components';
 
 import {
@@ -23,7 +23,7 @@ function RecommendationsPage() {
 
   const history = useHistory();
   const location = useLocation();
-  const { criterias } = useCurrentPoll();
+  const { name: pollName, criterias } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
 
   const prov: PaginatedRecommendationList = {
@@ -72,12 +72,17 @@ function RecommendationsPage() {
     const fetchVideos = async () => {
       setIsLoading(true);
       setEntities(
-        (await getRecommendedVideos(limit, location.search, criterias)) || []
+        (await getRecommendations(
+          pollName,
+          limit,
+          location.search,
+          criterias
+        )) || []
       );
       setIsLoading(false);
     };
     fetchVideos();
-  }, [location.search, history, searchParams, criterias]);
+  }, [criterias, history, location.search, pollName, searchParams]);
 
   return (
     <>
