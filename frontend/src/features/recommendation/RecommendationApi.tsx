@@ -95,7 +95,9 @@ const getMetadataFilter = (
   return metadata;
 };
 
-// make it work with video
+/**
+ * Return the recommendations of a given poll.
+ */
 export const getRecommendations = async (
   pollName: string,
   limit: number,
@@ -117,91 +119,6 @@ export const getRecommendations = async (
       metadata: getMetadataFilter(pollName, params),
       weights: Object.fromEntries(
         criterias.map((c) => [c.name, getParamValueAsNumber(params, c.name)])
-      ),
-    });
-  } catch (err) {
-    console.error(err);
-    return {
-      results: [],
-      count: 0,
-    };
-  }
-};
-
-export const getRecommendedVideos = async (
-  limit: number,
-  searchString: string,
-  criterias: PollCriteria[]
-): Promise<PaginatedRecommendationList> => {
-  const dayInMillisecondes = 1000 * 60 * 60 * 24;
-  const conversionTime = new Map();
-  const params = new URLSearchParams(searchString);
-  conversionTime.set('Any', 1);
-  // "Today" is 36 hours to get most of the videos from the previous day
-  conversionTime.set('Today', dayInMillisecondes * 1.5);
-  conversionTime.set('Week', dayInMillisecondes * 7);
-  conversionTime.set('Month', dayInMillisecondes * 31);
-  conversionTime.set('Year', dayInMillisecondes * 365);
-  const dateNow = Date.now();
-
-  if (params.get('date')) {
-    const date = params.get('date');
-    params.delete('date');
-    if (date != 'Any') {
-      // TODO figure out why the 1 month adding is needed here
-      const limitPublicationDateMilliseconds =
-        dateNow - conversionTime.get(date);
-      const param_date = new Date(limitPublicationDateMilliseconds);
-      const [d, m, y, H, M, S] = [
-        param_date.getDate().toString(),
-        (param_date.getMonth() + 1).toString(),
-        param_date.getFullYear().toString(),
-        param_date.getHours().toString(),
-        param_date.getMinutes().toString(),
-        param_date.getSeconds().toString(),
-      ].map((t) => format(t));
-      params.append('date_gte', `${d}-${m}-${y}-${H}-${M}-${S}`);
-    }
-  }
-
-  function format(str: string) {
-    if (str.length == 1) {
-      return '0'.concat(str);
-    } else if (str.length == 4) {
-      return str.slice(2);
-    } else {
-      return str;
-    }
-  }
-
-  const getNumberValue = (key: string): number | undefined => {
-    const value = params.get(key);
-    return value ? Number(value) : undefined;
-  };
-
-  const metadata: Record<string, string | string[]> = {};
-  const languageFilter = params.get('language');
-  const uploaderFilter = params.get('uploader');
-
-  if (languageFilter) {
-    metadata['language'] = languageFilter.split(',');
-  }
-
-  if (uploaderFilter) {
-    metadata['uploader'] = uploaderFilter;
-  }
-
-  try {
-    return await PollsService.pollsRecommendationsList({
-      name: 'videos',
-      limit: limit,
-      offset: getNumberValue('offset'),
-      search: params.get('search') ?? undefined,
-      dateGte: params.get('date_gte') ?? undefined,
-      unsafe: params.get('unsafe') === 'true' ?? undefined,
-      metadata: metadata,
-      weights: Object.fromEntries(
-        criterias.map((c) => [c.name, getNumberValue(c.name)])
       ),
     });
   } catch (err) {
