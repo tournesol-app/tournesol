@@ -221,23 +221,29 @@ function CriteriaFilter({ setFilter }: FilterProps) {
   return (
     <>
       <TitledSection title={t('filter.criteria')}>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isMultipleFilter}
-                onChange={() => setIsMultipleFilter(!isMultipleFilter)}
+        <Grid container spacing={1}>
+          <Grid item>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isMultipleFilter}
+                    onChange={() => setIsMultipleFilter(!isMultipleFilter)}
+                  />
+                }
+                label={t('filter.multipleCriteria') as string}
+                aria-label="multiple criteria"
               />
-            }
-            label={t('filter.multipleCriteria') as string}
-            aria-label="multiple criteria"
-          />
-        </FormGroup>
-        {isMultipleFilter ? (
-          <MultipleCriteriaFilter setFilter={setFilter} />
-        ) : (
-          <SingleCriteriaFilter setFilter={setFilter} />
-        )}
+            </FormGroup>
+          </Grid>
+          <Grid item>
+            {isMultipleFilter ? (
+              <MultipleCriteriaFilter setFilter={setFilter} />
+            ) : (
+              <SingleCriteriaFilter setFilter={setFilter} />
+            )}
+          </Grid>
+        </Grid>
       </TitledSection>
     </>
   );
