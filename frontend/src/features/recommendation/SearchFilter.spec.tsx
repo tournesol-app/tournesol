@@ -226,4 +226,22 @@ describe('Filters feature', () => {
       expectInUrl: '',
     });
   });
+
+  it('Can fold and unfold the multiple criteria', () => {
+    clickOnShowMore();
+
+    // By default the criteria sliders must be hidden.
+    const checkbox = screen.queryByLabelText('multiple criteria');
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(0);
+
+    // A click on the label must display all criteria sliders.
+    fireEvent.click(checkbox);
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(3);
+    expect(screen.queryByText(/criteria 1 label/i)).toBeVisible();
+    expect(screen.queryByText(/criteria 2 label/i)).toBeVisible();
+    expect(screen.queryByText(/criteria 3 label/i)).toBeVisible();
+
+    fireEvent.click(checkbox);
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(0);
+  });
 });
