@@ -15,9 +15,7 @@ const CriteriaIcon = ({
   return (
     <Box
       sx={{
-        '& img': {
-          display: 'block',
-        },
+        display: 'inline',
         ...sx,
       }}
     >

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
-import { criteriaToEmoji } from 'src/utils/constants';
+import { CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 
 interface Props {
@@ -20,7 +20,13 @@ const CriteriaSelector = ({ criteria, setCriteria }: Props) => {
     >
       {criterias.map((criterion) => (
         <MenuItem key={criterion.name} value={criterion.name}>
-          {criteriaToEmoji[criterion.name]} {criterion.label}
+          <CriteriaIcon
+            criteriaName={criterion.name}
+            sx={{
+              marginRight: '6px',
+            }}
+          />
+          {criterion.label}
         </MenuItem>
       ))}
     </Select>
