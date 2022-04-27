@@ -15,7 +15,6 @@ const CriteriaIcon = ({
   return (
     <Box
       sx={{
-        display: 'inline',
         ...sx,
       }}
     >

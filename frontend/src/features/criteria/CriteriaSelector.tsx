@@ -23,6 +23,7 @@ const CriteriaSelector = ({ criteria, setCriteria }: Props) => {
           <CriteriaIcon
             criteriaName={criterion.name}
             sx={{
+              display: 'inline',
               marginRight: '6px',
             }}
           />
