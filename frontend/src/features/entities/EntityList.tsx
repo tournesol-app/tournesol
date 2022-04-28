@@ -2,18 +2,16 @@ import React from 'react';
 
 import VideoList from 'src/features/videos/VideoList';
 import { useCurrentPoll } from 'src/hooks';
-import { Video, VideoSerializerWithCriteria } from 'src/services/openapi';
 import { Recommendation } from 'src/services/openapi/models/Recommendation';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import {
   videoFromRelatedEntity,
-  videoWithCriteriaFromRecommendation,
+  videoWithScoresFromRecommendation,
 } from 'src/utils/entity';
 import { ActionList, RelatedEntityObject, VideoObject } from 'src/utils/types';
 
 interface Props {
   entities: RelatedEntityObject[] | Recommendation[] | undefined;
-  isRecommendation: boolean;
   actions?: ActionList;
   settings?: ActionList;
   emptyMessage?: React.ReactNode;
@@ -42,7 +40,6 @@ interface Props {
  */
 function EntityList({
   entities,
-  isRecommendation,
   actions,
   settings = [],
   personalScores,
@@ -51,43 +48,24 @@ function EntityList({
   const { name: pollName } = useCurrentPoll();
 
   const fromEntitiesToVideos = (
-    entities: RelatedEntityObject[] | Recommendation[] | undefined,
-    isRecommendation: boolean
+    entities: RelatedEntityObject[] | Recommendation[] | undefined
   ): VideoObject[] => {
-    if (isRecommendation) {
-      return _getResultsAsVideoWithCriteria(entities as Recommendation[]);
-    }
-    return _getResultsAsVideo(entities);
-  };
-
-  /**
-   * Return Video[] from RelatedEntityObject[]
-   */
-  const _getResultsAsVideo = (
-    results: RelatedEntityObject[] | undefined
-  ): Video[] => {
-    if (!results) {
+    if (!entities) {
       return [];
     }
-    return results.map((entity) => videoFromRelatedEntity(entity));
-  };
+    return entities.map((entity) => {
+      if ('tournesol_score' in entity) {
+        return videoWithScoresFromRecommendation(entity);
+      }
 
-  /**
-   * Return VideoSerializerWithCriteria[] from Recommendation[]
-   */
-  const _getResultsAsVideoWithCriteria = (
-    results: Recommendation[] | undefined
-  ): VideoSerializerWithCriteria[] => {
-    if (!results) {
-      return [];
-    }
-    return results.map((entity) => videoWithCriteriaFromRecommendation(entity));
+      return videoFromRelatedEntity(entity);
+    });
   };
 
   if (pollName === YOUTUBE_POLL_NAME) {
     return (
       <VideoList
-        videos={fromEntitiesToVideos(entities, isRecommendation)}
+        videos={fromEntitiesToVideos(entities)}
         actions={actions}
         settings={settings}
         personalScores={personalScores}

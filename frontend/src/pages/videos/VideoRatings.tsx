@@ -165,7 +165,6 @@ const VideoRatingsPage = () => {
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities}
-            isRecommendation={false}
             settings={[PublicStatusAction]}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
             personalScores={personalScores}

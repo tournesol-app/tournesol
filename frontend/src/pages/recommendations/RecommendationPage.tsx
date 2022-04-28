@@ -94,7 +94,6 @@ function RecommendationsPage() {
         <LoaderWrapper isLoading={isLoading}>
           <EntityList
             entities={entities.results}
-            isRecommendation={true}
             emptyMessage={
               isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
             }
