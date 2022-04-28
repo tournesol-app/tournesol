@@ -20,46 +20,26 @@ const buildDateURLParameter = (
   pollName: string,
   params: URLSearchParams
 ): void => {
-  function format(str: string) {
-    if (str.length == 1) {
-      return '0'.concat(str);
-    } else if (str.length == 4) {
-      return str.slice(2);
-    } else {
-      return str;
-    }
-  }
-
   if (pollName === YOUTUBE_POLL_NAME) {
     const conversionTime = new Map();
-    const dayInMillisecondes = 1000 * 60 * 60 * 24;
+    const dayInMillisecs = 1000 * 60 * 60 * 24;
 
     conversionTime.set('Any', 1);
     // Set today to 36 hours instead of 24; to get most of the videos from the
     // previous day
-    conversionTime.set('Today', dayInMillisecondes * 1.5);
-    conversionTime.set('Week', dayInMillisecondes * 7);
-    conversionTime.set('Month', dayInMillisecondes * 31);
-    conversionTime.set('Year', dayInMillisecondes * 365);
-    const dateNow = Date.now();
+    conversionTime.set('Today', dayInMillisecs * 1.5);
+    conversionTime.set('Week', dayInMillisecs * 7);
+    conversionTime.set('Month', dayInMillisecs * 31);
+    conversionTime.set('Year', dayInMillisecs * 365);
 
     if (params.get('date')) {
       const date = params.get('date');
       params.delete('date');
+
       if (date != 'Any') {
         // TODO: figure out why adding 1 month is needed here
-        const limitPublicationDateMilliseconds =
-          dateNow - conversionTime.get(date);
-        const param_date = new Date(limitPublicationDateMilliseconds);
-        const [d, m, y, H, M, S] = [
-          param_date.getDate().toString(),
-          (param_date.getMonth() + 1).toString(),
-          param_date.getFullYear().toString(),
-          param_date.getHours().toString(),
-          param_date.getMinutes().toString(),
-          param_date.getSeconds().toString(),
-        ].map((t) => format(t));
-        params.append('date_gte', `${d}-${m}-${y}-${H}-${M}-${S}`);
+        const param_date = new Date(Date.now() - conversionTime.get(date));
+        params.append('date_gte', param_date.toISOString());
       }
     }
   }
