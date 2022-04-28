@@ -37,7 +37,6 @@ const buildDateURLParameter = (
       params.delete('date');
 
       if (date != 'Any') {
-        // TODO: figure out why adding 1 month is needed here
         const param_date = new Date(Date.now() - conversionTime.get(date));
         params.append('date_gte', param_date.toISOString());
       }
