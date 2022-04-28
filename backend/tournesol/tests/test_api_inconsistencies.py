@@ -61,6 +61,9 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         entity_1 = EntityFactory()
         entity_2 = EntityFactory()
 
+        rating_1 = ContributorRatingFactory(user=user, entity=entity_1, poll=self.poll)
+        rating_2 = ContributorRatingFactory(user=user, entity=entity_2, poll=self.poll)
+
         ComparisonCriteriaScoreFactory(
             comparison__poll=self.poll,
             comparison__user=user,
@@ -69,9 +72,6 @@ class ScoreInconsistenciesApiTestCase(TestCase):
             criteria=criterion,
             score=comparison_score,
         )
-
-        rating_1 = ContributorRatingFactory(user=user, entity=entity_1, poll=self.poll)
-        rating_2 = ContributorRatingFactory(user=user, entity=entity_2, poll=self.poll)
 
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating_1,
@@ -104,15 +104,15 @@ class ScoreInconsistenciesApiTestCase(TestCase):
         entity1 = EntityFactory()
         entity2 = EntityFactory()
 
+        rating_1 = ContributorRatingFactory(user=self.user, entity=entity1, poll=self.poll)
+        rating_2 = ContributorRatingFactory(user=self.user, entity=entity2, poll=self.poll)
+
         comparison = ComparisonFactory(
             poll=self.poll,
             user=self.user,
             entity_1=entity1,
             entity_2=entity2,
         )
-
-        rating_1 = ContributorRatingFactory(user=self.user, entity=entity1, poll=self.poll)
-        rating_2 = ContributorRatingFactory(user=self.user, entity=entity2, poll=self.poll)
 
         comparison_score = default_inconsistency_threshold + 1
         rating_1_score = 0.01
