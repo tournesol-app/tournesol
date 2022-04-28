@@ -34,7 +34,7 @@ function RecommendationsPage() {
     results: [],
   };
 
-  const [entities, setVideos] = useState(prov);
+  const [entities, setEntities] = useState(prov);
   const entitiesCount = entities.count || 0;
 
   const searchParams = useMemo(
@@ -74,7 +74,7 @@ function RecommendationsPage() {
 
     const fetchVideos = async () => {
       setIsLoading(true);
-      setVideos(
+      setEntities(
         (await getRecommendedVideos(limit, location.search, criterias)) || []
       );
       setIsLoading(false);
