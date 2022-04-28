@@ -18,6 +18,8 @@ import EntityImagery from './EntityImagery';
 import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
 import { RelatedEntityObject, ActionList } from 'src/utils/types';
+import EntityCardScores from './EntityCardScores';
+import { Recommendation } from 'src/services/openapi';
 
 const EntityCard = ({
   entity,
@@ -38,6 +40,13 @@ const EntityCard = ({
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
+  const shouldDisplayScores = (
+    compact: boolean,
+    entity: Recommendation | RelatedEntityObject
+  ) => {
+    return !compact && 'tournesol_score' in entity ? true : false;
+  };
+
   return (
     <Grid container sx={entityCardMainSx}>
       <Grid item xs={12} sm={4} md={3} sx={{ aspectRatio: '16 / 9' }}>
@@ -57,8 +66,9 @@ const EntityCard = ({
       >
         <EntityCardTitle title={entity.metadata.name} compact={compact} />
         <EntityMetadata entity={entity} />
-        {/* TODO: implement scores in this entity card}
-        {/* {!compact && <VideoCardScores video={video} />} */}
+        {shouldDisplayScores(compact, entity) && (
+          <EntityCardScores entity={entity as Recommendation} />
+        )}
       </Grid>
       <Grid
         item
