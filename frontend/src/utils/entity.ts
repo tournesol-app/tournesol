@@ -22,7 +22,7 @@ export const videoFromRelatedEntity = (entity: RelatedEntityObject): Video => {
   };
 };
 
-export const videoWithCriteriaFromRecommendation = (
+export const videoWithScoresFromRecommendation = (
   entity: Recommendation
 ): VideoSerializerWithCriteria => {
   const video = videoFromRelatedEntity(entity);

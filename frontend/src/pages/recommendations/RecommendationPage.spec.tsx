@@ -26,7 +26,7 @@ describe('VideoRecommendationPage', () => {
     historySpy = jest.spyOn(history, 'replace');
     navigatorLanguagesGetter = jest.spyOn(window.navigator, 'languages', 'get');
     getRecommendedVideosSpy = jest
-      .spyOn(RecommendationApi, 'getRecommendedVideos')
+      .spyOn(RecommendationApi, 'getRecommendations')
       .mockImplementation(async () => ({ count: 0, results: [] }));
   });
   const component = () => {
@@ -49,6 +49,7 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('fr,en');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      'videos',
       20,
       '?language=fr%2Cen',
       expect.anything()
@@ -66,6 +67,7 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      'videos',
       20,
       '?language=de',
       expect.anything()
@@ -82,6 +84,7 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      'videos',
       20,
       '?language=fr',
       expect.anything()

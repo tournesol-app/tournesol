@@ -3,30 +3,27 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 
-import type {
-  PaginatedRecommendationList,
-  Recommendation,
-} from 'src/services/openapi';
-import Pagination from 'src/components/Pagination';
-import VideoList from 'src/features/videos/VideoList';
-import SearchFilter from 'src/features/recommendation/SearchFilter';
-import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
-import { ContentBox, ContentHeader } from 'src/components';
+import type { PaginatedRecommendationList } from 'src/services/openapi';
 import LoaderWrapper from 'src/components/LoaderWrapper';
+import Pagination from 'src/components/Pagination';
+import EntityList from 'src/features/entities/EntityList';
+import SearchFilter from 'src/features/recommendation/SearchFilter';
+import { getRecommendations } from 'src/features/recommendation/RecommendationApi';
+import { ContentBox, ContentHeader } from 'src/components';
+
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { videoWithCriteriaFromRecommendation } from 'src/utils/entity';
 
 function RecommendationsPage() {
   const { t } = useTranslation();
 
   const history = useHistory();
   const location = useLocation();
-  const { criterias } = useCurrentPoll();
+  const { name: pollName, criterias } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
 
   const prov: PaginatedRecommendationList = {
@@ -75,19 +72,17 @@ function RecommendationsPage() {
     const fetchVideos = async () => {
       setIsLoading(true);
       setEntities(
-        (await getRecommendedVideos(limit, location.search, criterias)) || []
+        (await getRecommendations(
+          pollName,
+          limit,
+          location.search,
+          criterias
+        )) || []
       );
       setIsLoading(false);
     };
     fetchVideos();
-  }, [location.search, history, searchParams, criterias]);
-
-  const getResultsAsVideos = (results: Recommendation[] | undefined) => {
-    if (!results) {
-      return [];
-    }
-    return results.map((entity) => videoWithCriteriaFromRecommendation(entity));
-  };
+  }, [criterias, history, location.search, pollName, searchParams]);
 
   return (
     <>
@@ -97,8 +92,8 @@ function RecommendationsPage() {
           <SearchFilter />
         </Box>
         <LoaderWrapper isLoading={isLoading}>
-          <VideoList
-            videos={getResultsAsVideos(entities.results)}
+          <EntityList
+            entities={entities.results}
             emptyMessage={
               isLoading ? '' : t('noVideoCorrespondsToSearchCriterias')
             }
