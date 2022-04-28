@@ -11,7 +11,7 @@ import {
 } from 'src/utils/recommendationsLanguages';
 import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
 
-import VideoRecommendationPage from './VideoRecommendation';
+import RecommendationPage from './RecommendationPage';
 
 const VideoList = () => null;
 jest.mock('src/features/videos/VideoList', () => VideoList);
@@ -33,7 +33,7 @@ describe('VideoRecommendationPage', () => {
     render(
       <Router history={history}>
         <ThemeProvider theme={theme}>
-          <VideoRecommendationPage />
+          <RecommendationPage />
         </ThemeProvider>
       </Router>
     );
@@ -49,6 +49,7 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('fr,en');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      20,
       '?language=fr%2Cen',
       expect.anything()
     );
@@ -65,6 +66,7 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      20,
       '?language=de',
       expect.anything()
     );
@@ -80,6 +82,7 @@ describe('VideoRecommendationPage', () => {
     expect(loadRecommendationsLanguages()).toEqual('de');
     expect(getRecommendedVideosSpy).toHaveBeenCalledTimes(1);
     expect(getRecommendedVideosSpy).toHaveBeenLastCalledWith(
+      20,
       '?language=fr',
       expect.anything()
     );

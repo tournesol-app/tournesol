@@ -7,7 +7,7 @@ import PageNotFound from 'src/pages/404/PageNotFound';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
 import FeedbackPage from 'src/pages/personal/feedback/FeedbackPage';
 import HomePage from 'src/pages/home/Home';
-import VideoRecommendationPage from 'src/pages/videos/VideoRecommendation';
+import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import VideoRatingsPage from 'src/pages/videos/VideoRatings';
 import ComparisonPage from 'src/pages/comparisons/Comparison';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
@@ -54,7 +54,7 @@ const PollRoutes = ({ pollName }: Props) => {
     {
       id: RouteID.Recommendations,
       url: 'recommendations',
-      page: VideoRecommendationPage,
+      page: RecommendationPage,
       type: PublicRoute,
     },
     {
