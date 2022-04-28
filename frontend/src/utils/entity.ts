@@ -30,7 +30,7 @@ export const videoWithCriteriaFromRecommendation = (
   return {
     ...video,
     criteria_scores: entity.criteria_scores,
-    tournesol_score: entity.tournesol_score || null,
+    tournesol_score: entity.tournesol_score ?? null,
     rating_n_ratings: entity.n_comparisons,
     rating_n_contributors: entity.n_contributors,
   };
