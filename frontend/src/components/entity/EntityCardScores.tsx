@@ -162,7 +162,8 @@ const EntityCardScores = ({ entity }: Props) => {
               <span>{t('video.criteriaRatedHigh')}</span>
               <CriteriaIcon
                 criteriaName={max_criteria}
-                width="32"
+                emojiSize="26px"
+                imgWidth="32px"
                 imgTitle={`${getCriteriaLabel(max_criteria)}: ${displayScore(
                   max_score
                 )}`}
@@ -175,7 +176,8 @@ const EntityCardScores = ({ entity }: Props) => {
               <span>{t('video.criteriaRatedLow')}</span>
               <CriteriaIcon
                 criteriaName={min_criteria}
-                width="32"
+                emojiSize="26px"
+                imgWidth="32px"
                 imgTitle={`${getCriteriaLabel(min_criteria)}: ${displayScore(
                   min_score
                 )}`}

@@ -5,17 +5,21 @@ import { criteriaIcon } from 'src/utils/criteria';
 
 const CriteriaIcon = ({
   criteriaName,
-  width = '18px',
+  emojiSize = '16px',
+  imgWidth = '18px',
   imgTitle,
   sx = {},
 }: {
   criteriaName: string;
-  width?: string;
+  emojiSize?: string;
+  imgWidth?: string;
   imgTitle?: string;
   sx?: SxProps;
 }) => {
   const { getCriteriaLabel } = useCurrentPoll();
   const { emoji, imagePath } = criteriaIcon(criteriaName);
+  const criteriaLabel = getCriteriaLabel(criteriaName);
+
   return (
     <Box
       sx={{
@@ -26,13 +30,13 @@ const CriteriaIcon = ({
       }}
     >
       {emoji ? (
-        emoji
+        <Box fontSize={emojiSize}>{emoji}</Box>
       ) : (
         <img
           src={imagePath}
-          width={width}
-          alt={getCriteriaLabel(criteriaName)}
-          title={imgTitle ? imgTitle : criteriaName}
+          width={imgWidth}
+          alt={criteriaLabel}
+          title={imgTitle ? imgTitle : criteriaLabel}
         />
       )}
     </Box>
