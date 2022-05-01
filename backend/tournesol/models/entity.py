@@ -3,6 +3,7 @@ Entity and closely related models.
 """
 
 import logging
+from collections import defaultdict
 from functools import cached_property
 
 import numpy as np
@@ -163,6 +164,38 @@ class Entity(models.Model):
             '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
         )
 
+    def criteria_scores_distributions(self, poll):
+        """Returns the distribution of criteria score per criteria for the entity"""
+        min_score_base = -1.0
+        max_score_base = 1.0
+
+        # Fetch data with QuerySet
+        contributor_rating_criteria_score_list = [
+            list(contributor_rating.criteria_scores.all())
+            for contributor_rating in
+            self.contributorvideoratings.filter(poll=poll, is_public=True).prefetch_related(
+                "criteria_scores"
+            )
+        ]
+
+        contributor_rating_criteria_score_flatten_list = [
+            val for _list in contributor_rating_criteria_score_list for val in _list]
+
+        # Format data into dictionnary
+        scores_dict = defaultdict(list)
+        for element in contributor_rating_criteria_score_flatten_list:
+            scores_dict[element.criteria].append(element.score)
+
+        # Create object
+        criteria_distributions = []
+        for key, values in scores_dict.items():
+            range = (min_score_base, max_score_base)
+            distribution, bins = np.histogram(np.clip(values, *range), range=range)
+
+            criteria_distributions.append(CriteriaDistributionScore(
+                key, distribution, bins))
+        return criteria_distributions
+
     @staticmethod
     def recompute_quantiles():
         """
@@ -275,3 +308,10 @@ class VideoRateLater(models.Model):
 
     def __str__(self):
         return f"{self.user}/{self.video}@{self.datetime_add}"
+
+
+class CriteriaDistributionScore:
+    def __init__(self, criteria, distribution, bins):
+        self.criteria = criteria
+        self.distribution = distribution
+        self.bins = bins
