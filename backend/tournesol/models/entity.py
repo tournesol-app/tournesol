@@ -165,7 +165,7 @@ class Entity(models.Model):
         )
 
     def criteria_scores_distributions(self, poll):
-        """Returns the distribution of critera score per criteria for the entity"""
+        """Returns the distribution of criteria score per criteria for the entity"""
         min_score_base = -1.0
         max_score_base = 1.0
 
@@ -192,7 +192,7 @@ class Entity(models.Model):
             range = (min_score_base, max_score_base)
             distribution, bins = np.histogram(np.clip(values, *range), range=range)
 
-            criteria_distributions.append(CriteraDistributionScore(
+            criteria_distributions.append(CriteriaDistributionScore(
                 key, distribution, bins))
         return criteria_distributions
 
@@ -310,7 +310,7 @@ class VideoRateLater(models.Model):
         return f"{self.user}/{self.video}@{self.datetime_add}"
 
 
-class CriteraDistributionScore:
+class CriteriaDistributionScore:
     def __init__(self, criteria, distribution, bins):
         self.criteria = criteria
         self.distribution = distribution

@@ -183,14 +183,14 @@ class EntitySerializer(ModelSerializer):
         return EntityPollSerializer(items, many=True).data
 
 
-class CriteraDistributionScoreSerializer(Serializer):
+class CriteriaDistributionScoreSerializer(Serializer):
 
     criteria = CharField()
     distribution = ListField(child=FloatField())
     bins = ListField(child=FloatField())
 
 
-class EntityCriteraDistributionSerializer(EntitySerializer):
+class EntityCriteriaDistributionSerializer(EntitySerializer):
     """
     An Entity serializer that show distribution of score for a given entity
     """
@@ -216,9 +216,9 @@ class EntityCriteraDistributionSerializer(EntitySerializer):
             "criteria_scores_distributions"
         ]
 
-    @extend_schema_field(CriteraDistributionScoreSerializer(many=True))
+    @extend_schema_field(CriteriaDistributionScoreSerializer(many=True))
     def get_criteria_scores_distributions(self, obj):
-        return CriteraDistributionScoreSerializer(
+        return CriteriaDistributionScoreSerializer(
             obj.criteria_scores_distributions(poll=self.context["poll"]),
             many=True).data
 
