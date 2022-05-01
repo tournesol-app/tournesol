@@ -16,7 +16,7 @@ from .views.criteria_correlations import ContributorCriteriaCorrelationsView
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
-from .views.polls import PollsCriteraScoreDistributionView, PollsRecommendationsView, PollsView
+from .views.polls import PollsCriteriaScoreDistributionView, PollsRecommendationsView, PollsView
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -128,7 +128,7 @@ urlpatterns = [
     ),
     path(
         "polls/<str:name>/entities/<str:uid>/criteria_scores_distributions",
-        PollsCriteraScoreDistributionView.as_view(),
+        PollsCriteriaScoreDistributionView.as_view(),
         name="polls_score_distribution",
     ),
 ]

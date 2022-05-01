@@ -237,7 +237,8 @@ class EntityPollDistributorTestCase(TestCase):
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(response.data["criteria_scores_distributions"]
                          [0]["criteria"], "reliability")
-        #  The sixth position represente 0.2 value with 10 values between [-1,1]
+        # The sixth position are values between (0, 0.2) because
+        # we use a 10 bins between (-1, 1)
         self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
 
     def test_two_criteria_score_should_have_right_distribution(self):
@@ -253,10 +254,11 @@ class EntityPollDistributorTestCase(TestCase):
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(response.data["criteria_scores_distributions"]
                          [0]["criteria"], "reliability")
-        #  The sixth position represente 0.2 value with 10 values between [-1,1]
+        # The sixth position are values between (0, 0.2) because
+        # we use a 10 bins between (-1, 1)
         self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
-        #  The tenth position represente 1 value with 10 values between [-1,1]
-        # (with value above the range included)
+        # The sixth position are all values above 0.8 because we use a 10 bins
+        # between (-1, 1) and we clip all values between (-1, 1)
         self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][9], 1)
         # Distribution is always in a range [-1,1]
         self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)

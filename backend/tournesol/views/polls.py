@@ -205,9 +205,9 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         return queryset.order_by("-total_score", "-pk")
 
 
-class PollsCriteraScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
+class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     """
-    Get the distribution of criteria_scores between for an entity.
+    Get the distribution of the contributor's ratings per criteria for an entity
     """
 
     poll_parameter = "name"

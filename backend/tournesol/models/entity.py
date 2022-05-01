@@ -165,7 +165,7 @@ class Entity(models.Model):
         )
 
     def criteria_scores_distributions(self, poll):
-        """Returns the distribution of critera score for the entities"""
+        """Returns the distribution of critera score per criteria for the entity"""
         min_score_base = -1.0
         max_score_base = 1.0
 
