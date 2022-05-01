@@ -14,7 +14,7 @@ from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from tournesol.models import Entity, EntityCriteriaScore, Poll
-from tournesol.serializers.entity import EntityCriteraDistributionSerializer
+from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
 from tournesol.serializers.poll import (
     PollSerializer,
     RecommendationSerializer,
@@ -214,7 +214,7 @@ class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
 
     permission_classes = []
     queryset = Entity.objects.none()
-    serializer_class = EntityCriteraDistributionSerializer
+    serializer_class = EntityCriteriaDistributionSerializer
 
     def get_object(self):
         """ Get object based on the entity uid """
