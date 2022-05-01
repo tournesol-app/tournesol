@@ -213,14 +213,18 @@ class EntityPollDistributorTestCase(TestCase):
         user1 = User.objects.create_user(username="user1", email="test1@example.test")
         user2 = User.objects.create_user(username="user2", email="test2@example.test")
 
-        self.entity1 = EntityFactory()
+        self.entity_public = EntityFactory()
+        self.entity_private = EntityFactory()
 
-        self.contributor_ratings_1 = ContributorRatingFactory(user=user1, entity=self.entity1)
-        self.contributor_ratings_2 = ContributorRatingFactory(user=user2, entity=self.entity1)
+        self.contributor_ratings_1 = ContributorRatingFactory(user=user1, entity=self.entity_public, is_public=True)
+        self.contributor_ratings_2 = ContributorRatingFactory(user=user2, entity=self.entity_public, is_public=True)
+
+        self.contributor_ratings_private_1 = ContributorRatingFactory(user=user1, entity=self.entity_private, is_public=False)
+        self.contributor_ratings_private_2 = ContributorRatingFactory(user=user2, entity=self.entity_private, is_public=False)
 
     def test_basic_api_call_is_successfull(self):
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_basic_call_missing_entity(self):
@@ -231,7 +235,7 @@ class EntityPollDistributorTestCase(TestCase):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_1, criteria="reliability", score=0.2)
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
@@ -248,7 +252,7 @@ class EntityPollDistributorTestCase(TestCase):
             contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
@@ -264,6 +268,18 @@ class EntityPollDistributorTestCase(TestCase):
         self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)
         self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 1)
 
+    def test_no_private_criteria_ratings_should_be_in_distribution(self):
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_private_1, criteria="better_habits", score=2)
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=self.contributor_ratings_private_2, criteria="reliability", score=6)
+
+        response = self.client.get(
+            f"/polls/videos/entities/{self.entity_private.uid}/criteria_scores_distributions")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["criteria_scores_distributions"]), 0)
+
     def test_all_criteria_ratings_should_be_in_distribution(self):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_1, criteria="better_habits", score=2)
@@ -271,7 +287,7 @@ class EntityPollDistributorTestCase(TestCase):
             contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 2)
@@ -283,7 +299,7 @@ class EntityPollDistributorTestCase(TestCase):
             contributor_rating=self.contributor_ratings_2, criteria="better_habits", score=-0.6)
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity1.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)

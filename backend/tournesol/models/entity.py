@@ -173,7 +173,7 @@ class Entity(models.Model):
         contributor_rating_criteria_score_list = [
             list(contributor_rating.criteria_scores.all())
             for contributor_rating in
-            self.contributorvideoratings.filter(poll=poll).prefetch_related(
+            self.contributorvideoratings.filter(poll=poll, is_public=True).prefetch_related(
                 "criteria_scores"
             )
         ]
