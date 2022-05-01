@@ -166,6 +166,18 @@ class PollsView(RetrieveAPIView):
     serializer_class = PollSerializer
 
 
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "score_mode",
+                OpenApiTypes.STR,
+                enum=ScoreMode.values,
+                default=ScoreMode.DEFAULT,
+            ),
+        ],
+    )
+)
 class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     """
     List the recommended entities of a given poll sorted by decreasing total
@@ -180,14 +192,24 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     queryset = Entity.objects.none()
     serializer_class = RecommendationSerializer
 
-    def annotate_with_total_score(self, queryset, request, poll: Poll):
-        score_mode = ScoreMode.DEFAULT
+    def annotate_and_prefetch_scores(self, queryset, request, poll: Poll):
+        raw_score_mode = request.query_params.get("score_mode", ScoreMode.DEFAULT)
+        try:
+            score_mode = ScoreMode(raw_score_mode)
+        except ValueError:
+            raise serializers.ValidationError(
+                {"score_mode": f"Accepted values are: {','.join(ScoreMode.values)}"}
+            )
+
         criteria_weight = self._build_criteria_weight_condition(
             request, poll, when="all_criteria_scores__criteria"
         )
         queryset = (
             queryset
-            .filter(all_criteria_scores__score_mode=score_mode)
+            .filter(
+                all_criteria_scores__poll=poll,
+                all_criteria_scores__score_mode=score_mode,
+            )
             .annotate(
                 total_score=Sum(
                     F("all_criteria_scores__score") * criteria_weight,
@@ -198,9 +220,9 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
     def get_queryset(self):
         poll = self.poll_from_url
-        queryset = Entity.objects.filter(all_criteria_scores__poll=poll)
+        queryset = Entity.objects.all()
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
-        queryset = self.annotate_with_total_score(queryset, self.request, poll)
+        queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
         return queryset.order_by("-total_score", "-pk")
 
