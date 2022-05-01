@@ -35,8 +35,14 @@ class User(AbstractUser):
         max_length=100, blank=True, null=True, help_text="Last name"
     )
     title = models.TextField(null=True, blank=True, help_text="Your position")
+    diplomas = models.TextField(
+        null=True, blank=True, help_text="Your diplomas"
+    )
+    competencies = models.TextField(
+        null=True, blank=True, help_text="Your competencies"
+    )
     bio = models.TextField(
-        null=True, blank=True, help_text="Self-description (degree, biography, ...)"
+        null=True, blank=True, help_text="Self-description (other degrees, biography, ...)"
     )
     comment_anonymously = models.BooleanField(
         default=False, help_text="Comment anonymously by-default"
@@ -184,6 +190,11 @@ class User(AbstractUser):
         help_text="Your profile picture.",
         validators=[validate_avatar],
         null=True,
+    )
+    trust_score = models.FloatField(
+        default = 0,
+        help_text = "Your trust score",
+        null = True
     )
 
     # @property

@@ -129,6 +129,42 @@
   },
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
+  "settings": {
+    "emailStatus": "Statut de l'adresse",
+    "emailTrusted": "Fiable",
+    "emailNonTrusted": "Non-fiable",
+    "learnMoreAboutTrustedDomains": "À propos des domaines fiables",
+    "errorOccurredWhenRetrievingProfile": "Désolé, une erreur est survenue, impossible de récupérer votre profil.",
+    "errorOccurredWhenUpdatingProfile": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
+    "profileChangedSuccessfully": "Profil bien mis à jour.",
+    "captionUsernameWillAppearInPublicDatabase": "Votre nom d'utilisateur apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
+    "updateProfile": "Mettre à jour le profil",
+    "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
+    "deleteYourAccount": "Supprimer votre compte",
+    "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
+    "currentEmailAddressIs": "Votre adresse actuelle est",
+    "newEmailAddress": "Nouvelle adresse e-mail",
+    "sendVerificationEmail": "Envoyer un courriel de confirmation",
+    "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
+    "downloadFile": "Télécharger le fichier",
+    "prepareExport": "Préparer l'export",
+    "errorOccurredDuringPasswordUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
+    "passwordChangedSuccessfully": "Mot de passe bien mis à jour.",
+    "oldPassword": "Ancien mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmez le mot de passe",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "account": "Compte",
+    "title": "Paramètres",
+    "changeEmailAddress": "Changer d'adresse e-mail",
+    "changePassword": "Changer de mot de passe",
+    "exportAllData": "Télécharger vos données",
+    "deleteAccount": "Supprimer votre compte"
+  },
+  "username": "Nom d'utilisateur",
+  "First name": "Prénom",
+  "Last name": "Nom de famille",
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
     "addToMyRateLaterList": "Ajouter à ma liste",
@@ -175,40 +211,6 @@
     "compareVideosButton": "Comparer des vidéos"
   },
   "options": "Options",
-  "settings": {
-    "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
-    "deleteYourAccount": "Supprimer votre compte",
-    "emailStatus": "Statut de l'adresse",
-    "emailTrusted": "Fiable",
-    "emailNonTrusted": "Non-fiable",
-    "learnMoreAboutTrustedDomains": "À propos des domaines fiables",
-    "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
-    "currentEmailAddressIs": "Votre adresse actuelle est",
-    "newEmailAddress": "Nouvelle adresse e-mail",
-    "sendVerificationEmail": "Envoyer un courriel de confirmation",
-    "downloadAllComparisons": "Télécharger toutes les comparaisons que vous avez faites sur Tournesol.",
-    "downloadFile": "Télécharger le fichier",
-    "prepareExport": "Préparer l'export",
-    "errorOccurredDuringPasswordUpdate": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
-    "passwordChangedSuccessfully": "Mot de passe bien mis à jour.",
-    "oldPassword": "Ancien mot de passe",
-    "newPassword": "Nouveau mot de passe",
-    "confirmNewPassword": "Confirmez le mot de passe",
-    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
-    "updatePassword": "Mettre à jour le mot de passe",
-    "errorOccurredWhenRetrievingProfile": "Désolé, une erreur est survenue, impossible de récupérer votre profil.",
-    "errorOccurredWhenUpdatingProfile": "Désolé, une erreur est survenue, impossible de mettre à jour votre mot de passe.",
-    "profileChangedSuccessfully": "Profil bien mis à jour.",
-    "captionUsernameWillAppearInPublicDatabase": "Votre nom d'utilisateur apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
-    "updateProfile": "Mettre à jour le profil",
-    "account": "Compte",
-    "title": "Paramètres",
-    "changeEmailAddress": "Changer d'adresse e-mail",
-    "changePassword": "Changer de mot de passe",
-    "exportAllData": "Télécharger vos données",
-    "deleteAccount": "Supprimer votre compte"
-  },
-  "username": "Nom d'utilisateur",
   "profile": "Profil",
   "metrics": {
     "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
@@ -300,10 +302,10 @@
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
-    "title": "Mes comparaisons",
     "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
     "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
-    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
+    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
+    "title": "Mes comparaisons"
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
@@ -356,9 +358,15 @@
       "discoverTournesol": "Découvrez Tournesol"
     }
   },
+  "Profile": "Profil",
+  "Modify my profile": "Modifier mon profil",
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
   },
+  "recommendationsPage": {
+    "title": "Recommandations"
+  },
+  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",
@@ -377,10 +385,6 @@
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
   },
-  "recommendationsPage": {
-    "title": "Recommandations"
-  },
-  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "actions": {
     "compareNow": "Comparer !",
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",

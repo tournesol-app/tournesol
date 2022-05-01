@@ -1,0 +1,267 @@
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { AccountsService, ApiError, UserProfile } from 'src/services/openapi';
+import { Lens as LensIcon, HelpOutline as HelpIcon } from '@mui/icons-material';
+import { useTheme } from '@mui/styles';
+import { useLoginState, useNotifications } from 'src/hooks';
+import {
+  CircularProgress,
+  Box,
+  Typography,
+  Theme,
+  Grid,
+  Button,
+  TextField,
+} from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+
+const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
+  const { t } = useTranslation();
+  const theme = useTheme<Theme>();
+  const statusColor = isTrusted
+    ? theme.palette.success.dark
+    : theme.palette.warning.dark;
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      flexWrap="wrap"
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <Typography
+        component="div"
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        {t('settings.emailStatus')}
+        {': '}
+        <LensIcon sx={{ fontSize: 16, color: statusColor, margin: '0 4px' }} />
+        <Box color={statusColor} fontWeight="bold">
+          {isTrusted
+            ? t('settings.emailTrusted')
+            : t('settings.emailNonTrusted')}
+        </Box>
+      </Typography>
+
+      <Box display="inline-flex">
+        <Button
+          component={RouterLink}
+          to="/about/trusted_domains"
+          size="small"
+          sx={{ fontSize: 13, color: '#777' }}
+          startIcon={<HelpIcon />}
+        >
+          {t('settings.learnMoreAboutTrustedDomains')}
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+const PublicProfileFormModification = () => {
+  const { t } = useTranslation();
+  useNotifications();
+  const { contactAdministrator, displayErrorsFrom, showSuccessAlert } =
+    useNotifications();
+
+  const [disabled, setDisabled] = useState(false);
+
+  const { updateUsername } = useLoginState();
+  const { showErrorAlert } = useNotifications();
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [apiError, setApiError] = useState<ApiError | null>(null);
+
+  const [username, setUsername] = useState('');
+  //const [diplomas, setDiplomas] = useState <null | undefined | string>();
+  //const [competencies, setCompetencies] = useState <null | undefined | string>();
+  const [lastname, setLastName] = useState<null | undefined | string>();
+  const [firstname, setFirstName] = useState<null | undefined | string>();
+
+  useEffect(() => {
+    async function retrieveProfile() {
+      const response = await AccountsService.accountsProfileRetrieve().catch(
+        () => {
+          contactAdministrator(
+            'error',
+            t('settings.errorOccurredWhenRetrievingProfile')
+          );
+        }
+      );
+      if (response) {
+        setUsername(response['username']);
+        //setDiplomas(response['diplomas']);
+        //setCompetencies(response['competencies']);
+        setLastName(response['last_name']);
+        setLastName(response['first_name']);
+      }
+    }
+
+    retrieveProfile();
+    const loadProfile = async () => {
+      try {
+        const profile = await AccountsService.accountsProfileRetrieve();
+        setProfileData(profile);
+        setIsLoading(false);
+      } catch (err) {
+        showErrorAlert(err?.message || 'Server error');
+      }
+    };
+    loadProfile();
+  }, [t, contactAdministrator]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setDisabled(true);
+
+    const response = await AccountsService.accountsProfilePartialUpdate({
+      requestBody: {
+        username,
+      },
+    }).catch((reason: ApiError) => {
+      displayErrorsFrom(reason, t('settings.errorOccurredWhenUpdatingProfile'));
+    });
+
+    // handle success and malformed success
+    if (response) {
+      if ('detail' in response) {
+        showSuccessAlert(response['detail']);
+      } else {
+        showSuccessAlert(t('settings.profileChangedSuccessfully'));
+      }
+      setUsername(response['username']);
+      setFirstName(response['first_name']);
+      setLastName(response['last_name']);
+      updateUsername(response['username']);
+
+      (document.activeElement as HTMLElement).blur();
+    }
+    setDisabled(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Grid container spacing={5} direction="column" alignItems="stretch">
+        <Grid item>
+          <TextField
+            required
+            fullWidth
+            label={t('username')}
+            name="username"
+            color="secondary"
+            size="small"
+            type="text"
+            variant="outlined"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            inputProps={{ 'data-testid': 'username' }}
+          />
+
+          <Typography variant="caption">
+            {t('settings.captionUsernameWillAppearInPublicDatabase')}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <TextField
+            required
+            fullWidth
+            label={t('First name')}
+            name="firstname"
+            color="secondary"
+            size="small"
+            type="text"
+            variant="outlined"
+            value={firstname}
+            onChange={(event) => setFirstName(event.target.value)}
+            inputProps={{ 'data-testid': 'firstname' }}
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            required
+            fullWidth
+            label={t('Last name')}
+            name="lastname"
+            color="secondary"
+            size="small"
+            type="text"
+            variant="outlined"
+            value={lastname}
+            onChange={(event) => setLastName(event.target.value)}
+            inputProps={{ 'data-testid': 'lastname' }}
+          />
+        </Grid>
+        <Grid item>
+          <Button
+            fullWidth
+            type="submit"
+            color="secondary"
+            variant="contained"
+            disabled={disabled}
+          >
+            {t('settings.updateProfile')}
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
+
+    // <Grid container spacing={2} direction="column" alignItems="stretch">
+    //   <Grid item>
+    //     <Typography>
+    //       {t('Username: ')}{' '}
+    //         <strong style={{ whiteSpace: 'nowrap' }}>
+    //       <code>{username}</code>
+    //     </strong>
+    //     </Typography>
+
+    //     <Typography>
+    //       {t((lastname!=null || firstname!=null)?'Name: ':'')}{' '}
+    //           <strong style={{ whiteSpace: 'nowrap' }}>
+    //             <code>{lastname}</code>
+    //             <code>{firstname}</code>
+    //           </strong>
+    //     </Typography>
+    //     <Typography>
+    //       {t((diplomas!=null)?'Declared diplomas: ':'')}{' '}
+    //         <strong style={{ whiteSpace: 'nowrap' }}>
+    //       <code>{diplomas}</code>
+    //     </strong>
+    //     </Typography>
+    //     <Typography>
+    //       {t((competencies!=null)?'Declared competencies: ':'')}{' '}
+    //         <strong style={{ whiteSpace: 'nowrap' }}>
+    //       <code>{competencies}</code>
+    //     </strong>
+    //     </Typography>
+
+    //   </Grid>
+    //   {isLoading && <CircularProgress />}
+    //   {/* "display" is used here to keep the form state during loading. */}
+    //   <Grid item sx={{ display: isLoading ? 'none' : undefined }}>
+    //     {profileData && (
+    //       <Box
+    //         marginBottom={2}
+    //         display="flex"
+    //         flexDirection="column"
+    //         gap="8px"
+    //       >
+    //         <Typography>
+    //           {t('Email Address: ')}{' '}
+    //           <strong style={{ whiteSpace: 'nowrap' }}>
+    //             <code>{profileData.email}</code>
+    //           </strong>
+    //         </Typography>
+    //         <TrustStatus isTrusted={profileData.is_trusted} />
+
+    //       </Box>
+    //     )}
+
+    //   </Grid>
+    // </Grid>
+  );
+};
+
+export default PublicProfileFormModification;

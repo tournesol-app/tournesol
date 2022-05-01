@@ -26,6 +26,8 @@ import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
+import PublicProfile from './pages/publicProfile/PublicProfile';
+import PublicProfileModification from './pages/publicProfile/PublicProfileModification';
 
 // The Analysis Page uses recharts which is a rather big library,
 // thus we choose to load it lazily.
@@ -87,6 +89,12 @@ function App() {
           </PrivateRoute>
           <PrivateRoute path="/settings/account">
             <SettingsAccountPage />
+          </PrivateRoute>
+          <PublicRoute path="/yourpublicprofile/:username_url">
+            <PublicProfile />
+          </PublicRoute>
+          <PrivateRoute path="/editpublicprofile">
+            <PublicProfileModification />
           </PrivateRoute>
           <PublicRoute path="/signup">
             {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}

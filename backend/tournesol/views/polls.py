@@ -2,7 +2,6 @@ import logging
 
 from django.conf import settings
 from django.db.models import Case, F, Prefetch, Q, Sum, When
-from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -14,7 +13,6 @@ from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from tournesol.models import Entity, EntityCriteriaScore, Poll
-from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
 from tournesol.serializers.poll import (
     PollSerializer,
     RecommendationSerializer,
@@ -203,20 +201,3 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         queryset = self.annotate_with_total_score(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
         return queryset.order_by("-total_score", "-pk")
-
-
-class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
-    """
-    Get the distribution of the contributor's ratings per criteria for an entity
-    """
-
-    poll_parameter = "name"
-
-    permission_classes = []
-    queryset = Entity.objects.none()
-    serializer_class = EntityCriteriaDistributionSerializer
-
-    def get_object(self):
-        """ Get object based on the entity uid """
-        entity_uid = self.kwargs.get("uid")
-        return get_object_or_404(Entity, uid=entity_uid)

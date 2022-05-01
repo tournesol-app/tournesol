@@ -5,8 +5,8 @@ from django.db.models import ObjectDoesNotExist
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.fields import CharField, FloatField, ListField, RegexField
-from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
+from rest_framework.fields import CharField, RegexField
+from rest_framework.serializers import ModelSerializer
 
 from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities.base import UID_DELIMITER
@@ -181,46 +181,6 @@ class EntitySerializer(ModelSerializer):
             for (name, scores) in poll_to_scores.items()
         ]
         return EntityPollSerializer(items, many=True).data
-
-
-class CriteriaDistributionScoreSerializer(Serializer):
-
-    criteria = CharField()
-    distribution = ListField(child=FloatField())
-    bins = ListField(child=FloatField())
-
-
-class EntityCriteriaDistributionSerializer(EntitySerializer):
-    """
-    An Entity serializer that show distribution of score for a given entity
-    """
-
-    criteria_scores_distributions = SerializerMethodField()
-
-    class Meta:
-        model = Entity
-        fields = [
-            "uid",
-            "type",
-            "metadata",
-            "tournesol_score",
-            "rating_n_contributors",
-            "criteria_scores_distributions"
-        ]
-        read_only_fields = [
-            "uid",
-            "type",
-            "metadata",
-            "tournesol_score",
-            "rating_n_contributors",
-            "criteria_scores_distributions"
-        ]
-
-    @extend_schema_field(CriteriaDistributionScoreSerializer(many=True))
-    def get_criteria_scores_distributions(self, obj):
-        return CriteriaDistributionScoreSerializer(
-            obj.criteria_scores_distributions(poll=self.context["poll"]),
-            many=True).data
 
 
 class EntityNoExtraFieldSerializer(EntitySerializer):

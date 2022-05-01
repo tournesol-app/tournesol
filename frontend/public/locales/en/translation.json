@@ -124,6 +124,42 @@
   },
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
+  "settings": {
+    "emailStatus": "Email status",
+    "emailTrusted": "Trusted",
+    "emailNonTrusted": "Non-trusted",
+    "learnMoreAboutTrustedDomains": "Learn more about trusted domains",
+    "errorOccurredWhenRetrievingProfile": "Sorry, an error has occurred, cannot retrieve your profile.",
+    "errorOccurredWhenUpdatingProfile": "Sorry, an error has occurred, cannot update the profile.",
+    "profileChangedSuccessfully": "Profile changed successfully",
+    "captionUsernameWillAppearInPublicDatabase": "Your username will appear in the Tournesol public database if you choose to make any of your data on Tournesol public. You can change it at any time.",
+    "updateProfile": "Update profile",
+    "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
+    "deleteYourAccount": "Delete your account",
+    "verificationEmailSentNewEmail": "A verification email has been sent to confirm your new email address.",
+    "currentEmailAddressIs": "Your current email address is",
+    "newEmailAddress": "New email address",
+    "sendVerificationEmail": "Send verification email",
+    "downloadAllComparisons": "Download all the comparisons that you have submitted to Tournesol",
+    "downloadFile": "Download file",
+    "prepareExport": "Prepare export",
+    "errorOccurredDuringPasswordUpdate": "Sorry, an error has occurred, cannot update password.",
+    "passwordChangedSuccessfully": "Password changed successfully",
+    "oldPassword": "Old password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "updatePassword": "Update password",
+    "account": "Account",
+    "title": "Settings",
+    "changeEmailAddress": "Change email address",
+    "changePassword": "Change password",
+    "exportAllData": "Export all data",
+    "deleteAccount": "Delete account"
+  },
+  "username": "Username",
+  "First name": "First name",
+  "Last name": "Last name",
   "ratelater": {
     "videoIdOrURL": "Video id or URL",
     "addToMyRateLaterList": "Add to my rate later list",
@@ -169,40 +205,6 @@
     "compareVideosButton": "Compare videos"
   },
   "options": "Options",
-  "settings": {
-    "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
-    "deleteYourAccount": "Delete your account",
-    "emailStatus": "Email status",
-    "emailTrusted": "Trusted",
-    "emailNonTrusted": "Non-trusted",
-    "learnMoreAboutTrustedDomains": "Learn more about trusted domains",
-    "verificationEmailSentNewEmail": "A verification email has been sent to confirm your new email address.",
-    "currentEmailAddressIs": "Your current email address is",
-    "newEmailAddress": "New email address",
-    "sendVerificationEmail": "Send verification email",
-    "downloadAllComparisons": "Download all the comparisons that you have submitted to Tournesol",
-    "downloadFile": "Download file",
-    "prepareExport": "Prepare export",
-    "errorOccurredDuringPasswordUpdate": "Sorry, an error has occurred, cannot update password.",
-    "passwordChangedSuccessfully": "Password changed successfully",
-    "oldPassword": "Old password",
-    "newPassword": "New password",
-    "confirmNewPassword": "Confirm new password",
-    "passwordsDoNotMatch": "Passwords do not match",
-    "updatePassword": "Update password",
-    "errorOccurredWhenRetrievingProfile": "Sorry, an error has occurred, cannot retrieve your profile.",
-    "errorOccurredWhenUpdatingProfile": "Sorry, an error has occurred, cannot update the profile.",
-    "profileChangedSuccessfully": "Profile changed successfully",
-    "captionUsernameWillAppearInPublicDatabase": "Your username will appear in the Tournesol public database if you choose to make any of your data on Tournesol public. You can change it at any time.",
-    "updateProfile": "Update profile",
-    "account": "Account",
-    "title": "Settings",
-    "changeEmailAddress": "Change email address",
-    "changePassword": "Change password",
-    "exportAllData": "Export all data",
-    "deleteAccount": "Delete account"
-  },
-  "username": "Username",
   "profile": "Profile",
   "metrics": {
     "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
@@ -294,10 +296,10 @@
   "clickToDownload": "Click to Download",
   "myComparisonsPage": {
     "noComparisonYet": "No comparison",
-    "title": "My comparisons",
     "listHasNbComparisons_one": "You already did <1>{{comparisonCount}}</1> comparison.",
-    "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons.",
-    "listHasNbComparisons_other": "You already did <1>{{comparisonCount}}</1> comparisons."
+    "listHasNbComparisons_other": "You already did <1>{{comparisonCount}}</1> comparisons.",
+    "title": "My comparisons",
+    "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
@@ -349,9 +351,15 @@
       "discoverTournesol": "Discover Tournesol"
     }
   },
+  "Profile": "Profile",
+  "Modify my profile": "Modify my profile",
   "myRateLaterListPage": {
     "title": "My rate-later list"
   },
+  "recommendationsPage": {
+    "title": "Recommendations"
+  },
+  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",
@@ -370,10 +378,6 @@
   "myRatedVideosPage": {
     "title": "My rated videos"
   },
-  "recommendationsPage": {
-    "title": "Recommendations"
-  },
-  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {
     "compareNow": "Compare now",
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",
