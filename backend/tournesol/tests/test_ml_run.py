@@ -155,7 +155,9 @@ class TestMlTrainMehestan(TransactionTestCase):
 
         call_command("ml_train")
 
-        self.assertEqual(EntityCriteriaScore.objects.count(), 22)
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 22)
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="all_equal").count(), 22)
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="trusted_only").count(), 20)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 40)
         self.assertEqual(ContributorScaling.objects.count(), 11)
 

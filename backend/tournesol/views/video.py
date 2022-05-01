@@ -19,6 +19,8 @@ from tournesol.entities import VideoEntity
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models import Entity
+from tournesol.models.entity_score import ScoreMode
+from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.serializers.entity import VideoSerializer, VideoSerializerWithCriteria
 from tournesol.throttling import (
     BurstAnonRateThrottle,
@@ -152,7 +154,7 @@ class VideoViewSet(
 
         criteria_cases = [
             When(
-                criteria_scores__criteria=crit,
+                all_criteria_scores__criteria=crit,
                 then=int(
                     request.query_params.get(crit)
                     if request.query_params.get(crit)
@@ -164,8 +166,12 @@ class VideoViewSet(
         ]
         criteria_weight = Case(*criteria_cases, default=0)
 
-        queryset = queryset.annotate(
-            total_score=Sum(F("criteria_scores__score") * criteria_weight)
+        queryset = (
+            queryset
+            .filter(all_criteria_scores__score_mode=ScoreMode.DEFAULT)
+            .annotate(
+                total_score=Sum(F("all_criteria_scores__score") * criteria_weight)
+            )
         )
 
         show_unsafe = request.query_params.get("unsafe") == "true"
@@ -176,8 +182,10 @@ class VideoViewSet(
             queryset = queryset.filter(
                 rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
             ).filter(total_score__gt=0)
-        return queryset.prefetch_related("criteria_scores").order_by(
-            "-total_score", "-metadata__publication_date"
+        return (
+            queryset
+            .with_prefetched_scores(poll_name=DEFAULT_POLL_NAME)
+            .order_by("-total_score", "-metadata__publication_date")
         )
 
     def get_serializer_class(self):

@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 from ml.inputs import MlInput
+from tournesol.models.entity_score import ScoreMode
 
 from .primitives import BrMean, QrDev, QrMed, QrUnc
 
@@ -221,16 +222,19 @@ def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFr
     return compute_scaling(df, ml_input=ml_input)
 
 
-def get_global_scores(
+def compute_scaled_scores(
     ml_input: MlInput, individual_scores: pd.DataFrame
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns (global_scores, scalings):
-        - global_scores: Dataframe with columns
+    Returns:
+        - scaled individual scores: Dataframe with columns
+            * `user_id`
             * `entity_id`
             * `score`
             * `uncertainty`
-            * `deviation`
+            * `is_public`
+            * `is_trusted`
+            * `is_supertrusted`
         - scalings: DataFrame with index `entity_id` and columns:
             * `s`: scaling factor
             * `tau`: translation value
@@ -239,7 +243,15 @@ def get_global_scores(
     """
     if len(individual_scores) == 0:
         scores = pd.DataFrame(
-            columns=["entity_id", "score", "uncertainty", "deviation"]
+            columns=[
+                "user_id",
+                "entity_id",
+                "score",
+                "uncertainty",
+                "is_public",
+                "is_trusted",
+                "is_supertrusted",
+            ]
         )
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
@@ -289,49 +301,69 @@ def get_global_scores(
     df["score"] = df["score"] * df["s"] + df["tau"]
     df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
 
-    # Voting weight for non trusted users will be computed per entity
-    df["voting_weight"] = 0
-    df["voting_weight"].mask(
-        (df.is_trusted) & (df.is_public),
-        VOTE_WEIGHT_TRUSTED_PUBLIC,
-        inplace=True,
-    )
-    df["voting_weight"].mask(
-        (df.is_trusted) & (~df.is_public),
-        VOTE_WEIGHT_TRUSTED_PRIVATE,
-        inplace=True,
-    )
+    all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
+    return df, all_scalings
+
+
+def get_global_scores(scaled_individual_scores: pd.DataFrame, score_mode: ScoreMode):
+    df = scaled_individual_scores.copy(deep=False)
+
+    if score_mode == ScoreMode.TRUSTED_ONLY:
+        df = df[df["is_trusted"]]
+        df["voting_weight"] = 1
+
+    if score_mode == ScoreMode.ALL_EQUAL:
+        df["voting_weight"] = 1
+
+    if score_mode == ScoreMode.DEFAULT:
+        # Voting weight for non trusted users will be computed per entity
+        df["voting_weight"] = 0
+        df["voting_weight"].mask(
+            (df.is_trusted) & (df.is_public),
+            VOTE_WEIGHT_TRUSTED_PUBLIC,
+            inplace=True,
+        )
+        df["voting_weight"].mask(
+            (df.is_trusted) & (~df.is_public),
+            VOTE_WEIGHT_TRUSTED_PRIVATE,
+            inplace=True,
+        )
 
     global_scores = {}
     for (entity_id, scores) in df.groupby("entity_id"):
-        trusted_weight = scores["voting_weight"].sum()
-        non_trusted_weight = (
-            TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT
-            + TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION * trusted_weight
-        )
-        nb_non_trusted_public = (scores["is_public"] & (~scores["is_trusted"])).sum()
-        nb_non_trusted_private = (~scores["is_public"] & (~scores["is_trusted"])).sum()
+        if score_mode == ScoreMode.DEFAULT:
+            trusted_weight = scores["voting_weight"].sum()
+            non_trusted_weight = (
+                TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT
+                + TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION * trusted_weight
+            )
+            nb_non_trusted_public = (
+                scores["is_public"] & (~scores["is_trusted"])
+            ).sum()
+            nb_non_trusted_private = (
+                ~scores["is_public"] & (~scores["is_trusted"])
+            ).sum()
 
-        if (nb_non_trusted_private > 0) or (nb_non_trusted_public > 0):
-            scores["voting_weight"].mask(
-                scores["is_public"] & (scores["voting_weight"] == 0),
-                min(
-                    VOTE_WEIGHT_TRUSTED_PUBLIC,
-                    2
-                    * non_trusted_weight
-                    / (2 * nb_non_trusted_public + nb_non_trusted_private),
-                ),
-                inplace=True,
-            )
-            scores["voting_weight"].mask(
-                ~scores["is_public"] & (scores["voting_weight"] == 0),
-                min(
-                    VOTE_WEIGHT_TRUSTED_PRIVATE,
-                    non_trusted_weight
-                    / (2 * nb_non_trusted_public + nb_non_trusted_private),
-                ),
-                inplace=True,
-            )
+            if (nb_non_trusted_private > 0) or (nb_non_trusted_public > 0):
+                scores["voting_weight"].mask(
+                    scores["is_public"] & (scores["voting_weight"] == 0),
+                    min(
+                        VOTE_WEIGHT_TRUSTED_PUBLIC,
+                        2
+                        * non_trusted_weight
+                        / (2 * nb_non_trusted_public + nb_non_trusted_private),
+                    ),
+                    inplace=True,
+                )
+                scores["voting_weight"].mask(
+                    ~scores["is_public"] & (scores["voting_weight"] == 0),
+                    min(
+                        VOTE_WEIGHT_TRUSTED_PRIVATE,
+                        non_trusted_weight
+                        / (2 * nb_non_trusted_public + nb_non_trusted_private),
+                    ),
+                    inplace=True,
+                )
 
         w = scores.voting_weight
         theta = scores.score
@@ -345,14 +377,9 @@ def get_global_scores(
             "deviation": rho_deviation,
         }
 
-    all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
-
     if len(global_scores) == 0:
-        scores = pd.DataFrame(
-            columns=["entity_id", "score", "uncertainty", "deviation"]
-        )
-        return scores, all_scalings
+        return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
 
     result = pd.DataFrame.from_dict(global_scores, orient="index")
     result.index.name = "entity_id"
-    return result.reset_index(), all_scalings
+    return result.reset_index()

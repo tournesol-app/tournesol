@@ -14,10 +14,12 @@ from tournesol.models import (
     EntityCriteriaScore,
     Poll,
 )
+from tournesol.models.entity_score import ScoreMode
 
 
 def save_entity_scores(
-    poll, entity_scores: Union[pd.DataFrame, Iterable[tuple]], single_criteria=None
+    poll, entity_scores: Union[pd.DataFrame, Iterable[tuple]], single_criteria=None,
+    score_mode=ScoreMode.DEFAULT
 ):
     if isinstance(entity_scores, pd.DataFrame):
         scores_iterator = entity_scores[
@@ -30,7 +32,7 @@ def save_entity_scores(
     scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
 
     with transaction.atomic():
-        scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll)
+        scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll, score_mode=score_mode)
         if single_criteria:
             scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
         scores_to_delete.delete()
@@ -44,6 +46,7 @@ def save_entity_scores(
                     score=score,
                     uncertainty=uncertainty,
                     deviation=deviation,
+                    score_mode=score_mode,
                 )
                 for entity_id, criteria, score, uncertainty, deviation in scores_iterator
             ),
@@ -54,12 +57,12 @@ def save_entity_scores(
 def save_tournesol_score_as_sum_of_criteria(poll):
     entities = []
     for entity in (
-        Entity.objects.filter(criteria_scores__poll=poll)
+        Entity.objects.filter(all_criteria_scores__poll=poll)
         .distinct()
-        .prefetch_related("criteria_scores")
+        .with_prefetched_scores(poll_name=poll.name)
     ):
         entity.tournesol_score = 10 * sum(
-            criterion.score for criterion in entity.criteria_scores.all()
+            criterion.score for criterion in entity.criteria_scores
         )
         entities.append(entity)
     Entity.objects.bulk_update(entities, ["tournesol_score"])
