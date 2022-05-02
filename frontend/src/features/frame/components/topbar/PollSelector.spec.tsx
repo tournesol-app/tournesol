@@ -14,6 +14,8 @@ describe('change password feature', () => {
   const polls: Array<SelectablePoll> = [
     {
       name: PRESIDENTIELLE_2022_POLL_NAME,
+      defaultAnonEntityActions: [],
+      defaultAuthEntityActions: [],
       displayOrder: 20,
       path: '/presidentielle2022/',
       iconComponent: HowToVote,
@@ -23,6 +25,8 @@ describe('change password feature', () => {
     },
     {
       name: YOUTUBE_POLL_NAME,
+      defaultAnonEntityActions: [],
+      defaultAuthEntityActions: [],
       displayOrder: 10,
       path: '/',
       iconComponent: YouTube,

@@ -52,6 +52,10 @@ export type OrderedDialogs = {
  */
 export type SelectablePoll = {
   name: string;
+  // default actions displayed on `EntityCard` for anonymous users
+  defaultAnonEntityActions: ActionList;
+  // default actions displayed on `EntityCard` for authenticaed users
+  defaultAuthEntityActions: ActionList;
   displayOrder: number;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;

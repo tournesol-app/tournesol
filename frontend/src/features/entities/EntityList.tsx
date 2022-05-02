@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import EntityCard from 'src/components/entity/EntityCard';
 
+import EntityCard from 'src/components/entity/EntityCard';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi/models/Recommendation';
 import { ActionList, RelatedEntityObject } from 'src/utils/types';
 
@@ -39,21 +40,12 @@ function EntityList({
   // personalScores,
   emptyMessage,
 }: Props) {
-  {
-    /*
-  if (pollName === YOUTUBE_POLL_NAME) {
-    return (
-      <VideoList
-        videos={fromEntitiesToVideos(entities)}
-        actions={actions}
-        settings={settings}
-        personalScores={personalScores}
-        emptyMessage={emptyMessage}
-      />
-    );
-  }
-  */
-  }
+  const { isLoggedIn } = useLoginState();
+  const { options } = useCurrentPoll();
+
+  const defaultEntityActions = isLoggedIn
+    ? options?.defaultAuthEntityActions
+    : options?.defaultAnonEntityActions;
 
   return (
     <>
@@ -62,7 +54,7 @@ function EntityList({
           <Box key={entity.uid} mx={1} my={2}>
             <EntityCard
               entity={entity}
-              actions={actions}
+              actions={actions ?? defaultEntityActions}
               settings={settings}
               compact={false}
             />

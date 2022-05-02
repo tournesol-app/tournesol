@@ -61,8 +61,8 @@ const EntityCard = ({
       <Grid
         item
         xs={12}
-        sm={compact ? 12 : 8}
-        md={compact ? 12 : 9}
+        sm={compact ? 12 : 7}
+        md={compact ? 12 : 8}
         sx={{
           padding: 1,
         }}
