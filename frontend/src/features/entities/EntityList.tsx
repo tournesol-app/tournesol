@@ -23,15 +23,6 @@ interface Props {
  *
  * According to the current poll, this component renders a specific child
  * component able to correctly display the entities.
- *
- * Component tree:
- *
- *   ParentPage
- *   |
- *   +-- EntityList (here)
- *       |
- *       +-- VideoList
- *       +-- generic entity list
  */
 function EntityList({
   entities,
