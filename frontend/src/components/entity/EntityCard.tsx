@@ -49,14 +49,20 @@ const EntityCard = ({
 
   return (
     <Grid container sx={entityCardMainSx}>
-      <Grid item xs={12} sm={4} md={3} sx={{ aspectRatio: '16 / 9' }}>
+      <Grid
+        item
+        xs={12}
+        sm={compact ? 12 : 4}
+        md={compact ? 12 : 3}
+        sx={{ aspectRatio: '16 / 9' }}
+      >
         <EntityImagery entity={entity} />
       </Grid>
       <Grid
         item
         xs={12}
-        sm={8}
-        md={9}
+        sm={compact ? 12 : 8}
+        md={compact ? 12 : 9}
         sx={{
           padding: 1,
         }}
