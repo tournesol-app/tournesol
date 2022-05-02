@@ -69,7 +69,7 @@ function RecommendationsPage() {
       return;
     }
 
-    const fetchVideos = async () => {
+    const fetchEntities = async () => {
       setIsLoading(true);
       setEntities(
         (await getRecommendations(
@@ -81,7 +81,7 @@ function RecommendationsPage() {
       );
       setIsLoading(false);
     };
-    fetchVideos();
+    fetchEntities();
   }, [criterias, history, location.search, pollName, searchParams]);
 
   return (
