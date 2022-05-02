@@ -80,7 +80,7 @@ function SingleCriteriaFilter({ setFilter }: FilterProps) {
 
   function handleCriteriaChange(criteria: string) {
     setSelectedCriteria(criteria);
-    criterias.forEach((c) => setFilter(c.name, '0'));
+    criterias.forEach((c) => setFilter(c.name, '50'));
     setFilter(criteria, '100');
   }
 
