@@ -7,18 +7,22 @@ const CriteriaIcon = ({
   criteriaName,
   emojiSize = '16px',
   imgWidth = '18px',
-  imgTitle,
+  tooltip,
   sx = {},
 }: {
   criteriaName: string;
   emojiSize?: string;
   imgWidth?: string;
-  imgTitle?: string;
+  tooltip?: string;
   sx?: SxProps;
 }) => {
   const { getCriteriaLabel } = useCurrentPoll();
   const { emoji, imagePath } = criteriaIcon(criteriaName);
   const criteriaLabel = getCriteriaLabel(criteriaName);
+
+  // If `tooltip` is empty, null or undefined, fallback to `criteriaLabel`.
+  // If `criteriaLabel` is empty, null or undefined, fallback to `criteriaName`.
+  const tooltipTitle = tooltip || criteriaLabel || criteriaName;
 
   return (
     <Box
@@ -29,7 +33,7 @@ const CriteriaIcon = ({
         ...sx,
       }}
     >
-      <Tooltip title={imgTitle ? imgTitle : criteriaLabel}>
+      <Tooltip title={tooltipTitle}>
         {emoji ? (
           <Box fontSize={emojiSize}>{emoji}</Box>
         ) : (

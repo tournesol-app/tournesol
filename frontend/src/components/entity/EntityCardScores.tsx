@@ -164,7 +164,7 @@ const EntityCardScores = ({ entity }: Props) => {
                 criteriaName={max_criteria}
                 emojiSize="26px"
                 imgWidth="32px"
-                imgTitle={`${getCriteriaLabel(max_criteria)}: ${displayScore(
+                tooltip={`${getCriteriaLabel(max_criteria)}: ${displayScore(
                   max_score
                 )}`}
               />
@@ -178,7 +178,7 @@ const EntityCardScores = ({ entity }: Props) => {
                 criteriaName={min_criteria}
                 emojiSize="26px"
                 imgWidth="32px"
-                imgTitle={`${getCriteriaLabel(min_criteria)}: ${displayScore(
+                tooltip={`${getCriteriaLabel(min_criteria)}: ${displayScore(
                   min_score
                 )}`}
               />
