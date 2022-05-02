@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, SxProps } from '@mui/material';
+import { Box, SxProps, Tooltip } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks';
 import { criteriaIcon } from 'src/utils/criteria';
 
@@ -29,16 +29,13 @@ const CriteriaIcon = ({
         ...sx,
       }}
     >
-      {emoji ? (
-        <Box fontSize={emojiSize}>{emoji}</Box>
-      ) : (
-        <img
-          src={imagePath}
-          width={imgWidth}
-          alt={criteriaLabel}
-          title={imgTitle ? imgTitle : criteriaLabel}
-        />
-      )}
+      <Tooltip title={imgTitle ? imgTitle : criteriaLabel}>
+        {emoji ? (
+          <Box fontSize={emojiSize}>{emoji}</Box>
+        ) : (
+          <img src={imagePath} width={imgWidth} alt={criteriaLabel} />
+        )}
+      </Tooltip>
     </Box>
   );
 };
