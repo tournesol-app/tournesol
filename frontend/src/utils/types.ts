@@ -56,6 +56,10 @@ export type SelectablePoll = {
   defaultAnonEntityActions: ActionList;
   // default actions displayed on `EntityCard` for authenticaed users
   defaultAuthEntityActions: ActionList;
+  // if true, make the default value of the language filter on the
+  // recommendation page match the browser language. not relevant for entities
+  // with no language metadata
+  defaultRecoLanguageDiscovery?: boolean;
   displayOrder: number;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;

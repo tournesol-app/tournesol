@@ -23,7 +23,7 @@ function RecommendationsPage() {
 
   const history = useHistory();
   const location = useLocation();
-  const { name: pollName, criterias } = useCurrentPoll();
+  const { name: pollName, criterias, options } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
 
   const prov: PaginatedRecommendationList = {
@@ -40,6 +40,7 @@ function RecommendationsPage() {
   );
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
+  const autoLanguageDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
   const locationSearchRef = useRef<string>();
 
@@ -56,7 +57,7 @@ function RecommendationsPage() {
     }
     locationSearchRef.current = location.search;
 
-    if (searchParams.get('language') === null) {
+    if (autoLanguageDiscovery && searchParams.get('language') === null) {
       let loadedLanguages = loadRecommendationsLanguages();
 
       if (loadedLanguages === null) {
@@ -82,7 +83,14 @@ function RecommendationsPage() {
       setIsLoading(false);
     };
     fetchEntities();
-  }, [criterias, history, location.search, pollName, searchParams]);
+  }, [
+    autoLanguageDiscovery,
+    criterias,
+    history,
+    location.search,
+    pollName,
+    searchParams,
+  ]);
 
   return (
     <>

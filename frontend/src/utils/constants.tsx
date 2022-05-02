@@ -210,6 +210,7 @@ export const polls: Array<SelectablePoll> = [
       AnalysisPageLink,
     ],
     defaultAnonEntityActions: [AnalysisPageLink],
+    defaultRecoLanguageDiscovery: true,
     displayOrder: 10,
     path: '/',
     disabledRouteIds: [RouteID.MyFeedback],
