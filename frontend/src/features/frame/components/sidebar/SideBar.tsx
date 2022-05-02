@@ -106,6 +106,9 @@ const SideBar = () => {
   const { options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
+  const defaultRecoSearchParams = options?.defaultRecoSearchParams
+    ? '?' + options?.defaultRecoSearchParams
+    : '';
 
   const drawerOpen = useAppSelector(selectFrame);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -124,7 +127,7 @@ const SideBar = () => {
     },
     {
       id: RouteID.Recommendations,
-      targetUrl: `${path}recommendations?date=Month`,
+      targetUrl: `${path}recommendations${defaultRecoSearchParams}`,
       IconComponent: VideoLibrary,
       displayText: t('menu.recommendations'),
     },

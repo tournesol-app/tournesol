@@ -60,6 +60,10 @@ export type SelectablePoll = {
   // recommendation page match the browser language. not relevant for entities
   // with no language metadata
   defaultRecoLanguageDiscovery?: boolean;
+  // default URL search parameters set by the `SideBar` when a user clicks on
+  // the recommendation link. can be date=Month to retrieve the entities
+  // uploaded during the last month for instance
+  defaultRecoSearchParams?: string;
   displayOrder: number;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
