@@ -124,11 +124,12 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         show_unsafe = filters["unsafe"]
         if show_unsafe:
-            queryset = queryset.filter(total_score__isnull=False)
+            return queryset
         else:
-            queryset = queryset.filter(
-                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-            ).filter(total_score__gt=0)
+            return queryset.filter(
+                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
+                tournesol_score__gt=0
+            )
 
         return queryset
 

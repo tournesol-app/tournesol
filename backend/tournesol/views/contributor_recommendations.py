@@ -38,18 +38,16 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
             total_score=Sum(
                 F("contributorvideoratings__criteria_scores__score") * criteria_weight,
             ),
-        )
+        ).filter(total_score__isnull=False)
 
     def filter_unsafe(self, queryset, filters):
         show_unsafe = filters["unsafe"]
         if show_unsafe:
-            queryset = queryset.filter(total_score__isnull=False)
+            return queryset
         else:
             # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the
             # total score
-            queryset = queryset.filter(total_score__gt=0)
-
-        return queryset
+            return queryset.filter(tournesol_score__gt=0)
 
 
 class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):

@@ -36,7 +36,7 @@ class PollsRecommendationsApi(TestCase):
             metadata__publication_date="2021-01-01",
             metadata__uploader="_test_uploader_1",
             metadata__language="es",
-            tournesol_score=1.1,
+            tournesol_score=-1,
             rating_n_contributors=2,
         )
         self.video_2 = VideoFactory(
@@ -120,7 +120,9 @@ class PollsRecommendationsApi(TestCase):
         # Disable reliability
         resp = self.client.get("/polls/videos/recommendations/?weights[reliability]=0")
         self.assertEqual(
-            [r["uid"] for r in resp.data["results"]],
+            # Only verifying the first two videos of the response because other videos
+            # have only criteria scores for reliability
+            [r["uid"] for r in resp.data["results"]][:2],
             [self.video_4.uid, self.video_3.uid],
         )
 
@@ -128,7 +130,13 @@ class PollsRecommendationsApi(TestCase):
         resp = self.client.get(
             "/polls/videos/recommendations/?weights[reliability]=0&weights[importance]=0"
         )
-        self.assertEqual([r["uid"] for r in resp.data["results"]], [])
+        self.assertEqual(len([r["uid"] for r in resp.data["results"]]), 3)
+
+        # Disable both reliability and importance and specify unsafe
+        resp = self.client.get(
+            "/polls/videos/recommendations/?weights[reliability]=0&weights[importance]=0&unsafe=true"
+        )
+        self.assertEqual(len([r["uid"] for r in resp.data["results"]]), 4)
 
         # More weight to reliability should change the order
         resp = self.client.get(
