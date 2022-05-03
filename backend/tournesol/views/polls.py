@@ -131,8 +131,6 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                 tournesol_score__gt=0
             )
 
-        return queryset
-
     def _build_criteria_weight_condition(
         self, request, poll: Poll, when="criteria_scores__criteria"
     ):
