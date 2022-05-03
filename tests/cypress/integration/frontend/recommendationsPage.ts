@@ -56,7 +56,7 @@ describe('Recommendations page', () => {
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
 
           cy.location('search').should('contain', 'date=Year');
-          cy.contains('Showing videos 1 to 20 of', {matchCase: false}).should('be.visible');
+          cy.contains('Showing videos 1 to', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
         })
 
