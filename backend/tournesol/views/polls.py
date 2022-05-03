@@ -213,7 +213,7 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
                 total_score=Sum(
                     F("all_criteria_scores__score") * criteria_weight,
                 )
-            )
+            ).filter(total_score__isnull=False)
         )
         return queryset.with_prefetched_scores(poll_name=poll.name, mode=score_mode)
 
