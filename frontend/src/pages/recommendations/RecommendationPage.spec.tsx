@@ -1,26 +1,45 @@
 import React from 'react';
+
 import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
-import { render } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
+import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
+import configureStore, { MockStoreCreator } from 'redux-mock-store';
+import thunk, { ThunkDispatch } from 'redux-thunk';
+
 import { ThemeProvider } from '@mui/material/styles';
+import { AnyAction } from '@reduxjs/toolkit';
+import { render } from '@testing-library/react';
+
+import { initialState } from 'src/features/login/loginSlice';
+import { LoginState } from 'src/features/login/LoginState.model';
+import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
+import { PollProvider } from 'src/hooks/useCurrentPoll';
+import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import { theme } from 'src/theme';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
 } from 'src/utils/recommendationsLanguages';
-import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
 
-import RecommendationPage from './RecommendationPage';
+const EntityList = () => null;
+jest.mock('src/features/entities/EntityList', () => EntityList);
 
-const VideoList = () => null;
-jest.mock('src/features/videos/VideoList', () => VideoList);
+interface MockState {
+  token: LoginState;
+}
 
-describe('VideoRecommendationPage', () => {
+describe('RecommendationPage', () => {
+  const mockStore: MockStoreCreator<
+    MockState,
+    ThunkDispatch<LoginState, undefined, AnyAction>
+  > = configureStore([thunk]);
+
   let history: ReturnType<typeof createMemoryHistory>;
   let historySpy: ReturnType<typeof jest.spyOn>;
   let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
   let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
+
   beforeEach(() => {
     history = createMemoryHistory();
     historySpy = jest.spyOn(history, 'replace');
@@ -29,13 +48,20 @@ describe('VideoRecommendationPage', () => {
       .spyOn(RecommendationApi, 'getRecommendations')
       .mockImplementation(async () => ({ count: 0, results: [] }));
   });
+
   const component = () => {
+    const state = { token: initialState };
+    const store = mockStore(state);
     render(
-      <Router history={history}>
-        <ThemeProvider theme={theme}>
-          <RecommendationPage />
-        </ThemeProvider>
-      </Router>
+      <Provider store={store}>
+        <Router history={history}>
+          <ThemeProvider theme={theme}>
+            <PollProvider>
+              <RecommendationPage />
+            </PollProvider>
+          </ThemeProvider>
+        </Router>
+      </Provider>
     );
   };
 
