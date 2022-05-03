@@ -65,6 +65,10 @@ export type SelectablePoll = {
   // uploaded during the last month for instance
   defaultRecoSearchParams?: string;
   displayOrder: number;
+  // list of the main criteria name. useful in some situations, like when you
+  // want to exclude them from the rated high / rated low metric of the
+  // `EntityCard` without hardcoding them everywhere in the application
+  mainCriteriaName: string[];
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
   // a list route id that will be disable in `PollRoutes` and `SideBar`

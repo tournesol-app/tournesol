@@ -12,11 +12,6 @@ interface Props {
   entity: Recommendation;
 }
 
-/**
- * Criteria excluded from the rated high / low display.
- */
-const EXCLUDED_MAIN_CRITERIA = ['largely_recommended', 'be_president'];
-
 const useStyles = makeStyles((theme: Theme) => ({
   nb_tournesol: {
     fontFamily: 'Poppins',
@@ -45,7 +40,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const EntityCardScores = ({ entity }: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { getCriteriaLabel } = useCurrentPoll();
+  const { getCriteriaLabel, options } = useCurrentPoll();
+  const excluded_main_criteria = Array.from(options?.mainCriteriaName || []);
 
   const nbRatings = entity.n_comparisons;
   const nbContributors = entity.n_contributors;
@@ -70,7 +66,7 @@ const EntityCardScores = ({ entity }: Props) => {
       if (
         criteria.score != undefined &&
         criteria.score > max_score &&
-        !EXCLUDED_MAIN_CRITERIA.includes(criteria.criteria)
+        !excluded_main_criteria.includes(criteria.criteria)
       ) {
         max_score = criteria.score;
         max_criteria = criteria.criteria;
@@ -78,7 +74,7 @@ const EntityCardScores = ({ entity }: Props) => {
       if (
         criteria.score != undefined &&
         criteria.score < min_score &&
-        !EXCLUDED_MAIN_CRITERIA.includes(criteria.criteria)
+        !excluded_main_criteria.includes(criteria.criteria)
       ) {
         min_score = criteria.score;
         min_criteria = criteria.criteria;
