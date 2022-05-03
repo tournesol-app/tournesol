@@ -154,6 +154,7 @@
     "important": "Important",
     "crucial": "Crucial",
     "criteria": "Critères",
+    "multipleCriteria": "Plusieurs critères",
     "today": "Un jour",
     "thisWeek": "Une semaine",
     "thisMonth": "Un mois",
@@ -300,10 +301,10 @@
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
-    "title": "Mes comparaisons",
     "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
     "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
-    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
+    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
+    "title": "Mes comparaisons"
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
