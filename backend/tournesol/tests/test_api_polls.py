@@ -224,14 +224,12 @@ class PollsRecommendationsApi(TestCase):
         results = response.data["results"]
         self.assertEqual(len(results), 3)
 
-        self.assertEqual(results[0]["tournesol_score"], 3.3)
+        self.assertEqual(results[0]["uid"], self.video_3.uid)
         self.assertEqual(results[0]["total_score"], 5.0)
-
-        self.assertEqual(results[1]["tournesol_score"], 4.4)
+        self.assertEqual(results[1]["uid"], self.video_4.uid)
         self.assertEqual(results[1]["total_score"], 4.0)
-
-        self.assertEqual(results[2]["tournesol_score"], 1.1)
-        self.assertEqual(results[2]["total_score"], 1.0)
+        self.assertEqual(results[2]["uid"], self.video_2.uid)
+        self.assertEqual(results[2]["total_score"], -2.0)
 
 
 class EntityPollDistributorTestCase(TestCase):
