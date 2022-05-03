@@ -53,10 +53,14 @@ describe('Recommendations page', () => {
           cy.location('search').should('contain', 'date=Year');
           cy.contains('Showing videos 1 to', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
-          
+        })
+        
+        it('shows no videos for 1 day ago', () => {
+          cy.visit('/recommendations?unsafe=true');
+          cy.contains('Filters', {matchCase: false}).click();
           cy.contains('A day ago', {matchCase: false}).should('be.visible');
-          cy.get('input[type=checkbox][name="Day"]').check();
-          cy.get('input[type=checkbox][name="Day"]').should('be.checked');
+          cy.get('input[type=checkbox][name="Today"]').check();
+          cy.get('input[type=checkbox][name="Today"]').should('be.checked');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
         })
 
@@ -69,7 +73,6 @@ describe('Recommendations page', () => {
           cy.get('input[type=checkbox][name=""]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
 
-          cy.location('search').should('contain', 'date=');
           cy.contains('Showing videos 1 to 20 of', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
         })
