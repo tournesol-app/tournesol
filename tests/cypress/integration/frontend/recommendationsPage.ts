@@ -42,13 +42,8 @@ describe('Recommendations page', () => {
         })
 
         it('allows to filter: a year ago', () => {
-          cy.visit('/');
-          cy.contains('Recommendations').click();
-
+          cy.visit('/recommendations?unsafe=true');
           cy.contains('Filters', {matchCase: false}).click();
-          // Video are filtered by month by default.
-          cy.get('input[type=checkbox][name=Month]').should('be.checked');
-          cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
 
           cy.contains('A year ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name="Year"]').check();
@@ -58,16 +53,16 @@ describe('Recommendations page', () => {
           cy.location('search').should('contain', 'date=Year');
           cy.contains('Showing videos 1 to', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
+          
+          cy.contains('A day ago', {matchCase: false}).should('be.visible');
+          cy.get('input[type=checkbox][name="Day"]').check();
+          cy.get('input[type=checkbox][name="Day"]').should('be.checked');
+          cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
         })
 
         it('allows to filter: all time', () => {
-          cy.visit('/');
-          cy.contains('Recommendations').click();
-
+          cy.visit('/recommendations?unsafe=true');
           cy.contains('Filters', {matchCase: false}).click();
-          // Video are filtered by month by default.
-          cy.get('input[type=checkbox][name=Month]').should('be.checked');
-          cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
 
           cy.contains('A year ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name=""]').check();
