@@ -108,11 +108,20 @@ class EntityAdmin(admin.ModelAdmin):
 class EntityCriteriaScoreAdmin(admin.ModelAdmin):
     list_display = (
         'entity',
+        'poll',
         'criteria',
+        'score_mode',
         'score'
+    )
+    list_filter = (
+        'poll',
+        'score_mode',
     )
     search_fields = (
         'entity__uid',
+    )
+    raw_id_fields = (
+        'entity',
     )
 
 

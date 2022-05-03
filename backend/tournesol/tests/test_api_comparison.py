@@ -963,7 +963,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         call_command("ml_train")
 
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
-        self.assertEqual(EntityCriteriaScore.objects.count(), 4)
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 4)
 
         # user2 has no contributor scores before the comparison is submitted
         self.assertEqual(
@@ -1012,4 +1012,4 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         # Global scores and individual scores related to other users are unchanged
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
-        self.assertEqual(EntityCriteriaScore.objects.count(), 4)
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 4)

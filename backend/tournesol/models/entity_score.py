@@ -1,8 +1,13 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .entity import Entity
 from .poll import Poll
+
+
+class ScoreMode(models.TextChoices):
+    DEFAULT = "default"
+    ALL_EQUAL = "all_equal"
+    TRUSTED_ONLY = "trusted_only"
 
 
 class EntityCriteriaScore(models.Model):
@@ -12,10 +17,10 @@ class EntityCriteriaScore(models.Model):
     """
 
     entity = models.ForeignKey(
-        to=Entity,
+        to="Entity",
         on_delete=models.CASCADE,
         help_text="Foreign key to the video",
-        related_name="criteria_scores",
+        related_name="all_criteria_scores",
     )
     poll = models.ForeignKey(
         Poll,
@@ -32,6 +37,11 @@ class EntityCriteriaScore(models.Model):
         default=0,
         blank=False,
         help_text="Score of the given criteria",
+    )
+    score_mode = models.CharField(
+        max_length=30,
+        choices=ScoreMode.choices,
+        default=ScoreMode.DEFAULT
     )
     uncertainty = models.FloatField(
         default=0,
@@ -59,7 +69,11 @@ class EntityCriteriaScore(models.Model):
     )
 
     class Meta:
-        unique_together = ["entity", "poll", "criteria"]
+        unique_together = ["entity", "poll", "criteria", "score_mode"]
 
     def __str__(self):
-        return f"{self.entity}/{self.criteria}/{self.score}"
+        return f"{self.entity}/{self.criteria}/{self.score_mode}/{self.score}"
+
+    @classmethod
+    def default_scores(cls):
+        return EntityCriteriaScore.objects.filter(score_mode=ScoreMode.DEFAULT)

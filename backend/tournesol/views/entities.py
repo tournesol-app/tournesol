@@ -45,17 +45,18 @@ class EntitiesViewSet(ReadOnlyModelViewSet):
 
         if poll_name:
             queryset = queryset.filter(
-                criteria_scores__poll__name=poll_name
+                all_criteria_scores__poll__name=poll_name
             ).distinct()
 
-            criteria_scores_queryset = EntityCriteriaScore.objects.filter(
+            criteria_scores_queryset = EntityCriteriaScore.default_scores().filter(
                 poll__name=poll_name
             )
         else:
-            criteria_scores_queryset = EntityCriteriaScore.objects.all()
+            criteria_scores_queryset = EntityCriteriaScore.default_scores().all()
         return queryset.prefetch_related(
             Prefetch(
-                "criteria_scores",
+                "all_criteria_scores",
                 queryset=criteria_scores_queryset.select_related("poll"),
+                to_attr="_prefetched_criteria_scores"
             )
         )

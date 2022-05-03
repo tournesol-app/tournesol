@@ -3,6 +3,8 @@ import random
 from core.utils.time import time_ago
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
+from tournesol.models.entity_score import ScoreMode
+from tournesol.models.poll import DEFAULT_POLL_NAME
 from twitterbot import settings
 from twitterbot.models.tweeted import TweetInfo
 from twitterbot.twitter_api import TwitterBot
@@ -12,9 +14,10 @@ from twitterbot.uploader_twitter_account import get_twitter_account_from_video_i
 def get_best_criteria(video, n):
     """Get the n best criteria"""
 
-    criteria_list = video.criteria_scores.filter(poll__name="videos").order_by(
-        "-score"
-    )[:n]
+    criteria_list = video.all_criteria_scores.filter(
+        poll__name=DEFAULT_POLL_NAME,
+        score_mode=ScoreMode.DEFAULT,
+    ).order_by("-score")[:n]
 
     if len(criteria_list) < n:
         raise ValueError("Not enough criteria to show!")
@@ -79,6 +82,13 @@ def prepare_tweet(video):
 def get_video_recommendations(language):
     """Find a list of good video to recommend with some quality criteria."""
 
+    reliable_videos = Entity.objects.filter(
+        all_criteria_scores__poll__name=DEFAULT_POLL_NAME,
+        all_criteria_scores__score_mode=ScoreMode.DEFAULT,
+        all_criteria_scores__criteria="reliability",
+        all_criteria_scores__score__gt=settings.MIN_RELIABILITY_SCORE,
+    )
+
     # Filter videos with some quality criteria
     tweetable_videos = Entity.objects.filter(
         add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
@@ -89,8 +99,7 @@ def get_video_recommendations(language):
         rating_n_ratings__gte=settings.MIN_NB_RATINGS,
         metadata__language=language,
         tournesol_score__gte=settings.MIN_TOURNESOL_SCORE,
-        criteria_scores__criteria="reliability",
-        criteria_scores__score__gt=settings.MIN_RELIABILITY_SCORE,
+        pk__in=reliable_videos,
         tweets=None,
     )
 
