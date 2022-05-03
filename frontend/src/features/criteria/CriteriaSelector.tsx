@@ -6,9 +6,14 @@ import { useCurrentPoll } from 'src/hooks';
 interface Props {
   criteria: string;
   setCriteria: (c: string) => void;
+  extraEmptyOption?: string;
 }
 
-const CriteriaSelector = ({ criteria, setCriteria }: Props) => {
+const CriteriaSelector = ({
+  criteria,
+  setCriteria,
+  extraEmptyOption = '',
+}: Props) => {
   const { criterias } = useCurrentPoll();
   return (
     <Select
@@ -18,6 +23,9 @@ const CriteriaSelector = ({ criteria, setCriteria }: Props) => {
       value={criteria}
       onChange={(v) => setCriteria(v.target.value)}
     >
+      {extraEmptyOption !== '' && (
+        <MenuItem value={extraEmptyOption}>------------</MenuItem>
+      )}
       {criterias.map((criterion) => (
         <MenuItem key={criterion.name} value={criterion.name}>
           <CriteriaIcon

@@ -75,19 +75,28 @@ function ValueLabelComponent(props: ValueLabelProps) {
 }
 
 function SingleCriteriaFilter({ setFilter }: FilterProps) {
+  // Extra entry which permit the selection of the entities by 'default'
+  // as in the back end
+  const extraOption = '_total_score';
   const { criterias } = useCurrentPoll();
-  const [selectedCriteria, setSelectedCriteria] = useState(criterias[0].name);
+  const [selectedCriteria, setSelectedCriteria] = useState(extraOption);
 
   function handleCriteriaChange(criteria: string) {
     setSelectedCriteria(criteria);
-    criterias.forEach((c) => setFilter(c.name, '50'));
-    setFilter(criteria, '100');
+
+    if (criteria === extraOption) {
+      criterias.forEach((c) => setFilter(c.name, '50'));
+    } else {
+      criterias.forEach((c) => setFilter(c.name, '0'));
+      setFilter(criteria, '100');
+    }
   }
 
   return (
     <CriteriaSelector
       criteria={selectedCriteria}
       setCriteria={handleCriteriaChange}
+      extraEmptyOption={extraOption}
     />
   );
 }
