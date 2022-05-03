@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, MenuItem } from '@mui/material';
+import { Select, MenuItem, Box } from '@mui/material';
 import { CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 
@@ -28,14 +28,16 @@ const CriteriaSelector = ({
       )}
       {criterias.map((criterion) => (
         <MenuItem key={criterion.name} value={criterion.name}>
-          <CriteriaIcon
-            criteriaName={criterion.name}
-            sx={{
-              display: 'inline',
-              marginRight: '6px',
-            }}
-          />
-          {criterion.label}
+          <Box display="flex" alignItems="center">
+            <CriteriaIcon
+              criteriaName={criterion.name}
+              sx={{
+                display: 'inline',
+                marginRight: '6px',
+              }}
+            />
+            {criterion.label}
+          </Box>
         </MenuItem>
       ))}
     </Select>
