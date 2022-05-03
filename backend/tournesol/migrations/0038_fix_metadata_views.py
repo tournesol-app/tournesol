@@ -15,7 +15,7 @@ def migrate_forward(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournesol', '0037_contributorscaling'),
+        ('tournesol', '0038_alter_entitycriteriascore_unique_together_and_more'),
     ]
 
     operations = [migrations.RunPython(migrate_forward, migrations.RunPython.noop)]
