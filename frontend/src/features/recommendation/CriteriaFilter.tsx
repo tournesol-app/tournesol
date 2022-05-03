@@ -75,8 +75,9 @@ function ValueLabelComponent(props: ValueLabelProps) {
 }
 
 function SingleCriteriaFilter({ setFilter }: FilterProps) {
-  // Extra entry which permit the selection of the entities by 'default'
-  // as in the back end
+  // This extra selectable entry allows us to provide a specific default
+  // ordering that mimic how the entities tournesol_score is built by the back
+  // end.
   const extraOption = '_total_score';
   const { criterias } = useCurrentPoll();
   const [selectedCriteria, setSelectedCriteria] = useState(extraOption);
