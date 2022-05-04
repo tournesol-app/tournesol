@@ -9,23 +9,25 @@ import { render } from '@testing-library/react';
 
 import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
 import { PollProvider } from 'src/hooks/useCurrentPoll';
-import * as useCurrentPoll from 'src/hooks/useCurrentPoll';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import { theme } from 'src/theme';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
 } from 'src/utils/recommendationsLanguages';
+import { PollsService } from 'src/services/openapi';
 
 const EntityList = () => null;
 jest.mock('src/features/entities/EntityList', () => EntityList);
+
+const SearchFilter = () => null;
+jest.mock('src/features/recommendation/SearchFilter', () => SearchFilter);
 
 describe('RecommendationPage', () => {
   let history: ReturnType<typeof createMemoryHistory>;
   let historySpy: ReturnType<typeof jest.spyOn>;
   let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
   let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
-  let getPollSpy: ReturnType<typeof jest.spyOn>;
 
   beforeEach(() => {
     history = createMemoryHistory();
@@ -36,18 +38,16 @@ describe('RecommendationPage', () => {
       .mockImplementation(async () => ({ count: 0, results: [] }));
 
     // prevent the useCurrentPoll hook to make HTTP requests
-    getPollSpy = jest
-      .spyOn(useCurrentPoll, 'getPoll')
-      .mockImplementation(async () => ({
-        name: 'videos',
-        criterias: [
-          {
-            name: 'largely_recommended',
-            label: 'largely recommended',
-            optional: false,
-          },
-        ],
-      }));
+    jest.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
+      name: 'videos',
+      criterias: [
+        {
+          name: 'largely_recommended',
+          label: 'largely recommended',
+          optional: false,
+        },
+      ],
+    }));
   });
 
   const component = () => {
