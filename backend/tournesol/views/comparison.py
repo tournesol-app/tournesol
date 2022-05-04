@@ -15,6 +15,10 @@ from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpd
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
+class InactivePollError(exceptions.PermissionDenied):
+    default_detail = "This action is not allowed on an inactive poll."
+
+
 class ComparisonApiMixin:
     """A mixin used to factorize behaviours common to all API views."""
 
@@ -94,6 +98,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         Create a new comparison associated with the logged user, in a given
         poll.
         """
+        if not self.poll_from_url.active:
+            raise InactivePollError
         return self.create(request, *args, **kwargs)
 
     @transaction.atomic
@@ -220,8 +226,12 @@ class ComparisonDetailApi(
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""
+        if not self.poll_from_url.active:
+            raise InactivePollError
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Delete a comparison made by the logged user, in the given poll"""
+        if not self.poll_from_url.active:
+            raise InactivePollError
         return self.destroy(request, *args, **kwargs)

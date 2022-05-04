@@ -121,7 +121,7 @@ class Command(BaseCommand):
         if TOURNESOL_DEV:
             logging.error("You must turn TOURNESOL_DEV to 0 to use this")
         else:  # production
-            for poll in Poll.objects.all():
+            for poll in Poll.objects.filter(active=True):
                 ml_input = MlInputFromDb(poll_name=poll.name)
 
                 if poll.algorithm == ALGORITHM_LICCHAVI:

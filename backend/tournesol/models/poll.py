@@ -28,6 +28,7 @@ class Poll(models.Model):
     algorithm = models.CharField(
         max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
     )
+    active = models.BooleanField(default=True)
 
     @classmethod
     def default_poll(cls) -> "Poll":
