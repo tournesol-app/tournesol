@@ -1,19 +1,40 @@
+from __future__ import annotations
+
+from core.models import User
 from recommendation.video import Video
 import numpy as np
 
 
 class Graph:
-    # not necessarily the best data structure, I still have to find out what is the best one between the two]
+    # not necessarily the best data structure,
+    # I still have to find out what is the best one between the two
     edges: list[tuple[Video, Video]]
-    nodes: list[Video]
+    _nodes: list[Video]
     graph: dict[Video, list[Video]]
     sigma: float
+    dirty: bool
+    local_user: User
+
+    LAMBDA_THRESHOLD = 0.5
+    MIN_SCALING_ACCURACY = 0.5
+
+    ABSENT_NODE = Video()
 
     adjacency_matrix: np.array
     normalized_adjacency_matrix: np.array
 
     distance_matrix: np.array
     similarity_matrix: np.array
+
+    @property
+    def nodes(self):
+        return self.nodes
+
+    def __init__(self):
+        self.dirty = True
+        # init absent node values
+        self.ABSENT_NODE.v1_score = -1
+        self.ABSENT_NODE.estimated_information_gains = 1
 
     def add_node(self, new_node):
         if new_node not in self.nodes:
@@ -36,6 +57,8 @@ class Graph:
             self.edges.append((node_b, node_a))
             self.graph[node_a].append(node_b)
             self.graph[node_b].append(node_a)
+
+        self.dirty = True
 
     def build_adjacency_matrix(self):
         self.adjacency_matrix = np.zeroes(len(self.nodes))
@@ -125,11 +148,56 @@ class Graph:
             for j, v in enumerate(self.nodes):
                 self.similarity_matrix[i][j] = np.e ** ((self.distance_matrix[i, j])**2/self.sigma**2)
     
-    def compute_offline_parameters(self):
-        pass
+    def compute_offline_parameters(self, scaling_factor_increasing_videos):
+        if self.dirty:
+            self.dirty = False
+            self.build_adjacency_matrix()
+            self.build_distance_matrix()
+            self.build_similarity_matrix()
+            self.compute_information_gain(scaling_factor_increasing_videos)
 
-    def compute_information_gain(self):
-        pass
+    def compute_information_gain(self, scaling_factor_increasing_videos):
+        # First try to increase the scaling accuracy of the user if necessary
+        # TODO Use here data from db
+        if self.local_user.scaling_accuray < self.MIN_SCALING_ACCURACY:
+            for v in self.nodes:
+                for u in self.nodes:
+                    if v in scaling_factor_increasing_videos and u in scaling_factor_increasing_videos:
+                        v.v1_score = 1
+                        v.v2_score[u] = 1
+                    else:
+                        v.v1_score = 0
+                        v.v2_score[u] = 0
+        # Once the scaling factor is high enough, check what video should gain information being compared by the user
+        else:
+            for sg in self.find_connex_subgraphs():
+                eigenvalues = np.linalg.eigvalsh(sg.normalized_adjacency_matrix)
+                max_beta = 0
+                for u in sg.nodes:
+                    for v in self.nodes:
+                        # In the case the eigen value is big enough
+                        # => the graph is poorly connected,
+                        # so we should improve connexity
+                        if eigenvalues[1] > self.LAMBDA_THRESHOLD:
+                            u_index = sg.nodes.index(u)
+                            v_index = sg.nodes.index(v)
+                            v.v2_score[u] = sg.similarity_matrix[u_index, v_index]
+                        elif v not in sg.nodes:
+                            v.v2_score[u] = 1
+                        else:
+                            v.v2_score[u] = 0
+                        # TODO Use here data from db
+                        v.beta[u] += (self.local_user.delta_sigma[u] + self.local_user.delta_sigma[v]/(self.local_user.sigma[u] - self.local_user.sigma[v] + 1))
+                        if max_beta < v.beta[u]:
+                            max_beta = v.beta[u]
+                for u in sg.nodes:
+                    for v in self.nodes:
+                        v.v2_score[u] += v.beta[u]/max_beta
 
+    # This doesn't depend on the user -> not done here, well actually yes but not used in most of the graphs
     def update_preferences(self):
-        pass
+        for v in self.nodes:
+            for u in set(self.graph[v]):
+                v.estimated_related_preferences[u] = 0
+            for u in self.graph[v]:
+                v.estimated_related_preferences[u] += 1
