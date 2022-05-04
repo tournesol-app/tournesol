@@ -1,3 +1,9 @@
+/*
+  Because of a regression in CRA v5, Typescript is wrongly enforced here
+  See https://github.com/facebook/create-react-app/pull/11875
+*/
+// eslint-disable-next-line
+// @ts-nocheck
 import React from 'react';
 
 import { createMemoryHistory } from 'history';
