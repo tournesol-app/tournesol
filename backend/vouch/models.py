@@ -22,8 +22,7 @@ class Vouch(models.Model)
 
     trust_value = models.FloatField(
         default=0,
-        blank=False,
-        help_text="trust value assigned by vouchinguser to vouchedforuser",
+        help_text="Trust value assigned by vouching user to vouched-for user.",
     )
     uncertainty = models.FloatField(
         default=0,
