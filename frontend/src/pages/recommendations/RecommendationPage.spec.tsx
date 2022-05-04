@@ -2,19 +2,14 @@ import React from 'react';
 
 import { createMemoryHistory } from 'history';
 import { act } from 'react-dom/test-utils';
-import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
-import configureStore, { MockStoreCreator } from 'redux-mock-store';
-import thunk, { ThunkDispatch } from 'redux-thunk';
 
 import { ThemeProvider } from '@mui/material/styles';
-import { AnyAction } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 
-import { initialState } from 'src/features/login/loginSlice';
-import { LoginState } from 'src/features/login/LoginState.model';
 import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
 import { PollProvider } from 'src/hooks/useCurrentPoll';
+import * as useCurrentPoll from 'src/hooks/useCurrentPoll';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import { theme } from 'src/theme';
 import {
@@ -25,20 +20,12 @@ import {
 const EntityList = () => null;
 jest.mock('src/features/entities/EntityList', () => EntityList);
 
-interface MockState {
-  token: LoginState;
-}
-
 describe('RecommendationPage', () => {
-  const mockStore: MockStoreCreator<
-    MockState,
-    ThunkDispatch<LoginState, undefined, AnyAction>
-  > = configureStore([thunk]);
-
   let history: ReturnType<typeof createMemoryHistory>;
   let historySpy: ReturnType<typeof jest.spyOn>;
   let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
   let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
+  let getPollSpy: ReturnType<typeof jest.spyOn>;
 
   beforeEach(() => {
     history = createMemoryHistory();
@@ -47,21 +34,31 @@ describe('RecommendationPage', () => {
     getRecommendedVideosSpy = jest
       .spyOn(RecommendationApi, 'getRecommendations')
       .mockImplementation(async () => ({ count: 0, results: [] }));
+
+    // prevent the useCurrentPoll hook to make HTTP requests
+    getPollSpy = jest
+      .spyOn(useCurrentPoll, 'getPoll')
+      .mockImplementation(async () => ({
+        name: 'videos',
+        criterias: [
+          {
+            name: 'largely_recommended',
+            label: 'largely recommended',
+            optional: false,
+          },
+        ],
+      }));
   });
 
   const component = () => {
-    const state = { token: initialState };
-    const store = mockStore(state);
     render(
-      <Provider store={store}>
-        <Router history={history}>
-          <ThemeProvider theme={theme}>
-            <PollProvider>
-              <RecommendationPage />
-            </PollProvider>
-          </ThemeProvider>
-        </Router>
-      </Provider>
+      <Router history={history}>
+        <ThemeProvider theme={theme}>
+          <PollProvider>
+            <RecommendationPage />
+          </PollProvider>
+        </ThemeProvider>
+      </Router>
     );
   };
 

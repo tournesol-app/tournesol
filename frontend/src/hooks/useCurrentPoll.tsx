@@ -12,7 +12,7 @@ import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const pollsCache: Record<string, Promise<Poll>> = {};
 
-const getPoll = async (name: string, currentLang: string) => {
+export const getPoll = async (name: string, currentLang: string) => {
   const cacheKey = `${name},${currentLang}`;
   if (!pollsCache[cacheKey]) {
     pollsCache[cacheKey] = PollsService.pollsRetrieve({ name });
