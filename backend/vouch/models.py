@@ -17,7 +17,7 @@ class Vouch(models.Model)
         related_name="vouchedforuser",
     )
     is_public = models.BooleanField(
-        default=False, null=False, help_text="Should the vouching be public?"
+        default=False, help_text="Should the vouching be public?"
     )
 
     trust_value = models.FloatField(
