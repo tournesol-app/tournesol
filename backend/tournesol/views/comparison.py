@@ -5,6 +5,7 @@ API endpoints to interact with the contributor's comparisons.
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
@@ -16,7 +17,7 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 class InactivePollError(exceptions.PermissionDenied):
-    default_detail = "This action is not allowed on an inactive poll."
+    default_detail = _("This action is not allowed on an inactive poll.")
 
 
 class ComparisonApiMixin:
