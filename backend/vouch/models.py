@@ -2,8 +2,7 @@ from django.db import models
 from django.db.models import ObjectDoesNotExist
 from core.models.user import User
 
-# Create your models here.
-class vouch(models.Model):
+class Vouch(models.Model)
 
     vouching = models.ForeignKey(
         User,
