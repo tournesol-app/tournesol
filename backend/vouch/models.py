@@ -2,7 +2,9 @@ from django.db import models
 from django.db.models import ObjectDoesNotExist
 from core.models.user import User
 
+
 class Vouch(models.Model):
+
 
     by = models.ForeignKey(
         User,
@@ -43,6 +45,7 @@ class Vouch(models.Model):
         super().save(*args, **kwargs)
 
     @staticmethod
+
     def get_to(by):
         to = Vouch.objects.filter(by = by)
         return to, to.exists()
