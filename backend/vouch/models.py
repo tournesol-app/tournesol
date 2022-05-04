@@ -26,7 +26,6 @@ class Vouch(models.Model)
     )
     uncertainty = models.FloatField(
         default=0,
-        blank=False,
         help_text="Uncertainty about the vouching score",
     )
     criteria = models.TextField(
