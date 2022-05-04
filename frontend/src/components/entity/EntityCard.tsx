@@ -19,7 +19,6 @@ import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
 import { RelatedEntityObject, ActionList } from 'src/utils/types';
 import EntityCardScores from './EntityCardScores';
-import { Recommendation } from 'src/services/openapi';
 
 const EntityCard = ({
   entity,
@@ -40,11 +39,11 @@ const EntityCard = ({
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
-  const shouldDisplayScores = (
-    compact: boolean,
-    entity: Recommendation | RelatedEntityObject
-  ) => {
-    return !compact && 'tournesol_score' in entity ? true : false;
+  const displayEntityCardScores = () => {
+    if ('tournesol_score' in entity && !compact) {
+      return <EntityCardScores entity={entity} />;
+    }
+    return null;
   };
 
   return (
@@ -72,9 +71,7 @@ const EntityCard = ({
       >
         <EntityCardTitle title={entity.metadata.name} compact={compact} />
         <EntityMetadata entity={entity} />
-        {shouldDisplayScores(compact, entity) && (
-          <EntityCardScores entity={entity as Recommendation} />
-        )}
+        {displayEntityCardScores()}
       </Grid>
       <Grid
         item
