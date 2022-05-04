@@ -62,7 +62,3 @@ class Vouch(models.Model)
             return vouchedfor, False
         vouchedfor = vouch.objects.filter(vouchedfor = vouchedfor)
         return vouchedfor, True
-
-
-    
-
