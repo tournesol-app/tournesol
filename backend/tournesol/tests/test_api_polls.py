@@ -66,6 +66,11 @@ class PollsRecommendationsApi(TestCase):
         VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
         VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
 
+        VideoCriteriaScoreFactory(entity=self.video_1, criteria="reliability", score=0.1, score_mode="all_equal")
+        VideoCriteriaScoreFactory(entity=self.video_2, criteria="reliability", score=-0.2, score_mode="all_equal")
+        VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.5, score_mode="all_equal")
+        VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4, score_mode="all_equal")
+
     def test_anonymous_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -203,6 +208,22 @@ class PollsRecommendationsApi(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
+    
+    def test_can_list_recommendations_with_score_mode(self):
+        response = self.client.get("/polls/videos/recommendations/?score_mode=all_equal")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 3)
+
+        self.assertEqual(results[0]["tournesol_score"], 3.3)
+        self.assertEqual(results[0]["total_score"], 5.0)
+
+        self.assertEqual(results[1]["tournesol_score"], 4.4)
+        self.assertEqual(results[1]["total_score"], 4.0)
+
+        self.assertEqual(results[2]["tournesol_score"], 1.1)
+        self.assertEqual(results[2]["total_score"], 1.0)
 
 
 class EntityPollDistributorTestCase(TestCase):

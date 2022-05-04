@@ -16,8 +16,9 @@ from ml.outputs import (
     save_tournesol_score_as_sum_of_criteria,
 )
 from tournesol.models import Poll
+from tournesol.models.entity_score import ScoreMode
 
-from .global_scores import get_global_scores
+from .global_scores import compute_scaled_scores, get_global_scores
 from .individual import compute_individual_score
 
 logger = logging.getLogger(__name__)
@@ -43,18 +44,6 @@ def get_individual_scores(
     return result[["user_id", "entity_id", "score", "uncertainty"]]
 
 
-def compute_mehestan_scores(ml_input, criteria):
-    indiv_scores = get_individual_scores(ml_input, criteria=criteria)
-    logger.debug("Individual scores computed for crit '%s'", criteria)
-    global_scores, scalings = get_global_scores(
-        ml_input, individual_scores=indiv_scores
-    )
-    logger.debug("Global scores computed for crit '%s'", criteria)
-    indiv_scores["criteria"] = criteria
-    global_scores["criteria"] = criteria
-    return indiv_scores, global_scores, scalings
-
-
 def update_user_scores(poll: Poll, user: User):
     ml_input = MlInputFromDb(poll_name=poll.name)
     for criteria in poll.criterias_list:
@@ -77,20 +66,31 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
         poll.name,
         criteria,
     )
-    indiv_scores, global_scores, scalings = compute_mehestan_scores(
-        ml_input, criteria=criteria
-    )
-    logger.info(
-        "Mehestan for poll '%s': scores computed for crit '%s'",
-        poll.name,
-        criteria,
+
+    indiv_scores = get_individual_scores(ml_input, criteria=criteria)
+    logger.debug("Individual scores computed for crit '%s'", criteria)
+    scaled_scores, scalings = compute_scaled_scores(
+        ml_input, individual_scores=indiv_scores
     )
 
+    indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
     save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
-    save_entity_scores(poll, global_scores, single_criteria=criteria)
+
+    for mode in ScoreMode:
+        global_scores = get_global_scores(scaled_scores, score_mode=mode)
+        global_scores["criteria"] = criteria
+
+        logger.info(
+            "Mehestan for poll '%s': scores computed for crit '%s' and mode '%s'",
+            poll.name,
+            criteria,
+            mode,
+        )
+        save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
+
     logger.info(
-        "Mehestan for poll '%s': scores saved for crit '%s'",
+        "Mehestan for poll '%s': done with crit '%s'",
         poll.name,
         criteria,
     )
