@@ -16,7 +16,10 @@ class Command(BaseCommand):
             "-f",
             "--file",
             type=str,
-            help="Relative path to the input file. Each line must follow the structure {yt_video_id};{BOT_NAME}.",
+            help=(
+                "Relative path to the input file. "
+                "Each line must follow the structure {yt_video_id};{BOT_NAME}."
+            ),
         )
 
         # Optional argument
