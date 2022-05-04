@@ -448,6 +448,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/Poll'
           description: ''
+  /polls/{name}/entities/{uid}/criteria_scores_distributions:
+    get:
+      operationId: polls_entities_criteria_scores_distributions_retrieve
+      description: Get the distribution of the contributor's ratings per criteria
+        for an entity
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - polls
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityCriteriaDistribution'
+          description: ''
   /polls/{name}/recommendations/:
     get:
       operationId: polls_recommendations_list
@@ -528,6 +556,15 @@ paths:
               name: A candidate full name
               youtube_channel_id: channel ID
             summary: Some filters available for candidates.
+      - in: query
+        name: score_mode
+        schema:
+          type: string
+          enum:
+          - all_equal
+          - default
+          - trusted_only
+          default: default
       tags:
       - polls
       security:
@@ -1423,7 +1460,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedEntityList'
+                $ref: '#/components/schemas/PaginatedEntityNoExtraFieldList'
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -2003,34 +2040,34 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        is_public:
-          type: boolean
-          readOnly: true
         metadata:
           type: object
           additionalProperties: {}
           readOnly: true
+        is_public:
+          type: boolean
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
+        total_score:
+          type: number
+          format: float
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        total_score:
-          type: number
-          format: float
       required:
       - criteria_scores
       - is_public
@@ -2038,6 +2075,25 @@ components:
       - total_score
       - type
       - uid
+    CriteriaDistributionScore:
+      type: object
+      properties:
+        criteria:
+          type: string
+        distribution:
+          type: array
+          items:
+            type: number
+            format: float
+        bins:
+          type: array
+          items:
+            type: number
+            format: float
+      required:
+      - bins
+      - criteria
+      - distribution
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -2120,6 +2176,47 @@ components:
       - tournesol_score
       - type
       - uid
+    EntityCriteriaDistribution:
+      type: object
+      description: An Entity serializer that show distribution of score for a given
+        entity
+      properties:
+        uid:
+          type: string
+          readOnly: true
+          description: A unique identifier, build with a namespace and an external
+            id.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        tournesol_score:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
+        rating_n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the video
+        criteria_scores_distributions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CriteriaDistributionScore'
+          readOnly: true
+      required:
+      - criteria_scores_distributions
+      - metadata
+      - rating_n_contributors
+      - tournesol_score
+      - type
+      - uid
     EntityCriteriaScore:
       type: object
       properties:
@@ -2166,6 +2263,11 @@ components:
       required:
       - criteria_scores
       - name
+    EntityTypeEnum:
+      enum:
+      - video
+      - candidate_fr_2022
+      type: string
     GenderEnum:
       enum:
       - Not Specified
@@ -2537,6 +2639,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Entity'
+    PaginatedEntityNoExtraFieldList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityNoExtraField'
     PaginatedRecommendationList:
       type: object
       properties:
@@ -2767,8 +2889,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PollCriteria'
+        entity_type:
+          $ref: '#/components/schemas/EntityTypeEnum'
+        active:
+          type: boolean
+          description: On an inactive poll, entity scores are not updated and comparisons
+            can't be created, updated or deleted.
       required:
       - criterias
+      - entity_type
       - name
     PollCriteria:
       type: object

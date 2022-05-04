@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { CircularProgress, Grid, Typography, Card } from '@mui/material';
 
 import { useNotifications } from 'src/hooks';
-import { UsersService, ComparisonRequest } from 'src/services/openapi';
+import {
+  UsersService,
+  ComparisonRequest,
+  ApiError,
+} from 'src/services/openapi';
 import ComparisonSliders from 'src/features/comparisons/ComparisonSliders';
 import EntitySelector, {
   SelectorValue,
@@ -70,7 +74,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
-  const { showSuccessAlert } = useNotifications();
+  const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { name: pollName } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
   const [initialComparison, setInitialComparison] =
@@ -156,20 +160,25 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
   }, [pollName, uidA, uidB, selectorA.uid, selectorB.uid]);
 
   const onSubmitComparison = async (c: ComparisonRequest) => {
-    if (initialComparison) {
-      const { entity_a, entity_b, criteria_scores, duration_ms } = c;
-      await UsersService.usersMeComparisonsUpdate({
-        pollName,
-        uidA: entity_a.uid,
-        uidB: entity_b.uid,
-        requestBody: { criteria_scores, duration_ms },
-      });
-    } else {
-      await UsersService.usersMeComparisonsCreate({
-        pollName,
-        requestBody: c,
-      });
-      setInitialComparison(c);
+    try {
+      if (initialComparison) {
+        const { entity_a, entity_b, criteria_scores, duration_ms } = c;
+        await UsersService.usersMeComparisonsUpdate({
+          pollName,
+          uidA: entity_a.uid,
+          uidB: entity_b.uid,
+          requestBody: { criteria_scores, duration_ms },
+        });
+      } else {
+        await UsersService.usersMeComparisonsCreate({
+          pollName,
+          requestBody: c,
+        });
+        setInitialComparison(c);
+      }
+    } catch (e) {
+      displayErrorsFrom(e as ApiError);
+      throw e;
     }
 
     if (afterSubmitCallback) {

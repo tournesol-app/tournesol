@@ -115,6 +115,7 @@ export const useCurrentPoll = () => {
 
   return {
     ...contextValue,
+    active: contextValue.poll?.active ?? false,
     baseUrl: pollOptions?.path.replace(/\/+$/g, ''),
     criterias: poll?.criterias ?? [],
     options: pollOptions,
