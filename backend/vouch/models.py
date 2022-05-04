@@ -41,6 +41,7 @@ class Vouch(models.Model)
          raise ValueError("Updating the value of creator isn't allowed")
         super().save(*args, **kwargs)
 
+    @staticmethod
     def get_vouchedfor(vouching):
         try:
             vouching = vouch.objects.get(vouching = vouching)
