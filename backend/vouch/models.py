@@ -52,7 +52,8 @@ class Vouch(models.Model)
         vouching = vouch.objects.get(vouching = vouching)
         return vouching, True
 
-    def get_vouching(vouchedfor):
+    @staticmethod
+    def get_vouching(vouching):
         try:
             vouchedfor = vouch.objects.filter(vouchedfor = vouchedfor)
         except ObjectDoesNotExist:
