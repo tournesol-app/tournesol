@@ -24,7 +24,7 @@ const between = (a: number, b: number, x: number | undefined): number => {
 
 const CriteriaRadarChart = ({ video }: Props) => {
   const { getCriteriaLabel, options } = useCurrentPoll();
-  const excluded_main_criteria = Array.from(options?.mainCriteriaName || []);
+  const mainCriterionName = options?.mainCriterionName ?? '';
 
   const renderCustomAxisTick = ({
     x,
@@ -65,7 +65,7 @@ const CriteriaRadarChart = ({ video }: Props) => {
   }
 
   const data = criteria_scores
-    .filter((s) => !excluded_main_criteria.includes(s.criteria))
+    .filter((s) => mainCriterionName !== s.criteria)
     .map((s) => ({
       ...s,
       score: between(

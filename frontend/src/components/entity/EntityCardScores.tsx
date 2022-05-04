@@ -41,7 +41,7 @@ const EntityCardScores = ({ entity }: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { getCriteriaLabel, options } = useCurrentPoll();
-  const excluded_main_criteria = Array.from(options?.mainCriteriaName || []);
+  const mainCriterionName = options?.mainCriterionName ?? '';
 
   const nbRatings = entity.n_comparisons;
   const nbContributors = entity.n_contributors;
@@ -66,7 +66,7 @@ const EntityCardScores = ({ entity }: Props) => {
       if (
         criteria.score != undefined &&
         criteria.score > max_score &&
-        !excluded_main_criteria.includes(criteria.criteria)
+        mainCriterionName !== criteria.criteria
       ) {
         max_score = criteria.score;
         max_criteria = criteria.criteria;
@@ -74,7 +74,7 @@ const EntityCardScores = ({ entity }: Props) => {
       if (
         criteria.score != undefined &&
         criteria.score < min_score &&
-        !excluded_main_criteria.includes(criteria.criteria)
+        mainCriterionName !== criteria.criteria
       ) {
         min_score = criteria.score;
         min_criteria = criteria.criteria;
