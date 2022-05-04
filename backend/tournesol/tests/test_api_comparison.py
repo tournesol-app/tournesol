@@ -886,7 +886,9 @@ class ComparisonApiTestCase(TestCase):
 
     @patch("tournesol.utils.api_youtube.get_video_metadata")
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
-        mock_get_video_metadata.return_value = {}
+        mock_get_video_metadata.return_value = {
+            "views": "42000"
+        }
 
         user = UserFactory(username="non_existing_user")
         self.client.force_authenticate(user=user)
@@ -909,6 +911,8 @@ class ComparisonApiTestCase(TestCase):
         response = self.client.post(self.comparisons_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
+        video01.refresh_from_db()
+        self.assertEqual(video01.metadata["views"], 42000)
 
         data = {
             "entity_a": {"uid": self._uid_01},
