@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "rest_registration",
+    "vouch",
 ]
 
 REST_REGISTRATION_MAIN_URL = server_settings.get(

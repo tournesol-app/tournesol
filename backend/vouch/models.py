@@ -2,33 +2,32 @@ from django.db import models
 from django.db.models import ObjectDoesNotExist
 from core.models.user import User
 
-# Create your models here.
-class vouch(models.Model):
+class Vouch(models.Model):
 
-    vouching = models.ForeignKey(
+    by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="",
-        related_name="vouchinguser",
+        help_text="User who vouch for",
+        related_name="user_by",
+        default= 0,
     )
-    vouchedfor = models.ForeignKey(
+    to = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="The contributor",
-        related_name="vouchedforuser",
+        help_text="User being vouched for",
+        related_name="user_to",
+        default= 0,
     )
     is_public = models.BooleanField(
-        default=False, null=False, help_text="Should the vouching be public?"
+        default=False, help_text="Should the vouching be public?"
     )
 
     trust_value = models.FloatField(
         default=0,
-        blank=False,
-        help_text="trust value assigned by vouchinguser to vouchedforuser",
+        help_text="Trust value assigned by vouching user to vouched-for user.",
     )
     uncertainty = models.FloatField(
         default=0,
-        blank=False,
         help_text="Uncertainty about the vouching score",
     )
     criteria = models.TextField(
@@ -39,31 +38,16 @@ class vouch(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if not self._state.adding and (
-            self.creator_id != self._loaded_values['creator_id']):
-         raise ValueError("Updating the value of creator isn't allowed")
+        if self.pk:
+            raise ValueError("This vouching is not allowed")
         super().save(*args, **kwargs)
 
-    def get_vouchedfor(vouching):
-        try:
-            vouching = vouch.objects.get(vouching = vouching)
-        except ObjectDoesNotExist:
-            pass
-        else:
-            return vouching, False
-        vouching = vouch.objects.get(vouching = vouching)
-        return vouching, True
+    @staticmethod
+    def get_to(by):
+        to = Vouch.objects.filter(by = by)
+        return to, to.exists()
 
-    def get_vouching(vouchedfor):
-        try:
-            vouchedfor = vouch.objects.filter(vouchedfor = vouchedfor)
-        except ObjectDoesNotExist:
-            pass
-        else:
-            return vouchedfor, False
-        vouchedfor = vouch.objects.filter(vouchedfor = vouchedfor)
-        return vouchedfor, True
-
-
-    
-
+    @staticmethod
+    def get_by(to):
+        by = Vouch.objects.filter(to = to)
+        return by, by.exists()
