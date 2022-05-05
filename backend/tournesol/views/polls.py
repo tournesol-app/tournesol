@@ -1,7 +1,7 @@
 import logging
 
 from django.conf import settings
-from django.db.models import Case, F, Prefetch, Q, Sum, When
+from django.db.models import Case, F, Sum, When
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -13,7 +13,8 @@ from drf_spectacular.utils import (
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
-from tournesol.models import Entity, EntityCriteriaScore, Poll
+from tournesol.models import Entity, Poll
+from tournesol.models.entity_score import ScoreMode
 from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
 from tournesol.serializers.poll import (
     PollSerializer,
@@ -153,23 +154,6 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             criteria_cases.append(When(**{when: crit}, then=weight))
         return Case(*criteria_cases, default=0)
 
-    def annotate_with_total_score(self, queryset, request, poll: Poll):
-        criteria_weight = self._build_criteria_weight_condition(request, poll)
-
-        queryset = queryset.annotate(
-            total_score=Sum(
-                F("criteria_scores__score") * criteria_weight,
-                filter=Q(criteria_scores__poll=poll),
-            )
-        )
-
-        return queryset.prefetch_related(
-            Prefetch(
-                "criteria_scores",
-                queryset=EntityCriteriaScore.objects.filter(poll=poll),
-            )
-        )
-
 
 class PollsView(RetrieveAPIView):
     """
@@ -182,6 +166,18 @@ class PollsView(RetrieveAPIView):
     serializer_class = PollSerializer
 
 
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "score_mode",
+                OpenApiTypes.STR,
+                enum=ScoreMode.values,
+                default=ScoreMode.DEFAULT,
+            ),
+        ],
+    )
+)
 class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     """
     List the recommended entities of a given poll sorted by decreasing total
@@ -196,11 +192,37 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     queryset = Entity.objects.none()
     serializer_class = RecommendationSerializer
 
+    def annotate_and_prefetch_scores(self, queryset, request, poll: Poll):
+        raw_score_mode = request.query_params.get("score_mode", ScoreMode.DEFAULT)
+        try:
+            score_mode = ScoreMode(raw_score_mode)
+        except ValueError:
+            raise serializers.ValidationError(
+                {"score_mode": f"Accepted values are: {','.join(ScoreMode.values)}"}
+            )
+
+        criteria_weight = self._build_criteria_weight_condition(
+            request, poll, when="all_criteria_scores__criteria"
+        )
+        queryset = (
+            queryset
+            .filter(
+                all_criteria_scores__poll=poll,
+                all_criteria_scores__score_mode=score_mode,
+            )
+            .annotate(
+                total_score=Sum(
+                    F("all_criteria_scores__score") * criteria_weight,
+                )
+            )
+        )
+        return queryset.with_prefetched_scores(poll_name=poll.name, mode=score_mode)
+
     def get_queryset(self):
         poll = self.poll_from_url
-        queryset = Entity.objects.filter(criteria_scores__poll=poll)
+        queryset = Entity.objects.all()
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
-        queryset = self.annotate_with_total_score(queryset, self.request, poll)
+        queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
         return queryset.order_by("-total_score", "-pk")
 

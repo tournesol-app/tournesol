@@ -1,14 +1,19 @@
 import React from 'react';
-import { Select, MenuItem } from '@mui/material';
-import { criteriaToEmoji } from 'src/utils/constants';
+import { Select, MenuItem, Box } from '@mui/material';
+import { CriteriaIcon } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 
 interface Props {
   criteria: string;
   setCriteria: (c: string) => void;
+  extraEmptyOption?: string;
 }
 
-const CriteriaSelector = ({ criteria, setCriteria }: Props) => {
+const CriteriaSelector = ({
+  criteria,
+  setCriteria,
+  extraEmptyOption = '',
+}: Props) => {
   const { criterias } = useCurrentPoll();
   return (
     <Select
@@ -18,9 +23,21 @@ const CriteriaSelector = ({ criteria, setCriteria }: Props) => {
       value={criteria}
       onChange={(v) => setCriteria(v.target.value)}
     >
+      {extraEmptyOption !== '' && (
+        <MenuItem value={extraEmptyOption}>------------</MenuItem>
+      )}
       {criterias.map((criterion) => (
         <MenuItem key={criterion.name} value={criterion.name}>
-          {criteriaToEmoji[criterion.name]} {criterion.label}
+          <Box display="flex" alignItems="center">
+            <CriteriaIcon
+              criteriaName={criterion.name}
+              sx={{
+                display: 'inline',
+                marginRight: '6px',
+              }}
+            />
+            {criterion.label}
+          </Box>
         </MenuItem>
       ))}
     </Select>
