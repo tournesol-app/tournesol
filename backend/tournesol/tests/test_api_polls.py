@@ -17,6 +17,8 @@ class PollsApi(TestCase):
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(response_data["name"], "videos")
+        self.assertEqual(response_data["active"], True)
+        self.assertEqual(response_data["entity_type"], "video")
         self.assertEqual(len(response_data["criterias"]), 10)
         self.assertEqual(
             response_data["criterias"][0],

@@ -45,7 +45,9 @@
     "comparisonInPublicDatasetAfterSubmission": "After submission, this comparison will be included in the public dataset.",
     "editComparison": "Edit comparison",
     "criteriaSkipped": "skipped",
-    "submitAComparison": "Submit a comparison"
+    "submitAComparison": "Submit a comparison",
+    "inactivePoll": "This poll is closed.",
+    "inactivePollComparisonCannotBeSubmittedOrEdited": "No comparison can be submitted or modified."
   },
   "comparisonHelper": {
     "hideHelp": "Hide the help",
@@ -353,6 +355,10 @@
   "myRateLaterListPage": {
     "title": "My rate-later list"
   },
+  "recommendationsPage": {
+    "title": "Recommendations"
+  },
+  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",
@@ -371,10 +377,6 @@
   "myRatedVideosPage": {
     "title": "My rated videos"
   },
-  "recommendationsPage": {
-    "title": "Recommendations"
-  },
-  "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "actions": {
     "compareNow": "Compare now",
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",

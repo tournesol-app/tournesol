@@ -19,7 +19,7 @@ class PollSerializer(ModelSerializer):
 
     class Meta:
         model = Poll
-        fields = ["name", "criterias"]
+        fields = ["name", "criterias", "entity_type", "active"]
 
 
 class RecommendationSerializer(ModelSerializer):

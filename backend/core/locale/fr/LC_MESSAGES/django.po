@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-19 09:51+0000\n"
+"POT-Creation-Date: 2022-05-04 11:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,14 +22,15 @@ msgstr ""
 msgid "email address"
 msgstr "adresse e-mail"
 
-#: core/models/user.py:278
+#: core/models/user.py:277
+#, python-format
 msgid ""
 "A user with an email starting with '%(email)s' already exists in this domain."
 msgstr ""
-"Un utilisateur avec un e-mail commençant par '%(email)' existe déjà dans ce "
+"Un utilisateur avec un e-mail commençant par '%(email)s' existe déjà dans ce "
 "domaine."
 
-#: core/models/user.py:312 core/serializers/user.py:19
+#: core/models/user.py:310 core/serializers/user.py:19
 msgid "A user with this email address already exists."
 msgstr "Un utilisateur avec cet e-mail existe déjà."
 

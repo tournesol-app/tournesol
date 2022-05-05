@@ -28,6 +28,11 @@ class Poll(models.Model):
     algorithm = models.CharField(
         max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
     )
+    active = models.BooleanField(
+        default=True,
+        help_text="On an inactive poll, entity scores are not updated"
+        " and comparisons can't be created, updated or deleted by users.",
+    )
 
     @classmethod
     def default_poll(cls) -> "Poll":

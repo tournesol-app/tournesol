@@ -48,7 +48,9 @@
     "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
     "editComparison": "Modifier la comparaison",
     "criteriaSkipped": "ignoré",
-    "submitAComparison": "Soumettre une comparaison"
+    "submitAComparison": "Soumettre une comparaison",
+    "inactivePoll": "Ce scrutin est fermé.",
+    "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée."
   },
   "comparisonHelper": {
     "hideHelp": "Cacher l'aide",
@@ -360,6 +362,10 @@
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
   },
+  "recommendationsPage": {
+    "title": "Recommandations"
+  },
+  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",
@@ -378,10 +384,6 @@
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
   },
-  "recommendationsPage": {
-    "title": "Recommandations"
-  },
-  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "actions": {
     "compareNow": "Comparer !",
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
