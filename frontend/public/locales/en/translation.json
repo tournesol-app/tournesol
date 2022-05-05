@@ -2,6 +2,13 @@
   "components": {
     "filtersButton": "filters"
   },
+  "criteriaScoreDistributions": {
+    "lessThan": "< {{score}}",
+    "fromTo": "{{from}} to {{to}}",
+    "greaterThan": "> {{score}}",
+    "label": "Count",
+    "title": "Criteria score distribution"
+  },
   "dialogBox": {
     "continue": "continue"
   },

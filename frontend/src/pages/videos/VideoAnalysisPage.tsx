@@ -9,12 +9,17 @@ import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { TitledSection } from 'src/components';
+import { useTranslation } from 'react-i18next';
+import CriteriaScoreDistributions from 'src/components/CriteriaScoreDistributions';
 
 export const VideoAnalysis = ({
   video,
 }: {
   video: VideoSerializerWithCriteria;
 }) => {
+  const { t } = useTranslation();
+  const entityId = `yt:${video.video_id}`;
   return (
     <Box display="flex" justifyContent="center">
       <Grid
@@ -38,6 +43,11 @@ export const VideoAnalysis = ({
           <Card>
             <CriteriaBarChart video={video} />
           </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TitledSection title={t('criteriaScoreDistributions.title')}>
+            <CriteriaScoreDistributions uid={entityId} />
+          </TitledSection>
         </Grid>
       </Grid>
     </Box>
