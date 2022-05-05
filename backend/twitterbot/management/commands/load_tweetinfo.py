@@ -20,6 +20,7 @@ class Command(BaseCommand):
                 "Relative path to the input file. "
                 "Each line must follow the structure {yt_video_id};{BOT_NAME}."
             ),
+            required=True,
         )
 
         # Optional argument
