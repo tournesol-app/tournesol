@@ -10,6 +10,7 @@ import EntityCardScores from 'src/components/entity/EntityCardScores';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Recommendation, TypeEnum } from 'src/services/openapi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
+import CriteriaScoreDistributions from 'src/components/CriteriaScoreDistributions';
 
 interface Props {
   entity: Recommendation;
@@ -67,6 +68,23 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
               </Box>
               <Box p={1}>
                 <CriteriaBarChart entity={entity} />
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <Paper>
+              <Box
+                p={1}
+                bgcolor="rgb(238, 238, 238)"
+                display="flex"
+                justifyContent="center"
+              >
+                <Typography variant="h5">
+                  {t('entityAnalysisPage.chart.scoreDistribution.title')}
+                </Typography>
+              </Box>
+              <Box p={1}>
+                <CriteriaScoreDistributions uid={entity.uid} />
               </Box>
             </Paper>
           </Grid>

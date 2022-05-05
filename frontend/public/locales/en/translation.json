@@ -2,6 +2,12 @@
   "components": {
     "filtersButton": "filters"
   },
+  "criteriaScoreDistributions": {
+    "lessThan": "< {{score}}",
+    "fromTo": "{{from}} to {{to}}",
+    "greaterThan": "> {{score}}",
+    "label": "Count"
+  },
   "dialogBox": {
     "continue": "continue"
   },
@@ -327,6 +333,9 @@
     "chart": {
       "criteriaScores": {
         "title": "Scores per criterion"
+      },
+      "scoreDistribution": {
+        "title": "Score distribution per criterion"
       }
     }
   },
