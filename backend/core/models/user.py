@@ -192,9 +192,9 @@ class User(AbstractUser):
         null=True,
     )
     trust_score = models.FloatField(
-        default = 0,
-        help_text = "Your trust score",
-        null = True
+        default=0,
+        help_text="Your trust score",
+        null=True
     )
 
     # @property
