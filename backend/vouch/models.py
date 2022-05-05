@@ -4,8 +4,6 @@ from core.models.user import User
 
 
 class Vouch(models.Model):
-
-
     by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
