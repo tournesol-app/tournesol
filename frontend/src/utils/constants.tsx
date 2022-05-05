@@ -178,6 +178,15 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   }
 };
 
+export const getRecommendationPageName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case PRESIDENTIELLE_2022_POLL_NAME:
+      return t('recommendationsPage.title.results');
+    default:
+      return t('recommendationsPage.title.recommendations');
+  }
+};
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.

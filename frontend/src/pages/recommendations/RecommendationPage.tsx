@@ -17,6 +17,7 @@ import {
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { getRecommendationPageName } from 'src/utils/constants';
 
 function RecommendationsPage() {
   const { t } = useTranslation();
@@ -94,7 +95,7 @@ function RecommendationsPage() {
 
   return (
     <>
-      <ContentHeader title={t('recommendationsPage.title')} />
+      <ContentHeader title={getRecommendationPageName(t, pollName)} />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box px={{ xs: 2, sm: 0 }}>
           <SearchFilter />

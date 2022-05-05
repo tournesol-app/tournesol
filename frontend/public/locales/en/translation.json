@@ -7,14 +7,6 @@
   },
   "video": {
     "labelShowSettings": "Show settings related to this video",
-    "nbViews": "{{nbViews}} views",
-    "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
-    "nComparisonsByYou_one": "{{count}} comparison by you",
-    "nComparisonsByYou_other": "{{count}} comparisons by you",
-    "notYetComparedByYou": "Not yet compared by you",
-    "contributionsArePublicMessage": "Your contributions about this item are currently public. Comparisons appear in the public data associated to your profile only if you tag both items as public.",
-    "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
-    "personalScore": "Personal score: {{score}}",
     "unsafeNotEnoughContributor": "The relevance of this score is uncertain, due to too few contributors.",
     "unsafeNegativeRating": "This video score is below the average of the other videos added to Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparison by",
@@ -22,7 +14,15 @@
     "nbContributors_one": "{{count}} contributor",
     "nbContributors_other": "{{count}} contributors",
     "criteriaRatedHigh": "Rated high:",
-    "criteriaRatedLow": "Rated low:"
+    "criteriaRatedLow": "Rated low:",
+    "nbViews": "{{nbViews}} views",
+    "seeRecommendedVideosSameUploader": "See recommended videos of the same uploader",
+    "nComparisonsByYou_one": "{{count}} comparison by you",
+    "nComparisonsByYou_other": "{{count}} comparisons by you",
+    "notYetComparedByYou": "Not yet compared by you",
+    "contributionsArePublicMessage": "Your contributions about this item are currently public. Comparisons appear in the public data associated to your profile only if you tag both items as public.",
+    "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
+    "personalScore": "Personal score: {{score}}"
   },
   "pagination": {
     "videos": "videos",
@@ -92,7 +92,6 @@
   },
   "menu": {
     "home": "Home",
-    "recommendations": "Recommendations",
     "compare": "Compare 🌻",
     "myComparisons": "My comparisons",
     "comparedItems": "My compared items",
@@ -355,9 +354,6 @@
   "myRateLaterListPage": {
     "title": "My rate-later list"
   },
-  "recommendationsPage": {
-    "title": "Recommendations"
-  },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
@@ -455,6 +451,12 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
+  },
+  "recommendationsPage": {
+    "title": {
+      "results": "Results",
+      "recommendations": "Recommendations"
+    }
   },
   "presidentielle2022": {
     "dialogs": {

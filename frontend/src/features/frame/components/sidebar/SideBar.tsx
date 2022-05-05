@@ -33,6 +33,7 @@ import { closeDrawer } from '../../drawerOpenSlice';
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { getRecommendationPageName } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
 import Footer from './Footer';
 
@@ -103,7 +104,7 @@ const SideBar = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const { options } = useCurrentPoll();
+  const { name: pollName, options } = useCurrentPoll();
   const path = options && options.path ? options.path : '/';
   const disabledItems = options?.disabledRouteIds ?? [];
   const defaultRecoSearchParams = options?.defaultRecoSearchParams
@@ -129,7 +130,7 @@ const SideBar = () => {
       id: RouteID.Recommendations,
       targetUrl: `${path}recommendations${defaultRecoSearchParams}`,
       IconComponent: VideoLibrary,
-      displayText: t('menu.recommendations'),
+      displayText: getRecommendationPageName(t, pollName),
     },
     { displayText: 'divider_1' },
     {

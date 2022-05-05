@@ -7,15 +7,6 @@
   },
   "video": {
     "labelShowSettings": "Voir les paramètres de cette video",
-    "nbViews": "{{nbViews}} vues",
-    "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
-    "nComparisonsByYou_one": "{{count}} comparaison par vous",
-    "nComparisonsByYou_many": "{{count}} comparaisons par vous",
-    "nComparisonsByYou_other": "{{count}} comparaisons par vous",
-    "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
-    "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
-    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
-    "personalScore": "Score personnel\u00a0: {{score}}",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
@@ -25,7 +16,16 @@
     "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :"
+    "criteriaRatedLow": "Noté faiblement :",
+    "nbViews": "{{nbViews}} vues",
+    "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "nComparisonsByYou_one": "{{count}} comparaison par vous",
+    "nComparisonsByYou_many": "{{count}} comparaisons par vous",
+    "nComparisonsByYou_other": "{{count}} comparaisons par vous",
+    "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
+    "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
+    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
+    "personalScore": "Score personnel\u00a0: {{score}}"
   },
   "pagination": {
     "videos": "vidéos",
@@ -97,7 +97,6 @@
   },
   "menu": {
     "home": "Accueil",
-    "recommendations": "Recommandations",
     "compare": "Comparer 🌻",
     "myComparisons": "Mes comparaisons",
     "comparedItems": "Élements comparés",
@@ -362,9 +361,6 @@
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
   },
-  "recommendationsPage": {
-    "title": "Recommandations"
-  },
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
@@ -462,6 +458,12 @@
     "videos": "vidéos",
     "entityCandidate": "candidat",
     "entityVideo": "vidéo"
+  },
+  "recommendationsPage": {
+    "title": {
+      "results": "Résultats",
+      "recommendations": "Recommandations"
+    }
   },
   "presidentielle2022": {
     "dialogs": {
