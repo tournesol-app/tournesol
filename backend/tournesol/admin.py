@@ -256,13 +256,14 @@ class CriteriaLocalesInline(admin.TabularInline):
 class PollAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'active',
         'algorithm',
         'entity_type',
         'get_n_criteria',
         'get_n_comparisons',
         'get_n_comparisons_per_criteria',
     )
-    list_filter = ("algorithm", "entity_type")
+    list_filter = ("active", "algorithm", "entity_type")
     inlines = (CriteriasInline,)
 
     def get_queryset(self, request):
