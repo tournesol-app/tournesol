@@ -124,13 +124,12 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         show_unsafe = filters["unsafe"]
         if show_unsafe:
-            queryset = queryset.filter(total_score__isnull=False)
+            return queryset
         else:
-            queryset = queryset.filter(
-                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-            ).filter(total_score__gt=0)
-
-        return queryset
+            return queryset.filter(
+                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
+                tournesol_score__gt=0
+            )
 
     def _build_criteria_weight_condition(
         self, request, poll: Poll, when="criteria_scores__criteria"
@@ -214,7 +213,7 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
                 total_score=Sum(
                     F("all_criteria_scores__score") * criteria_weight,
                 )
-            )
+            ).filter(total_score__isnull=False)
         )
         return queryset.with_prefetched_scores(poll_name=poll.name, mode=score_mode)
 
