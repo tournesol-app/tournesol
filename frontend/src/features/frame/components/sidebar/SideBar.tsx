@@ -33,7 +33,10 @@ import { closeDrawer } from '../../drawerOpenSlice';
 import { useAppSelector, useAppDispatch } from 'src/app/hooks';
 import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { getRecommendationPageName } from 'src/utils/constants';
+import {
+  getRecommendationPageName,
+  PRESIDENTIELLE_2022_POLL_NAME,
+} from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
 import Footer from './Footer';
 
@@ -200,6 +203,15 @@ const SideBar = () => {
           if (id && disabledItems.includes(id)) {
             return;
           }
+
+          // Temporary: hide results page for "presidentielle2022" in menu
+          if (
+            id === RouteID.Recommendations &&
+            pollName === PRESIDENTIELLE_2022_POLL_NAME
+          ) {
+            return;
+          }
+
           const selected = isItemSelected(targetUrl);
           return (
             <ListItem
