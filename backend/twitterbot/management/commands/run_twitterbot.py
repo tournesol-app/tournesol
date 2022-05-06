@@ -41,7 +41,7 @@ class Command(BaseCommand):
         bot_name = options["bot_name"]
 
         if options["list"]:
-            language = settings.TWITTERBOT_CREDENTIALS[bot_name]["language"]
+            language = settings.TWITTERBOT_CREDENTIALS[bot_name]["LANGUAGE"]
             videos = get_video_recommendations(language)
 
             for video in videos:
