@@ -23,7 +23,8 @@ const between = (a: number, b: number, x: number | undefined): number => {
 };
 
 const CriteriaRadarChart = ({ video }: Props) => {
-  const { getCriteriaLabel } = useCurrentPoll();
+  const { getCriteriaLabel, options } = useCurrentPoll();
+  const mainCriterionName = options?.mainCriterionName ?? '';
 
   const renderCustomAxisTick = ({
     x,
@@ -64,7 +65,7 @@ const CriteriaRadarChart = ({ video }: Props) => {
   }
 
   const data = criteria_scores
-    .filter((s) => s.criteria != 'largely_recommended')
+    .filter((s) => mainCriterionName !== s.criteria)
     .map((s) => ({
       ...s,
       score: between(

@@ -7,16 +7,18 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Video, UsersService } from 'src/services/openapi';
-import { useNotifications } from 'src/hooks';
+import { useCurrentPoll, useNotifications } from 'src/hooks';
 import { idFromUid } from './video';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
+
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
         size="medium"
-        href={`/comparison/?uidA=${uid}`}
+        href={`${baseUrl}/comparison/?uidA=${uid}`}
         sx={{ color: '#CDCABC' }}
       >
         <CompareIcon />

@@ -5,6 +5,11 @@ import {
   getAllCandidates,
   getTutorialDialogs,
 } from './polls/presidentielle2022';
+import {
+  AddToRateLaterList,
+  AnalysisPageLink,
+  CompareNowAction,
+} from './action';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -173,6 +178,15 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   }
 };
 
+export const getRecommendationPageName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case PRESIDENTIELLE_2022_POLL_NAME:
+      return t('recommendationsPage.title.results');
+    default:
+      return t('recommendationsPage.title.recommendations');
+  }
+};
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.
@@ -182,13 +196,12 @@ export const polls: Array<SelectablePoll> = [
     ? [
         {
           name: PRESIDENTIELLE_2022_POLL_NAME,
+          defaultAuthEntityActions: [CompareNowAction],
+          defaultAnonEntityActions: [],
           displayOrder: 20,
+          mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
-          disabledRouteIds: [
-            RouteID.Recommendations,
-            RouteID.MyRateLaterList,
-            RouteID.MyComparedItems,
-          ],
+          disabledRouteIds: [RouteID.MyRateLaterList, RouteID.MyComparedItems],
           iconComponent: HowToVote,
           withSearchBar: false,
           topBarBackground:
@@ -201,7 +214,16 @@ export const polls: Array<SelectablePoll> = [
     : []),
   {
     name: YOUTUBE_POLL_NAME,
+    defaultAuthEntityActions: [
+      CompareNowAction,
+      AddToRateLaterList,
+      AnalysisPageLink,
+    ],
+    defaultAnonEntityActions: [AnalysisPageLink],
+    defaultRecoLanguageDiscovery: true,
+    defaultRecoSearchParams: 'date=Month',
     displayOrder: 10,
+    mainCriterionName: 'largely_recommended',
     path: '/',
     disabledRouteIds: [RouteID.MyFeedback],
     iconComponent: YouTube,

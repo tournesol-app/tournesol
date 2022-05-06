@@ -43,7 +43,8 @@ const SizedBarChart = ({
   width?: number;
   height?: number;
 }) => {
-  const { getCriteriaLabel } = useCurrentPoll();
+  const { getCriteriaLabel, options } = useCurrentPoll();
+  const mainCriterionName = options?.mainCriterionName ?? '';
 
   const renderCustomAxisTick = ({
     x,
@@ -88,7 +89,7 @@ const SizedBarChart = ({
   }
 
   const data = criteria_scores
-    .filter((s) => s.criteria != 'largely_recommended')
+    .filter((s) => mainCriterionName !== s.criteria)
     .map((s) => {
       const clipped_score = between(
         BAR_CHART_CRITERIA_SCORE_MIN,

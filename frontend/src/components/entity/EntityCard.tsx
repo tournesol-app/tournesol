@@ -18,6 +18,7 @@ import EntityImagery from './EntityImagery';
 import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
 import { RelatedEntityObject, ActionList } from 'src/utils/types';
+import EntityCardScores from './EntityCardScores';
 
 const EntityCard = ({
   entity,
@@ -38,20 +39,29 @@ const EntityCard = ({
   });
   const [settingsVisible, setSettingsVisible] = useState(!isSmallScreen);
 
+  const displayEntityCardScores = () => {
+    if ('tournesol_score' in entity && !compact) {
+      return <EntityCardScores entity={entity} />;
+    }
+    return null;
+  };
+
   return (
     <Grid container sx={entityCardMainSx}>
       <Grid
         item
         xs={12}
-        sm={compact ? 12 : 'auto'}
-        sx={{ aspectRatio: '16 / 9', width: '240px !important' }}
+        sm={compact ? 12 : 4}
+        md={compact ? 12 : 3}
+        sx={{ aspectRatio: '16 / 9' }}
       >
         <EntityImagery entity={entity} />
       </Grid>
       <Grid
         item
         xs={12}
-        sm={compact ? 12 : true}
+        sm={compact ? 12 : 7}
+        md={compact ? 12 : 8}
         sx={{
           padding: 1,
         }}
@@ -61,8 +71,7 @@ const EntityCard = ({
       >
         <EntityCardTitle title={entity.metadata.name} compact={compact} />
         <EntityMetadata entity={entity} />
-        {/* TODO: implement scores in this entity card}
-        {/* {!compact && <VideoCardScores video={video} />} */}
+        {displayEntityCardScores()}
       </Grid>
       <Grid
         item
