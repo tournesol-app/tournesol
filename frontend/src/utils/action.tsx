@@ -12,7 +12,11 @@ import { idFromUid } from './video';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
+  const { baseUrl, active } = useCurrentPoll();
+
+  if (!active) {
+    return null;
+  }
 
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">

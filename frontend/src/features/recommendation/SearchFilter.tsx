@@ -8,13 +8,15 @@ import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
 import UploaderFilter from './UploaderFilter';
 import AdvancedFilter from './AdvancedFilter';
+import ScoreModeFilter from './ScoreModeFilter';
 import {
   recommendationFilters,
   defaultRecommendationFilters,
   YOUTUBE_POLL_NAME,
+  PRESIDENTIELLE_2022_POLL_NAME,
 } from 'src/utils/constants';
 import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
-
+import { ScoreModeEnum } from 'src/features/recommendation/RecommendationApi';
 /**
  * Filter options for Videos recommendations
  *
@@ -102,6 +104,14 @@ function SearchFilter() {
           <Grid item xs={12} sm={12} md={6}>
             <CriteriaFilter setFilter={setFilter} />
           </Grid>
+          {pollName == PRESIDENTIELLE_2022_POLL_NAME && (
+            <Grid item xs={6} sm={4}>
+              <ScoreModeFilter
+                value={filterParams.get('score_mode') ?? ScoreModeEnum.DEFAULT}
+                onChange={(value) => setFilter('score_mode', value)}
+              />
+            </Grid>
+          )}
         </Grid>
       </Collapse>
     </Box>

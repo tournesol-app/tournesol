@@ -81,6 +81,7 @@ describe('RecommendationPage', () => {
       'videos',
       20,
       '?language=fr%2Cen',
+      expect.anything(),
       expect.anything()
     );
   });
@@ -99,6 +100,7 @@ describe('RecommendationPage', () => {
       'videos',
       20,
       '?language=de',
+      expect.anything(),
       expect.anything()
     );
   });
@@ -116,6 +118,7 @@ describe('RecommendationPage', () => {
       'videos',
       20,
       '?language=fr',
+      expect.anything(),
       expect.anything()
     );
   });

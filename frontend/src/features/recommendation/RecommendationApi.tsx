@@ -3,7 +3,11 @@ import {
   PollCriteria,
   PollsService,
 } from 'src/services/openapi';
-import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import {
+  PRESIDENTIELLE_2022_POLL_NAME,
+  YOUTUBE_POLL_NAME,
+} from 'src/utils/constants';
+import { SelectablePoll } from 'src/utils/types';
 
 const getParamValueAsNumber = (
   params: URLSearchParams,
@@ -74,6 +78,12 @@ const getMetadataFilter = (
   return metadata;
 };
 
+export enum ScoreModeEnum {
+  DEFAULT = 'default',
+  ALL_EQUAL = 'all_equal',
+  TRUSTED_ONLY = 'trusted_only',
+}
+
 /**
  * Return the recommendations of a given poll.
  */
@@ -81,11 +91,35 @@ export const getRecommendations = async (
   pollName: string,
   limit: number,
   searchString: string,
-  criterias: PollCriteria[]
+  criterias: PollCriteria[],
+  pollOptions?: SelectablePoll
 ): Promise<PaginatedRecommendationList> => {
   const params = new URLSearchParams(searchString);
 
   buildDateURLParameter(pollName, params);
+
+  let criteriaWeights = Object.fromEntries(
+    criterias.map((c) => [c.name, getParamValueAsNumber(params, c.name)])
+  );
+
+  /*
+    Temporary workaround for "presidentielle2022":
+    Contrary to poll "videos" where the default order for recommendations is an aggregation of
+    criteria, here we need to sort by the main criterion only (if custom weights are not provided).
+    2 things to fix before removing this workaround:
+      - update the backend implementation of "tournesol_score" to apply this new definition
+      - make sure that `CriteriaFilter` behaves correctly on initialization, and that its state
+      persists after the filter section is closed or the page is refreshed.
+  */
+  if (
+    pollName === PRESIDENTIELLE_2022_POLL_NAME &&
+    Object.values(criteriaWeights).filter((x) => x != null).length === 0
+  ) {
+    criteriaWeights = {
+      ...Object.fromEntries(criterias.map((c) => [c.name, 0])),
+      [pollOptions?.mainCriterionName ?? '']: 100,
+    };
+  }
 
   try {
     return await PollsService.pollsRecommendationsList({
@@ -94,11 +128,10 @@ export const getRecommendations = async (
       offset: getParamValueAsNumber(params, 'offset'),
       search: params.get('search') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
-      unsafe: params.get('unsafe') === 'true' ?? undefined,
+      unsafe: params.get('unsafe') === 'true' || pollOptions?.unsafeDefault,
       metadata: getMetadataFilter(pollName, params),
-      weights: Object.fromEntries(
-        criterias.map((c) => [c.name, getParamValueAsNumber(params, c.name)])
-      ),
+      scoreMode: (params.get('score_mode') as ScoreModeEnum) ?? undefined,
+      weights: criteriaWeights,
     });
   } catch (err) {
     console.error(err);

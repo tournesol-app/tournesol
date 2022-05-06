@@ -164,6 +164,12 @@
     "uploadDate": "Mises en ligne depuis",
     "allLanguages": "Toutes",
     "language": "Langues",
+    "scoreMode": {
+      "default": "Par défaut",
+      "allEqual": "Tous à égalité",
+      "trustedOnly": "Emails fiables seulement"
+    },
+    "scoreModeSection": "Droits de vote",
     "uploader": "Chaîne"
   },
   "ratings": {
