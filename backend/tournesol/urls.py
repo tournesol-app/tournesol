@@ -7,6 +7,8 @@ Defines Tournesol's backend API routes
 from django.urls import include, path
 from rest_framework import routers
 
+from tournesol.views.proof_of_vote import ProofOfVoteView
+
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.contributor_recommendations import (
     PrivateContributorRecommendationsView,
@@ -15,7 +17,12 @@ from .views.contributor_recommendations import (
 from .views.criteria_correlations import ContributorCriteriaCorrelationsView
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
-from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.exports import (
+    ExportAllView,
+    ExportComparisonsView,
+    ExportProofOfVoteView,
+    ExportPublicComparisonsView,
+)
 from .views.inconsistencies import ScoreInconsistencies
 from .views.polls import PollsCriteriaScoreDistributionView, PollsRecommendationsView, PollsView
 from .views.ratings import (
@@ -49,6 +56,11 @@ urlpatterns = [
         "exports/comparisons/",
         ExportPublicComparisonsView.as_view(),
         name="export_public",
+    ),
+    path(
+        "exports/polls/<str:poll_name>/proof_of_vote/",
+        ExportProofOfVoteView.as_view(),
+        name="export_poll_proof_of_vote",
     ),
     # Comparison API
     path(
@@ -121,6 +133,12 @@ urlpatterns = [
         "users/me/criteria_correlations/<str:poll_name>/",
         ContributorCriteriaCorrelationsView.as_view(),
         name="contributor_criteria_correlations",
+    ),
+    # Proof of votes
+    path(
+        "users/me/proof_of_votes/<str:poll_name>/",
+        ProofOfVoteView.as_view(),
+        name="proof_of_vote",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),
