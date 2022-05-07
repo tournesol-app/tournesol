@@ -2,17 +2,21 @@ import csv
 import zipfile
 from io import StringIO
 
+from django.db.models import Count, F
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from drf_spectacular.utils import OpenApiTypes, extend_schema
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.views import APIView
 
+from core.models import User
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.models import Comparison, ContributorRating
 from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
+from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 def write_comparisons_file(request, write_target):
@@ -151,4 +155,39 @@ class ExportAllView(APIView):
         # Close zip for all contents to be written
         zf.close()
 
+        return response
+
+
+class ExportProofOfVoteView(PollScopedViewMixin, APIView):
+    authentication_classes = [SessionAuthentication]  # Auth via Django Admin session
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Download current user data in .zip file",
+        responses={200: OpenApiTypes.BINARY},
+    )
+    def get(self, request, *args, **kwargs):
+        poll = self.poll_from_url
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = f'attachment; filename="proof_of_vote_{poll.name}.csv"'
+
+        fieldnames = [
+            "user_id",
+            "username",
+            "email",
+            "n_comparisons",
+            "signature",
+        ]
+        writer = csv.DictWriter(response, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(
+            {**d, "signature": poll.get_proof_of_vote(d["user_id"])}
+            for d in User.objects.filter(comparisons__poll=poll)
+            .values(
+                "username",
+                "email",
+                n_comparisons=Count("*"),
+                user_id=F("id")
+            )
+        )
         return response
