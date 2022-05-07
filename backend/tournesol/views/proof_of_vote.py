@@ -13,7 +13,7 @@ from .mixins.poll import PollScopedViewMixin
 
 class ProofOfVoteView(PollScopedViewMixin, generics.RetrieveAPIView):
     """
-    API for retrievring proof_of_vote in a given poll
+    API for retrieving proof_of_vote in a given poll
     """
     serializer_class = ProofOfVoteSerializer
 

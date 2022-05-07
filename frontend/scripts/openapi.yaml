@@ -426,6 +426,30 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /exports/polls/{poll_name}/proof_of_vote/:
+    get:
+      operationId: exports_polls_proof_of_vote_retrieve
+      description: Download .csv file with proof of vote signatures
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - exports
+      security:
+      - cookieAuth: []
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /polls/{name}/:
     get:
       operationId: polls_retrieve
@@ -1371,6 +1395,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/ScoreInconsistencies'
           description: ''
+  /users/me/proof_of_votes/{poll_name}/:
+    get:
+      operationId: users_me_proof_of_votes_retrieve
+      description: API for retrieving proof_of_vote in a given poll
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofOfVote'
+          description: ''
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list
@@ -2080,10 +2126,6 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
         tournesol_score:
           type: number
           format: float
@@ -2097,14 +2139,18 @@ components:
           readOnly: true
         type:
           $ref: '#/components/schemas/TypeEnum'
-        is_public:
-          type: boolean
+        metadata:
+          type: object
+          additionalProperties: {}
           readOnly: true
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
+        is_public:
+          type: boolean
+          readOnly: true
         total_score:
           type: number
           format: float
@@ -2951,6 +2997,16 @@ components:
       required:
       - label
       - name
+    ProofOfVote:
+      type: object
+      properties:
+        poll_name:
+          type: string
+        signature:
+          type: string
+      required:
+      - poll_name
+      - signature
     RaceEnum:
       enum:
       - Not Specified
@@ -4374,6 +4430,10 @@ components:
       - video_id
       - views
   securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
     oauth2:
       type: oauth2
       flows:

@@ -163,7 +163,7 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
     permission_classes = [IsAdminUser]
 
     @extend_schema(
-        description="Download current user data in .zip file",
+        description="Download .csv file with proof of vote signatures",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, *args, **kwargs):

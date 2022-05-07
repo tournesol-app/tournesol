@@ -370,14 +370,16 @@
       "notEnoughComparisons_other": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
       "continueComparisons": "Continuer vos comparaisons",
       "thanksForComparingCandidates": "Merci d'avoir comparé des candidat.es sur notre plateforme",
-      "description": "Vos avis seront pris en compte dans l'évaluation et le classement global des candidat.es. Après les élections nous rendrons public les résultats globaux. Pour protéger la vie privée des contributeurs et contributrices, les résultats individuels resteront privés.",
+      "goToGlobalRanking": "Voir le classement global",
       "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat.es.",
       "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
     },
     "generic": {
       "whatsNext": "Et maintenant ?",
       "discoverTournesol": "Découvrez Tournesol"
-    }
+    },
+    "proofOfVoteHelperText": "Ce code sera utile afin de répondre à notre sondage.",
+    "proofOfVote": "Preuve de participation"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
