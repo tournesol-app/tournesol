@@ -226,6 +226,23 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         return queryset.order_by("-total_score", "-pk")
 
 
+class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
+    """
+    Get the distribution of the contributor's ratings per criteria for an entity
+    """
+
+    poll_parameter = "name"
+
+    permission_classes = []
+    queryset = Entity.objects.none()
+    serializer_class = RecommendationSerializer
+
+    def get_object(self):
+        """ Get object based on the entity uid """
+        entity_uid = self.kwargs.get("uid")
+        return get_object_or_404(Entity, uid=entity_uid)
+
+
 class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     """
     Get the distribution of the contributor's ratings per criteria for an entity

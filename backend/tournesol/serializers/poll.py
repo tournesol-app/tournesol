@@ -26,7 +26,9 @@ class RecommendationSerializer(ModelSerializer):
     n_comparisons = serializers.IntegerField(source="rating_n_ratings")
     n_contributors = serializers.IntegerField(source="rating_n_contributors")
     criteria_scores = EntityCriteriaScoreSerializer(many=True)
-    total_score = serializers.FloatField()
+    # TODO: the field total_score is the only field in this serializer that
+    # on the parameters of an api request. Should it be treated differently?
+    total_score = serializers.FloatField(default=0.)
 
     class Meta:
         model = Entity
