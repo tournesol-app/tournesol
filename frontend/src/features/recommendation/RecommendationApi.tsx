@@ -128,7 +128,9 @@ export const getRecommendations = async (
       offset: getParamValueAsNumber(params, 'offset'),
       search: params.get('search') ?? undefined,
       dateGte: params.get('date_gte') ?? undefined,
-      unsafe: params.get('unsafe') === 'true' || pollOptions?.unsafeDefault,
+      unsafe: params.has('unsafe')
+        ? params.get('unsafe') === 'true'
+        : pollOptions?.unsafeDefault,
       metadata: getMetadataFilter(pollName, params),
       scoreMode: (params.get('score_mode') as ScoreModeEnum) ?? undefined,
       weights: criteriaWeights,
