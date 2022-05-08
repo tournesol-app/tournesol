@@ -263,6 +263,7 @@
     "trustedEmailDomains": "Trusted email domains",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited voting right to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
+    "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "privacyPolicy": {
