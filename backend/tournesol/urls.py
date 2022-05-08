@@ -24,7 +24,12 @@ from .views.exports import (
     ExportPublicComparisonsView,
 )
 from .views.inconsistencies import ScoreInconsistencies
-from .views.polls import PollsCriteriaScoreDistributionView, PollsRecommendationsView, PollsEntityView, PollsView
+from .views.polls import (
+    PollsCriteriaScoreDistributionView,
+    PollsEntityView,
+    PollsRecommendationsView,
+    PollsView,
+)
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
