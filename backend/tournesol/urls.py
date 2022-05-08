@@ -16,6 +16,7 @@ from .views.criteria_correlations import ContributorCriteriaCorrelationsView
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
 from .views.exports import ExportAllView, ExportComparisonsView, ExportPublicComparisonsView
+from .views.inconsistencies import ScoreInconsistencies
 from .views.polls import PollsCriteriaScoreDistributionView, PollsRecommendationsView, PollsView
 from .views.ratings import (
     ContributorRatingDetail,
@@ -91,6 +92,12 @@ urlpatterns = [
         "users/me/contributor_ratings/<str:poll_name>/<str:uid>/",
         ContributorRatingDetail.as_view(),
         name="ratings_me_detail",
+    ),
+    # Inconsistencies API
+    path(
+        "users/me/inconsistencies/score/<str:poll_name>",
+        ScoreInconsistencies.as_view(),
+        name="score_inconsistencies",
     ),
     # User recommendations API
     path(

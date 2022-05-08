@@ -288,10 +288,6 @@ REST_FRAMEWORK = {
     },
 }
 
-# Maximal value for a rating (0-100)
-# 0 means left video is best, 100 means right video is best
-MAX_VALUE = 100.0
-
 LEGACY_CRITERIAS = [
     'largely_recommended',
     'reliability',
