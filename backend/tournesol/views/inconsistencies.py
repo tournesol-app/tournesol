@@ -8,10 +8,186 @@ from rest_framework.response import Response
 from core.utils.constants import COMPARISON_MAX
 from tournesol.models import ComparisonCriteriaScore, ContributorRatingCriteriaScore
 from tournesol.serializers.inconsistencies import (
+    Length3CyclesFilterSerializer,
+    Length3CyclesSerializer,
     ScoreInconsistenciesFilterSerializer,
     ScoreInconsistenciesSerializer,
 )
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            Length3CyclesFilterSerializer,
+        ]
+    )
+)
+class Length3Cycles(PollScopedViewMixin, GenericAPIView):
+    """
+    List the cycles of length 3 in the comparisons graphs.
+
+    These "graphs" (one graph per criterion) are modeled by considering
+    entities as nodes, and comparisons as directed edges.
+
+    A cycle between 3 entities A, B, C is when A is preferred to
+    B, which is preferred to C, which is preferred to A (A > B > C > A).
+    Longer cycles are ignored, because it would be too long to count.
+
+    A "comparison trio" is any set of 3 entities that are all compared to each other.
+    The ratio cycles_count / comparison_trios_count can be used as an indicator of consistency.
+    """
+
+    serializer_class = Length3CyclesSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    cycles = []
+    criterion = None
+    all_entities = set()
+    outgoing_connections = {}
+    incoming_connections = {}
+    all_connections = {}
+
+    def get(self, request, *args, **kwargs):
+        poll = self.poll_from_url
+        user = request.user
+
+        stats = {}
+        self.cycles = []
+
+        filter_serializer = ScoreInconsistenciesFilterSerializer(data=request.query_params)
+        filter_serializer.is_valid(raise_exception=True)
+        filters = filter_serializer.validated_data
+        comparisons = ComparisonCriteriaScore.objects.filter(
+            comparison__user=user,
+            comparison__poll=poll,
+        )
+
+        if filters["date_gte"]:
+            comparisons = comparisons.filter(
+                comparison__datetime_lastedit__gte=filters["date_gte"]
+            )
+
+        comparisons = list(
+            comparisons.values(
+                "comparison__entity_1__uid",
+                "comparison__entity_2__uid",
+                "criteria",
+                "score",
+            )
+        )
+
+        for self.criterion in poll.criterias_list:
+
+            self._fill_graph_parameters(comparisons)
+
+            cycles_count, comparison_trios_count = self._count_cycles_and_comparison_trios()
+
+            stats[self.criterion] = {
+                "cycles_count": cycles_count,
+                "comparison_trios_count": comparison_trios_count,
+            }
+
+        response = {
+            "count": len(self.cycles),
+            "results": self.cycles,
+            "stats": stats,
+        }
+
+        return Response(Length3CyclesSerializer(response).data)
+
+    def _fill_graph_parameters(self, comparisons: list):
+        """
+        Fill the set containing all the entities.
+
+        The incoming and outgoing connections sets are used to search the cycles.
+        all_connections is only used to count all the comparison trios.
+
+        outgoing_connections: Dictionary of sets for each entity.
+                              Each element in the sets is a preferred entity.
+        incoming_connections: Idem but each element in the sets is a worse rated entity.
+
+        all_connections: all the edges (also including comparisons with a score of 0 as edges)
+        """
+        self.all_entities = set()
+        self.outgoing_connections = {}
+        self.incoming_connections = {}
+
+        # all the edges (also including comparisons with a score of 0 as edges)
+        self.all_connections = {}
+
+        criterion_comparisons = list(
+            filter(lambda d: d["criteria"] == self.criterion, comparisons)
+        )
+
+        for comparison in criterion_comparisons:
+            entity_1 = comparison["comparison__entity_1__uid"]
+            entity_2 = comparison["comparison__entity_2__uid"]
+
+            if entity_1 not in self.all_entities:
+                self.all_entities.add(entity_1)
+                self.incoming_connections[entity_1] = set()
+                self.outgoing_connections[entity_1] = set()
+                self.all_connections[entity_1] = set()
+
+            if entity_2 not in self.all_entities:
+                self.all_entities.add(entity_2)
+                self.incoming_connections[entity_2] = set()
+                self.outgoing_connections[entity_2] = set()
+                self.all_connections[entity_2] = set()
+
+            if comparison["score"] > 0:
+                # Entity_2 is preferred
+                self.incoming_connections[entity_2].add(entity_1)
+                self.outgoing_connections[entity_1].add(entity_2)
+
+            elif comparison["score"] < 0:
+                # Entity_1 is preferred
+                self.incoming_connections[entity_1].add(entity_2)
+                self.outgoing_connections[entity_2].add(entity_1)
+            else:
+                continue
+
+            self.all_connections[entity_1].add(entity_2)
+            self.all_connections[entity_2].add(entity_1)
+
+    def _count_cycles_and_comparison_trios(self):
+        """
+        Count the cycles of length 3 and the comparison trios.
+        Add the cycles found to the cycles list.
+
+        The cycles returned are in the order 1, 2, 3 with 1 > 2 > 3 > 1.
+        """
+        cycles_count = 0
+        comparison_trios_count = 0
+        for entity_1 in self.all_entities:
+            # Search the cycles
+            for entity_2 in self.outgoing_connections[entity_1].copy():
+                for entity_3 in self.incoming_connections[entity_1] & \
+                                self.outgoing_connections[entity_2]:
+                    cycles_count += 1
+                    self.cycles.append({
+                        "criterion": self.criterion,
+                        "entity_1_uid": entity_1,
+                        "entity_2_uid": entity_2,
+                        "entity_3_uid": entity_3,
+                    })
+
+                # Remove the edge, so that these cycles won't be counted again
+                self.outgoing_connections[entity_1].remove(entity_2)
+                self.incoming_connections[entity_2].remove(entity_1)
+
+            # Count the comparison trios
+            for entity_2 in self.all_connections[entity_1].copy():
+                comparison_trios_count += len(self.all_connections[entity_1] &
+                                              self.all_connections[entity_2])
+
+                # Remove the edge, so that these comparison trios won't be counter again
+                self.all_connections[entity_1].remove(entity_2)
+                self.all_connections[entity_2].remove(entity_1)
+
+        return cycles_count, comparison_trios_count
 
 
 @extend_schema_view(

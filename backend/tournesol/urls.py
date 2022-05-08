@@ -24,7 +24,7 @@ from .views.exports import (
     ExportProofOfVoteView,
     ExportPublicComparisonsView,
 )
-from .views.inconsistencies import ScoreInconsistencies
+from .views.inconsistencies import Length3Cycles, ScoreInconsistencies
 from .views.polls import (
     PollsCriteriaScoreDistributionView,
     PollsEntityView,
@@ -117,6 +117,11 @@ urlpatterns = [
         name="ratings_me_detail",
     ),
     # Inconsistencies API
+    path(
+        "users/me/inconsistencies/length_3_cycles/<str:poll_name>",
+        Length3Cycles.as_view(),
+        name="length_3_cycles",
+    ),
     path(
         "users/me/inconsistencies/score/<str:poll_name>",
         ScoreInconsistencies.as_view(),

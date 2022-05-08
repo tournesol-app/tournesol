@@ -21,6 +21,237 @@ from tournesol.tests.factories.ratings import (
     ContributorRatingFactory,
 )
 
+
+class Length3CyclesApiTestCase(TestCase):
+    """
+    TestCase of the length-3 cycles API.
+    """
+
+    def setUp(self):
+        """
+        entity 1 < entity 2 < entity 3 < entity 4 < entity 1
+        entity 3 < entity 1
+        entity 2 < entity 4
+        => 2 cycles (1, 2, 3) and (1, 2, 4) amongst 4 comparison trios
+        """
+        self.client = APIClient()
+
+        self.user = UserFactory()
+        self.poll = Poll.default_poll()
+        self.criterion = self.poll.criterias_list[0]
+
+        self.entity_1 = EntityFactory()
+        self.entity_2 = EntityFactory()
+        self.entity_3 = EntityFactory()
+        self.entity_4 = EntityFactory()
+        self.entities = [self.entity_1, self.entity_2, self.entity_3, self.entity_4]
+
+        for index, entity in enumerate(self.entities):
+            ComparisonCriteriaScoreFactory(
+                comparison__poll=self.poll,
+                comparison__user=self.user,
+                comparison__entity_1=self.entities[index - 1],
+                comparison__entity_2=entity,
+                criteria=self.criterion,
+                score=1,
+            )
+
+        ComparisonCriteriaScoreFactory(
+            comparison__poll=self.poll,
+            comparison__user=self.user,
+            comparison__entity_1=self.entity_3,
+            comparison__entity_2=self.entity_1,
+            criteria=self.criterion,
+            score=1,
+        )
+
+        ComparisonCriteriaScoreFactory(
+            comparison__poll=self.poll,
+            comparison__user=self.user,
+            comparison__entity_1=self.entity_2,
+            comparison__entity_2=self.entity_4,
+            criteria=self.criterion,
+            score=1,
+        )
+
+        self.setup_cycles_count = 2
+        self.setup_comparison_trios_count = 4
+
+        self.url = f"/users/me/inconsistencies/length_3_cycles/{self.poll.name}"
+
+    def test_only_for_authorized_users(self):
+        """An anonymous user can't access the score inconsistencies API"""
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_multiple_criteria(self):
+        """
+        Create cycles for multiple criteria of the same comparison,
+        and verify the output format
+        """
+        self.client.force_authenticate(self.user)
+
+        nb_criteria = len(self.poll.criterias_list)
+        self.assertGreater(nb_criteria, 1)
+        entities = [EntityFactory() for _ in range(3)]
+
+        for index, entity in enumerate(entities):
+            comparison = ComparisonFactory(
+                poll=self.poll,
+                user=self.user,
+                entity_1=entities[index - 1],
+                entity_2=entity,
+            )
+
+            for criterion in self.poll.criterias_list:
+                ComparisonCriteriaScoreFactory(
+                    comparison=comparison,
+                    criteria=criterion,
+                    score=1,
+                )
+
+        expected_cycles = {criterion: [{e.uid for e in entities}]
+                           for criterion in self.poll.criterias_list}
+
+        expected_cycles[self.criterion].append(
+            {self.entity_1.uid, self.entity_2.uid, self.entity_3.uid}
+        )
+        expected_cycles[self.criterion].append(
+            {self.entity_1.uid, self.entity_2.uid, self.entity_4.uid}
+        )
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], self.setup_cycles_count + nb_criteria)
+        self.assertEqual(len(response.data["results"]), self.setup_cycles_count + nb_criteria)
+
+        for criterion in self.poll.criterias_list:
+            self.assertIn(criterion, response.data["stats"])
+            stat = response.data["stats"][criterion]
+
+            if criterion == self.criterion:
+                self.assertEqual(stat["cycles_count"], self.setup_cycles_count + 1)
+                self.assertEqual(stat["comparison_trios_count"],
+                                 self.setup_comparison_trios_count + 1)
+            else:
+                self.assertEqual(stat["cycles_count"], 1)
+                self.assertEqual(stat["comparison_trios_count"], 1)
+
+            cycles = response.data["results"]
+            for cycle in cycles:
+                cycle_entities_set = {
+                    cycle["entity_1_uid"],
+                    cycle["entity_2_uid"],
+                    cycle["entity_3_uid"]
+                }
+                self.assertIn(cycle_entities_set, expected_cycles[cycle["criterion"]])
+
+    def test_no_cycle(self):
+        """
+        Create comparisons so that there are many
+        comparison trios but no cycle.
+        """
+        self.client.force_authenticate(self.user)
+
+        best_entities = [EntityFactory() for _ in range(3)]
+        middle_entities = [EntityFactory() for _ in range(3)]
+        worst_entities = [EntityFactory() for _ in range(3)]
+
+        for worse_entities, better_entities in zip(
+                [worst_entities, middle_entities, worst_entities],
+                [middle_entities, best_entities, best_entities]):
+            for entity_1 in worse_entities:
+                for entity_2 in better_entities:
+                    ComparisonCriteriaScoreFactory(
+                        comparison__poll=self.poll,
+                        comparison__user=self.user,
+                        comparison__entity_1=entity_1,
+                        comparison__entity_2=entity_2,
+                        criteria=self.criterion,
+                        score=1,
+                    )
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], self.setup_cycles_count)
+        self.assertEqual(len(response.data["results"]), self.setup_cycles_count)
+        self.assertEqual(response.data["stats"][self.criterion]["cycles_count"],
+                         self.setup_cycles_count)
+        self.assertEqual(response.data["stats"][self.criterion]["comparison_trios_count"],
+                         3**3 + self.setup_comparison_trios_count)
+
+    def test_only_cycles(self):
+        """
+        Create comparisons so that all the comparison trios are also cycles.
+        """
+        self.client.force_authenticate(self.user)
+
+        entities = [[EntityFactory() for _ in range(3)] for _ in range(3)]
+
+        for index in range(3):
+            for entity_1 in entities[index - 1]:
+                for entity_2 in entities[index]:
+                    ComparisonCriteriaScoreFactory(
+                        comparison__poll=self.poll,
+                        comparison__user=self.user,
+                        comparison__entity_1=entity_1,
+                        comparison__entity_2=entity_2,
+                        criteria=self.criterion,
+                        score=1,
+                    )
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 3**3 + self.setup_cycles_count)
+        self.assertEqual(len(response.data["results"]), 3**3 + self.setup_cycles_count)
+        self.assertEqual(response.data["stats"][self.criterion]["cycles_count"],
+                         3**3 + self.setup_cycles_count)
+        self.assertEqual(response.data["stats"][self.criterion]["comparison_trios_count"],
+                         3**3 + self.setup_comparison_trios_count)
+
+    def test_date_filter(self):
+        """Can use the date filter to ignore old comparisons"""
+        self.client.force_authenticate(self.user)
+
+        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+
+        response = self.client.get(
+            self.url + f"?date_gte={yesterday.isoformat()}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], self.setup_cycles_count)
+
+        response = self.client.get(
+            self.url + f"?date_gte={tomorrow.isoformat()}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+    def test_ignore_other_polls(self):
+        """Test that the result is not affected by other polls"""
+        self.client.force_authenticate(self.user)
+
+        request_poll = PollWithCriteriasFactory()
+
+        response = self.client.get(
+            f"/users/me/inconsistencies/score/{request_poll.name}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+    def test_ignore_other_contributors(self):
+        """Test that the result is not affected by other contributors' comparisons"""
+        request_user = UserFactory()
+        self.client.force_authenticate(request_user)
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+
 default_inconsistency_threshold = 5.0
 
 class ScoreInconsistenciesApiTestCase(TestCase):
