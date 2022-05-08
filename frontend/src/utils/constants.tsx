@@ -1,15 +1,20 @@
 import { TFunction } from 'react-i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
-import { SelectablePoll, RouteID } from './types';
-import {
-  getAllCandidates,
-  getTutorialDialogs,
-} from './polls/presidentielle2022';
+
 import {
   AddToRateLaterList,
   AnalysisPageLink,
   CompareNowAction,
 } from './action';
+import {
+  getAllCandidates,
+  getTutorialDialogs as getPresidentielleTutorialDialogs,
+} from './polls/presidentielle2022';
+import {
+  getTutoFriendlyVideos,
+  getTutorialDialogs as getVideoTutorialDialogs,
+} from './polls/videos';
+import { SelectablePoll, RouteID } from './types';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -208,7 +213,7 @@ export const polls: Array<SelectablePoll> = [
             'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
           tutorialLength: 7,
           tutorialAlternatives: getAllCandidates,
-          tutorialDialogs: getTutorialDialogs,
+          tutorialDialogs: getPresidentielleTutorialDialogs,
         },
       ]
     : []),
@@ -222,14 +227,17 @@ export const polls: Array<SelectablePoll> = [
     defaultAnonEntityActions: [AnalysisPageLink],
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
-    displayOrder: 10,
     mainCriterionName: 'largely_recommended',
+    displayOrder: 20,
     path: '/',
     disabledRouteIds: [RouteID.MyFeedback],
     iconComponent: YouTube,
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
+    tutorialLength: 4,
+    tutorialAlternatives: getTutoFriendlyVideos,
+    tutorialDialogs: getVideoTutorialDialogs,
   },
 ];
 

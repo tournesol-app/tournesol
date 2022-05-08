@@ -54,7 +54,8 @@ const ComparisonPage = () => {
             generateInitial={true}
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
-            redirectTo={`${baseUrl}/personal/feedback`}
+            //redirectTo={`${baseUrl}/personal/feedback`}
+            redirectTo={`${baseUrl}/comparison`}
             resumable={true}
           />
         ) : (

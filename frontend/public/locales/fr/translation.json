@@ -509,5 +509,42 @@
         }
       }
     }
+  },
+  "videos": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "Bienvenue dans Tournesol 🌻",
+        "message1": {
+          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de comparaisons de vidéos.",
+          "p20": "Pour comparer 2 vidéos que vous avez regardé, déplacez les curseurs pour chacun des critères, puis enregistrez quand votre choix est fait.",
+          "p30": "Plus votre avis est tranché sur un critère plus le curseur devrait être proche de l'extrémité. Les critères optionnels permettent vraiment d'améliorer Tournesol alors n'hésitez pas à les renseigner dès que possible.",
+          "p40": "Si vous trouvez les vidéos difficiles à départager, le curseur devrait rester proche du centre."
+        },
+        "title2": "Bravo !",
+        "message2": {
+          "p10": "Vous avez effectué votre première comparaison 🥳.",
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en utilisant les menus déroulants (ou en collant l'URL youtube d'une video) qui se trouvent au dessus des miniatures. Vous pouvez également choisir de vous exprimer ou non sur les critères optionnels",
+          "p30": "Bon à savoir: Vous pouvez modifier toutes vos comparaisons si vous n'êtes pas sûr·e de vous."
+        },
+        "title3": "A quoi corresponde les critères ?",
+        "message3": {
+          "p10": "'Fiable et non trompeur' vise à mesurer la fiabilité des informations présentées dans un contenu et à prendre la mesure dans laquelle ces informations peuvent être trompeuses.",
+          "p20": "'Clair et pédagogique' vise à mesurer la clarté des explications d'un contenu. Plus le contenu guide les spectateurs dans leur compréhension, plus ce critère sera noté haut",
+          "p30": "'Important et actionnable' vise à mettre en avant les contenus avec des informations qui n'ont pas l'attention qu'elles devraient avoir pour le bien de l'humanité et au-delà et qui permettent d'agir concretement de manière impactante",
+          "p40": "'Adapté aux non-spécialistes' vise à identifier les contenus qui conviendraient à un large public.",
+          "p50": "'Divertissant et relaxant' évalue les contenus en fonction de leur ton plus ou moins détendu et divertissant pour les spectateurs.",
+          "p60": "Stimulant et suscite à la réflexion évalue les contenus en fonction de l'envie d'aller plus loin du spectateur après avoir regardé et la remise en cause des croyances de l'audience.",
+          "p70": "Diversité et inclusion vise à identifier les contenus qui favorisent une vision plus diverse et inclusive de la grande diversité des ethnies, des croyances et des préférences de l'humanité.",
+          "p80": "Encourage à de meilleures habitudes vise à mettre en valeur les contenus qui incitent et motivent les spectateurs à s'améliorer en adoptant de meilleures habitudes plus saines pour soi, pour la société ou pour la planète.",
+          "p90": "Résistant aux retours négatifs/Résiste aux mauvaises interprétations vise à mesurer la probabilité qu'un contenu créé un malentendu avec le spectateur: plus le risque que l'utilisateur comprenne mal ou réagisse négativement aux informations présentées est élevé, plus ce critère sera noté haut."
+        },
+        "title4": "Merci beaucoup d'avoir suivi ce tutoriel !",
+        "message4": {
+          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices.",
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
+          "p30": "Nous espérons sincèrement que vous avez apprécié ce tutoriel, n'hésitez pas à nous faire des retours via les réseaux sociaux."
+        }
+      }
+    }
   }
 }
