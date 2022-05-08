@@ -269,6 +269,7 @@
     "trustedEmailDomains": "Noms de domaine fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
     "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
+    "trustedDomainsValuable": "Dans tous les cas, vos contributions sont utiles car elles motiveront et aideront la recherche en éthique des algorithmes et de l'intelligence artificielle",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
   "privacyPolicy": {
