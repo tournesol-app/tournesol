@@ -45,6 +45,7 @@ export enum RouteID {
   MyRateLaterList = 'myRateLaterList',
   MyFeedback = 'myFeedback',
   About = 'about',
+  EntityAnalysis = 'entities',
 }
 
 export type OrderedDialogs = {
