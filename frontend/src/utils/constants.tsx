@@ -1,15 +1,17 @@
 import { TFunction } from 'react-i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
-import { SelectablePoll, RouteID } from './types';
-import {
-  getAllCandidates,
-  getTutorialDialogs,
-} from './polls/presidentielle2022';
+
 import {
   AddToRateLaterList,
   AnalysisPageLink,
   CompareNowAction,
 } from './action';
+import {
+  getAllCandidates,
+  getTutorialDialogs as getPresidentielleTutorialDialogs,
+} from './polls/presidentielle2022';
+import { getTutoFriendlyVideos, getTutorialDialogs as getVideoTutorialDialogs } from './polls/videos';
+import { SelectablePoll, RouteID } from './types';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -37,10 +39,6 @@ export const recommendationFilters = {
 
 export const defaultRecommendationFilters = {
   date: null,
-  language: null,
-  uploader: null,
-  unsafe: null,
-  reliability: '50',
   pedagogy: '50',
   importance: '50',
   layman_friendly: '50',
@@ -64,6 +62,7 @@ export const criteriaToEmoji: Record<string, string> = {
 
 export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
   return {
+    // presidentielle2022
     energy_environment: t('criteriaTooltips.energy_environment'),
     international: t('criteriaTooltips.international'),
     education_culture: t('criteriaTooltips.education_culture'),
@@ -71,6 +70,16 @@ export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
     institutions_democracy: t('criteriaTooltips.institutions_democracy'),
     labour_economy: t('criteriaTooltips.labour_economy'),
     solidarity: t('criteriaTooltips.solidarity'),
+    // videos
+    pedagogy: t('criteriaTooltips.pedagogy'),
+    importance: t('criteriaTooltips.importance'),
+    layman_friendly: t('criteriaTooltips.layman_friendly'),
+    entertaining_relaxing: t('criteriaTooltips.entertaining_relaxing'),
+    engaging: t('criteriaTooltips.engaging'),
+    diversity_inclusion: t('criteriaTooltips.diversity_inclusion'),
+    better_habits: t('criteriaTooltips.better_habits'),
+    backfire_risk: t('criteriaTooltips.backfire_risk'),
+    reliability: t('criteriaTooltips.reliability'),
   }[criteria];
 };
 
@@ -208,7 +217,7 @@ export const polls: Array<SelectablePoll> = [
             'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
           tutorialLength: 7,
           tutorialAlternatives: getAllCandidates,
-          tutorialDialogs: getTutorialDialogs,
+          tutorialDialogs: getPresidentielleTutorialDialogs,
         },
       ]
     : []),
@@ -222,14 +231,17 @@ export const polls: Array<SelectablePoll> = [
     defaultAnonEntityActions: [AnalysisPageLink],
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
-    displayOrder: 10,
     mainCriterionName: 'largely_recommended',
+    displayOrder: 20,
     path: '/',
     disabledRouteIds: [RouteID.MyFeedback],
     iconComponent: YouTube,
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
+    tutorialLength: 4,
+    tutorialAlternatives: getTutoFriendlyVideos,
+    tutorialDialogs: getVideoTutorialDialogs,
   },
 ];
 
