@@ -27,6 +27,9 @@
     "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
     "personalScore": "Score personnel\u00a0: {{score}}"
   },
+  "score": {
+    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
+  },
   "pagination": {
     "videos": "vidéos",
     "previousButton": "{{limit}} prec.",
@@ -165,9 +168,18 @@
     "allLanguages": "Toutes",
     "language": "Langues",
     "scoreMode": {
-      "default": "Par défaut",
-      "allEqual": "Tous à égalité",
-      "trustedOnly": "Emails fiables seulement"
+      "default": {
+        "description": "Davantage d'importance est donnée aux comptes associés à une adresse e-mail fiable",
+        "label": "Par défaut"
+      },
+      "allEqual": {
+        "description": "Importance égale pour tous les comptes",
+        "label": "À égalité"
+      },
+      "trustedOnly": {
+        "description": "Seuls les comptes associés à <2>une adresse e-mail fiable</2> sont inclus",
+        "label": "E-mails fiables seulement"
+      }
     },
     "scoreModeSection": "Droits de vote",
     "uploader": "Chaîne"

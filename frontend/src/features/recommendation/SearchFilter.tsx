@@ -105,7 +105,7 @@ function SearchFilter() {
             <CriteriaFilter setFilter={setFilter} />
           </Grid>
           {pollName == PRESIDENTIELLE_2022_POLL_NAME && (
-            <Grid item xs={6} sm={4}>
+            <Grid item xs={12} sm={4}>
               <ScoreModeFilter
                 value={filterParams.get('score_mode') ?? ScoreModeEnum.DEFAULT}
                 onChange={(value) => setFilter('score_mode', value)}

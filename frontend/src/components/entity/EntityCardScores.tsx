@@ -1,7 +1,10 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Box, Theme, Stack, Tooltip, Typography } from '@mui/material';
-import { Warning as WarningIcon } from '@mui/icons-material';
+import {
+  Warning as WarningIcon,
+  HelpOutline as HelpIcon,
+} from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { displayScore } from 'src/utils/criteria';
@@ -100,10 +103,18 @@ const EntityCardScores = ({
   return (
     <>
       {showTotalScore && (
-        <Typography color="text.secondary">
-          Score : <strong>{entity.total_score.toFixed(2)}</strong>
-          {''}
-        </Typography>
+        <Box display="flex" alignItems="center" columnGap={1}>
+          <Typography color="text.secondary">
+            Score : <strong>{entity.total_score.toFixed(2)}</strong>
+            {''}
+          </Typography>
+          <Tooltip
+            title={t('score.totalScoreBasedOnRankingChoice')}
+            placement="right"
+          >
+            <HelpIcon fontSize="inherit" color="action" />
+          </Tooltip>
+        </Box>
       )}
       <Box
         display="flex"

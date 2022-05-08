@@ -24,6 +24,9 @@
     "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
     "personalScore": "Personal score: {{score}}"
   },
+  "score": {
+    "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
+  },
   "pagination": {
     "videos": "videos",
     "previousButton": "Previous {{limit}}",
@@ -159,9 +162,18 @@
     "allLanguages": "All languages",
     "language": "Language",
     "scoreMode": {
-      "default": "Default",
-      "allEqual": "All users are equal",
-      "trustedOnly": "Trusted emails only"
+      "default": {
+        "description": "More importance is given to accounts associated with a trusted email address",
+        "label": "Default"
+      },
+      "allEqual": {
+        "description": "Equal importance is given to all accounts",
+        "label": "All equal"
+      },
+      "trustedOnly": {
+        "description": "Only accounts associated with <2>a trusted email address</2>are considered",
+        "label": "Trusted only"
+      }
     },
     "scoreModeSection": "Voting rights",
     "uploader": "Uploader"
