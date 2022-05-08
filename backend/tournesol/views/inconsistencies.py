@@ -5,6 +5,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from core.utils.constants import COMPARISON_MAX
 from tournesol.models import ComparisonCriteriaScore, ContributorRatingCriteriaScore
 from tournesol.serializers.inconsistencies import (
     ScoreInconsistenciesFilterSerializer,
@@ -90,7 +91,6 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         comparisons_analysed_count = dict.fromkeys(criteria_list, 0)
         inconsistent_comparisons_count = dict.fromkeys(criteria_list, 0)
         inconsistency_sum = dict.fromkeys(criteria_list, 0.0)
-        mean_inconsistency = dict.fromkeys(criteria_list, 0.0)
 
         inconsistent_criterion_comparisons = []
 
@@ -114,15 +114,15 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
             uncertainty = rating_1["uncertainty"] + rating_2["uncertainty"]
 
-            inconsistency = ScoreInconsistencies._calculate_inconsistency(rating_1["score"],
-                                                                          rating_2["score"],
-                                                                          comparison_score,
-                                                                          uncertainty)
+            inconsistency, ideal_comparison_score = ScoreInconsistencies._calculate_inconsistency(
+                rating_1["score"],
+                rating_2["score"],
+                comparison_score,
+                uncertainty,
+            )
 
             comparisons_analysed_count[criterion] += 1
             inconsistency_sum[criterion] += inconsistency
-            mean_inconsistency[criterion] = inconsistency_sum[criterion] / \
-                comparisons_analysed_count[criterion]
 
             if inconsistency >= threshold:
                 inconsistent_comparisons_count[criterion] += 1
@@ -133,9 +133,10 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                         "criterion": criterion,
                         "entity_1_uid": entity_1,
                         "entity_2_uid": entity_2,
-                        "comparison_score": comparison_score,
                         "entity_1_rating": rating_1["score"],
                         "entity_2_rating": rating_2["score"],
+                        "comparison_score": comparison_score,
+                        "expected_comparison_score": ideal_comparison_score,
                     }
                 )
 
@@ -145,8 +146,13 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         response["results"] = inconsistent_criterion_comparisons
         response["stats"] = {}
         for criterion in criteria_list:
+            mean_inconsistency = 0.0
+            if comparisons_analysed_count[criterion] > 0:
+                mean_inconsistency = inconsistency_sum[criterion] / \
+                                     comparisons_analysed_count[criterion]
+
             response["stats"][criterion] = {
-                "mean_inconsistency": mean_inconsistency[criterion],
+                "mean_inconsistency": mean_inconsistency,
                 "inconsistent_comparisons_count": inconsistent_comparisons_count[criterion],
                 "comparisons_count": comparisons_analysed_count[criterion],
             }
@@ -171,35 +177,40 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
         The function i(r), is either:
         1 - always increasing, if c <= -10 (normally, c is in [-10, 10])
-        2 - decreasing to 0, then increasing (because it is an absolute value)
-        3 - always decreasing, if c >= 10
-        So, the inconsistency is either i(R - U) in case 1, inconsistency(R + U)
-        in case 3, or 0 in case 2.
-        The value of R for which i(r) = 0 is C / sqrt(100 - C²), which
-        helps in case 2 to know if the minimum is 0 by checking if this root
-        is in [R - U, R + U].
+        2 - always decreasing, if c >= 10
+        3 - decreasing to 0, then increasing (because it is an absolute value)
+        So, the inconsistency is:
+           - in case 1: i(R - U)
+           - in case 2: i(R + U)
+           - in case 3: The value of R for which i(r) = 0 is C / sqrt(100 - C²).
+                        The inconsistency is 0 if this value is between [R - U, R + U],
+                        otherwise it is respectively i(R - U) or i(R + U) if it is on
+                        the left or the right of the interval.
 
         There is also an imprecision of 0.5 on the comparisons,
         since the comparisons are made on integers (considering that contributors
         have to "mentally round" their preferences to the nearest integer).
         This imprecision is subtracted on the result of the previous calculation.
+
+        Also return the "expected" comparison score (10R / sqrt(R² + 1)). This
+        can be used by the frontend to indicate to contributors a range
+        of "acceptable" values.
         """
 
         base_rating_difference = entity_2_calculated_rating - entity_1_calculated_rating
-        comparison_max = 10
 
         def inconsistency_calculation(rating_diff):
-            return abs(comparison_score - comparison_max * rating_diff / sqrt(rating_diff**2 + 1))
+            return abs(comparison_score - COMPARISON_MAX * rating_diff / sqrt(rating_diff**2 + 1))
 
         min_rating_difference = base_rating_difference - uncertainty
         max_rating_difference = base_rating_difference + uncertainty
 
-        if comparison_score <= -comparison_max:
+        if comparison_score <= -COMPARISON_MAX:
             min_inconsistency = inconsistency_calculation(min_rating_difference)
-        elif comparison_score >= comparison_max:
+        elif comparison_score >= COMPARISON_MAX:
             min_inconsistency = inconsistency_calculation(max_rating_difference)
         else:
-            root = comparison_score / sqrt(comparison_max**2 - comparison_score**2)
+            root = comparison_score / sqrt(COMPARISON_MAX ** 2 - comparison_score ** 2)
             if max_rating_difference < root:
                 # The inconsistency is decreasing with the rating_difference
                 min_inconsistency = inconsistency_calculation(max_rating_difference)
@@ -213,4 +224,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         # Comparison imprecision of 0.5, because comparisons scores are on integers, not floats
         inconsistency = max(min_inconsistency - 0.5, 0)
 
-        return inconsistency
+        expected_comparison_score = \
+            COMPARISON_MAX * base_rating_difference / sqrt(base_rating_difference**2 + 1)
+
+        return inconsistency, expected_comparison_score

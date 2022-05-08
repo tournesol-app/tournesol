@@ -10,9 +10,10 @@ class ScoreInconsistencySerializer(Serializer):
     criterion = serializers.CharField()
     entity_1_uid = serializers.CharField()
     entity_2_uid = serializers.CharField()
-    comparison_score = serializers.FloatField()
     entity_1_rating = serializers.FloatField()
     entity_2_rating = serializers.FloatField()
+    comparison_score = serializers.FloatField()
+    expected_comparison_score = serializers.FloatField()
 
 
 class ScoreInconsistenciesStatsSerializer(Serializer):

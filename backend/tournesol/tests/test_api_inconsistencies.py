@@ -152,9 +152,11 @@ class ScoreInconsistenciesApiTestCase(TestCase):
             self.assertGreater(results["inconsistency"], default_inconsistency_threshold)
             self.assertEqual(results["entity_1_uid"], entity1.uid)
             self.assertEqual(results["entity_2_uid"], entity2.uid)
-            self.assertEqual(results["comparison_score"], comparison_score)
             self.assertEqual(results["entity_1_rating"], rating_1_score)
             self.assertEqual(results["entity_2_rating"], rating_2_score)
+            self.assertEqual(results["comparison_score"], comparison_score)
+            self.assertGreater(results["expected_comparison_score"], 0)
+            self.assertLess(results["expected_comparison_score"], 1)
 
         for criterion in self.poll.criterias_list:
             self.assertIn(criterion, response.data["stats"])
@@ -349,8 +351,7 @@ class ScoreInconsistenciesApiTestCase(TestCase):
     def test_inconsistency_bad_rating(self):
         """
         Verify the inconsistency for extremely bad ratings.
-        The rating_difference can, in theory, take any value.
-        The inconsistency though should always be in [0,19.5[ with a comparison
+        The inconsistency should always be in [0,19.5[ with a comparison
         score of 10 or -10, and in [0,9.5[ for a comparison score of 0.
 
         It is 19.5 and 9.5 instead of 20 and 10 because if the comparison_imprecision
