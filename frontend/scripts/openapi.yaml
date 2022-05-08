@@ -1331,6 +1331,46 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /users/me/inconsistencies/score/{poll_name}:
+    get:
+      operationId: users_me_inconsistencies_score_retrieve
+      description: |-
+        List the comparisons criteria for which the given score is very
+        different from what would be expected from both entities' criteria scores.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: inconsistency_threshold
+        schema:
+          type: number
+          format: float
+          default: 5.0
+        description: Comparisons with an inconsistency score above this threshold
+          are considered inconsistent and listed in the response (max. 100 responses).
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Restrict the search to entities created or edited after this date.
+          Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`).
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoreInconsistencies'
+          description: ''
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list
@@ -2044,30 +2084,30 @@ components:
           type: object
           additionalProperties: {}
           readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
-          readOnly: true
-        total_score:
-          type: number
-          format: float
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        is_public:
+          type: boolean
+          readOnly: true
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        total_score:
+          type: number
+          format: float
       required:
       - criteria_scores
       - is_public
@@ -2894,7 +2934,7 @@ components:
         active:
           type: boolean
           description: On an inactive poll, entity scores are not updated and comparisons
-            can't be created, updated or deleted.
+            can't be created, updated or deleted by users.
       required:
       - criterias
       - entity_type
@@ -3710,6 +3750,78 @@ components:
       - Zambia
       - Zimbabwe
       type: string
+    ScoreInconsistencies:
+      type: object
+      description: |-
+        Returns the score inconsistencies and some statistics.
+        Used from a dictionary, not a queryset.
+      properties:
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScoreInconsistency'
+        stats:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ScoreInconsistenciesStats'
+          title: criterion
+      required:
+      - count
+      - results
+      - stats
+    ScoreInconsistenciesStats:
+      type: object
+      description: |-
+        Return some statistics for each criterion,
+        to be able to compare the results for the different criteria
+      properties:
+        mean_inconsistency:
+          type: number
+          format: float
+        inconsistent_comparisons_count:
+          type: integer
+        comparisons_count:
+          type: integer
+      required:
+      - comparisons_count
+      - inconsistent_comparisons_count
+      - mean_inconsistency
+    ScoreInconsistency:
+      type: object
+      description: Serializer for one element
+      properties:
+        inconsistency:
+          type: number
+          format: float
+        criterion:
+          type: string
+        entity_1_uid:
+          type: string
+        entity_2_uid:
+          type: string
+        entity_1_rating:
+          type: number
+          format: float
+        entity_2_rating:
+          type: number
+          format: float
+        comparison_score:
+          type: number
+          format: float
+        expected_comparison_score:
+          type: number
+          format: float
+      required:
+      - comparison_score
+      - criterion
+      - entity_1_rating
+      - entity_1_uid
+      - entity_2_rating
+      - entity_2_uid
+      - expected_comparison_score
+      - inconsistency
     Statistics:
       type: object
       description: A representation of the Tournesol public statistics.
