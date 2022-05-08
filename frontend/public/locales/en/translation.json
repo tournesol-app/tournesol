@@ -389,7 +389,16 @@
     "health": "Topics related to the health system, mental health, sports, end-of-life ethics, COVID-19 and vaccines",
     "institutions_democracy": "Topics related to the organization of political life, democracy, territories and collectivities, public service and overseas",
     "labour_economy": "Topics related to jobs, unemployment, purchasing power, taxation, public deficits and debt",
-    "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration"
+    "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration",
+    "pedagogy": "",
+    "importance": "",
+    "layman_friendly": "",
+    "entertaining_relaxing": "",
+    "engaging": "",
+    "diversity_inclusion": "",
+    "better_habits": "",
+    "backfire_risk": "",
+    "reliability": ""
   },
   "language": {
     "af": "Afrikaans",
