@@ -28,7 +28,7 @@ class RecommendationSerializer(ModelSerializer):
     criteria_scores = EntityCriteriaScoreSerializer(many=True)
     # TODO: the field total_score is the only field in this serializer that
     # on the parameters of an api request. Should it be treated differently?
-    total_score = serializers.FloatField(default=0.)
+    total_score = serializers.FloatField()
 
     class Meta:
         model = Entity

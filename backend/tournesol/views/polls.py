@@ -240,7 +240,16 @@ class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
     def get_object(self):
         """Get the entity based on the requested uid."""
         entity_uid = self.kwargs.get("uid")
-        return get_object_or_404(Entity, uid=entity_uid)
+        entity = get_object_or_404(Entity, uid=entity_uid)
+
+        # The `total_score` is not a natural attribute of an entity. It is
+        # used by the recommendations API and computed during the queryset
+        # building. The value of the `total_score` may vary depending on the
+        # criteria filters used in a recommendations HTTP request. As there is
+        # no such filters in the `PollsEntityView` we consider that the
+        # `total_score` matches the `tournesol_score`.
+        entity.total_score = entity.tournesol_score
+        return entity
 
 
 class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
