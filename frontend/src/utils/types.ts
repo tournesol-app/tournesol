@@ -39,13 +39,13 @@ export type VideoObject = Video | VideoSerializerWithCriteria;
 export enum RouteID {
   Home = 'home',
   Recommendations = 'recommendations',
+  EntityAnalysis = 'entityAnalysis',
   Comparison = 'comparison',
   MyComparisons = 'myComparisons',
   MyComparedItems = 'myComparedItems',
   MyRateLaterList = 'myRateLaterList',
   MyFeedback = 'myFeedback',
   About = 'about',
-  EntityAnalysis = 'entities',
 }
 
 export type OrderedDialogs = {
