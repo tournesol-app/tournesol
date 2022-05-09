@@ -28,23 +28,21 @@ const ProofOfVote = () => {
   return (
     <Box my={2}>
       {code && (
-        <>
-          <TextField
-            label={t('myFeedbackPage.proofOfVote')}
-            helperText={codeHelperText}
-            color="secondary"
-            fullWidth
-            value={code}
-            InputProps={{
-              readOnly: true,
-              sx: {
-                bgcolor: 'white',
-                fontFamily: 'monospace',
-              },
-            }}
-            onFocus={(e) => e.target.select()}
-          />
-        </>
+        <TextField
+          label={t('myFeedbackPage.proofOfVote')}
+          helperText={codeHelperText}
+          color="secondary"
+          fullWidth
+          value={code}
+          InputProps={{
+            readOnly: true,
+            sx: {
+              bgcolor: 'white',
+              fontFamily: 'monospace',
+            },
+          }}
+          onFocus={(e) => e.target.select()}
+        />
       )}
     </Box>
   );

@@ -1,5 +1,5 @@
 """
-API endpoints to show public statistics
+API endpoints to interact with the contributor's proof of work.
 """
 
 from rest_framework import generics
@@ -13,7 +13,7 @@ from .mixins.poll import PollScopedViewMixin
 
 class ProofOfVoteView(PollScopedViewMixin, generics.RetrieveAPIView):
     """
-    API for retrieving proof_of_vote in a given poll
+    API for retrieving the logged user's proof_of_vote in a given poll.
     """
     serializer_class = ProofOfVoteSerializer
 
