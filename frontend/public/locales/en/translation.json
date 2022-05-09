@@ -171,7 +171,7 @@
         "label": "All equal"
       },
       "trustedOnly": {
-        "description": "Only accounts associated with <2>a trusted email address</2>are considered",
+        "description": "Only accounts associated with <2>a trusted email address</2> are considered",
         "label": "Trusted only"
       }
     },
