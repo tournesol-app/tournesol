@@ -4,12 +4,23 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Poll
+from tournesol.tests.factories.entity import (
+    EntityFactory,
+    UserFactory,
+    VideoCriteriaScoreFactory,
+    VideoFactory,
+)
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
 
-from .factories.entity import EntityFactory, VideoCriteriaScoreFactory, VideoFactory
-from .factories.ratings import ContributorRatingCriteriaScoreFactory, ContributorRatingFactory
 
+class PollsTestCase(TestCase):
+    """
+    TestCase of the PollsView API.
+    """
 
-class PollsApi(TestCase):
     def test_anonymous_can_read(self):
         """An anonymous user can read a poll with its translated criteria."""
         client = APIClient(HTTP_ACCEPT_LANGUAGE="fr")
@@ -30,7 +41,11 @@ class PollsApi(TestCase):
         )
 
 
-class PollsRecommendationsApi(TestCase):
+class PollsRecommendationsTestCase(TestCase):
+    """
+    TestCase of the PollsRecommendationsView API.
+    """
+
     def setUp(self):
         self.client = APIClient()
 
@@ -188,7 +203,8 @@ class PollsRecommendationsApi(TestCase):
 
         resp = self.client.get(
             "/polls/videos/recommendations/?metadata[language]=fr"
-            "&metadata[language]=pt""&metadata[language]=it"
+            "&metadata[language]=pt"
+            "&metadata[language]=it"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(
@@ -218,7 +234,7 @@ class PollsRecommendationsApi(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
-    
+
     def test_can_list_recommendations_with_score_mode(self):
         response = self.client.get("/polls/videos/recommendations/?score_mode=all_equal")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -234,7 +250,68 @@ class PollsRecommendationsApi(TestCase):
         self.assertEqual(results[2]["total_score"], -2.0)
 
 
-class EntityPollDistributorTestCase(TestCase):
+class PollsEntityTestCase(TestCase):
+    """
+    TestCase of the PollsEntityView API.
+    """
+
+    # users available in all tests
+    _user = "username"
+
+    # videos available in all tests
+    _uid_01 = "yt:video_id_01"
+
+    def setUp(self):
+        self.client = APIClient()
+
+        self.video_1 = VideoFactory(
+            uid="yt:video_id_01",
+            tournesol_score=-2,
+            rating_n_contributors=4,
+            rating_n_ratings=8,
+        )
+
+        self.user = UserFactory(username=self._user)
+
+    def test_auth_can_read(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/polls/videos/entities/yt:video_id_01")
+
+        data = response.data
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["tournesol_score"], -2)
+        self.assertEqual(data["n_comparisons"], 8)
+        self.assertEqual(data["n_contributors"], 4)
+        self.assertIn("total_score", data)
+        self.assertIn("criteria_scores", data)
+
+    def test_anon_can_read(self):
+        response = self.client.get("/polls/videos/entities/yt:video_id_01")
+
+        data = response.data
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["tournesol_score"], -2)
+        self.assertEqual(data["n_comparisons"], 8)
+        self.assertEqual(data["n_contributors"], 4)
+        self.assertIn("total_score", data)
+        self.assertIn("criteria_scores", data)
+
+    def test_users_read_404_if_not_exists(self):
+        # anonymous user
+        response = self.client.get("/polls/videos/entities/yt:_non_existing")
+        self.assertEqual(response.status_code, 404)
+
+        # authenticated user
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/polls/videos/entities/yt:_non_existing")
+        self.assertEqual(response.status_code, 404)
+
+
+class PollsCriteriaScoreDistributionTestCase(TestCase):
+    """
+    TestCase of the PollsCriteriaScoreDistributionView API.
+    """
+
     def setUp(self):
         self.client = APIClient()
         self.poll_videos = Poll.default_poll()
