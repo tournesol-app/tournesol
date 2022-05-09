@@ -472,11 +472,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/Poll'
           description: ''
+  /polls/{name}/entities/{uid}:
+    get:
+      operationId: polls_entities_retrieve
+      description: Fetch an entity with its poll specific statistics.
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - polls
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recommendation'
+          description: ''
   /polls/{name}/entities/{uid}/criteria_scores_distributions:
     get:
       operationId: polls_entities_criteria_scores_distributions_retrieve
-      description: Get the distribution of the contributor's ratings per criteria
-        for an entity
+      description: Fetch an entity with the distribution of its contributors' ratings
+        per criteria.
       parameters:
       - in: path
         name: name
@@ -1398,7 +1425,7 @@ paths:
   /users/me/proof_of_votes/{poll_name}/:
     get:
       operationId: users_me_proof_of_votes_retrieve
-      description: API for retrieving proof_of_vote in a given poll
+      description: API for retrieving the logged user's proof_of_vote in a given poll.
       parameters:
       - in: path
         name: poll_name
@@ -2126,34 +2153,34 @@ components:
     ContributorRecommendations:
       type: object
       properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        total_score:
+          type: number
+          format: float
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        is_public:
+          type: boolean
+          readOnly: true
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        is_public:
-          type: boolean
-          readOnly: true
-        total_score:
-          type: number
-          format: float
       required:
       - criteria_scores
       - is_public
