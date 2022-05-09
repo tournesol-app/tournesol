@@ -28,6 +28,7 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
     <Box
       position="relative"
       height="100%"
+      width="100%"
       onClick={() => setIsDurationVisible(false)}
       ref={ref}
     >
