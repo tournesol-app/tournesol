@@ -261,6 +261,9 @@ class PollsEntityTestCase(TestCase):
     # videos available in all tests
     _uid_01 = "yt:video_id_01"
 
+    _non_existing_uid = "yt:_non_existing"
+    _non_existing_poll = "_non_existing"
+
     def setUp(self):
         self.client = APIClient()
 
@@ -275,7 +278,7 @@ class PollsEntityTestCase(TestCase):
 
     def test_auth_can_read(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.get("/polls/videos/entities/yt:video_id_01")
+        response = self.client.get(f"/polls/videos/entities/{self.video_1.uid}")
 
         data = response.data
         self.assertEqual(response.status_code, 200)
@@ -286,7 +289,7 @@ class PollsEntityTestCase(TestCase):
         self.assertIn("criteria_scores", data)
 
     def test_anon_can_read(self):
-        response = self.client.get("/polls/videos/entities/yt:video_id_01")
+        response = self.client.get(f"/polls/videos/entities/{self.video_1.uid}")
 
         data = response.data
         self.assertEqual(response.status_code, 200)
@@ -296,14 +299,24 @@ class PollsEntityTestCase(TestCase):
         self.assertIn("total_score", data)
         self.assertIn("criteria_scores", data)
 
-    def test_users_read_404_if_not_exists(self):
+    def test_users_read_404_if_uid_doesnt_exist(self):
         # anonymous user
-        response = self.client.get("/polls/videos/entities/yt:_non_existing")
+        response = self.client.get(f"/polls/videos/entities/{self._non_existing_uid}")
         self.assertEqual(response.status_code, 404)
 
         # authenticated user
         self.client.force_authenticate(user=self.user)
-        response = self.client.get("/polls/videos/entities/yt:_non_existing")
+        response = self.client.get(f"/polls/videos/entities/{self._non_existing_uid}")
+        self.assertEqual(response.status_code, 404)
+
+    def test_users_read_404_if_poll_doesnt_exist(self):
+        # anonymous user
+        response = self.client.get(f"/polls/{self._non_existing_poll}/entities/{self.video_1.uid}")
+        self.assertEqual(response.status_code, 404)
+
+        # authenticated user
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f"/polls/{self._non_existing_poll}/entities/{self.video_1.uid}")
         self.assertEqual(response.status_code, 404)
 
 
