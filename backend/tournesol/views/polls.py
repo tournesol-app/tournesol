@@ -228,7 +228,7 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
 
 class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
     """
-    Get the distribution of the contributor's ratings per criteria for an entity
+    Fetch an entity with its poll specific statistics.
     """
 
     poll_parameter = "name"
@@ -238,14 +238,14 @@ class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
     serializer_class = RecommendationSerializer
 
     def get_object(self):
-        """ Get object based on the entity uid """
+        """Get the entity based on the requested uid."""
         entity_uid = self.kwargs.get("uid")
         return get_object_or_404(Entity, uid=entity_uid)
 
 
 class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     """
-    Get the distribution of the contributor's ratings per criteria for an entity
+    Fetch an entity with the distribution of its contributors' ratings per criteria.
     """
 
     poll_parameter = "name"
@@ -255,6 +255,6 @@ class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     serializer_class = EntityCriteriaDistributionSerializer
 
     def get_object(self):
-        """ Get object based on the entity uid """
+        """Get the entity based on the requested uid."""
         entity_uid = self.kwargs.get("uid")
         return get_object_or_404(Entity, uid=entity_uid)
