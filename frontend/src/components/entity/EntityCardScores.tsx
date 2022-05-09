@@ -1,7 +1,10 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Box, Theme, Stack, Tooltip } from '@mui/material';
-import { Warning as WarningIcon } from '@mui/icons-material';
+import { Box, Theme, Stack, Tooltip, Typography } from '@mui/material';
+import {
+  Warning as WarningIcon,
+  HelpOutline as HelpIcon,
+} from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { displayScore } from 'src/utils/criteria';
@@ -10,6 +13,8 @@ import CriteriaIcon from '../CriteriaIcon';
 
 interface Props {
   entity: Recommendation;
+  showTournesolScore?: boolean;
+  showTotalScore?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -37,7 +42,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const EntityCardScores = ({ entity }: Props) => {
+const EntityCardScores = ({
+  entity,
+  showTournesolScore = true,
+  showTotalScore = false,
+}: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { getCriteriaLabel, options } = useCurrentPoll();
@@ -92,97 +101,119 @@ const EntityCardScores = ({ entity }: Props) => {
   );
 
   return (
-    <Box
-      display="flex"
-      flexWrap="wrap"
-      alignItems="center"
-      columnGap="12px"
-      paddingBottom={1}
-    >
-      {'tournesol_score' in entity && entity.tournesol_score != null && (
-        <Tooltip title={tournesolScoreTitle} placement="right">
-          <Box
-            display="flex"
-            alignItems="center"
-            data-testid="video-card-overall-score"
-            {...(isUnsafe && {
-              sx: {
-                filter: 'grayscale(100%)',
-                opacity: 0.6,
-              },
-            })}
+    <>
+      {showTotalScore && (
+        <Box display="flex" alignItems="center" columnGap={1}>
+          <Typography color="text.secondary">
+            Score : <strong>{entity.total_score.toFixed(2)}</strong>
+            {''}
+          </Typography>
+          <Tooltip
+            title={t('score.totalScoreBasedOnRankingChoice')}
+            placement="right"
           >
-            <img
-              className="tournesol"
-              src={'/svg/tournesol.svg'}
-              alt="logo"
-              title="Overall score"
-              width={32}
-            />
-            <span className={classes.nb_tournesol}>
-              {entity.tournesol_score.toFixed(0)}
+            <HelpIcon fontSize="inherit" color="action" />
+          </Tooltip>
+        </Box>
+      )}
+      <Box
+        display="flex"
+        flexWrap="wrap"
+        alignItems="center"
+        columnGap="12px"
+        paddingBottom={1}
+      >
+        {showTournesolScore &&
+          'tournesol_score' in entity &&
+          entity.tournesol_score != null && (
+            <Tooltip title={tournesolScoreTitle} placement="right">
+              <Box
+                display="flex"
+                alignItems="center"
+                data-testid="video-card-overall-score"
+                {...(isUnsafe && {
+                  sx: {
+                    filter: 'grayscale(100%)',
+                    opacity: 0.6,
+                  },
+                })}
+              >
+                <img
+                  className="tournesol"
+                  src={'/svg/tournesol.svg'}
+                  alt="logo"
+                  title="Overall score"
+                  width={32}
+                />
+                <span className={classes.nb_tournesol}>
+                  {entity.tournesol_score.toFixed(0)}
+                </span>
+              </Box>
+            </Tooltip>
+          )}
+
+        {nbRatings != null && nbRatings > 0 && (
+          <Box data-testid="video-card-ratings">
+            <span className={classes.ratings}>
+              <Trans t={t} i18nKey="video.nbComparisonsBy" count={nbRatings}>
+                {{ count: nbRatings }} comparisons by
+              </Trans>
+            </span>{' '}
+            <span className={classes.contributors}>
+              <Trans
+                t={t}
+                i18nKey="video.nbContributors"
+                count={nbContributors}
+              >
+                {{ count: nbContributors }} contributors
+              </Trans>
             </span>
           </Box>
-        </Tooltip>
-      )}
+        )}
 
-      {nbRatings != null && nbRatings > 0 && (
-        <Box data-testid="video-card-ratings">
-          <span className={classes.ratings}>
-            <Trans t={t} i18nKey="video.nbComparisonsBy" count={nbRatings}>
-              {{ count: nbRatings }} comparisons by
-            </Trans>
-          </span>{' '}
-          <span className={classes.contributors}>
-            <Trans t={t} i18nKey="video.nbContributors" count={nbContributors}>
-              {{ count: nbContributors }} contributors
-            </Trans>
-          </span>
-        </Box>
-      )}
-
-      {max_criteria !== '' && (
-        <Box
-          data-testid="video-card-minmax-criterias"
-          display="flex"
-          alignItems="center"
-          sx={{
-            fontFamily: 'Poppins',
-            fontSize: '0.9em',
-            color: 'text.secondary',
-            gap: '6px',
-          }}
-        >
-          {max_score > 0 && (
-            <>
-              <span>{t('video.criteriaRatedHigh')}</span>
-              <CriteriaIcon
-                criteriaName={max_criteria}
-                emojiSize="26px"
-                imgWidth="32px"
-                tooltip={`${getCriteriaLabel(max_criteria)}: ${displayScore(
-                  max_score
-                )}`}
-              />
-            </>
-          )}
-          <span />
-          {min_score < 0 && (
-            <>
-              <span>{t('video.criteriaRatedLow')}</span>
-              <CriteriaIcon
-                criteriaName={min_criteria}
-                emojiSize="26px"
-                imgWidth="32px"
-                tooltip={`${getCriteriaLabel(min_criteria)}: ${displayScore(
-                  min_score
-                )}`}
-              />
-            </>
-          )}
-        </Box>
-      )}
-    </Box>
+        {max_criteria !== '' && (
+          <Box
+            data-testid="video-card-minmax-criterias"
+            display="flex"
+            alignItems="center"
+            sx={{
+              fontFamily: 'Poppins',
+              fontSize: '0.9em',
+              color: 'text.secondary',
+              gap: '6px',
+            }}
+          >
+            {max_score > 0 && (
+              <>
+                <span>{t('video.criteriaRatedHigh')}</span>
+                <CriteriaIcon
+                  criteriaName={max_criteria}
+                  emojiSize="26px"
+                  imgWidth="32px"
+                  tooltip={`${getCriteriaLabel(max_criteria)}: ${displayScore(
+                    max_score
+                  )}`}
+                />
+              </>
+            )}
+            <span />
+            {min_score < 0 && (
+              <>
+                <span>{t('video.criteriaRatedLow')}</span>
+                <CriteriaIcon
+                  criteriaName={min_criteria}
+                  emojiSize="26px"
+                  imgWidth="32px"
+                  tooltip={`${getCriteriaLabel(min_criteria)}: ${displayScore(
+                    min_score
+                  )}`}
+                />
+              </>
+            )}
+          </Box>
+        )}
+      </Box>
+    </>
   );
 };
 

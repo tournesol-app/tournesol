@@ -78,7 +78,8 @@ function RecommendationsPage() {
           pollName,
           limit,
           location.search,
-          criterias
+          criterias,
+          options
         )) || []
       );
       setIsLoading(false);
@@ -91,6 +92,7 @@ function RecommendationsPage() {
     location.search,
     pollName,
     searchParams,
+    options,
   ]);
 
   return (
@@ -108,7 +110,7 @@ function RecommendationsPage() {
             }
           />
         </LoaderWrapper>
-        {!isLoading && entitiesCount > 0 && (
+        {!isLoading && entitiesCount > limit && (
           <Pagination
             offset={offset}
             count={entitiesCount}

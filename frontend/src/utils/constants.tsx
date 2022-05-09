@@ -220,6 +220,7 @@ export const polls: Array<SelectablePoll> = [
           tutorialLength: 7,
           tutorialAlternatives: getAllCandidates,
           tutorialDialogs: getTutorialDialogs,
+          unsafeDefault: true,
         },
       ]
     : []),

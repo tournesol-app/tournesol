@@ -27,6 +27,9 @@
     "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
     "personalScore": "Score personnel\u00a0: {{score}}"
   },
+  "score": {
+    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
+  },
   "pagination": {
     "videos": "vidéos",
     "previousButton": "{{limit}} prec.",
@@ -164,6 +167,21 @@
     "uploadDate": "Mises en ligne depuis",
     "allLanguages": "Toutes",
     "language": "Langues",
+    "scoreMode": {
+      "default": {
+        "description": "Davantage d'importance est donnée aux comptes associés à une adresse e-mail fiable",
+        "label": "Par défaut"
+      },
+      "allEqual": {
+        "description": "Importance égale pour tous les comptes",
+        "label": "À égalité"
+      },
+      "trustedOnly": {
+        "description": "Seuls les comptes associés à <2>une adresse e-mail fiable</2> sont inclus",
+        "label": "E-mails fiables seulement"
+      }
+    },
+    "scoreModeSection": "Droits de vote",
     "uploader": "Chaîne"
   },
   "ratings": {
@@ -317,7 +335,9 @@
       "whyCompareCandidates": "Initialement conçue pour la recommendation de vidéos d'utilité publique, Tournesol vous propose aujourd'hui de comparer les candidats à l'élection présidentielle française 2022. Ainsi, vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous exprimez.",
       "dataUsage": "Les données enregistrées ne seront jamais dévoilées aux autres utilisateurs, et ne serviront  qu'à la recherche dans l'éthique des algorithmes et en intelligence artificielle.",
       "createAccount": "Créer un compte",
-      "start": "Commencer"
+      "start": "Commencer",
+      "pollIsClosed": "Le scrutin est maintenant fermé.",
+      "seeResults": "Voir les résultats"
     },
     "contributeTitle": "Participez !",
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",

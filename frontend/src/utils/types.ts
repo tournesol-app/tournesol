@@ -4,6 +4,7 @@ import { SvgIconComponent } from '@mui/icons-material';
 import {
   Entity,
   EntityNoExtraField,
+  Recommendation,
   RelatedEntity,
   Video,
   VideoSerializerWithCriteria,
@@ -25,7 +26,10 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
-export type RelatedEntityObject = EntityNoExtraField | RelatedEntity;
+export type RelatedEntityObject =
+  | EntityNoExtraField
+  | RelatedEntity
+  | Recommendation;
 export type VideoObject = Video | VideoSerializerWithCriteria;
 
 /**
@@ -85,4 +89,6 @@ export type SelectablePoll = {
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
+  // whether the 'unsafe' recommendations should be included by default
+  unsafeDefault?: boolean;
 };

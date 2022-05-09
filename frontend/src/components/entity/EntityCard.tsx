@@ -19,6 +19,7 @@ import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
 import { RelatedEntityObject, ActionList } from 'src/utils/types';
 import EntityCardScores from './EntityCardScores';
+import { TypeEnum } from 'src/services/openapi';
 
 const EntityCard = ({
   entity,
@@ -41,27 +42,26 @@ const EntityCard = ({
 
   const displayEntityCardScores = () => {
     if ('tournesol_score' in entity && !compact) {
-      return <EntityCardScores entity={entity} />;
+      return (
+        <EntityCardScores
+          entity={entity}
+          showTournesolScore={entity.type !== TypeEnum.CANDIDATE_FR_2022}
+          showTotalScore={entity.type === TypeEnum.CANDIDATE_FR_2022}
+        />
+      );
     }
     return null;
   };
 
   return (
     <Grid container sx={entityCardMainSx}>
-      <Grid
-        item
-        xs={12}
-        sm={compact ? 12 : 4}
-        md={compact ? 12 : 3}
-        sx={{ aspectRatio: '16 / 9' }}
-      >
-        <EntityImagery entity={entity} />
+      <Grid item xs={12} sm={compact ? 12 : 'auto'}>
+        <EntityImagery entity={entity} compact={compact} />
       </Grid>
       <Grid
         item
         xs={12}
-        sm={compact ? 12 : 7}
-        md={compact ? 12 : 8}
+        sm={compact ? 12 : true}
         sx={{
           padding: 1,
         }}
