@@ -5,23 +5,37 @@ from functools import total_ordering
 
 @total_ordering
 class Video:
-    yt_url = ""
+    uid = ""
     v1_score: float = 0
     v2_score: dict[Video, float] = {}
-    beta: dict[Video, float] = []
+    beta: dict[Video, float] = {}
     estimated_information_gains = []
-    estimated_related_preferences = []
+    nb_comparison_with: dict[Video, int] = {}
+
+    comparison_nb: int = 0
+    user_pref: int = 0
+
+    video_reference: Video
+
+    def __init__(self, video_reference: Video):
+        self.video_reference = video_reference
 
     def __eq__(self, __o: Video) -> bool:
-        return __o.yt_url == self.yt_url
+        return __o.uid == self.uid
 
     def __gt__(self, obj):
-        return self.v2_score > obj.v2_score
+        if self.video_reference.uid == "":
+            return self.v1_score > obj.v1_score
+        else:
+            return self.v2_score[self.video_reference] > obj.v2_scoreself.video_reference
 
     def __le__(self, other):
-        return self.v2_score <= other.v2_score
+        if self.video_reference.uid == "":
+            return self.v1_score <= other.v1_score
+        else:
+            return self.v2_score[self.video_reference] <= other.v2_score[self.video_reference]
 
     def __repr__(self) -> str:
-        return "Video " + self.yt_url + \
+        return "Video " + self.uid + \
                " with score v1 " + str(self.v1_score) + \
                " and scores v2 " + str(self.v2_score)
