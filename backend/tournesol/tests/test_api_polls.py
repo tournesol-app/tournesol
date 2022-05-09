@@ -78,15 +78,39 @@ class PollsRecommendationsTestCase(TestCase):
             rating_n_contributors=5,
         )
 
-        VideoCriteriaScoreFactory(entity=self.video_1, criteria="reliability", score=-0.1)
-        VideoCriteriaScoreFactory(entity=self.video_2, criteria="reliability", score=0.2)
+        VideoCriteriaScoreFactory(
+            entity=self.video_1, criteria="reliability", score=-0.1
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.video_2, criteria="reliability", score=0.2
+        )
         VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.3)
         VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4)
 
-        VideoCriteriaScoreFactory(entity=self.video_1, criteria="reliability", score=0.1, score_mode="all_equal")
-        VideoCriteriaScoreFactory(entity=self.video_2, criteria="reliability", score=-0.2, score_mode="all_equal")
-        VideoCriteriaScoreFactory(entity=self.video_3, criteria="importance", score=0.5, score_mode="all_equal")
-        VideoCriteriaScoreFactory(entity=self.video_4, criteria="importance", score=0.4, score_mode="all_equal")
+        VideoCriteriaScoreFactory(
+            entity=self.video_1,
+            criteria="reliability",
+            score=0.1,
+            score_mode="all_equal",
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.video_2,
+            criteria="reliability",
+            score=-0.2,
+            score_mode="all_equal",
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.video_3,
+            criteria="importance",
+            score=0.5,
+            score_mode="all_equal",
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.video_4,
+            criteria="importance",
+            score=0.4,
+            score_mode="all_equal",
+        )
 
     def test_anonymous_can_list_recommendations(self):
         response = self.client.get("/polls/videos/recommendations/")
@@ -106,8 +130,9 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__publication_date="2021-01-05",
             rating_n_contributors=6,
         )
-        VideoCriteriaScoreFactory(poll=other_poll, entity=video_5,
-                                  criteria="importance", score=0.5)
+        VideoCriteriaScoreFactory(
+            poll=other_poll, entity=video_5, criteria="importance", score=0.5
+        )
         response = self.client.get("/polls/videos/recommendations/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 3)
@@ -236,7 +261,9 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(resp.data["results"], [])
 
     def test_can_list_recommendations_with_score_mode(self):
-        response = self.client.get("/polls/videos/recommendations/?score_mode=all_equal")
+        response = self.client.get(
+            "/polls/videos/recommendations/?score_mode=all_equal"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.data["results"]
@@ -311,12 +338,16 @@ class PollsEntityTestCase(TestCase):
 
     def test_users_read_404_if_poll_doesnt_exist(self):
         # anonymous user
-        response = self.client.get(f"/polls/{self._non_existing_poll}/entities/{self.video_1.uid}")
+        response = self.client.get(
+            f"/polls/{self._non_existing_poll}/entities/{self.video_1.uid}"
+        )
         self.assertEqual(response.status_code, 404)
 
         # authenticated user
         self.client.force_authenticate(user=self.user)
-        response = self.client.get(f"/polls/{self._non_existing_poll}/entities/{self.video_1.uid}")
+        response = self.client.get(
+            f"/polls/{self._non_existing_poll}/entities/{self.video_1.uid}"
+        )
         self.assertEqual(response.status_code, 404)
 
 
@@ -335,92 +366,151 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.entity_public = EntityFactory()
         self.entity_private = EntityFactory()
 
-        self.contributor_ratings_1 = ContributorRatingFactory(user=user1, entity=self.entity_public, is_public=True)
-        self.contributor_ratings_2 = ContributorRatingFactory(user=user2, entity=self.entity_public, is_public=True)
+        self.contributor_ratings_1 = ContributorRatingFactory(
+            user=user1, entity=self.entity_public, is_public=True
+        )
+        self.contributor_ratings_2 = ContributorRatingFactory(
+            user=user2, entity=self.entity_public, is_public=True
+        )
 
-        self.contributor_ratings_private_1 = ContributorRatingFactory(user=user1, entity=self.entity_private, is_public=False)
-        self.contributor_ratings_private_2 = ContributorRatingFactory(user=user2, entity=self.entity_private, is_public=False)
+        self.contributor_ratings_private_1 = ContributorRatingFactory(
+            user=user1, entity=self.entity_private, is_public=False
+        )
+        self.contributor_ratings_private_2 = ContributorRatingFactory(
+            user=user2, entity=self.entity_private, is_public=False
+        )
 
     def test_basic_api_call_is_successfull(self):
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_basic_call_missing_entity(self):
-        response = self.client.get("/polls/videos/entities/XYZ/criteria_scores_distributions")
+        response = self.client.get(
+            "/polls/videos/entities/XYZ/criteria_scores_distributions"
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_one_criteria_score_should_have_base_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=0.2)
+            contributor_rating=self.contributor_ratings_1,
+            criteria="reliability",
+            score=0.2,
+        )
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
-        self.assertEqual(response.data["criteria_scores_distributions"]
-                         [0]["criteria"], "reliability")
+        self.assertEqual(
+            response.data["criteria_scores_distributions"][0]["criteria"], "reliability"
+        )
         # The sixth position are values between (0, 0.2) because
         # we use a 10 bins between (-1, 1)
-        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
+        self.assertEqual(
+            response.data["criteria_scores_distributions"][0]["distribution"][5], 1
+        )
 
     def test_two_criteria_score_should_have_right_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_1, criteria="reliability", score=0.2)
+            contributor_rating=self.contributor_ratings_1,
+            criteria="reliability",
+            score=0.2,
+        )
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
+            contributor_rating=self.contributor_ratings_2,
+            criteria="reliability",
+            score=6,
+        )
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
-        self.assertEqual(response.data["criteria_scores_distributions"]
-                         [0]["criteria"], "reliability")
+        self.assertEqual(
+            response.data["criteria_scores_distributions"][0]["criteria"], "reliability"
+        )
         # The sixth position are values between (0, 0.2) because
         # we use a 10 bins between (-1, 1)
-        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][5], 1)
+        self.assertEqual(
+            response.data["criteria_scores_distributions"][0]["distribution"][5], 1
+        )
         # The sixth position are all values above 0.8 because we use a 10 bins
         # between (-1, 1) and we clip all values between (-1, 1)
-        self.assertEqual(response.data["criteria_scores_distributions"][0]["distribution"][9], 1)
+        self.assertEqual(
+            response.data["criteria_scores_distributions"][0]["distribution"][9], 1
+        )
         # Distribution is always in a range [-1,1]
-        self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)
-        self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 1)
+        self.assertEqual(
+            min(response.data["criteria_scores_distributions"][0]["bins"]), -1
+        )
+        self.assertEqual(
+            max(response.data["criteria_scores_distributions"][0]["bins"]), 1
+        )
 
     def test_no_private_criteria_ratings_should_be_in_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_private_1, criteria="better_habits", score=2)
+            contributor_rating=self.contributor_ratings_private_1,
+            criteria="better_habits",
+            score=2,
+        )
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_private_2, criteria="reliability", score=6)
+            contributor_rating=self.contributor_ratings_private_2,
+            criteria="reliability",
+            score=6,
+        )
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity_private.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_private.uid}/criteria_scores_distributions"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 0)
 
     def test_all_criteria_ratings_should_be_in_distribution(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_1, criteria="better_habits", score=2)
+            contributor_rating=self.contributor_ratings_1,
+            criteria="better_habits",
+            score=2,
+        )
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_2, criteria="reliability", score=6)
+            contributor_rating=self.contributor_ratings_2,
+            criteria="reliability",
+            score=6,
+        )
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 2)
 
     def test_value_in_minus_1_plus_1_should_have_default_bins(self):
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_1, criteria="better_habits", score=0.6)
+            contributor_rating=self.contributor_ratings_1,
+            criteria="better_habits",
+            score=0.6,
+        )
         ContributorRatingCriteriaScoreFactory(
-            contributor_rating=self.contributor_ratings_2, criteria="better_habits", score=-0.6)
+            contributor_rating=self.contributor_ratings_2,
+            criteria="better_habits",
+            score=-0.6,
+        )
 
         response = self.client.get(
-            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions")
+            f"/polls/videos/entities/{self.entity_public.uid}/criteria_scores_distributions"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
-        self.assertEqual(min(response.data["criteria_scores_distributions"][0]["bins"]), -1)
-        self.assertEqual(max(response.data["criteria_scores_distributions"][0]["bins"]), 1)
+        self.assertEqual(
+            min(response.data["criteria_scores_distributions"][0]["bins"]), -1
+        )
+        self.assertEqual(
+            max(response.data["criteria_scores_distributions"][0]["bins"]), 1
+        )
