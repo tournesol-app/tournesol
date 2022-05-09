@@ -74,7 +74,7 @@ function App() {
           <PublicRoute path="/about">
             <About />
           </PublicRoute>
-          {/* Specific to Videos */}
+          {/* LEGAGY route used for retro-compatibility */}
           <PublicRoute path="/video/:video_id">
             <VideoAnalysisPage />
           </PublicRoute>

@@ -87,11 +87,13 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
 
 export const AnalysisPageLink = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
+
   return (
     <Tooltip title={`${t('actions.analysis')}`} placement="left">
       <IconButton
         size="medium"
-        href={`/video/${uid.slice(3)}`}
+        href={`${baseUrl}/entities/${uid}`}
         sx={{ color: '#CDCABC' }}
       >
         <QueryStatsIcon />
