@@ -23,6 +23,7 @@ import {
 } from 'src/services/openapi';
 import { getPollName, polls, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { SelectablePoll } from 'src/utils/types';
+import ProofOfVote from './ProofOfVote';
 
 const COMPARISONS_NBR_MAX = 100;
 
@@ -157,13 +158,21 @@ const FeedbackPagePresidentielle2022 = () => {
           </>
         ) : (
           <>
-            <Typography variant="h2" textAlign="center">
+            <Typography variant="h3" textAlign="center">
               {t(
                 'myFeedbackPage.presidentielle2022.thanksForComparingCandidates'
               )}
             </Typography>
-            <Typography paragraph mt={2} textAlign="justify">
-              {t('myFeedbackPage.presidentielle2022.description')}
+            <ProofOfVote />
+            <Typography paragraph textAlign="right">
+              <Button
+                color="secondary"
+                variant="contained"
+                component={RouterLink}
+                to={`${baseUrl}/recommendations`}
+              >
+                {t('myFeedbackPage.presidentielle2022.goToGlobalRanking')}
+              </Button>
             </Typography>
             <Grid
               container
