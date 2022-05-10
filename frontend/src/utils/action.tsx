@@ -22,9 +22,10 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
-        size="medium"
-        href={`${baseUrl}/comparison/?uidA=${uid}`}
         sx={{ color: '#CDCABC' }}
+        size="medium"
+        component={Link}
+        to={`${baseUrl}/comparison/?uidA=${uid}`}
       >
         <CompareIcon />
       </IconButton>
