@@ -9,6 +9,7 @@ import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import EntityCardScores from 'src/components/entity/EntityCardScores';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Recommendation, TypeEnum } from 'src/services/openapi';
+import CriteriaBarChart from 'src/components/CriteriaBarChart';
 
 interface Props {
   entity: Recommendation;
@@ -51,6 +52,9 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
                 />
               </Box>
             </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <CriteriaBarChart entity={entity} />
           </Grid>
         </Grid>
       </Box>

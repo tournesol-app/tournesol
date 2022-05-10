@@ -9,7 +9,11 @@ import {
   TooltipProps,
   ResponsiveContainer,
 } from 'recharts';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import {
+  VideoSerializerWithCriteria,
+  Recommendation,
+  EntityCriteriaScore,
+} from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { displayScore, criteriaIcon } from 'src/utils/criteria';
 
@@ -35,11 +39,11 @@ const criteriaColors: { [criteria: string]: string } = {
 };
 
 const SizedBarChart = ({
-  video,
+  criteriaScores,
   width,
   height,
 }: {
-  video: VideoSerializerWithCriteria;
+  criteriaScores: Array<EntityCriteriaScore>;
   width?: number;
   height?: number;
 }) => {
@@ -81,14 +85,13 @@ const SizedBarChart = ({
     );
   };
 
-  const { criteria_scores } = video;
-  const shouldDisplayChart = criteria_scores && criteria_scores.length > 0;
+  const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 
   if (!shouldDisplayChart) {
     return <div></div>;
   }
 
-  const data = criteria_scores
+  const data = criteriaScores
     .filter((s) => mainCriterionName !== s.criteria)
     .map((s) => {
       const clipped_score = between(
@@ -147,15 +150,19 @@ const SizedBarChart = ({
 };
 
 interface Props {
-  video: VideoSerializerWithCriteria;
+  video?: VideoSerializerWithCriteria;
+  entity?: Recommendation;
 }
 
-const CriteriaBarChart = ({ video }: Props) => {
+const CriteriaBarChart = ({ video, entity }: Props) => {
+  const criteriaScores: Array<EntityCriteriaScore> =
+    video?.criteria_scores || entity?.criteria_scores || [];
+
   // ResponsiveContainer adds the width and height props to its child component.
   // We need the width to position the icons.
   return (
     <ResponsiveContainer width="100%" aspect={1}>
-      <SizedBarChart video={video} />
+      <SizedBarChart criteriaScores={criteriaScores} />
     </ResponsiveContainer>
   );
 };
