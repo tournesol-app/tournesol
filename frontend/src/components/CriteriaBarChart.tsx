@@ -72,7 +72,7 @@ const SizedBarChart = ({
         xmlns="http://www.w3.org/2000/svg"
       >
         <style>{'.emoji { font-size: 42px; fill: black; }'}</style>
-        <rect x="0" y="15" width="60" height="30" fill="white" />
+        <rect x="0" y="15" width="60" height="60" fill="white" />
         {emoji ? (
           <text x="9" y="9" dominantBaseline="hanging" className="emoji">
             {emoji}
@@ -158,10 +158,12 @@ const CriteriaBarChart = ({ video, entity }: Props) => {
   const criteriaScores: Array<EntityCriteriaScore> =
     video?.criteria_scores || entity?.criteria_scores || [];
 
+  const height = criteriaScores.length * 60;
+
   // ResponsiveContainer adds the width and height props to its child component.
   // We need the width to position the icons.
   return (
-    <ResponsiveContainer width="100%" aspect={1}>
+    <ResponsiveContainer width="100%" height={height}>
       <SizedBarChart criteriaScores={criteriaScores} />
     </ResponsiveContainer>
   );
