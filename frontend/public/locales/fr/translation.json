@@ -578,7 +578,7 @@
         "title2": "Bravo !",
         "message2": {
           "p10": "Vous avez effectué votre première comparaison 🥳.",
-          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en utilisant les menus déroulants (ou en collant l'URL youtube d'une video) qui se trouvent au dessus des miniatures.",
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant l'URL youtube d'une video qui se trouvent au dessus des miniatures.",
           "p30": "Vous pouvez aussi cliquer sur 'Auto' pour qu'une video vous soit suggérée soit parmi les videos recommandées par Tournesol soit parmi votre liste de 'videos à noter plus tard'.",
           "p40": "Vous pouvez également choisir de vous exprimer ou non sur les critères optionnels en cochant/décochant le critère.",
           "p50": "Bon à savoir: Vous pourrez modifier ultérieurement toutes vos comparaisons si vous n'êtes pas sûr·e de vous."
