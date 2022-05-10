@@ -326,6 +326,11 @@
     "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
     "title": "Mes comparaisons"
   },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Voir le classement global"
+    }
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
