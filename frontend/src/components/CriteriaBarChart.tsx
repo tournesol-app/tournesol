@@ -102,7 +102,7 @@ const SizedBarChart = ({
       const clipped_score = between(
         BAR_CHART_CRITERIA_SCORE_MIN,
         BAR_CHART_CRITERIA_SCORE_MAX,
-        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 5 * _score : _score
+        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 4 * _score : _score
       );
       return {
         ...s,
