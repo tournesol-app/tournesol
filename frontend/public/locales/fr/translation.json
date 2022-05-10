@@ -332,7 +332,7 @@
     },
     "chart": {
       "criteriaScores": {
-        "title": "Score par critère"
+        "title": "Scores par critère"
       }
     }
   },
