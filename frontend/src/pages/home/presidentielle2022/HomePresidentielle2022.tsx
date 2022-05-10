@@ -7,6 +7,7 @@ import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { PRESIDENTIELLE_2022_SURVEY_URL } from 'src/utils/constants';
 
 const HomePresidentielle2022Page = () => {
   const { t } = useTranslation();
@@ -67,19 +68,36 @@ const HomePresidentielle2022Page = () => {
             <Typography paragraph color="#666">
               {t('home.presidentielle2022.pollIsClosed')}
             </Typography>
-            <Button
-              size="large"
-              color="primary"
-              variant="contained"
-              component={Link}
-              to={`${baseUrl}/recommendations`}
-              sx={{
-                px: 4,
-                fontSize: '120%',
-              }}
-            >
-              {t('home.presidentielle2022.seeResults')}
-            </Button>
+            <Stack spacing={2} direction="row">
+              <Button
+                size="large"
+                color="primary"
+                variant="contained"
+                component={Link}
+                to={`${baseUrl}/recommendations`}
+                sx={{
+                  px: 4,
+                  fontSize: '120%',
+                }}
+              >
+                {t('home.presidentielle2022.seeResults')}
+              </Button>
+              {isLoggedIn && (
+                <Button
+                  size="large"
+                  color="inherit"
+                  variant="outlined"
+                  sx={{
+                    px: 4,
+                    textAlign: 'center',
+                    fontSize: '120%',
+                  }}
+                  href={PRESIDENTIELLE_2022_SURVEY_URL}
+                >
+                  {t('home.presidentielle2022.respondToSurvey')}
+                </Button>
+              )}
+            </Stack>
           </Box>
         )}
       </TitleSection>

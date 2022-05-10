@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Box, TextField } from '@mui/material';
 import { UsersService } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks';
+import { PRESIDENTIELLE_2022_SURVEY_URL } from 'src/utils/constants';
 
 const ProofOfVote = () => {
   const { t } = useTranslation();
@@ -16,13 +17,12 @@ const ProofOfVote = () => {
   }, [pollName]);
 
   const codeHelperText = (
-    <span>
-      {t('myFeedbackPage.proofOfVoteHelperText')}{' '}
-      {/* TODO add link to survey:
-       <a target="_blank" href={'https://tournesol.app'} rel="noreferrer">
-        https://tournesol.app
-      </a> */}
-    </span>
+    <Trans t={t} i18nKey="myFeedbackPage.proofOfVoteHelperText">
+      This code will be helpful to complete{' '}
+      <a target="_blank" rel="noreferrer" href={PRESIDENTIELLE_2022_SURVEY_URL}>
+        our survey.
+      </a>
+    </Trans>
   );
 
   return (

@@ -351,7 +351,8 @@
       "createAccount": "Create account",
       "start": "Start",
       "pollIsClosed": "The poll is now closed.",
-      "seeResults": "See results"
+      "seeResults": "See results",
+      "respondToSurvey": "Respond to survey"
     },
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
@@ -391,7 +392,7 @@
       "whatsNext": "What's next?",
       "discoverTournesol": "Discover Tournesol"
     },
-    "proofOfVoteHelperText": "This code will be helpful to complete our survey.",
+    "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
     "proofOfVote": "Proof of vote"
   },
   "myRateLaterListPage": {
