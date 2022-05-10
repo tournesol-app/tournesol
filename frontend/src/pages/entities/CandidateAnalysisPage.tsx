@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Box, Button, Container, Grid, Paper } from '@mui/material';
+import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
 
 import EntityImagery from 'src/components/entity/EntityImagery';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
@@ -53,8 +53,20 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
               </Box>
             </Paper>
           </Grid>
-          <Grid item xs={12}>
-            <CriteriaBarChart entity={entity} />
+          <Grid item sm={12} md={6}>
+            <Paper>
+              <Box
+                p={1}
+                bgcolor="rgb(238, 238, 238)"
+                display="flex"
+                justifyContent="center"
+              >
+                <Typography variant="h5">Scores par critère</Typography>
+              </Box>
+              <Box p={1}>
+                <CriteriaBarChart entity={entity} />
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Box>
