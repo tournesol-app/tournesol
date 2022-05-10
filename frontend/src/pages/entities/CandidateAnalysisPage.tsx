@@ -8,7 +8,7 @@ import EntityImagery from 'src/components/entity/EntityImagery';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import EntityCardScores from 'src/components/entity/EntityCardScores';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { Recommendation } from 'src/services/openapi';
+import { Recommendation, TypeEnum } from 'src/services/openapi';
 
 interface Props {
   entity: Recommendation;
@@ -21,6 +21,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
   return (
     <Container>
       <Box py={2}>
+        {/* Top level section, containing links and maybe more in the future. */}
         <Box display="flex" justifyContent="flex-end">
           <Button
             color="secondary"
@@ -31,6 +32,8 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
             {t('entityAnalysisPage.candidate.goToGlobalRanking')}
           </Button>
         </Box>
+
+        {/* Entity section, with its title and scores. */}
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <EntityImagery entity={entity} compact={true} />
@@ -41,8 +44,10 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
                 <EntityCardTitle title={entity.metadata.name} compact={false} />
                 <EntityCardScores
                   entity={entity}
-                  showTournesolScore={false}
-                  showTotalScore={true}
+                  showTournesolScore={
+                    entity.type !== TypeEnum.CANDIDATE_FR_2022
+                  }
+                  showTotalScore={entity.type === TypeEnum.CANDIDATE_FR_2022}
                 />
               </Box>
             </Paper>

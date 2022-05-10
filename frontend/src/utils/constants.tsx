@@ -207,8 +207,8 @@ export const polls: Array<SelectablePoll> = [
     ? [
         {
           name: PRESIDENTIELLE_2022_POLL_NAME,
-          defaultAuthEntityActions: [CompareNowAction],
-          defaultAnonEntityActions: [],
+          defaultAuthEntityActions: [CompareNowAction, AnalysisPageLink],
+          defaultAnonEntityActions: [AnalysisPageLink],
           displayOrder: 20,
           mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
