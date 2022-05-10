@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Container, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { Link, useParams } from 'react-router-dom';
+
+import { Box, Button, Container, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -17,30 +19,46 @@ const CandidateAnalysisPage = React.lazy(
   () => import('src/pages/entities/CandidateAnalysisPage')
 );
 
-/**
- * TODO:
- *
- * - display a concise title
- * - display a paragraph containing a comprehensive description
- * - translate the title and the paragraph
- */
 const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
+  const { t } = useTranslation();
+
+  const { options } = useCurrentPoll();
+  const path = options?.path ?? '/';
+
   if (apiError == undefined) {
     return null;
   }
 
   let title: string;
+  let message: string;
 
   switch (apiError.status) {
     case 404:
-      title = 'Not Found';
+      title = t('entityNotFound.404.title');
+      message = t('entityNotFound.404.message');
       break;
     default:
-      title = 'Error';
+      title = t('entityNotFound.unexpected.title');
+      message = t('entityNotFound.unexpected.message');
   }
 
-  return <Typography variant="h3">{title}</Typography>;
-  title;
+  return (
+    <Grid container justifyContent="center" textAlign="center">
+      <Grid item xs={12}>
+        <Typography variant="h2">{title}</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1">{message}</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Box mt={2}>
+          <Button variant="contained" component={Link} to={path}>
+            {t('pageNotFound.backToHomePage')}
+          </Button>
+        </Box>
+      </Grid>
+    </Grid>
+  );
 };
 
 const EntityAnalysisPage = () => {
