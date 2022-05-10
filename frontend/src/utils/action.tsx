@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { IconButton, Tooltip } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
@@ -92,9 +93,10 @@ export const AnalysisPageLink = ({ uid }: { uid: string }) => {
   return (
     <Tooltip title={`${t('actions.analysis')}`} placement="left">
       <IconButton
-        size="medium"
-        href={`${baseUrl}/entities/${uid}`}
         sx={{ color: '#CDCABC' }}
+        size="medium"
+        component={Link}
+        to={`${baseUrl}/entities/${uid}`}
       >
         <QueryStatsIcon />
       </IconButton>
