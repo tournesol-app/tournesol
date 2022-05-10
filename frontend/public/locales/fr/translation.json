@@ -326,6 +326,21 @@
     "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
     "title": "Mes comparaisons"
   },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Voir le classement global"
+    }
+  },
+  "entityNotFound": {
+    "404": {
+      "title": "Non trouvée",
+      "message": "L'entité demandée est invalide, ou n'est simplement plus disponible."
+    },
+    "unexpected": {
+      "title": "Erreur inconnue",
+      "message": "Une erreur innatendu est survenue."
+    }
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",

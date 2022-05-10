@@ -320,6 +320,21 @@
     "title": "My comparisons",
     "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Go to global ranking"
+    }
+  },
+  "entityNotFound": {
+    "404": {
+      "title": "Not found",
+      "message": "The requested entity is either invalid, or not available anymore."
+    },
+    "unexpected": {
+      "title": "Unknown error",
+      "message": "An unexpected error has occured."
+    }
+  },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",

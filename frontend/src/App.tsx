@@ -32,7 +32,7 @@ import { PollProvider } from './hooks/useCurrentPoll';
 // See https://reactjs.org/docs/code-splitting.html#route-based-code-splitting
 // for more details.
 const VideoAnalysisPage = React.lazy(
-  () => import('./pages/videos/VideoAnalysis')
+  () => import('./pages/videos/VideoAnalysisPage')
 );
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -74,7 +74,7 @@ function App() {
           <PublicRoute path="/about">
             <About />
           </PublicRoute>
-          {/* Specific to Videos */}
+          {/* LEGAGY route used for retro-compatibility */}
           <PublicRoute path="/video/:video_id">
             <VideoAnalysisPage />
           </PublicRoute>
