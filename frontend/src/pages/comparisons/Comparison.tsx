@@ -25,6 +25,7 @@ const ComparisonPage = () => {
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
+  const redirectTo = options?.tutorialRedirectTo ?? undefined;
 
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
@@ -54,8 +55,7 @@ const ComparisonPage = () => {
             generateInitial={true}
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
-            //redirectTo={`${baseUrl}/personal/feedback`}
-            redirectTo={`${baseUrl}/comparison`}
+            redirectTo={`${baseUrl}${redirectTo}`}
             resumable={true}
           />
         ) : (

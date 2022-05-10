@@ -27,7 +27,8 @@ const HomeVideosPage = () => {
             <strong>robustly beneficial</strong> for all of humanity.
           </Trans>
         </Typography>
-        {/*<Button
+        {/*
+        <Button
           color="primary"
           variant="contained"
           component={Link}

@@ -85,4 +85,5 @@ export type SelectablePoll = {
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
+  tutorialRedirectTo?: string;
 };
