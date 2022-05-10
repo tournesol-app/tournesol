@@ -6,7 +6,6 @@ import { Box, Button, Container, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { VideoAnalysis } from 'src/pages/videos/VideoAnalysisPage';
 import { ApiError, PollsService, Recommendation } from 'src/services/openapi';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
@@ -17,6 +16,12 @@ import { videoWithScoresFromRecommendation } from 'src/utils/entity';
 
 const CandidateAnalysisPage = React.lazy(
   () => import('src/pages/entities/CandidateAnalysisPage')
+);
+
+const VideoAnalysis = React.lazy(() =>
+  import('src/pages/videos/VideoAnalysisPage').then(({ VideoAnalysis }) => ({
+    default: VideoAnalysis,
+  }))
 );
 
 const EntityNotFound = ({ apiError }: { apiError: ApiError | undefined }) => {
