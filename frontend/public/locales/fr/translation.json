@@ -329,6 +329,11 @@
   "entityAnalysisPage": {
     "candidate": {
       "goToGlobalRanking": "Voir le classement global"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores par critère"
+      }
     }
   },
   "entityNotFound": {
