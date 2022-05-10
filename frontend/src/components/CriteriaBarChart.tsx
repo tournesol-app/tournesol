@@ -16,6 +16,7 @@ import {
 } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { displayScore, criteriaIcon } from 'src/utils/criteria';
+import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
 
 const BAR_CHART_CRITERIA_SCORE_MIN = -1;
 const BAR_CHART_CRITERIA_SCORE_MAX = 1;
@@ -47,7 +48,7 @@ const SizedBarChart = ({
   width?: number;
   height?: number;
 }) => {
-  const { getCriteriaLabel, options } = useCurrentPoll();
+  const { getCriteriaLabel, options, name: pollName } = useCurrentPoll();
   const mainCriterionName = options?.mainCriterionName ?? '';
 
   const renderCustomAxisTick = ({
@@ -101,7 +102,10 @@ const SizedBarChart = ({
       );
       return {
         ...s,
-        clipped_score,
+        clipped_score:
+          pollName === PRESIDENTIELLE_2022_POLL_NAME
+            ? 5 * clipped_score
+            : clipped_score,
       };
     });
 
