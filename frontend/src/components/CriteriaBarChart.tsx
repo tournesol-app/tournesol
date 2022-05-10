@@ -95,17 +95,18 @@ const SizedBarChart = ({
   const data = criteriaScores
     .filter((s) => mainCriterionName !== s.criteria)
     .map((s) => {
+      // TODO: below is a bad hack necessary because scores on multiple
+      // polls are not scaled in the same way. We should have a simpler
+      // manner to address this.
+      const _score = s.score || 0;
       const clipped_score = between(
         BAR_CHART_CRITERIA_SCORE_MIN,
         BAR_CHART_CRITERIA_SCORE_MAX,
-        s.score
+        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 4 * _score : _score
       );
       return {
         ...s,
-        clipped_score:
-          pollName === PRESIDENTIELLE_2022_POLL_NAME
-            ? 5 * clipped_score
-            : clipped_score,
+        clipped_score,
       };
     });
 
