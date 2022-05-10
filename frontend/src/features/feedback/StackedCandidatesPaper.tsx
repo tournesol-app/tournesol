@@ -38,7 +38,7 @@ const StackedCandidatesPaper = ({
 }: Props) => {
   const [sortingCriteria, setSortingCriteria] = useState('be_president');
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
+  const { active, baseUrl } = useCurrentPoll();
 
   const nComparisons = Object.fromEntries(
     ratings.map((rating) => {
@@ -133,7 +133,7 @@ const StackedCandidatesPaper = ({
               {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}
             </Typography>
           </Box>
-          <Grid container>
+          <Grid container justifyContent="flex-end">
             <Grid item xs={6} sx={{ px: 1 }}>
               <Button
                 color="secondary"
@@ -146,18 +146,20 @@ const StackedCandidatesPaper = ({
                 {t('stackedCandidatesPaper.seeMyComparisons')}
               </Button>
             </Grid>
-            <Grid item xs={6} sx={{ px: 1 }}>
-              <Button
-                color="secondary"
-                component={RouterLink}
-                variant="contained"
-                to={`${baseUrl}/comparison`}
-                sx={{ height: '100%' }}
-                fullWidth
-              >
-                {t('stackedCandidatesPaper.addNewComparisons')}
-              </Button>
-            </Grid>
+            {active && (
+              <Grid item xs={6} sx={{ px: 1 }}>
+                <Button
+                  color="secondary"
+                  component={RouterLink}
+                  variant="contained"
+                  to={`${baseUrl}/comparison`}
+                  sx={{ height: '100%' }}
+                  fullWidth
+                >
+                  {t('stackedCandidatesPaper.addNewComparisons')}
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </>
       }

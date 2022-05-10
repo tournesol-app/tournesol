@@ -59,7 +59,7 @@ const CriteriaCorrelationListItem = (correlation: {
  */
 const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
+  const { active, baseUrl } = useCurrentPoll();
 
   const orderedCriteriaCorrelations = criteriaCorrelations.criteria
     .map((criterion, idx) => {
@@ -107,19 +107,21 @@ const StackedCriteriaPaper = ({ criteriaCorrelations }: Props) => {
               {t('stackedCriteriaPaper.ifYourRankingSeemsOff')}
             </Typography>
           </Box>
-          <Grid container spacing={1}>
-            <Grid item xs={6} sx={{ px: 1 }}>
-              <Button
-                color="secondary"
-                component={RouterLink}
-                variant="outlined"
-                to={`${baseUrl}/comparison`}
-                sx={{ height: '100%' }}
-                fullWidth
-              >
-                {t('stackedCriteriaPaper.addNewComparisons')}
-              </Button>
-            </Grid>
+          <Grid container spacing={1} justifyContent="flex-end">
+            {active && (
+              <Grid item xs={6} sx={{ px: 1 }}>
+                <Button
+                  color="secondary"
+                  component={RouterLink}
+                  variant="outlined"
+                  to={`${baseUrl}/comparison`}
+                  sx={{ height: '100%' }}
+                  fullWidth
+                >
+                  {t('stackedCriteriaPaper.addNewComparisons')}
+                </Button>
+              </Grid>
+            )}
             <Grid item xs={6} sx={{ px: 1 }}>
               <Button
                 color="secondary"
