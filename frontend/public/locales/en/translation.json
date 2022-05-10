@@ -24,6 +24,9 @@
     "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
     "personalScore": "Personal score: {{score}}"
   },
+  "score": {
+    "totalScoreBasedOnRankingChoice": "Score based on selected ranking parameters"
+  },
   "pagination": {
     "videos": "videos",
     "previousButton": "Previous {{limit}}",
@@ -158,6 +161,21 @@
     "uploadDate": "Uploaded",
     "allLanguages": "All languages",
     "language": "Language",
+    "scoreMode": {
+      "default": {
+        "description": "More importance is given to accounts associated with a trusted email address",
+        "label": "Default"
+      },
+      "allEqual": {
+        "description": "Equal importance is given to all accounts",
+        "label": "All equal"
+      },
+      "trustedOnly": {
+        "description": "Only accounts associated with <2>a trusted email address</2> are considered",
+        "label": "Trusted only"
+      }
+    },
+    "scoreModeSection": "Voting rights",
     "uploader": "Uploader"
   },
   "ratings": {
@@ -263,6 +281,7 @@
     "trustedEmailDomains": "Trusted email domains",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited voting right to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
+    "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
   "privacyPolicy": {
@@ -301,6 +320,26 @@
     "title": "My comparisons",
     "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Go to global ranking"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores per criterion"
+      }
+    }
+  },
+  "entityNotFound": {
+    "404": {
+      "title": "Not found",
+      "message": "The requested entity is either invalid, or not available anymore."
+    },
+    "unexpected": {
+      "title": "Unknown error",
+      "message": "An unexpected error has occured."
+    }
+  },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol is used to compare multiple types of alternatives. See the list below and choose the Tournesol that is best for you:",
@@ -310,7 +349,9 @@
       "whyCompareCandidates": "Initially developped to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about your explicited preferences.",
       "dataUsage": "Submitted data will never be revealed to other users, and will only be used to help research on the ethics of algorithms and artificial intelligence.",
       "createAccount": "Create account",
-      "start": "Start"
+      "start": "Start",
+      "pollIsClosed": "The poll is now closed.",
+      "seeResults": "See results"
     },
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
@@ -345,14 +386,16 @@
       "notEnoughComparisons_other": "We need at least {{minComparisons}} different comparisons before being able to display your results. {{remainingComparisons}} comparisons are still required. Click on the button below, and follow the instructions to continue.",
       "continueComparisons": "Continue your comparisons",
       "thanksForComparingCandidates": "Thank you for comparing candidates on our platform",
-      "description": "Your opinions will now be included in a global evaluation and ranking of the candidates. After the election we will make the global results public. To protect the privacy and the opinions of all contributors, the individual contributions will remain private.",
+      "goToGlobalRanking": "Go to global ranking",
       "opinionsOnOnlineSharedContent": "We think your opinions on online shared contents are at least as equally important as your opinions on candidates.",
       "discoverTournesolVideos": "Discover Tournesol videos. A place where you can give your opinion on the YouTube videos you watch, to improve everyone's recommendations."
     },
     "generic": {
       "whatsNext": "What's next?",
       "discoverTournesol": "Discover Tournesol"
-    }
+    },
+    "proofOfVoteHelperText": "This code will be helpful to complete our survey.",
+    "proofOfVote": "Proof of vote"
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
@@ -392,7 +435,16 @@
     "health": "Topics related to the health system, mental health, sports, end-of-life ethics, COVID-19 and vaccines",
     "institutions_democracy": "Topics related to the organization of political life, democracy, territories and collectivities, public service and overseas",
     "labour_economy": "Topics related to jobs, unemployment, purchasing power, taxation, public deficits and debt",
-    "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration"
+    "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration",
+    "pedagogy": "'Clear & pedagogical' is a measure of how clear and educational the content is. The more the content can guide the spectators in their understanding, the higher this criterion will be rated",
+    "importance": "'Important & actionable' aims to highlight content with information that does not have the attention it should have for the good of humanity and beyond and that allows to act concretely in an impactful way",
+    "layman_friendly": "'Layman-friendly' aims to identify contents that would be suitable to those with very limited prior knowledge",
+    "entertaining_relaxing": "'Entertaining & relaxing' evaluates videos based on whether it is relaxed and entertaining for viewers",
+    "engaging": "'Engaging & thought-provoking' evaluates videos based on the viewer's desire to go further after watching and/or the reconsideration of their beliefs",
+    "diversity_inclusion": "'Diversity & inclusion' aims to identify content that promotes a more diverse and inclusive view of the great diversity of humanity's ethnicities, beliefs and preferences",
+    "better_habits": "'Encourages better habits' aims to highlight content that encourages and motivates viewers to improve themselves by adopting better and healthier habits for themselves, for society or for the planet",
+    "backfire_risk": "'Resilience to backfiring risks' aims to measure the probability that a content will create a misunderstanding with the viewer: the higher the risk that the user misunderstands or reacts negatively to the information presented, the higher this criterion will be rated",
+    "reliability": "'Reliable & not misleading' aims to measure the trustworthiness of the information presented in a content, but also the extent to which the information may be misleading"
   },
   "language": {
     "af": "Afrikaans",

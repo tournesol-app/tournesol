@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { IconButton, Tooltip } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,7 +13,11 @@ import { idFromUid } from './video';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
+  const { baseUrl, active } = useCurrentPoll();
+
+  if (!active) {
+    return null;
+  }
 
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
@@ -83,12 +88,15 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
 
 export const AnalysisPageLink = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
+
   return (
     <Tooltip title={`${t('actions.analysis')}`} placement="left">
       <IconButton
-        size="medium"
-        href={`/video/${uid.slice(3)}`}
         sx={{ color: '#CDCABC' }}
+        size="medium"
+        component={Link}
+        to={`${baseUrl}/entities/${uid}`}
       >
         <QueryStatsIcon />
       </IconButton>

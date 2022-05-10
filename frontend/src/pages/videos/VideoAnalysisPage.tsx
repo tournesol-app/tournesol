@@ -8,11 +8,13 @@ import VideoCard from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
+import { VideoSerializerWithCriteria } from 'src/services/openapi';
 
-function VideoAnalysis() {
-  const { video_id } = useParams<{ video_id: string }>();
-  const video = useVideoMetadata(video_id);
-
+export const VideoAnalysis = ({
+  video,
+}: {
+  video: VideoSerializerWithCriteria;
+}) => {
   return (
     <Box display="flex" justifyContent="center">
       <Grid
@@ -23,7 +25,11 @@ function VideoAnalysis() {
         sx={{ marginTop: 3, marginBottom: 3 }}
       >
         <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
-          <VideoPlayer videoId={video_id} duration={video.duration} controls />
+          <VideoPlayer
+            videoId={video.video_id}
+            duration={video.duration}
+            controls
+          />
         </Grid>
         <Grid item xs={12}>
           <VideoCard video={video} showPlayer={false} />
@@ -36,6 +42,13 @@ function VideoAnalysis() {
       </Grid>
     </Box>
   );
-}
+};
 
-export default VideoAnalysis;
+const VideoAnalysisPage = () => {
+  const { video_id } = useParams<{ video_id: string }>();
+  const video = useVideoMetadata(video_id);
+
+  return <VideoAnalysis video={video} />;
+};
+
+export default VideoAnalysisPage;

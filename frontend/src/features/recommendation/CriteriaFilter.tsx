@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Grid, Typography, Slider, Tooltip } from '@mui/material';
-//import Autocomplete from '@mui/material/Autocomplete';
 
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
@@ -13,6 +12,7 @@ import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
 
 const useStyles = makeStyles(() => ({
   featuresContainer: {
@@ -80,7 +80,12 @@ function SingleCriteriaFilter({ setFilter }: FilterProps) {
   // end.
   const extraOption = '_total_score';
   const { criterias } = useCurrentPoll();
-  const [selectedCriteria, setSelectedCriteria] = useState(extraOption);
+  const { name: pollName, options } = useCurrentPoll();
+  const [selectedCriteria, setSelectedCriteria] = useState(() =>
+    pollName === PRESIDENTIELLE_2022_POLL_NAME
+      ? options?.mainCriterionName ?? ''
+      : extraOption
+  );
 
   function handleCriteriaChange(criteria: string) {
     setSelectedCriteria(criteria);
@@ -97,7 +102,9 @@ function SingleCriteriaFilter({ setFilter }: FilterProps) {
     <CriteriaSelector
       criteria={selectedCriteria}
       setCriteria={handleCriteriaChange}
-      extraEmptyOption={extraOption}
+      extraEmptyOption={
+        pollName === PRESIDENTIELLE_2022_POLL_NAME ? undefined : extraOption
+      }
     />
   );
 }
@@ -241,7 +248,7 @@ function CriteriaFilter({ setFilter }: FilterProps) {
                     onChange={() => setIsMultipleFilter(!isMultipleFilter)}
                   />
                 }
-                label={t('filter.multipleCriteria') as string}
+                label={t('filter.multipleCriteria')}
                 aria-label="multiple criteria"
               />
             </FormGroup>
