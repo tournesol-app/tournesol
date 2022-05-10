@@ -69,6 +69,7 @@ export const criteriaToEmoji: Record<string, string> = {
 
 export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
   return {
+    // presidentielle2022
     energy_environment: t('criteriaTooltips.energy_environment'),
     international: t('criteriaTooltips.international'),
     education_culture: t('criteriaTooltips.education_culture'),
@@ -76,6 +77,16 @@ export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
     institutions_democracy: t('criteriaTooltips.institutions_democracy'),
     labour_economy: t('criteriaTooltips.labour_economy'),
     solidarity: t('criteriaTooltips.solidarity'),
+    // videos
+    pedagogy: t('criteriaTooltips.pedagogy'),
+    importance: t('criteriaTooltips.importance'),
+    layman_friendly: t('criteriaTooltips.layman_friendly'),
+    entertaining_relaxing: t('criteriaTooltips.entertaining_relaxing'),
+    engaging: t('criteriaTooltips.engaging'),
+    diversity_inclusion: t('criteriaTooltips.diversity_inclusion'),
+    better_habits: t('criteriaTooltips.better_habits'),
+    backfire_risk: t('criteriaTooltips.backfire_risk'),
+    reliability: t('criteriaTooltips.reliability'),
   }[criteria];
 };
 
@@ -201,8 +212,8 @@ export const polls: Array<SelectablePoll> = [
     ? [
         {
           name: PRESIDENTIELLE_2022_POLL_NAME,
-          defaultAuthEntityActions: [CompareNowAction],
-          defaultAnonEntityActions: [],
+          defaultAuthEntityActions: [CompareNowAction, AnalysisPageLink],
+          defaultAnonEntityActions: [AnalysisPageLink],
           displayOrder: 20,
           mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
@@ -215,6 +226,7 @@ export const polls: Array<SelectablePoll> = [
           tutorialAlternatives: getAllCandidates,
           tutorialDialogs: getPresidentielleTutorialDialogs,
           tutorialRedirectTo: '/personal/feedback',
+          unsafeDefault: true,
         },
       ]
     : []),

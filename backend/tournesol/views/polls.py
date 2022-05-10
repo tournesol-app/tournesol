@@ -226,9 +226,35 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         return queryset.order_by("-total_score", "-pk")
 
 
+class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):
+    """
+    Fetch an entity with its poll specific statistics.
+    """
+
+    poll_parameter = "name"
+
+    permission_classes = []
+    queryset = Entity.objects.none()
+    serializer_class = RecommendationSerializer
+
+    def get_object(self):
+        """Get the entity based on the requested uid."""
+        entity_uid = self.kwargs.get("uid")
+        entity = get_object_or_404(Entity, uid=entity_uid)
+
+        # The `total_score` is not a natural attribute of an entity. It is
+        # used by the recommendations API and computed during the queryset
+        # building. The value of the `total_score` may vary depending on the
+        # criteria filters used in a recommendations HTTP request. As there is
+        # no such filters in the `PollsEntityView` we consider that the
+        # `total_score` matches the `tournesol_score`.
+        entity.total_score = entity.tournesol_score
+        return entity
+
+
 class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     """
-    Get the distribution of the contributor's ratings per criteria for an entity
+    Fetch an entity with the distribution of its contributors' ratings per criteria.
     """
 
     poll_parameter = "name"
@@ -238,6 +264,6 @@ class PollsCriteriaScoreDistributionView(PollScopedViewMixin, RetrieveAPIView):
     serializer_class = EntityCriteriaDistributionSerializer
 
     def get_object(self):
-        """ Get object based on the entity uid """
+        """Get the entity based on the requested uid."""
         entity_uid = self.kwargs.get("uid")
         return get_object_or_404(Entity, uid=entity_uid)

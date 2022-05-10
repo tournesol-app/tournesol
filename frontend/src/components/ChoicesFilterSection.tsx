@@ -20,7 +20,7 @@ import {
 interface Props {
   title: string;
   value: string;
-  choices: Record<string, string>;
+  choices: Record<string, React.ReactNode>;
   multipleChoice?: boolean;
   radio?: boolean;
   tooltip?: string;

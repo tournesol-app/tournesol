@@ -25,6 +25,7 @@ import {
   Info as InfoIcon,
   ListAlt as ListIcon,
   Stars as StarsIcon,
+  TableRows as TableRowsIcon,
   VideoLibrary,
   WatchLater as WatchLaterIcon,
 } from '@mui/icons-material';
@@ -35,7 +36,7 @@ import { LanguageSelector } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
   getRecommendationPageName,
-  PRESIDENTIELLE_2022_POLL_NAME,
+  YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
 import Footer from './Footer';
@@ -132,7 +133,8 @@ const SideBar = () => {
     {
       id: RouteID.Recommendations,
       targetUrl: `${path}recommendations${defaultRecoSearchParams}`,
-      IconComponent: VideoLibrary,
+      IconComponent:
+        pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,
       displayText: getRecommendationPageName(t, pollName),
     },
     { displayText: 'divider_1' },
@@ -201,14 +203,6 @@ const SideBar = () => {
           if (!IconComponent || !targetUrl)
             return <Divider key={displayText} />;
           if (id && disabledItems.includes(id)) {
-            return;
-          }
-
-          // Temporary: hide results page for "presidentielle2022" in menu
-          if (
-            id === RouteID.Recommendations &&
-            pollName === PRESIDENTIELLE_2022_POLL_NAME
-          ) {
             return;
           }
 

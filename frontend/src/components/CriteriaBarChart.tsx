@@ -9,7 +9,11 @@ import {
   TooltipProps,
   ResponsiveContainer,
 } from 'recharts';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import {
+  VideoSerializerWithCriteria,
+  Recommendation,
+  EntityCriteriaScore,
+} from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { displayScore, criteriaIcon } from 'src/utils/criteria';
 
@@ -35,11 +39,11 @@ const criteriaColors: { [criteria: string]: string } = {
 };
 
 const SizedBarChart = ({
-  video,
+  criteriaScores,
   width,
   height,
 }: {
-  video: VideoSerializerWithCriteria;
+  criteriaScores: Array<EntityCriteriaScore>;
   width?: number;
   height?: number;
 }) => {
@@ -68,7 +72,7 @@ const SizedBarChart = ({
         xmlns="http://www.w3.org/2000/svg"
       >
         <style>{'.emoji { font-size: 42px; fill: black; }'}</style>
-        <rect x="0" y="15" width="60" height="30" fill="white" />
+        <rect x="0" y="15" width="60" height="60" fill="white" />
         {emoji ? (
           <text x="9" y="9" dominantBaseline="hanging" className="emoji">
             {emoji}
@@ -81,14 +85,13 @@ const SizedBarChart = ({
     );
   };
 
-  const { criteria_scores } = video;
-  const shouldDisplayChart = criteria_scores && criteria_scores.length > 0;
+  const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 
   if (!shouldDisplayChart) {
     return <div></div>;
   }
 
-  const data = criteria_scores
+  const data = criteriaScores
     .filter((s) => mainCriterionName !== s.criteria)
     .map((s) => {
       const clipped_score = between(
@@ -147,15 +150,21 @@ const SizedBarChart = ({
 };
 
 interface Props {
-  video: VideoSerializerWithCriteria;
+  video?: VideoSerializerWithCriteria;
+  entity?: Recommendation;
 }
 
-const CriteriaBarChart = ({ video }: Props) => {
+const CriteriaBarChart = ({ video, entity }: Props) => {
+  const criteriaScores: Array<EntityCriteriaScore> =
+    video?.criteria_scores || entity?.criteria_scores || [];
+
+  const height = criteriaScores.length * 60;
+
   // ResponsiveContainer adds the width and height props to its child component.
   // We need the width to position the icons.
   return (
-    <ResponsiveContainer width="100%" aspect={1}>
-      <SizedBarChart video={video} />
+    <ResponsiveContainer width="100%" height={height}>
+      <SizedBarChart criteriaScores={criteriaScores} />
     </ResponsiveContainer>
   );
 };
