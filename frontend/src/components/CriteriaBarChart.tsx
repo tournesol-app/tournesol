@@ -98,14 +98,11 @@ const SizedBarChart = ({
       const clipped_score = between(
         BAR_CHART_CRITERIA_SCORE_MIN,
         BAR_CHART_CRITERIA_SCORE_MAX,
-        s.score
+        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 5 * s.score : s.score
       );
       return {
         ...s,
-        clipped_score:
-          pollName === PRESIDENTIELLE_2022_POLL_NAME
-            ? 5 * clipped_score
-            : clipped_score,
+        clipped_score,
       };
     });
 
