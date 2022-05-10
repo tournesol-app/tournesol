@@ -246,3 +246,6 @@ export const polls: Array<SelectablePoll> = [
 ];
 
 export const LAST_POLL_NAME_STORAGE_KEY = 'last_poll_name';
+
+export const PRESIDENTIELLE_2022_SURVEY_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLScNUUKaapn0z6N64au-6YcFxAoViAyvbl53sZswYsWzDasHpw/viewform';
