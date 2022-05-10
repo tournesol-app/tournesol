@@ -323,6 +323,11 @@
   "entityAnalysisPage": {
     "candidate": {
       "goToGlobalRanking": "Go to global ranking"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores per criterion"
+      }
     }
   },
   "entityNotFound": {

@@ -61,7 +61,9 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
                 display="flex"
                 justifyContent="center"
               >
-                <Typography variant="h5">Scores par critère</Typography>
+                <Typography variant="h5">
+                  {t('entityAnalysisPage.chart.criteriaScores.title')}
+                </Typography>
               </Box>
               <Box p={1}>
                 <CriteriaBarChart entity={entity} />
