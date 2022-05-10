@@ -5,8 +5,6 @@ import { OrderedDialogs } from 'src/utils/types';
 let VIDEOS: Promise<Entity[]> | null = null;
 
 export function getTutoFriendlyVideos(): Promise<Entity[]> {
-  console.log('coucou2');
-  console.log(VIDEOS);
   if (VIDEOS != null) {
     return VIDEOS;
   }
@@ -17,7 +15,6 @@ export function getTutoFriendlyVideos(): Promise<Entity[]> {
 }
 
 export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
-  console.log('coucou3');
   return {
     '0': {
       title: t('videos.dialogs.tutorial.title1'),
@@ -34,6 +31,8 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
         t('videos.dialogs.tutorial.message2.p10'),
         t('videos.dialogs.tutorial.message2.p20'),
         t('videos.dialogs.tutorial.message2.p30'),
+        t('videos.dialogs.tutorial.message2.p40'),
+        t('videos.dialogs.tutorial.message2.p50'),
       ],
     },
     '2': {
@@ -43,11 +42,6 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
         t('videos.dialogs.tutorial.message3.p20'),
         t('videos.dialogs.tutorial.message3.p30'),
         t('videos.dialogs.tutorial.message3.p40'),
-        t('videos.dialogs.tutorial.message3.p50'),
-        t('videos.dialogs.tutorial.message3.p60'),
-        t('videos.dialogs.tutorial.message3.p70'),
-        t('videos.dialogs.tutorial.message3.p80'),
-        t('videos.dialogs.tutorial.message3.p90'),
       ],
     },
     '3': {
@@ -55,7 +49,6 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.dialogs.tutorial.message4.p10'),
         t('videos.dialogs.tutorial.message4.p20'),
-        t('videos.dialogs.tutorial.message4.p30'),
       ],
     },
   };

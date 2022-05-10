@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Typography } from '@mui/material';
+//import { Button } from '@mui/material';
 
+//import { Link } from 'react-router-dom';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import ExtensionSection from 'src/pages/home/videos/ExtensionSection';
 import ContributeSection from 'src/pages/home/videos/ContributeSection';
@@ -25,6 +27,14 @@ const HomeVideosPage = () => {
             <strong>robustly beneficial</strong> for all of humanity.
           </Trans>
         </Typography>
+        {/*<Button
+          color="primary"
+          variant="contained"
+          component={Link}
+          to="/comparison?series=true"
+        >
+          {t('home.videos.start')}
+        </Button>*/}
       </TitleSection>
       <ExtensionSection />
       <ContributeSection />

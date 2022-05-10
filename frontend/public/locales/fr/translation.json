@@ -326,7 +326,10 @@
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité.",
+    "videos": {
+      "start": "Commencer"
+    }
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -523,26 +526,22 @@
         "title2": "Bravo !",
         "message2": {
           "p10": "Vous avez effectué votre première comparaison 🥳.",
-          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en utilisant les menus déroulants (ou en collant l'URL youtube d'une video) qui se trouvent au dessus des miniatures. Vous pouvez également choisir de vous exprimer ou non sur les critères optionnels",
-          "p30": "Bon à savoir: Vous pouvez modifier toutes vos comparaisons si vous n'êtes pas sûr·e de vous."
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en utilisant les menus déroulants (ou en collant l'URL youtube d'une video) qui se trouvent au dessus des miniatures.",
+          "p30": "Vous pouvez aussi cliquer sur 'Auto' pour qu'une video vous soit suggérée soit parmi les videos recommandées par Tournesol soit parmi votre liste de 'videos à noter plus tard'.",
+          "p40": "Vous pouvez également choisir de vous exprimer ou non sur les critères optionnels en cochant/décochant le critère.",
+          "p50": "Bon à savoir: Vous pourrez modifier ultérieurement toutes vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
-        "title3": "A quoi corresponde les critères ?",
+        "title3": "Comment fonctionne Tournesol ?",
         "message3": {
-          "p10": "'Fiable et non trompeur' vise à mesurer la fiabilité des informations présentées dans un contenu et à prendre la mesure dans laquelle ces informations peuvent être trompeuses.",
-          "p20": "'Clair et pédagogique' vise à mesurer la clarté des explications d'un contenu. Plus le contenu guide les spectateurs dans leur compréhension, plus ce critère sera noté haut",
-          "p30": "'Important et actionnable' vise à mettre en avant les contenus avec des informations qui n'ont pas l'attention qu'elles devraient avoir pour le bien de l'humanité et au-delà et qui permettent d'agir concretement de manière impactante",
-          "p40": "'Adapté aux non-spécialistes' vise à identifier les contenus qui conviendraient à un large public.",
-          "p50": "'Divertissant et relaxant' évalue les contenus en fonction de leur ton plus ou moins détendu et divertissant pour les spectateurs.",
-          "p60": "Stimulant et suscite à la réflexion évalue les contenus en fonction de l'envie d'aller plus loin du spectateur après avoir regardé et la remise en cause des croyances de l'audience.",
-          "p70": "Diversité et inclusion vise à identifier les contenus qui favorisent une vision plus diverse et inclusive de la grande diversité des ethnies, des croyances et des préférences de l'humanité.",
-          "p80": "Encourage à de meilleures habitudes vise à mettre en valeur les contenus qui incitent et motivent les spectateurs à s'améliorer en adoptant de meilleures habitudes plus saines pour soi, pour la société ou pour la planète.",
-          "p90": "Résistant aux retours négatifs/Résiste aux mauvaises interprétations vise à mesurer la probabilité qu'un contenu créé un malentendu avec le spectateur: plus le risque que l'utilisateur comprenne mal ou réagisse négativement aux informations présentées est élevé, plus ce critère sera noté haut."
+          "p10": "A quoi correspondent les critères ? Une description de chaque critère est disponible dans des infobulles.",
+          "p20": "Vous pouvez approfondir votre compréhension de ces critères en cliquant dessus pour consulter la page wiki qui leur est consacrée.",
+          "p30": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices sur les différents critères.",
+          "p40": "Le score final représente alors un équilibre, qui est un compromis parmi les avis des différentes personnes votantes."
         },
         "title4": "Merci beaucoup d'avoir suivi ce tutoriel !",
         "message4": {
-          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices.",
-          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
-          "p30": "Nous espérons sincèrement que vous avez apprécié ce tutoriel, n'hésitez pas à nous faire des retours via les réseaux sociaux."
+          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e pour effectuer de nouvelles comparaisons ou pour consulter les vidéos suggérées par la communauté.",
+          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel, n'hésitez pas à nous faire des retours via les réseaux sociaux."
         }
       }
     }
