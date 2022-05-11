@@ -2,15 +2,6 @@
   "components": {
     "filtersButton": "filtres"
   },
-  "criteriaScoreDistributions": {
-    "lessThan": "< {{score}}",
-    "fromTo": "{{from}} à {{to}}",
-    "greaterThan": "> {{score}}",
-    "label": "Quantité",
-    "scores": "scores",
-    "numberOfRatings": "nombre de notes",
-    "title": "Distribution des scores par critère"
-  },
   "dialogBox": {
     "continue": "continuer"
   },
@@ -48,6 +39,15 @@
   },
   "stackedCard": {
     "showAll": "Tout montrer"
+  },
+  "criteriaScoresDistribution": {
+    "lessThan": "< {{score}}",
+    "fromTo": "{{from}} à {{to}}",
+    "greaterThan": "> {{score}}",
+    "label": "Quantité",
+    "scores": "scores",
+    "numberOfRatings": "nombre de notes",
+    "title": "Distribution des scores par critère"
   },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",

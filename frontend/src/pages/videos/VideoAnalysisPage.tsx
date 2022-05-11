@@ -9,7 +9,7 @@ import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useTranslation } from 'react-i18next';
-import CriteriaScoreDistributions from 'src/components/CriteriaScoreDistributions';
+import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 
 export const VideoAnalysis = ({
   video,
@@ -51,11 +51,11 @@ export const VideoAnalysis = ({
               justifyContent="center"
             >
               <Typography variant="h5">
-                {t('criteriaScoreDistributions.title')}
+                {t('criteriaScoresDistribution.title')}
               </Typography>
             </Box>
             <Box p={1}>
-              <CriteriaScoreDistributions uid={entityId} />
+              <CriteriaScoresDistribution uid={entityId} />
             </Box>
           </Paper>
         </Grid>

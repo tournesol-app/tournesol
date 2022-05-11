@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
-import { useCurrentPoll } from 'src/hooks';
+import { useTranslation, TFunction } from 'react-i18next';
 import {
   Bar,
   BarChart,
@@ -10,35 +9,39 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
-import { useTranslation, TFunction } from 'react-i18next';
+
 import { Box } from '@mui/material';
+
+import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
+import { useCurrentPoll } from 'src/hooks';
+import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
 
 const displayScore = (score: number) => (10 * score).toFixed(0);
 
 const binLabel = (index: number, bins: number[], t: TFunction) => {
   if (index === 0)
-    return t('criteriaScoreDistributions.lessThan', {
+    return t('criteriaScoresDistribution.lessThan', {
       score: displayScore(bins[1]),
     });
   if (index > 0 && index < bins.length - 2)
-    return t('criteriaScoreDistributions.fromTo', {
+    return t('criteriaScoresDistribution.fromTo', {
       from: displayScore(bins[index]),
       to: displayScore(bins[index + 1]),
     });
   if (index === bins.length - 2)
-    return t('criteriaScoreDistributions.greaterThan', {
+    return t('criteriaScoresDistribution.greaterThan', {
       score: displayScore(bins[bins.length - 2]),
     });
 };
 
-const CriteriaDistributionScoreChart = ({
+const CriteriaScoresDistributionChart = ({
   criteriaDistributionScore,
 }: {
   criteriaDistributionScore: CriteriaDistributionScore;
 }) => {
-  const { distribution, bins } = criteriaDistributionScore;
   const { t } = useTranslation();
+  const { bins, distribution } = criteriaDistributionScore;
+
   const data = useMemo(
     () =>
       distribution.map((value, index) => ({
@@ -49,7 +52,7 @@ const CriteriaDistributionScoreChart = ({
   );
 
   const tooltipFormatter = useCallback(
-    (value: number) => [value, t('criteriaScoreDistributions.label')],
+    (value: number) => [value, t('criteriaScoresDistribution.label')],
     [t]
   );
 
@@ -59,7 +62,7 @@ const CriteriaDistributionScoreChart = ({
         <CartesianGrid strokeDasharray="4 4" />
         <XAxis
           label={{
-            value: t('criteriaScoreDistributions.scores'),
+            value: t('criteriaScoresDistribution.scores'),
             position: 'insideBottom',
             offset: -4,
             textAnchor: 'middle',
@@ -68,7 +71,7 @@ const CriteriaDistributionScoreChart = ({
         />
         <YAxis
           label={{
-            value: t('criteriaScoreDistributions.numberOfRatings'),
+            value: t('criteriaScoresDistribution.numberOfRatings'),
             angle: -90,
             position: 'insideLeft',
             textAnchor: 'middle',
@@ -81,38 +84,41 @@ const CriteriaDistributionScoreChart = ({
   );
 };
 
-interface Props {
+interface CriteriaScoresDistributionProps {
   uid: string;
 }
 
-const CriteriaScoreDistributions = ({ uid }: Props) => {
+const CriteriaScoresDistribution = ({
+  uid,
+}: CriteriaScoresDistributionProps) => {
   const { name: pollName, options } = useCurrentPoll();
 
   const mainCriterionName = options?.mainCriterionName || '';
   const [selectedCriteria, setSelectedCriteria] =
     useState<string>(mainCriterionName);
 
-  const [criteriaScoresDistributions, setCriteriaScoresDistributions] =
-    useState<CriteriaDistributionScore[]>([]);
+  const [criteriaScoresDistribution, setCriteriaScoresDistribution] = useState<
+    CriteriaDistributionScore[]
+  >([]);
 
   useEffect(() => {
-    const load = async () => {
+    const getDistribution = async () => {
       const result =
         await PollsService.pollsEntitiesCriteriaScoresDistributionsRetrieve({
           name: pollName,
           uid,
         });
-      setCriteriaScoresDistributions(result.criteria_scores_distributions);
+      setCriteriaScoresDistribution(result.criteria_scores_distributions);
     };
-    load();
+    getDistribution();
   }, [uid, pollName]);
 
   const criteriaDistributionScore = useMemo(
     () =>
-      criteriaScoresDistributions.find(
+      criteriaScoresDistribution.find(
         ({ criteria }) => criteria === selectedCriteria
       ),
-    [selectedCriteria, criteriaScoresDistributions]
+    [selectedCriteria, criteriaScoresDistribution]
   );
 
   return (
@@ -125,7 +131,7 @@ const CriteriaScoreDistributions = ({ uid }: Props) => {
       </Box>
       {criteriaDistributionScore && (
         <Box py={1}>
-          <CriteriaDistributionScoreChart
+          <CriteriaScoresDistributionChart
             criteriaDistributionScore={criteriaDistributionScore}
           />
         </Box>
@@ -134,4 +140,4 @@ const CriteriaScoreDistributions = ({ uid }: Props) => {
   );
 };
 
-export default CriteriaScoreDistributions;
+export default CriteriaScoresDistribution;
