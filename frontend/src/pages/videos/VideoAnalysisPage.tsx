@@ -1,7 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 
 import Card from 'src/components/Card';
 import VideoCard from 'src/features/videos/VideoCard';
@@ -9,7 +8,6 @@ import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
-import { TitledSection } from 'src/components';
 import { useTranslation } from 'react-i18next';
 import CriteriaScoreDistributions from 'src/components/CriteriaScoreDistributions';
 
@@ -44,10 +42,22 @@ export const VideoAnalysis = ({
             <CriteriaBarChart video={video} />
           </Card>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <TitledSection title={t('criteriaScoreDistributions.title')}>
-            <CriteriaScoreDistributions uid={entityId} />
-          </TitledSection>
+        <Grid item xs={12} sm={12} md={6}>
+          <Paper>
+            <Box
+              p={1}
+              bgcolor="rgb(238, 238, 238)"
+              display="flex"
+              justifyContent="center"
+            >
+              <Typography variant="h5">
+                {t('criteriaScoreDistributions.title')}
+              </Typography>
+            </Box>
+            <Box p={1}>
+              <CriteriaScoreDistributions uid={entityId} />
+            </Box>
+          </Paper>
         </Grid>
       </Grid>
     </Box>

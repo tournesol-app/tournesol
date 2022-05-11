@@ -8,9 +8,11 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import { useTranslation, TFunction } from 'react-i18next';
+import { Box } from '@mui/material';
 
 const displayScore = (score: number) => (10 * score).toFixed(0);
 
@@ -54,8 +56,24 @@ const CriteriaDistributionScoreChart = ({
   return (
     <ResponsiveContainer width="100%" height={360}>
       <BarChart width={430} height={360} data={data}>
-        <XAxis dataKey="label" />
-        <YAxis />
+        <CartesianGrid strokeDasharray="4 4" />
+        <XAxis
+          label={{
+            value: 'scores',
+            position: 'insideBottom',
+            offset: -4,
+            textAnchor: 'middle',
+          }}
+          dataKey="label"
+        />
+        <YAxis
+          label={{
+            value: 'number of ratings',
+            angle: -90,
+            position: 'insideLeft',
+            textAnchor: 'middle',
+          }}
+        />
         <Tooltip formatter={tooltipFormatter} />
         <Bar dataKey="value" fill="#1282b2" />
       </BarChart>
@@ -68,10 +86,14 @@ interface Props {
 }
 
 const CriteriaScoreDistributions = ({ uid }: Props) => {
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, options } = useCurrentPoll();
+
+  const mainCriterionName = options?.mainCriterionName || '';
+  const [selectedCriteria, setSelectedCriteria] =
+    useState<string>(mainCriterionName);
+
   const [criteriaScoresDistributions, setCriteriaScoresDistributions] =
     useState<CriteriaDistributionScore[]>([]);
-  const [selectedCriteria, setSelectedCriteria] = useState<string>('');
 
   useEffect(() => {
     const load = async () => {
@@ -95,14 +117,18 @@ const CriteriaScoreDistributions = ({ uid }: Props) => {
 
   return (
     <>
-      <CriteriaSelector
-        criteria={selectedCriteria}
-        setCriteria={setSelectedCriteria}
-      />
-      {criteriaDistributionScore && (
-        <CriteriaDistributionScoreChart
-          criteriaDistributionScore={criteriaDistributionScore}
+      <Box px={2} pt={1} pb={1}>
+        <CriteriaSelector
+          criteria={selectedCriteria}
+          setCriteria={setSelectedCriteria}
         />
+      </Box>
+      {criteriaDistributionScore && (
+        <Box py={1}>
+          <CriteriaDistributionScoreChart
+            criteriaDistributionScore={criteriaDistributionScore}
+          />
+        </Box>
       )}
     </>
   );
