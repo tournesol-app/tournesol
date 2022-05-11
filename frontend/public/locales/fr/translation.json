@@ -570,30 +570,29 @@
       "tutorial": {
         "title1": "Bienvenue sur Tournesol 🌻 (1/4)",
         "message1": {
-          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de comparaisons de vidéos.",
-          "p20": "Pour comparer 2 vidéos que vous avez regardé, déplacez les curseurs pour chacun des critères, puis enregistrez quand votre choix est fait.",
-          "p30": "Plus votre avis est tranché sur un critère plus le curseur devrait être proche de l'extrémité. Les critères optionnels permettent un meilleur classement des vidéos sur Tournesol alors n'hésitez pas à les renseigner.",
-          "p40": "Si vous trouvez les vidéos difficiles à départager, le curseur devrait rester proche du centre."
+          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons.",
+          "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
+          "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
+          "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
         },
         "title2": "Bravo ! (2/4)",
         "message2": {
           "p10": "Vous avez effectué votre première comparaison 🥳.",
-          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant l'URL youtube d'une video qui se trouvent au dessus des miniatures.",
-          "p30": "Vous pouvez aussi cliquer sur 'Auto' pour qu'une video vous soit suggérée soit parmi les videos recommandées par Tournesol soit parmi votre liste de 'videos à noter plus tard'.",
-          "p40": "Vous pouvez également choisir de vous exprimer ou non sur les critères optionnels en cochant/décochant le critère.",
-          "p50": "Bon à savoir: Il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URL YouTube dans les champs qui se trouvent au dessus des miniatures.",
+          "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
+          "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
+          "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
         "title3": "Comment fonctionne Tournesol ? (3/4)",
         "message3": {
-          "p10": "A quoi correspondent les critères ? Une description de chaque critère est disponible dans des infobulles.",
-          "p20": "Vous pouvez approfondir votre compréhension de ces critères en cliquant dessus pour consulter la page wiki qui leur est consacrée.",
-          "p30": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices sur les différents critères.",
-          "p40": "Le score final représente alors un équilibre, qui est un compromis parmi les avis des différentes personnes votantes."
+          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices sur les différents critères.",
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
+          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet de consulter sa page wiki dédiée."
         },
         "title4": "Merci beaucoup d'avoir suivi ce tutoriel ! (4/4)",
         "message4": {
-          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e pour effectuer de nouvelles comparaisons ou pour consulter les vidéos suggérées par la communauté.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel, n'hésitez pas à nous faire des retours via les réseaux sociaux."
+          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e pour effectuer de nouvelles comparaisons ou pour consulter les vidéos recommandées.",
+          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel, et n'hésitez pas à parler de Tournesol autour de vous ❤️."
         }
       }
     }

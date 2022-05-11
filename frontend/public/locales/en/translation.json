@@ -563,30 +563,29 @@
       "tutorial": {
         "title1": "Welcome on Tournesol 🌻 (1/4)",
         "message1": {
-          "p10": "This tutorial will guide you step by step through a comparison series of videos.",
-          "p20": "To compare 2 videos that you watched, move the handles of each criterion and adjust your preferences by moving them more or less far. Save when your choice is made.",
-          "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity. The optional criteria really help to improve rankings of Tournesol so do not hesitate to fill them in.",
-          "p40": "If you find the videos too hard to separate, the handle should remain close to the center."
+          "p10": "This tutorial will guide you step by step through a series of four comparisons.",
+          "p20": "To compare two videos you watched, move the main handle and save when your choice is made.",
+          "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity.",
+          "p40": "If you find the videos similar, the handle should remain close to the center."
         },
         "title2": "Congratulations ! (2/4)",
         "message2": {
           "p10": "You have made your first comparison 🥳",
-          "p20": "Note that you can choose yourself the videos to compare by pasting the youtube URL of a video that are above the thumbnails.",
-          "p30": "You can also click on 'Auto' to change the compared video to one among the videos recommended by Tournesol or among your 'rate later videos' list.",
-          "p40": "You can also choose to vote or not on the optional criteria by checking/unchecking the criteria.",
-          "p50": "Good to know: You can edit all your comparisons later if you are not sure of your vote."
+          "p20": "Note that you can choose yourself the videos to compare by pasting their YouTube URL in the fields above the thumbnails.",
+          "p30": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
+          "p40": "You can also choose to not vote on the optional criteria by unchecking it.",
+          "p50": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "title3": "How do Tournseol work? (3/4)",
+        "title3": "How does Tournseol work? (3/4)",
         "message3": {
-          "p10": "What do the criteria refer to? Description of each criterion is available in the tooltips.",
-          "p20": "You can deepen your understanding of these criteria by clicking on them to consult the wiki page dedicated to them.",
-          "p30": "Tournesol calculate a score for each video, by aggregating the judgments of the contributors on the various criteria.",
-          "p40": "The final score then represents a balance, which is a compromise among the opinions of the different voters."
+          "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
+          "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
+          "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to consult its dedicated wiki page."
         },
         "title4": "Thanks a lot for following this tutorial! (4/4)",
         "message4": {
-          "p10": "One last comparison and you can browse Tournesol by yourself to make new comparisons or to consult videos suggested by the community.",
-          "p20": "We sincerely hope you enjoyed this tutorial, feel free to give us feedback via social networks."
+          "p10": "One last comparison and you will be able to browse Tournesol by yourself, making new comparisons or by consulting recommended videos.",
+          "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you ❤️."
         }
       }
     }
