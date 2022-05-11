@@ -2,7 +2,6 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 
-import Card from 'src/components/Card';
 import VideoCard from 'src/features/videos/VideoCard';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
@@ -37,10 +36,24 @@ export const VideoAnalysis = ({
         <Grid item xs={12}>
           <VideoCard video={video} showPlayer={false} />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CriteriaBarChart video={video} />
-          </Card>
+
+        {/* data visualization */}
+        <Grid item xs={12} sm={12} md={6}>
+          <Paper>
+            <Box
+              p={1}
+              bgcolor="rgb(238, 238, 238)"
+              display="flex"
+              justifyContent="center"
+            >
+              <Typography variant="h5">
+                {t('entityAnalysisPage.chart.criteriaScores.title')}
+              </Typography>
+            </Box>
+            <Box p={1}>
+              <CriteriaBarChart video={video} />
+            </Box>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Paper>
