@@ -7,6 +7,8 @@
     "fromTo": "{{from}} to {{to}}",
     "greaterThan": "> {{score}}",
     "label": "Count",
+    "scores": "scores",
+    "numberOfRatings": "number of ratings",
     "title": "Criteria score distribution"
   },
   "dialogBox": {

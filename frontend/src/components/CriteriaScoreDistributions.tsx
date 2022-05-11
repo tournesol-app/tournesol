@@ -59,7 +59,7 @@ const CriteriaDistributionScoreChart = ({
         <CartesianGrid strokeDasharray="4 4" />
         <XAxis
           label={{
-            value: 'scores',
+            value: t('criteriaScoreDistributions.scores'),
             position: 'insideBottom',
             offset: -4,
             textAnchor: 'middle',
@@ -68,7 +68,7 @@ const CriteriaDistributionScoreChart = ({
         />
         <YAxis
           label={{
-            value: 'number of ratings',
+            value: t('criteriaScoreDistributions.numberOfRatings'),
             angle: -90,
             position: 'insideLeft',
             textAnchor: 'middle',
