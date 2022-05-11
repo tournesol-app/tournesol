@@ -48,6 +48,7 @@ export const getTutorialDialogs = (t: TFunction): OrderedDialogs => {
       messages: [
         t('videos.dialogs.tutorial.message4.p10'),
         t('videos.dialogs.tutorial.message4.p20'),
+        t('videos.dialogs.tutorial.message4.p30'),
       ],
     },
   };

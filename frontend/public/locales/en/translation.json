@@ -561,31 +561,32 @@
   "videos": {
     "dialogs": {
       "tutorial": {
-        "title1": "Welcome on Tournesol 🌻 (1/4)",
+        "title1": "Welcome on Tournesol 🌻",
         "message1": {
           "p10": "This tutorial will guide you step by step through a series of four comparisons.",
           "p20": "To compare two videos you watched, move the main handle and save when your choice is made.",
           "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity.",
           "p40": "If you find the videos similar, the handle should remain close to the center."
         },
-        "title2": "Congratulations ! (2/4)",
+        "title2": "Bravo ! 🥳",
         "message2": {
-          "p10": "You have made your first comparison 🥳",
+          "p10": "You have made your first comparison",
           "p20": "Note that you can choose yourself the videos to compare by pasting their YouTube URL in the fields above the thumbnails.",
           "p30": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
           "p40": "You can also choose to not vote on the optional criteria by unchecking it.",
           "p50": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "title3": "How does Tournseol work? (3/4)",
+        "title3": "How does Tournseol work? 🤖",
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
           "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to consult its dedicated wiki page."
         },
-        "title4": "Thanks a lot for following this tutorial! (4/4)",
+        "title4": "Thanks a lot for following this tutorial ❤️",
         "message4": {
           "p10": "One last comparison and you will be able to browse Tournesol by yourself, making new comparisons or by consulting recommended videos.",
-          "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you ❤️."
+          "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you.",
+          "p30": "If you want to help, you can compare new videos from time to time. Also, feel free to talk about Tournesol around you. Thanks a lot."
         }
       }
     }
