@@ -25,7 +25,7 @@ const ComparisonPage = () => {
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
-  const redirectTo = options?.tutorialRedirectTo ?? undefined;
+  const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
 
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 

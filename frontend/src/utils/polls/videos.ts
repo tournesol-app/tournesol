@@ -4,7 +4,7 @@ import { OrderedDialogs } from 'src/utils/types';
 
 let VIDEOS: Promise<Entity[]> | null = null;
 
-export function getTutoFriendlyVideos(): Promise<Entity[]> {
+export function getTutorialVideos(): Promise<Entity[]> {
   if (VIDEOS != null) {
     return VIDEOS;
   }

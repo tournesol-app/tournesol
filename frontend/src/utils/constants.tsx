@@ -11,8 +11,8 @@ import {
   getTutorialDialogs as getPresidentielleTutorialDialogs,
 } from './polls/presidentielle2022';
 import {
-  getTutoFriendlyVideos,
-  getTutorialDialogs as getVideoTutorialDialogs,
+  getTutorialVideos,
+  getTutorialDialogs as getVideosTutorialDialogs,
 } from './polls/videos';
 import { SelectablePoll, RouteID } from './types';
 
@@ -249,8 +249,8 @@ export const polls: Array<SelectablePoll> = [
     topBarBackground: null,
     comparisonsCanBePublic: true,
     tutorialLength: 4,
-    tutorialAlternatives: getTutoFriendlyVideos,
-    tutorialDialogs: getVideoTutorialDialogs,
+    tutorialAlternatives: getTutorialVideos,
+    tutorialDialogs: getVideosTutorialDialogs,
     tutorialRedirectTo: '/comparison',
   },
 ];

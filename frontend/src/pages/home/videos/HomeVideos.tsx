@@ -1,9 +1,7 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Typography } from '@mui/material';
-//import { Button } from '@mui/material';
 
-//import { Link } from 'react-router-dom';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import ExtensionSection from 'src/pages/home/videos/ExtensionSection';
 import ContributeSection from 'src/pages/home/videos/ContributeSection';
@@ -27,15 +25,20 @@ const HomeVideosPage = () => {
             <strong>robustly beneficial</strong> for all of humanity.
           </Trans>
         </Typography>
-        {/*
+
+        {/* uncomment ONLY when the videos tutorial is ready
         <Button
           color="primary"
           variant="contained"
           component={Link}
           to="/comparison?series=true"
+          sx={{
+            px: 4,
+            fontSize: '120%',
+          }}
         >
           {t('home.videos.start')}
-        </Button>*/}
+        </Button> */}
       </TitleSection>
       <ExtensionSection />
       <ContributeSection />
