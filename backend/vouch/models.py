@@ -1,52 +1,62 @@
 from django.db import models
+
 from core.models.user import User
 
 
-class Vouch(models.Model):
+class Voucher(models.Model):
+    """A `Voucher` given by a user to another one.
+
+    A `Voucher` represents a mark of trust related to a specific poll
+    criterion a user is able to grant to another one. Each mark of trust has a
+    trust value and an associated uncertainty to weight its effect.
+
+    These vouchers can be used by algorithm computing the criteria scores to
+    give more or less "voting right" (influence) to a user criterion score.
+    """
+
     by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="User who vouch for",
-        related_name="user_by",
-        default=0,
+        help_text="The user giving the voucher.",
+        related_name="vouchers_given",
     )
     to = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        help_text="User being vouched for",
-        related_name="user_to",
-        default=0,
+        help_text="The user receiving the voucher.",
+        related_name="vouchers_received",
     )
     is_public = models.BooleanField(
-        default=False, help_text="Should the vouching be public?"
+        default=False, help_text="Should the voucher be public?"
     )
-
     trust_value = models.FloatField(
         default=0,
-        help_text="Trust value assigned by vouching user to vouched-for user.",
+        help_text="The trust value given by the vouching user to receiving user.",
     )
+    # XXX: What is the vouching score described in the help text? Is it the
+    # `trust_value`? If yes we should use the same vocabulary to avoid any
+    # confusion.
     uncertainty = models.FloatField(
         default=0,
-        help_text="Uncertainty about the vouching score",
+        help_text="Uncertainty about the voucher score.",
     )
-    criteria = models.TextField(
-        default=0,
+    criterion = models.TextField(
         max_length=32,
-        help_text="Name of the properity on which the vouching is based",
+        help_text="Name of the criterion affected by this voucher.",
         db_index=True,
     )
 
+    @staticmethod
+    def get_given_to(user):
+        vouchers = Voucher.objects.filter(to=user)
+        return vouchers, vouchers.exists()
+
+    @staticmethod
+    def get_received_by(user):
+        vouchers = Voucher.objects.filter(by=user)
+        return vouchers, vouchers.exists()
+
     def save(self, *args, **kwargs):
         if self.pk:
-            raise ValueError("This vouching is not allowed")
+            raise ValueError("Updating a voucher is not allowed.")
         super().save(*args, **kwargs)
-
-    @staticmethod
-    def get_to(by):
-        to = Vouch.objects.filter(by=by)
-        return to, to.exists()
-
-    @staticmethod
-    def get_by(to):
-        by = Vouch.objects.filter(to=to)
-        return by, by.exists()
