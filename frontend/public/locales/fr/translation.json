@@ -40,6 +40,15 @@
   "stackedCard": {
     "showAll": "Tout montrer"
   },
+  "criteriaScoresDistribution": {
+    "lessThan": "< {{score}}",
+    "fromTo": "{{from}} à {{to}}",
+    "greaterThan": "> {{score}}",
+    "label": "Quantité",
+    "scores": "scores",
+    "numberOfRatings": "nombre de notes",
+    "title": "Distribution des scores par critère"
+  },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
     "pleaseSelectTwoItems": "Selectionnez 2 éléments pour les comparer.",

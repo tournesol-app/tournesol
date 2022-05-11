@@ -37,6 +37,15 @@
   "stackedCard": {
     "showAll": "Show all"
   },
+  "criteriaScoresDistribution": {
+    "lessThan": "< {{score}}",
+    "fromTo": "{{from}} to {{to}}",
+    "greaterThan": "> {{score}}",
+    "label": "Count",
+    "scores": "scores",
+    "numberOfRatings": "number of ratings",
+    "title": "Criteria scores distribution"
+  },
   "comparison": {
     "successfullySubmitted": "The comparison has been successfully submitted.",
     "pleaseSelectTwoItems": "Please select 2 items to compare them.",
