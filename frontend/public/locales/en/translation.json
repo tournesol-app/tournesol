@@ -371,7 +371,10 @@
     "getTheExtensionButton": "Get the extension",
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity.",
+    "videos": {
+      "start": "Start" 
+    }
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
@@ -561,6 +564,39 @@
         "message7": {
           "p10": "One last comparison and you will be able to see your current preferences.",
           "p20": "We sincerely hope you appreciated this new voting system, which may have allowed you to better think about why you support some candidates."
+        }
+      }
+    }
+  },
+  "videos": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "Welcome to Tournesol 🌻",
+        "message1": {
+          "p10": "This tutorial will guide you step by step through a series of four comparisons.",
+          "p20": "To compare two videos you watched, move the main handle and save when your choice is made.",
+          "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity.",
+          "p40": "If you find the videos similar, the handle should remain close to the center."
+        },
+        "title2": "Bravo ! 🥳",
+        "message2": {
+          "p10": "You have made your first comparison",
+          "p20": "Note that you can choose yourself the videos to compare by pasting their YouTube URL in the fields above the thumbnails.",
+          "p30": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
+          "p40": "You can also choose to not vote on the optional criteria by unchecking it.",
+          "p50": "Good to know, you will be able to edit all your comparisons later if you are not confident."
+        },
+        "title3": "How does Tournseol work? 🤖",
+        "message3": {
+          "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
+          "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",
+          "p30": "At any time you can check the description of a criterion by hovering it with your mouse. To get even more information, click on a criterion to consult its dedicated wiki page."
+        },
+        "title4": "Thanks a lot for following this tutorial ❤️",
+        "message4": {
+          "p10": "One last comparison and you will be able to browse Tournesol by yourself, making new comparisons or by consulting recommended videos.",
+          "p20": "We sincerely hope you enjoyed this tutorial, feel free to talk about Tournesol around you.",
+          "p30": "If you want to help, you can compare new videos from time to time. Also, feel free to talk about Tournesol around you. Thanks a lot."
         }
       }
     }

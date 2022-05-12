@@ -377,7 +377,10 @@
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité.",
+    "videos": {
+      "start": "Commencer"
+    }
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -568,6 +571,39 @@
         "message7": {
           "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos préférences actuelles.",
           "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lequelles vous soutenez certains candidat.es."
+        }
+      }
+    }
+  },
+  "videos": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "Bienvenue sur Tournesol 🌻",
+        "message1": {
+          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons.",
+          "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
+          "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
+          "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
+        },
+        "title2": "Bravo ! 🥳",
+        "message2": {
+          "p10": "Vous avez effectué votre première comparaison.",
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URL YouTube dans les champs qui se trouvent au dessus des miniatures.",
+          "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
+          "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
+          "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+        },
+        "title3": "Comment fonctionne Tournesol ? 🤖",
+        "message3": {
+          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices sur les différents critères.",
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
+          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet de consulter sa page wiki dédiée."
+        },
+        "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
+        "message4": {
+          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
+          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
+          "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
         }
       }
     }

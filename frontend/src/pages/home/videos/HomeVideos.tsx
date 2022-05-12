@@ -25,6 +25,20 @@ const HomeVideosPage = () => {
             <strong>robustly beneficial</strong> for all of humanity.
           </Trans>
         </Typography>
+
+        {/* uncomment ONLY when the videos tutorial is ready
+        <Button
+          color="primary"
+          variant="contained"
+          component={Link}
+          to="/comparison?series=true"
+          sx={{
+            px: 4,
+            fontSize: '120%',
+          }}
+        >
+          {t('home.videos.start')}
+        </Button> */}
       </TitleSection>
       <ExtensionSection />
       <ContributeSection />

@@ -90,6 +90,8 @@ export type SelectablePoll = {
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
+  // redirect to this page after the last comparison is submitted
+  tutorialRedirectTo?: string;
   // whether the 'unsafe' recommendations should be included by default
   unsafeDefault?: boolean;
 };
