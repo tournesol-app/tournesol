@@ -62,12 +62,14 @@ export const VideoAnalysis = ({
                     {t('entityAnalysisPage.chart.criteriaScores.title')}
                   </Typography>
                 </Box>
-                <Box p={1}>
-                  <PersonalCriteriaScoresContextProvider video={video}>
+                <PersonalCriteriaScoresContextProvider video={video}>
+                  <Box px={2} pt={1}>
                     <PersonalScoreCheckbox />
+                  </Box>
+                  <Box p={1}>
                     <CriteriaBarChart video={video} />
-                  </PersonalCriteriaScoresContextProvider>
-                </Box>
+                  </Box>
+                </PersonalCriteriaScoresContextProvider>
               </Paper>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
