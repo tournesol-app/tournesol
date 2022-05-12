@@ -24,14 +24,14 @@ export const VideoAnalysis = ({
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
 
-  const entityId = `yt:${video.video_id}`;
+  const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
 
   return (
-    <Container>
+    <Container sx={{ maxWidth: '1000px !important' }}>
       <Box py={2}>
         {/* Top level section, containing links and maybe more in the future. */}
         <Box mb={2} display="flex" justifyContent="flex-end">
@@ -40,13 +40,15 @@ export const VideoAnalysis = ({
             variant="contained"
             endIcon={<CompareIcon />}
             component={RouterLink}
-            to={`${baseUrl}/comparison?uidA=${entityId}`}
+            to={`${baseUrl}/comparison?uidA=${uid}`}
           >
             {t('entityAnalysisPage.generic.compare')}
           </Button>
         </Box>
+
+        {/* Entity section, with its player, title, scores and actions. */}
         <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} sm={12} md={10} sx={{ aspectRatio: '16 / 9' }}>
+          <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
             <VideoPlayer
               videoId={video.video_id}
               duration={video.duration}
@@ -57,52 +59,53 @@ export const VideoAnalysis = ({
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
 
-        {/* data visualization */}
-        {shouldDisplayCharts && (
-          <>
-            <Grid item xs={12} sm={12} md={6}>
-              <Paper>
-                <Box
-                  p={1}
-                  bgcolor="rgb(238, 238, 238)"
-                  display="flex"
-                  justifyContent="center"
-                >
-                  <Typography variant="h5">
-                    {t('entityAnalysisPage.chart.criteriaScores.title')}
-                  </Typography>
-                </Box>
-                <PersonalCriteriaScoresContextProvider uid={uid}>
-                  <Box px={2} pt={1}>
-                    <PersonalScoreCheckbox />
+          {/* data visualization */}
+          {shouldDisplayCharts && (
+            <>
+              <Grid item xs={12} sm={12} md={6}>
+                <Paper>
+                  <Box
+                    p={1}
+                    bgcolor="rgb(238, 238, 238)"
+                    display="flex"
+                    justifyContent="center"
+                  >
+                    <Typography variant="h5">
+                      {t('entityAnalysisPage.chart.criteriaScores.title')}
+                    </Typography>
+                  </Box>
+                  <PersonalCriteriaScoresContextProvider uid={uid}>
+                    <Box px={2} pt={1}>
+                      <PersonalScoreCheckbox />
+                    </Box>
+                    <Box p={1}>
+                      <CriteriaBarChart video={video} />
+                    </Box>
+                  </PersonalCriteriaScoresContextProvider>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={12} md={6}>
+                <Paper>
+                  <Box
+                    p={1}
+                    bgcolor="rgb(238, 238, 238)"
+                    display="flex"
+                    justifyContent="center"
+                  >
+                    <Typography variant="h5">
+                      {t('criteriaScoresDistribution.title')}
+                    </Typography>
                   </Box>
                   <Box p={1}>
-                    <CriteriaBarChart video={video} />
+                    <CriteriaScoresDistribution uid={uid} />
                   </Box>
-                </PersonalCriteriaScoresContextProvider>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={12} md={6}>
-              <Paper>
-                <Box
-                  p={1}
-                  bgcolor="rgb(238, 238, 238)"
-                  display="flex"
-                  justifyContent="center"
-                >
-                  <Typography variant="h5">
-                    {t('criteriaScoresDistribution.title')}
-                  </Typography>
-                </Box>
-                <Box p={1}>
-                  <CriteriaScoresDistribution uid={uid} />
-                </Box>
-              </Paper>
-            </Grid>
-          </>
-        )}
-      </Grid>
-    </Box>
+                </Paper>
+              </Grid>
+            </>
+          )}
+        </Grid>
+      </Box>
+    </Container>
   );
 };
 
