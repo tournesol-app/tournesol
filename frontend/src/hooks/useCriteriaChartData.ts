@@ -25,13 +25,20 @@ export interface CriteriaChartDatum {
   clippedPersonalScore: number | undefined;
 }
 
+export interface UseCriteriaChartDataValue {
+  shouldDisplayChart: boolean; // Whether the chart should be displayed
+  data: CriteriaChartDatum[]; // The scores per criteria
+  personalScoresActivated: boolean; // True if the data also contains personal scores
+  domain: number[]; // Minimum and maximum score values that should be displayed (scores in data may be outside this domain)
+}
+
 const useCriteriaChartData = ({
   video,
   entity,
 }: {
   video?: VideoSerializerWithCriteria;
   entity?: Recommendation;
-}) => {
+}): UseCriteriaChartDataValue => {
   const criteriaScores: Array<EntityCriteriaScore> = useMemo(
     () => video?.criteria_scores || entity?.criteria_scores || [],
     [video, entity]
