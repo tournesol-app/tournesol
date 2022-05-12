@@ -19,7 +19,7 @@ type ReasonWhyPersonalScoresCannotBeActivated =
   | 'contextProviderMissing'
   | 'unknownError';
 
-interface PersonalCriteriaScoresValue {
+interface UsePersonalCriteriaScoresValue {
   canActivatePersonalScores: boolean;
   reasonWhyPersonalScoresCannotBeActivated: ReasonWhyPersonalScoresCannotBeActivated;
   personalScoresActivated: boolean;
@@ -28,7 +28,7 @@ interface PersonalCriteriaScoresValue {
 }
 
 const PersonalCriteriaScoresContext =
-  createContext<PersonalCriteriaScoresValue>({
+  createContext<UsePersonalCriteriaScoresValue>({
     canActivatePersonalScores: false,
     reasonWhyPersonalScoresCannotBeActivated: 'contextProviderMissing',
     personalScoresActivated: false,
@@ -45,8 +45,8 @@ export const PersonalCriteriaScoresContextProvider = ({
   const { name: pollName } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
   const { uid } = video;
-  const [contextValue, setContextValue] = useState<PersonalCriteriaScoresValue>(
-    {
+  const [contextValue, setContextValue] =
+    useState<UsePersonalCriteriaScoresValue>({
       canActivatePersonalScores: false,
       reasonWhyPersonalScoresCannotBeActivated: undefined,
       personalScoresActivated: false,
@@ -55,8 +55,7 @@ export const PersonalCriteriaScoresContextProvider = ({
           ...value,
           personalScoresActivated: activated,
         })),
-    }
-  );
+    });
 
   const { personalScoresActivated } = contextValue;
 
@@ -123,7 +122,7 @@ export const PersonalCriteriaScoresContextProvider = ({
   );
 };
 
-const usePersonalCriteriaScores = () =>
+const usePersonalCriteriaScores = (): UsePersonalCriteriaScoresValue =>
   useContext(PersonalCriteriaScoresContext);
 
 export default usePersonalCriteriaScores;
