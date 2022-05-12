@@ -21,7 +21,7 @@ export const VideoAnalysis = ({
   video: VideoSerializerWithCriteria;
 }) => {
   const { t } = useTranslation();
-  const entityId = `yt:${video.video_id}`;
+  const { uid } = video;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const { criteria_scores: criteriaScores } = video;
@@ -62,7 +62,7 @@ export const VideoAnalysis = ({
                     {t('entityAnalysisPage.chart.criteriaScores.title')}
                   </Typography>
                 </Box>
-                <PersonalCriteriaScoresContextProvider video={video}>
+                <PersonalCriteriaScoresContextProvider uid={uid}>
                   <Box px={2} pt={1}>
                     <PersonalScoreCheckbox />
                   </Box>
@@ -85,7 +85,7 @@ export const VideoAnalysis = ({
                   </Typography>
                 </Box>
                 <Box p={1}>
-                  <CriteriaScoresDistribution uid={entityId} />
+                  <CriteriaScoresDistribution uid={uid} />
                 </Box>
               </Paper>
             </Grid>

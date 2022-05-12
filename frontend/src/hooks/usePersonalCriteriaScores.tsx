@@ -36,15 +36,14 @@ const PersonalCriteriaScoresContext =
   });
 
 export const PersonalCriteriaScoresContextProvider = ({
-  video,
+  uid,
   children,
 }: {
-  video: VideoSerializerWithCriteria;
+  uid: string;
   children: React.ReactNode;
 }) => {
   const { name: pollName } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
-  const { uid } = video;
   const [contextValue, setContextValue] =
     useState<UsePersonalCriteriaScoresValue>({
       canActivatePersonalScores: false,
