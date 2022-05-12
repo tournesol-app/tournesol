@@ -1,16 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+
 import { Box, Grid, Paper, Typography } from '@mui/material';
 
-import VideoCard from 'src/features/videos/VideoCard';
-import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
-import { useTranslation } from 'react-i18next';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
-import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
+import { useVideoMetadata } from 'src/features/videos/VideoApi';
+import VideoCard from 'src/features/videos/VideoCard';
 import { useLoginState } from 'src/hooks';
+import { VideoSerializerWithCriteria } from 'src/services/openapi';
+import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 
 export const VideoAnalysis = ({
   video,
@@ -19,10 +20,8 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const entityId = `yt:${video.video_id}`;
-  const defaultActions = useLoginState()
-    ? [CompareNowAction, AddToRateLaterList]
-    : [];
-  console.log(defaultActions);
+  const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
+
   return (
     <Box display="flex" justifyContent="center">
       <Grid
@@ -40,11 +39,7 @@ export const VideoAnalysis = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <VideoCard
-            video={video}
-            actions={defaultActions}
-            showPlayer={false}
-          />
+          <VideoCard video={video} actions={actions} showPlayer={false} />
         </Grid>
 
         {/* data visualization */}
