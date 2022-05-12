@@ -241,7 +241,7 @@ export const polls: Array<SelectablePoll> = [
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
     mainCriterionName: 'largely_recommended',
-    displayOrder: 20,
+    displayOrder: 10,
     path: '/',
     disabledRouteIds: [RouteID.MyFeedback],
     iconComponent: YouTube,
