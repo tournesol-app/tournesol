@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from 'react';
 import { ContributorCriteriaScore } from 'src/services/openapi';
-import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { UsersService } from 'src/services/openapi';
 import { useLoginState } from 'src/hooks';
