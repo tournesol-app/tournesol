@@ -18,6 +18,10 @@ code {
     monospace;
 }
 
+.no-decoration {
+  text-decoration: none;
+}
+
 /* -- start: third-party packages customization -- */
 
 /* pkg: notistack */
