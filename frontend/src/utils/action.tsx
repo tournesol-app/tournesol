@@ -8,13 +8,15 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Video, UsersService } from 'src/services/openapi';
-import { useCurrentPoll, useNotifications } from 'src/hooks';
+import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { idFromUid } from './video';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
   const { baseUrl, active } = useCurrentPoll();
 
+  // Do not display anything if the poll is inactive. The button is still
+  // displayed for anonymous users to invite them to contribute.
   if (!active) {
     return null;
   }
@@ -35,7 +37,14 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
 
 export const AddToRateLaterList = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { isLoggedIn } = useLoginState();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
+
+  // Do not display anything if the user is not logged.
+  if (!isLoggedIn) {
+    return null;
+  }
+
   const handleCreation = async () => {
     try {
       await UsersService.usersMeVideoRateLaterCreate({
