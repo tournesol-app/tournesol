@@ -108,8 +108,8 @@ const RateLaterPage = () => {
   const videos = rateLaterList.map((r) => r.video);
   const rateLaterPageActions = [
     CompareNowAction,
-    RemoveFromRateLater(loadList),
     AnalysisPageLink,
+    RemoveFromRateLater(loadList),
   ];
 
   return (
