@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { ApiError, VideoRateLater } from 'src/services/openapi';
-import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
+import { CompareNowAction, RemoveFromRateLater, AnalysisPageLink } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
 import {
   ContentBox,
@@ -16,7 +16,7 @@ import {
   Pagination,
 } from 'src/components';
 import VideoList from 'src/features/videos/VideoList';
-import { useNotifications } from 'src/hooks';
+import { useLoginState, useNotifications } from 'src/hooks';
 import { getWebExtensionUrl } from 'src/utils/extension';
 
 const useStyles = makeStyles({
@@ -102,6 +102,7 @@ const RateLaterPage = () => {
   }, [loadList]);
 
   const videos = rateLaterList.map((r) => r.video);
+  const rateLaterPageActions = [CompareNowAction, RemoveFromRateLater(loadList), AnalysisPageLink];
 
   return (
     <>
@@ -165,7 +166,7 @@ const RateLaterPage = () => {
             <LoaderWrapper isLoading={isLoading}>
               <VideoList
                 videos={videos}
-                actions={[CompareNowAction, RemoveFromRateLater(loadList)]}
+                actions={rateLaterPageActions}
               />
             </LoaderWrapper>
           </Box>
