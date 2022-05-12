@@ -9,6 +9,8 @@ import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useTranslation } from 'react-i18next';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
+import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
+import { useLoginState } from 'src/hooks';
 
 export const VideoAnalysis = ({
   video,
@@ -17,6 +19,10 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const entityId = `yt:${video.video_id}`;
+  const defaultActions = useLoginState()
+    ? [CompareNowAction, AddToRateLaterList]
+    : [];
+  console.log(defaultActions);
   return (
     <Box display="flex" justifyContent="center">
       <Grid
@@ -34,7 +40,11 @@ export const VideoAnalysis = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <VideoCard video={video} showPlayer={false} />
+          <VideoCard
+            video={video}
+            actions={defaultActions}
+            showPlayer={false}
+          />
         </Grid>
 
         {/* data visualization */}
