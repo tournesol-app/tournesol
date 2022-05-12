@@ -10,6 +10,7 @@ export function getTutorialVideos(): Promise<Entity[]> {
   }
   VIDEOS = EntitiesService.entitiesList({
     type: TypeEnum.VIDEO,
+    limit: 8,
   }).then((data) => data.results ?? []);
   return VIDEOS;
 }
