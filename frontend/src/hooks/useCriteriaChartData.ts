@@ -25,7 +25,7 @@ export interface CriteriaChartDatum {
   clippedPersonalScore: number | undefined;
 }
 
-const useCrtiteriaChartData = ({
+const useCriteriaChartData = ({
   video,
   entity,
 }: {
@@ -110,4 +110,4 @@ const useCrtiteriaChartData = ({
   };
 };
 
-export default useCrtiteriaChartData;
+export default useCriteriaChartData;
