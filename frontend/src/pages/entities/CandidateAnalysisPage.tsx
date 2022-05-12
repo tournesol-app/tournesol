@@ -23,7 +23,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
     <Container>
       <Box py={2}>
         {/* Top level section, containing links and maybe more in the future. */}
-        <Box display="flex" justifyContent="flex-end">
+        <Box mb={2} display="flex" justifyContent="flex-end">
           <Button
             color="secondary"
             variant="outlined"

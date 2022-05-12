@@ -81,11 +81,17 @@ const StackedCandidatesPaper = ({
         return (
           <ListItem key={entity.uid} alignItems="flex-start">
             <ListItemAvatar>
-              <Avatar
-                alt={entity?.metadata?.name || ''}
-                src={entity?.metadata?.image_url || ''}
-              />
+              <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+                <Avatar
+                  alt={entity?.metadata?.name || ''}
+                  src={entity?.metadata?.image_url || ''}
+                />
+              </RouterLink>
             </ListItemAvatar>
+
+            {/* To stay mobile friendly, only the avatar is clickable. The
+                primary text is too close to the comparisons link, making it
+                clickalbe makes it easy to click on the wrong link. */}
             <ListItemText
               primary={entity?.metadata?.name || '??'}
               secondary={
