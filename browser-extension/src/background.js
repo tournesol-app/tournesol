@@ -223,7 +223,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
   } else if (request.message == 'getTournesolRecommendations') {
-    const api_url = 'video/';
+    const poll_name = 'video';
+    const api_url = f"/polls/{poll_name}/recommendations/";
 
     const request_recommendations = async (options) => {
       const resp = await fetchTournesolApi(
