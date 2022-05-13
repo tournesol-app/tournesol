@@ -1,19 +1,25 @@
 from __future__ import annotations
 
-from recommendation.recomended_user import User
+from core.models import User
 from recommendation.video import Video
 import numpy as np
+
+# uncertainties locations => EntityCriteriaScore = Entity Globals
+# uncertainties locations => ContributorRatingCriteriaScore = User entity
+# uncertainties locations => ContributorScaling = User global
+from tournesol.models import ContributorScaling
 
 
 class Graph:
     # not necessarily the best data structure,
     # I still have to find out what is the best one between the two
-    edges: list[tuple[Video, Video]]
+    edges: list[tuple[Video, Video]] = []
     _nodes: list[Video]
-    graph: dict[Video, list[Video]]
+    graph: dict[Video, list[Video]] = {}
     sigma: float
     dirty: bool
     local_user: User
+    local_user_scaling: ContributorScaling
 
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
@@ -37,18 +43,23 @@ class Graph:
         self.ABSENT_NODE.v1_score = -1
         self.ABSENT_NODE.estimated_information_gains = 1
         self.local_user = local_user
+        self.local_user_scaling = ContributorScaling.objects.filter(user=local_user)[0]
+        self._nodes = []
 
     def add_node(self, new_node):
         if new_node not in self.nodes:
             self.nodes.append(new_node)
             self.graph[new_node] = []
+            for n in self._nodes:
+                n.nb_comparison_with[new_node] = 0
+                new_node.nb_comparison_with[n] = 0
         else:
             print("Warning, trying to insert already present node")
 
-    def add_edge(self, node_a, node_b):
-        if node_a not in self.nodes:
+    def add_edge(self, node_a: Video, node_b: Video):
+        if node_a not in self._nodes:
             print("Warning ! unknown node added in edge")
-        if node_b not in self.nodes:
+        if node_b not in self._nodes:
             print("Warning ! unknown node added in edge")
 
         node_b.nb_comparison_with[node_a] += 1
@@ -130,7 +141,7 @@ class Graph:
 
         waiting_for_visit.append(unvisited.pop())
         result: set[Graph] = set()
-        act_graph = Graph()
+        act_graph = Graph(local_user=self.local_user)
 
         while len(unvisited) > 0:
             for act_vid in waiting_for_visit:
@@ -145,7 +156,7 @@ class Graph:
 
             if len(future_visits) == 0:
                 result.add(act_graph)
-                act_graph = Graph()
+                act_graph = Graph(self.local_user)
                 future_visits.add(unvisited.pop())
             waiting_for_visit = list(future_visits)
 
@@ -161,19 +172,29 @@ class Graph:
                 self.similarity_matrix[i][j] = np.e ** ((self.distance_matrix[i, j]) ** 2 / self.sigma ** 2)
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos):
-        if self.dirty:
+        if self.dirty and self.local_user is not None:
             self.dirty = False
             self.build_adjacency_matrix()
             self.build_distance_matrix()
             self.build_similarity_matrix()
             self.compute_information_gain(scaling_factor_increasing_videos)
+        elif self.local_user is None:
+            for n in self._nodes:
+                # todo get here the actual score uncertainty of the video + 0.5 for the graph completion
+                n.v1_score = 0.5
+                for n2 in self._nodes:
+                    n.v2_score[n2] = 0.5
 
     def compute_information_gain(self, scaling_factor_increasing_videos):
         # First try to increase the scaling accuracy of the user if necessary
         # TODO Use here data from db
         # Contributor_scaling + translation -> yes
         user = self.local_user
-        if user.scaling_accuracy * user.mean_score + user.translation_accuracy < self.MIN_SCALING_ACCURACY:
+        scale_uncertainty = self.local_user_scaling.scale_uncertainty
+        translation_uncertainty = self.local_user_scaling.scale_uncertainty
+        user_mean_score = 0
+
+        if scale_uncertainty * user.mean_score + translation_uncertainty < self.MIN_SCALING_ACCURACY:
             for v in self.nodes:
                 for u in self.nodes:
                     if v in scaling_factor_increasing_videos and u in scaling_factor_increasing_videos:

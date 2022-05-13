@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from functools import total_ordering
 
+from tournesol.models import Entity
+
 
 @total_ordering
 class Video:
@@ -17,8 +19,10 @@ class Video:
 
     video_reference: Video
 
-    def __init__(self, video_reference: Video):
+    def __init__(self, video_reference: Video, from_entity: Entity = None):
         self.video_reference = video_reference
+        if from_entity is not None:
+            self.uid = from_entity.uid
 
     def __eq__(self, __o: Video) -> bool:
         return __o.uid == self.uid
@@ -39,3 +43,6 @@ class Video:
         return "Video " + self.uid + \
                " with score v1 " + str(self.v1_score) + \
                " and scores v2 " + str(self.v2_score)
+
+    def __hash__(self):
+        return self.uid.__hash__()
