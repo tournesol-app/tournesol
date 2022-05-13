@@ -55,7 +55,11 @@ logger = logging.getLogger(__name__)
                 examples=[
                     OpenApiExample(
                         name="Some filters available for videos.",
-                        value={"language": "fr,pt", "uploader": "kurzgesagtES"},
+                        value={
+                            "language": "fr,pt",
+                            "uploader": "kurzgesagtES",
+                            "duration_lte": "120"
+                        },
                     ),
                     OpenApiExample(
                         name="Some filters available for candidates.",
@@ -96,6 +100,14 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         search = filters["search"]
         if search:
             queryset = poll.entity_cls.filter_search(queryset, search)
+
+        duration = filters["duration_lte"]
+        if duration:
+            queryset = poll.entity_cls.filter_duration_lte(queryset, duration)
+
+        duration = filters["duration_gte"]
+        if duration:
+            queryset = poll.entity_cls.filter_duration_gte(queryset, duration)
 
         date_lte = filters["date_lte"]
         if date_lte:

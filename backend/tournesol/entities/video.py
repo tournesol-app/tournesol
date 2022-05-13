@@ -30,6 +30,14 @@ class VideoEntity(EntityType):
         return qs.filter(metadata__publication_date__gte=dt.date().isoformat())
 
     @classmethod
+    def filter_duration_lte(cls, qs, duration):
+        return qs.filter(metadata__duration__lte=duration)
+
+    @classmethod
+    def filter_duration_gte(cls, qs, duration):
+        return qs.filter(metadata__duration__gte=duration)
+
+    @classmethod
     def filter_search(cls, qs, query):
         from tournesol.models import Entity
 

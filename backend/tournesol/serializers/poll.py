@@ -51,6 +51,12 @@ class RecommendationSerializer(ModelSerializer):
 
 
 class RecommendationsFilterSerializer(serializers.Serializer):
+    duration_lte = serializers.IntegerField(
+        default=None, help_text="A duration filter to lower or equal than the duration specified")
+    duration_gte = serializers.IntegerField(
+        default=None,
+        help_text="A duration filter to greater or equal than the duration specified"
+    )
     date_lte = serializers.DateTimeField(default=None)
     date_gte = serializers.DateTimeField(default=None)
     search = serializers.CharField(

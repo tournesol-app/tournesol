@@ -42,6 +42,16 @@ class EntityType(ABC):
 
     @classmethod
     @abstractmethod
+    def filter_duration_lte(cls, qs, duration):
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def filter_duration_gte(cls, qs, duration):
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
     def filter_search(cls, qs, query: str):
         raise NotImplementedError
 
