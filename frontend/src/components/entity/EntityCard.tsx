@@ -55,7 +55,12 @@ const EntityCard = ({
 
   return (
     <Grid container sx={entityCardMainSx}>
-      <Grid item xs={12} sm={compact ? 12 : 'auto'}>
+      <Grid
+        item
+        xs={12}
+        sm={compact ? 12 : 'auto'}
+        sx={{ display: 'flex', justifyContent: 'center' }}
+      >
         <EntityImagery entity={entity} compact={compact} />
       </Grid>
       <Grid

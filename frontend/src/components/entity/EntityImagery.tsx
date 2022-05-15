@@ -26,10 +26,6 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
       height="100%"
       onClick={() => setIsDurationVisible(false)}
       ref={ref}
-      sx={{
-        minWidth: '240px',
-        minHeight: '135px',
-      }}
     >
       {isDurationVisible && formattedDuration && (
         <Box
@@ -83,25 +79,20 @@ const EntityImagery = ({
   compact?: boolean;
 }) => {
   if (entity.type === TypeEnum.VIDEO) {
-    const player = (
-      <VideoPlayer
-        videoId={entity.metadata.video_id}
-        duration={entity.metadata.duration}
-      />
+    return (
+      <Box
+        sx={{
+          aspectRatio: '16 / 9',
+          width: '100%',
+          ...(compact ? {} : { minWidth: '240px' }),
+        }}
+      >
+        <VideoPlayer
+          videoId={entity.metadata.video_id}
+          duration={entity.metadata.duration}
+        />
+      </Box>
     );
-
-    if (compact) {
-      return (
-        <Box
-          sx={{
-            aspectRatio: '16 / 9',
-          }}
-        >
-          {player}
-        </Box>
-      );
-    }
-    return player;
   }
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {
     return (
