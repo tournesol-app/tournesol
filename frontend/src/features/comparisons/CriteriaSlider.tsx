@@ -9,6 +9,7 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Link } from '@mui/material';
 import { CriteriaIcon } from 'src/components';
 import { criteriaLinks, getCriteriaTooltips } from 'src/utils/constants';
+import { HelpOutline } from '@mui/icons-material';
 
 const SLIDER_MIN_STEP = -10;
 const SLIDER_MAX_STEP = 10;
@@ -46,10 +47,11 @@ type Props = {
 const CriteriaLabelWithTooltip = ({ children, criteria }: Props) => {
   const { t } = useTranslation();
   const tooltip = getCriteriaTooltips(t, criteria) || '';
+  const helpIcon = <HelpOutline fontSize="inherit" sx={{}} />;
   return tooltip ? (
     <Tooltip title={tooltip} placement="top">
       <Box component="span" sx={{ cursor: 'help' }}>
-        {children}
+        {children} {helpIcon}
       </Box>
     </Tooltip>
   ) : (

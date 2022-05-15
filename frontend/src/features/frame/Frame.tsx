@@ -19,7 +19,6 @@ const useStyles = makeStyles({
     flexGrow: 1,
     overflow: 'auto',
     height: '100%',
-    backgroundColor: '#ffffff',
   },
 });
 

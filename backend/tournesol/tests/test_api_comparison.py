@@ -1017,3 +1017,64 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         # Global scores and individual scores related to other users are unchanged
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
         self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 4)
+
+
+class ComparisonApiWithInactivePoll(TestCase):
+    def setUp(self):
+        self.poll = PollFactory(active=False)
+        self.user = UserFactory()
+        self.videos = [
+            VideoFactory(),
+            VideoFactory(),
+        ]
+        ComparisonFactory(
+            user=self.user,
+            poll=self.poll,
+            entity_1=self.videos[0],
+            entity_2=self.videos[1],
+        )
+
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_user_can_list_comparisons(self):
+        resp = self.client.get(f"/users/me/comparisons/{self.poll.name}")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data["results"]), 1)
+
+    def test_user_can_get_existing_comparison(self):
+        resp = self.client.get(f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["entity_a"]["uid"], self.videos[0].uid)
+
+    def test_user_cannot_create_comparison(self):
+        resp = self.client.post(f"/users/me/comparisons/{self.poll.name}", data={
+            "entity_a": {
+                "uid": "uid1"
+            },
+            "entity_b": {
+                "uid": "uid2"
+            },
+            "criteria_scores": [],
+        }, format="json")
+        self.assertContains(
+            resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
+        )
+
+    def test_user_cannot_update_comparison(self):
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/",
+            data={
+                "criteria_scores": []
+            },
+            format="json"
+        )
+        self.assertContains(
+            resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
+        )
+
+    def test_user_cannot_delete_comparison(self):
+        resp = self.client.delete(f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
+        self.assertContains(
+            resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
+        )

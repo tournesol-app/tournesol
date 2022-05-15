@@ -60,6 +60,8 @@ end representation the back end OpenAPI schema.
 **step 3** Don't forget to re-generate the service files by running
 `scripts/generate-services-from-openapi.sh`
 
+If you're using `dev-env` you can update the schema and the service files by running the script `dev-env/update-openapi.sh`.
+
 ### Front end
 
 To correct the lint of frontend files, it is possible to activate plugin

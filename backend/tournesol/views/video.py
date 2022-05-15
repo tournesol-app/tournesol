@@ -171,17 +171,15 @@ class VideoViewSet(
             .filter(all_criteria_scores__score_mode=ScoreMode.DEFAULT)
             .annotate(
                 total_score=Sum(F("all_criteria_scores__score") * criteria_weight)
-            )
+            ).filter(total_score__isnull=False)
         )
 
         show_unsafe = request.query_params.get("unsafe") == "true"
 
-        if show_unsafe is True:
-            queryset = queryset.filter(total_score__isnull=False)
-        else:
+        if not show_unsafe:
             queryset = queryset.filter(
                 rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS
-            ).filter(total_score__gt=0)
+            ).filter(tournesol_score__gt=0)
         return (
             queryset
             .with_prefetched_scores(poll_name=DEFAULT_POLL_NAME)

@@ -208,14 +208,14 @@ class VideoApi(TestCase):
 
         # Disable reliability
         resp = client.get("/video/?reliability=0")
-        self.assertEqual(
-            [r["video_id"] for r in resp.json()["results"]],
+        self.assertEqual(  # Only asserts that the first two videos are as expected
+            [r["video_id"] for r in resp.json()["results"]][:2],
             [self.video_4.video_id, self.video_3.video_id],
         )
 
         # Disable both reliability and importance
         resp = client.get("/video/?reliability=0&importance=0")
-        self.assertEqual([r["video_id"] for r in resp.json()["results"]], [])
+        self.assertEqual(len(resp.json()["results"]), len(self._list_of_videos))
 
         # More weight to reliability should change the order
         resp = client.get("/video/?reliability=100&importance=10")
@@ -268,25 +268,25 @@ class VideoApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(self._list_of_videos))
 
-    def test_cannot_get_video_with_particular_request(self):
+    def test_no_negative_tournesol_score_video(self):
         client = APIClient()
-        video = VideoFactory(rating_n_contributors=2)
+        video = VideoFactory(rating_n_contributors=2, tournesol_score=-10)
         VideoCriteriaScoreFactory(entity=video, criteria="engaging", score=-1)
         VideoCriteriaScoreFactory(entity=video, criteria="importance", score=1)
-        good_response = client.get("/video/?importance=50&engaging=0")
-        self.assertEqual(good_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(good_response.data["count"], len(self._list_of_videos) + 1)
-        bad_response = client.get("/video/?importance=50&engaging=100")
-        self.assertEqual(bad_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(bad_response.data["count"], len(self._list_of_videos))
+        safe_response = client.get("/video/?importance=50&engaging=0")
+        self.assertEqual(safe_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(safe_response.data["count"], len(self._list_of_videos))
+        unsafe_response = client.get("/video/?importance=50&engaging=100&unsafe=true")
+        self.assertEqual(unsafe_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(unsafe_response.data["count"], len(self._list_of_videos)+1)
 
     def test_get_video_languages_filter(self):
         client = APIClient()
 
         # Add 1 video in French and 2 videos in English
-        video1 = VideoFactory(metadata__language="fr", rating_n_contributors=2)
-        video2 = VideoFactory(metadata__language="en", rating_n_contributors=2)
-        video3 = VideoFactory(metadata__language="en", rating_n_contributors=2)
+        video1 = VideoFactory(metadata__language="fr", rating_n_contributors=2, tournesol_score=10)
+        video2 = VideoFactory(metadata__language="en", rating_n_contributors=2, tournesol_score=10)
+        video3 = VideoFactory(metadata__language="en", rating_n_contributors=2, tournesol_score=10)
         VideoCriteriaScoreFactory(entity=video1)
         VideoCriteriaScoreFactory(entity=video2)
         VideoCriteriaScoreFactory(entity=video3)

@@ -1,10 +1,20 @@
 import { TFunction } from 'react-i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
-import { SelectablePoll, RouteID } from './types';
+
+import {
+  AddToRateLaterList,
+  AnalysisPageLink,
+  CompareNowAction,
+} from './action';
 import {
   getAllCandidates,
-  getTutorialDialogs,
+  getTutorialDialogs as getPresidentielleTutorialDialogs,
 } from './polls/presidentielle2022';
+import {
+  getTutorialVideos,
+  getTutorialDialogs as getVideosTutorialDialogs,
+} from './polls/videos';
+import { SelectablePoll, RouteID } from './types';
 
 export const YOUTUBE_POLL_NAME = 'videos';
 export const PRESIDENTIELLE_2022_POLL_NAME = 'presidentielle2022';
@@ -59,6 +69,7 @@ export const criteriaToEmoji: Record<string, string> = {
 
 export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
   return {
+    // presidentielle2022
     energy_environment: t('criteriaTooltips.energy_environment'),
     international: t('criteriaTooltips.international'),
     education_culture: t('criteriaTooltips.education_culture'),
@@ -66,6 +77,16 @@ export const getCriteriaTooltips = (t: TFunction, criteria: string) => {
     institutions_democracy: t('criteriaTooltips.institutions_democracy'),
     labour_economy: t('criteriaTooltips.labour_economy'),
     solidarity: t('criteriaTooltips.solidarity'),
+    // videos
+    pedagogy: t('criteriaTooltips.pedagogy'),
+    importance: t('criteriaTooltips.importance'),
+    layman_friendly: t('criteriaTooltips.layman_friendly'),
+    entertaining_relaxing: t('criteriaTooltips.entertaining_relaxing'),
+    engaging: t('criteriaTooltips.engaging'),
+    diversity_inclusion: t('criteriaTooltips.diversity_inclusion'),
+    better_habits: t('criteriaTooltips.better_habits'),
+    backfire_risk: t('criteriaTooltips.backfire_risk'),
+    reliability: t('criteriaTooltips.reliability'),
   }[criteria];
 };
 
@@ -173,6 +194,15 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   }
 };
 
+export const getRecommendationPageName = (t: TFunction, pollName: string) => {
+  switch (pollName) {
+    case PRESIDENTIELLE_2022_POLL_NAME:
+      return t('recommendationsPage.title.results');
+    default:
+      return t('recommendationsPage.title.recommendations');
+  }
+};
+
 /*
   The most specific paths should be listed first,
   to be routed correctly.
@@ -182,25 +212,35 @@ export const polls: Array<SelectablePoll> = [
     ? [
         {
           name: PRESIDENTIELLE_2022_POLL_NAME,
+          defaultAuthEntityActions: [CompareNowAction, AnalysisPageLink],
+          defaultAnonEntityActions: [AnalysisPageLink],
           displayOrder: 20,
+          mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
-          disabledRouteIds: [
-            RouteID.Recommendations,
-            RouteID.MyRateLaterList,
-            RouteID.MyComparedItems,
-          ],
+          disabledRouteIds: [RouteID.MyRateLaterList, RouteID.MyComparedItems],
           iconComponent: HowToVote,
           withSearchBar: false,
           topBarBackground:
             'linear-gradient(60deg, #8b8be8 0%, white 33%, #e16767 100%)',
           tutorialLength: 7,
           tutorialAlternatives: getAllCandidates,
-          tutorialDialogs: getTutorialDialogs,
+          tutorialDialogs: getPresidentielleTutorialDialogs,
+          tutorialRedirectTo: '/personal/feedback',
+          unsafeDefault: true,
         },
       ]
     : []),
   {
     name: YOUTUBE_POLL_NAME,
+    defaultAuthEntityActions: [
+      CompareNowAction,
+      AddToRateLaterList,
+      AnalysisPageLink,
+    ],
+    defaultAnonEntityActions: [AnalysisPageLink],
+    defaultRecoLanguageDiscovery: true,
+    defaultRecoSearchParams: 'date=Month',
+    mainCriterionName: 'largely_recommended',
     displayOrder: 10,
     path: '/',
     disabledRouteIds: [RouteID.MyFeedback],
@@ -208,7 +248,14 @@ export const polls: Array<SelectablePoll> = [
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
+    tutorialLength: 4,
+    tutorialAlternatives: getTutorialVideos,
+    tutorialDialogs: getVideosTutorialDialogs,
+    tutorialRedirectTo: '/comparison',
   },
 ];
 
 export const LAST_POLL_NAME_STORAGE_KEY = 'last_poll_name';
+
+export const PRESIDENTIELLE_2022_SURVEY_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLScNUUKaapn0z6N64au-6YcFxAoViAyvbl53sZswYsWzDasHpw/viewform';

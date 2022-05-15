@@ -38,7 +38,7 @@ const StackedCandidatesPaper = ({
 }: Props) => {
   const [sortingCriteria, setSortingCriteria] = useState('be_president');
   const { t } = useTranslation();
-  const { baseUrl } = useCurrentPoll();
+  const { active, baseUrl } = useCurrentPoll();
 
   const nComparisons = Object.fromEntries(
     ratings.map((rating) => {
@@ -81,11 +81,17 @@ const StackedCandidatesPaper = ({
         return (
           <ListItem key={entity.uid} alignItems="flex-start">
             <ListItemAvatar>
-              <Avatar
-                alt={entity?.metadata?.name || ''}
-                src={entity?.metadata?.image_url || ''}
-              />
+              <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+                <Avatar
+                  alt={entity?.metadata?.name || ''}
+                  src={entity?.metadata?.image_url || ''}
+                />
+              </RouterLink>
             </ListItemAvatar>
+
+            {/* To stay mobile friendly, only the avatar is clickable. The
+                primary text is too close to the comparisons link, making it
+                clickalbe makes it easy to click on the wrong link. */}
             <ListItemText
               primary={entity?.metadata?.name || '??'}
               secondary={
@@ -133,7 +139,7 @@ const StackedCandidatesPaper = ({
               {t('stackedCandidatesPaper.ifYourRankingSeemsOff')}
             </Typography>
           </Box>
-          <Grid container>
+          <Grid container justifyContent="flex-end">
             <Grid item xs={6} sx={{ px: 1 }}>
               <Button
                 color="secondary"
@@ -146,18 +152,20 @@ const StackedCandidatesPaper = ({
                 {t('stackedCandidatesPaper.seeMyComparisons')}
               </Button>
             </Grid>
-            <Grid item xs={6} sx={{ px: 1 }}>
-              <Button
-                color="secondary"
-                component={RouterLink}
-                variant="contained"
-                to={`${baseUrl}/comparison`}
-                sx={{ height: '100%' }}
-                fullWidth
-              >
-                {t('stackedCandidatesPaper.addNewComparisons')}
-              </Button>
-            </Grid>
+            {active && (
+              <Grid item xs={6} sx={{ px: 1 }}>
+                <Button
+                  color="secondary"
+                  component={RouterLink}
+                  variant="contained"
+                  to={`${baseUrl}/comparison`}
+                  sx={{ height: '100%' }}
+                  fullWidth
+                >
+                  {t('stackedCandidatesPaper.addNewComparisons')}
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </>
       }
