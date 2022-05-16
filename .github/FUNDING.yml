@@ -5,7 +5,4 @@
 #
 #   See: https://tournesol.app/about/donate
 
-custom:
-  - 'https://utip.io/tournesol
-  - 'https://www.paypal.com/paypalme/tournesolapp'
-  - 'https://tournesol.app/about/donate'
+custom: ['https://utip.io/tournesol', 'https://www.paypal.com/paypalme/tournesolapp', 'https://tournesol.app/about/donate']
