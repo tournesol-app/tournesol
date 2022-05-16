@@ -10,7 +10,7 @@ class Video:
     v2_score: dict[Video, float] = {}
     beta: dict[Video, float] = {}
     estimated_information_gains = []
-    nb_comparison_with: dict[Video, int] = {}
+    nb_comparison_with: dict[str, int] = {}
 
     comparison_nb: int = 0
     user_pref: int = 0
