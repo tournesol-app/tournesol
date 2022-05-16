@@ -1,3 +1,11 @@
-# These are supported funding model platforms
+# These are the supported funding platforms.
+#
+# Direct transfers without extra fee are also available on the tournesol.app
+# donation page.
+#
+#   See: https://tournesol.app/about/donate
 
-custom: ['https://www.paypal.com/paypalme/tournesolapp', 'https://utip.io/tournesol']
+custom:
+  - 'https://utip.io/tournesol
+  - 'https://www.paypal.com/paypalme/tournesolapp'
+  - 'https://tournesol.app/about/donate'
