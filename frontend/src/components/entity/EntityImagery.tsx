@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
+import { Link as RouterLink } from 'react-router-dom';
+
 import { Avatar, Box } from '@mui/material';
+
+import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
-import { convertDurationToClockDuration } from 'src/utils/video';
 import { RelatedEntityObject } from 'src/utils/types';
+import { convertDurationToClockDuration } from 'src/utils/video';
 
 const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   {
@@ -78,6 +82,8 @@ const EntityImagery = ({
   entity: RelatedEntityObject;
   compact?: boolean;
 }) => {
+  const { baseUrl } = useCurrentPoll();
+
   if (entity.type === TypeEnum.VIDEO) {
     return (
       <Box
@@ -110,15 +116,17 @@ const EntityImagery = ({
         {compact ? (
           <img src={entity.metadata.image_url} alt={entity.metadata.name} />
         ) : (
-          <Avatar
-            alt={entity?.metadata?.name || ''}
-            src={entity?.metadata?.image_url || ''}
-            sx={{
-              width: '60px',
-              height: '60px',
-              m: 2,
-            }}
-          />
+          <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+            <Avatar
+              alt={entity?.metadata?.name || ''}
+              src={entity?.metadata?.image_url || ''}
+              sx={{
+                width: '60px',
+                height: '60px',
+                m: 2,
+              }}
+            />
+          </RouterLink>
         )}
       </Box>
     );
