@@ -3,11 +3,16 @@ from __future__ import annotations
 from typing import Optional
 
 import numpy as np
-from django.db.models import QuerySet, Avg
+from django.db.models import Avg, QuerySet
+
 from recommendation.recomended_user import User
 from recommendation.video import Video
-from tournesol.models import ContributorScaling, EntityCriteriaScore
-from tournesol.models import Poll, ContributorRatingCriteriaScore
+from tournesol.models import (
+    ContributorRatingCriteriaScore,
+    ContributorScaling,
+    EntityCriteriaScore,
+    Poll,
+)
 
 
 class Graph:
