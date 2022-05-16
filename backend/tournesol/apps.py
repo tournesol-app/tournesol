@@ -8,7 +8,8 @@ class TournesolConfig(AppConfig):
     name = "tournesol"
 
     def ready(self):
-        from . import signals  # noqa: F401
         from tournesol.views.entities_to_compare import EntitiesToCompareView
+
+        from . import signals  # noqa: F401
 
         EntitiesToCompareView.get_ready()

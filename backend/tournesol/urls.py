@@ -8,6 +8,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from tournesol.views.proof_of_vote import ProofOfVoteView
+
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.contributor_recommendations import (
     PrivateContributorRecommendationsView,
