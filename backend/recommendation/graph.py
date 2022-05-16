@@ -6,10 +6,8 @@ import numpy as np
 from django.db.models import QuerySet, Avg
 from recommendation.recomended_user import User
 from recommendation.video import Video
-# uncertainties locations => EntityCriteriaScore = Entity Globals
-# uncertainties locations => ContributorRatingCriteriaScore = User entity
-# uncertainties locations => ContributorScaling = User global
-from tournesol.models import ContributorScaling, EntityCriteriaScore, Poll, ContributorRatingCriteriaScore
+from tournesol.models import ContributorScaling, EntityCriteriaScore
+from tournesol.models import Poll, ContributorRatingCriteriaScore
 
 
 class Graph:
@@ -95,8 +93,10 @@ class Graph:
         for u, v in self.edges:
             u_index = self.nodes.index(u)
             v_index = self.nodes.index(v)
-            self.normalized_adjacency_matrix[u_index][v_index] = 1 / sum(self.adjacency_matrix[u_index])
-            self.normalized_adjacency_matrix[v_index][u_index] = 1 / sum(self.adjacency_matrix[u_index])
+            self.normalized_adjacency_matrix[u_index][v_index] = \
+                1 / sum(self.adjacency_matrix[u_index])
+            self.normalized_adjacency_matrix[v_index][u_index] = \
+                1 / sum(self.adjacency_matrix[u_index])
 
     def build_distance_matrix(self):
         # Compute sigma here
@@ -175,9 +175,10 @@ class Graph:
     def build_similarity_matrix(self):
         for i, u in enumerate(self.nodes):
             for j, v in enumerate(self.nodes):
-                self.similarity_matrix[i][j] = np.e ** ((self.distance_matrix[i, j]) ** 2 / self.sigma ** 2)
+                exponent = (self.distance_matrix[i, j]) ** 2 / self.sigma ** 2
+                self.similarity_matrix[i][j] = np.e ** exponent
 
-    def compute_offline_parameters(self, scaling_factor_increasing_videos):
+    def compute_offline_parameters(self, scaling_factor_increasing_videos: list[Video]):
         if self.dirty and self._local_user is not None:
             self.dirty = False
             self.build_adjacency_matrix()
@@ -199,16 +200,20 @@ class Graph:
                 for n in self._nodes:
                     act_vid.v2_score[n] = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
 
-    def compute_information_gain(self, scaling_factor_increasing_videos):
+    def compute_information_gain(self, scaling_factor_increasing_videos: list[Video]):
         # First try to increase the scaling accuracy of the user if necessary
         user = self._local_user
         scale_uncertainty = self.local_user_scaling.scale_uncertainty
         translation_uncertainty = self.local_user_scaling.translation_uncertainty
 
-        if scale_uncertainty * self.local_user_mean + translation_uncertainty < self.MIN_SCALING_ACCURACY:
+        weighted_scaling_uncertainty = scale_uncertainty * self.local_user_mean
+        actual_scaling_accuracy = weighted_scaling_uncertainty + translation_uncertainty
+
+        if actual_scaling_accuracy < self.MIN_SCALING_ACCURACY:
             for va in self.nodes:
                 for vb in self.nodes:
-                    if va in scaling_factor_increasing_videos and vb in scaling_factor_increasing_videos:
+                    if va in scaling_factor_increasing_videos and \
+                            vb in scaling_factor_increasing_videos:
                         va.v1_score = 1
                         va.v2_score[vb] = 1
                     else:
@@ -241,7 +246,8 @@ class Graph:
                     for va in self.nodes:
                         va.v2_score[vb] += va.beta[vb] / max_beta
 
-    # This doesn't depend on the user -> not done here, well actually yes but not used in most of the graphs
+    # This doesn't depend on the user -> not done here,
+    # well actually yes but not used in most of the graphs
     def update_preferences(self):
         for v in self.nodes:
             for u in set(self.graph[v]):

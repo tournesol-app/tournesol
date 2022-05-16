@@ -26,18 +26,22 @@ class Recommender:
         ).filter(
             criteria=self.criteria
         )
-        self._complete_graph = Graph(local_user=None, local_poll=self.poll, local_criteria=self.criteria)
+        self._complete_graph = Graph(None, self.poll, self.criteria)
 
         comparisons = query
         for c in comparisons:
             if c.comparison.entity_1 not in self._entity_to_video.keys():
-                self._entity_to_video[c.comparison.entity_1] = Video(self._comparison_reference_video,
-                                                                     from_entity=c.comparison.entity_1)
+                self._entity_to_video[c.comparison.entity_1] = \
+                    Video(self._comparison_reference_video, from_entity=c.comparison.entity_1)
+
                 self._complete_graph.add_node(self._entity_to_video[c.comparison.entity_1])
+
             if c.comparison.entity_2 not in self._entity_to_video.keys():
-                self._entity_to_video[c.comparison.entity_2] = Video(self._comparison_reference_video,
-                                                                     from_entity=c.comparison.entity_2)
+                self._entity_to_video[c.comparison.entity_2] = \
+                    Video(self._comparison_reference_video, from_entity=c.comparison.entity_2)
+
                 self._complete_graph.add_node(self._entity_to_video[c.comparison.entity_2])
+
             self._complete_graph.add_edge(self._entity_to_video[c.comparison.entity_1],
                                           self._entity_to_video[c.comparison.entity_2])
 
@@ -45,9 +49,10 @@ class Recommender:
 
     def get_user_comparability_augmenting_videos(self) -> list[Video]:
         # I want all entities from the current poll compared by supertrusted user
+        # todo create alias to properly detect supertrusted ?
         req_entities = Entity.objects \
             .filter(comparison__poll__name=self.poll.name) \
-            .filter(comparison__user__is_staff=True)  # todo create alias to properly detect supertrusted ?
+            .filter(comparison__user__is_staff=True)
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def get_user_rate_later_video_list(self, user: User) -> list[Video]:
@@ -64,8 +69,10 @@ class Recommender:
             g.compute_offline_parameters(scale_aug_vids)
 
     def register_new_user(self, new_user):
-        recommendation_user = RecommendationUser(self._entity_to_video, new_user, self.criteria, self.poll)
-        self._user_specific_graphs[new_user] = Graph(local_user=recommendation_user, local_poll=self.poll,
+        recommendation_user = RecommendationUser(self._entity_to_video, new_user,
+                                                 self.criteria, self.poll)
+        self._user_specific_graphs[new_user] = Graph(local_user=recommendation_user,
+                                                     local_poll=self.poll,
                                                      local_criteria=self.criteria)
         # build user graph
         query: QuerySet = ComparisonCriteriaScore.objects.filter(
@@ -94,8 +101,8 @@ class Recommender:
         # Give the first video id to the graph so the sorting will take that into account
         self._user_specific_graphs[user].prepare_for_sorting()
 
-        # Prepare the set of videos to sort, taking the videos present in the graph and append the ones that are not yet
-        # compared by the user
+        # Prepare the set of videos to sort, taking the videos present in the graph
+        # and append the ones that are not yet compared by the user
         considered_vids_list = self._prepare_video_list(user)
 
         max_vid_pref = 0
@@ -114,7 +121,10 @@ class Recommender:
                     break
         return result
 
-    def get_second_video_recommendation(self, user, first_video_id, nb_video_required: int) -> list[Video]:
+    def get_second_video_recommendation(self,
+                                        user,
+                                        first_video_id,
+                                        nb_video_required: int) -> list[Video]:
         # Lazily load the user graphs
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
@@ -123,8 +133,8 @@ class Recommender:
         # Give the first video id to the graph so the sorting will take that into account
         self._user_specific_graphs[user].prepare_for_sorting(first_video_id)
 
-        # Prepare the set of videos to sort, taking the videos present in the graph and append the ones that are not yet
-        # compared by the user
+        # Prepare the set of videos to sort, taking the videos present in the graph and append
+        # the ones that are not yet compared by the user
         considered_vids_list = self._prepare_video_list(user)
 
         max_vid_pref = 0
@@ -136,15 +146,17 @@ class Recommender:
         for i in range(nb_video_required):
             for v in considered_vids_list:
                 act_user_pref = v.user_pref
-                if act_user_pref >= (nb_video_required - i) / (
-                        nb_video_required + 1) * max_vid_pref and v.uid != first_video_id and v not in result:
+                act_min_ratio = (nb_video_required - i) / (nb_video_required + 1)
+                if act_user_pref >= act_min_ratio * max_vid_pref \
+                        and v.uid != first_video_id \
+                        and v not in result:
                     result.append(v)
                     break
         return result
 
     def _prepare_video_list(self, user):
-        # Prepare the set of videos to sort, taking the videos present in the graph and append the ones that are not yet
-        # compared by the user
+        # Prepare the set of videos to sort, taking the videos present in the graph and append
+        # the ones that are not yet compared by the user
         considered_vids = set(self._user_specific_graphs[user].nodes)
         tmp = set(self._complete_graph.nodes.copy())
         tmp = tmp.difference(considered_vids)
