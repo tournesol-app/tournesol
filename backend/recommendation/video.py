@@ -17,7 +17,9 @@ class Video:
 
     video_reference: Video
 
-    def __init__(self, video_reference: Video):
+    def __init__(
+        self, video_reference: Optional[Video], from_entity: Optional[Entity] = None
+    ):
         self.video_reference = video_reference
 
     def __eq__(self, __o: Video) -> bool:
@@ -27,15 +29,29 @@ class Video:
         if self.video_reference.uid == "":
             return self.v1_score > obj.v1_score
         else:
-            return self.v2_score[self.video_reference] > obj.v2_scoreself.video_reference
+            return (
+                self.v2_score[self.video_reference]
+                > other.v2_score[self.video_reference]
+            )
 
     def __le__(self, other):
         if self.video_reference.uid == "":
             return self.v1_score <= other.v1_score
         else:
-            return self.v2_score[self.video_reference] <= other.v2_score[self.video_reference]
+            return (
+                self.v2_score[self.video_reference]
+                <= other.v2_score[self.video_reference]
+            )
 
     def __repr__(self) -> str:
-        return "Video " + self.uid + \
-               " with score v1 " + str(self.v1_score) + \
-               " and scores v2 " + str(self.v2_score)
+        return (
+            "Video "
+            + self.uid
+            + " with score v1 "
+            + str(self.v1_score)
+            + " and scores v2 "
+            + str(self.v2_score)
+        )
+
+    def __hash__(self):
+        return self.uid.__hash__()
