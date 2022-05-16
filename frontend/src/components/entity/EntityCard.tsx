@@ -85,6 +85,7 @@ const EntityCard = ({
         sx={{
           display: 'flex',
           alignItems: 'end',
+          justifyContent: 'space-between',
           flexDirection: 'column',
           [theme.breakpoints.down('sm')]: {
             flexDirection: 'row',
