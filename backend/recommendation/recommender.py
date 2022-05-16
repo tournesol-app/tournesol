@@ -1,9 +1,10 @@
 from django.db.models import QuerySet
 
 from core.models import User
+from recommendation.recomended_user import User as RecommendationUser
 from recommendation.graph import Graph
 from recommendation.video import Video
-from tournesol.models import ComparisonCriteriaScore, Entity, Poll
+from tournesol.models import ComparisonCriteriaScore, Entity, Poll, Comparison
 
 
 class Recommender:
@@ -15,19 +16,17 @@ class Recommender:
     # Dictionary linking a user to its comparison graph, used to get its information gain
     _user_specific_graphs: dict[User, Graph] = {}
 
-    POLL_NAME = "videos"
-    # poll = Poll.default_poll()
-
     def __init__(self):
 
         self.poll = Poll.default_poll()
+        self.criteria = self.poll.criterias_list[0]
         # build complete graph
         query: QuerySet = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll.name
         ).filter(
-            criteria=self.poll.criterias_list[0]
+            criteria=self.criteria
         )
-        self._complete_graph = Graph(None)
+        self._complete_graph = Graph(local_user=None, local_poll=self.poll, local_criteria=self.criteria)
 
         comparisons = query
         for c in comparisons:
@@ -44,23 +43,35 @@ class Recommender:
 
         # create required user graphs (none at first in fact)
 
-    def get_scale_augmenting_videos(self) -> list[Video]:
-        pass
+    def get_user_comparability_augmenting_videos(self) -> list[Video]:
+        # I want all entities from the current poll compared by supertrusted user
+        req_entities = Entity.objects \
+            .filter(comparison__poll__name=self.poll.name) \
+            .filter(comparison__user__is_staff=True)  # todo create alias to properly detect supertrusted ?
+        return list(map(lambda entity: self._entity_to_video[entity], req_entities))
+
+    def get_user_rate_later_video_list(self, user: User) -> list[Video]:
+        req_entities = Entity.objects\
+            .filter(type=self.poll.name) \
+            .filter(videoratelater__user__email=user.email)
+        return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def do_offline_computation(self):
         # for requests => look at ml->inputs
-        scale_aug_vids = self.get_scale_augmenting_videos()
+        scale_aug_vids = self.get_user_comparability_augmenting_videos()
         for g in self._user_specific_graphs.values():
             # Will be cached, do at registration
             g.compute_offline_parameters(scale_aug_vids)
 
     def register_new_user(self, new_user):
-        self._user_specific_graphs[new_user] = Graph(local_user=new_user)
+        recommendation_user = RecommendationUser(self._entity_to_video, new_user, self.criteria, self.poll)
+        self._user_specific_graphs[new_user] = Graph(local_user=recommendation_user, local_poll=self.poll,
+                                                     local_criteria=self.criteria)
         # build user graph
         query: QuerySet = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll.name
         ).filter(
-            criteria=self.poll.criterias_list[0]
+            criteria=self.criteria
         ).filter(
             comparison__user__email=new_user.email
         )
@@ -79,16 +90,16 @@ class Recommender:
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
         result = []
-        self._user_specific_graphs[user].prepare_for_sorting()
-        considered_vids = set(self._user_specific_graphs[user].nodes)
-        tmp = set(self._complete_graph.nodes.copy())
-        tmp = tmp.difference(considered_vids)
 
-        considered_vids.update(tmp)
-        considered_vids_list = list(considered_vids)
-        considered_vids_list.sort(reverse=True)
+        # Give the first video id to the graph so the sorting will take that into account
+        self._user_specific_graphs[user].prepare_for_sorting()
+
+        # Prepare the set of videos to sort, taking the videos present in the graph and append the ones that are not yet
+        # compared by the user
+        considered_vids_list = self._prepare_video_list(user)
 
         max_vid_pref = 0
+        # Todo : take into account the rate later list / already seen videos ?
         for v in considered_vids_list:
             v.user_pref = max(v.nb_comparison_with.values()) / v.comparison_nb
             if v.user_pref > max_vid_pref:
@@ -106,15 +117,13 @@ class Recommender:
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
         result = []
-        # TODO Take into account the first video for the info gain
-        self._user_specific_graphs[user].prepare_for_sorting(first_video_id)
-        considered_vids = set(self._user_specific_graphs[user].nodes)
-        tmp = set(self._complete_graph.nodes.copy())
-        tmp = tmp.difference(considered_vids)
 
-        considered_vids.update(tmp)
-        considered_vids_list = list(considered_vids)
-        considered_vids_list.sort(reverse=True)
+        # Give the first video id to the graph so the sorting will take that into account
+        self._user_specific_graphs[user].prepare_for_sorting(first_video_id)
+
+        # Prepare the set of videos to sort, taking the videos present in the graph and append the ones that are not yet
+        # compared by the user
+        considered_vids_list = self._prepare_video_list(user)
 
         max_vid_pref = 0
         for v in considered_vids_list:
@@ -128,3 +137,15 @@ class Recommender:
                 if act_user_pref >= (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref:
                     result.append(v)
         return result
+
+    def _prepare_video_list(self, user):
+        # Prepare the set of videos to sort, taking the videos present in the graph and append the ones that are not yet
+        # compared by the user
+        considered_vids = set(self._user_specific_graphs[user].nodes)
+        tmp = set(self._complete_graph.nodes.copy())
+        tmp = tmp.difference(considered_vids)
+
+        considered_vids.update(tmp)
+        considered_vids_list = list(considered_vids)
+        considered_vids_list.sort(reverse=True)
+        return considered_vids_list

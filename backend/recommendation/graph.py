@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from core.models import User
-from recommendation.video import Video
-import numpy as np
+from typing import Optional
 
+import numpy as np
+from django.db.models import QuerySet, Avg
+from recommendation.recomended_user import User
+from recommendation.video import Video
 # uncertainties locations => EntityCriteriaScore = Entity Globals
 # uncertainties locations => ContributorRatingCriteriaScore = User entity
 # uncertainties locations => ContributorScaling = User global
-from tournesol.models import ContributorScaling
+from tournesol.models import ContributorScaling, EntityCriteriaScore, Poll, ContributorRatingCriteriaScore
 
 
 class Graph:
@@ -18,8 +20,9 @@ class Graph:
     graph: dict[Video, list[Video]] = {}
     sigma: float
     dirty: bool
-    local_user: User
+    _local_user: User
     local_user_scaling: ContributorScaling
+    _local_poll: Poll
 
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
@@ -36,15 +39,18 @@ class Graph:
     def nodes(self) -> list[Video]:
         return self._nodes
 
-    def __init__(self, local_user):
-        self.video_comparison_reference: Video
+    def __init__(self, local_user: Optional[User], local_poll: Poll, local_criteria):
+        self.local_user_mean: float = 0
+        self.video_comparison_reference = Video(None)
         self.dirty = True
         # init absent node values
         self.ABSENT_NODE.v1_score = -1
-        self.ABSENT_NODE.estimated_information_gains = 1
-        self.local_user = local_user
-        self.local_user_scaling = ContributorScaling.objects.filter(user=local_user)[0]
+        self.ABSENT_NODE.estimated_information_gains = 0.75
+        self.NEW_NODE_CONNECTION_SCORE = 0.5
+        self._local_user = local_user
         self._nodes = []
+        self._local_poll = local_poll
+        self._local_criteria = local_criteria
 
     def add_node(self, new_node):
         if new_node not in self.nodes:
@@ -141,7 +147,7 @@ class Graph:
 
         waiting_for_visit.append(unvisited.pop())
         result: set[Graph] = set()
-        act_graph = Graph(local_user=self.local_user)
+        act_graph = Graph(self._local_user, self._local_poll, self._local_criteria)
 
         while len(unvisited) > 0:
             for act_vid in waiting_for_visit:
@@ -156,7 +162,7 @@ class Graph:
 
             if len(future_visits) == 0:
                 result.add(act_graph)
-                act_graph = Graph(self.local_user)
+                act_graph = Graph(self._local_user, self._local_poll, self._local_criteria)
                 future_visits.add(unvisited.pop())
             waiting_for_visit = list(future_visits)
 
@@ -172,65 +178,68 @@ class Graph:
                 self.similarity_matrix[i][j] = np.e ** ((self.distance_matrix[i, j]) ** 2 / self.sigma ** 2)
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos):
-        if self.dirty and self.local_user is not None:
+        if self.dirty and self._local_user is not None:
             self.dirty = False
             self.build_adjacency_matrix()
             self.build_distance_matrix()
             self.build_similarity_matrix()
             self.compute_information_gain(scaling_factor_increasing_videos)
-        elif self.local_user is None:
-            for n in self._nodes:
-                # todo get here the actual score uncertainty of the video + 0.5 for the graph completion
-                n.v1_score = 0.5
-                for n2 in self._nodes:
-                    n.v2_score[n2] = 0.5
+            self.local_user_scaling = ContributorScaling.objects.filter(user=self._local_user)[0]
+            self.local_user_mean = ContributorRatingCriteriaScore.objects \
+                .filter(contributor_rating__user=self._local_user) \
+                .filter(contributor_rating__poll_name=self._local_poll.name) \
+                .aggregate(mean=Avg('score'))['mean']
+        elif self._local_user is None:
+            entity_criteria_scores: QuerySet = EntityCriteriaScore.objects \
+                .filter(comparison__poll__name=self._local_poll.name) \
+                .filter(criteria=self._local_criteria)
+            for ecs in entity_criteria_scores:
+                act_vid = self._nodes[self._nodes.index(ecs.entity.uid)]
+                act_vid.v1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                for n in self._nodes:
+                    act_vid.v2_score[n] = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
 
     def compute_information_gain(self, scaling_factor_increasing_videos):
         # First try to increase the scaling accuracy of the user if necessary
-        # TODO Use here data from db
-        # Contributor_scaling + translation -> yes
-        user = self.local_user
+        user = self._local_user
         scale_uncertainty = self.local_user_scaling.scale_uncertainty
-        translation_uncertainty = self.local_user_scaling.scale_uncertainty
-        user_mean_score = 0
+        translation_uncertainty = self.local_user_scaling.translation_uncertainty
 
-        if scale_uncertainty * user.mean_score + translation_uncertainty < self.MIN_SCALING_ACCURACY:
-            for v in self.nodes:
-                for u in self.nodes:
-                    if v in scaling_factor_increasing_videos and u in scaling_factor_increasing_videos:
-                        v.v1_score = 1
-                        v.v2_score[u] = 1
+        if scale_uncertainty * self.local_user_mean + translation_uncertainty < self.MIN_SCALING_ACCURACY:
+            for va in self.nodes:
+                for vb in self.nodes:
+                    if va in scaling_factor_increasing_videos and vb in scaling_factor_increasing_videos:
+                        va.v1_score = 1
+                        va.v2_score[vb] = 1
                     else:
-                        v.v1_score = 0
-                        v.v2_score[u] = 0
-        # Once the scaling factor is high enough, check what video should gain information being compared by the user
+                        va.v1_score = 0
+                        va.v2_score[vb] = 0
+        # Once the scaling factor is high enough, check what video should gain
+        # information being compared by the user
         else:
             for sg in self.find_connex_subgraphs():
                 eigenvalues = np.linalg.eigvalsh(sg.normalized_adjacency_matrix)
                 max_beta = 0
-                for u in sg.nodes:
-                    for v in self.nodes:
+                for vb in sg.nodes:
+                    for va in self.nodes:
                         # In the case the eigen value is big enough
                         # => the graph is poorly connected,
                         # so we should improve connexity
                         if eigenvalues[1] > self.LAMBDA_THRESHOLD:
-                            u_index = sg.nodes.index(u)
-                            v_index = sg.nodes.index(v)
-                            v.v2_score[u] = sg.similarity_matrix[u_index, v_index]
-                        elif v not in sg.nodes:
-                            v.v2_score[u] = 1
+                            u_index = sg.nodes.index(vb)
+                            v_index = sg.nodes.index(va)
+                            va.v2_score[vb] = sg.similarity_matrix[u_index, v_index]
+                        elif va not in sg.nodes:
+                            va.v2_score[vb] = 1
                         else:
-                            v.v2_score[u] = 0
-                        # TODO Use here data from db
-                        # from rating uncertainty
-                        # Attention, filtre par poll + critere (1er critere pour le principal)
-                        v.beta[u] += (self.local_user.delta_theta[u] + self.local_user.delta_theta[v] /
-                                      (self.local_user.theta[u] - self.local_user.theta[v] + 1))
-                        if max_beta < v.beta[u]:
-                            max_beta = v.beta[u]
-                for u in sg.nodes:
-                    for v in self.nodes:
-                        v.v2_score[u] += v.beta[u] / max_beta
+                            va.v2_score[vb] = 0
+                        va.beta[vb] += (user.delta_theta[vb] + user.delta_theta[va] /
+                                        (user.theta[vb] - user.theta[va] + 1))
+                        if max_beta < va.beta[vb]:
+                            max_beta = va.beta[vb]
+                for vb in sg.nodes:
+                    for va in self.nodes:
+                        va.v2_score[vb] += va.beta[vb] / max_beta
 
     # This doesn't depend on the user -> not done here, well actually yes but not used in most of the graphs
     def update_preferences(self):
