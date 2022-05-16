@@ -1,6 +1,6 @@
-from recommendation.video import Video
 from core.models.user import User as UserDB
-from tournesol.models import Comparison, Poll, Entity, ContributorRatingCriteriaScore
+from recommendation.video import Video
+from tournesol.models import Poll, Entity, ContributorRatingCriteriaScore
 
 
 class User:
@@ -9,14 +9,22 @@ class User:
     scores: dict[Video, float]
     score_uncertainties: dict[Video, float]
 
-    def __init__(self, entity_to_video: dict[Entity, Video], base_user: UserDB,
-                 local_criteria: str, concerned_poll: Poll):
+    def __init__(
+        self,
+        entity_to_video: dict[Entity, Video],
+        base_user: UserDB,
+        local_criteria: str,
+        concerned_poll: Poll,
+    ):
         self.uid = base_user.email
 
-        contributor_ratings = ContributorRatingCriteriaScore.objects\
-            .filter(contributor_rating__user__email=base_user.email)\
-            .filter(contributor_rating__poll__name=concerned_poll.name)\
+        contributor_ratings = (
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user__email=base_user.email
+            )
+            .filter(contributor_rating__poll__name=concerned_poll.name)
             .filter(criteria=local_criteria)
+        )
 
         self.score_uncertainties = {}
         self.scores = {}

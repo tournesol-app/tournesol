@@ -12,7 +12,9 @@ from tournesol.views import PollScopedViewMixin
     get=extend_schema(
         description="Retrieve a list of recommendations for the logged user to compare",
         parameters=[
-            OpenApiParameter("first_entity_uid", OpenApiTypes.STR, OpenApiParameter.QUERY)
+            OpenApiParameter(
+                "first_entity_uid", OpenApiTypes.STR, OpenApiParameter.QUERY
+            )
         ],
     )
 )
@@ -34,8 +36,9 @@ class EntitiesToCompareView(PollScopedViewMixin, ListAPIView):
         if opt_first_entity is None:
             entities = self.recommender.get_first_video_recommendation(user, limit)
         else:
-            entities = self.recommender.\
-                get_second_video_recommendation(user, opt_first_entity, limit)
+            entities = self.recommender.get_second_video_recommendation(
+                user, opt_first_entity, limit
+            )
 
         ser = self.get_serializer(entities, many=True)
         return Response(ser.data)

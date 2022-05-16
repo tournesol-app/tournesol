@@ -93,10 +93,12 @@ class Graph:
         for u, v in self.edges:
             u_index = self.nodes.index(u)
             v_index = self.nodes.index(v)
-            self.normalized_adjacency_matrix[u_index][v_index] = \
-                1 / sum(self.adjacency_matrix[u_index])
-            self.normalized_adjacency_matrix[v_index][u_index] = \
-                1 / sum(self.adjacency_matrix[u_index])
+            self.normalized_adjacency_matrix[u_index][v_index] = 1 / sum(
+                self.adjacency_matrix[u_index]
+            )
+            self.normalized_adjacency_matrix[v_index][u_index] = 1 / sum(
+                self.adjacency_matrix[u_index]
+            )
 
     def build_distance_matrix(self):
         # Compute sigma here
@@ -162,7 +164,9 @@ class Graph:
 
             if len(future_visits) == 0:
                 result.add(act_graph)
-                act_graph = Graph(self._local_user, self._local_poll, self._local_criteria)
+                act_graph = Graph(
+                    self._local_user, self._local_poll, self._local_criteria
+                )
                 future_visits.add(unvisited.pop())
             waiting_for_visit = list(future_visits)
 
@@ -175,8 +179,8 @@ class Graph:
     def build_similarity_matrix(self):
         for i, u in enumerate(self.nodes):
             for j, v in enumerate(self.nodes):
-                exponent = (self.distance_matrix[i, j]) ** 2 / self.sigma ** 2
-                self.similarity_matrix[i][j] = np.e ** exponent
+                exponent = (self.distance_matrix[i, j]) ** 2 / self.sigma**2
+                self.similarity_matrix[i][j] = np.e**exponent
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos: list[Video]):
         if self.dirty and self._local_user is not None:
@@ -185,20 +189,27 @@ class Graph:
             self.build_distance_matrix()
             self.build_similarity_matrix()
             self.compute_information_gain(scaling_factor_increasing_videos)
-            self.local_user_scaling = ContributorScaling.objects.filter(user=self._local_user)[0]
-            self.local_user_mean = ContributorRatingCriteriaScore.objects \
-                .filter(contributor_rating__user=self._local_user) \
-                .filter(contributor_rating__poll_name=self._local_poll.name) \
-                .aggregate(mean=Avg('score'))['mean']
+            self.local_user_scaling = ContributorScaling.objects.filter(
+                user=self._local_user
+            )[0]
+            self.local_user_mean = (
+                ContributorRatingCriteriaScore.objects.filter(
+                    contributor_rating__user=self._local_user
+                )
+                .filter(contributor_rating__poll_name=self._local_poll.name)
+                .aggregate(mean=Avg("score"))["mean"]
+            )
         elif self._local_user is None:
-            entity_criteria_scores: QuerySet = EntityCriteriaScore.objects \
-                .filter(comparison__poll__name=self._local_poll.name) \
-                .filter(criteria=self._local_criteria)
+            entity_criteria_scores: QuerySet = EntityCriteriaScore.objects.filter(
+                comparison__poll__name=self._local_poll.name
+            ).filter(criteria=self._local_criteria)
             for ecs in entity_criteria_scores:
                 act_vid = self._nodes[self._nodes.index(ecs.entity.uid)]
                 act_vid.v1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                 for n in self._nodes:
-                    act_vid.v2_score[n] = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                    act_vid.v2_score[n] = (
+                        self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                    )
 
     def compute_information_gain(self, scaling_factor_increasing_videos: list[Video]):
         # First try to increase the scaling accuracy of the user if necessary
@@ -212,8 +223,10 @@ class Graph:
         if actual_scaling_accuracy < self.MIN_SCALING_ACCURACY:
             for va in self.nodes:
                 for vb in self.nodes:
-                    if va in scaling_factor_increasing_videos and \
-                            vb in scaling_factor_increasing_videos:
+                    if (
+                        va in scaling_factor_increasing_videos
+                        and vb in scaling_factor_increasing_videos
+                    ):
                         va.v1_score = 1
                         va.v2_score[vb] = 1
                     else:
@@ -238,8 +251,9 @@ class Graph:
                             va.v2_score[vb] = 1
                         else:
                             va.v2_score[vb] = 0
-                        va.beta[vb] += (user.delta_theta[vb] + user.delta_theta[va] /
-                                        (user.theta[vb] - user.theta[va] + 1))
+                        va.beta[vb] += user.delta_theta[vb] + user.delta_theta[va] / (
+                            user.theta[vb] - user.theta[va] + 1
+                        )
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
