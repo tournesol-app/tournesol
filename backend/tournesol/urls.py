@@ -47,9 +47,6 @@ router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
 router.register(r"entities", EntitiesViewSet)
 
-# recommender = Recommender()
-# recommender.do_offline_computation()
-
 app_name = "tournesol"
 urlpatterns = [
     path("", include(router.urls)),

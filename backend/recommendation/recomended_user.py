@@ -13,7 +13,7 @@ class User:
                  local_criteria: str, concerned_poll: Poll):
         self.uid = base_user.email
 
-        contributor_ratings = ContributorRatingCriteriaScore.objects()\
+        contributor_ratings = ContributorRatingCriteriaScore.objects\
             .filter(contributor_rating__user__email=base_user.email)\
             .filter(contributor_rating__poll__name=concerned_poll.name)\
             .filter(criteria=local_criteria)

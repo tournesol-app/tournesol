@@ -57,8 +57,8 @@ class Graph:
             self.nodes.append(new_node)
             self.graph[new_node] = []
             for n in self._nodes:
-                n.nb_comparison_with[new_node] = 0
-                new_node.nb_comparison_with[n] = 0
+                n.nb_comparison_with[new_node.uid] = 0
+                new_node.nb_comparison_with[n.uid] = 0
         else:
             print("Warning, trying to insert already present node")
 
@@ -68,8 +68,8 @@ class Graph:
         if node_b not in self._nodes:
             print("Warning ! unknown node added in edge")
 
-        node_b.nb_comparison_with[node_a] += 1
-        node_a.nb_comparison_with[node_b] += 1
+        node_b.nb_comparison_with[node_a.uid] += 1
+        node_a.nb_comparison_with[node_b.uid] += 1
         node_a.comparison_nb += 1
         node_b.comparison_nb += 1
 
@@ -245,9 +245,9 @@ class Graph:
     def update_preferences(self):
         for v in self.nodes:
             for u in set(self.graph[v]):
-                v.nb_comparison_with[u] = 0
+                v.nb_comparison_with[u.uid] = 0
             for u in self.graph[v]:
-                v.nb_comparison_with[u] += 1
+                v.nb_comparison_with[u.uid] += 1
 
     def prepare_for_sorting(self, first_video_id: str = ""):
         self.video_comparison_reference.uid = first_video_id

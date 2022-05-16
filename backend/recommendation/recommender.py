@@ -51,7 +51,7 @@ class Recommender:
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def get_user_rate_later_video_list(self, user: User) -> list[Video]:
-        req_entities = Entity.objects\
+        req_entities = Entity.objects \
             .filter(type=self.poll.name) \
             .filter(videoratelater__user__email=user.email)
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
@@ -108,8 +108,10 @@ class Recommender:
         for i in range(nb_video_required):
             for v in considered_vids_list:
                 act_user_pref = v.user_pref
-                if act_user_pref >= (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref:
+                if act_user_pref >= (nb_video_required - i) / (
+                        nb_video_required + 1) * max_vid_pref and v not in result:
                     result.append(v)
+                    break
         return result
 
     def get_second_video_recommendation(self, user, first_video_id, nb_video_required: int) -> list[Video]:
@@ -134,8 +136,10 @@ class Recommender:
         for i in range(nb_video_required):
             for v in considered_vids_list:
                 act_user_pref = v.user_pref
-                if act_user_pref >= (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref:
+                if act_user_pref >= (nb_video_required - i) / (
+                        nb_video_required + 1) * max_vid_pref and v.uid != first_video_id and v not in result:
                     result.append(v)
+                    break
         return result
 
     def _prepare_video_list(self, user):
