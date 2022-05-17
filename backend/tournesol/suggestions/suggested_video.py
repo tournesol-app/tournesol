@@ -9,8 +9,8 @@ from tournesol.models import Entity
 @total_ordering
 class SuggestedVideo:
     uid = ""
-    v1_score: float = 0
-    v2_score: dict[SuggestedVideo, float] = {}
+    video1_score: float = 0
+    video2_score: dict[SuggestedVideo, float] = {}
     beta: dict[SuggestedVideo, float] = {}
     estimated_information_gains = []
     nb_comparison_with: dict[str, int] = {}
@@ -21,7 +21,9 @@ class SuggestedVideo:
     video_reference: SuggestedVideo
 
     def __init__(
-        self, video_reference: Optional[SuggestedVideo], from_entity: Optional[Entity] = None
+            self,
+            video_reference: Optional[SuggestedVideo],
+            from_entity: Optional[Entity] = None
     ):
         self.video_reference = video_reference
         if from_entity is not None:
@@ -32,30 +34,30 @@ class SuggestedVideo:
 
     def __gt__(self, other: SuggestedVideo):
         if self.video_reference.uid == "":
-            return self.v1_score > other.v1_score
+            return self.video1_score > other.video1_score
         else:
             return (
-                self.v2_score[self.video_reference]
-                > other.v2_score[self.video_reference]
+                    self.video2_score[self.video_reference]
+                    > other.video2_score[self.video_reference]
             )
 
     def __le__(self, other: SuggestedVideo):
         if self.video_reference.uid == "":
-            return self.v1_score <= other.v1_score
+            return self.video1_score <= other.video1_score
         else:
             return (
-                self.v2_score[self.video_reference]
-                <= other.v2_score[self.video_reference]
+                    self.video2_score[self.video_reference]
+                    <= other.video2_score[self.video_reference]
             )
 
     def __repr__(self) -> str:
         return (
-            "Video "
-            + self.uid
-            + " with score v1 "
-            + str(self.v1_score)
-            + " and scores v2 "
-            + str(self.v2_score)
+                "Video "
+                + self.uid
+                + " with score v1 "
+                + str(self.video1_score)
+                + " and scores v2 "
+                + str(self.video2_score)
         )
 
     def __hash__(self):

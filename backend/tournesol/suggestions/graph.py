@@ -47,7 +47,7 @@ class Graph:
         self.video_comparison_reference = SuggestedVideo(None)
         self.dirty = True
         # init absent node values
-        self.ABSENT_NODE.v1_score = -1
+        self.ABSENT_NODE.video1_score = -1
         self.ABSENT_NODE.estimated_information_gains = 0.75
         self.NEW_NODE_CONNECTION_SCORE = 0.5
         self._local_user = local_user
@@ -210,9 +210,9 @@ class Graph:
             ).filter(criteria=self._local_criteria)
             for ecs in entity_criteria_scores:
                 act_vid = self._nodes[self._nodes.index(ecs.entity.uid)]
-                act_vid.v1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                 for n in self._nodes:
-                    act_vid.v2_score[n] = (
+                    act_vid.video2_score[n] = (
                         self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                     )
 
@@ -232,11 +232,11 @@ class Graph:
                         va in scaling_factor_increasing_videos
                         and vb in scaling_factor_increasing_videos
                     ):
-                        va.v1_score = 1
-                        va.v2_score[vb] = 1
+                        va.video1_score = 1
+                        va.video2_score[vb] = 1
                     else:
-                        va.v1_score = 0
-                        va.v2_score[vb] = 0
+                        va.video1_score = 0
+                        va.video2_score[vb] = 0
         # Once the scaling factor is high enough, check what video should gain
         # information being compared by the user
         else:
@@ -251,11 +251,11 @@ class Graph:
                         if eigenvalues[1] > self.LAMBDA_THRESHOLD:
                             u_index = sg.nodes.index(vb)
                             v_index = sg.nodes.index(va)
-                            va.v2_score[vb] = sg.similarity_matrix[u_index, v_index]
+                            va.video2_score[vb] = sg.similarity_matrix[u_index, v_index]
                         elif va not in sg.nodes:
-                            va.v2_score[vb] = 1
+                            va.video2_score[vb] = 1
                         else:
-                            va.v2_score[vb] = 0
+                            va.video2_score[vb] = 0
                         va.beta[vb] += user.delta_theta[vb] + user.delta_theta[va] / (
                             user.theta[vb] - user.theta[va] + 1
                         )
@@ -263,7 +263,7 @@ class Graph:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
                     for va in self.nodes:
-                        va.v2_score[vb] += va.beta[vb] / max_beta
+                        va.video2_score[vb] += va.beta[vb] / max_beta
 
     # This doesn't depend on the user -> not done here,
     # well actually yes but not used in most of the graphs
