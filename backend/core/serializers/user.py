@@ -5,8 +5,14 @@ from rest_framework.validators import UniqueValidator
 from rest_registration.api.serializers import (
     DefaultRegisterEmailSerializer,
     DefaultRegisterUserSerializer,
+    DefaultSendResetPasswordLinkSerializer,
     DefaultUserProfileSerializer,
 )
+from rest_registration.utils.users import (
+    get_user_by_lookup_dict,
+    get_user_login_field_names,
+)
+
 
 from core.models.user import User
 
@@ -61,3 +67,40 @@ class UserProfileSerializer(DefaultUserProfileSerializer):
 
     def validate_username(self, value):
         return _validate_username(value)
+
+
+class SendResetPasswordLinkSerializer(DefaultSendResetPasswordLinkSerializer):
+    """
+    Custom overload of the serializer used for sending reset password link.
+
+    Contrary to REST Registration's `DefaultSendResetPasswordLinkSerializer`,
+    this class is able to use any Django field lookups to retrieve the user.
+
+    It allows us to retrieve users with a non-case-sensitive email.
+    """
+    _lookups = {"email": "email__iexact"}
+
+    def get_user_or_none(self):
+        validated_data = self.context["request"].data
+
+        login_field_names = get_user_login_field_names()
+        finder_tests = [("login", login_field_names)]
+        finder_tests.extend((f, [f]) for f in login_field_names)
+
+        for field_name, db_field_names in finder_tests:
+            value = validated_data.get(field_name)
+            if value is None:
+                continue
+            for db_fn in db_field_names:
+
+                lookup_field = self._lookups.get(db_fn)
+                if not lookup_field:
+                    lookup_field = db_fn
+
+                user = get_user_by_lookup_dict(
+                    {lookup_field: value}, default=None, require_verified=False
+                )
+                if user is not None:
+                    return user
+
+        return None
