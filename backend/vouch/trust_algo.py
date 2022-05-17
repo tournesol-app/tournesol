@@ -1,5 +1,4 @@
 import numpy as np
-from vouch.models import vouch
 from core.models import user
 
 # hyper parameter of algorithm - select them wisely
@@ -56,8 +55,9 @@ def trust_algo():
     pre-trusted users (the ones with an email from a trusted domain)
     and on vouchings made between users
     """
-    # list of users, list of their trust status (regarding their email) in same order, and number of users
-    users = list(user.User.objects)
+    # list of users, list of their trust status (regarding their email) in same order,
+    # and number of users
+    users = list(user.User.objects.all())
     trust_status = [u.is_trusted() for u in users]
     nb_users = len(users)
 
