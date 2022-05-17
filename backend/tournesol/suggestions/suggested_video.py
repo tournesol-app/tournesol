@@ -7,30 +7,30 @@ from tournesol.models import Entity
 
 
 @total_ordering
-class Video:
+class SuggestedVideo:
     uid = ""
     v1_score: float = 0
-    v2_score: dict[Video, float] = {}
-    beta: dict[Video, float] = {}
+    v2_score: dict[SuggestedVideo, float] = {}
+    beta: dict[SuggestedVideo, float] = {}
     estimated_information_gains = []
     nb_comparison_with: dict[str, int] = {}
 
     comparison_nb: int = 0
     user_pref: int = 0
 
-    video_reference: Video
+    video_reference: SuggestedVideo
 
     def __init__(
-        self, video_reference: Optional[Video], from_entity: Optional[Entity] = None
+        self, video_reference: Optional[SuggestedVideo], from_entity: Optional[Entity] = None
     ):
         self.video_reference = video_reference
         if from_entity is not None:
             self.uid = from_entity.uid
 
-    def __eq__(self, __o: Video) -> bool:
+    def __eq__(self, __o: SuggestedVideo) -> bool:
         return __o.uid == self.uid
 
-    def __gt__(self, other: Video):
+    def __gt__(self, other: SuggestedVideo):
         if self.video_reference.uid == "":
             return self.v1_score > other.v1_score
         else:
@@ -39,7 +39,7 @@ class Video:
                 > other.v2_score[self.video_reference]
             )
 
-    def __le__(self, other: Video):
+    def __le__(self, other: SuggestedVideo):
         if self.video_reference.uid == "":
             return self.v1_score <= other.v1_score
         else:

@@ -1,17 +1,17 @@
 from core.models.user import User as UserDB
-from tournesol.recommendation.video import Video
+from tournesol.suggestions.suggested_video import SuggestedVideo
 from tournesol.models import ContributorRatingCriteriaScore, Entity, Poll
 
 
-class User:
+class SuggestedUser:
     uid: str
 
-    scores: dict[Video, float]
-    score_uncertainties: dict[Video, float]
+    scores: dict[SuggestedVideo, float]
+    score_uncertainties: dict[SuggestedVideo, float]
 
     def __init__(
         self,
-        entity_to_video: dict[Entity, Video],
+        entity_to_video: dict[Entity, SuggestedVideo],
         base_user: UserDB,
         local_criteria: str,
         concerned_poll: Poll,

@@ -3,7 +3,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from tournesol.recommendation.recommender import Recommender
+from tournesol.suggestions.suggester import Suggester
 from tournesol.models import Poll
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.views import PollScopedViewMixin
@@ -21,12 +21,12 @@ from tournesol.views import PollScopedViewMixin
 )
 class EntitiesToCompareView(PollScopedViewMixin, ListAPIView):
     serializer_class = EntityNoExtraFieldSerializer
-    recommender: dict[Poll, Recommender] = {}
+    recommender: dict[Poll, Suggester] = {}
 
     # Singleton
     @classmethod
     def get_ready(cls, poll: Poll):
-        cls.recommender[poll] = Recommender()
+        cls.recommender[poll] = Suggester()
 
     def list(self, request, **kwargs):
         poll = self.poll_from_url

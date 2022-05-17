@@ -1,16 +1,16 @@
 from django.db.models import QuerySet
 
 from core.models import User
-from tournesol.recommendation.graph import Graph
-from tournesol.recommendation.recomended_user import User as RecommendationUser
-from tournesol.recommendation.video import Video
+from tournesol.suggestions.graph import Graph
+from tournesol.suggestions.suggested_user import SuggestedUser as RecommendationUser
+from tournesol.suggestions.suggested_video import SuggestedVideo
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
 
 
-class Recommender:
+class Suggester:
     # Entity to specific video structure dictionary
-    _entity_to_video: dict[Entity, Video] = {}
-    _comparison_reference_video: Video = Video(None)
+    _entity_to_video: dict[Entity, SuggestedVideo] = {}
+    _comparison_reference_video: SuggestedVideo = SuggestedVideo(None)
     # Graph containing all videos and existing comparisons, used to get the video preferences
     _complete_graph: Graph
     # Dictionary linking a user to its comparison graph, used to get its information gain
@@ -29,7 +29,7 @@ class Recommender:
         comparisons = query
         for c in comparisons:
             if c.comparison.entity_1 not in self._entity_to_video.keys():
-                self._entity_to_video[c.comparison.entity_1] = Video(
+                self._entity_to_video[c.comparison.entity_1] = SuggestedVideo(
                     self._comparison_reference_video, from_entity=c.comparison.entity_1
                 )
 
@@ -38,7 +38,7 @@ class Recommender:
                 )
 
             if c.comparison.entity_2 not in self._entity_to_video.keys():
-                self._entity_to_video[c.comparison.entity_2] = Video(
+                self._entity_to_video[c.comparison.entity_2] = SuggestedVideo(
                     self._comparison_reference_video, from_entity=c.comparison.entity_2
                 )
 
@@ -53,7 +53,7 @@ class Recommender:
 
         # create required user graphs (none at first in fact)
 
-    def get_user_comparability_augmenting_videos(self) -> list[Video]:
+    def get_user_comparability_augmenting_videos(self) -> list[SuggestedVideo]:
         # I want all entities from the current poll compared by supertrusted user
         # todo create alias to properly detect supertrusted ?
         req_entities = Entity.objects.filter(
@@ -61,7 +61,7 @@ class Recommender:
         ).filter(comparison__user__is_staff=True)
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
-    def get_user_rate_later_video_list(self, user: User) -> list[Video]:
+    def get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
         req_entities = Entity.objects.filter(type=self.poll.name).filter(
             videoratelater__user__email=user.email
         )
@@ -96,14 +96,14 @@ class Recommender:
             vb = c.comparison.entity_2
             self._user_specific_graphs[new_user].add_edge(va, vb)
 
-    def register_user_comparison(self, user: User, va: Video, vb: Video):
+    def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
         self._complete_graph.add_edge(va, vb)
         if user in self._user_specific_graphs.keys():
             self._user_specific_graphs[user].add_edge(va, vb)
 
     def get_first_video_recommendation(
         self, user: User, nb_video_required: int
-    ) -> list[Video]:
+    ) -> list[SuggestedVideo]:
         # Lazily load the user graph
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
@@ -137,7 +137,7 @@ class Recommender:
 
     def get_second_video_recommendation(
         self, user, first_video_id, nb_video_required: int
-    ) -> list[Video]:
+    ) -> list[SuggestedVideo]:
         # Lazily load the user graphs
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
