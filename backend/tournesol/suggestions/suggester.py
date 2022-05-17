@@ -8,6 +8,9 @@ from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
 class Suggester:
+    """
+    An interface class to ask for suggestions of videos to compare
+    """
     # Entity to specific video structure dictionary
     _entity_to_video: dict[Entity, SuggestedVideo] = {}
     _comparison_reference_video: SuggestedVideo = SuggestedVideo(None)
@@ -25,13 +28,14 @@ class Suggester:
         self.poll = concerned_poll
         self.criteria = self.poll.criterias_list[0]
         # build complete graph
-        query: QuerySet = ComparisonCriteriaScore.objects.filter(
-            comparison__poll__name=self.poll.name
-        ).filter(criteria=self.criteria)
+        comparison_queryset: QuerySet = ComparisonCriteriaScore.objects \
+            .filter(comparison__poll__name=self.poll.name) \
+            .filter(criteria=self.criteria)
         self._complete_graph = Graph(None, self.poll, self.criteria)
 
-        comparisons = query
-        for c in comparisons:
+        for c in comparison_queryset:
+            # Checks if each compared Entity has already been translated to a SuggestedVideo object
+            # and translates it otherwise
             if c.comparison.entity_1 not in self._entity_to_video.keys():
                 self._entity_to_video[c.comparison.entity_1] = SuggestedVideo(
                     self._comparison_reference_video, from_entity=c.comparison.entity_1
@@ -57,28 +61,43 @@ class Suggester:
 
         # create required user graphs (none at first in fact)
 
-    def get_user_comparability_augmenting_videos(self) -> list[SuggestedVideo]:
+    def _get_user_comparability_augmenting_videos(self) -> list[SuggestedVideo]:
+        """"
+        Function called to get the videos to recommend while the scale and translation
+        uncertainties of the user are not high enough
+        """
         # I want all entities from the current poll compared by supertrusted user
         # todo create alias to properly detect supertrusted ?
-        req_entities = Entity.objects.filter(
-            comparison__poll__name=self.poll.name
-        ).filter(comparison__user__is_staff=True)
+        req_entities = Entity.objects \
+            .filter(comparison__poll__name=self.poll.name) \
+            .filter(comparison__user__is_staff=True)
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
-    def get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
-        req_entities = Entity.objects.filter(type=self.poll.name).filter(
-            videoratelater__user__email=user.email
-        )
+    def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
+        """
+        Function to get the list of videos of the user's rate later list
+        """
+        req_entities = Entity.objects \
+            .filter(type=self.poll.name) \
+            .filter(videoratelater__user__email=user.email)
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def do_offline_computation(self):
+        """
+        Function to call regularly to keep the variables useful for the suggestions up to date
+        with the collected information
+        """
         # for requests => look at ml->inputs
-        scale_aug_vids = self.get_user_comparability_augmenting_videos()
+        scale_aug_vids = self._get_user_comparability_augmenting_videos()
         for g in self._user_specific_graphs.values():
             # Will be cached, do at registration
             g.compute_offline_parameters(scale_aug_vids)
 
     def register_new_user(self, new_user):
+        """
+        Function used to register a new user wanting suggestions, it thus initializes its
+        comparison graph
+        """
         recommendation_user = RecommendationUser(
             self._entity_to_video, new_user, self.criteria, self.poll
         )
@@ -92,8 +111,8 @@ class Suggester:
             ComparisonCriteriaScore.objects.filter(
                 comparison__poll__name=self.poll.name
             )
-            .filter(criteria=self.criteria)
-            .filter(comparison__user__email=new_user.email)
+                .filter(criteria=self.criteria)
+                .filter(comparison__user__email=new_user.email)
         )
         for c in query:
             va = c.comparison.entity_1
@@ -101,13 +120,23 @@ class Suggester:
             self._user_specific_graphs[new_user].add_edge(va, vb)
 
     def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
+        """
+        Function used to register a comparison submitted by the user, to keep the complete graph
+        up to date
+        """
         self._complete_graph.add_edge(va, vb)
         if user in self._user_specific_graphs.keys():
             self._user_specific_graphs[user].add_edge(va, vb)
 
     def get_first_video_recommendation(
-        self, user: User, nb_video_required: int
+            self,
+            user: User,
+            nb_video_required: int
     ) -> list[SuggestedVideo]:
+        """
+        Function used to get the first video recommendation for the requested user and returning
+        nb_video_required videos
+        """
         # Lazily load the user graph
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
@@ -131,17 +160,24 @@ class Suggester:
             for v in considered_vids_list:
                 act_user_pref = v.user_pref
                 if (
-                    act_user_pref
-                    >= (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
-                    and v not in result
+                        act_user_pref
+                        >= (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
+                        and v not in result
                 ):
                     result.append(v)
                     break
         return result
 
     def get_second_video_recommendation(
-        self, user, first_video_id, nb_video_required: int
+            self,
+            user: User,
+            first_video_id: str,
+            nb_video_required: int
     ) -> list[SuggestedVideo]:
+        """
+        Function used to get the first video recommendation for the requested user, optimizing
+        comparison with respect to first_video and returning nb_video_required videos
+        """
         # Lazily load the user graphs
         if user not in self._user_specific_graphs.keys():
             self.register_new_user(user)
@@ -165,15 +201,18 @@ class Suggester:
                 act_user_pref = v.user_pref
                 act_min_ratio = (nb_video_required - i) / (nb_video_required + 1)
                 if (
-                    act_user_pref >= act_min_ratio * max_vid_pref
-                    and v.uid != first_video_id
-                    and v not in result
+                        act_user_pref >= act_min_ratio * max_vid_pref
+                        and v.uid != first_video_id
+                        and v not in result
                 ):
                     result.append(v)
                     break
         return result
 
-    def _prepare_video_list(self, user):
+    def _prepare_video_list(self, user: User):
+        """
+        Function used in the video recommendations, to prepare the set of videos to choose the recommendation from
+        """
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
         considered_vids = set(self._user_specific_graphs[user].nodes)
