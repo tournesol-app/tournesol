@@ -1,9 +1,9 @@
 from django.db.models import QuerySet
 
 from core.models import User
-from recommendation.graph import Graph
-from recommendation.recomended_user import User as RecommendationUser
-from recommendation.video import Video
+from tournesol.recommendation.graph import Graph
+from tournesol.recommendation.recomended_user import User as RecommendationUser
+from tournesol.recommendation.video import Video
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
 
 
