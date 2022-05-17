@@ -45,7 +45,7 @@ const ComparisonSliders = ({
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { criteriaByName, criterias } = useCurrentPoll();
+  const { criteriaByName, criterias, active: isPollActive } = useCurrentPoll();
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
@@ -213,7 +213,7 @@ const ComparisonSliders = ({
           )}
         </Box>
         <Button
-          disabled={disableSubmit}
+          disabled={disableSubmit || !isPollActive}
           variant="contained"
           color="primary"
           size="large"

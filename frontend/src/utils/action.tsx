@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { IconButton, Tooltip } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
@@ -7,17 +8,26 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Video, UsersService } from 'src/services/openapi';
-import { useNotifications } from 'src/hooks';
+import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { idFromUid } from './video';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { baseUrl, active } = useCurrentPoll();
+
+  // Do not display anything if the poll is inactive. The button is still
+  // displayed for anonymous users to invite them to contribute.
+  if (!active) {
+    return null;
+  }
+
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
-        size="medium"
-        href={`/comparison/?uidA=${uid}`}
         sx={{ color: '#CDCABC' }}
+        size="medium"
+        component={Link}
+        to={`${baseUrl}/comparison/?uidA=${uid}`}
       >
         <CompareIcon />
       </IconButton>
@@ -27,7 +37,14 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
 
 export const AddToRateLaterList = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { isLoggedIn } = useLoginState();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
+
+  // Do not display anything if the user is not logged.
+  if (!isLoggedIn) {
+    return null;
+  }
+
   const handleCreation = async () => {
     try {
       await UsersService.usersMeVideoRateLaterCreate({
@@ -81,12 +98,15 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
 
 export const AnalysisPageLink = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
+
   return (
     <Tooltip title={`${t('actions.analysis')}`} placement="left">
       <IconButton
-        size="medium"
-        href={`/video/${uid.slice(3)}`}
         sx={{ color: '#CDCABC' }}
+        size="medium"
+        component={Link}
+        to={`${baseUrl}/entities/${uid}`}
       >
         <QueryStatsIcon />
       </IconButton>

@@ -1,26 +1,40 @@
+/*
+  Because of a regression in CRA v5, Typescript is wrongly enforced here
+  See https://github.com/facebook/create-react-app/pull/11875
+*/
+// eslint-disable-next-line
+// @ts-nocheck
 import React from 'react';
+
 import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
-import { render } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
+import { Router } from 'react-router-dom';
+
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
+
+import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
+import { PollProvider } from 'src/hooks/useCurrentPoll';
+import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
 import { theme } from 'src/theme';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
 } from 'src/utils/recommendationsLanguages';
-import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
+import { PollsService } from 'src/services/openapi';
 
-import RecommendationPage from './RecommendationPage';
+const EntityList = () => null;
+jest.mock('src/features/entities/EntityList', () => EntityList);
 
-const VideoList = () => null;
-jest.mock('src/features/videos/VideoList', () => VideoList);
+const SearchFilter = () => null;
+jest.mock('src/features/recommendation/SearchFilter', () => SearchFilter);
 
-describe('VideoRecommendationPage', () => {
+describe('RecommendationPage', () => {
   let history: ReturnType<typeof createMemoryHistory>;
   let historySpy: ReturnType<typeof jest.spyOn>;
   let navigatorLanguagesGetter: ReturnType<typeof jest.spyOn>;
   let getRecommendedVideosSpy: ReturnType<typeof jest.spyOn>;
+
   beforeEach(() => {
     history = createMemoryHistory();
     historySpy = jest.spyOn(history, 'replace');
@@ -28,12 +42,27 @@ describe('VideoRecommendationPage', () => {
     getRecommendedVideosSpy = jest
       .spyOn(RecommendationApi, 'getRecommendations')
       .mockImplementation(async () => ({ count: 0, results: [] }));
+
+    // prevent the useCurrentPoll hook to make HTTP requests
+    jest.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
+      name: 'videos',
+      criterias: [
+        {
+          name: 'largely_recommended',
+          label: 'largely recommended',
+          optional: false,
+        },
+      ],
+    }));
   });
+
   const component = () => {
     render(
       <Router history={history}>
         <ThemeProvider theme={theme}>
-          <RecommendationPage />
+          <PollProvider>
+            <RecommendationPage />
+          </PollProvider>
         </ThemeProvider>
       </Router>
     );
@@ -52,6 +81,7 @@ describe('VideoRecommendationPage', () => {
       'videos',
       20,
       '?language=fr%2Cen',
+      expect.anything(),
       expect.anything()
     );
   });
@@ -70,6 +100,7 @@ describe('VideoRecommendationPage', () => {
       'videos',
       20,
       '?language=de',
+      expect.anything(),
       expect.anything()
     );
   });
@@ -87,6 +118,7 @@ describe('VideoRecommendationPage', () => {
       'videos',
       20,
       '?language=fr',
+      expect.anything(),
       expect.anything()
     );
   });

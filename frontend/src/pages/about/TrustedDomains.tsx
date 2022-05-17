@@ -54,10 +54,7 @@ const TrustedDomains = () => {
                 to gain voting rights.
               </Trans>
             </p>
-            <p>
-              In any case, your contributions are valuable to us, as they will
-              motivate further research in safe and ethical algorithms.
-            </p>
+            <p>{t('about.trustedDomainsValuable')}</p>
           </Typography>
         </Box>
         <Box>

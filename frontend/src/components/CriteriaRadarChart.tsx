@@ -9,21 +9,15 @@ import {
 } from 'recharts';
 import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-
-const RADAR_CHART_CRITERIA_SCORE_MIN = -1;
-const RADAR_CHART_CRITERIA_SCORE_MAX = 1;
+import useCriteriaChartData from 'src/hooks/useCriteriaChartData';
 
 interface Props {
   video: VideoSerializerWithCriteria;
 }
 
-const between = (a: number, b: number, x: number | undefined): number => {
-  // clips x between a and b
-  return Math.min(b, Math.max(a, x || 0));
-};
-
 const CriteriaRadarChart = ({ video }: Props) => {
   const { getCriteriaLabel } = useCurrentPoll();
+  const { shouldDisplayChart, data, domain } = useCriteriaChartData({ video });
 
   const renderCustomAxisTick = ({
     x,
@@ -56,23 +50,9 @@ const CriteriaRadarChart = ({ video }: Props) => {
     );
   };
 
-  const { criteria_scores } = video;
-  const shouldDisplayChart = criteria_scores && criteria_scores.length > 0;
-
   if (!shouldDisplayChart) {
-    return <div></div>;
+    return null;
   }
-
-  const data = criteria_scores
-    .filter((s) => s.criteria != 'largely_recommended')
-    .map((s) => ({
-      ...s,
-      score: between(
-        RADAR_CHART_CRITERIA_SCORE_MIN,
-        RADAR_CHART_CRITERIA_SCORE_MAX,
-        s.score
-      ),
-    }));
 
   return (
     <ResponsiveContainer width="100%" aspect={1}>
@@ -80,19 +60,18 @@ const CriteriaRadarChart = ({ video }: Props) => {
         <PolarGrid />
         <PolarAngleAxis dataKey="criteria" tick={renderCustomAxisTick} />
         {/* An invisible PolarRadiusAxis used to enforce the axis between 0 and 1 */}
-        <PolarRadiusAxis
-          domain={[
-            RADAR_CHART_CRITERIA_SCORE_MIN,
-            RADAR_CHART_CRITERIA_SCORE_MAX,
-          ]}
-          axisLine={false}
-          tick={false}
+        <PolarRadiusAxis domain={domain} axisLine={false} tick={false} />
+        <Radar
+          dataKey="clippedScore"
+          stroke="#DFC642"
+          fill="rgb(255,200,0)"
+          fillOpacity={0.3}
         />
         <Radar
-          dataKey="score"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.6}
+          dataKey="clippedPersonalScore"
+          stroke="#0a0"
+          fill="#4BB061"
+          fillOpacity={0.3}
         />
       </RadarChart>
     </ResponsiveContainer>
