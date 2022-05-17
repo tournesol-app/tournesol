@@ -16,6 +16,10 @@ from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
 class Graph:
+    """
+    Class representing a comparison graph
+    Each node is a video and each node is a comparison
+    """
     # not necessarily the best data structure,
     # I still have to find out what is the best one between the two
     edges: list[tuple[SuggestedVideo, SuggestedVideo]] = []
@@ -188,6 +192,11 @@ class Graph:
                 self.similarity_matrix[i][j] = np.e**exponent
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
+        """
+        Function computing the offline parameters, including the adjacency matrix, its
+        normalization, the distance matrix and the similarity matrix if the graph is a user graph,
+        the video scores otherwise
+        """
         if self.dirty and self._local_user is not None:
             self.dirty = False
             self.build_adjacency_matrix()
@@ -217,6 +226,9 @@ class Graph:
                     )
 
     def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
+        """
+        Function used to compute the estimated information gain
+        """
         # First try to increase the scaling accuracy of the user if necessary
         user = self._local_user
         scale_uncertainty = self.local_user_scaling.scale_uncertainty
@@ -268,6 +280,9 @@ class Graph:
     # This doesn't depend on the user -> not done here,
     # well actually yes but not used in most of the graphs
     def update_preferences(self):
+        """
+        Function computing online the estimated preferences with respect to another video
+        """
         for v in self.nodes:
             for u in set(self.graph[v]):
                 v.nb_comparison_with[u.uid] = 0
