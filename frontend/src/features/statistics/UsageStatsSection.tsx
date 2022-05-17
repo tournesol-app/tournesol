@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import { Statistics, StatsService } from 'src/services/openapi';
+import { useCurrentPoll } from 'src/hooks';
 
 interface statsProp {
   text: string;
@@ -12,8 +13,8 @@ interface statsProp {
 interface statsData {
   userCount: number;
   lastMonthUserCount: number;
-  videoCount: number;
-  lastMonthVideoCount: number;
+  comparedEntityCount: number;
+  lastMonthComparedEntityCount: number;
   comparisonCount: number;
   lastMonthComparisonCount: number;
 }
@@ -46,28 +47,32 @@ const StatsSection = () => {
   const [data, setData] = useState<statsData>({
     userCount: 0,
     lastMonthUserCount: 0,
-    videoCount: 0,
-    lastMonthVideoCount: 0,
+    comparedEntityCount: 0,
+    lastMonthComparedEntityCount: 0,
     comparisonCount: 0,
     lastMonthComparisonCount: 0,
   });
+  const { name: pollName } = useCurrentPoll();
 
   useEffect(() => {
     StatsService.statsRetrieve()
       .then((value: Statistics) => {
+        const pollStats = value.polls.find(({ name }) => name === pollName);
+        if (pollStats === undefined) return;
         setData({
-          userCount: value.user_count,
-          videoCount: value.video_count,
-          comparisonCount: value.comparison_count,
-          lastMonthUserCount: value.last_month_user_count,
-          lastMonthVideoCount: value.last_month_video_count,
-          lastMonthComparisonCount: value.last_month_comparison_count,
+          userCount: value.active_users.total,
+          comparedEntityCount: pollStats.compared_entities.total,
+          comparisonCount: pollStats.comparisons.total,
+          lastMonthUserCount: value.active_users.joined_last_month,
+          lastMonthComparedEntityCount:
+            pollStats.compared_entities.added_last_month,
+          lastMonthComparisonCount: pollStats.comparisons.added_last_month,
         });
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [pollName]);
 
   return (
     <Box
@@ -96,8 +101,8 @@ const StatsSection = () => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.ratedVideos')}
-            count={data.videoCount}
-            lastMonthCount={data.lastMonthVideoCount}
+            count={data.comparedEntityCount}
+            lastMonthCount={data.lastMonthComparedEntityCount}
           />
         </Grid>
       </Grid>

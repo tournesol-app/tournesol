@@ -1842,6 +1842,16 @@ paths:
           description: ''
 components:
   schemas:
+    ActiveUsersStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+        joined_last_month:
+          type: integer
+      required:
+      - joined_last_month
+      - total
     ChangePassword:
       type: object
       properties:
@@ -1869,6 +1879,16 @@ components:
       - old_password
       - password
       - password_confirm
+    ComparedEntitiesStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+        added_last_month:
+          type: integer
+      required:
+      - added_last_month
+      - total
     Comparison:
       type: object
       description: |-
@@ -2016,6 +2036,16 @@ components:
           description: Time it took to rate the videos (in milliseconds)
       required:
       - criteria_scores
+    ComparisonsStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+        added_last_month:
+          type: integer
+      required:
+      - added_last_month
+      - total
     ContributorCriteriaCorrelations:
       type: object
       properties:
@@ -2153,19 +2183,11 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        type:
-          $ref: '#/components/schemas/TypeEnum'
         total_score:
           type: number
           format: float
-        metadata:
-          type: object
-          additionalProperties: {}
+        is_public:
+          type: boolean
           readOnly: true
         tournesol_score:
           type: number
@@ -2173,14 +2195,22 @@ components:
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        is_public:
-          type: boolean
+        metadata:
+          type: object
+          additionalProperties: {}
           readOnly: true
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        type:
+          $ref: '#/components/schemas/TypeEnum'
       required:
       - criteria_scores
       - is_public
@@ -3023,6 +3053,19 @@ components:
           type: boolean
       required:
       - label
+      - name
+    PollStatistics:
+      type: object
+      properties:
+        name:
+          type: string
+        compared_entities:
+          $ref: '#/components/schemas/ComparedEntitiesStatistics'
+        comparisons:
+          $ref: '#/components/schemas/ComparisonsStatistics'
+      required:
+      - compared_entities
+      - comparisons
       - name
     ProofOfVote:
       type: object
@@ -3909,25 +3952,15 @@ components:
       type: object
       description: A representation of the Tournesol public statistics.
       properties:
-        user_count:
-          type: integer
-        last_month_user_count:
-          type: integer
-        video_count:
-          type: integer
-        last_month_video_count:
-          type: integer
-        comparison_count:
-          type: integer
-        last_month_comparison_count:
-          type: integer
+        active_users:
+          $ref: '#/components/schemas/ActiveUsersStatistics'
+        polls:
+          type: array
+          items:
+            $ref: '#/components/schemas/PollStatistics'
       required:
-      - comparison_count
-      - last_month_comparison_count
-      - last_month_user_count
-      - last_month_video_count
-      - user_count
-      - video_count
+      - active_users
+      - polls
     StatusEnum:
       enum:
       - RJ
