@@ -1,6 +1,6 @@
 from core.models.user import User as UserDB
-from tournesol.suggestions.suggested_video import SuggestedVideo
 from tournesol.models import ContributorRatingCriteriaScore, Entity, Poll
+from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
 class SuggestedUser:
