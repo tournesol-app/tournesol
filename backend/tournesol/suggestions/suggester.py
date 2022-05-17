@@ -1,10 +1,10 @@
 from django.db.models import QuerySet
 
 from core.models import User
+from tournesol.models import ComparisonCriteriaScore, Entity, Poll
 from tournesol.suggestions.graph import Graph
 from tournesol.suggestions.suggested_user import SuggestedUser as RecommendationUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
-from tournesol.models import ComparisonCriteriaScore, Entity, Poll
 
 
 class Suggester:

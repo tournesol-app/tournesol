@@ -3,9 +3,9 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from tournesol.suggestions.suggester import Suggester
 from tournesol.models import Poll
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer
+from tournesol.suggestions.suggester import Suggester
 from tournesol.views import PollScopedViewMixin
 
 

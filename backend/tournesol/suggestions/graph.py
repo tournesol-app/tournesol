@@ -5,14 +5,14 @@ from typing import Optional
 import numpy as np
 from django.db.models import Avg, QuerySet
 
-from tournesol.suggestions.suggested_user import SuggestedUser
-from tournesol.suggestions.suggested_video import SuggestedVideo
 from tournesol.models import (
     ContributorRatingCriteriaScore,
     ContributorScaling,
     EntityCriteriaScore,
     Poll,
 )
+from tournesol.suggestions.suggested_user import SuggestedUser
+from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
 class Graph:
