@@ -5,8 +5,8 @@ from typing import Optional
 import numpy as np
 from django.db.models import Avg, QuerySet
 
-from tournesol.recommendation.recomended_user import User
-from tournesol.recommendation.video import Video
+from tournesol.suggestions.suggested_user import SuggestedUser
+from tournesol.suggestions.suggested_video import SuggestedVideo
 from tournesol.models import (
     ContributorRatingCriteriaScore,
     ContributorScaling,
@@ -18,19 +18,19 @@ from tournesol.models import (
 class Graph:
     # not necessarily the best data structure,
     # I still have to find out what is the best one between the two
-    edges: list[tuple[Video, Video]] = []
-    _nodes: list[Video]
-    graph: dict[Video, list[Video]] = {}
+    edges: list[tuple[SuggestedVideo, SuggestedVideo]] = []
+    _nodes: list[SuggestedVideo]
+    graph: dict[SuggestedVideo, list[SuggestedVideo]] = {}
     sigma: float
     dirty: bool
-    _local_user: User
+    _local_user: SuggestedUser
     local_user_scaling: ContributorScaling
     _local_poll: Poll
 
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
 
-    ABSENT_NODE = Video(None)
+    ABSENT_NODE = SuggestedVideo(None)
 
     adjacency_matrix: np.array
     normalized_adjacency_matrix: np.array
@@ -39,12 +39,12 @@ class Graph:
     similarity_matrix: np.array
 
     @property
-    def nodes(self) -> list[Video]:
+    def nodes(self) -> list[SuggestedVideo]:
         return self._nodes
 
-    def __init__(self, local_user: Optional[User], local_poll: Poll, local_criteria):
+    def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
         self.local_user_mean: float = 0
-        self.video_comparison_reference = Video(None)
+        self.video_comparison_reference = SuggestedVideo(None)
         self.dirty = True
         # init absent node values
         self.ABSENT_NODE.v1_score = -1
@@ -65,7 +65,7 @@ class Graph:
         else:
             print("Warning, trying to insert already present node")
 
-    def add_edge(self, node_a: Video, node_b: Video):
+    def add_edge(self, node_a: SuggestedVideo, node_b: SuggestedVideo):
         if node_a not in self._nodes:
             print("Warning ! unknown node added in edge")
         if node_b not in self._nodes:
@@ -116,10 +116,10 @@ class Graph:
         self.sigma = total_max_dist / len(self.nodes)
 
     def bfs(self, starting_node, give_distances=True, on_all_sub_graphs=False):
-        visited: list[Video] = []
-        waiting_for_visit: list[Video] = [starting_node]
-        future_visits: set[Video] = set()
-        unvisited: list[Video] = self.nodes.copy()
+        visited: list[SuggestedVideo] = []
+        waiting_for_visit: list[SuggestedVideo] = [starting_node]
+        future_visits: set[SuggestedVideo] = set()
+        unvisited: list[SuggestedVideo] = self.nodes.copy()
 
         act_root = starting_node
         depth = 0
@@ -147,10 +147,10 @@ class Graph:
             waiting_for_visit = list(future_visits)
 
     def find_connex_subgraphs(self) -> set[Graph]:
-        visited: list[Video] = []
-        waiting_for_visit: list[Video] = []
-        future_visits: set[Video] = set()
-        unvisited: list[Video] = self.nodes.copy()
+        visited: list[SuggestedVideo] = []
+        waiting_for_visit: list[SuggestedVideo] = []
+        future_visits: set[SuggestedVideo] = set()
+        unvisited: list[SuggestedVideo] = self.nodes.copy()
 
         waiting_for_visit.append(unvisited.pop())
         result: set[Graph] = set()
@@ -187,7 +187,7 @@ class Graph:
                 exponent = (self.distance_matrix[i, j]) ** 2 / self.sigma**2
                 self.similarity_matrix[i][j] = np.e**exponent
 
-    def compute_offline_parameters(self, scaling_factor_increasing_videos: list[Video]):
+    def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
         if self.dirty and self._local_user is not None:
             self.dirty = False
             self.build_adjacency_matrix()
@@ -216,7 +216,7 @@ class Graph:
                         self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                     )
 
-    def compute_information_gain(self, scaling_factor_increasing_videos: list[Video]):
+    def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
         # First try to increase the scaling accuracy of the user if necessary
         user = self._local_user
         scale_uncertainty = self.local_user_scaling.scale_uncertainty
