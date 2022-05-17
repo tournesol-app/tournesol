@@ -7,6 +7,8 @@ from typing import Any, Dict
 from rest_registration.exceptions import UserNotFound
 from rest_registration.utils.users import get_user_by_lookup_dict, get_user_login_field_names
 
+from core.models.user import User
+
 # Keys are lookup fields of the `User` model that will be replaced by their
 # value.
 RESET_PASSWORD_USER_LOOKUPS_OVERRIDE = {"email": "email__iexact"}
@@ -14,7 +16,7 @@ RESET_PASSWORD_USER_LOOKUPS_OVERRIDE = {"email": "email__iexact"}
 
 def find_user_by_send_reset_password_link_data(
     data: Dict[str, Any], **kwargs: Any
-) -> "AbstractBaseUser":
+) -> User:
     """
     Custom override of the default Django REST Registration function.
 
