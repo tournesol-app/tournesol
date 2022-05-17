@@ -4,6 +4,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from recommendation.recommender import Recommender
+from tournesol.models import Poll
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.views import PollScopedViewMixin
 
@@ -20,23 +21,25 @@ from tournesol.views import PollScopedViewMixin
 )
 class EntitiesToCompareView(PollScopedViewMixin, ListAPIView):
     serializer_class = EntityNoExtraFieldSerializer
-    recommender: Recommender = None
+    recommender: dict[Poll, Recommender] = {}
 
     # Singleton
     @classmethod
-    def get_ready(cls):
-        cls.recommender = Recommender()
+    def get_ready(cls, poll: Poll):
+        cls.recommender[poll] = Recommender()
 
     def list(self, request, **kwargs):
-        # poll = self.poll_from_url
+        poll = self.poll_from_url
+        if poll not in self.recommender.keys():
+            EntitiesToCompareView.get_ready(poll)
         user = self.request.user
 
         opt_first_entity = self.request.query_params.get("first_entity_uid")
         limit = int(self.request.query_params.get("limit", 10))
         if opt_first_entity is None:
-            entities = self.recommender.get_first_video_recommendation(user, limit)
+            entities = self.recommender[poll].get_first_video_recommendation(user, limit)
         else:
-            entities = self.recommender.get_second_video_recommendation(
+            entities = self.recommender[poll].get_second_video_recommendation(
                 user, opt_first_entity, limit
             )
 
