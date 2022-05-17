@@ -47,9 +47,10 @@ class Command(BaseCommand):
             for video in videos:
                 print(
                     video.metadata["video_id"],
-                    video.metadata["name"],
+                    f"{video.tournesol_score:5.2f}",
                     video.metadata["uploader"],
-                    video.tournesol_score,
+                    video.metadata["name"],
+                    sep=" - ",
                 )
 
         # Temporary, to avoid to tweet anything if not in debug mode
