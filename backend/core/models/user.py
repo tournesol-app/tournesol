@@ -35,12 +35,6 @@ class User(AbstractUser):
         max_length=100, blank=True, null=True, help_text="Last name"
     )
     title = models.TextField(null=True, blank=True, help_text="Your position")
-    diplomas = models.TextField(
-        null=True, blank=True, help_text="Your diplomas"
-    )
-    competencies = models.TextField(
-        null=True, blank=True, help_text="Your competencies"
-    )
     bio = models.TextField(
         null=True, blank=True, help_text="Self-description (other degrees, biography, ...)"
     )
@@ -192,9 +186,8 @@ class User(AbstractUser):
         null=True,
     )
     trust_score = models.FloatField(
-        default=0,
-        help_text="Your trust score",
-        null=True
+        default=None,
+        help_text="The global trust score assigned to the user based on the vouching mechanism"
     )
 
     # @property

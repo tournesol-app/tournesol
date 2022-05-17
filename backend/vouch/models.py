@@ -1,18 +1,15 @@
 from django.db import models
-
 from core.models.user import User
-
 
 
 class Voucher(models.Model):
     """A `Voucher` given by a user to another one.
-    A `Voucher` represents a mark of trust related to a specific attribute (PoP, degree, diploma, ...)
+    A `Voucher` represents a mark of trust
     a user is able to grant to another one. Each mark of trust has a
-    trust value and an associated uncertainty to weight its effect.
-    These vouchers can be used by an algorithm to compute the global trust score given to every user by the
+    trust value. These vouchers can be used by an algorithm to compute the global trust
+    score given to every user by the
     network, in order to weight their voting right accordingly.
     """
-
     by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -32,18 +29,7 @@ class Voucher(models.Model):
         default=0,
         help_text="The trust value given by the vouching user to receiving user.",
     )
-    # XXX: What is the vouching score described in the help text? Is it the
-    # `trust_value`? If yes we should use the same vocabulary to avoid any
-    # confusion.
-    uncertainty = models.FloatField(
-        default=0,
-        help_text="Uncertainty about the voucher score.",
-    )
-    attribute = models.TextField(
-        max_length=32,
-        help_text="Name of the attribute corresponding to this voucher.",
-        db_index=True,
-    )
+
     @staticmethod
     def get_given_to(user):
         vouchers = Voucher.objects.filter(to=user)
