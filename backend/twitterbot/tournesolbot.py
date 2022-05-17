@@ -148,7 +148,7 @@ def tweet_video_recommendation(bot_name, debug=True):
         print("Today's video to tweet will be:")
         print(tweet_text)
 
-        confirmation = input("\nWould you like to tweet that? (y/n)")
+        confirmation = input("\nWould you like to tweet that? (y/n): ")
 
         if confirmation not in ["y", "yes"]:
             return
@@ -160,6 +160,5 @@ def tweet_video_recommendation(bot_name, debug=True):
     TweetInfo.objects.create(
         video=video,
         tweet_id=resp.id,
-        datetime_tweet=twitterbot.api.now(),
         bot_name=bot_name,
     )
