@@ -33,10 +33,11 @@ def find_user_by_send_reset_password_link_data(
 
     for field_name, db_field_names in finder_tests:
         value = data.get(field_name)
+
         if value is None:
             continue
-        for db_fn in db_field_names:
 
+        for db_fn in db_field_names:
             lookup_field = RESET_PASSWORD_USER_LOOKUPS_OVERRIDE.get(db_fn)
             if not lookup_field:
                 lookup_field = db_fn
