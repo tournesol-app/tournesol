@@ -16,9 +16,13 @@ class Suggester:
     # Dictionary linking a user to its comparison graph, used to get its information gain
     _user_specific_graphs: dict[User, Graph] = {}
 
-    def __init__(self):
-
-        self.poll = Poll.default_poll()
+    def __init__(self, concerned_poll: Poll):
+        """
+        Function used to initialize the class
+        It must not be called before the DB is ready, as it will call it while constructing the
+        complete graph
+        """
+        self.poll = concerned_poll
         self.criteria = self.poll.criterias_list[0]
         # build complete graph
         query: QuerySet = ComparisonCriteriaScore.objects.filter(
