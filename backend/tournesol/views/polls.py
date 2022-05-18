@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
                         value={
                             "language": "fr,pt",
                             "uploader": "kurzgesagtES",
-                            "duration_lte": "120"
+                            "duration__lte": "120"
                         },
                     ),
                     OpenApiExample(
