@@ -74,7 +74,11 @@ const EntityCard = ({
         container
         direction="column"
       >
-        <EntityCardTitle title={entity.metadata.name} compact={compact} />
+        <EntityCardTitle
+          uid={entity.uid}
+          title={entity.metadata.name}
+          compact={compact}
+        />
         <EntityMetadata entity={entity} />
         {displayEntityCardScores()}
       </Grid>
