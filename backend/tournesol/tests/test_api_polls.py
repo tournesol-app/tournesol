@@ -265,7 +265,7 @@ class PollsRecommendationsTestCase(TestCase):
 
     def test_anon_can_list_videos_filtered_by_duration(self):
         response = self.client.get(
-            "/polls/videos/recommendations/?duration_gte=20"
+            "/polls/videos/recommendations/?metadata[duration__gte]=20"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -274,7 +274,7 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(len(results), 2)
 
         response = self.client.get(
-            "/polls/videos/recommendations/?duration_gte=1"
+            "/polls/videos/recommendations/?metadata[duration__gte]=1"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -283,7 +283,7 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(len(results), 3)
 
         response = self.client.get(
-            "/polls/videos/recommendations/?duration_lte=120"
+            "/polls/videos/recommendations/?metadata[duration__lte]=120"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -292,7 +292,8 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(len(results), 2)
 
         response = self.client.get(
-            "/polls/videos/recommendations/?duration_gte=120&duration_lte=200"
+            "/polls/videos/recommendations/?metadata[duration__gte]=120"
+            + "&metadata[duration__lte]=200"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

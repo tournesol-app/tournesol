@@ -101,14 +101,6 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         if search:
             queryset = poll.entity_cls.filter_search(queryset, search)
 
-        duration = filters["duration_lte"]
-        if duration:
-            queryset = poll.entity_cls.filter_duration_lte(queryset, duration)
-
-        duration = filters["duration_gte"]
-        if duration:
-            queryset = poll.entity_cls.filter_duration_gte(queryset, duration)
-
         date_lte = filters["date_lte"]
         if date_lte:
             queryset = poll.entity_cls.filter_date_lte(queryset, date_lte)

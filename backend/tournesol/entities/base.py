@@ -36,19 +36,13 @@ class EntityType(ABC):
             if len(values) > 1:
                 qst = qst.filter(**{"metadata__" + key + "__in": values})
             else:
-                qst = qst.filter(**{"metadata__" + key: values[0]})
+                if values[0].isnumeric():
+                    # Filtering numeric values should be postfixed by lte or gte
+                    qst = qst.filter(**{"metadata__" + key: int(values[0])})
+                else:
+                    qst = qst.filter(**{"metadata__" + key: values[0]})
 
         return qst
-
-    @classmethod
-    @abstractmethod
-    def filter_duration_lte(cls, qs, duration):
-        raise NotImplementedError
-
-    @classmethod
-    @abstractmethod
-    def filter_duration_gte(cls, qs, duration):
-        raise NotImplementedError
 
     @classmethod
     @abstractmethod
