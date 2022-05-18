@@ -294,7 +294,7 @@
     "donateByPaypal": "By PayPal",
     "publicDatabase": "Public Database",
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
-    "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{videoCount}} videos.",
+    "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Trusted email domains",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited voting right to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
