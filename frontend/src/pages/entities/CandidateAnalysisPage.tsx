@@ -42,7 +42,11 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
           <Grid item xs={12}>
             <Paper>
               <Box p={1}>
-                <EntityCardTitle title={entity.metadata.name} compact={false} />
+                <EntityCardTitle
+                  uid={entity.uid}
+                  title={entity.metadata.name}
+                  compact={false}
+                />
                 <EntityCardScores
                   entity={entity}
                   showTournesolScore={

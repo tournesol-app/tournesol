@@ -105,7 +105,7 @@ function VideoCard({
         container
         direction="column"
       >
-        <EntityCardTitle title={video.name} compact={compact} />
+        <EntityCardTitle uid={video.uid} title={video.name} compact={compact} />
         <VideoMetadata
           views={video.views}
           publicationDate={video.publication_date}
@@ -191,7 +191,12 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
         />
       </Box>
       <Box flex={1}>
-        <EntityCardTitle title={video.name} titleMaxLines={1} fontSize="1em" />
+        <EntityCardTitle
+          uid={video.uid}
+          title={video.name}
+          titleMaxLines={1}
+          fontSize="1em"
+        />
         <VideoMetadata
           views={video.views}
           uploader={video.uploader}
