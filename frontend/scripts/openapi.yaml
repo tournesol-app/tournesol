@@ -775,7 +775,7 @@ paths:
   /stats/:
     get:
       operationId: stats_retrieve
-      description: Retrieve statistics.
+      description: Fetch all Tournesol's public statistics.
       tags:
       - stats
       security:
@@ -2183,11 +2183,16 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        total_score:
-          type: number
-          format: float
-        is_public:
-          type: boolean
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        metadata:
+          type: object
+          additionalProperties: {}
           readOnly: true
         tournesol_score:
           type: number
@@ -2195,22 +2200,17 @@ components:
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
+        total_score:
+          type: number
+          format: float
+        is_public:
+          type: boolean
           readOnly: true
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        type:
-          $ref: '#/components/schemas/TypeEnum'
       required:
       - criteria_scores
       - is_public

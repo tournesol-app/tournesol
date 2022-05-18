@@ -57,12 +57,16 @@ class Statistics:
     """
 
     active_users: ActiveUsersStatistics
-    polls: List[PollStatistics] = []
+    polls: List[PollStatistics]
+
+    def __init__(self):
+        self.active_users = 0
+        self.polls = []
 
     def set_active_users(self, user_count, last_month_user_count):
         self.active_users = ActiveUsersStatistics(user_count, last_month_user_count)
 
-    def set_polls(
+    def append_poll(
         self,
         poll_name,
         compared_entity_count,
@@ -113,7 +117,7 @@ class StatisticsView(generics.GenericAPIView):
                 datetime_lastedit__gte=time_ago(days=self._days_delta)
             ).count()
 
-            statistics.set_polls(
+            statistics.append_poll(
                 poll.name,
                 compared_entity_count,
                 last_month_compared_entity_count,
