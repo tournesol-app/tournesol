@@ -88,18 +88,8 @@ chrome.webRequest.onHeadersReceived.addListener(
 
 function getDateThreeWeeksAgo() {
   // format a string to properly display years months and day: 2011 -> 11, 5 -> 05, 12 -> 12
-  const format = (str) =>
-    str.length == 1 ? `0${str}` : str.length == 4 ? str.slice(2) : str;
   const threeWeeksAgo = new Date(Date.now() - 3 * 7 * 24 * 3600000);
-  const [d, m, y, H, M, S] = [
-    threeWeeksAgo.getDate(),
-    threeWeeksAgo.getMonth() + 1, // adds 1 because January has index 0 in Javascript but Django expect "01"
-    threeWeeksAgo.getFullYear(),
-    threeWeeksAgo.getHours(),
-    threeWeeksAgo.getMinutes(),
-    threeWeeksAgo.getSeconds(),
-  ].map((t) => format(t.toString()));
-  return `${d}-${m}-${y}-${H}-${M}-${S}`;
+  return threeWeeksAgo.toISOString();
 }
 
 const availableRecommendationsLanguages = [
@@ -223,8 +213,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
   } else if (request.message == 'getTournesolRecommendations') {
-    const poll_name = 'video';
-    const api_url = `/polls/${poll_name}/recommendations/`;
+    const poll_name = 'videos';
+    const api_url = `polls/${poll_name}/recommendations/`;
 
     const request_recommendations = async (options) => {
       const resp = await fetchTournesolApi(
