@@ -1,6 +1,7 @@
 """
 API endpoints to show public statistics
 """
+from typing import List
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
@@ -52,16 +53,16 @@ class PollStatistics:
 
 class Statistics:
     """
-    Representation of a Statistics
+    Representation of the Tournesol's public statistics.
     """
 
-    def __init__(self):
-        self.polls = []
+    active_users: ActiveUsersStatistics
+    polls: List[PollStatistics] = []
 
-    def add_user_statistics(self, user_count, last_month_user_count):
+    def set_active_users(self, user_count, last_month_user_count):
         self.active_users = ActiveUsersStatistics(user_count, last_month_user_count)
 
-    def add_poll_statistics(
+    def set_polls(
         self,
         poll_name,
         compared_entity_count,
@@ -80,28 +81,25 @@ class Statistics:
         )
 
 
-@extend_schema_view(get=extend_schema(description="Retrieve statistics."))
+@extend_schema_view(
+    get=extend_schema(description="Fetch all Tournesol's public statistics.")
+)
 class StatisticsView(generics.GenericAPIView):
-    """
-    API view for retrieving statistics
-    """
-
     permission_classes = [AllowAny]
-
     serializer_class = StatisticsSerializer
+
     _days_delta = 30
 
     def get(self, request):
         statistics = Statistics()
 
-        user_count = User.objects.filter(is_active=True).count()
-        last_month_user_count = User.objects.filter(
+        active_users = User.objects.filter(is_active=True).count()
+        last_month_active_users = User.objects.filter(
             is_active=True, date_joined__gte=time_ago(days=self._days_delta)
         ).count()
-        statistics.add_user_statistics(user_count, last_month_user_count)
+        statistics.set_active_users(active_users, last_month_active_users)
 
-        polls = Poll.objects
-        for poll in polls.all():
+        for poll in Poll.objects.iterator():
             entities = Entity.objects.filter(type=poll.entity_type)
             compared_entities = entities.filter(rating_n_ratings__gt=0)
             compared_entity_count = compared_entities.count()
@@ -115,7 +113,7 @@ class StatisticsView(generics.GenericAPIView):
                 datetime_lastedit__gte=time_ago(days=self._days_delta)
             ).count()
 
-            statistics.add_poll_statistics(
+            statistics.set_polls(
                 poll.name,
                 compared_entity_count,
                 last_month_compared_entity_count,
