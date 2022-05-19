@@ -6,7 +6,7 @@ import { Avatar, Box } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
-import { RelatedEntityObject } from 'src/utils/types';
+import { JSONValue, RelatedEntityObject } from 'src/utils/types';
 import { convertDurationToClockDuration } from 'src/utils/video';
 
 const PlayerWrapper = React.forwardRef(function PlayerWrapper(
@@ -78,26 +78,53 @@ export const VideoPlayer = ({
 const EntityImagery = ({
   entity,
   compact = false,
+  config = {},
 }: {
   entity: RelatedEntityObject;
   compact?: boolean;
+  config?: { [k: string]: { [k: string]: JSONValue } };
 }) => {
   const { baseUrl } = useCurrentPoll();
+  const videoConfig = config[TypeEnum.VIDEO] ?? {};
 
   if (entity.type === TypeEnum.VIDEO) {
     return (
-      <Box
-        sx={{
-          aspectRatio: '16 / 9',
-          width: '100%',
-          ...(compact ? {} : { minWidth: '240px', maxWidth: { sm: '240px' } }),
-        }}
-      >
-        <VideoPlayer
-          videoId={entity.metadata.video_id}
-          duration={entity.metadata.duration}
-        />
-      </Box>
+      <>
+        {/* display the video player by default, unless otherwise configured */}
+        {videoConfig?.displayPlayer ?? true ? (
+          <Box
+            sx={{
+              aspectRatio: '16 / 9',
+              width: '100%',
+              ...(compact
+                ? {}
+                : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+            }}
+          >
+            <VideoPlayer
+              videoId={entity.metadata.video_id}
+              duration={entity.metadata.duration}
+            />
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            bgcolor="black"
+            sx={{
+              width: '100%',
+              '& > img': {
+                flex: 1,
+                objectFit: 'contain',
+              },
+            }}
+          >
+            <img
+              src={entity.metadata.thumbnails.medium.url}
+              alt={entity.metadata.name}
+            />
+          </Box>
+        )}
+      </>
     );
   }
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {

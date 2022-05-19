@@ -48,6 +48,7 @@ function EntityList({
               actions={actions ?? defaultEntityActions}
               settings={settings}
               compact={false}
+              config={{ video: { displayPlayer: false } }}
             />
           </Box>
         ))
