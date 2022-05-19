@@ -109,19 +109,20 @@ const EntityImagery = ({
         ) : (
           <Box
             display="flex"
-            bgcolor="black"
+            lineHeight={0}
             sx={{
-              width: '100%',
               '& > img': {
                 flex: 1,
                 objectFit: 'contain',
               },
             }}
           >
-            <img
-              src={entity.metadata.thumbnails.medium.url}
-              alt={entity.metadata.name}
-            />
+            <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+              <img
+                src={entity.metadata.thumbnails.medium.url}
+                alt={entity.metadata.name}
+              />
+            </RouterLink>
           </Box>
         )}
       </>
