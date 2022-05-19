@@ -1,4 +1,4 @@
-# Tournesol Backend
+# Tournesol back end
 
 The API of the Tournesol platform, made with Python and Django.
 
@@ -90,20 +90,44 @@ features will be missing. It's recommended to get and configure this API key if
 you plan to contribute regularly to the project, to make your environment
 closer to the production one.
 
+#### Requirements
+
+1. a Google account
+2. to be connected while following the procedure
+3. to have at least one YouTube video in the database
+
 #### Procedure
 
-* Go to https://console.cloud.google.com/apis/ and create a new project
-  named `tournesol`
+Go to https://console.cloud.google.com/apis/ and create a new project. You
+can choose the name you prefer, we suggest `tournesol-local`. You should now
+be automatically redirected to the project dashboard.
 
-* Setup you credentials by getting a API key. Do not restrict its use for
-  development purpose.
+Go to the credentials page, accessible from the menu, and create new
+`API key `credentials. Do not apply any application nor API restriction. You
+should now be able to see the API key value by clicking on it.
 
-* Set `YOUTUBE_API_KEY` value in your `SETTINGS_FILE`.  
-  If you are using the "dev-env", this is
-  in [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml)
+Now configure the `YOUTUBE_API_KEY` setting with the API key value in your
+`SETTINGS_FILE`.  If you are using the dev-env, the settings file is
+[backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml)
 
-* Then go to https://console.cloud.google.com/apis/credentials/consent, and add
-  a user test (typicaly your gmail account)
+Finally, you need to enable your API key. The first time the back end will try
+to get metadata from YouTube, you will see an HTTP 403 error in the back end's
+logs, with an activation link.
+
+- Start the back end
+- Log in the administration interface with your superuser
+- Go the entities list
+- Select a YouTube video entity and run the action force refresh metadata 
+
+Check the back end's logs, and copy and paste the activation link in you
+browser. The link should look like this:
+
+```
+https://console.developers.google.com/apis/api/youtube.googleapis.com/overview?project=[YOUR_PROJECT_ID]
+```
+
+The back end is now ready to automatically update the videos' metadata when
+new videos are added using the API, and when using the force refresh action.
 
 ## Tests
 
