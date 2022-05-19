@@ -99,7 +99,7 @@ closer to the production one.
 #### Procedure
 
 Go to https://console.cloud.google.com/apis/ and create a new project. You
-can choose the name you prefer, we suggest `tournesol-local`. You should now
+can choose the name you prefer, we suggest `tournesol`. You should now
 be automatically redirected to the project dashboard.
 
 Go to the credentials page, accessible from the menu, and create new
