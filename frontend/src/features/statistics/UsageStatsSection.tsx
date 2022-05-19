@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import { Statistics, StatsService } from 'src/services/openapi';
@@ -74,6 +74,17 @@ const StatsSection = () => {
       });
   }, [pollName]);
 
+  const comparedEntitiesTitle = useMemo(() => {
+    switch (pollName) {
+      case 'videos':
+        return t('stats.ratedVideos');
+      case 'presidentielle2022':
+        return t('stats.ratedCandidates');
+      default:
+        throw new Error(`Unknown poll: ${pollName}`);
+    }
+  }, [pollName, t]);
+
   return (
     <Box
       sx={{
@@ -100,7 +111,7 @@ const StatsSection = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
-            text={t('stats.ratedVideos')}
+            text={comparedEntitiesTitle}
             count={data.comparedEntityCount}
             lastMonthCount={data.lastMonthComparedEntityCount}
           />

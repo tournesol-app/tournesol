@@ -253,7 +253,8 @@
   "stats": {
     "activeUsers": "Utilisateurs actifs",
     "comparisons": "Comparaisons",
-    "ratedVideos": "Vidéos notées"
+    "ratedVideos": "Vidéos notées",
+    "ratedCandidates": "Candidats notés"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",

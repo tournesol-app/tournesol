@@ -5,6 +5,7 @@ import { Box, Divider, Stack, Button, Typography } from '@mui/material';
 
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
+import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { PRESIDENTIELLE_2022_SURVEY_URL } from 'src/utils/constants';
@@ -102,11 +103,7 @@ const HomePresidentielle2022Page = () => {
         )}
       </TitleSection>
       <PollListSection />
-      {/* 
-        <UsageStatsSection /> 
-        TODO: Stats are specific to videos. This component and the api 
-        endpoint may be adapted to work for all Polls.
-      */}
+      <UsageStatsSection />
     </AlternatingBackgroundColorSectionList>
   );
 };
