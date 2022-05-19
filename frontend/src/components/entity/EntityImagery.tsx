@@ -109,16 +109,23 @@ const EntityImagery = ({
         ) : (
           <Box
             display="flex"
+            alignItems="center"
+            bgcolor="black"
+            width="100%"
+            // prevent the RouterLink to add few extra pixels
             lineHeight={0}
             sx={{
               '& > img': {
                 flex: 1,
-                objectFit: 'contain',
               },
             }}
           >
-            <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+            <RouterLink
+              to={`${baseUrl}/entities/${entity.uid}`}
+              className="full-width"
+            >
               <img
+                className="full-width"
                 src={entity.metadata.thumbnails.medium.url}
                 alt={entity.metadata.name}
               />
