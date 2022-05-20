@@ -6,7 +6,7 @@ class CycleSerializer(Serializer):
     """
     Serializer for one cycle of length 3
     """
-    criterion = serializers.CharField()
+    criteria = serializers.CharField()
     entity_1_uid = serializers.CharField()
     entity_2_uid = serializers.CharField()
     entity_3_uid = serializers.CharField()
@@ -14,7 +14,7 @@ class CycleSerializer(Serializer):
 
 class CyclesStatsSerializer(Serializer):
     """
-    Stats for each criterion
+    Stats for each criteria
 
     Includes the number of cycles, and the number of "comparison trios". This refers
     to any 3 entities that all have a comparison to each other.
@@ -33,14 +33,14 @@ class Length3CyclesSerializer(Serializer):
     """
     count = serializers.IntegerField()
     results = CycleSerializer(many=True)
-    stats = serializers.DictField(child=CyclesStatsSerializer(), label="criterion")
+    stats = serializers.DictField(child=CyclesStatsSerializer(), label="criteria")
 
 
 class Length3CyclesFilterSerializer(serializers.Serializer):
 
     date_gte = serializers.DateTimeField(
         default=None,
-        help_text="Restrict the search to entities created or edited after this date.\n"
+        help_text="Restrict the search to comparisons done or edited after this date.\n"
                   "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`).",
     )
 
@@ -50,7 +50,7 @@ class ScoreInconsistencySerializer(Serializer):
     Serializer for one element
     """
     inconsistency = serializers.FloatField()
-    criterion = serializers.CharField()
+    criteria = serializers.CharField()
     entity_1_uid = serializers.CharField()
     entity_2_uid = serializers.CharField()
     entity_1_rating = serializers.FloatField()
@@ -61,7 +61,7 @@ class ScoreInconsistencySerializer(Serializer):
 
 class ScoreInconsistenciesStatsSerializer(Serializer):
     """
-    Return some statistics for each criterion,
+    Return some statistics for each criteria,
     to be able to compare the results for the different criteria
     """
     mean_inconsistency = serializers.FloatField()
@@ -76,7 +76,7 @@ class ScoreInconsistenciesSerializer(Serializer):
     """
     count = serializers.IntegerField()
     results = ScoreInconsistencySerializer(many=True)
-    stats = serializers.DictField(child=ScoreInconsistenciesStatsSerializer(), label="criterion")
+    stats = serializers.DictField(child=ScoreInconsistenciesStatsSerializer(), label="criteria")
 
 
 class ScoreInconsistenciesFilterSerializer(Serializer):
@@ -89,6 +89,6 @@ class ScoreInconsistenciesFilterSerializer(Serializer):
 
     date_gte = serializers.DateTimeField(
         default=None,
-        help_text="Restrict the search to entities created or edited after this date.\n"
+        help_text="Restrict the search to comparisons done or edited after this date.\n"
                   "Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`).",
     )

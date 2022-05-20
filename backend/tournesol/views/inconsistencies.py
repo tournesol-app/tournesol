@@ -1,3 +1,4 @@
+from collections import defaultdict
 from math import sqrt
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -27,7 +28,7 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
     """
     List the cycles of length 3 in the comparisons graphs.
 
-    These "graphs" (one graph per criterion) are modeled by considering
+    These "graphs" (one graph per criteria) are modeled by considering
     entities as nodes, and comparisons as directed edges.
 
     A cycle between 3 entities A, B, C is when A is preferred to
@@ -43,7 +44,6 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     cycles = []
-    criterion = None
     all_entities = set()
     outgoing_connections = {}
     incoming_connections = {}
@@ -78,13 +78,14 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
             )
         )
 
-        for self.criterion in poll.criterias_list:
+        for criteria in poll.criterias_list:
 
-            self._fill_graph_parameters(comparisons)
+            self._fill_graph_parameters(comparisons, criteria)
 
-            cycles_count, comparison_trios_count = self._count_cycles_and_comparison_trios()
+            cycles_count, comparison_trios_count = \
+                self._count_cycles_and_comparison_trios(criteria)
 
-            stats[self.criterion] = {
+            stats[criteria] = {
                 "cycles_count": cycles_count,
                 "comparison_trios_count": comparison_trios_count,
             }
@@ -97,7 +98,7 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
 
         return Response(Length3CyclesSerializer(response).data)
 
-    def _fill_graph_parameters(self, comparisons: list):
+    def _fill_graph_parameters(self, comparisons: list, criteria):
         """
         Fill the set containing all the entities.
 
@@ -110,32 +111,20 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
 
         all_connections: all the edges (also including comparisons with a score of 0 as edges)
         """
-        self.all_entities = set()
-        self.outgoing_connections = {}
-        self.incoming_connections = {}
+        self.outgoing_connections = defaultdict(set)
+        self.incoming_connections = defaultdict(set)
+        self.all_connections = defaultdict(set)
 
-        # all the edges (also including comparisons with a score of 0 as edges)
-        self.all_connections = {}
-
-        criterion_comparisons = list(
-            filter(lambda d: d["criteria"] == self.criterion, comparisons)
+        criteria_comparisons = list(
+            filter(lambda d: d["criteria"] == criteria, comparisons)
         )
 
-        for comparison in criterion_comparisons:
+        for comparison in criteria_comparisons:
             entity_1 = comparison["comparison__entity_1__uid"]
             entity_2 = comparison["comparison__entity_2__uid"]
 
-            if entity_1 not in self.all_entities:
-                self.all_entities.add(entity_1)
-                self.incoming_connections[entity_1] = set()
-                self.outgoing_connections[entity_1] = set()
-                self.all_connections[entity_1] = set()
-
-            if entity_2 not in self.all_entities:
-                self.all_entities.add(entity_2)
-                self.incoming_connections[entity_2] = set()
-                self.outgoing_connections[entity_2] = set()
-                self.all_connections[entity_2] = set()
+            self.all_connections[entity_1].add(entity_2)
+            self.all_connections[entity_2].add(entity_1)
 
             if comparison["score"] > 0:
                 # Entity_2 is preferred
@@ -146,46 +135,42 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
                 # Entity_1 is preferred
                 self.incoming_connections[entity_1].add(entity_2)
                 self.outgoing_connections[entity_2].add(entity_1)
-            else:
-                continue
 
-            self.all_connections[entity_1].add(entity_2)
-            self.all_connections[entity_2].add(entity_1)
-
-    def _count_cycles_and_comparison_trios(self):
+    def _count_cycles_and_comparison_trios(self, criteria):
         """
         Count the cycles of length 3 and the comparison trios.
         Add the cycles found to the cycles list.
 
-        The cycles returned are in the order 1, 2, 3 with 1 > 2 > 3 > 1.
+        The cycles returned are in the order 1, 2, 3 with uid1 < uid2
+        and uid1 < uid3, and score_1 > score_2 > score_3 > score_1.
         """
         cycles_count = 0
         comparison_trios_count = 0
-        for entity_1 in self.all_entities:
+        for entity_1 in self.all_connections.keys():
             # Search the cycles
-            for entity_2 in self.outgoing_connections[entity_1].copy():
-                for entity_3 in self.incoming_connections[entity_1] & \
-                                self.outgoing_connections[entity_2]:
-                    cycles_count += 1
-                    self.cycles.append({
-                        "criterion": self.criterion,
-                        "entity_1_uid": entity_1,
-                        "entity_2_uid": entity_2,
-                        "entity_3_uid": entity_3,
-                    })
-
-                # Remove the edge, so that these cycles won't be counted again
-                self.outgoing_connections[entity_1].remove(entity_2)
-                self.incoming_connections[entity_2].remove(entity_1)
+            for entity_2 in self.outgoing_connections[entity_1]:
+                # Count only when entity_1 has the lowest uid,to count each cycle only once
+                if entity_1 < entity_2:
+                    for entity_3 in self.incoming_connections[entity_1] & \
+                                    self.outgoing_connections[entity_2]:
+                        if entity_1 < entity_3:
+                            cycles_count += 1
+                            self.cycles.append({
+                                "criteria": criteria,
+                                "entity_1_uid": entity_1,
+                                "entity_2_uid": entity_2,
+                                "entity_3_uid": entity_3,
+                            })
 
             # Count the comparison trios
-            for entity_2 in self.all_connections[entity_1].copy():
+            for entity_2 in self.all_connections[entity_1]:
                 comparison_trios_count += len(self.all_connections[entity_1] &
                                               self.all_connections[entity_2])
 
-                # Remove the edge, so that these comparison trios won't be counter again
-                self.all_connections[entity_1].remove(entity_2)
-                self.all_connections[entity_2].remove(entity_1)
+        # Every comparison trio should have been counted 6 times, like this:
+        # ((1, 2, 3), (2, 3, 1), (3, 1, 2), and the reverses (3, 2, 1), (1, 3, 2), (2, 1, 3))
+        assert (comparison_trios_count % 6) == 0
+        comparison_trios_count //= 6
 
         return cycles_count, comparison_trios_count
 
@@ -258,7 +243,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                                        threshold: float,
                                        criteria_list: list) -> dict:
         """
-        For each comparison criterion, search the corresponding rating,
+        For each comparison criteria, search the corresponding rating,
         calculate the inconsistency, and check if it crosses the threshold.
         Then prepare the HTTP response.
         """
@@ -268,23 +253,23 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         inconsistent_comparisons_count = dict.fromkeys(criteria_list, 0)
         inconsistency_sum = dict.fromkeys(criteria_list, 0.0)
 
-        inconsistent_criterion_comparisons = []
+        inconsistent_criteria_comparisons = []
 
         ratings_map = {
             (rating["contributor_rating__entity__uid"], rating["criteria"]): rating
             for rating in criteria_ratings
         }
 
-        for comparison_criterion in criteria_comparisons:
+        for comparison_criteria in criteria_comparisons:
 
-            entity_1 = comparison_criterion["comparison__entity_1__uid"]
-            entity_2 = comparison_criterion["comparison__entity_2__uid"]
-            criterion = comparison_criterion["criteria"]
-            comparison_score = comparison_criterion["score"]
+            entity_1 = comparison_criteria["comparison__entity_1__uid"]
+            entity_2 = comparison_criteria["comparison__entity_2__uid"]
+            criteria = comparison_criteria["criteria"]
+            comparison_score = comparison_criteria["score"]
 
             try:
-                rating_1 = ratings_map[(entity_1, criterion)]
-                rating_2 = ratings_map[(entity_2, criterion)]
+                rating_1 = ratings_map[(entity_1, criteria)]
+                rating_2 = ratings_map[(entity_2, criteria)]
             except KeyError:
                 continue
 
@@ -297,16 +282,16 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                 uncertainty,
             )
 
-            comparisons_analysed_count[criterion] += 1
-            inconsistency_sum[criterion] += inconsistency
+            comparisons_analysed_count[criteria] += 1
+            inconsistency_sum[criteria] += inconsistency
 
             if inconsistency >= threshold:
-                inconsistent_comparisons_count[criterion] += 1
+                inconsistent_comparisons_count[criteria] += 1
 
-                inconsistent_criterion_comparisons.append(
+                inconsistent_criteria_comparisons.append(
                     {
                         "inconsistency": inconsistency,
-                        "criterion": criterion,
+                        "criteria": criteria,
                         "entity_1_uid": entity_1,
                         "entity_2_uid": entity_2,
                         "entity_1_rating": rating_1["score"],
@@ -316,21 +301,21 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                     }
                 )
 
-        inconsistent_criterion_comparisons.sort(key=lambda d: d['inconsistency'], reverse=True)
+        inconsistent_criteria_comparisons.sort(key=lambda d: d['inconsistency'], reverse=True)
 
-        response["count"] = len(inconsistent_criterion_comparisons)
-        response["results"] = inconsistent_criterion_comparisons
+        response["count"] = len(inconsistent_criteria_comparisons)
+        response["results"] = inconsistent_criteria_comparisons
         response["stats"] = {}
-        for criterion in criteria_list:
+        for criteria in criteria_list:
             mean_inconsistency = 0.0
-            if comparisons_analysed_count[criterion] > 0:
-                mean_inconsistency = inconsistency_sum[criterion] / \
-                                     comparisons_analysed_count[criterion]
+            if comparisons_analysed_count[criteria] > 0:
+                mean_inconsistency = inconsistency_sum[criteria] / \
+                                     comparisons_analysed_count[criteria]
 
-            response["stats"][criterion] = {
+            response["stats"][criteria] = {
                 "mean_inconsistency": mean_inconsistency,
-                "inconsistent_comparisons_count": inconsistent_comparisons_count[criterion],
-                "comparisons_count": comparisons_analysed_count[criterion],
+                "inconsistent_comparisons_count": inconsistent_comparisons_count[criteria],
+                "comparisons_count": comparisons_analysed_count[criteria],
             }
 
         return response
@@ -342,7 +327,7 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
                                  uncertainty) -> float:
         """
         Calculate the inconsistency between the comparison
-        criterion score and the general rating of the entity.
+        criteria score and the general rating of the entity.
 
         Let's note R the rating difference (rating2 - rating1),
         r its variable counterpart, U the uncertainty and C the
