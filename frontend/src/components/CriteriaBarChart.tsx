@@ -1,53 +1,348 @@
-import React from 'react';
-import {
-  Bar,
-  BarChart,
-  XAxis,
-  YAxis,
-  Cell,
-  Tooltip,
-  TooltipProps,
-  ResponsiveContainer,
-} from 'recharts';
+import React, {
+  useRef,
+  useLayoutEffect,
+  useState,
+  useMemo,
+  createContext,
+  useContext,
+} from 'react';
 import {
   VideoSerializerWithCriteria,
   Recommendation,
 } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { displayScore, criteriaIcon } from 'src/utils/criteria';
+import { displayScore, criteriaIcon, criterionColor } from 'src/utils/criteria';
 import useCriteriaChartData, {
-  CriteriaChartDatum,
+  CriterionChartScores,
 } from 'src/hooks/useCriteriaChartData';
 import { useTranslation } from 'react-i18next';
+import { lighten } from 'src/utils/color';
+import { Tooltip } from '@mui/material';
 
-const criteriaColors: { [criteria: string]: string } = {
-  reliability: '#4F77DD',
-  importance: '#DC8A5D',
-  engaging: '#DFC642',
-  pedagogy: '#C28BED',
-  layman_friendly: '#4BB061',
-  diversity_inclusion: '#76C6CB',
-  backfire_risk: '#D37A80',
-  better_habits: '#9DD654',
-  entertaining_relaxing: '#D8B36D',
-  default: '#506ad4',
+const barMargin = 40; // The horizontal margin around the bar (must be enough for the icon and the score value)
+const criterionChartHeight = 40; // The height of a single criterion chart (circle + icon + bars)
+const scoreBarHeight = 10;
+const scoreBarsSpacing = 4;
+const scoreLabelSpacingWithBar = 4;
+
+interface ChartContextValue {
+  data: CriterionChartScores[];
+  domain: number[];
+  chartWidth: number;
+  chartHeight: number;
+  personalScoresActivated: boolean;
+}
+const ChartContext = createContext<ChartContextValue>({
+  data: [],
+  domain: [0.0, 1.0],
+  chartWidth: 0,
+  chartHeight: 0,
+  personalScoresActivated: false,
+});
+const useChartContext = () => useContext(ChartContext);
+
+const useCriterionScoreData = ({
+  index,
+  personal,
+}: {
+  index: number;
+  personal: boolean;
+}) => {
+  const { data } = useChartContext();
+  const criterionScores = data[index];
+  const {
+    criterion,
+    score,
+    clippedScore,
+    personalScore,
+    clippedPersonalScore,
+  } = criterionScores;
+  const color = criterionColor(criterion);
+
+  if (personal)
+    return {
+      score: personalScore,
+      clippedScore: clippedPersonalScore,
+      color: lighten(color, 0.5),
+    };
+  else
+    return {
+      score,
+      clippedScore,
+      color,
+    };
 };
 
-// Copied from https://stackoverflow.com/a/59387478
-const lighten = (color: string, lighten: number) => {
-  const c = color.replace('#', '');
-  const rgb = [
-    parseInt(c.substr(0, 2), 16),
-    parseInt(c.substr(2, 2), 16),
-    parseInt(c.substr(4, 2), 16),
-  ];
-  let returnstatement = '#';
-  rgb.forEach((color) => {
-    returnstatement += Math.round(
-      (255 - color) * (1 - Math.pow(Math.E, -lighten)) + color
-    ).toString(16);
+const calculateScoreBarY = ({
+  index,
+  personalScoresActivated,
+  personal,
+}: {
+  index: number;
+  personalScoresActivated: boolean;
+  personal: boolean;
+}) => {
+  let y =
+    criterionChartHeight * index +
+    criterionChartHeight / 2 -
+    scoreBarHeight / 2;
+
+  if (personalScoresActivated) {
+    if (personal) y += scoreBarHeight / 2 + scoreBarsSpacing / 2;
+    else y -= scoreBarHeight / 2 + scoreBarsSpacing / 2;
+  }
+
+  return y;
+};
+
+const calculateScoreBarWidth = ({
+  chartWidth,
+  clippedScore,
+  domain,
+}: {
+  chartWidth: number;
+  clippedScore: number;
+  domain: number[];
+}) => {
+  const maxBarWidth = chartWidth - 2 * barMargin;
+  const [min, max] = domain;
+  const scoreWidth = ((clippedScore - min) / (max - min)) * maxBarWidth;
+  return scoreWidth;
+};
+
+const ScoreBar = ({
+  index,
+  personal,
+}: {
+  index: number;
+  personal: boolean;
+}) => {
+  const { chartWidth, domain, personalScoresActivated } = useChartContext();
+  const { clippedScore, color } = useCriterionScoreData({
+    index,
+    personal,
   });
-  return returnstatement;
+
+  if (personal && !personalScoresActivated) return null;
+  if (clippedScore === undefined) return null;
+
+  const y = calculateScoreBarY({ index, personalScoresActivated, personal });
+  const scoreWidth = calculateScoreBarWidth({
+    chartWidth,
+    clippedScore,
+    domain,
+  });
+
+  // We make the bar start inside the margin instead of the minimum value to make it look like it comes from below the circle
+  const barOffsetInsideMargin = barMargin * 0.5;
+
+  return (
+    <rect
+      x={barMargin - barOffsetInsideMargin}
+      y={y}
+      width={scoreWidth + barOffsetInsideMargin}
+      height={scoreBarHeight}
+      fill={color}
+    />
+  );
+};
+
+const ScoreLabel = ({
+  index,
+  personal,
+}: {
+  index: number;
+  personal: boolean;
+}) => {
+  const { chartWidth, domain, personalScoresActivated } = useChartContext();
+  const { score, clippedScore, color } = useCriterionScoreData({
+    index,
+    personal,
+  });
+
+  if (personal && !personalScoresActivated) return null;
+  if (score === undefined) return null;
+
+  const y = calculateScoreBarY({ index, personalScoresActivated, personal });
+  const scoreWidth = calculateScoreBarWidth({
+    chartWidth,
+    clippedScore: clippedScore || 0,
+    domain,
+  });
+
+  return (
+    <text
+      x={barMargin + scoreWidth + scoreLabelSpacingWithBar}
+      y={y + scoreBarHeight / 2}
+      dominantBaseline="middle"
+      fill={color}
+      style={{ fontSize: 14, fontWeight: 'bold' }}
+    >
+      {displayScore(score)}
+    </text>
+  );
+};
+
+const SVGTooltip = ({
+  x,
+  y,
+  width,
+  height,
+  debug = false,
+  ...tooltipProps
+}: {
+  title: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  debug?: boolean;
+  [tooltipProps: string]: unknown;
+}) => (
+  <foreignObject x={x} y={y} width={width} height={height}>
+    <Tooltip {...tooltipProps}>
+      <div
+        style={{
+          width,
+          height,
+          background: debug ? 'rgba(255, 0, 0, 0.3)' : undefined,
+        }}
+      />
+    </Tooltip>
+  </foreignObject>
+);
+
+const ScoreTooltip = ({
+  index,
+  personal,
+}: {
+  index: number;
+  personal: boolean;
+}) => {
+  const { chartWidth, domain, personalScoresActivated } = useChartContext();
+  const { clippedScore } = useCriterionScoreData({
+    index,
+    personal,
+  });
+  const { t } = useTranslation();
+
+  if (personal && !personalScoresActivated) return null;
+
+  const tooltip = personal
+    ? t('criteriaBarChart.personalScoreTooltip')
+    : t('criteriaBarChart.scoreTooltip');
+
+  const y = calculateScoreBarY({ index, personalScoresActivated, personal });
+  const scoreWidth = calculateScoreBarWidth({
+    chartWidth,
+    clippedScore: clippedScore || 0,
+    domain,
+  });
+
+  const extraVerticalSize = 2;
+  const maxLabelWidth = 30;
+
+  const width = scoreWidth + scoreLabelSpacingWithBar + maxLabelWidth;
+  const height = scoreBarHeight + extraVerticalSize / 2;
+
+  return (
+    <SVGTooltip
+      x={barMargin - 2}
+      y={y - extraVerticalSize / 2}
+      width={width + 2}
+      height={height + extraVerticalSize}
+      title={tooltip}
+      placement="right"
+      arrow
+    />
+  );
+};
+
+const SVGCriterionIcon = ({
+  criterion,
+  centerX,
+  centerY,
+}: {
+  criterion: string;
+  centerX: number;
+  centerY: number;
+}) => {
+  // We don't use the CriteriaIcon component here (inside a foreignObject) because it makes the image or emoji not centered
+
+  const { getCriteriaLabel } = useCurrentPoll();
+  const { emoji, imagePath } = criteriaIcon(criterion);
+
+  return (
+    <>
+      {emoji ? (
+        <text
+          x={centerX}
+          y={centerY + 2}
+          width="18"
+          height="20"
+          dominantBaseline="middle"
+          textAnchor="middle"
+        >
+          {emoji}
+        </text>
+      ) : (
+        <foreignObject x={centerX - 9} y={centerY - 10} width="18" height="20">
+          <img src={imagePath} width="18" />
+        </foreignObject>
+      )}
+      <SVGTooltip
+        x={centerX - 18}
+        y={centerY - 18}
+        width={36}
+        height={36}
+        title={getCriteriaLabel(criterion)}
+        placement="bottom-start"
+        arrow
+      />
+    </>
+  );
+};
+
+const CriterionLabel = ({ index }: { index: number }) => {
+  const { data } = useChartContext();
+  const criterionScores = data[index];
+  const { criterion } = criterionScores;
+  const color = criterionColor(criterion);
+
+  return (
+    <>
+      <circle
+        cx="20"
+        cy={criterionChartHeight * index + 20}
+        r={16}
+        stroke={color}
+        strokeWidth="4"
+        fill="white"
+      />
+      <SVGCriterionIcon
+        criterion={criterion}
+        centerX={20}
+        centerY={criterionChartHeight * index + criterionChartHeight / 2}
+      />
+    </>
+  );
+};
+
+const AxisLine = () => {
+  const { chartWidth, chartHeight, domain } = useChartContext();
+  const x =
+    barMargin +
+    calculateScoreBarWidth({ chartWidth, clippedScore: 0.0, domain });
+  return (
+    <line
+      x1={x}
+      x2={x}
+      y1={0}
+      y2={chartHeight}
+      stroke="black"
+      strokeDasharray="5,5"
+    />
+  );
 };
 
 const SizedBarChart = ({
@@ -55,106 +350,46 @@ const SizedBarChart = ({
   personalScoresActivated,
   domain,
   width,
-  height,
 }: {
-  data: CriteriaChartDatum[];
+  data: CriterionChartScores[];
   personalScoresActivated: boolean;
   domain: number[];
-  width?: number;
-  height?: number;
+  width: number;
 }) => {
-  const { getCriteriaLabel } = useCurrentPoll();
-  const { t } = useTranslation();
+  const height = criterionChartHeight * data.length;
 
-  const renderCustomAxisTick = ({
-    x,
-    y,
-    payload,
-  }: {
-    x: number;
-    y: number;
-    payload: { value: string };
-  }) => {
-    const criteriaName = payload.value;
-    const { emoji, imagePath } = criteriaIcon(criteriaName);
-    return (
-      <svg
-        x={x - 30 + (width || 0) / 2}
-        y={y - 30}
-        width="60"
-        height="60"
-        viewBox="0 0 60 60"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <style>{'.emoji { font-size: 42px; fill: black; }'}</style>
-        <rect x="0" y="0" width="60" height="60" fill="white" />
-        {emoji ? (
-          <text x="9" y="9" dominantBaseline="hanging" className="emoji">
-            {emoji}
-          </text>
-        ) : (
-          <image x="9" y="9" width="42" height="42" href={imagePath} />
-        )}
-        <title>{getCriteriaLabel(criteriaName)}</title>
-      </svg>
-    );
-  };
+  const contextValue = useMemo<ChartContextValue>(
+    () => ({
+      data,
+      domain,
+      chartWidth: width,
+      chartHeight: height,
+      personalScoresActivated,
+    }),
+    [data, domain, width, height, personalScoresActivated]
+  );
 
   return (
-    <BarChart layout="vertical" width={width} height={height} data={data}>
-      <XAxis type="number" domain={domain} hide={true} />
-
-      <Bar dataKey="clippedScore" barSize={20}>
-        {data.map((entry) => (
-          <Cell
-            key={entry.criteria}
-            fill={criteriaColors[entry.criteria] || criteriaColors['default']}
-          />
+    <ChartContext.Provider value={contextValue}>
+      <svg width={width} height={height}>
+        {data.map(({ criterion }, index) => (
+          <React.Fragment key={criterion}>
+            <ScoreBar index={index} personal={false} />
+            <ScoreBar index={index} personal={true} />
+            <CriterionLabel index={index} />
+          </React.Fragment>
         ))}
-      </Bar>
-      {personalScoresActivated && (
-        <Bar dataKey="clippedPersonalScore" barSize={20}>
-          {data.map((entry) => (
-            <Cell
-              key={entry.criteria}
-              fill={lighten(
-                criteriaColors[entry.criteria] || criteriaColors['default'],
-                0.5
-              )}
-            />
-          ))}
-        </Bar>
-      )}
-      <YAxis
-        type="category"
-        dataKey="criteria"
-        tick={renderCustomAxisTick}
-        interval={0}
-        axisLine={false}
-        tickLine={false}
-        width={6}
-      />
-      <Tooltip
-        cursor={{ stroke: 'black', strokeWidth: 2, fill: 'transparent' }}
-        content={(props: TooltipProps<number, string>) => {
-          const payload = props?.payload;
-          if (payload && payload[0]) {
-            const { criteria, score, personalScore } = payload[0].payload;
-            return (
-              <pre>
-                {getCriteriaLabel(criteria)}: {displayScore(score)}
-                {personalScoresActivated &&
-                  `\n${t('personalCriteriaScores.chartTooltip', {
-                    score: displayScore(personalScore),
-                  })}`}
-              </pre>
-            );
-          }
-          return null;
-        }}
-      />
-    </BarChart>
+        <AxisLine />
+        {data.map(({ criterion }, index) => (
+          <React.Fragment key={criterion}>
+            <ScoreLabel index={index} personal={false} />
+            <ScoreLabel index={index} personal={true} />
+            <ScoreTooltip index={index} personal={false} />
+            <ScoreTooltip index={index} personal={true} />
+          </React.Fragment>
+        ))}
+      </svg>
+    </ChartContext.Provider>
   );
 };
 
@@ -167,20 +402,30 @@ const CriteriaBarChart = ({ video, entity }: Props) => {
   const { shouldDisplayChart, data, personalScoresActivated, domain } =
     useCriteriaChartData({ video, entity });
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState<number | undefined>(undefined);
+
+  useLayoutEffect(() => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    const width = rect?.width;
+    setWidth(width);
+  }, []);
+
+  // TODO: handle div resize with @react-hook/resize-observer or custom code
+
   if (!shouldDisplayChart) return null;
 
-  const height = data.length * 60;
-
-  // We use a separated component for the chart because we need the width to position the icons.
-  // ResponsiveContainer adds the width and height props to its child component.
   return (
-    <ResponsiveContainer width="100%" height={height}>
-      <SizedBarChart
-        data={data}
-        personalScoresActivated={personalScoresActivated}
-        domain={domain}
-      />
-    </ResponsiveContainer>
+    <div ref={containerRef}>
+      {width !== undefined && (
+        <SizedBarChart
+          data={data}
+          domain={domain}
+          personalScoresActivated={personalScoresActivated}
+          width={width}
+        />
+      )}
+    </div>
   );
 };
 

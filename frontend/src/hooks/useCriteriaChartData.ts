@@ -17,8 +17,8 @@ const SCORE_MIN = -1;
 const SCORE_MAX = 1;
 const DOMAIN = [SCORE_MIN, SCORE_MAX];
 
-export interface CriteriaChartDatum {
-  criteria: string;
+export interface CriterionChartScores {
+  criterion: string;
   score: number | undefined;
   clippedScore: number | undefined;
   personalScore: number | undefined;
@@ -27,7 +27,7 @@ export interface CriteriaChartDatum {
 
 export interface UseCriteriaChartDataValue {
   shouldDisplayChart: boolean; // Whether the chart should be displayed
-  data: CriteriaChartDatum[]; // The scores per criteria
+  data: CriterionChartScores[]; // The scores per criterion
   personalScoresActivated: boolean; // True if the data also contains personal scores
   domain: number[]; // Minimum and maximum score values that should be displayed (scores in data may be outside this domain)
 }
@@ -63,19 +63,19 @@ const useCriteriaChartData = ({
     [pollName]
   );
 
-  const personalScoreByCriteria = useMemo(() => {
+  const personalScoreByCriterion = useMemo(() => {
     if (!personalScoresActivated || personalCriteriaScores === undefined)
       return {};
 
     const result: {
-      [criteria: string]: {
+      [criterion: string]: {
         score: number | undefined;
         clippedScore: number | undefined;
       };
     } = {};
     personalCriteriaScores.forEach(
-      ({ criteria, score }) =>
-        (result[criteria] = {
+      ({ criteria: criterion, score }) =>
+        (result[criterion] = {
           score,
           clippedScore: clipScore(score),
         })
@@ -83,22 +83,22 @@ const useCriteriaChartData = ({
     return result;
   }, [personalScoresActivated, personalCriteriaScores, clipScore]);
 
-  const data = useMemo<CriteriaChartDatum[]>(() => {
+  const data = useMemo<CriterionChartScores[]>(() => {
     if (!shouldDisplayChart) return [];
 
-    return criteriaScores.map(({ score, criteria }) => {
+    return criteriaScores.map(({ score, criteria: criterion }) => {
       const clippedScore = clipScore(score);
       const { score: personalScore, clippedScore: clippedPersonalScore } =
-        personalScoreByCriteria[criteria] || {};
+        personalScoreByCriterion[criterion] || {};
       return {
-        criteria,
+        criterion,
         score,
         clippedScore,
         personalScore,
         clippedPersonalScore,
       };
     });
-  }, [shouldDisplayChart, criteriaScores, personalScoreByCriteria, clipScore]);
+  }, [shouldDisplayChart, criteriaScores, personalScoreByCriterion, clipScore]);
 
   return {
     shouldDisplayChart,
