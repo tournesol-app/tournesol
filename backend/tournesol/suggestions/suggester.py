@@ -1,4 +1,4 @@
-from django.db.models import QuerySet, Q
+from django.db.models import Q, QuerySet
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
