@@ -1,4 +1,4 @@
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
@@ -72,9 +72,18 @@ class Suggester:
         # I want all entities from the current poll compared by supertrusted user
         # todo create alias to properly detect supertrusted ?
         req_entities = Entity.objects \
-            .filter(comparison__poll__name=self.poll.name)\
-            .filter(comparison__user__is_staff=True)\
+            .filter(Q(comparisons_entity_1__poll__name=self.poll.name) |
+                    Q(comparisons_entity_2__poll__name=self.poll.name))\
+            .filter(Q(comparisons_entity_1__user__is_staff=True) |
+                    Q(comparisons_entity_2__user__is_staff=True))\
             .distinct()
+        # .prefetch_related(Prefetch('comparison__entity_1',
+        #                            queryset=Comparison.objects.all(),
+        #                            to_attr='cmp_ent_1'),
+        #                   Prefetch('comparison__entity_2',
+        #                            queryset=Comparison.objects.all(),
+        #                            to_attr='cmp_ent_2'))\
+
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
@@ -147,6 +156,7 @@ class Suggester:
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
+        self._user_specific_graphs[user].compute_offline_parameters(self._get_user_comparability_augmenting_videos())
         self._user_specific_graphs[user].prepare_for_sorting()
 
         # Prepare the set of videos to sort, taking the videos present in the graph
@@ -188,6 +198,7 @@ class Suggester:
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
+        self._user_specific_graphs[user].compute_offline_parameters(self._get_user_comparability_augmenting_videos())
         self._user_specific_graphs[user].prepare_for_sorting(first_video_id)
 
         # Prepare the set of videos to sort, taking the videos present in the graph and append

@@ -54,7 +54,7 @@ class SuggestionAPITestCase(TestCase):
         # Populate the user table
         self.user = UserFactory(username=self._user)
         self.other = UserFactory(username=self._other)
-        self.central_scaled_user = UserFactory(username=self._central_scaled_user)
+        self.central_scaled_user = UserFactory(username=self._central_scaled_user, is_staff=True)
         now = datetime.datetime.now()
 
         # Populate the video table

@@ -39,7 +39,7 @@ class Graph:
     adjacency_matrix: np.array
     normalized_adjacency_matrix: np.array
 
-    distance_matrix: np.array
+    distance_matrix: dict[SuggestedVideo, dict[SuggestedVideo, int]]
     similarity_matrix: np.array
 
     @property
@@ -94,7 +94,8 @@ class Graph:
         self.dirty = True
 
     def build_adjacency_matrix(self):
-        self.adjacency_matrix = np.zeroes(len(self.nodes))
+        self.adjacency_matrix = np.zeros((len(self.nodes), len(self.nodes)))
+        self.normalized_adjacency_matrix = self.adjacency_matrix.copy()
 
         for u, v in self.edges:
             u_index = self.nodes.index(u)
@@ -114,23 +115,24 @@ class Graph:
     def build_distance_matrix(self):
         # Compute sigma here
         self.sigma = 1
-        self.distance_matrix = np.zeroes(len(self.nodes))
+        self.distance_matrix = {key: {key2: 0 for key2 in self.nodes} for key in self.nodes}
         total_max_dist = 0
-        for i, v in enumerate(self.nodes):
+        for v in self.nodes:
             self.bfs(v, give_distances=True, on_all_sub_graphs=False)
-            total_max_dist += max(self.distance_matrix[i])
+            total_max_dist += max(self.distance_matrix[v].values())
         self.sigma = total_max_dist / len(self.nodes)
 
-    def bfs(self, starting_node, give_distances=True, on_all_sub_graphs=False):
+    def bfs(self, starting_node: SuggestedVideo, give_distances=True, on_all_sub_graphs=False):
         visited: list[SuggestedVideo] = []
         waiting_for_visit: list[SuggestedVideo] = [starting_node]
-        future_visits: set[SuggestedVideo] = set()
+        future_visits: set[SuggestedVideo]
         unvisited: list[SuggestedVideo] = self.nodes.copy()
 
         act_root = starting_node
         depth = 0
 
         while len(unvisited) > 0:
+            future_visits = set()
             for act_vid in waiting_for_visit:
                 # act_vid = waiting_for_visit.pop()
                 visited.append(act_vid)
@@ -139,7 +141,8 @@ class Graph:
                     self.distance_matrix[act_root][act_vid] = depth
                     self.distance_matrix[act_vid][act_root] = depth
                 for v in self.graph[act_vid]:
-                    if v not in visited and v not in waiting_for_visit:
+                    if v not in visited and v not in waiting_for_visit\
+                            :
                         future_visits.add(v)
             if len(future_visits) == 0:
                 if on_all_sub_graphs:
@@ -188,9 +191,10 @@ class Graph:
         return len(self.find_connex_subgraphs()) == 1
 
     def build_similarity_matrix(self):
+        self.similarity_matrix = np.zeros((len(self.nodes), len(self.nodes)))
         for i, u in enumerate(self.nodes):
             for j, v in enumerate(self.nodes):
-                exponent = (self.distance_matrix[i, j]) ** 2 / self.sigma**2
+                exponent = (self.distance_matrix[u][v]) ** 2 / self.sigma**2
                 self.similarity_matrix[i][j] = np.e**exponent
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
@@ -204,17 +208,19 @@ class Graph:
             self.build_adjacency_matrix()
             self.build_distance_matrix()
             self.build_similarity_matrix()
-            self.compute_information_gain(scaling_factor_increasing_videos)
             self.local_user_scaling = ContributorScaling.objects.filter(
-                user=self._local_user
+                user__email=self._local_user.uid
             )[0]
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
-                    contributor_rating__user=self._local_user
+                    contributor_rating__user__email=self._local_user.uid
                 )
-                .filter(contributor_rating__poll_name=self._local_poll.name)
-                .aggregate(mean=Avg("score"))["mean"]
-            )
+                .filter(contributor_rating__poll__name=self._local_poll.name)
+                .aggregate(mean=Avg("score"))
+            )["mean"]
+
+            self.compute_information_gain(scaling_factor_increasing_videos)
+
         elif self._local_user is None:
             entity_criteria_scores: QuerySet = EntityCriteriaScore.objects.filter(
                 comparison__poll__name=self._local_poll.name
