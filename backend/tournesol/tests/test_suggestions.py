@@ -11,6 +11,10 @@ from tournesol.suggestions.suggester_store import _SuggesterStore
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
 from tournesol.tests.factories.scaling import ContributorScalingFactory
 
 
@@ -214,6 +218,43 @@ class SuggestionAPITestCase(TestCase):
             scale_uncertainty=0,
             translation_uncertainty=0.0,
         )
+        # Populate the rating table - is already done ?
+        for i, v in enumerate(self.videos[:5]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.other,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0,
+            )
+        for i, v in enumerate(self.videos[5:]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=2.2,
+            )
+        contributor_rating = ContributorRatingFactory(
+            poll=self.poll,
+            entity=self.videos[5],
+            user=self.central_scaled_user,
+            is_public=True,
+        )
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=contributor_rating,
+            criteria=self._criteria,
+            score=0,
+        )
+
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 

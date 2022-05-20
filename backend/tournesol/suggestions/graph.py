@@ -141,10 +141,10 @@ class Graph:
                     self.distance_matrix[act_root][act_vid] = depth
                     self.distance_matrix[act_vid][act_root] = depth
                 for v in self.graph[act_vid]:
-                    if v not in visited and v not in waiting_for_visit\
+                    if v not in visited and v not in waiting_for_visit \
                             :
                         future_visits.add(v)
-            if len(future_visits) == 0:
+            if len(future_visits) == 0 and len(unvisited) > 0:
                 if on_all_sub_graphs:
                     act_root = unvisited.pop()
                     future_visits.add(act_root)
@@ -158,14 +158,15 @@ class Graph:
     def find_connex_subgraphs(self) -> set[Graph]:
         visited: list[SuggestedVideo] = []
         waiting_for_visit: list[SuggestedVideo] = []
-        future_visits: set[SuggestedVideo] = set()
+        future_visits: set[SuggestedVideo]
         unvisited: list[SuggestedVideo] = self.nodes.copy()
 
-        waiting_for_visit.append(unvisited.pop())
+        waiting_for_visit.append(unvisited[0])
         result: set[Graph] = set()
         act_graph = Graph(self._local_user, self._local_poll, self._local_criteria)
 
         while len(unvisited) > 0:
+            future_visits = set()
             for act_vid in waiting_for_visit:
                 # act_vid = waiting_for_visit.pop()
                 visited.append(act_vid)
@@ -176,7 +177,7 @@ class Graph:
                     if v not in visited and v not in waiting_for_visit:
                         future_visits.add(v)
 
-            if len(future_visits) == 0:
+            if len(future_visits) == 0 and len(unvisited) > 0:
                 result.add(act_graph)
                 act_graph = Graph(
                     self._local_user, self._local_poll, self._local_criteria
@@ -194,8 +195,8 @@ class Graph:
         self.similarity_matrix = np.zeros((len(self.nodes), len(self.nodes)))
         for i, u in enumerate(self.nodes):
             for j, v in enumerate(self.nodes):
-                exponent = (self.distance_matrix[u][v]) ** 2 / self.sigma**2
-                self.similarity_matrix[i][j] = np.e**exponent
+                exponent = (self.distance_matrix[u][v]) ** 2 / self.sigma ** 2
+                self.similarity_matrix[i][j] = np.e ** exponent
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
         """
@@ -215,8 +216,8 @@ class Graph:
                 ContributorRatingCriteriaScore.objects.filter(
                     contributor_rating__user__email=self._local_user.uid
                 )
-                .filter(contributor_rating__poll__name=self._local_poll.name)
-                .aggregate(mean=Avg("score"))
+                    .filter(contributor_rating__poll__name=self._local_poll.name)
+                    .aggregate(mean=Avg("score"))
             )["mean"]
 
             self.compute_information_gain(scaling_factor_increasing_videos)
@@ -230,7 +231,7 @@ class Graph:
                 act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                 for n in self._nodes:
                     act_vid.video2_score[n] = (
-                        self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                            self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                     )
 
     def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
@@ -249,8 +250,8 @@ class Graph:
             for va in self.nodes:
                 for vb in self.nodes:
                     if (
-                        va in scaling_factor_increasing_videos
-                        and vb in scaling_factor_increasing_videos
+                            va in scaling_factor_increasing_videos
+                            and vb in scaling_factor_increasing_videos
                     ):
                         va.video1_score = 1
                         va.video2_score[vb] = 1
@@ -260,7 +261,12 @@ class Graph:
         # Once the scaling factor is high enough, check what video should gain
         # information being compared by the user
         else:
-            for sg in self.find_connex_subgraphs():
+            sub_graphs = self.find_connex_subgraphs()
+            if len(sub_graphs) == 1:
+                sub_graphs = [self]
+            for sg in sub_graphs:
+                if len(sub_graphs) > 1:
+                    sg.compute_offline_parameters(scaling_factor_increasing_videos)
                 eigenvalues = np.linalg.eigvalsh(sg.normalized_adjacency_matrix)
                 max_beta = 0
                 for vb in sg.nodes:
@@ -276,9 +282,13 @@ class Graph:
                             va.video2_score[vb] = 1
                         else:
                             va.video2_score[vb] = 0
-                        va.beta[vb] += user.delta_theta[vb] + user.delta_theta[va] / (
-                            user.theta[vb] - user.theta[va] + 1
-                        )
+                        # Compute estimated information gain relative to the respective
+                        # uncertainties in both scores
+                        va.beta[vb] = user.delta_theta.get(vb, actual_scaling_accuracy) + \
+                                      user.delta_theta.get(va, actual_scaling_accuracy) / (
+                                              user.theta.get(vb, self.local_user_mean) -
+                                              user.theta.get(va, self.local_user_mean) + 1
+                                      )
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
