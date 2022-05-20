@@ -45,8 +45,7 @@ const useCriteriaChartData = ({
   );
   const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 
-  const { options, name: pollName } = useCurrentPoll();
-  const mainCriterionName = options?.mainCriterionName ?? '';
+  const { name: pollName } = useCurrentPoll();
 
   const { personalScoresActivated, personalCriteriaScores } =
     usePersonalCriteriaScores();
@@ -87,27 +86,19 @@ const useCriteriaChartData = ({
   const data = useMemo<CriteriaChartDatum[]>(() => {
     if (!shouldDisplayChart) return [];
 
-    return criteriaScores
-      .filter((s) => s.criteria != mainCriterionName)
-      .map(({ score, criteria }) => {
-        const clippedScore = clipScore(score);
-        const { score: personalScore, clippedScore: clippedPersonalScore } =
-          personalScoreByCriteria[criteria] || {};
-        return {
-          criteria,
-          score,
-          clippedScore,
-          personalScore,
-          clippedPersonalScore,
-        };
-      });
-  }, [
-    shouldDisplayChart,
-    criteriaScores,
-    personalScoreByCriteria,
-    mainCriterionName,
-    clipScore,
-  ]);
+    return criteriaScores.map(({ score, criteria }) => {
+      const clippedScore = clipScore(score);
+      const { score: personalScore, clippedScore: clippedPersonalScore } =
+        personalScoreByCriteria[criteria] || {};
+      return {
+        criteria,
+        score,
+        clippedScore,
+        personalScore,
+        clippedPersonalScore,
+      };
+    });
+  }, [shouldDisplayChart, criteriaScores, personalScoreByCriteria, clipScore]);
 
   return {
     shouldDisplayChart,
