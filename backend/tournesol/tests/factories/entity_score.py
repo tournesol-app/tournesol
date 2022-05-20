@@ -1,6 +1,7 @@
 import factory.django
 
-from tournesol.models import EntityCriteriaScore as EntityCriteriaScoreModels, Poll
+from tournesol.models import EntityCriteriaScore as EntityCriteriaScoreModels
+from tournesol.models import Poll
 from tournesol.tests.factories.entity import VideoFactory
 
 

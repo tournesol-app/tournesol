@@ -12,12 +12,12 @@ class Suggester:
     An interface class to ask for suggestions of videos to compare
     """
     # Entity to specific video structure dictionary
-    _entity_to_video: dict[Entity, SuggestedVideo] = {}
-    _comparison_reference_video: SuggestedVideo = SuggestedVideo(None)
+    _entity_to_video: dict[Entity, SuggestedVideo]  # todo Use only uid as key
+    _comparison_reference_video: SuggestedVideo
     # Graph containing all videos and existing comparisons, used to get the video preferences
     _complete_graph: Graph
     # Dictionary linking a user to its comparison graph, used to get its information gain
-    _user_specific_graphs: dict[User, Graph] = {}
+    _user_specific_graphs: dict[User, Graph]
 
     def __init__(self, concerned_poll: Poll):
         """
@@ -25,6 +25,9 @@ class Suggester:
         It must not be called before the DB is ready, as it will call it while constructing the
         complete graph
         """
+        self._comparison_reference_video = SuggestedVideo(None)
+        self._entity_to_video = {}
+        self._user_specific_graphs = {}
         self.poll = concerned_poll
         self.criteria = self.poll.criterias_list[0]
         # build complete graph
@@ -69,8 +72,9 @@ class Suggester:
         # I want all entities from the current poll compared by supertrusted user
         # todo create alias to properly detect supertrusted ?
         req_entities = Entity.objects \
-            .filter(comparison__poll__name=self.poll.name) \
-            .filter(comparison__user__is_staff=True)
+            .filter(comparison__poll__name=self.poll.name)\
+            .filter(comparison__user__is_staff=True)\
+            .distinct()
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
@@ -115,8 +119,8 @@ class Suggester:
                 .filter(comparison__user__email=new_user.email)
         )
         for c in query:
-            va = c.comparison.entity_1
-            vb = c.comparison.entity_2
+            va = self._entity_to_video[c.comparison.entity_1]
+            vb = self._entity_to_video[c.comparison.entity_2]
             self._user_specific_graphs[new_user].add_edge(va, vb)
 
     def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
