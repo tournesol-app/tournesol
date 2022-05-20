@@ -22,9 +22,9 @@ class Graph:
     """
     # not necessarily the best data structure,
     # I still have to find out what is the best one between the two
-    edges: list[tuple[SuggestedVideo, SuggestedVideo]] = []
-    _nodes: list[SuggestedVideo]
-    graph: dict[SuggestedVideo, list[SuggestedVideo]] = {}
+    edges: list[tuple[SuggestedVideo, SuggestedVideo]]
+    _nodes: list[SuggestedVideo]  # todo clean that, use default dict functions
+    graph: dict[SuggestedVideo, list[SuggestedVideo]]
     sigma: float
     dirty: bool
     _local_user: SuggestedUser
@@ -50,6 +50,8 @@ class Graph:
         self.local_user_mean: float = 0
         self.video_comparison_reference = SuggestedVideo(None)
         self.dirty = True
+        self.edges = []
+        self.graph = {}
         # init absent node values
         self.ABSENT_NODE.video1_score = -1
         self.ABSENT_NODE.estimated_information_gains = 0.75
@@ -71,9 +73,9 @@ class Graph:
 
     def add_edge(self, node_a: SuggestedVideo, node_b: SuggestedVideo):
         if node_a not in self._nodes:
-            print("Warning ! unknown node added in edge")
+            self.add_node(node_a)
         if node_b not in self._nodes:
-            print("Warning ! unknown node added in edge")
+            self.add_node(node_b)
 
         node_b.nb_comparison_with[node_a.uid] += 1
         node_a.nb_comparison_with[node_b.uid] += 1
