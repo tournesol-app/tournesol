@@ -169,7 +169,6 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
 
         # Every comparison trio should have been counted 6 times, like this:
         # ((1, 2, 3), (2, 3, 1), (3, 1, 2), and the reverses (3, 2, 1), (1, 3, 2), (2, 1, 3))
-        assert (comparison_trios_count % 6) == 0
         comparison_trios_count //= 6
 
         return cycles_count, comparison_trios_count
