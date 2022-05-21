@@ -167,8 +167,8 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
                 comparison_trios_count += len(self.all_connections[entity_1] &
                                               self.all_connections[entity_2])
 
-        # Every comparison trio should have been counted 6 times, like this:
-        # ((1, 2, 3), (2, 3, 1), (3, 1, 2), and the reverses (3, 2, 1), (1, 3, 2), (2, 1, 3))
+        # Every comparison trio should have been counted 6 times
+        # (any node can be counted in any order, so 1*2*3 = 6 possible permutations)
         comparison_trios_count //= 6
 
         return cycles_count, comparison_trios_count
