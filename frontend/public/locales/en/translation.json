@@ -247,7 +247,8 @@
   "stats": {
     "activeUsers": "Active users",
     "comparisons": "Comparisons",
-    "ratedVideos": "Rated videos"
+    "ratedVideos": "Rated videos",
+    "ratedCandidates": "Rated candidates"
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
