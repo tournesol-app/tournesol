@@ -141,8 +141,7 @@ class Graph:
                     self.distance_matrix[act_root][act_vid] = depth
                     self.distance_matrix[act_vid][act_root] = depth
                 for v in self.graph[act_vid]:
-                    if v not in visited and v not in waiting_for_visit \
-                            :
+                    if v not in visited and v not in waiting_for_visit:
                         future_visits.add(v)
             if len(future_visits) == 0 and len(unvisited) > 0:
                 if on_all_sub_graphs:
@@ -216,8 +215,8 @@ class Graph:
                 ContributorRatingCriteriaScore.objects.filter(
                     contributor_rating__user__email=self._local_user.uid
                 )
-                    .filter(contributor_rating__poll__name=self._local_poll.name)
-                    .aggregate(mean=Avg("score"))
+                .filter(contributor_rating__poll__name=self._local_poll.name)
+                .aggregate(mean=Avg("score"))
             )["mean"]
 
             self.compute_information_gain(scaling_factor_increasing_videos)
@@ -285,10 +284,10 @@ class Graph:
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
                         va.beta[vb] = user.delta_theta.get(vb, actual_scaling_accuracy) + \
-                                      user.delta_theta.get(va, actual_scaling_accuracy) / (
-                                              user.theta.get(vb, self.local_user_mean) -
-                                              user.theta.get(va, self.local_user_mean) + 1
-                                      )
+                            user.delta_theta.get(va, actual_scaling_accuracy) / (
+                            user.theta.get(vb, self.local_user_mean) -
+                            user.theta.get(va, self.local_user_mean) + 1
+                            )
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:

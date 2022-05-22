@@ -77,12 +77,6 @@ class Suggester:
             .filter(Q(comparisons_entity_1__user__is_staff=True) |
                     Q(comparisons_entity_2__user__is_staff=True))\
             .distinct()
-        # .prefetch_related(Prefetch('comparison__entity_1',
-        #                            queryset=Comparison.objects.all(),
-        #                            to_attr='cmp_ent_1'),
-        #                   Prefetch('comparison__entity_2',
-        #                            queryset=Comparison.objects.all(),
-        #                            to_attr='cmp_ent_2'))\
 
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
@@ -121,11 +115,10 @@ class Suggester:
         )
         # build user graph
         query: QuerySet = (
-            ComparisonCriteriaScore.objects.filter(
-                comparison__poll__name=self.poll.name
-            )
-                .filter(criteria=self.criteria)
-                .filter(comparison__user__email=new_user.email)
+            ComparisonCriteriaScore.objects
+                                   .filter(comparison__poll__name=self.poll.name)
+                                   .filter(criteria=self.criteria)
+                                   .filter(comparison__user__email=new_user.email)
         )
         for c in query:
             va = self._entity_to_video[c.comparison.entity_1]
@@ -156,8 +149,9 @@ class Suggester:
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
-        self._user_specific_graphs[user].compute_offline_parameters(self._get_user_comparability_augmenting_videos())
-        self._user_specific_graphs[user].prepare_for_sorting()
+        user_graph = self._user_specific_graphs[user]
+        user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
+        user_graph.prepare_for_sorting()
 
         # Prepare the set of videos to sort, taking the videos present in the graph
         # and append the ones that are not yet compared by the user
@@ -198,8 +192,9 @@ class Suggester:
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
-        self._user_specific_graphs[user].compute_offline_parameters(self._get_user_comparability_augmenting_videos())
-        self._user_specific_graphs[user].prepare_for_sorting(first_video_id)
+        user_graph = self._user_specific_graphs[user]
+        user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
+        user_graph.prepare_for_sorting(first_video_id)
 
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
@@ -226,7 +221,8 @@ class Suggester:
 
     def _prepare_video_list(self, user: User):
         """
-        Function used in the video recommendations, to prepare the set of videos to choose the recommendation from
+        Function used in the video recommendations, to prepare the set of videos to choose the
+        recommendation from
         """
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
