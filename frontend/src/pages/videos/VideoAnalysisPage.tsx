@@ -2,7 +2,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
-import { Box, Button, Collapse, Container, Grid, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Collapse,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+} from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
@@ -64,16 +72,21 @@ export const VideoAnalysis = ({
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
           <Grid item xs={12}>
-          <CollapseButton expanded={expanded} onClick={() => {setExpanded(!expanded)}}>
-            {t("entityAnalysisPage.video.description")}
-          </CollapseButton>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <Box
-              style={expanded ? { display: 'block' } : { display: 'none' }}
-              dangerouslySetInnerHTML={{ __html: linki }}
-              color= 'theme.palette.text.primary'
-            />
-          </Collapse>
+            <CollapseButton
+              expanded={expanded}
+              onClick={() => {
+                setExpanded(!expanded);
+              }}
+            >
+              {t('entityAnalysisPage.video.description')}
+            </CollapseButton>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+              <Box
+                style={expanded ? { display: 'block' } : { display: 'none' }}
+                dangerouslySetInnerHTML={{ __html: linki }}
+                color="theme.palette.text.primary"
+              />
+            </Collapse>
           </Grid>
 
           {/* data visualization */}
