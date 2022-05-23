@@ -5,11 +5,7 @@ from django.test import TestCase
 from core.utils.time import time_ago
 from tournesol.models import Entity
 from tournesol.tests.factories.entity import VideoCriteriaScoreFactory, VideoFactory
-from twitterbot.tournesolbot import (
-    get_best_criteria,
-    get_video_recommendations,
-    prepare_tweet,
-)
+from twitterbot.tournesolbot import get_best_criteria, get_video_recommendations, prepare_tweet
 
 
 class TestTournesolBot(TestCase):
