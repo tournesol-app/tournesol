@@ -14,10 +14,14 @@ from twitterbot.uploader_twitter_account import get_twitter_account_from_video_i
 def get_best_criteria(video, n):
     """Get the n best criteria"""
 
-    criteria_list = video.all_criteria_scores.filter(
-        poll__name=DEFAULT_POLL_NAME,
-        score_mode=ScoreMode.DEFAULT,
-    ).order_by("-score")[:n]
+    criteria_list = (
+        video.all_criteria_scores.filter(
+            poll__name=DEFAULT_POLL_NAME,
+            score_mode=ScoreMode.DEFAULT,
+        )
+        .exclude(criteria="largely_recommended")
+        .order_by("-score")[:n]
+    )
 
     if len(criteria_list) < n:
         raise ValueError("Not enough criteria to show!")
@@ -41,9 +45,7 @@ def prepare_tweet(video):
     # Get two best criteria and criteria dict name
     crit1, crit2 = get_best_criteria(video, 2)
     crit_dict = dict(
-        CriteriaLocale.objects.filter(language=language).values_list(
-            "criteria__name", "label"
-        )
+        CriteriaLocale.objects.filter(language=language).values_list("criteria__name", "label")
     )
 
     # Replace "@" by "at" to avoid false mentions in the tweet
@@ -92,9 +94,7 @@ def get_video_recommendations(language):
     # Filter videos with some quality criteria
     tweetable_videos = Entity.objects.filter(
         add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
-        metadata__publication_date__gte=time_ago(
-            days=settings.DAYS_TOO_OLD
-        ).isoformat(),
+        metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
         rating_n_contributors__gt=settings.MIN_NB_CONTRIBUTORS,
         rating_n_ratings__gte=settings.MIN_NB_RATINGS,
         metadata__language=language,
