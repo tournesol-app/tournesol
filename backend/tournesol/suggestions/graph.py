@@ -210,9 +210,9 @@ class Graph:
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
                     contributor_rating__user__id=self._local_user.uid)
-                .filter(criteria=self._local_criteria)
-                .filter(contributor_rating__poll__name=self._local_poll.name)
-                .aggregate(mean=Avg("score"))
+                    .filter(criteria=self._local_criteria)
+                    .filter(contributor_rating__poll__name=self._local_poll.name)
+                    .aggregate(mean=Avg("score"))
             )["mean"]
 
             self.compute_information_gain(scaling_factor_increasing_videos)
@@ -280,10 +280,10 @@ class Graph:
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
                         va.beta[vb] = user.delta_theta.get(vb, actual_scaling_accuracy) + \
-                                      user.delta_theta.get(va, actual_scaling_accuracy) / (
-                                              user.theta.get(vb, self.local_user_mean) -
-                                              user.theta.get(va, self.local_user_mean) + 1
-                                      )
+                            user.delta_theta.get(va, actual_scaling_accuracy) / (
+                                user.theta.get(vb, self.local_user_mean) -
+                                user.theta.get(va, self.local_user_mean) + 1
+                            )
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
