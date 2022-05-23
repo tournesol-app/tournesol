@@ -7,7 +7,7 @@ from tournesol.suggestions.suggested_user import SuggestedUser as Recommendation
 from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
-class Suggester:
+class SuggestionProvider:
     """
     An interface class to ask for suggestions of videos to compare
     """
@@ -95,10 +95,10 @@ class Suggester:
         with the collected information
         """
         # for requests => look at ml->inputs
-        scale_aug_vids = self._get_user_comparability_augmenting_videos()
+        scale_aug_videos = self._get_user_comparability_augmenting_videos()
         for g in self._user_specific_graphs.values():
             # Will be cached, do at registration
-            g.compute_offline_parameters(scale_aug_vids)
+            g.compute_offline_parameters(scale_aug_videos)
 
     def register_new_user(self, new_user):
         """
@@ -155,18 +155,18 @@ class Suggester:
 
         # Prepare the set of videos to sort, taking the videos present in the graph
         # and append the ones that are not yet compared by the user
-        considered_vids_list = self._prepare_video_list(user)
+        considered_vid_list = self._prepare_video_list(user)
 
         max_vid_pref = 0
         # Todo : take into account the rate later list / already seen videos ?
-        for v in considered_vids_list:
+        for v in considered_vid_list:
             v.user_pref = max(v.nb_comparison_with.values()) / v.comparison_nb
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
         for i in range(nb_video_required):
             act_preference_goal = (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
-            for v in considered_vids_list:
+            for v in considered_vid_list:
                 act_user_pref = v.user_pref
                 if act_user_pref >= act_preference_goal and v not in result:
                     result.append(v)
@@ -196,16 +196,16 @@ class Suggester:
 
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
-        considered_vids_list = self._prepare_video_list(user)
+        considered_vid_list = self._prepare_video_list(user)
 
         max_vid_pref = 0
-        for v in considered_vids_list:
+        for v in considered_vid_list:
             v.user_pref = v.nb_comparison_with[first_video_id] / v.comparison_nb
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
         for i in range(nb_video_required):
-            for v in considered_vids_list:
+            for v in considered_vid_list:
                 act_user_pref = v.user_pref
                 act_min_ratio = (nb_video_required - i) / (nb_video_required + 1)
                 if (
@@ -225,11 +225,11 @@ class Suggester:
         """
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
-        considered_vids = set(self._user_specific_graphs[user].nodes)
+        considered_vid = set(self._user_specific_graphs[user].nodes)
         tmp = set(self._complete_graph.nodes.copy())
-        tmp = tmp.difference(considered_vids)
+        tmp = tmp.difference(considered_vid)
 
-        considered_vids.update(tmp)
-        considered_vids_list = list(considered_vids)
-        considered_vids_list.sort(reverse=True)
-        return considered_vids_list
+        considered_vid.update(tmp)
+        considered_vid_list = list(considered_vid)
+        considered_vid_list.sort(reverse=True)
+        return considered_vid_list
