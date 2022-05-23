@@ -1,4 +1,4 @@
-# Tournesol Backend
+# Tournesol back end
 
 The API of the Tournesol platform, made with Python and Django.
 
@@ -90,20 +90,58 @@ features will be missing. It's recommended to get and configure this API key if
 you plan to contribute regularly to the project, to make your environment
 closer to the production one.
 
+#### Requirements
+
+1. a Google account
+2. to be connected while following the procedure
+
 #### Procedure
 
-* Go to https://console.cloud.google.com/apis/ and create a new project
-  named `tournesol`
+##### Create and configure the key
 
-* Setup you credentials by getting a API key. Do not restrict its use for
-  development purpose.
+**(1)** First go to https://console.cloud.google.com/apis/ and create a new
+project. You can choose the name you prefer, we suggest `tournesol`. You
+should now be automatically redirected to the project dashboard.
 
-* Set `YOUTUBE_API_KEY` value in your `SETTINGS_FILE`.  
-  If you are using the "dev-env", this is
-  in [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml)
+**(2)** Go to the credentials page, accessible from the menu, and create new
+`API key `credentials. You should now be able to see the API key value by
+clicking on it.
 
-* Then go to https://console.cloud.google.com/apis/credentials/consent, and add
-  a user test (typicaly your gmail account)
+**(3)** Unfold the action menu of your API key and click on modify. To secure
+the key usage you need to add few restrictions.
+
+Add an application restriction to define the only URLs or IP addresses allowed
+to use the key (not relevant for local development environments).
+
+Also add an API restriction to make the key able to query only the
+`YouTube Data API v3`. This setting can take few minutes to apply.
+
+##### Configure the back end with the key
+
+**(1)** Now configure the `YOUTUBE_API_KEY` setting with the API key value in your
+`SETTINGS_FILE`. If you are using the `dev-env`, the settings file is
+[backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
+
+**(2)** Finally, you need to enable your API keys. As long as the keys are not
+activated, the YouTube API will return an HTTP 403 error each time the back
+end  will try to get videos' metadata.
+
+To activate your keys, you need to know your project id. You can copy it from
+the page https://console.cloud.google.com/welcome.
+
+Then simply visit the following URL. Don't forget to replace the string
+`{YOUR_PROJECT_ID}` by your own project ID.
+
+```
+https://console.developers.google.com/apis/api/youtube.googleapis.com/overview?project={YOUR_PROJECT_ID}
+```
+
+If the URLs of the Google Cloud console in this document are outdated, you can
+always get the correct activation link from the back end's logs, by triggering
+a video metadata refresh from the administration interface.
+
+The back end is now ready to automatically update the videos' metadata when
+new videos are added using the API, and when using the force refresh action.
 
 ## Tests
 
