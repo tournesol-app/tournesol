@@ -124,7 +124,7 @@ def select_a_video(tweetable_videos):
     return selected_video
 
 
-def tweet_video_recommendation(bot_name, debug=True):
+def tweet_video_recommendation(bot_name, assumeyes=False):
     """Tweet a video recommendation.
 
     Args:
@@ -144,12 +144,11 @@ def tweet_video_recommendation(bot_name, debug=True):
     video = select_a_video(tweetable_videos)
     tweet_text = prepare_tweet(video)
 
-    if debug:
-        print("Today's video to tweet will be:")
-        print(tweet_text)
-
+    print("Today's video to tweet will be:")
+    print(tweet_text)
+        
+    if not assumeyes:
         confirmation = input("\nWould you like to tweet that? (y/n): ")
-
         if confirmation not in ["y", "yes"]:
             return
 

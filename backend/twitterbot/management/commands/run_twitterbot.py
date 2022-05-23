@@ -21,11 +21,11 @@ class Command(BaseCommand):
 
         # Optional argument
         parser.add_argument(
-            "-d",
-            "--debug",
+            "-y",
+            "--assumeyes",
             action="store_true",
             default=False,
-            help="Debug mode, will ask for confirmation.",
+            help="Answer yes when ask for confirmation. Default: False",
         )
 
         parser.add_argument(
@@ -53,8 +53,4 @@ class Command(BaseCommand):
                     sep=" - ",
                 )
 
-        # Temporary, to avoid to tweet anything if not in debug mode
-        if not options["debug"]:
-            return
-
-        tweet_video_recommendation(bot_name, debug=options["debug"])
+        tweet_video_recommendation(bot_name, assumeyes=options["assumeyes"])
