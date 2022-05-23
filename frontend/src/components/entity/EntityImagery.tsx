@@ -90,8 +90,14 @@ const EntityImagery = ({
   if (entity.type === TypeEnum.VIDEO) {
     return (
       <>
-        {/* display the video player by default, unless otherwise configured */}
-        {videoConfig?.displayPlayer ?? true ? (
+        {/*
+            Display the video player by default, unless otherwise configured.
+
+            Automatically fallback to the video player if the entity metadata
+            don't contain the `thumbnails` attribute.
+        */}
+        {(videoConfig?.displayPlayer ?? true) ||
+        entity.metadata.thumbnails === undefined ? (
           <Box
             sx={{
               aspectRatio: '16 / 9',
