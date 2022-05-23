@@ -203,18 +203,21 @@ class SuggestionAPITestCase(TestCase):
         ContributorScalingFactory(
             user=self.user,
             poll=self.poll,
+            criteria=self._criteria,
             scale_uncertainty=0.75,
             translation_uncertainty=0.25,
         )
         ContributorScalingFactory(
             user=self.other,
             poll=self.poll,
+            criteria=self._criteria,
             scale_uncertainty=1,
             translation_uncertainty=0.5,
         )
         ContributorScalingFactory(
             user=self.central_scaled_user,
             poll=self.poll,
+            criteria=self._criteria,
             scale_uncertainty=0,
             translation_uncertainty=0.0,
         )
