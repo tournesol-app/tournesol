@@ -265,7 +265,6 @@ class SuggestionAPITestCase(TestCase):
         actual_store.get_suggester(self.poll)
 
     def test_algo_gives_right_number_vids(self):
-        actual_store = _SuggesterStore()
         suggester = Suggester(self.poll)
         videos = suggester.get_first_video_recommendation(self.user, 3)
         assert len(videos) == 3
@@ -273,13 +272,11 @@ class SuggestionAPITestCase(TestCase):
         assert len(snd_videos) == 3
 
     def test_complete_graph_construction(self):
-        actual_store = _SuggesterStore()
         suggester = Suggester(self.poll)
         assert len(suggester._complete_graph.edges) == len(self.comparisons)
         assert len(suggester._complete_graph.nodes) == len(self.videos)
 
     def test_lazy_loading(self):
-        actual_store = _SuggesterStore()
         suggester = Suggester(self.poll)
         assert self.user not in suggester._user_specific_graphs.keys()
         suggester.get_first_video_recommendation(self.user, 6)
@@ -287,10 +284,24 @@ class SuggestionAPITestCase(TestCase):
 
 # This would be nice to test, but this property is not easy to compute...
     def test_most_informative_vid_given_first(self):
-        pass
+        suggester = Suggester(self.poll)
+        user_videos = suggester.get_first_video_recommendation(self.central_scaled_user, 6)
+        last_vid_score = 1000
+        for v in user_videos:
+            assert v.video1_score <= last_vid_score
+            last_vid_score = v.video1_score
+
+        user_videos = suggester.get_second_video_recommendation(
+            self.central_scaled_user,
+            user_videos[0].uid,
+            6
+        )
+        last_vid_score = 1000
+        for v in user_videos:
+            assert v.video1_score <= last_vid_score
+            last_vid_score = v.video1_score
 
     def test_suggestions_personalization(self):
-        actual_store = _SuggesterStore()
         suggester = Suggester(self.poll)
         user_videos = suggester.get_first_video_recommendation(self.user, 6)
         other_videos = suggester.get_first_video_recommendation(self.other, 6)
