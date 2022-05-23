@@ -104,30 +104,16 @@ project. You can choose the name you prefer, we suggest `tournesol`. You
 should now be automatically redirected to the project dashboard.
 
 **(2)** Go to the credentials page, accessible from the menu, and create new
-`API key `credentials. You should now be able to see the API key value by
-clicking on it.
+`API key` credentials, without adding any restriction for now. The key will
+be accessible from this screen by clicking on the key's name.
 
-**(3)** Unfold the action menu of your API key and click on modify. To secure
-the key usage you need to add few restrictions.
-
-Add an « application restriction » to define the only URLs or IP addresses
-allowed to use the key (not relevant for local development environments).
-
-Also add an « API restriction » to make the key able to query only the
-`YouTube Data API v3`. This setting can take few minutes to apply.
-
-##### Configure the back end with the key
-
-**(1)** Now configure the `YOUTUBE_API_KEY` setting with the API key value in
-your local `SETTINGS_FILE`. If you are using the `dev-env`, the settings file
-is [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
-
-**(2)** Finally, you need to enable your API keys. As long as the keys are not
-activated, the YouTube API will return an HTTP 403 error each time the back
-end  will try to get videos' metadata.
+**(3)** Enable your API keys. As long as the keys are not activated, the
+YouTube API will return an HTTP 403 error each time the back end will try to
+get videos' metadata.
 
 To activate your keys, you need to know your project id. You can copy it from
-the page https://console.cloud.google.com/welcome.
+the URL parameter `?project=` or from the page
+https://console.cloud.google.com/welcome.
 
 Then simply visit the following URL. Don't forget to replace the string
 `{YOUR_PROJECT_ID}` by your own project ID.
@@ -136,9 +122,26 @@ Then simply visit the following URL. Don't forget to replace the string
 https://console.developers.google.com/apis/api/youtube.googleapis.com/overview?project={YOUR_PROJECT_ID}
 ```
 
-If the URLs of the Google Cloud console in this document are outdated, you can
-always get the correct activation link from the back end's logs, by triggering
-a video metadata refresh from the administration interface.
+##### Secure the key usage by adding restrictions
+
+To secure the API key usage you need to add few restrictions.
+
+Return to the page credentials of you project, and unfold the action menu of
+your API key and click on modify.
+
+In the modification page:
+
+**(1)** Add an « application restriction » to define the only URLs or IP addresses
+allowed to use the key (not relevant for local development environments).
+
+**(2)** Also add an « API restriction » to make the key able to query only the
+`YouTube Data API v3`. This setting can take few minutes to apply.
+
+##### Configure the back end with the key
+
+Finally, configure the `YOUTUBE_API_KEY` setting with the API key value in
+your local `SETTINGS_FILE`. If you are using the `dev-env`, the settings file
+is [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
 
 The back end is now ready to automatically update the videos' metadata when
 new videos are added using the API, and when using the force refresh action.
