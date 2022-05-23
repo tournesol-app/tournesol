@@ -34,8 +34,6 @@ class Graph:
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
 
-    ABSENT_NODE = SuggestedVideo(None)
-
     adjacency_matrix: np.array
     normalized_adjacency_matrix: np.array
 
@@ -52,9 +50,6 @@ class Graph:
         self.dirty = True
         self.edges = []
         self.graph = {}
-        # init absent node values
-        self.ABSENT_NODE.video1_score = -1
-        self.ABSENT_NODE.estimated_information_gains = 0.75
         self.NEW_NODE_CONNECTION_SCORE = 0.5
         self._local_user = local_user
         self._nodes = []
@@ -134,7 +129,6 @@ class Graph:
         while len(unvisited) > 0:
             future_visits = set()
             for act_vid in waiting_for_visit:
-                # act_vid = waiting_for_visit.pop()
                 visited.append(act_vid)
                 unvisited.remove(act_vid)
                 if give_distances:
@@ -208,13 +202,15 @@ class Graph:
             self.build_adjacency_matrix()
             self.build_distance_matrix()
             self.build_similarity_matrix()
-            self.local_user_scaling = ContributorScaling.objects.filter(
-                user__email=self._local_user.uid
-            )[0]
+            self.local_user_scaling = ContributorScaling.objects \
+                .filter(user__id=self._local_user.uid) \
+                .filter(Poll__name=self._local_poll.name) \
+                .filter(criteria=self._local_criteria) \
+                .get()
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
-                    contributor_rating__user__email=self._local_user.uid
-                )
+                    contributor_rating__user__id=self._local_user.uid)
+                .filter(criteria=self._local_criteria)
                 .filter(contributor_rating__poll__name=self._local_poll.name)
                 .aggregate(mean=Avg("score"))
             )["mean"]
@@ -222,7 +218,7 @@ class Graph:
             self.compute_information_gain(scaling_factor_increasing_videos)
 
         elif self._local_user is None:
-            entity_criteria_scores: QuerySet = EntityCriteriaScore.objects.filter(
+            entity_criteria_scores: QuerySet = EntityCriteriaScore.default_scores().filter(
                 comparison__poll__name=self._local_poll.name
             ).filter(criteria=self._local_criteria)
             for ecs in entity_criteria_scores:
@@ -284,27 +280,15 @@ class Graph:
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
                         va.beta[vb] = user.delta_theta.get(vb, actual_scaling_accuracy) + \
-                            user.delta_theta.get(va, actual_scaling_accuracy) / (
-                            user.theta.get(vb, self.local_user_mean) -
-                            user.theta.get(va, self.local_user_mean) + 1
-                            )
+                                      user.delta_theta.get(va, actual_scaling_accuracy) / (
+                                              user.theta.get(vb, self.local_user_mean) -
+                                              user.theta.get(va, self.local_user_mean) + 1
+                                      )
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
                     for va in self.nodes:
                         va.video2_score[vb] += va.beta[vb] / max_beta
-
-    # This doesn't depend on the user -> not done here,
-    # well actually yes but not used in most of the graphs
-    def update_preferences(self):
-        """
-        Function computing online the estimated preferences with respect to another video
-        """
-        for v in self.nodes:
-            for u in set(self.graph[v]):
-                v.nb_comparison_with[u.uid] = 0
-            for u in self.graph[v]:
-                v.nb_comparison_with[u.uid] += 1
 
     def prepare_for_sorting(self, first_video_id: str = ""):
         self.video_comparison_reference.uid = first_video_id

@@ -86,7 +86,7 @@ class Suggester:
         """
         req_entities = Entity.objects \
             .filter(type=self.poll.name) \
-            .filter(videoratelater__user__email=user.email)
+            .filter(videoratelater__user=user)
         return list(map(lambda entity: self._entity_to_video[entity], req_entities))
 
     def do_offline_computation(self):
@@ -165,15 +165,13 @@ class Suggester:
                 max_vid_pref = v.user_pref
 
         for i in range(nb_video_required):
+            act_preference_goal = (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
             for v in considered_vids_list:
                 act_user_pref = v.user_pref
-                if (
-                        act_user_pref
-                        >= (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
-                        and v not in result
-                ):
+                if act_user_pref >= act_preference_goal and v not in result:
                     result.append(v)
                     break
+        result.reverse()
         return result
 
     def get_second_video_recommendation(
@@ -217,6 +215,7 @@ class Suggester:
                 ):
                     result.append(v)
                     break
+        result.reverse()
         return result
 
     def _prepare_video_list(self, user: User):
