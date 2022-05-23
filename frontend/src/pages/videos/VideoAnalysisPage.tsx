@@ -15,6 +15,7 @@ import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
+import linkifyHtml from 'linkify-html';
 
 export const VideoAnalysis = ({
   video,
@@ -23,12 +24,16 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
+  const [show, setShow] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
+  const options = { defaultProtocol: 'https' };
+  const linki = linkifyHtml(video.description || "", options);
+  console.log(linki);
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
@@ -57,6 +62,13 @@ export const VideoAnalysis = ({
           </Grid>
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
+          </Grid>
+          <Grid item xs={12}>
+            <Button onClick={()=>setShow(!show)}>Creator description from YouTube</Button> 
+          <Box 
+            style={show?{display:"block"}:{display:'none'}} 
+            dangerouslySetInnerHTML={{ __html: linki }}
+          />
           </Grid>
 
           {/* data visualization */}
