@@ -1,12 +1,12 @@
 # Quality criteria
-MIN_NB_CONTRIBUTORS = 3
-MIN_NB_RATINGS = 10
+MIN_NB_CONTRIBUTORS = 5
+MIN_NB_RATINGS = 15
 MIN_RELIABILITY_SCORE = 0.1
 MIN_TOURNESOL_SCORE = 10
 
 # Date range for videos to be considered
 DAYS_TOO_RECENT = 7  # min 1 week old
-DAYS_TOO_OLD = 180  # max 6 months old
+DAYS_TOO_OLD = 210  # max 7 months old
 
 # Number of days to wait before tweeting the same uploader again
 DAYS_ALREADY_TWEETED_UPLOADER = 7
