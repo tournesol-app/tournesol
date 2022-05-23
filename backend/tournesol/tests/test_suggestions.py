@@ -294,15 +294,15 @@ class SuggestionAPITestCase(TestCase):
             assert v.video1_score <= last_vid_score
             last_vid_score = v.video1_score
 
-        user_videos = suggester.get_second_video_recommendation(
+        user2_videos = suggester.get_second_video_recommendation(
             self.central_scaled_user,
             user_videos[0].uid,
             6
         )
         last_vid_score = 1000
-        for v in user_videos:
-            assert v.video1_score <= last_vid_score
-            last_vid_score = v.video1_score
+        for v in user2_videos:
+            assert v.video2_score[user_videos[0]] <= last_vid_score
+            last_vid_score = v.video2_score[user_videos[0]]
 
     def test_suggestions_personalization(self):
         suggester = SuggestionProvider(self.poll)
