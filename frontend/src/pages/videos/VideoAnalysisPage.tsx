@@ -33,7 +33,6 @@ export const VideoAnalysis = ({
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
   const options = { defaultProtocol: 'https' };
   const linki = linkifyHtml(video.description || '', options);
-  console.log(linki);
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
