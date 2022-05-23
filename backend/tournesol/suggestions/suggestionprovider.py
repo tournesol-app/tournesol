@@ -19,7 +19,7 @@ class SuggestionProvider:
     # Dictionary linking a user to its comparison graph, used to get its information gain
     _user_specific_graphs: dict[User, Graph]
 
-    def __init__(self, concerned_poll: Poll):
+    def __init__(self, actual_poll: Poll):
         """
         Function used to initialize the class
         It must not be called before the DB is ready, as it will call it while constructing the
@@ -28,7 +28,7 @@ class SuggestionProvider:
         self._comparison_reference_video = SuggestedVideo(None)
         self._entity_to_video = {}
         self._user_specific_graphs = {}
-        self.poll = concerned_poll
+        self.poll = actual_poll
         self.criteria = self.poll.criterias_list[0]
         # build complete graph
         comparison_queryset: QuerySet = ComparisonCriteriaScore.objects \

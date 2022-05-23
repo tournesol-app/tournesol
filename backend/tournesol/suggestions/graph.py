@@ -204,7 +204,7 @@ class Graph:
             self.build_similarity_matrix()
             self.local_user_scaling = ContributorScaling.objects \
                 .filter(user__id=self._local_user.uid) \
-                .filter(Poll__name=self._local_poll.name) \
+                .filter(poll__name=self._local_poll.name) \
                 .filter(criteria=self._local_criteria) \
                 .get()
             self.local_user_mean = (
