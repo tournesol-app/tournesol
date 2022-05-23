@@ -110,17 +110,17 @@ clicking on it.
 **(3)** Unfold the action menu of your API key and click on modify. To secure
 the key usage you need to add few restrictions.
 
-Add an application restriction to define the only URLs or IP addresses allowed
-to use the key (not relevant for local development environments).
+Add an « application restriction » to define the only URLs or IP addresses
+allowed to use the key (not relevant for local development environments).
 
-Also add an API restriction to make the key able to query only the
+Also add an « API restriction » to make the key able to query only the
 `YouTube Data API v3`. This setting can take few minutes to apply.
 
 ##### Configure the back end with the key
 
-**(1)** Now configure the `YOUTUBE_API_KEY` setting with the API key value in your
-`SETTINGS_FILE`. If you are using the `dev-env`, the settings file is
-[backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
+**(1)** Now configure the `YOUTUBE_API_KEY` setting with the API key value in
+your local `SETTINGS_FILE`. If you are using the `dev-env`, the settings file
+is [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
 
 **(2)** Finally, you need to enable your API keys. As long as the keys are not
 activated, the YouTube API will return an HTTP 403 error each time the back
