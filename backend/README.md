@@ -98,13 +98,26 @@ closer to the production one.
 
 #### Procedure
 
-Go to https://console.cloud.google.com/apis/ and create a new project. You
+##### Create and configure the key
+
+**(1)** Go to https://console.cloud.google.com/apis/ and create a new project. You
 can choose the name you prefer, we suggest `tournesol`. You should now
 be automatically redirected to the project dashboard.
 
-Go to the credentials page, accessible from the menu, and create new
-`API key `credentials. Do not apply any application nor API restriction. You
-should now be able to see the API key value by clicking on it.
+**(2)** Go to the credentials page, accessible from the menu, and create new
+`API key `credentials. You should now be able to see the API key value by
+clicking on it.
+
+**(3)** Unfold the action menu of your API key and click on modify. To secure
+the key usage you need to add few restrictions.
+
+Add an application restriction to define the only URLs or IP addresses allowed
+to use the key (not relevant for local development environments).
+
+Also add an API restriction to make the key able to query only the
+`YouTube Data API v3`. This setting can take few minutes to apply.
+
+##### Configure the back end
 
 Now configure the `YOUTUBE_API_KEY` setting with the API key value in your
 `SETTINGS_FILE`.  If you are using the dev-env, the settings file is
