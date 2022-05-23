@@ -19,13 +19,23 @@ class TwitterBotAdmin(admin.ModelAdmin):
         "video",
         "get_video_name",
         "get_video_uploader",
-        "tweet_id",
-        "datetime_tweet",
         "bot_name",
+        "datetime_tweet",
+        "get_twitter_link",
         "get_video_link",
+        "tweet_id",
     )
     search_fields = ("video__uid", "video__metadata__name", "video__metadata__uploader")
     list_filter = ["bot_name"]
+
+    @admin.display(description="URL of the tweet")
+    def get_twitter_link(self):
+        """Returns URL of the tweet"""
+        return format_html(
+            '<a href="https://twitter.com/{}/status/{}" target="_blank">Tweet</a>',
+            self.bot_name,
+            self.tweet_id,
+        )
 
     @staticmethod
     @admin.display(ordering="video__metadata__name", description="Video name")
