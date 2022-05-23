@@ -34,4 +34,4 @@ class EntitiesToCompareView(PollScopedViewMixin, ListAPIView):
             entities = suggester.get_second_video_recommendation(user, opt_first_entity, limit)
 
         ser = self.get_serializer(entities, many=True)
-        return Response(ser.data)
+        return Response({"results": ser.data})
