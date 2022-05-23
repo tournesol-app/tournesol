@@ -32,7 +32,7 @@ export const VideoAnalysis = ({
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
   const options = { defaultProtocol: 'https' };
-  const linki = linkifyHtml(video.description || "", options);
+  const linki = linkifyHtml(video.description || '', options);
   console.log(linki);
 
   return (
@@ -64,11 +64,13 @@ export const VideoAnalysis = ({
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
           <Grid item xs={12}>
-            <Button onClick={()=>setShow(!show)}>Creator description from YouTube</Button> 
-          <Box 
-            style={show?{display:"block"}:{display:'none'}} 
-            dangerouslySetInnerHTML={{ __html: linki }}
-          />
+            <Button color="secondary" onClick={() => setShow(!show)}>
+              Creator description from YouTube
+            </Button>
+            <Box
+              style={show ? { display: 'block' } : { display: 'none' }}
+              dangerouslySetInnerHTML={{ __html: linki }}
+            />
           </Grid>
 
           {/* data visualization */}
