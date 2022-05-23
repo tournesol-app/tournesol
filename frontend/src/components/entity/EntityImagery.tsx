@@ -87,17 +87,25 @@ const EntityImagery = ({
   const { baseUrl } = useCurrentPoll();
   const videoConfig = config[TypeEnum.VIDEO] ?? {};
 
+  /**
+   * Display the video player by default, unless otherwise configured.
+   *
+   * Automatically fallback to the video player if the entity metadata
+   * don't contain the required `thumbnails.medium` attributes.
+   */
+  const displayPlayer = () => {
+    const askedByConfig = videoConfig?.displayPlayer ?? true;
+    const forcedByMetadata =
+      entity.metadata.thumbnails === undefined ||
+      entity.metadata.thumbnails.medium === undefined;
+
+    return askedByConfig || forcedByMetadata;
+  };
+
   if (entity.type === TypeEnum.VIDEO) {
     return (
       <>
-        {/*
-            Display the video player by default, unless otherwise configured.
-
-            Automatically fallback to the video player if the entity metadata
-            don't contain the `thumbnails` attribute.
-        */}
-        {(videoConfig?.displayPlayer ?? true) ||
-        entity.metadata.thumbnails === undefined ? (
+        {displayPlayer() ? (
           <Box
             sx={{
               aspectRatio: '16 / 9',
