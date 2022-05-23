@@ -148,7 +148,7 @@ class Graph:
                 depth += 1
             waiting_for_visit = list(future_visits)
 
-    def find_connex_subgraphs(self) -> set[Graph]:
+    def find_connected_sub_graphs(self) -> set[Graph]:
         visited: list[SuggestedVideo] = []
         waiting_for_visit: list[SuggestedVideo] = []
         future_visits: set[SuggestedVideo]
@@ -181,8 +181,8 @@ class Graph:
         result.add(act_graph)
         return result
 
-    def is_connex(self) -> bool:
-        return len(self.find_connex_subgraphs()) == 1
+    def is_connected(self) -> bool:
+        return len(self.find_connected_sub_graphs()) == 1
 
     def build_similarity_matrix(self):
         self.similarity_matrix = np.zeros((len(self.nodes), len(self.nodes)))
@@ -209,10 +209,10 @@ class Graph:
                 .get()
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
-                    contributor_rating__user__id=self._local_user.uid)
-                    .filter(criteria=self._local_criteria)
-                    .filter(contributor_rating__poll__name=self._local_poll.name)
-                    .aggregate(mean=Avg("score"))
+                        contributor_rating__user__id=self._local_user.uid)
+                .filter(criteria=self._local_criteria)
+                .filter(contributor_rating__poll__name=self._local_poll.name)
+                .aggregate(mean=Avg("score"))
             )["mean"]
 
             self.compute_information_gain(scaling_factor_increasing_videos)
@@ -256,7 +256,7 @@ class Graph:
         # Once the scaling factor is high enough, check what video should gain
         # information being compared by the user
         else:
-            sub_graphs = self.find_connex_subgraphs()
+            sub_graphs = self.find_connected_sub_graphs()
             if len(sub_graphs) == 1:
                 sub_graphs = [self]
             for sg in sub_graphs:
@@ -268,7 +268,7 @@ class Graph:
                     for va in self.nodes:
                         # In the case the eigen value is big enough
                         # => the graph is poorly connected,
-                        # so we should improve connexity
+                        # so we should improve connectivity
                         if eigenvalues[1] > self.LAMBDA_THRESHOLD:
                             u_index = sg.nodes.index(vb)
                             v_index = sg.nodes.index(va)

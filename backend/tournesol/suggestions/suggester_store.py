@@ -1,13 +1,13 @@
 from tournesol.models import Poll
-from tournesol.suggestions.suggester import Suggester
+from tournesol.suggestions.suggestionprovider import SuggestionProvider
 
 
 class _SuggesterStore:
-    suggesters: dict[Poll, Suggester] = {}
+    suggesters: dict[Poll, SuggestionProvider] = {}
 
-    def get_suggester(self, poll: Poll) -> Suggester:
+    def get_suggester(self, poll: Poll) -> SuggestionProvider:
         if poll not in self.suggesters.keys():
-            self.suggesters[poll] = Suggester(poll)
+            self.suggesters[poll] = SuggestionProvider(poll)
         return self.suggesters[poll]
 
 
