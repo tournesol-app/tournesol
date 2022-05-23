@@ -6,8 +6,8 @@ from rest_framework.test import APIClient
 from core.tests.factories.user import UserFactory
 from tournesol.models import Poll
 from tournesol.suggestions.graph import Graph
-from tournesol.suggestions.suggestionprovider import SuggestionProvider
 from tournesol.suggestions.suggester_store import _SuggesterStore
+from tournesol.suggestions.suggestionprovider import SuggestionProvider
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
