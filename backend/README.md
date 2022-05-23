@@ -94,15 +94,14 @@ closer to the production one.
 
 1. a Google account
 2. to be connected while following the procedure
-3. to have at least one YouTube video in the database
 
 #### Procedure
 
 ##### Create and configure the key
 
-**(1)** Go to https://console.cloud.google.com/apis/ and create a new project. You
-can choose the name you prefer, we suggest `tournesol`. You should now
-be automatically redirected to the project dashboard.
+**(1)** First go to https://console.cloud.google.com/apis/ and create a new
+project. You can choose the name you prefer, we suggest `tournesol`. You
+should now be automatically redirected to the project dashboard.
 
 **(2)** Go to the credentials page, accessible from the menu, and create new
 `API key `credentials. You should now be able to see the API key value by
@@ -117,27 +116,29 @@ to use the key (not relevant for local development environments).
 Also add an API restriction to make the key able to query only the
 `YouTube Data API v3`. This setting can take few minutes to apply.
 
-##### Configure the back end
+##### Configure the back end with the key
 
-Now configure the `YOUTUBE_API_KEY` setting with the API key value in your
-`SETTINGS_FILE`.  If you are using the dev-env, the settings file is
-[backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml)
+**(1)** Now configure the `YOUTUBE_API_KEY` setting with the API key value in your
+`SETTINGS_FILE`. If you are using the `dev-env`, the settings file is
+[backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
 
-Finally, you need to enable your API key. The first time the back end will try
-to get metadata from YouTube, you will see an HTTP 403 error in the back end's
-logs, with an activation link.
+**(2)** Finally, you need to enable your API keys. As long as the keys are not
+activated, the YouTube API will return an HTTP 403 error each time the back
+end  will try to get videos' metadata.
 
-- Start the back end
-- Log in the administration interface with your superuser
-- Go the entities list
-- Select a YouTube video entity and run the action force refresh metadata 
+To activate your keys, you need to know your project id. You can copy it from
+the page https://console.cloud.google.com/welcome.
 
-Check the back end's logs, and copy and paste the activation link in you
-browser. The link should look like this:
+Then simply visit the following URL. Don't forget to replace the string
+`{YOUR_PROJECT_ID}` by your own project ID.
 
 ```
-https://console.developers.google.com/apis/api/youtube.googleapis.com/overview?project=[YOUR_PROJECT_ID]
+https://console.developers.google.com/apis/api/youtube.googleapis.com/overview?project={YOUR_PROJECT_ID}
 ```
+
+If the URLs of the Google Cloud console in this document are outdated, you can
+always get the correct activation link from the back end's logs, by triggering
+a video metadata refresh from the administration interface.
 
 The back end is now ready to automatically update the videos' metadata when
 new videos are added using the API, and when using the force refresh action.
