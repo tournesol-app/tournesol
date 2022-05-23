@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
-import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Collapse, Container, Grid, Paper, Typography } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
@@ -16,6 +16,7 @@ import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCrit
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyHtml from 'linkify-html';
+import CollapseButton from 'src/components/CollapseButton';
 
 export const VideoAnalysis = ({
   video,
@@ -24,7 +25,7 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
-  const [show, setShow] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
@@ -63,13 +64,16 @@ export const VideoAnalysis = ({
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
           <Grid item xs={12}>
-            <Button color="secondary" onClick={() => setShow(!show)}>
-              Creator description from YouTube
-            </Button>
+          <CollapseButton expanded={expanded} onClick={() => {setExpanded(!expanded)}}>
+            {t("entityAnalysisPage.video.description")}
+          </CollapseButton>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
             <Box
-              style={show ? { display: 'block' } : { display: 'none' }}
+              style={expanded ? { display: 'block' } : { display: 'none' }}
               dangerouslySetInnerHTML={{ __html: linki }}
+              color= 'theme.palette.text.primary'
             />
+          </Collapse>
           </Grid>
 
           {/* data visualization */}
