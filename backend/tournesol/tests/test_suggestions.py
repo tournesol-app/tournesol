@@ -267,7 +267,7 @@ class SuggestionAPITestCase(TestCase):
         actual_store = _SuggesterStore()
         actual_store.get_suggester(self.poll)
 
-    def test_algo_gives_right_number_vids(self):
+    def test_algo_gives_right_number_vid(self):
         suggester = SuggestionProvider(self.poll)
         videos = suggester.get_first_video_recommendation(self.user, 3)
         assert len(videos) == 3
@@ -281,9 +281,9 @@ class SuggestionAPITestCase(TestCase):
 
     def test_lazy_loading(self):
         suggester = SuggestionProvider(self.poll)
-        assert self.user not in suggester._user_specific_graphs.keys()
+        assert self.user.id not in suggester._user_specific_graphs.keys()
         suggester.get_first_video_recommendation(self.user, 6)
-        assert self.user in suggester._user_specific_graphs.keys()
+        assert self.user.id in suggester._user_specific_graphs.keys()
 
 # This would be nice to test, but this property is not easy to compute...
     def test_most_informative_vid_given_first(self):
