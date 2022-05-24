@@ -256,16 +256,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const language = await recommendationsLanguages();
 
       // Only one request for both videos and additional videos
-      const recent = await request_recommendations(
-        `date_gte=${threeWeeksAgo}&language=${language}&limit=${
-          recentVideoToLoad + recentAdditionalVideoToLoad
-        }`
-      );
-      const old = await request_recommendations(
-        `date_lte=${threeWeeksAgo}&language=${language}&limit=${
-          oldVideoToLoad + oldAdditionalVideoToLoad
-        }`
-      );
+      const recentParams = new URLSearchParams([
+        ['date_gte', threeWeeksAgo],
+        ['limit', recentVideoToLoad + recentAdditionalVideoToLoad],
+        ...language.split(',').map((l) => ['metadata[language]', l]),
+      ]);
+
+      const oldParams = new URLSearchParams([
+        ['date_lte', threeWeeksAgo],
+        ['limit', oldVideoToLoad + oldAdditionalVideoToLoad],
+        ...language.split(',').map((l) => ['metadata[language]', l]),
+      ]);
+
+      const [recent, old] = await Promise.all([
+        request_recommendations(recentParams),
+        request_recommendations(oldParams),
+      ]);
 
       // Cut the response into the part for the videos and the one for the additional videos
       const videoRecent = recent.slice(0, recentVideoToLoad);
