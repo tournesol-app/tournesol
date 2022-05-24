@@ -28,13 +28,14 @@ class TwitterBotAdmin(admin.ModelAdmin):
     search_fields = ("video__uid", "video__metadata__name", "video__metadata__uploader")
     list_filter = ["bot_name"]
 
+    @staticmethod
     @admin.display(description="URL of the tweet")
-    def get_twitter_link(self):
+    def get_twitter_link(obj):
         """Returns URL of the tweet"""
         return format_html(
             '<a href="https://twitter.com/{}/status/{}" target="_blank">Tweet</a>',
-            self.bot_name,
-            self.tweet_id,
+            obj.bot_name,
+            obj.tweet_id,
         )
 
     @staticmethod
