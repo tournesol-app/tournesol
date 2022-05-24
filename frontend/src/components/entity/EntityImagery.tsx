@@ -96,9 +96,6 @@ const EntityImagery = ({
             sx={{
               aspectRatio: '16 / 9',
               width: '100%',
-              ...(compact
-                ? {}
-                : { minWidth: '240px', maxWidth: { sm: '240px' } }),
             }}
           >
             <VideoPlayer

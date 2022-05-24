@@ -87,7 +87,13 @@ function VideoCard({
           item
           xs={12}
           sm={compact ? 12 : 'auto'}
-          sx={{ display: 'flex', justifyContent: 'center' }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            ...(compact
+              ? {}
+              : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+          }}
         >
           <Box
             display="flex"
