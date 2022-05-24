@@ -11,7 +11,7 @@ class SuggestedUser:
 
     def __init__(
         self,
-        entity_to_video: dict[Entity, SuggestedVideo],
+        entity_to_video: dict[str, SuggestedVideo],
         base_user: UserDB,
         local_criteria: str,
         concerned_poll: Poll,
@@ -29,7 +29,7 @@ class SuggestedUser:
         self.score_uncertainties = {}
         self.scores = {}
         for rating in contributor_ratings:
-            corresponding_video = entity_to_video[rating.contributor_rating.entity]
+            corresponding_video = entity_to_video[rating.contributor_rating.entity.uid]
             self.score_uncertainties[corresponding_video] = rating.uncertainty
             self.scores[corresponding_video] = rating.score
 
