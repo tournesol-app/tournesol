@@ -7,7 +7,7 @@ import { Avatar, Box } from '@mui/material';
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
 import { JSONValue, RelatedEntityObject } from 'src/utils/types';
-import { convertDurationToClockDuration } from 'src/utils/video';
+import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
 const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   {
@@ -87,25 +87,11 @@ const EntityImagery = ({
   const { baseUrl } = useCurrentPoll();
   const videoConfig = config[TypeEnum.VIDEO] ?? {};
 
-  /**
-   * Display the video player by default, unless otherwise configured.
-   *
-   * Automatically fallback to the video player if the entity metadata
-   * don't contain the required `thumbnails.medium` attributes.
-   */
-  const displayPlayer = () => {
-    const askedByConfig = videoConfig?.displayPlayer ?? true;
-    const forcedByMetadata =
-      entity.metadata.thumbnails === undefined ||
-      entity.metadata.thumbnails.medium === undefined;
-
-    return askedByConfig || forcedByMetadata;
-  };
-
   if (entity.type === TypeEnum.VIDEO) {
     return (
       <>
-        {displayPlayer() ? (
+        {/* Display the video player by default, unless otherwise configured. */}
+        {videoConfig?.displayPlayer ?? true ? (
           <Box
             sx={{
               aspectRatio: '16 / 9',
@@ -140,7 +126,9 @@ const EntityImagery = ({
             >
               <img
                 className="full-width"
-                src={entity.metadata.thumbnails.medium.url}
+                src={`https://i.ytimg.com/vi/${idFromUid(
+                  entity.uid
+                )}/mqdefault.jpg`}
                 alt={entity.metadata.name}
               />
             </RouterLink>

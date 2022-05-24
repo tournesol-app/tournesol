@@ -8,7 +8,6 @@ class VideoMetadata(serializers.Serializer):
     video_id = serializers.RegexField(rf"^({YOUTUBE_VIDEO_ID_REGEX})$")
     name = serializers.CharField(allow_blank=True, default="")
     description = serializers.CharField(allow_blank=True, default="")
-    thumbnails = serializers.DictField(allow_empty=True, default={})
     uploader = serializers.CharField(allow_blank=True, default="")
     channel_id = serializers.CharField(allow_null=True, default=None)
     publication_date = serializers.DateField(allow_null=True, default=None)

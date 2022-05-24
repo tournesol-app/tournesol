@@ -27,13 +27,14 @@ const EntityCard = ({
   actions = [],
   settings = [],
   compact = false,
-  config = {},
+  entityTypeConfig,
 }: {
   entity: RelatedEntityObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
-  config?: { [k: string]: { [k: string]: JSONValue } };
+  // Configuration specific to the entity type.
+  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -64,7 +65,11 @@ const EntityCard = ({
         sm={compact ? 12 : 'auto'}
         sx={{ display: 'flex', justifyContent: 'center' }}
       >
-        <EntityImagery entity={entity} compact={compact} config={config} />
+        <EntityImagery
+          entity={entity}
+          compact={compact}
+          config={entityTypeConfig}
+        />
       </Grid>
       <Grid
         item

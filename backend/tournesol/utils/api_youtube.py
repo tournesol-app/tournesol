@@ -54,10 +54,7 @@ def get_video_metadata(video_id, compute_language=True):
         raise VideoNotFound
 
     yt_info = yt_items[0]
-
     title = yt_info["snippet"]["title"]
-
-    thumbnails = format_yt_thumbnails(yt_info["snippet"]["thumbnails"])
     nb_views = yt_info.get("statistics", {}).get("viewCount")
     published_date = str(yt_info["snippet"]["publishedAt"])
     published_date = published_date.split("T")[0]
@@ -75,7 +72,6 @@ def get_video_metadata(video_id, compute_language=True):
     is_unlisted = yt_info["status"].get("privacyStatus") == "unlisted"
     return {
         "source": "youtube",
-        "thumbnails": thumbnails,
         "name": title,
         "description": description,
         "publication_date": published_date,
@@ -87,18 +83,3 @@ def get_video_metadata(video_id, compute_language=True):
         "duration": int(duration.total_seconds()) if duration else None,
         "is_unlisted": is_unlisted,
     }
-
-
-def format_yt_thumbnails(thumbnails: dict) -> dict:
-    """
-    Format YT thumbnails object into a standard video entity thumbnails
-    object.
-
-    The `thumbnails` dictionary follows the structure described by:
-    https://developers.google.com/youtube/v3/docs/thumbnails#resource-representation
-    """
-    validated_thumbnails = {}
-    if "medium" in thumbnails:
-        validated_thumbnails["thumbnails"] = thumbnails["medium"]
-
-    return validated_thumbnails
