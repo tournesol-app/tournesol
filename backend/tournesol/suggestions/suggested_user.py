@@ -1,5 +1,5 @@
 from core.models.user import User as UserDB
-from tournesol.models import ContributorRatingCriteriaScore, Entity, Poll
+from tournesol.models import ContributorRatingCriteriaScore, Poll
 from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
