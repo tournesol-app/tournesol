@@ -58,7 +58,7 @@ class Graph:
         self._local_poll = local_poll
         self._local_criteria = local_criteria
 
-    def add_node(self, new_node):
+    def add_node(self, new_node: SuggestedVideo):
         if new_node.uid not in self.uid_to_index:
             self._nodes.append(new_node)
             self.graph[new_node] = []

@@ -100,7 +100,7 @@ class SuggestionProvider:
             # Will be cached, do at registration
             g.compute_offline_parameters(scale_aug_videos)
 
-    def register_new_user(self, new_user):
+    def register_new_user(self, new_user: User):
         """
         Function used to register a new user wanting suggestions, it thus initializes its
         comparison graph
@@ -151,6 +151,7 @@ class SuggestionProvider:
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
+        self._comparison_reference_video.uid = ""
         user_graph.prepare_for_sorting()
 
         # Prepare the set of videos to sort, taking the videos present in the graph
@@ -192,6 +193,7 @@ class SuggestionProvider:
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
+        self._comparison_reference_video.uid = first_video_id
         user_graph.prepare_for_sorting(first_video_id)
 
         # Prepare the set of videos to sort, taking the videos present in the graph and append

@@ -313,3 +313,19 @@ class SuggestionAPITestCase(TestCase):
             if v1 != v2:
                 all_the_same = False
         assert not all_the_same
+
+        all_the_same = True
+        user_second_videos_a = suggester.get_second_video_recommendation(
+            self.user,
+            user_videos[0].uid,
+            8
+        )
+        user_second_videos_b = suggester.get_second_video_recommendation(
+            self.user,
+            user_videos[0].uid,
+            8
+        )
+        for v1, v2 in zip(user_second_videos_a, user_second_videos_b):
+            if v1 != v2:
+                all_the_same = False
+        assert not all_the_same
