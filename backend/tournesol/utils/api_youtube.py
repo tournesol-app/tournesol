@@ -74,7 +74,9 @@ def get_video_metadata(video_id, compute_language=True):
     is_unlisted = yt_info["status"].get("privacyStatus") == "unlisted"
     return {
         "source": "youtube",
-        "thumbnails": thumbnails,
+        "thumbnails": {
+          "medium": thumbnails["medium"]
+        },
         "name": title,
         "description": description,
         "publication_date": published_date,
