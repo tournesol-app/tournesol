@@ -49,7 +49,7 @@ class Command(BaseCommand):
                     video.metadata["name"],
                     sep=" - ",
                 )
-            
+
             return
 
         tweet_video_recommendation(bot_name, assumeyes=options["assumeyes"])
