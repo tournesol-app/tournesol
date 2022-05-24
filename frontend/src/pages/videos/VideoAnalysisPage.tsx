@@ -85,6 +85,8 @@ export const VideoAnalysis = ({
                 style={expanded ? { display: 'block' } : { display: 'none' }}
                 dangerouslySetInnerHTML={{ __html: linki }}
                 color="theme.palette.text.primary"
+                whiteSpace="pre-wrap"
+                fontSize="0.8em"
               />
             </Collapse>
           </Grid>
