@@ -143,6 +143,8 @@ Finally, configure the `YOUTUBE_API_KEY` setting with the API key value in
 your local `SETTINGS_FILE`. If you are using the `dev-env`, the settings file
 is [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
 
+Restart the back end.
+
 The back end is now ready to automatically update the videos' metadata when
 new videos are added using the API, and when using the force refresh action.
 
