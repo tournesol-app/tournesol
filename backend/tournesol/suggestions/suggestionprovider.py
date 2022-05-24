@@ -17,7 +17,7 @@ class SuggestionProvider:
     # Graph containing all videos and existing comparisons, used to get the video preferences
     _complete_graph: Graph
     # Dictionary linking a user to its comparison graph, used to get its information gain
-    _user_specific_graphs: dict[User, Graph]
+    _user_specific_graphs: dict[int, Graph]
 
     def __init__(self, actual_poll: Poll):
         """
@@ -108,7 +108,7 @@ class SuggestionProvider:
         recommendation_user = RecommendationUser(
             self._entity_to_video, new_user, self.criteria, self.poll
         )
-        self._user_specific_graphs[new_user] = Graph(
+        self._user_specific_graphs[new_user.id] = Graph(
             local_user=recommendation_user,
             local_poll=self.poll,
             local_criteria=self.criteria,
@@ -123,7 +123,7 @@ class SuggestionProvider:
         for c in query:
             va = self._entity_to_video[c.comparison.entity_1.uid]
             vb = self._entity_to_video[c.comparison.entity_2.uid]
-            self._user_specific_graphs[new_user].add_edge(va, vb)
+            self._user_specific_graphs[new_user.id].add_edge(va, vb)
 
     def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
         """
@@ -131,8 +131,8 @@ class SuggestionProvider:
         up to date
         """
         self._complete_graph.add_edge(va, vb)
-        if user in self._user_specific_graphs.keys():
-            self._user_specific_graphs[user].add_edge(va, vb)
+        if user.id in self._user_specific_graphs.keys():
+            self._user_specific_graphs[user.id].add_edge(va, vb)
 
     def get_first_video_recommendation(
             self,
@@ -144,12 +144,12 @@ class SuggestionProvider:
         nb_video_required videos
         """
         # Lazily load the user graph
-        if user not in self._user_specific_graphs.keys():
+        if user.id not in self._user_specific_graphs.keys():
             self.register_new_user(user)
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
-        user_graph = self._user_specific_graphs[user]
+        user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
         user_graph.prepare_for_sorting()
 
@@ -185,12 +185,12 @@ class SuggestionProvider:
         comparison with respect to first_video and returning nb_video_required videos
         """
         # Lazily load the user graphs
-        if user not in self._user_specific_graphs.keys():
+        if user.id not in self._user_specific_graphs.keys():
             self.register_new_user(user)
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
-        user_graph = self._user_specific_graphs[user]
+        user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
         user_graph.prepare_for_sorting(first_video_id)
 
@@ -225,7 +225,7 @@ class SuggestionProvider:
         """
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
-        considered_vid = set(self._user_specific_graphs[user].nodes)
+        considered_vid = set(self._user_specific_graphs[user.id].nodes)
         tmp = set(self._complete_graph.nodes.copy())
         tmp = tmp.difference(considered_vid)
 
