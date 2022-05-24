@@ -1,10 +1,7 @@
-from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.core.management.base import BaseCommand
 
-from twitterbot.tournesolbot import (
-    get_video_recommendations,
-    tweet_video_recommendation,
-)
+from twitterbot.tournesolbot import get_video_recommendations, tweet_video_recommendation
 
 
 class Command(BaseCommand):
@@ -52,5 +49,7 @@ class Command(BaseCommand):
                     video.metadata["name"],
                     sep=" - ",
                 )
+
+            return
 
         tweet_video_recommendation(bot_name, assumeyes=options["assumeyes"])
