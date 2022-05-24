@@ -186,6 +186,7 @@ class User(AbstractUser):
         null=True,
     )
     trust_score = models.FloatField(
+        null=True,
         default=None,
         help_text="The global trust score assigned to the user based on the vouching mechanism"
     )
