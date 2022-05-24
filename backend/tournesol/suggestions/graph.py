@@ -24,6 +24,7 @@ class Graph:
     # I still have to find out what is the best one between the two
     edges: list[tuple[SuggestedVideo, SuggestedVideo]]
     _nodes: list[SuggestedVideo]  # todo clean that, use default dict functions
+    uid_to_index: dict[str, int]
     graph: dict[SuggestedVideo, list[SuggestedVideo]]
     sigma: float
     dirty: bool
@@ -53,13 +54,15 @@ class Graph:
         self.NEW_NODE_CONNECTION_SCORE = 0.5
         self._local_user = local_user
         self._nodes = []
+        self.uid_to_index = {}
         self._local_poll = local_poll
         self._local_criteria = local_criteria
 
     def add_node(self, new_node):
-        if new_node not in self.nodes:
-            self.nodes.append(new_node)
+        if new_node.uid not in self.uid_to_index:
+            self._nodes.append(new_node)
             self.graph[new_node] = []
+            self.uid_to_index[new_node.uid] = len(self.nodes) - 1
             for n in self._nodes:
                 n.nb_comparison_with[new_node.uid] = 0
                 new_node.nb_comparison_with[n.uid] = 0
@@ -93,13 +96,13 @@ class Graph:
         self.normalized_adjacency_matrix = self.adjacency_matrix.copy()
 
         for u, v in self.edges:
-            u_index = self.nodes.index(u)
-            v_index = self.nodes.index(v)
+            u_index = self.uid_to_index[u.uid]
+            v_index = self.uid_to_index[v.uid]
             self.adjacency_matrix[u_index][v_index] = 1
             self.adjacency_matrix[v_index][u_index] = 1
         for u, v in self.edges:
-            u_index = self.nodes.index(u)
-            v_index = self.nodes.index(v)
+            u_index = self.uid_to_index[u.uid]
+            v_index = self.uid_to_index[v.uid]
             self.normalized_adjacency_matrix[u_index][v_index] = 1 / sum(
                 self.adjacency_matrix[u_index]
             )
@@ -222,7 +225,7 @@ class Graph:
                 comparison__poll__name=self._local_poll.name
             ).filter(criteria=self._local_criteria)
             for ecs in entity_criteria_scores:
-                act_vid = self._nodes[self._nodes.index(ecs.entity.uid)]
+                act_vid = self._nodes[self.uid_to_index[ecs.entity.uid]]
                 act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                 for n in self._nodes:
                     act_vid.video2_score[n] = (
@@ -270,10 +273,10 @@ class Graph:
                         # => the graph is poorly connected,
                         # so we should improve connectivity
                         if eigenvalues[1] > self.LAMBDA_THRESHOLD:
-                            u_index = sg.nodes.index(vb)
-                            v_index = sg.nodes.index(va)
+                            u_index = sg.uid_to_index[vb.uid]
+                            v_index = sg.uid_to_index[va.uid]
                             va.video2_score[vb] = sg.similarity_matrix[u_index, v_index]
-                        elif va not in sg.nodes:
+                        elif va.uid not in sg.uid_to_index:
                             va.video2_score[vb] = 1
                         else:
                             va.video2_score[vb] = 0
