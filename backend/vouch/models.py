@@ -1,15 +1,23 @@
+"""
+Models related to the vouching system.
+"""
+
 from django.db import models
+
 from core.models.user import User
 
 
 class Voucher(models.Model):
     """A `Voucher` given by a user to another one.
-    A `Voucher` represents a mark of trust
-    a user is able to grant to another one. Each mark of trust has a
-    trust value. These vouchers can be used by an algorithm to compute the global trust
-    score given to every user by the
-    network, in order to weight their voting right accordingly.
+
+    A `Voucher` represents a mark of trust a user is able to grant to another
+    user. Each mark of trust has a trust value.
+
+    These vouchers can be used by an algorithm to compute the global trust
+    score given to every user by the network, in order to weight their voting
+    right accordingly.
     """
+
     by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
