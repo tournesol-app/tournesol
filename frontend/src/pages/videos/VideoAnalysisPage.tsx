@@ -40,7 +40,7 @@ export const VideoAnalysis = ({
 
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
-  const options = { defaultProtocol: 'https' };
+  const options = { defaultProtocol: 'https', target: '_blank' };
   const linki = linkifyHtml(video.description || '', options);
 
   return (
