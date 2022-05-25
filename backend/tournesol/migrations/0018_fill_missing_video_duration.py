@@ -1,6 +1,7 @@
 import logging
 from django.db import migrations
 from django.utils import timezone
+from django.utils.dateparse import parse_duration
 from tournesol.utils.api_youtube import get_video_metadata, VideoNotFound
 
 def refresh_youtube_metadata(video):
@@ -27,11 +28,11 @@ def refresh_youtube_metadata(video):
         "publication_date",
         "uploader",
         "views",
-        "duration",
-        "metadata_timestamp",
     ]
     for f in fields:
         setattr(video, f, metadata[f])
+    video.duration = parse_duration(str(metadata["duration"]))
+    video.metadata_timestamp = timezone.now()
     logging.info("Saving metadata for video %s. Duration: %s", video.video_id, video.duration)
     video.save(update_fields=fields)
 
