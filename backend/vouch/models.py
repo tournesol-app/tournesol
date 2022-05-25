@@ -39,13 +39,13 @@ class Voucher(models.Model):
     )
 
     @staticmethod
-    def get_given_to(user):
-        vouchers = Voucher.objects.filter(to=user)
+    def get_given_by(user):
+        vouchers = Voucher.objects.filter(by=user)
         return vouchers, vouchers.exists()
 
     @staticmethod
-    def get_received_by(user):
-        vouchers = Voucher.objects.filter(by=user)
+    def get_given_to(user):
+        vouchers = Voucher.objects.filter(to=user)
         return vouchers, vouchers.exists()
 
     def save(self, *args, **kwargs):
