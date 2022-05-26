@@ -100,17 +100,30 @@ class SuggestionAPITestCase(TestCase):
                 criteria=self._criteria,
                 score=2.2,
             )
-        contributor_rating = ContributorRatingFactory(
-            poll=self.poll,
-            entity=self.videos[5],
-            user=self.central_scaled_user,
-            is_public=True,
-        )
-        ContributorRatingCriteriaScoreFactory(
-            contributor_rating=contributor_rating,
-            criteria=self._criteria,
-            score=0,
-        )
+        for i, v in enumerate(self.videos[:3]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.central_scaled_user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0.125,
+            )
+        for i, v in enumerate(self.videos[7:]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.central_scaled_user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0.25,
+            )
 
         # Populate the comparison table
         self.comparisons = [

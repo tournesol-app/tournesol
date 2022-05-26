@@ -175,7 +175,6 @@ class SuggestionProvider:
                 if act_user_pref >= act_preference_goal and v not in result:
                     result.append(v)
                     break
-        result.reverse()
         return result
 
     def get_second_video_recommendation(
@@ -223,7 +222,6 @@ class SuggestionProvider:
                 ):
                     result.append(v)
                     break
-        result.reverse()
         return result
 
     def _prepare_video_list(self, user: User):
