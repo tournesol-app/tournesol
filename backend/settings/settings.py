@@ -332,6 +332,9 @@ SPECTACULAR_SETTINGS = {
     "OAUTH2_REFRESH_URL": MAIN_URL + "o/token/",
     "OAUTH2_SCOPES": "read write groups",
     "TITLE": "Tournesol API",
+    "ENUM_NAME_OVERRIDES": {
+        "ScoreModeEnum": "tournesol.models.entity_score.Scoreode",
+    }
 }
 
 YOUTUBE_API_KEY = server_settings.get("YOUTUBE_API_KEY", "")
