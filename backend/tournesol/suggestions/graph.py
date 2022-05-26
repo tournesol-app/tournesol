@@ -12,7 +12,8 @@ from tournesol.models import (
     Poll,
 )
 from tournesol.suggestions.suggested_user import SuggestedUser
-from tournesol.suggestions.suggested_video import SuggestedVideo, SuggestedUserVideo
+from tournesol.suggestions.suggested_user_video import SuggestedUserVideo
+from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
 class CompleteGraph:
@@ -21,14 +22,13 @@ class CompleteGraph:
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
 
-    def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
+    def __init__(self, local_poll: Poll, local_criteria):
         self.local_user_mean: float = 0
-        self.video_comparison_reference = SuggestedVideo(None)
+        self.video_comparison_reference = []
         self.dirty = True
         self.edges = []
         self.graph = {}
         self.NEW_NODE_CONNECTION_SCORE = 0.5
-        self._local_user = local_user
         self._nodes = []
         self.uid_to_index = {}
         self._local_poll = local_poll
@@ -57,8 +57,6 @@ class CompleteGraph:
 
         node_b.nb_comparison_with[node_a.uid] += 1
         node_a.nb_comparison_with[node_b.uid] += 1
-        node_a.comparison_nb += 1
-        node_b.comparison_nb += 1
 
         if node_a <= node_b:
             self.edges.append((node_a, node_b))
@@ -79,20 +77,23 @@ class CompleteGraph:
         """
         if self.dirty:
             entity_criteria_scores: QuerySet = EntityCriteriaScore.default_scores().filter(
-                comparison__poll__name=self._local_poll.name
+                poll__name=self._local_poll.name
             ).filter(criteria=self._local_criteria)
             for ecs in entity_criteria_scores:
                 act_vid = self._nodes[self.uid_to_index[ecs.entity.uid]]
                 act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
-                act_vid._global_video_score_uncertainty = ecs.uncertainty
-                act_vid._global_video_score = ecs.score
+                act_vid.global_video_score_uncertainty = ecs.uncertainty
+                act_vid.global_video_score = ecs.score
                 for n in self._nodes:
                     act_vid.video2_score[n] = (
                             self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
                     )
 
-    def prepare_for_sorting(self, first_video_id: str = ""):
-        self.video_comparison_reference.uid = first_video_id
+    def prepare_for_sorting(self, first_video: Optional[SuggestedVideo]):
+        if first_video is None:
+            self.video_comparison_reference.clear()
+        else:
+            self.video_comparison_reference.append(first_video)
 
 
 class Graph(CompleteGraph):
@@ -117,8 +118,9 @@ class Graph(CompleteGraph):
     distance_matrix: dict[SuggestedVideo, dict[SuggestedVideo, int]]
     similarity_matrix: np.array
 
-    def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
-        super().__init__(local_user, local_poll, local_criteria)
+    def __init__(self, local_user: SuggestedUser, local_poll: Poll, local_criteria):
+        super().__init__(local_poll, local_criteria)
+        self._local_user = local_user
 
     def add_node(self, new_node: SuggestedVideo):
         if new_node.uid not in self.uid_to_index:
@@ -131,6 +133,23 @@ class Graph(CompleteGraph):
                 actual_new_node.nb_comparison_with[n.uid] = 0
         else:
             print("Warning, trying to insert already present node")
+
+    def add_edge(self, node_a: SuggestedVideo, node_b: SuggestedVideo):
+        if node_a not in self._nodes:
+            self.add_node(node_a)
+        if node_b not in self._nodes:
+            self.add_node(node_b)
+
+        if node_a <= node_b:
+            self.edges.append((node_a, node_b))
+            self.graph[node_a].append(node_b)
+            self.graph[node_b].append(node_a)
+        else:
+            self.edges.append((node_b, node_a))
+            self.graph[node_a].append(node_b)
+            self.graph[node_b].append(node_a)
+
+        self.dirty = True
 
     def build_adjacency_matrix(self):
         self.adjacency_matrix = np.zeros((len(self.nodes), len(self.nodes)))
@@ -320,4 +339,14 @@ class Graph(CompleteGraph):
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
                     for va in self.nodes:
-                        va.video2_score[vb] += va.beta[vb] / max_beta
+                        va.video2_score[vb] += va.beta[vb] / max(max_beta, 1)
+
+    def prepare_for_sorting(self, first_video: Optional[SuggestedVideo]):
+        if first_video is None:
+            self.video_comparison_reference.clear()
+        else:
+            if first_video.uid in self.uid_to_index:
+                local_first_video = self._nodes[self.uid_to_index[first_video.uid]]
+                self.video_comparison_reference.append(local_first_video)
+            else:
+                self.video_comparison_reference.append(first_video)

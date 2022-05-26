@@ -75,6 +75,43 @@ class SuggestionAPITestCase(TestCase):
             VideoFactory(metadata__video_id=self._uid_09.split(":")[1]),
         ]
 
+        # Populate the rating table - is already done ?
+        for i, v in enumerate(self.videos[5:]):
+            contributor_rating = ContributorRatingFactory(
+                poll__name=self.poll.name,
+                entity=v,
+                user=self.other,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0,
+            )
+        for i, v in enumerate(self.videos[:5]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=2.2,
+            )
+        contributor_rating = ContributorRatingFactory(
+            poll=self.poll,
+            entity=self.videos[5],
+            user=self.central_scaled_user,
+            is_public=True,
+        )
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=contributor_rating,
+            criteria=self._criteria,
+            score=0,
+        )
+
         # Populate the comparison table
         self.comparisons = [
             # "user" will have comparisons for elements 2 by 2 for videos 0 to 4, the video
@@ -221,49 +258,13 @@ class SuggestionAPITestCase(TestCase):
             scale_uncertainty=0,
             translation_uncertainty=0.0,
         )
-        # Populate the rating table - is already done ?
-        for i, v in enumerate(self.videos[:5]):
-            contributor_rating = ContributorRatingFactory(
-                poll=self.poll,
-                entity=v,
-                user=self.other,
-                is_public=True,
-            )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=contributor_rating,
-                criteria=self._criteria,
-                score=0,
-            )
-        for i, v in enumerate(self.videos[5:]):
-            contributor_rating = ContributorRatingFactory(
-                poll=self.poll,
-                entity=v,
-                user=self.user,
-                is_public=True,
-            )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=contributor_rating,
-                criteria=self._criteria,
-                score=2.2,
-            )
-        contributor_rating = ContributorRatingFactory(
-            poll=self.poll,
-            entity=self.videos[5],
-            user=self.central_scaled_user,
-            is_public=True,
-        )
-        ContributorRatingCriteriaScoreFactory(
-            contributor_rating=contributor_rating,
-            criteria=self._criteria,
-            score=0,
-        )
 
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
     def test_class_instantiation(self):
         local_poll = self.poll
-        Graph(None, local_poll, self._criteria)
+        Graph(self.user, local_poll, self._criteria)
         actual_store = _SuggesterStore()
         actual_store.get_suggester(self.poll)
 
