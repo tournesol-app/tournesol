@@ -146,7 +146,7 @@ const EntityCardScores = ({
                   width={32}
                 />
                 <span className={classes.nb_tournesol}>
-                  {entity.tournesol_score.toFixed(0)}
+                  {entity.tournesol_score.toFixed(2)}
                 </span>
               </Box>
             </Tooltip>
