@@ -2,7 +2,7 @@ from django.db.models import Q, QuerySet
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
-from tournesol.suggestions.graph import Graph
+from tournesol.suggestions.graph import Graph, CompleteGraph
 from tournesol.suggestions.suggested_user import SuggestedUser as RecommendationUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
 
@@ -15,7 +15,7 @@ class SuggestionProvider:
     _entity_to_video: dict[str, SuggestedVideo]
     _comparison_reference_video: SuggestedVideo
     # Graph containing all videos and existing comparisons, used to get the video preferences
-    _complete_graph: Graph
+    _complete_graph: CompleteGraph
     # Dictionary linking a user to its comparison graph, used to get its information gain
     _user_specific_graphs: dict[int, Graph]
 
@@ -61,6 +61,7 @@ class SuggestionProvider:
                 self._entity_to_video[c.comparison.entity_1.uid],
                 self._entity_to_video[c.comparison.entity_2.uid],
             )
+        self._complete_graph.compute_offline_parameters([])
 
         # create required user graphs (none at first in fact)
 

@@ -12,38 +12,14 @@ from tournesol.models import (
     Poll,
 )
 from tournesol.suggestions.suggested_user import SuggestedUser
-from tournesol.suggestions.suggested_video import SuggestedVideo
+from tournesol.suggestions.suggested_video import SuggestedVideo, SuggestedUserVideo
 
 
-class Graph:
-    """
-    Class representing a comparison graph
-    Each node is a video and each node is a comparison
-    """
-    # not necessarily the best data structure,
-    # I still have to find out what is the best one between the two
-    edges: list[tuple[SuggestedVideo, SuggestedVideo]]
-    _nodes: list[SuggestedVideo]  # todo clean that, use default dict functions
-    uid_to_index: dict[str, int]
-    graph: dict[SuggestedVideo, list[SuggestedVideo]]
-    sigma: float
-    dirty: bool
-    _local_user: SuggestedUser
-    local_user_scaling: ContributorScaling
+class CompleteGraph:
     _local_poll: Poll
 
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
-
-    adjacency_matrix: np.array
-    normalized_adjacency_matrix: np.array
-
-    distance_matrix: dict[SuggestedVideo, dict[SuggestedVideo, int]]
-    similarity_matrix: np.array
-
-    @property
-    def nodes(self) -> list[SuggestedVideo]:
-        return self._nodes
 
     def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
         self.local_user_mean: float = 0
@@ -57,6 +33,10 @@ class Graph:
         self.uid_to_index = {}
         self._local_poll = local_poll
         self._local_criteria = local_criteria
+
+    @property
+    def nodes(self) -> list[SuggestedVideo]:
+        return self._nodes
 
     def add_node(self, new_node: SuggestedVideo):
         if new_node.uid not in self.uid_to_index:
@@ -90,6 +70,67 @@ class Graph:
             self.graph[node_b].append(node_a)
 
         self.dirty = True
+
+    def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
+        """
+        Function computing the offline parameters, including the adjacency matrix, its
+        normalization, the distance matrix and the similarity matrix if the graph is a user graph,
+        the video scores otherwise
+        """
+        if self.dirty:
+            entity_criteria_scores: QuerySet = EntityCriteriaScore.default_scores().filter(
+                comparison__poll__name=self._local_poll.name
+            ).filter(criteria=self._local_criteria)
+            for ecs in entity_criteria_scores:
+                act_vid = self._nodes[self.uid_to_index[ecs.entity.uid]]
+                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                act_vid._global_video_score_uncertainty = ecs.uncertainty
+                act_vid._global_video_score = ecs.score
+                for n in self._nodes:
+                    act_vid.video2_score[n] = (
+                            self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
+                    )
+
+    def prepare_for_sorting(self, first_video_id: str = ""):
+        self.video_comparison_reference.uid = first_video_id
+
+
+class Graph(CompleteGraph):
+    """
+    Class representing a comparison graph
+    Each node is a video and each node is a comparison
+    """
+    # not necessarily the best data structure,
+    # I still have to find out what is the best one between the two
+    edges: list[tuple[SuggestedVideo, SuggestedVideo]]
+    _nodes: list[SuggestedVideo]  # todo clean that, use default dict functions
+    uid_to_index: dict[str, int]
+    graph: dict[SuggestedVideo, list[SuggestedVideo]]
+    sigma: float
+    dirty: bool
+    _local_user: SuggestedUser
+    local_user_scaling: ContributorScaling
+
+    adjacency_matrix: np.array
+    normalized_adjacency_matrix: np.array
+
+    distance_matrix: dict[SuggestedVideo, dict[SuggestedVideo, int]]
+    similarity_matrix: np.array
+
+    def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
+        super().__init__(local_user, local_poll, local_criteria)
+
+    def add_node(self, new_node: SuggestedVideo):
+        if new_node.uid not in self.uid_to_index:
+            actual_new_node = SuggestedUserVideo(self.video_comparison_reference, new_node, self._local_user)
+            self.uid_to_index[actual_new_node.uid] = len(self.nodes)
+            self._nodes.append(actual_new_node)
+            self.graph[actual_new_node] = []
+            for n in self._nodes:
+                n.nb_comparison_with[actual_new_node.uid] = 0
+                actual_new_node.nb_comparison_with[n.uid] = 0
+        else:
+            print("Warning, trying to insert already present node")
 
     def build_adjacency_matrix(self):
         self.adjacency_matrix = np.zeros((len(self.nodes), len(self.nodes)))
@@ -200,7 +241,7 @@ class Graph:
         normalization, the distance matrix and the similarity matrix if the graph is a user graph,
         the video scores otherwise
         """
-        if self.dirty and self._local_user is not None:
+        if self.dirty:
             self.dirty = False
             self.build_adjacency_matrix()
             self.build_distance_matrix()
@@ -219,18 +260,6 @@ class Graph:
             )["mean"]
 
             self.compute_information_gain(scaling_factor_increasing_videos)
-
-        elif self._local_user is None:
-            entity_criteria_scores: QuerySet = EntityCriteriaScore.default_scores().filter(
-                comparison__poll__name=self._local_poll.name
-            ).filter(criteria=self._local_criteria)
-            for ecs in entity_criteria_scores:
-                act_vid = self._nodes[self.uid_to_index[ecs.entity.uid]]
-                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
-                for n in self._nodes:
-                    act_vid.video2_score[n] = (
-                            self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
-                    )
 
     def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
         """
@@ -292,6 +321,3 @@ class Graph:
                 for vb in sg.nodes:
                     for va in self.nodes:
                         va.video2_score[vb] += va.beta[vb] / max_beta
-
-    def prepare_for_sorting(self, first_video_id: str = ""):
-        self.video_comparison_reference.uid = first_video_id
