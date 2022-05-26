@@ -13,7 +13,7 @@ from ml.outputs import (
     save_contributor_scalings,
     save_contributor_scores,
     save_entity_scores,
-    save_tournesol_score_as_sum_of_criteria,
+    save_tournesol_scores,
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
@@ -135,5 +135,5 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
         ):
             pass
 
-    save_tournesol_score_as_sum_of_criteria(poll)
+    save_tournesol_scores(poll)
     logger.info("Mehestan for poll '%s': Done", poll.name)

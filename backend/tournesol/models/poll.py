@@ -60,6 +60,13 @@ class Poll(models.Model):
         )
 
     @property
+    def main_criteria(self):
+        criterias = self.criterias_list
+        if len(criterias) > 0:
+            return criterias[0]
+        return None
+
+    @property
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.entity_type]
 

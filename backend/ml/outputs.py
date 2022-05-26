@@ -15,6 +15,7 @@ from tournesol.models import (
     Poll,
 )
 from tournesol.models.entity_score import ScoreMode
+from tournesol.models.poll import ALGORITHM_MEHESTAN
 
 
 def save_entity_scores(
@@ -54,16 +55,23 @@ def save_entity_scores(
         )
 
 
-def save_tournesol_score_as_sum_of_criteria(poll):
+def save_tournesol_scores(poll):
     entities = []
     for entity in (
         Entity.objects.filter(all_criteria_scores__poll=poll)
         .distinct()
         .with_prefetched_scores(poll_name=poll.name)
     ):
-        entity.tournesol_score = 10 * sum(
-            criterion.score for criterion in entity.criteria_scores
-        )
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            # The tournesol score is simply the score associated with the main criteria
+            entity.tournesol_score = next(
+                (s.score for s in entity.criteria_scores if s.criteria == poll.main_criteria),
+                None
+            )
+        else:
+            entity.tournesol_score = 10 * sum(
+                criterion.score for criterion in entity.criteria_scores
+            )
         entities.append(entity)
     Entity.objects.bulk_update(entities, ["tournesol_score"])
 
