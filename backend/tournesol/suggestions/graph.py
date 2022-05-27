@@ -124,7 +124,11 @@ class Graph(CompleteGraph):
 
     def add_node(self, new_node: SuggestedVideo):
         if new_node.uid not in self.uid_to_index:
-            actual_new_node = SuggestedUserVideo(self.video_comparison_reference, new_node, self._local_user)
+            actual_new_node = SuggestedUserVideo(
+                self.video_comparison_reference,
+                new_node,
+                self._local_user
+            )
             self.uid_to_index[actual_new_node.uid] = len(self.nodes)
             self._nodes.append(actual_new_node)
             self.graph[actual_new_node] = []

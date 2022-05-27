@@ -37,7 +37,7 @@ class SuggestionProvider:
         for c in comparison_queryset:
             # Checks if each compared Entity has already been translated to a SuggestedVideo object
             # and translates it otherwise
-            if c.comparison.entity_1.uid not in self._entity_to_video.keys():
+            if c.comparison.entity_1.uid not in self._entity_to_video:
                 self._entity_to_video[c.comparison.entity_1.uid] = SuggestedVideo(
                     self._complete_graph.video_comparison_reference,
                     from_entity=c.comparison.entity_1
@@ -47,7 +47,7 @@ class SuggestionProvider:
                     self._entity_to_video[c.comparison.entity_1.uid]
                 )
 
-            if c.comparison.entity_2.uid not in self._entity_to_video.keys():
+            if c.comparison.entity_2.uid not in self._entity_to_video:
                 self._entity_to_video[c.comparison.entity_2.uid] = SuggestedVideo(
                     self._complete_graph.video_comparison_reference,
                     from_entity=c.comparison.entity_2
@@ -132,7 +132,7 @@ class SuggestionProvider:
         up to date
         """
         self._complete_graph.add_edge(va, vb)
-        if user.id in self._user_specific_graphs.keys():
+        if user.id in self._user_specific_graphs:
             self._user_specific_graphs[user.id].add_edge(va, vb)
 
     def get_first_video_recommendation(
@@ -145,7 +145,7 @@ class SuggestionProvider:
         nb_video_required videos
         """
         # Lazily load the user graph
-        if user.id not in self._user_specific_graphs.keys():
+        if user.id not in self._user_specific_graphs:
             self.register_new_user(user)
         result = []
 
@@ -188,7 +188,7 @@ class SuggestionProvider:
         comparison with respect to first_video and returning nb_video_required videos
         """
         # Lazily load the user graphs
-        if user.id not in self._user_specific_graphs.keys():
+        if user.id not in self._user_specific_graphs:
             self.register_new_user(user)
         result = []
 
