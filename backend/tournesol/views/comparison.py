@@ -117,8 +117,10 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison: Comparison = serializer.save()
         comparison.entity_1.update_n_ratings()
         comparison.entity_1.inner.refresh_metadata()
+        comparison.entity_1.auto_remove_from_rate_later(self.request.user)
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.inner.refresh_metadata()
+        comparison.entity_2.auto_remove_from_rate_later(self.request.user)
         if poll.algorithm == ALGORITHM_MEHESTAN:
             update_user_scores(poll, user=self.request.user)
 

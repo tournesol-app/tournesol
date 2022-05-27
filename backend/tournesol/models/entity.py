@@ -121,6 +121,19 @@ class Entity(models.Model):
         )
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
+    def auto_remove_from_rate_later(self, user):
+        """
+        When called, the entity will be removed from the VideoRateLater
+        list if it has 4 or more comparisons
+        """
+        from .comparisons import Comparison
+
+        n_comparisons = Comparison.objects.filter(user=user).filter(
+            Q(entity_1=self) | Q(entity_2=self)
+        ).count()
+        if n_comparisons >= 4:
+            VideoRateLater.objects.filter(user=user, video=self).delete()
+
     @property
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.type]
