@@ -246,7 +246,7 @@ class VideoRateLaterApi(TestCase):
 
     def test_automatically_removed_after_4_comparisons(self):
         """
-        
+        Test the automated removal from the rate later list.
         """
         user = User.objects.get(username=self._user)
         other_user = User.objects.get(username=self._other)
