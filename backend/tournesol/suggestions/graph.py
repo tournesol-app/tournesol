@@ -266,11 +266,15 @@ class Graph(CompleteGraph):
             self.build_adjacency_matrix()
             self.build_distance_matrix()
             self.build_similarity_matrix()
-            self.local_user_scaling = ContributorScaling.objects \
-                .filter(user__id=self._local_user.uid) \
-                .filter(poll__name=self._local_poll.name) \
-                .filter(criteria=self._local_criteria) \
-                .get()
+            try:
+                self.local_user_scaling = ContributorScaling.objects \
+                    .filter(user__id=self._local_user.uid) \
+                    .filter(poll__name=self._local_poll.name) \
+                    .filter(criteria=self._local_criteria) \
+                    .get()
+            except ContributorScaling.DoesNotExist:
+                self.local_user_scaling = type('', (object,), {"scale_uncertainty": 0,
+                                                               "translation_uncertainty": 0})()
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
                         contributor_rating__user__id=self._local_user.uid)

@@ -21,6 +21,7 @@ from tournesol.tests.factories.scaling import ContributorScalingFactory
 class SuggestionAPITestCase(TestCase):
     # users available in the test
     _user = "username"
+    _user_no_comparison = "absent"
     _other = "other_username"
     _central_scaled_user = "central_user"
 
@@ -57,6 +58,7 @@ class SuggestionAPITestCase(TestCase):
 
         # Populate the user table
         self.user = UserFactory(username=self._user)
+        self.user_no_comparison = UserFactory(username=self._user_no_comparison)
         self.other = UserFactory(username=self._other)
         self.central_scaled_user = UserFactory(username=self._central_scaled_user, is_staff=True)
         now = datetime.datetime.now()
@@ -124,6 +126,28 @@ class SuggestionAPITestCase(TestCase):
                 criteria=self._criteria,
                 score=0.25,
             )
+        contributor_rating = ContributorRatingFactory(
+            poll=self.poll,
+            entity=self.videos[4],
+            user=self.user_no_comparison,
+            is_public=True,
+        )
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=contributor_rating,
+            criteria=self._criteria,
+            score=0,
+        )
+        contributor_rating = ContributorRatingFactory(
+            poll=self.poll,
+            entity=self.videos[6],
+            user=self.user_no_comparison,
+            is_public=True,
+        )
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=contributor_rating,
+            criteria=self._criteria,
+            score=0,
+        )
 
         # Populate the comparison table
         self.comparisons = [
@@ -230,6 +254,13 @@ class SuggestionAPITestCase(TestCase):
                 duration_ms=205,
                 datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
+            ComparisonFactory(
+                user=self.user_no_comparison,
+                entity_1=self.videos[4],
+                entity_2=self.videos[6],
+                duration_ms=404,
+                datetime_lastedit=now + datetime.timedelta(minutes=2),
+            ),
         ]
 
         # CriteriaRankFactory(poll=self.poll, criteria__name="largely_recommended")
@@ -298,6 +329,11 @@ class SuggestionAPITestCase(TestCase):
         assert self.user.id not in suggester._user_specific_graphs.keys()
         suggester.get_first_video_recommendation(self.user, 6)
         assert self.user.id in suggester._user_specific_graphs.keys()
+
+    def test_absent_user_does_not_crash(self):
+        suggester = SuggestionProvider(self.poll)
+        vid = suggester.get_first_video_recommendation(self.user_no_comparison, 6)
+        suggester.get_second_video_recommendation(self.user_no_comparison, vid[0].uid, 6)
 
 # This would be nice to test, but this property is not easy to compute...
     def test_most_informative_vid_given_first(self):
