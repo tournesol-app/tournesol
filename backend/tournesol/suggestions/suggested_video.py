@@ -10,37 +10,28 @@ from tournesol.models import Entity
 class SuggestedVideo:
     uid = ""
     video1_score: float = 0
-    video2_score: dict[SuggestedVideo, float] = {}
     beta: dict[SuggestedVideo, float] = {}
     nb_comparison_with: dict[str, int] = {}
     global_video_score_uncertainty: float
     global_video_score: float
+    suggestibility_normalization: float
     NEW_NODE_CONNECTION_SCORE = 0.5
 
     user_pref: int = 0
 
-    video_reference: list[SuggestedVideo]
-
     def __init__(
             self,
-            video_reference: Optional[list[SuggestedVideo]],
             from_entity: Optional[Entity] = None
     ):
-        self.video_reference = video_reference
         if from_entity is not None:
             self.uid = from_entity.uid
+        self.suggestibility_normalization = 1
 
     def __eq__(self, __o: SuggestedVideo) -> bool:
         return __o.uid == self.uid
 
     def __le__(self, other: SuggestedVideo):
-        if len(self.video_reference) == 0:
-            return self.video1_score <= other.video1_score
-        else:
-            #  self.video2_score.get(self.video_reference, self.)
-            score_self = self.score_suggestibility + self.graph_sparsity
-            score_other = other.score_suggestibility + other.graph_sparsity
-            return score_self <= score_other
+        return self.uid <= other.uid
 
     def __repr__(self) -> str:
         return "Video " + self.uid
@@ -48,10 +39,10 @@ class SuggestedVideo:
     def __hash__(self):
         return self.uid.__hash__()
 
-    @property
-    def score_suggestibility(self):
-        return self.score_uncertainty + self.video_reference[0].score_uncertainty / (
-                    self.score + self.video_reference[0].score + 1)
+    def score_computation(self, reference: SuggestedVideo):
+        return (self.score_uncertainty + reference.score_uncertainty / (
+                    self.score + reference.score + 1)
+                ) / self.suggestibility_normalization
 
     @property
     def score(self):

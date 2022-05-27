@@ -351,8 +351,9 @@ class SuggestionAPITestCase(TestCase):
         )
         last_vid_score = 1000
         for v in user2_videos:
-            assert v.video2_score[user_videos[0]] <= last_vid_score
-            last_vid_score = v.video2_score[user_videos[0]]
+            v_score = v.score_computation(user_videos[0]) + v.graph_sparsity
+            assert v_score <= last_vid_score
+            last_vid_score = v_score
 
     def test_suggestions_personalization(self):
         suggester = SuggestionProvider(self.poll)

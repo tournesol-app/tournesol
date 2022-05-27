@@ -6,11 +6,11 @@ class SuggestedUserVideo(SuggestedVideo):
     local_user: SuggestedUser
 
     def __init__(
-            self, video_reference: list[SuggestedVideo],
+            self,
             parent: SuggestedVideo,
             local_user: SuggestedUser
     ):
-        super().__init__(video_reference)
+        super().__init__()
         self._graph_sparsity_score = 0
         self.uid = parent.uid
         self.nb_comparison_with = parent.nb_comparison_with

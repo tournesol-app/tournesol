@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db.models import Q, QuerySet
 
 from core.models import User
@@ -39,7 +41,6 @@ class SuggestionProvider:
             # and translates it otherwise
             if c.comparison.entity_1.uid not in self._entity_to_video:
                 self._entity_to_video[c.comparison.entity_1.uid] = SuggestedVideo(
-                    self._complete_graph.video_comparison_reference,
                     from_entity=c.comparison.entity_1
                 )
 
@@ -49,7 +50,6 @@ class SuggestionProvider:
 
             if c.comparison.entity_2.uid not in self._entity_to_video:
                 self._entity_to_video[c.comparison.entity_2.uid] = SuggestedVideo(
-                    self._complete_graph.video_comparison_reference,
                     from_entity=c.comparison.entity_2
                 )
 
@@ -154,12 +154,9 @@ class SuggestionProvider:
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
         self._complete_graph.compute_offline_parameters([])
 
-        self._complete_graph.prepare_for_sorting(None)
-        user_graph.prepare_for_sorting(None)
-
         # Prepare the set of videos to sort, taking the videos present in the graph
         # and append the ones that are not yet compared by the user
-        considered_vid_list = self._prepare_video_list(user)
+        considered_vid_list = self._prepare_video_list(user, None)
 
         max_vid_pref = 0
         # Todo : take into account the rate later list / already seen videos ?
@@ -168,6 +165,7 @@ class SuggestionProvider:
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
+        # todo explain that
         for i in range(nb_video_required):
             act_preference_goal = (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
             for v in considered_vid_list:
@@ -198,12 +196,10 @@ class SuggestionProvider:
         self._complete_graph.compute_offline_parameters([])
 
         first_video = self._complete_graph.nodes[self._complete_graph.uid_to_index[first_video_id]]
-        self._complete_graph.prepare_for_sorting(first_video)
-        user_graph.prepare_for_sorting(first_video)
 
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
-        considered_vid_list = self._prepare_video_list(user)
+        considered_vid_list = self._prepare_video_list(user, first_video)
 
         max_vid_pref = 0
         for v in considered_vid_list:
@@ -224,7 +220,7 @@ class SuggestionProvider:
                     break
         return result
 
-    def _prepare_video_list(self, user: User):
+    def _prepare_video_list(self, user: User, first_video: Optional[SuggestedVideo]):
         """
         Function used in the video recommendations, to prepare the set of videos to choose the
         recommendation from
@@ -237,5 +233,8 @@ class SuggestionProvider:
 
         considered_vid.update(tmp)
         considered_vid_list = list(considered_vid)
-        considered_vid_list.sort(reverse=True)
+        if first_video is not None:
+            considered_vid_list.sort(reverse=True, key=lambda x: x.score_computation(first_video))
+        else:
+            considered_vid_list.sort(reverse=True, key=lambda x: x.video1_score)
         return considered_vid_list
