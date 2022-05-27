@@ -43,10 +43,7 @@ class SuggestedVideo:
             return score_self <= score_other
 
     def __repr__(self) -> str:
-        return (
-                "Video "
-                + self.uid
-        )
+        return "Video " + self.uid
 
     def __hash__(self):
         return self.uid.__hash__()

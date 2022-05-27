@@ -128,9 +128,6 @@ class Graph(CompleteGraph):
             self.uid_to_index[actual_new_node.uid] = len(self.nodes)
             self._nodes.append(actual_new_node)
             self.graph[actual_new_node] = []
-            for n in self._nodes:
-                n.nb_comparison_with[actual_new_node.uid] = 0
-                actual_new_node.nb_comparison_with[n.uid] = 0
         else:
             print("Warning, trying to insert already present node")
 

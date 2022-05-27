@@ -330,13 +330,13 @@ class SuggestionAPITestCase(TestCase):
 
         all_the_same = True
         user_second_videos_a = suggester.get_second_video_recommendation(
-            self.user,
+            self.central_scaled_user,
             user_videos[0].uid,
             8
         )
         user_second_videos_b = suggester.get_second_video_recommendation(
-            self.user,
-            user_videos[0].uid,
+            self.central_scaled_user,
+            user_videos[-1].uid,
             8
         )
         for v1, v2 in zip(user_second_videos_a, user_second_videos_b):
