@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.test import TestCase
+from core.utils.time import time_ago
 
 from core.tests.factories.user import UserFactory
 from tournesol.models import Poll
@@ -60,6 +61,13 @@ class TestBestContributor(TestCase):
 
         for comparison in self.comparisons:
             Comparison.objects.filter(pk=comparison.pk).update(datetime_add=last_month)
+
+        # Comparisons with other dates to be sure it only get those from the previous month
+        ComparisonFactory(user=self.users[4], entity_1=self.entities[1], entity_2=self.entities[2])
+        older_comparison = ComparisonFactory(
+            user=self.users[4], entity_1=self.entities[1], entity_2=self.entities[3]
+        )
+        Comparison.objects.filter(pk=older_comparison.pk).update(datetime_add=time_ago(days=65))
 
     def test_get_previous_month_top_public_contributor(self):
         """Test top public contributor of the previous month."""
