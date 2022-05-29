@@ -33,7 +33,7 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
-  const [expanded, setExpanded] = React.useState(false);
+  const [collapsedState, setCollapsed] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
@@ -41,7 +41,7 @@ export const VideoAnalysis = ({
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
   const options = { defaultProtocol: 'https', target: '_blank' };
-  const linki = linkifyHtml(video.description || '', options);
+  const linkifiedDescription = linkifyHtml(video.description || '', options);
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
@@ -73,17 +73,17 @@ export const VideoAnalysis = ({
           </Grid>
           <Grid item xs={12}>
             <CollapseButton
-              expanded={expanded}
+              expanded={collapsedState}
               onClick={() => {
-                setExpanded(!expanded);
+                setCollapsed(!collapsedState);
               }}
             >
               {t('entityAnalysisPage.video.description')}
             </CollapseButton>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <Collapse in={collapsedState} timeout="auto" unmountOnExit>
               <Box
-                style={expanded ? { display: 'block' } : { display: 'none' }}
-                dangerouslySetInnerHTML={{ __html: linki }}
+                style={collapsedState ? { display: 'block' } : { display: 'none' }}
+                dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
                 color="theme.palette.text.primary"
                 whiteSpace="pre-wrap"
                 fontSize="0.8em"
