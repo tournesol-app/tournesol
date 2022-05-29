@@ -10,11 +10,11 @@ from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.ratings import ContributorRatingFactory
-from twitterbot.best_contributors import get_previous_month_best_public_contributor
+from twitterbot.top_contributors import get_previous_month_top_public_contributor
 
 
 class TestBestContributor(TestCase):
-    """TestCase for the best contributors of last month."""
+    """TestCase for the top contributors of last month."""
     
     def setUp(self):
 
@@ -63,14 +63,14 @@ class TestBestContributor(TestCase):
         for comparison in self.comparisons:
             Comparison.objects.filter(pk=comparison.pk).update(datetime_add=last_month)
 
-    def test_get_previous_month_best_public_contributor(self):
-        """Test best public contributor of the previous month."""
+    def test_get_previous_month_top_public_contributor(self):
+        """Test top public contributor of the previous month."""
         
-        best_contributors = get_previous_month_best_public_contributor()
+        top_contributors = get_previous_month_top_public_contributor()
         
-        assert best_contributors[0] == (self.users[2].username, 5)
-        assert best_contributors[1] == (self.users[0].username, 4)
-        assert best_contributors[2] == (self.users[3].username, 3)
-        assert best_contributors[3] == (self.users[1].username, 2)
-        assert best_contributors[4] == (self.users[4].username, 1)
+        assert top_contributors[0] == (self.users[2].username, 5)
+        assert top_contributors[1] == (self.users[0].username, 4)
+        assert top_contributors[2] == (self.users[3].username, 3)
+        assert top_contributors[3] == (self.users[1].username, 2)
+        assert top_contributors[4] == (self.users[4].username, 1)
         
