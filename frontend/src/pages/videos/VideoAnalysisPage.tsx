@@ -82,7 +82,9 @@ export const VideoAnalysis = ({
             </CollapseButton>
             <Collapse in={collapsedState} timeout="auto" unmountOnExit>
               <Box
-                style={collapsedState ? { display: 'block' } : { display: 'none' }}
+                style={
+                  collapsedState ? { display: 'block' } : { display: 'none' }
+                }
                 dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
                 color="theme.palette.text.primary"
                 whiteSpace="pre-wrap"
