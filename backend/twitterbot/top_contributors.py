@@ -8,26 +8,22 @@ from tournesol.models.ratings import ContributorRating
 
 def get_previous_month_top_public_contributor():
     """Return the top public contributor of the previous month."""
-        
+
     now = datetime.now()
     last_month = datetime(now.year, now.month, 1) - timedelta(days=15)
-    
-    public_data = (
-        ContributorRating.objects
-        .filter(is_public=True, poll__name=DEFAULT_POLL_NAME)
-        .select_related("user", "entity")
-    )
-    
+
+    public_data = ContributorRating.objects.filter(
+        is_public=True, poll__name=DEFAULT_POLL_NAME
+    ).select_related("user", "entity")
+
     public_videos = set((rating.user, rating.entity) for rating in public_data)
-    
-    comparisons = (
-        Comparison.objects
-        .filter(poll__name=DEFAULT_POLL_NAME, 
-                datetime_add__month=last_month.month,
-                datetime_add__year=last_month.year)
-        .select_related("entity_1", "entity_2", "user")
-    )
-    
+
+    comparisons = Comparison.objects.filter(
+        poll__name=DEFAULT_POLL_NAME,
+        datetime_add__month=last_month.month,
+        datetime_add__year=last_month.year,
+    ).select_related("entity_1", "entity_2", "user")
+
     public_comparisons = [
         comparison
         for comparison in comparisons
@@ -36,10 +32,9 @@ def get_previous_month_top_public_contributor():
             and (comparison.user, comparison.entity_2) in public_videos
         )
     ]
-        
+
     public_usernames = [comparison.user.username for comparison in public_comparisons]
- 
+
     top_contributor_counter = collections.Counter(public_usernames)
 
     return top_contributor_counter.most_common(10)
-        
