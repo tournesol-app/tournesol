@@ -9,7 +9,7 @@ from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.ratings import ContributorRatingFactory
-from twitterbot.top_contributors import get_previous_month_top_public_contributor
+from twitterbot.top_contributors import get_last_month_top_public_contributors
 
 
 class TestBestContributor(TestCase):
@@ -69,10 +69,10 @@ class TestBestContributor(TestCase):
         )
         Comparison.objects.filter(pk=older_comparison.pk).update(datetime_add=time_ago(days=65))
 
-    def test_get_previous_month_top_public_contributor(self):
+    def test_get_last_month_top_public_contributors(self):
         """Test top public contributor of the previous month."""
 
-        top_contributors = get_previous_month_top_public_contributor(poll_name=self.poll.name)
+        top_contributors = get_last_month_top_public_contributors(poll_name=self.poll.name)
 
         assert top_contributors[0] == (self.users[2].username, 5)
         assert top_contributors[1] == (self.users[0].username, 4)

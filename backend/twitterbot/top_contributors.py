@@ -5,7 +5,7 @@ from tournesol.models.comparisons import Comparison
 from tournesol.models.ratings import ContributorRating
 
 
-def get_previous_month_top_public_contributor(poll_name):
+def get_last_month_top_public_contributors(poll_name):
     """
     Return the top contributors of the previous month, based on the number of
     their public comparisons.
