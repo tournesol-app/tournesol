@@ -1,11 +1,7 @@
 import { TFunction } from 'react-i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
 
-import {
-  AddToRateLaterList,
-  AnalysisPageLink,
-  CompareNowAction,
-} from './action';
+import { AddToRateLaterList, CompareNowAction } from './action';
 import {
   getAllCandidates,
   getTutorialDialogs as getPresidentielleTutorialDialogs,
@@ -212,8 +208,8 @@ export const polls: Array<SelectablePoll> = [
     ? [
         {
           name: PRESIDENTIELLE_2022_POLL_NAME,
-          defaultAuthEntityActions: [CompareNowAction, AnalysisPageLink],
-          defaultAnonEntityActions: [AnalysisPageLink],
+          defaultAuthEntityActions: [CompareNowAction],
+          defaultAnonEntityActions: [],
           displayOrder: 20,
           mainCriterionName: 'be_president',
           path: '/presidentielle2022/',
@@ -232,12 +228,8 @@ export const polls: Array<SelectablePoll> = [
     : []),
   {
     name: YOUTUBE_POLL_NAME,
-    defaultAuthEntityActions: [
-      CompareNowAction,
-      AddToRateLaterList,
-      AnalysisPageLink,
-    ],
-    defaultAnonEntityActions: [AnalysisPageLink],
+    defaultAuthEntityActions: [CompareNowAction, AddToRateLaterList],
+    defaultAnonEntityActions: [],
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
     mainCriterionName: 'largely_recommended',
