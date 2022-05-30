@@ -118,7 +118,8 @@ class UnitTest(TestCase):
         
     def test_trust_algo(self) :
         trust_algo()
-        #check trust score of Users
+        assert self.user_1.trust_score == pytest.approx(1,0.00000001)
+        assert self.user_9.trust_score == pytest.approx(0,0.00000001)
 
 
 
