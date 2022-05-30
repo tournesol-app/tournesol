@@ -7,7 +7,10 @@ from tournesol.models.ratings import ContributorRating
 
 
 def get_previous_month_top_public_contributor():
-    """Return the top public contributor of the previous month."""
+    """
+    Return the top contributors of the previous month, based on the number of
+    their public comparisons.
+    """
 
     now = datetime.now()
     last_month = datetime(now.year, now.month, 1) - timedelta(days=15)
