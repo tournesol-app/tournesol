@@ -13,11 +13,9 @@ const DurationWrapper = React.forwardRef(function DurationWrapper(
   {
     duration,
     children,
-    bottom = 0,
   }: {
     duration?: number;
     children: React.ReactNode;
-    bottom?: number;
   },
   ref
 ) {
@@ -36,14 +34,15 @@ const DurationWrapper = React.forwardRef(function DurationWrapper(
       {isDurationVisible && formattedDuration && (
         <Box
           position="absolute"
-          bottom={bottom}
+          bottom={0}
           right={0}
-          bgcolor="rgba(0,0,0,0.5)"
           color="#fff"
+          bgcolor="rgba(0,0,0,0.5)"
           px={1}
           fontFamily="system-ui, arial, sans-serif"
           fontSize="0.8em"
           fontWeight="bold"
+          lineHeight={1.5}
           sx={{ pointerEvents: 'none' }}
         >
           {formattedDuration}
@@ -123,7 +122,7 @@ const EntityImagery = ({
               to={`${baseUrl}/entities/${entity.uid}`}
               className="full-width"
             >
-              <DurationWrapper bottom={12} duration={entity.metadata.duration}>
+              <DurationWrapper duration={entity.metadata.duration}>
                 <img
                   className="full-width"
                   src={`https://i.ytimg.com/vi/${idFromUid(
