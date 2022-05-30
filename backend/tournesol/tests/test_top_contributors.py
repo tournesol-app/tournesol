@@ -9,7 +9,7 @@ from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.ratings import ContributorRatingFactory
-from twitterbot.top_contributors import get_last_month_top_public_contributors
+from tournesol.utils.top_contributors import get_last_month_top_public_contributors
 
 
 class TestBestContributor(TestCase):
