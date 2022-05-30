@@ -20,6 +20,17 @@ interface Props {
 
 const DEFAULT_MESSAGE = 'No video found.';
 
+/**
+ * THIS COMPONENT IS DEPRECATED. USE `EntityList` INSTEAD.
+ *
+ * This component is only used by the rate-later page, which is connected
+ * to a legacy API endpoint returning VideoObject instead of new style entity.
+ *
+ * TODO:
+ *  - make the rate-later component return entities
+ *  - use the `EntityList` in the rate-later page
+ *  - delete this component
+ */
 function VideoList({
   videos,
   actions,

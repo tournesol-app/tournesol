@@ -13,24 +13,28 @@ import {
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
+import { TypeEnum } from 'src/services/openapi';
+import { ActionList, JSONValue, RelatedEntityObject } from 'src/utils/types';
+
 import EntityCardTitle from './EntityCardTitle';
+import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
-import { RelatedEntityObject, ActionList } from 'src/utils/types';
-import EntityCardScores from './EntityCardScores';
-import { TypeEnum } from 'src/services/openapi';
 
 const EntityCard = ({
   entity,
   actions = [],
   settings = [],
   compact = false,
+  entityTypeConfig,
 }: {
   entity: RelatedEntityObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
+  // Configuration specific to the entity type.
+  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -59,9 +63,17 @@ const EntityCard = ({
         item
         xs={12}
         sm={compact ? 12 : 'auto'}
-        sx={{ display: 'flex', justifyContent: 'center' }}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          ...(compact ? {} : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+        }}
       >
-        <EntityImagery entity={entity} compact={compact} />
+        <EntityImagery
+          entity={entity}
+          compact={compact}
+          config={entityTypeConfig}
+        />
       </Grid>
       <Grid
         item

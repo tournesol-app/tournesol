@@ -6,8 +6,8 @@ import { Avatar, Box } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
-import { RelatedEntityObject } from 'src/utils/types';
-import { convertDurationToClockDuration } from 'src/utils/video';
+import { JSONValue, RelatedEntityObject } from 'src/utils/types';
+import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
 const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   {
@@ -78,26 +78,60 @@ export const VideoPlayer = ({
 const EntityImagery = ({
   entity,
   compact = false,
+  config = {},
 }: {
   entity: RelatedEntityObject;
   compact?: boolean;
+  config?: { [k: string]: { [k: string]: JSONValue } };
 }) => {
   const { baseUrl } = useCurrentPoll();
+  const videoConfig = config[TypeEnum.VIDEO] ?? {};
 
   if (entity.type === TypeEnum.VIDEO) {
     return (
-      <Box
-        sx={{
-          aspectRatio: '16 / 9',
-          width: '100%',
-          ...(compact ? {} : { minWidth: '240px', maxWidth: { sm: '240px' } }),
-        }}
-      >
-        <VideoPlayer
-          videoId={entity.metadata.video_id}
-          duration={entity.metadata.duration}
-        />
-      </Box>
+      <>
+        {/* Display the video player by default, unless otherwise configured. */}
+        {videoConfig?.displayPlayer ?? true ? (
+          <Box
+            sx={{
+              aspectRatio: '16 / 9',
+              width: '100%',
+            }}
+          >
+            <VideoPlayer
+              videoId={entity.metadata.video_id}
+              duration={entity.metadata.duration}
+            />
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            alignItems="center"
+            bgcolor="black"
+            width="100%"
+            // prevent the RouterLink to add few extra pixels
+            lineHeight={0}
+            sx={{
+              '& > img': {
+                flex: 1,
+              },
+            }}
+          >
+            <RouterLink
+              to={`${baseUrl}/entities/${entity.uid}`}
+              className="full-width"
+            >
+              <img
+                className="full-width"
+                src={`https://i.ytimg.com/vi/${idFromUid(
+                  entity.uid
+                )}/mqdefault.jpg`}
+                alt={entity.metadata.name}
+              />
+            </RouterLink>
+          </Box>
+        )}
+      </>
     );
   }
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {
