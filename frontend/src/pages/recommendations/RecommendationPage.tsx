@@ -17,13 +17,14 @@ import {
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { getRecommendationPageName } from 'src/utils/constants';
 
 function RecommendationsPage() {
   const { t } = useTranslation();
 
   const history = useHistory();
   const location = useLocation();
-  const { name: pollName, criterias } = useCurrentPoll();
+  const { name: pollName, criterias, options } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
 
   const prov: PaginatedRecommendationList = {
@@ -40,6 +41,7 @@ function RecommendationsPage() {
   );
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
+  const autoLanguageDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
 
   const locationSearchRef = useRef<string>();
 
@@ -56,7 +58,7 @@ function RecommendationsPage() {
     }
     locationSearchRef.current = location.search;
 
-    if (searchParams.get('language') === null) {
+    if (autoLanguageDiscovery && searchParams.get('language') === null) {
       let loadedLanguages = loadRecommendationsLanguages();
 
       if (loadedLanguages === null) {
@@ -69,24 +71,33 @@ function RecommendationsPage() {
       return;
     }
 
-    const fetchVideos = async () => {
+    const fetchEntities = async () => {
       setIsLoading(true);
       setEntities(
         (await getRecommendations(
           pollName,
           limit,
           location.search,
-          criterias
+          criterias,
+          options
         )) || []
       );
       setIsLoading(false);
     };
-    fetchVideos();
-  }, [criterias, history, location.search, pollName, searchParams]);
+    fetchEntities();
+  }, [
+    autoLanguageDiscovery,
+    criterias,
+    history,
+    location.search,
+    pollName,
+    searchParams,
+    options,
+  ]);
 
   return (
     <>
-      <ContentHeader title={t('recommendationsPage.title')} />
+      <ContentHeader title={getRecommendationPageName(t, pollName)} />
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box px={{ xs: 2, sm: 0 }}>
           <SearchFilter />
@@ -99,7 +110,7 @@ function RecommendationsPage() {
             }
           />
         </LoaderWrapper>
-        {!isLoading && entitiesCount > 0 && (
+        {!isLoading && entitiesCount > limit && (
           <Pagination
             offset={offset}
             count={entitiesCount}

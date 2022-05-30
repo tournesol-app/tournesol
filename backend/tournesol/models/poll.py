@@ -1,5 +1,6 @@
 from typing import List
 
+from django.core.signing import Signer
 from django.db import models
 from django.utils.functional import cached_property
 
@@ -27,6 +28,11 @@ class Poll(models.Model):
     criterias = models.ManyToManyField("Criteria", through="CriteriaRank")
     algorithm = models.CharField(
         max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
+    )
+    active = models.BooleanField(
+        default=True,
+        help_text="On an inactive poll, entity scores are not updated"
+        " and comparisons can't be created, updated or deleted by users.",
     )
 
     @classmethod
@@ -59,3 +65,14 @@ class Poll(models.Model):
 
     def __str__(self) -> str:
         return f'Poll "{self.name}"'
+
+    def get_proof_of_vote(self, user_id: int):
+        """
+        Returns the user_id signed with a signature,
+        derived from the Django SECRET_KEY and the current poll name.
+
+        Should only be provided for the user after they submitted
+        at least 1 comparison in the current poll.
+        """
+        signer = Signer(salt=f"proof_of_vote:{self.name}")
+        return signer.sign(f"{user_id:05d}")

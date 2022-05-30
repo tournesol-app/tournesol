@@ -57,6 +57,12 @@ class EntityType(ABC):
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
 
+    @property
+    def cleaned_metadata(self):
+        serializer = self.metadata_serializer_class(data=self.instance.metadata)
+        serializer.is_valid(raise_exception=True)
+        return serializer.data
+
     def metadata_needs_to_be_refreshed(self) -> bool:
         return False
 
@@ -77,6 +83,8 @@ class EntityType(ABC):
             self.instance.save(update_fields=["last_metadata_request_at"])
 
         self.update_metadata_field()
+        # Ensure that the metadata format is valid after refresh
+        self.instance.metadata = self.cleaned_metadata
         self.instance.metadata_timestamp = timezone.now()
         if save:
             self.instance.save(update_fields=["metadata", "metadata_timestamp"])

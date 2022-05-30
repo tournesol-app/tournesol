@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
@@ -21,10 +21,11 @@ const ComparisonPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const series: string = searchParams.get('series') || 'false';
 
-  const { options, baseUrl } = useCurrentPoll();
+  const { options, baseUrl, active: pollActive } = useCurrentPoll();
   const tutorialLength = options?.tutorialLength ?? 0;
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
+  const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
 
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
@@ -39,13 +40,22 @@ const ComparisonPage = () => {
           py: 2,
         }}
       >
+        {!pollActive && (
+          <Box pb={3} textAlign="center" color="neutral.main">
+            <Typography>{t('comparison.inactivePoll')}</Typography>
+            <Typography>
+              {t('comparison.inactivePollComparisonCannotBeSubmittedOrEdited')}
+            </Typography>
+          </Box>
+        )}
+
         {series === 'true' && tutorialLength > 0 ? (
           <ComparisonSeries
             dialogs={dialogs}
             generateInitial={true}
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
-            redirectTo={`${baseUrl}/personal/feedback`}
+            redirectTo={`${baseUrl}${redirectTo}`}
             resumable={true}
           />
         ) : (

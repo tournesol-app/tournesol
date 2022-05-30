@@ -426,6 +426,30 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /exports/polls/{poll_name}/proof_of_vote/:
+    get:
+      operationId: exports_polls_proof_of_vote_retrieve
+      description: Download .csv file with proof of vote signatures
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - exports
+      security:
+      - cookieAuth: []
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /polls/{name}/:
     get:
       operationId: polls_retrieve
@@ -447,6 +471,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Poll'
+          description: ''
+  /polls/{name}/entities/{uid}:
+    get:
+      operationId: polls_entities_retrieve
+      description: Fetch an entity with its poll specific statistics.
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - polls
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recommendation'
+          description: ''
+  /polls/{name}/entities/{uid}/criteria_scores_distributions:
+    get:
+      operationId: polls_entities_criteria_scores_distributions_retrieve
+      description: Fetch an entity with the distribution of its contributors' ratings
+        per criteria.
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - polls
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityCriteriaDistribution'
           description: ''
   /polls/{name}/recommendations/:
     get:
@@ -528,6 +607,15 @@ paths:
               name: A candidate full name
               youtube_channel_id: channel ID
             summary: Some filters available for candidates.
+      - in: query
+        name: score_mode
+        schema:
+          type: string
+          enum:
+          - all_equal
+          - default
+          - trusted_only
+          default: default
       tags:
       - polls
       security:
@@ -687,7 +775,7 @@ paths:
   /stats/:
     get:
       operationId: stats_retrieve
-      description: Retrieve statistics.
+      description: Fetch all Tournesol's public statistics.
       tags:
       - stats
       security:
@@ -1294,6 +1382,68 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /users/me/inconsistencies/score/{poll_name}:
+    get:
+      operationId: users_me_inconsistencies_score_retrieve
+      description: |-
+        List the comparisons criteria for which the given score is very
+        different from what would be expected from both entities' criteria scores.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: inconsistency_threshold
+        schema:
+          type: number
+          format: float
+          default: 5.0
+        description: Comparisons with an inconsistency score above this threshold
+          are considered inconsistent and listed in the response (max. 100 responses).
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Restrict the search to entities created or edited after this date.
+          Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`).
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoreInconsistencies'
+          description: ''
+  /users/me/proof_of_votes/{poll_name}/:
+    get:
+      operationId: users_me_proof_of_votes_retrieve
+      description: API for retrieving the logged user's proof_of_vote in a given poll.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofOfVote'
+          description: ''
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list
@@ -1423,7 +1573,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedEntityList'
+                $ref: '#/components/schemas/PaginatedEntityNoExtraFieldList'
           description: ''
   /users/me/video_rate_later/:
     get:
@@ -1692,6 +1842,16 @@ paths:
           description: ''
 components:
   schemas:
+    ActiveUsersStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+        joined_last_month:
+          type: integer
+      required:
+      - joined_last_month
+      - total
     ChangePassword:
       type: object
       properties:
@@ -1719,6 +1879,16 @@ components:
       - old_password
       - password
       - password_confirm
+    ComparedEntitiesStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+        added_last_month:
+          type: integer
+      required:
+      - added_last_month
+      - total
     Comparison:
       type: object
       description: |-
@@ -1866,6 +2036,16 @@ components:
           description: Time it took to rate the videos (in milliseconds)
       required:
       - criteria_scores
+    ComparisonsStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+        added_last_month:
+          type: integer
+      required:
+      - added_last_month
+      - total
     ContributorCriteriaCorrelations:
       type: object
       properties:
@@ -2003,17 +2183,16 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        is_public:
-          type: boolean
-          readOnly: true
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        metadata:
+          type: object
+          additionalProperties: {}
           readOnly: true
         tournesol_score:
           type: number
@@ -2021,16 +2200,17 @@ components:
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        total_score:
+          type: number
+          format: float
+        is_public:
+          type: boolean
+          readOnly: true
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        total_score:
-          type: number
-          format: float
       required:
       - criteria_scores
       - is_public
@@ -2038,6 +2218,25 @@ components:
       - total_score
       - type
       - uid
+    CriteriaDistributionScore:
+      type: object
+      properties:
+        criteria:
+          type: string
+        distribution:
+          type: array
+          items:
+            type: number
+            format: float
+        bins:
+          type: array
+          items:
+            type: number
+            format: float
+      required:
+      - bins
+      - criteria
+      - distribution
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -2120,6 +2319,47 @@ components:
       - tournesol_score
       - type
       - uid
+    EntityCriteriaDistribution:
+      type: object
+      description: An Entity serializer that show distribution of score for a given
+        entity
+      properties:
+        uid:
+          type: string
+          readOnly: true
+          description: A unique identifier, build with a namespace and an external
+            id.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        tournesol_score:
+          type: number
+          format: float
+          readOnly: true
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
+        rating_n_contributors:
+          type: integer
+          readOnly: true
+          description: Total number of certified contributors who rated the video
+        criteria_scores_distributions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CriteriaDistributionScore'
+          readOnly: true
+      required:
+      - criteria_scores_distributions
+      - metadata
+      - rating_n_contributors
+      - tournesol_score
+      - type
+      - uid
     EntityCriteriaScore:
       type: object
       properties:
@@ -2166,6 +2406,11 @@ components:
       required:
       - criteria_scores
       - name
+    EntityTypeEnum:
+      enum:
+      - video
+      - candidate_fr_2022
+      type: string
     GenderEnum:
       enum:
       - Not Specified
@@ -2537,6 +2782,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Entity'
+    PaginatedEntityNoExtraFieldList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityNoExtraField'
     PaginatedRecommendationList:
       type: object
       properties:
@@ -2767,8 +3032,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PollCriteria'
+        entity_type:
+          $ref: '#/components/schemas/EntityTypeEnum'
+        active:
+          type: boolean
+          description: On an inactive poll, entity scores are not updated and comparisons
+            can't be created, updated or deleted by users.
       required:
       - criterias
+      - entity_type
       - name
     PollCriteria:
       type: object
@@ -2782,6 +3054,29 @@ components:
       required:
       - label
       - name
+    PollStatistics:
+      type: object
+      properties:
+        name:
+          type: string
+        compared_entities:
+          $ref: '#/components/schemas/ComparedEntitiesStatistics'
+        comparisons:
+          $ref: '#/components/schemas/ComparisonsStatistics'
+      required:
+      - compared_entities
+      - comparisons
+      - name
+    ProofOfVote:
+      type: object
+      properties:
+        poll_name:
+          type: string
+        signature:
+          type: string
+      required:
+      - poll_name
+      - signature
     RaceEnum:
       enum:
       - Not Specified
@@ -3581,29 +3876,91 @@ components:
       - Zambia
       - Zimbabwe
       type: string
+    ScoreInconsistencies:
+      type: object
+      description: |-
+        Returns the score inconsistencies and some statistics.
+        Used from a dictionary, not a queryset.
+      properties:
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScoreInconsistency'
+        stats:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ScoreInconsistenciesStats'
+          title: criterion
+      required:
+      - count
+      - results
+      - stats
+    ScoreInconsistenciesStats:
+      type: object
+      description: |-
+        Return some statistics for each criterion,
+        to be able to compare the results for the different criteria
+      properties:
+        mean_inconsistency:
+          type: number
+          format: float
+        inconsistent_comparisons_count:
+          type: integer
+        comparisons_count:
+          type: integer
+      required:
+      - comparisons_count
+      - inconsistent_comparisons_count
+      - mean_inconsistency
+    ScoreInconsistency:
+      type: object
+      description: Serializer for one element
+      properties:
+        inconsistency:
+          type: number
+          format: float
+        criterion:
+          type: string
+        entity_1_uid:
+          type: string
+        entity_2_uid:
+          type: string
+        entity_1_rating:
+          type: number
+          format: float
+        entity_2_rating:
+          type: number
+          format: float
+        comparison_score:
+          type: number
+          format: float
+        expected_comparison_score:
+          type: number
+          format: float
+      required:
+      - comparison_score
+      - criterion
+      - entity_1_rating
+      - entity_1_uid
+      - entity_2_rating
+      - entity_2_uid
+      - expected_comparison_score
+      - inconsistency
     Statistics:
       type: object
       description: A representation of the Tournesol public statistics.
       properties:
-        user_count:
-          type: integer
-        last_month_user_count:
-          type: integer
-        video_count:
-          type: integer
-        last_month_video_count:
-          type: integer
-        comparison_count:
-          type: integer
-        last_month_comparison_count:
-          type: integer
+        active_users:
+          $ref: '#/components/schemas/ActiveUsersStatistics'
+        polls:
+          type: array
+          items:
+            $ref: '#/components/schemas/PollStatistics'
       required:
-      - comparison_count
-      - last_month_comparison_count
-      - last_month_user_count
-      - last_month_video_count
-      - user_count
-      - video_count
+      - active_users
+      - polls
     StatusEnum:
       enum:
       - RJ
@@ -4133,6 +4490,10 @@ components:
       - video_id
       - views
   securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
     oauth2:
       type: oauth2
       flows:

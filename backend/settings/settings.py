@@ -83,6 +83,7 @@ REST_REGISTRATION = {
     "REGISTER_VERIFICATION_ENABLED": True,
     "REGISTER_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "verify-user/",
     "REGISTER_VERIFICATION_ONE_TIME_USE": True,
+    "SEND_RESET_PASSWORD_LINK_USER_FINDER": "core.utils.rest_registration.users.find_user_by_send_reset_password_link_data",
     "RESET_PASSWORD_VERIFICATION_ENABLED": True,
     "RESET_PASSWORD_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "reset-password/",
     "RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND": False,  # to be set to True to prevent user enumeration
@@ -289,10 +290,6 @@ REST_FRAMEWORK = {
     },
 }
 
-# Maximal value for a rating (0-100)
-# 0 means left video is best, 100 means right video is best
-MAX_VALUE = 100.0
-
 LEGACY_CRITERIAS = [
     'largely_recommended',
     'reliability',
@@ -340,6 +337,8 @@ SPECTACULAR_SETTINGS = {
 
 YOUTUBE_API_KEY = server_settings.get("YOUTUBE_API_KEY", "")
 ENABLE_API_WIKIDATA = server_settings.get("ENABLE_API_WIKIDATA", {"MIGRATIONS": False})
+
+TWITTERBOT_CREDENTIALS = server_settings.get("TWITTERBOT_CREDENTIALS", {})
 
 LOGGING = {
     "version": 1,

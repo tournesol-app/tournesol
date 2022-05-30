@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 from ..models import Comparison, Entity
-from ..serializers.entity import EntitySerializer
+from ..serializers.entity import EntityNoExtraFieldSerializer
 
 
 @extend_schema_view(
@@ -24,7 +24,7 @@ class UnconnectedEntitiesView(
     """
     API view for showing unconnected entities
     """
-    serializer_class = EntitySerializer
+    serializer_class = EntityNoExtraFieldSerializer
     permission_classes = [IsAuthenticated]
 
     _already_visited_node_ = set()

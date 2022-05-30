@@ -26,8 +26,8 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.user1 = UserFactory()
         self.user2 = UserFactory()
 
-        self.entity1 = EntityFactory()
-        self.entity2 = EntityFactory()
+        self.entity1 = EntityFactory(tournesol_score=1)
+        self.entity2 = EntityFactory(tournesol_score=1)
 
         ContributorRatingFactory(user=self.user1, entity=self.entity1, is_public=True)
         ContributorRatingFactory(user=self.user1, entity=self.entity2, is_public=False)
@@ -205,7 +205,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         `unsafe` URL parameter.
         """
         user = UserFactory()
-        entity = EntityFactory()
+        entity = EntityFactory(tournesol_score=-1)
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
@@ -249,7 +249,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         criterion_score = 1.8
         weight = 2
 
-        entity = EntityFactory()
+        entity = EntityFactory(tournesol_score=1)
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
@@ -308,28 +308,22 @@ class ContributorRecommendationsApiTestCase(TestCase):
     def test_recommendations_are_sorted_by_descending_total_score(self):
         user = UserFactory()
         scores = [1, -1, 5, 0.5, 0, 2]
-        score_to_entity = {}
 
         for score in scores:
-            entity = EntityFactory()
+            entity = EntityFactory(tournesol_score=1)
             rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
             ContributorRatingCriteriaScoreFactory(
                 contributor_rating=rating,
                 criteria=self.criterion,
                 score=score,
             )
-            score_to_entity[score] = entity
 
         response = self.client.get(
             f"/users/{user.username}/recommendations/{self.poll.name}", format="json"
         )
 
-        # filtered and sorted: [1, -1, 5, 0.5, 0, 2] => [5, 2, 1, .5]
-        expected_results = [5, 2, 1, 0.5]
+        # sorted: [1, -1, 5, 0.5, 0, 2] => [5, 2, 1, .5, 0, -1]
+        expected_results = sorted(scores, reverse=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], len(expected_results))
-
-        for i, score in enumerate(expected_results):
-            self.assertEqual(
-                response.data["results"][i]["uid"], score_to_entity[score].uid
-            )
+        self.assertEqual([e['criteria_scores'][0]["score"] for e in response.data["results"]], expected_results)

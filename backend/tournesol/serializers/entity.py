@@ -174,7 +174,7 @@ class EntitySerializer(ModelSerializer):
     @extend_schema_field(EntityPollSerializer(many=True))
     def get_polls(self, obj):
         poll_to_scores = defaultdict(list)
-        for score in obj.criteria_scores.all():
+        for score in obj.criteria_scores:
             poll_to_scores[score.poll.name].append(score)
         items = [
             {"name": name, "criteria_scores": scores}

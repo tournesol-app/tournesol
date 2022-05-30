@@ -2,20 +2,19 @@
   "components": {
     "filtersButton": "filtres"
   },
+  "personalCriteriaScores": {
+    "chartTooltip": "Score personnel: {{score}}",
+    "reasonWhyItCannotBeActivated": {
+      "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
+      "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
+    },
+    "activatePersonalScores": "Afficher les scores personnels"
+  },
   "dialogBox": {
     "continue": "continuer"
   },
   "video": {
     "labelShowSettings": "Voir les paramètres de cette video",
-    "nbViews": "{{nbViews}} vues",
-    "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
-    "nComparisonsByYou_one": "{{count}} comparaison par vous",
-    "nComparisonsByYou_many": "{{count}} comparaisons par vous",
-    "nComparisonsByYou_other": "{{count}} comparaisons par vous",
-    "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
-    "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
-    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
-    "personalScore": "Score personnel\u00a0: {{score}}",
     "unsafeNotEnoughContributor": "La pertinence de ce score est incertaine, en raison d'un trop faible nombre de contributeurs.",
     "unsafeNegativeRating": "Cette vidéo a un score inférieur à la moyenne des autres vidéos ajoutées à Tournesol.",
     "nbComparisonsBy_one": "{{count}} comparaison par",
@@ -25,7 +24,19 @@
     "nbContributors_many": "{{count}} contributeurs",
     "nbContributors_other": "{{count}} contributeurs",
     "criteriaRatedHigh": "Noté fortement :",
-    "criteriaRatedLow": "Noté faiblement :"
+    "criteriaRatedLow": "Noté faiblement :",
+    "nbViews": "{{nbViews}} vues",
+    "seeRecommendedVideosSameUploader": "Voir les vidéos recommandées de cette chaîne",
+    "nComparisonsByYou_one": "{{count}} comparaison par vous",
+    "nComparisonsByYou_many": "{{count}} comparaisons par vous",
+    "nComparisonsByYou_other": "{{count}} comparaisons par vous",
+    "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
+    "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
+    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
+    "personalScore": "Score personnel\u00a0: {{score}}"
+  },
+  "score": {
+    "totalScoreBasedOnRankingChoice": "Score basé sur les critères de classement selectionnés"
   },
   "pagination": {
     "videos": "vidéos",
@@ -36,6 +47,15 @@
   },
   "stackedCard": {
     "showAll": "Tout montrer"
+  },
+  "criteriaScoresDistribution": {
+    "lessThan": "< {{score}}",
+    "fromTo": "{{from}} à {{to}}",
+    "greaterThan": "> {{score}}",
+    "label": "Quantité",
+    "scores": "scores",
+    "numberOfRatings": "nombre de notes",
+    "title": "Distribution des scores par critère"
   },
   "comparison": {
     "successfullySubmitted": "Comparaison bien enregistrée.",
@@ -48,7 +68,9 @@
     "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
     "editComparison": "Modifier la comparaison",
     "criteriaSkipped": "ignoré",
-    "submitAComparison": "Soumettre une comparaison"
+    "submitAComparison": "Soumettre une comparaison",
+    "inactivePoll": "Ce scrutin est fermé.",
+    "inactivePollComparisonCannotBeSubmittedOrEdited": "Aucune comparaison ne peut être ajoutée ou modifiée."
   },
   "comparisonHelper": {
     "hideHelp": "Cacher l'aide",
@@ -95,7 +117,6 @@
   },
   "menu": {
     "home": "Accueil",
-    "recommendations": "Recommandations",
     "compare": "Comparer 🌻",
     "myComparisons": "Mes comparaisons",
     "comparedItems": "Élements comparés",
@@ -154,6 +175,7 @@
     "important": "Important",
     "crucial": "Crucial",
     "criteria": "Critères",
+    "multipleCriteria": "Plusieurs critères",
     "today": "Un jour",
     "thisWeek": "Une semaine",
     "thisMonth": "Un mois",
@@ -162,6 +184,21 @@
     "uploadDate": "Mises en ligne depuis",
     "allLanguages": "Toutes",
     "language": "Langues",
+    "scoreMode": {
+      "default": {
+        "description": "Davantage d'importance est donnée aux comptes associés à une adresse e-mail fiable",
+        "label": "Par défaut"
+      },
+      "allEqual": {
+        "description": "Importance égale pour tous les comptes",
+        "label": "À égalité"
+      },
+      "trustedOnly": {
+        "description": "Seuls les comptes associés à <2>une adresse e-mail fiable</2> sont inclus",
+        "label": "E-mails fiables seulement"
+      }
+    },
+    "scoreModeSection": "Droits de vote",
     "uploader": "Chaîne"
   },
   "ratings": {
@@ -216,7 +253,8 @@
   "stats": {
     "activeUsers": "Utilisateurs actifs",
     "comparisons": "Comparaisons",
-    "ratedVideos": "Vidéos notées"
+    "ratedVideos": "Vidéos notées",
+    "ratedCandidates": "Candidats notés"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
@@ -263,10 +301,11 @@
     "donateByPaypal": "Par PayPal",
     "publicDatabase": "Base de données publique",
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
-    "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{videoCount}} vidéos. ❤️",
+    "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
     "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
+    "trustedDomainsValuable": "Dans tous les cas, vos contributions sont utiles car elles motiveront et aideront la recherche en éthique des algorithmes et de l'intelligence artificielle",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
   "privacyPolicy": {
@@ -300,10 +339,33 @@
   "clickToDownload": "Télécharger",
   "myComparisonsPage": {
     "noComparisonYet": "Aucune comparaison",
-    "title": "Mes comparaisons",
     "listHasNbComparisons_one": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaison.",
     "listHasNbComparisons_many": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
-    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons."
+    "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
+    "title": "Mes comparaisons"
+  },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Voir le classement global"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores par critère"
+      }
+    },
+    "generic": {
+      "compare": "Comparer"
+    }
+  },
+  "entityNotFound": {
+    "404": {
+      "title": "Non trouvée",
+      "message": "L'entité demandée est invalide, ou n'est simplement plus disponible."
+    },
+    "unexpected": {
+      "title": "Erreur inconnue",
+      "message": "Une erreur innatendu est survenue."
+    }
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
@@ -314,7 +376,10 @@
       "whyCompareCandidates": "Initialement conçue pour la recommendation de vidéos d'utilité publique, Tournesol vous propose aujourd'hui de comparer les candidats à l'élection présidentielle française 2022. Ainsi, vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous exprimez.",
       "dataUsage": "Les données enregistrées ne seront jamais dévoilées aux autres utilisateurs, et ne serviront  qu'à la recherche dans l'éthique des algorithmes et en intelligence artificielle.",
       "createAccount": "Créer un compte",
-      "start": "Commencer"
+      "start": "Commencer",
+      "pollIsClosed": "Le scrutin est maintenant fermé.",
+      "seeResults": "Voir les résultats",
+      "respondToSurvey": "Répondre au sondage"
     },
     "contributeTitle": "Participez !",
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
@@ -347,18 +412,21 @@
       "notEnoughComparisons_other": "Nous avons besoin d'au moins {{minComparisons}} comparaisons différentes avant de pouvoir vous présenter des résultats. Il vous en restre encore {{remainingComparisons}} à faire. Cliquez sur le bouton ci-dessous pour continuer, et laissez-vous guider par les instructions.",
       "continueComparisons": "Continuer vos comparaisons",
       "thanksForComparingCandidates": "Merci d'avoir comparé des candidat.es sur notre plateforme",
-      "description": "Vos avis seront pris en compte dans l'évaluation et le classement global des candidat.es. Après les élections nous rendrons public les résultats globaux. Pour protéger la vie privée des contributeurs et contributrices, les résultats individuels resteront privés.",
+      "goToGlobalRanking": "Voir le classement global",
       "opinionsOnOnlineSharedContent": "Nous pensons que votre avis sur les contenus partagés en ligne est au moins aussi important que votre avis sur les candidat.es.",
       "discoverTournesolVideos": "Découvrez maintenant Tournesol vidéos. Un endroit qui vous permet de donner votre avis sur les vidéos YouTube que vous avez regardées, afin d'améliorer les recommandations de tous."
     },
     "generic": {
       "whatsNext": "Et maintenant ?",
       "discoverTournesol": "Découvrez Tournesol"
-    }
+    },
+    "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
+    "proofOfVote": "Preuve de participation"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
   },
+  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",
@@ -377,10 +445,6 @@
   "myRatedVideosPage": {
     "title": "Mes vidéos comparées"
   },
-  "recommendationsPage": {
-    "title": "Recommandations"
-  },
-  "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "actions": {
     "compareNow": "Comparer !",
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
@@ -397,7 +461,16 @@
     "health": "Les sujets liés au système de santé, à la santé mentale, aux sports, à l'éthique de fin de vie, au COVID-19 et aux vaccins",
     "institutions_democracy": "Les sujets liés à l'organisation de la vie politique, à la démocratie, aux territoires et collectivités, à la fonction publique et à l'Outre-mer",
     "labour_economy": "Les sujets liés aux emplois, au chômage, au pouvoir d'achat, à la fiscalité, au déficits publiques et la dette",
-    "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration"
+    "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration",
+    "pedagogy": "'Clair & pedagogique' vise à mesurer la clarté et la pédagogie des explications d'un contenu. Plus le contenu guide les spectateurs dans leur compréhension, plus ce critère sera noté haut",
+    "importance": "'Important et actionnable' vise à mettre en avant les contenus avec des informations qui n'ont pas l'attention qu'elles devraient avoir pour le bien de l'humanité et au-delà et qui permettent d'agir concretement de manière impactante",
+    "layman_friendly": "'Adapté aux non-spécialistes' vise à identifier les contenus qui conviendraient à un large public.",
+    "entertaining_relaxing": "'Divertissant et relaxant' évalue les contenus en fonction de leur ton plus ou moins détendu et divertissant pour les spectateurs.",
+    "engaging": "'Stimulant et suscite à la réflexion' évalue les contenus en fonction de l'envie d'aller plus loin du spectateur après avoir regardé et la remise en cause des croyances de l'audience.",
+    "diversity_inclusion": "'Diversité et inclusion' vise à identifier les contenus qui favorisent une vision plus diverse et inclusive de la grande diversité des ethnies, des croyances et des préférences de l'humanité.",
+    "better_habits": "'Encourage à de meilleures habitudes' vise à mettre en valeur les contenus qui incitent et motivent les spectateurs à s'améliorer en adoptant de meilleures habitudes plus saines pour soi, pour la société ou pour la planète.",
+    "backfire_risk": "'Résistant aux retours négatifs/Résiste aux mauvaises interprétations' vise à mesurer la probabilité qu'un contenu créé un malentendu avec le spectateur: plus le risque que l'utilisateur comprenne mal ou réagisse négativement aux informations présentées est élevé, plus ce critère sera noté haut.",
+    "reliability": "'Fiable & non trompeur' vise à mesurer la fiabilité des informations présentées dans un contenu et/ou à prendre la mesure dans laquelle ces informations peuvent être trompeuses."
   },
   "language": {
     "af": "Afrikaans",
@@ -460,6 +533,12 @@
     "entityCandidate": "candidat",
     "entityVideo": "vidéo"
   },
+  "recommendationsPage": {
+    "title": {
+      "results": "Résultats",
+      "recommendations": "Recommandations"
+    }
+  },
   "presidentielle2022": {
     "dialogs": {
       "tutorial": {
@@ -501,6 +580,39 @@
         "message7": {
           "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos préférences actuelles.",
           "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lequelles vous soutenez certains candidat.es."
+        }
+      }
+    }
+  },
+  "videos": {
+    "dialogs": {
+      "tutorial": {
+        "title1": "Bienvenue sur Tournesol 🌻",
+        "message1": {
+          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons.",
+          "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
+          "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
+          "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
+        },
+        "title2": "Bravo ! 🥳",
+        "message2": {
+          "p10": "Vous avez effectué votre première comparaison.",
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URL YouTube dans les champs qui se trouvent au dessus des miniatures.",
+          "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
+          "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
+          "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
+        },
+        "title3": "Comment fonctionne Tournesol ? 🤖",
+        "message3": {
+          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices sur les différents critères.",
+          "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
+          "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet de consulter sa page wiki dédiée."
+        },
+        "title4": "Merci beaucoup d'avoir suivi ce tutoriel ❤️",
+        "message4": {
+          "p10": "Encore une dernière comparaison et vous pourrez naviguer dans Tournesol tout·e seul·e.",
+          "p20": "Nous espérons sincèrement que vous avez apprécié ce tutoriel.",
+          "p30": "Si vous souhaitez nous aider dans notre projet, vous pouvez comparer de temps en temps de nouvelles vidéos. Aussi, n'hésitez pas à parler de Tournesol autour de vous. Merci beaucoup beaucoup."
         }
       }
     }

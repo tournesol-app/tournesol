@@ -5,12 +5,13 @@ Entity and closely related models.
 import logging
 from collections import defaultdict
 from functools import cached_property
+from typing import List
 
 import numpy as np
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.utils import timezone
 from django.utils.html import format_html
 from tqdm.auto import tqdm
@@ -19,9 +20,24 @@ from core.models import User
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
+from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
 from tournesol.serializers.metadata import VideoMetadata
 
 LANGUAGES = settings.LANGUAGES
+
+
+class EntityQueryset(models.QuerySet):
+    def with_prefetched_scores(self, poll_name, mode=ScoreMode.DEFAULT):
+        return self.prefetch_related(
+            Prefetch(
+                "all_criteria_scores",
+                queryset=EntityCriteriaScore.objects.filter(
+                    poll__name=poll_name,
+                    score_mode=mode
+                ),
+                to_attr="_prefetched_criteria_scores"
+            )
+        )
 
 
 class Entity(models.Model):
@@ -36,6 +52,8 @@ class Entity(models.Model):
 
     class Meta:
         verbose_name_plural = "entities"
+
+    objects = EntityQueryset.as_manager()
 
     uid = models.CharField(
         unique=True,
@@ -277,6 +295,13 @@ class Entity(models.Model):
             if not serializer.is_valid():
                 raise ValidationError({"metadata": str(serializer.errors)})
             self.metadata = serializer.data
+
+    @property
+    def criteria_scores(self) -> List["EntityCriteriaScore"]:
+        from .entity_score import ScoreMode
+        if hasattr(self, "_prefetched_criteria_scores"):
+            return list(self._prefetched_criteria_scores)
+        return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))
 
 
 class VideoRateLater(models.Model):

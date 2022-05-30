@@ -5,6 +5,8 @@ Administration interface of the `tournesol` app
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
+from django.urls import reverse
+from django.utils.html import format_html
 from sql_util.utils import SubqueryCount
 
 from .models import (
@@ -108,11 +110,20 @@ class EntityAdmin(admin.ModelAdmin):
 class EntityCriteriaScoreAdmin(admin.ModelAdmin):
     list_display = (
         'entity',
+        'poll',
         'criteria',
+        'score_mode',
         'score'
+    )
+    list_filter = (
+        'poll',
+        'score_mode',
     )
     search_fields = (
         'entity__uid',
+    )
+    raw_id_fields = (
+        'entity',
     )
 
 
@@ -247,13 +258,15 @@ class CriteriaLocalesInline(admin.TabularInline):
 class PollAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'active',
         'algorithm',
         'entity_type',
         'get_n_criteria',
         'get_n_comparisons',
         'get_n_comparisons_per_criteria',
+        'get_proof_of_vote_file',
     )
-    list_filter = ("algorithm", "entity_type")
+    list_filter = ("active", "algorithm", "entity_type")
     inlines = (CriteriasInline,)
 
     def get_queryset(self, request):
@@ -281,6 +294,13 @@ class PollAdmin(admin.ModelAdmin):
     )
     def get_n_comparisons_per_criteria(self, obj):
         return obj._n_comparisons_per_criteria
+
+    @admin.display(description="Proof of vote")
+    def get_proof_of_vote_file(self, obj):
+        return format_html(
+            "<a href={url}>CSV</a>",
+            url=reverse("tournesol:export_poll_proof_of_vote", kwargs={"poll_name": obj.name})
+        )
 
 
 @admin.register(Criteria)

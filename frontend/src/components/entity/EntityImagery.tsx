@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { Box } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+
+import { Avatar, Box } from '@mui/material';
+
+import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
-import { convertDurationToClockDuration } from 'src/utils/video';
-import { RelatedEntityObject } from 'src/utils/types';
+import { JSONValue, RelatedEntityObject } from 'src/utils/types';
+import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
 const PlayerWrapper = React.forwardRef(function PlayerWrapper(
   {
@@ -71,13 +75,63 @@ export const VideoPlayer = ({
   );
 };
 
-const EntityImagery = ({ entity }: { entity: RelatedEntityObject }) => {
+const EntityImagery = ({
+  entity,
+  compact = false,
+  config = {},
+}: {
+  entity: RelatedEntityObject;
+  compact?: boolean;
+  config?: { [k: string]: { [k: string]: JSONValue } };
+}) => {
+  const { baseUrl } = useCurrentPoll();
+  const videoConfig = config[TypeEnum.VIDEO] ?? {};
+
   if (entity.type === TypeEnum.VIDEO) {
     return (
-      <VideoPlayer
-        videoId={entity.metadata.video_id}
-        duration={entity.metadata.duration}
-      />
+      <>
+        {/* Display the video player by default, unless otherwise configured. */}
+        {videoConfig?.displayPlayer ?? true ? (
+          <Box
+            sx={{
+              aspectRatio: '16 / 9',
+              width: '100%',
+            }}
+          >
+            <VideoPlayer
+              videoId={entity.metadata.video_id}
+              duration={entity.metadata.duration}
+            />
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            alignItems="center"
+            bgcolor="black"
+            width="100%"
+            // prevent the RouterLink to add few extra pixels
+            lineHeight={0}
+            sx={{
+              '& > img': {
+                flex: 1,
+              },
+            }}
+          >
+            <RouterLink
+              to={`${baseUrl}/entities/${entity.uid}`}
+              className="full-width"
+            >
+              <img
+                className="full-width"
+                src={`https://i.ytimg.com/vi/${idFromUid(
+                  entity.uid
+                )}/mqdefault.jpg`}
+                alt={entity.metadata.name}
+              />
+            </RouterLink>
+          </Box>
+        )}
+      </>
     );
   }
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {
@@ -87,13 +141,27 @@ const EntityImagery = ({ entity }: { entity: RelatedEntityObject }) => {
         maxHeight="280px"
         justifyContent="center"
         sx={{
-          '& img': {
+          '& > img': {
             flex: 1,
             objectFit: 'contain',
           },
         }}
       >
-        <img src={entity.metadata.image_url} alt={entity.metadata.name} />
+        {compact ? (
+          <img src={entity.metadata.image_url} alt={entity.metadata.name} />
+        ) : (
+          <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+            <Avatar
+              alt={entity?.metadata?.name || ''}
+              src={entity?.metadata?.image_url || ''}
+              sx={{
+                width: '60px',
+                height: '60px',
+                m: 2,
+              }}
+            />
+          </RouterLink>
+        )}
       </Box>
     );
   }

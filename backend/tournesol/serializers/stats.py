@@ -1,5 +1,26 @@
-from rest_framework.fields import IntegerField
+from rest_framework.fields import CharField, IntegerField
 from rest_framework.serializers import Serializer
+
+
+class ActiveUsersStatisticsSerializer(Serializer):
+    total = IntegerField()
+    joined_last_month = IntegerField()
+
+
+class ComparedEntitiesStatisticsSerializer(Serializer):
+    total = IntegerField()
+    added_last_month = IntegerField()
+
+
+class ComparisonsStatisticsSerializer(Serializer):
+    total = IntegerField()
+    added_last_month = IntegerField()
+
+
+class PollStatisticsSerializer(Serializer):
+    name = CharField()
+    compared_entities = ComparedEntitiesStatisticsSerializer()
+    comparisons = ComparisonsStatisticsSerializer()
 
 
 class StatisticsSerializer(Serializer):
@@ -7,9 +28,5 @@ class StatisticsSerializer(Serializer):
     A representation of the Tournesol public statistics.
     """
 
-    user_count = IntegerField()
-    last_month_user_count = IntegerField()
-    video_count = IntegerField()
-    last_month_video_count = IntegerField()
-    comparison_count = IntegerField()
-    last_month_comparison_count = IntegerField()
+    active_users = ActiveUsersStatisticsSerializer()
+    polls = PollStatisticsSerializer(many=True)

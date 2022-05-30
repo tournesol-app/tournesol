@@ -99,8 +99,7 @@ describe('Filters feature', () => {
     expect(queryAllByTestId(languageFilter, 'autocomplete')).toHaveLength(1);
 
     // Check criteria filters presence
-    // 1 slider per criteria, "Neutral" position by default
-    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(3);
+    expect(screen.getByLabelText('multiple criteria')).toBeVisible();
   }
 
   // Click on a date filter checkbox and verify the resulting URL parameters
@@ -226,5 +225,48 @@ describe('Filters feature', () => {
       language: 'language.de',
       expectInUrl: '',
     });
+  });
+
+  it('Can fold and unfold the multiple criteria', () => {
+    clickOnShowMore();
+
+    // By default the criteria sliders must be hidden.
+    const checkbox = screen.queryByLabelText('multiple criteria');
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(0);
+    expect(
+      screen.queryByTestId('filter-criterion-slider-criteria1')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('filter-criterion-slider-criteria2')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('filter-criterion-slider-criteria3')
+    ).not.toBeInTheDocument();
+
+    // A click on the label must display all criteria sliders.
+    fireEvent.click(checkbox);
+    expect(screen.getAllByLabelText(/neutral/i)).toHaveLength(3);
+    expect(
+      screen.getByTestId('filter-criterion-slider-criteria1')
+    ).toBeVisible();
+    expect(
+      screen.getByTestId('filter-criterion-slider-criteria2')
+    ).toBeVisible();
+    expect(
+      screen.getByTestId('filter-criterion-slider-criteria3')
+    ).toBeVisible();
+
+    // An additional click on the label must hide all criteria sliders.
+    fireEvent.click(checkbox);
+    expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(0);
+    expect(
+      screen.queryByTestId('filter-criterion-slider-criteria1')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('filter-criterion-slider-criteria2')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('filter-criterion-slider-criteria3')
+    ).not.toBeInTheDocument();
   });
 });

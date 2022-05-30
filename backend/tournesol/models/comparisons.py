@@ -10,6 +10,7 @@ from django.db import models
 from django.db.models import F, ObjectDoesNotExist, Q
 
 from core.models import User
+from core.utils.constants import COMPARISON_MAX
 
 from .poll import Poll
 
@@ -128,7 +129,7 @@ class ComparisonCriteriaScore(models.Model):
     )
     score = models.FloatField(
         help_text="Score for the given comparison",
-        validators=[MinValueValidator(-10.0), MaxValueValidator(10.0)],
+        validators=[MinValueValidator(-COMPARISON_MAX), MaxValueValidator(COMPARISON_MAX)],
     )
     # TODO: ask Lê if weights should be in a certain range (maybe always > 0)
     # and add validation if required

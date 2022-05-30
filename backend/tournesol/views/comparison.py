@@ -5,6 +5,7 @@ API endpoints to interact with the contributor's comparisons.
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
@@ -13,6 +14,10 @@ from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+
+class InactivePollError(exceptions.PermissionDenied):
+    default_detail = _("This action is not allowed on an inactive poll.")
 
 
 class ComparisonApiMixin:
@@ -94,6 +99,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         Create a new comparison associated with the logged user, in a given
         poll.
         """
+        if not self.poll_from_url.active:
+            raise InactivePollError
         return self.create(request, *args, **kwargs)
 
     @transaction.atomic
@@ -220,8 +227,12 @@ class ComparisonDetailApi(
 
     def put(self, request, *args, **kwargs):
         """Update a comparison made by the logged user, in the given poll"""
+        if not self.poll_from_url.active:
+            raise InactivePollError
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Delete a comparison made by the logged user, in the given poll"""
+        if not self.poll_from_url.active:
+            raise InactivePollError
         return self.destroy(request, *args, **kwargs)

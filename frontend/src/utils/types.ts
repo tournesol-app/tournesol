@@ -4,6 +4,7 @@ import { SvgIconComponent } from '@mui/icons-material';
 import {
   Entity,
   EntityNoExtraField,
+  Recommendation,
   RelatedEntity,
   Video,
   VideoSerializerWithCriteria,
@@ -25,7 +26,10 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
-export type RelatedEntityObject = EntityNoExtraField | RelatedEntity;
+export type RelatedEntityObject =
+  | EntityNoExtraField
+  | RelatedEntity
+  | Recommendation;
 export type VideoObject = Video | VideoSerializerWithCriteria;
 
 /**
@@ -35,6 +39,7 @@ export type VideoObject = Video | VideoSerializerWithCriteria;
 export enum RouteID {
   Home = 'home',
   Recommendations = 'recommendations',
+  EntityAnalysis = 'entityAnalysis',
   Comparison = 'comparison',
   MyComparisons = 'myComparisons',
   MyComparedItems = 'myComparedItems',
@@ -52,7 +57,23 @@ export type OrderedDialogs = {
  */
 export type SelectablePoll = {
   name: string;
+  // default actions displayed on `EntityCard` for anonymous users
+  defaultAnonEntityActions: ActionList;
+  // default actions displayed on `EntityCard` for authenticaed users
+  defaultAuthEntityActions: ActionList;
+  // if true, make the default value of the language filter on the
+  // recommendation page match the browser language. not relevant for entities
+  // with no language metadata
+  defaultRecoLanguageDiscovery?: boolean;
+  // default URL search parameters set by the `SideBar` when a user clicks on
+  // the recommendation link. can be date=Month to retrieve the entities
+  // uploaded during the last month for instance
+  defaultRecoSearchParams?: string;
   displayOrder: number;
+  // the main criteria name. useful in some situations, like when you want
+  // to exclude it from the rated high / rated low metric of the `EntityCard`
+  // without hardcoding it everywhere in the application
+  mainCriterionName: string;
   // the path used as URL prefix, must include leading and trailing slash
   path: string;
   // a list route id that will be disable in `PollRoutes` and `SideBar`
@@ -69,4 +90,8 @@ export type SelectablePoll = {
   // that are suggested after each comparison
   tutorialAlternatives?: () => Promise<Array<Entity>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
+  // redirect to this page after the last comparison is submitted
+  tutorialRedirectTo?: string;
+  // whether the 'unsafe' recommendations should be included by default
+  unsafeDefault?: boolean;
 };

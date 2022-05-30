@@ -1,5 +1,5 @@
 """
-Defines Tournesol's User model and user preferences
+User models and user preferences.
 """
 
 import logging
@@ -36,7 +36,9 @@ class User(AbstractUser):
     )
     title = models.TextField(null=True, blank=True, help_text="Your position")
     bio = models.TextField(
-        null=True, blank=True, help_text="Self-description (degree, biography, ...)"
+        null=True,
+        blank=True,
+        help_text="Self-description (other degrees, biography, ...)",
     )
     comment_anonymously = models.BooleanField(
         default=False, help_text="Comment anonymously by-default"
@@ -184,6 +186,11 @@ class User(AbstractUser):
         help_text="Your profile picture.",
         validators=[validate_avatar],
         null=True,
+    )
+    trust_score = models.FloatField(
+        null=True,
+        default=None,
+        help_text="The global trust score assigned to the user based on the vouching mechanism.",
     )
 
     # @property
