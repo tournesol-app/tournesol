@@ -23,6 +23,7 @@ import VideoCardScores from './VideoCardScores';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import { entityCardMainSx } from 'src/components/entity/style';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
+import { DurationWrapper } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
 import { useCurrentPoll } from 'src/hooks';
 import { UID_YT_NAMESPACE } from 'src/utils/constants';
@@ -112,11 +113,13 @@ function VideoCard({
               to={`${baseUrl}/entities/${UID_YT_NAMESPACE}${videoId}`}
               className="full-width"
             >
-              <img
-                className="full-width"
-                src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
-                alt={video.name}
-              />
+              <DurationWrapper duration={video.duration || undefined}>
+                <img
+                  className="full-width"
+                  src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
+                  alt={video.name}
+                />
+              </DurationWrapper>
             </RouterLink>
           </Box>
         </Grid>

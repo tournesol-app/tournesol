@@ -9,7 +9,7 @@ import { TypeEnum } from 'src/services/openapi';
 import { JSONValue, RelatedEntityObject } from 'src/utils/types';
 import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
-const DurationWrapper = React.forwardRef(function DurationWrapper(
+export const DurationWrapper = React.forwardRef(function DurationWrapper(
   {
     duration,
     children,
