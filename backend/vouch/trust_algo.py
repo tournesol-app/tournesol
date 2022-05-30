@@ -1,4 +1,5 @@
 import numpy as np
+from vouch.models import Voucher
 from core.models import user
 
 # hyper parameter of algorithm - select them wisely
@@ -65,7 +66,7 @@ def trust_algo():
     C = np.empty([nb_users, nb_users], dtype=float)
     for i, by in enumerate(users):
         for j, to in enumerate(users):
-            C[i][j] = vouch.objects.filter(by=by).filter(to=to).trust_value
+            C[i][j] = Voucher.objects.filter(by=by).filter(to=to).trust_value
 
     # improved eigen trust algorithm
     p = trust_status

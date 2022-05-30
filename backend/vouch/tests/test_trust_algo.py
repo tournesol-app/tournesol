@@ -1,17 +1,11 @@
-import random
-
-from attr import Factory
 import numpy as np
 import pytest
-from vouch.models import Voucher
 
 from trust_algo import normalize_trust_values, get_trust_vector, rescale, trust_algo
 """
 Test module for vouch and trust algo
 """
 from django.test import TestCase
-from core.models.user import EmailDomain, User
-from core.tests.factories.user import UserFactory
 
 
 # ========== unit tests - trustalgo ===============
@@ -36,13 +30,7 @@ class UnitTest(TestCase):
 
 
 
-    # ensure trust score are in [0,1]
-    def test_trust_values_range(self):
-        C = np.random.rand(10,10)
-        global_trust = trust_algo()
-        for value in global_trust:
-            assert (0<=value and value <=1)
-
+    
     # # # ======= unit tests - vouching connections =======
     # #create 10 users from scratch
     # users_nb = 12
