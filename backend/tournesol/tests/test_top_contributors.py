@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 from django.test import TestCase
-from core.utils.time import time_ago
 
 from core.tests.factories.user import UserFactory
+from core.utils.time import time_ago
 from tournesol.models import Poll
 from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory
