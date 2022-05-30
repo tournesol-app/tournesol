@@ -355,6 +355,9 @@
     },
     "generic": {
       "compare": "Comparer"
+    },
+    "video": {
+      "description": "Description (provenant de YouTube)"
     }
   },
   "entityNotFound": {

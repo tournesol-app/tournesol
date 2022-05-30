@@ -2,9 +2,18 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
-import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Collapse,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+} from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 
+import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
@@ -15,6 +24,7 @@ import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
+import linkifyHtml from 'linkify-html';
 
 export const VideoAnalysis = ({
   video,
@@ -23,12 +33,19 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
+  const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
+
+  const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
+  const linkifiedDescription = linkifyHtml(
+    video.description || '',
+    linkifyOpts
+  );
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
@@ -58,8 +75,32 @@ export const VideoAnalysis = ({
           <Grid item xs={12}>
             <VideoCard video={video} actions={actions} showPlayer={false} />
           </Grid>
+          <Grid item xs={12}>
+            <CollapseButton
+              expanded={descriptionCollapsed}
+              onClick={() => {
+                setDescriptionCollapsed(!descriptionCollapsed);
+              }}
+            >
+              {t('entityAnalysisPage.video.description')}
+            </CollapseButton>
+            <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
+              <Typography paragraph>
+                <Box
+                  style={
+                    descriptionCollapsed
+                      ? { display: 'block' }
+                      : { display: 'none' }
+                  }
+                  dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
+                  fontSize="0.9em"
+                  whiteSpace="pre-wrap"
+                />
+              </Typography>
+            </Collapse>
+          </Grid>
 
-          {/* data visualization */}
+          {/* Data visualization. */}
           {shouldDisplayCharts && (
             <>
               <Grid item xs={12} sm={12} md={6}>

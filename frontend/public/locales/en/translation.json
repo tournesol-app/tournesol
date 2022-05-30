@@ -349,6 +349,9 @@
     },
     "generic": {
       "compare": "Compare"
+    },
+    "video": {
+      "description": "Description (from YouTube)"
     }
   },
   "entityNotFound": {
