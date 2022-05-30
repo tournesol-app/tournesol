@@ -59,7 +59,7 @@ def trust_algo():
     # list of users, list of their trust status (regarding their email) in same order,
     # and number of users
     users = list(user.User.objects.all())
-    trust_status = [u.is_trusted() for u in users]
+    trust_status = [u.is_trusted for u in users]
     nb_users = len(users)
 
     # create a matrix C where entry c_ij is the trust value user i gave to user j
