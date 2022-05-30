@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import CompareIcon from '@mui/icons-material/Compare';
 
+import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
@@ -24,7 +25,6 @@ import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCrit
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyHtml from 'linkify-html';
-import CollapseButton from 'src/components/CollapseButton';
 
 export const VideoAnalysis = ({
   video,
@@ -33,15 +33,19 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
-  const [collapsedState, setCollapsed] = React.useState(false);
+  const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
 
   const uid = `yt:${video.video_id}`;
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   const { criteria_scores: criteriaScores } = video;
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
-  const options = { defaultProtocol: 'https', target: '_blank' };
-  const linkifiedDescription = linkifyHtml(video.description || '', options);
+
+  const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
+  const linkifiedDescription = linkifyHtml(
+    video.description || '',
+    linkifyOpts
+  );
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
@@ -73,27 +77,30 @@ export const VideoAnalysis = ({
           </Grid>
           <Grid item xs={12}>
             <CollapseButton
-              expanded={collapsedState}
+              expanded={descriptionCollapsed}
               onClick={() => {
-                setCollapsed(!collapsedState);
+                setDescriptionCollapsed(!descriptionCollapsed);
               }}
             >
               {t('entityAnalysisPage.video.description')}
             </CollapseButton>
-            <Collapse in={collapsedState} timeout="auto" unmountOnExit>
-              <Box
-                style={
-                  collapsedState ? { display: 'block' } : { display: 'none' }
-                }
-                dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
-                color="theme.palette.text.primary"
-                whiteSpace="pre-wrap"
-                fontSize="0.8em"
-              />
+            <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
+              <Typography paragraph>
+                <Box
+                  style={
+                    descriptionCollapsed
+                      ? { display: 'block' }
+                      : { display: 'none' }
+                  }
+                  dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
+                  fontSize="0.9em"
+                  whiteSpace="pre-wrap"
+                />
+              </Typography>
             </Collapse>
           </Grid>
 
-          {/* data visualization */}
+          {/* Data visualization. */}
           {shouldDisplayCharts && (
             <>
               <Grid item xs={12} sm={12} md={6}>
