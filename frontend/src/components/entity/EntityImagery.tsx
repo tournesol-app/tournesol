@@ -109,7 +109,7 @@ const EntityImagery = ({
     const thumbnail = (
       <DurationWrapper duration={entity.metadata.duration}>
         <img
-          className="full-width"
+          className="full-width entity-thumbnail"
           src={`https://i.ytimg.com/vi/${idFromUid(entity.uid)}/mqdefault.jpg`}
           alt={entity.metadata.name}
         />
@@ -134,19 +134,10 @@ const EntityImagery = ({
             to={`${baseUrl}/entities/${entity.uid}`}
             className="full-width"
           >
-            <RouterLink
-              to={`${baseUrl}/entities/${entity.uid}`}
-              className="full-width"
-            >
-              <img
-                className="full-width"
-                src={`https://i.ytimg.com/vi/${idFromUid(
-                  entity.uid
-                )}/mqdefault.jpg`}
-                alt={entity.metadata.name}
-              />
-            </RouterLink>
-          </Box>
+            {thumbnail}
+          </RouterLink>
+        ) : (
+          thumbnail
         )}
       </Box>
     );

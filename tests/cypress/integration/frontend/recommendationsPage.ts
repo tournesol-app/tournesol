@@ -78,7 +78,7 @@ describe('Recommendations page', () => {
         })
       });
     });
-    describe('List', () => {
+    describe('List of recommendations', () => {
       it('entities\'s thumbnails are clickable', () => {
         cy.visit('/recommendations?unsafe=true&date=');
 

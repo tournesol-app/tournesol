@@ -113,7 +113,7 @@ function VideoCard({
             >
               <DurationWrapper duration={video.duration || undefined}>
                 <img
-                  className="full-width"
+                  className="full-width entity-thumbnail"
                   src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
                   alt={video.name}
                 />
