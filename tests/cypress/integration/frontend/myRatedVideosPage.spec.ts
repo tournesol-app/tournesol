@@ -37,4 +37,23 @@ describe('"My rated videos" page', () => {
       () => cy.get('input[type=checkbox]').should('be.checked')
     );
   })
+  it('entities\'s thumbnails are clickable', () => {
+    cy.visit('/ratings');
+    cy.focused().type("user1");
+    cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+
+    const thumbnail = cy.get('img.entity-thumbnail').first();
+    thumbnail.click();
+    cy.location('pathname').should('match', /^\/entities\//);
+  });
+
+  it('entities\'s titles are clickable', () => {
+    cy.visit('/ratings');
+    cy.focused().type("user1");
+    cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+
+    const videoCard = cy.get('div[data-testid=video-card-info]').first();
+    videoCard.find('h6').click();
+    cy.location('pathname').should('match', /^\/entities\//);
+  });
 });

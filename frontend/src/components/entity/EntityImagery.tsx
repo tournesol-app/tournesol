@@ -134,10 +134,19 @@ const EntityImagery = ({
             to={`${baseUrl}/entities/${entity.uid}`}
             className="full-width"
           >
-            {thumbnail}
-          </RouterLink>
-        ) : (
-          thumbnail
+            <RouterLink
+              to={`${baseUrl}/entities/${entity.uid}`}
+              className="full-width"
+            >
+              <img
+                className="full-width"
+                src={`https://i.ytimg.com/vi/${idFromUid(
+                  entity.uid
+                )}/mqdefault.jpg`}
+                alt={entity.metadata.name}
+              />
+            </RouterLink>
+          </Box>
         )}
       </Box>
     );
