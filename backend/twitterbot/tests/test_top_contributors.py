@@ -72,7 +72,7 @@ class TestBestContributor(TestCase):
     def test_get_previous_month_top_public_contributor(self):
         """Test top public contributor of the previous month."""
 
-        top_contributors = get_previous_month_top_public_contributor()
+        top_contributors = get_previous_month_top_public_contributor(poll_name=self.poll.name)
 
         assert top_contributors[0] == (self.users[2].username, 5)
         assert top_contributors[1] == (self.users[0].username, 4)

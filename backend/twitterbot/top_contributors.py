@@ -2,11 +2,10 @@ import collections
 from datetime import datetime, timedelta
 
 from tournesol.models.comparisons import Comparison
-from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.models.ratings import ContributorRating
 
 
-def get_previous_month_top_public_contributor():
+def get_previous_month_top_public_contributor(poll_name):
     """
     Return the top contributors of the previous month, based on the number of
     their public comparisons.
@@ -16,13 +15,13 @@ def get_previous_month_top_public_contributor():
     last_month = datetime(now.year, now.month, 1) - timedelta(days=15)
 
     public_data = ContributorRating.objects.filter(
-        is_public=True, poll__name=DEFAULT_POLL_NAME
+        is_public=True, poll__name=poll_name
     ).select_related("user", "entity")
 
     public_videos = set((rating.user, rating.entity) for rating in public_data)
 
     comparisons = Comparison.objects.filter(
-        poll__name=DEFAULT_POLL_NAME,
+        poll__name=poll_name,
         datetime_add__month=last_month.month,
         datetime_add__year=last_month.year,
     ).select_related("entity_1", "entity_2", "user")
