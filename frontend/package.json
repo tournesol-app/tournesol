@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.2.5",
     "@mui/material": "^5.2.6",
     "@mui/styles": "^5.2.3",
+    "@react-hook/resize-observer": "^1.2.5",
     "@reduxjs/toolkit": "^1.7.1",
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.38",

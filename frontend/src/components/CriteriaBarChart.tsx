@@ -18,6 +18,7 @@ import useCriteriaChartData, {
 import { useTranslation } from 'react-i18next';
 import { lighten } from 'src/utils/color';
 import { Tooltip } from '@mui/material';
+import useResizeObserver from '@react-hook/resize-observer';
 
 const barMargin = 40; // The horizontal margin around the bar (must be enough for the icon and the score value)
 const criterionChartHeight = 40; // The height of a single criterion chart (circle + icon + bars)
@@ -411,7 +412,7 @@ const CriteriaBarChart = ({ video, entity }: Props) => {
     setWidth(width);
   }, []);
 
-  // TODO: handle div resize with @react-hook/resize-observer or custom code
+  useResizeObserver(containerRef, (entry) => setWidth(entry.contentRect.width));
 
   if (!shouldDisplayChart) return null;
 
