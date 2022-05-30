@@ -9,13 +9,15 @@ import { TypeEnum } from 'src/services/openapi';
 import { JSONValue, RelatedEntityObject } from 'src/utils/types';
 import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
-const PlayerWrapper = React.forwardRef(function PlayerWrapper(
+const DurationWrapper = React.forwardRef(function DurationWrapper(
   {
     duration,
     children,
+    bottom = 0,
   }: {
     duration?: number;
     children: React.ReactNode;
+    bottom?: number;
   },
   ref
 ) {
@@ -34,7 +36,7 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
       {isDurationVisible && formattedDuration && (
         <Box
           position="absolute"
-          bottom={0}
+          bottom={bottom}
           right={0}
           bgcolor="rgba(0,0,0,0.5)"
           color="#fff"
@@ -68,7 +70,7 @@ export const VideoPlayer = ({
       light
       width="100%"
       height="100%"
-      wrapper={PlayerWrapper}
+      wrapper={DurationWrapper}
       duration={duration}
       controls={controls}
     />
@@ -121,13 +123,15 @@ const EntityImagery = ({
               to={`${baseUrl}/entities/${entity.uid}`}
               className="full-width"
             >
-              <img
-                className="full-width"
-                src={`https://i.ytimg.com/vi/${idFromUid(
-                  entity.uid
-                )}/mqdefault.jpg`}
-                alt={entity.metadata.name}
-              />
+              <DurationWrapper bottom={12} duration={entity.metadata.duration}>
+                <img
+                  className="full-width"
+                  src={`https://i.ytimg.com/vi/${idFromUid(
+                    entity.uid
+                  )}/mqdefault.jpg`}
+                  alt={entity.metadata.name}
+                />
+              </DurationWrapper>
             </RouterLink>
           </Box>
         )}
