@@ -357,7 +357,7 @@
       "compare": "Comparer"
     },
     "video": {
-      "description": "Description du créateur YouTube"
+      "description": "Description (provenant de YouTube)"
     }
   },
   "entityNotFound": {
