@@ -1,3 +1,7 @@
+"""
+Shortcuts functions related to the contributors.
+"""
+
 import collections
 from datetime import datetime, timedelta
 
@@ -14,29 +18,34 @@ def get_last_month_top_public_contributors(poll_name):
     now = datetime.now()
     last_month = datetime(now.year, now.month, 1) - timedelta(days=15)
 
-    public_data = ContributorRating.objects.filter(
-        is_public=True, poll__name=poll_name
-    ).select_related("user", "entity")
+    public_ratings = (
+        ContributorRating.objects.filter(is_public=True, poll__name=poll_name)
+        .select_related("user", "entity")
+        .values_list("user__username", "entity__uid")
+    )
 
-    public_videos = set((rating.user, rating.entity) for rating in public_data)
-
-    comparisons = Comparison.objects.filter(
-        poll__name=poll_name,
-        datetime_add__month=last_month.month,
-        datetime_add__year=last_month.year,
-    ).select_related("entity_1", "entity_2", "user")
+    comparisons = (
+        Comparison.objects.filter(
+            poll__name=poll_name,
+            datetime_add__month=last_month.month,
+            datetime_add__year=last_month.year,
+        )
+        .select_related("entity_1", "entity_2", "user")
+        .values("entity_1__uid", "entity_2__uid", "user__username")
+    )
 
     public_comparisons = [
         comparison
         for comparison in comparisons
         if (
-            (comparison.user, comparison.entity_1) in public_videos
-            and (comparison.user, comparison.entity_2) in public_videos
+            (comparison["user__username"], comparison["entity_1__uid"])
+            in public_ratings
+            and (comparison["user__username"], comparison["entity_2__uid"])
+            in public_ratings
         )
     ]
 
-    public_usernames = [comparison.user.username for comparison in public_comparisons]
+    usernames = [comparison["user__username"] for comparison in public_comparisons]
 
-    top_contributor_counter = collections.Counter(public_usernames)
-
-    return top_contributor_counter.most_common(10)
+    top_contributors_counter = collections.Counter(usernames)
+    return top_contributors_counter.most_common(10)
