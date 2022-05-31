@@ -2,6 +2,7 @@ import random
 import numpy as np
 import pytest
 from core.models.user import EmailDomain, User
+from core.models import user
 from vouch.models import Voucher
 from core.tests.factories.user import UserFactory
 
@@ -118,8 +119,9 @@ class UnitTest(TestCase):
         
     def test_trust_algo(self) :
         trust_algo()
-        assert self.user_1.trust_score == pytest.approx(1,0.00000001)
-        assert self.user_9.trust_score == pytest.approx(0,0.00000001)
+        users = list(user.User.objects.all())
+        assert users[1].trust_score >= 0.9999999
+        assert users[9].trust_score == pytest.approx(0,0.00000001)
 
 
 

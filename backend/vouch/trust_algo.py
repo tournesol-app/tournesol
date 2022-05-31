@@ -67,31 +67,34 @@ def trust_algo():
     for i, by in enumerate(users):
         for j, to in enumerate(users):
             voucher = Voucher.objects.filter(by=by).filter(to=to)
-            if voucher.exists() :
-                C_[i][j] = voucher[0].trust_value if voucher.exists() else 0
-                print("VOUCHER")
-                print(voucher[0].trust_value if voucher.exists() else 0)
+            C_[i][j] = voucher[0].trust_value if voucher.exists() else 0
+            print("VOUCHER")
+            print(voucher[0].trust_value if voucher.exists() else 0)
     print("before normalization")    
     print(C_)
+    print("trust status")
+    print(trust_status)
     # improved eigen trust algorithm
     p = trust_status
     p = p/np.sum(p)
     # make the matrix to make it stochastic and give trust of users who didn't
     # vouch much to pre-trusted set
     C = normalize_trust_values(C_, trust_status)
+    #C = C.transpose() #mmmh?
     print("normalize")
     print(C)
     # get the a vector of trust given to each users by the network
     trust_vector = get_trust_vector(C, p)
-    print("len trust_vector")
-    print(len(trust_vector))
+    print("trust vector")
+    print(trust_vector)
     # normalize and rescale it
+
     trust_vector = trust_vector/np.sum(trust_vector)
     voting_weight = rescale(trust_vector, trust_status)
+    print("voting weight")
     print(voting_weight)
-    print("len voting weight")
-    print(len(voting_weight))
     for k, u in enumerate(users):
-        u.trust_score = voting_weight[k]
+        u.trust_score = float(voting_weight[k])
         u.save()
     return True
+
