@@ -10,8 +10,8 @@ from tournesol import models
 
 UID_DELIMITER = ":"
 
-DEFAULT_ALLOWED_FILTER_FUNCS: {'int': int, 'str': str}
-DEFAULT_ALLOWED_FILTER_LOOKUPS: ['gt', 'gte', 'lt', 'lte']
+DEFAULT_ALLOWED_FILTER_FUNCS = {'int': int, 'str': str}
+DEFAULT_ALLOWED_FILTER_LOOKUPS = ['gt', 'gte', 'lt', 'lte']
 
 
 class EntityType(ABC):
@@ -111,10 +111,10 @@ class EntityType(ABC):
         lookup = None
         func = None
 
-        if len(split_op) > 0:
+        if len(split_op) > 1:
             lookup = split_op[1]
 
-        if len(split_op) > 1:
+        if len(split_op) > 2:
             func = split_op[2]
 
         return field, lookup, func
@@ -132,20 +132,22 @@ class EntityType(ABC):
         for operation, values in filters:
 
             field, lookup, func = cls.get_filter_operation(operation)
-            qstring = field
 
             if len(values) > 1:
                 qst = qst.filter(**{"metadata__" + field + "__in": values})
             else:
+                qstring = field
+
                 # The lookup must be explicitly allowed to be applied.
                 if lookup and lookup in cls.get_allowed_filter_lookups():
                     qstring += f'__{lookup}'
 
+                filtered_value = values[0]
                 # The function must be explicitly allowed to be applied.
                 if func:
-                    sanitized_value = cls.cast_filter_value(values[0], func)
+                    filtered_value = cls.cast_filter_value(filtered_value, func)
 
-                qst = qst.filter(**{"metadata__" + qstring: sanitized_value})
+                qst = qst.filter(**{"metadata__" + qstring: filtered_value})
 
         return qst
 
