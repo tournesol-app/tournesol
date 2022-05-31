@@ -27,7 +27,8 @@ class UtilsContributorsTestCase(TestCase):
             for entity in self.entities:
 
                 is_public = True
-                if user == self.users[2] and entity == self.entities[4]:
+                # All comparisons involving the entity 2 will be private.
+                if entity == self.entities[2]:
                     is_public = False
 
                 ContributorRatingFactory.create(
@@ -37,25 +38,30 @@ class UtilsContributorsTestCase(TestCase):
                 )
 
         comparisons_parameters = [
+            # Made by the user 0.
+            dict(user=self.users[0], entity_1=self.entities[0], entity_2=self.entities[1]),
+            dict(user=self.users[0], entity_1=self.entities[0], entity_2=self.entities[2]),
+            dict(user=self.users[0], entity_1=self.entities[0], entity_2=self.entities[3]),
+            dict(user=self.users[0], entity_1=self.entities[1], entity_2=self.entities[5]),
+            # Made by the user 1.
+            dict(user=self.users[1], entity_1=self.entities[0], entity_2=self.entities[1]),
+            dict(user=self.users[1], entity_1=self.entities[0], entity_2=self.entities[2]),
+            # Made by the user 2.
             dict(user=self.users[2], entity_1=self.entities[0], entity_2=self.entities[1]),
             dict(user=self.users[2], entity_1=self.entities[0], entity_2=self.entities[2]),
             dict(user=self.users[2], entity_1=self.entities[0], entity_2=self.entities[3]),
             dict(user=self.users[2], entity_1=self.entities[0], entity_2=self.entities[4]),
             dict(user=self.users[2], entity_1=self.entities[0], entity_2=self.entities[5]),
             dict(user=self.users[2], entity_1=self.entities[1], entity_2=self.entities[5]),
-            dict(user=self.users[0], entity_1=self.entities[0], entity_2=self.entities[1]),
-            dict(user=self.users[0], entity_1=self.entities[0], entity_2=self.entities[2]),
-            dict(user=self.users[0], entity_1=self.entities[0], entity_2=self.entities[3]),
-            dict(user=self.users[0], entity_1=self.entities[1], entity_2=self.entities[5]),
+            # Made by the user 3.
             dict(user=self.users[3], entity_1=self.entities[0], entity_2=self.entities[1]),
             dict(user=self.users[3], entity_1=self.entities[0], entity_2=self.entities[2]),
             dict(user=self.users[3], entity_1=self.entities[0], entity_2=self.entities[3]),
-            dict(user=self.users[1], entity_1=self.entities[0], entity_2=self.entities[1]),
-            dict(user=self.users[1], entity_1=self.entities[0], entity_2=self.entities[2]),
+            # Made by the user 4.
             dict(user=self.users[4], entity_1=self.entities[0], entity_2=self.entities[1]),
         ]
 
-        self.comparisons = [ComparisonFactory(**c) for c in comparisons_parameters]
+        self.comparisons = [ComparisonFactory(**comp) for comp in comparisons_parameters]
 
         now = timezone.now()
         last_month = timezone.datetime(
@@ -65,12 +71,13 @@ class UtilsContributorsTestCase(TestCase):
         for comparison in self.comparisons:
             Comparison.objects.filter(pk=comparison.pk).update(datetime_add=last_month)
 
-        # Comparisons with other dates to be sure it only gets those from the previous month
+        # Add public comparisons younger and older than the last month. They
+        # must not be counted in the top contributors of the last month.
         ComparisonFactory(
-            user=self.users[4], entity_1=self.entities[1], entity_2=self.entities[2]
+            user=self.users[4], entity_1=self.entities[1], entity_2=self.entities[3]
         )
         older_comparison = ComparisonFactory(
-            user=self.users[4], entity_1=self.entities[1], entity_2=self.entities[3]
+            user=self.users[4], entity_1=self.entities[1], entity_2=self.entities[4]
         )
         Comparison.objects.filter(pk=older_comparison.pk).update(
             datetime_add=time_ago(days=65)
@@ -84,7 +91,7 @@ class UtilsContributorsTestCase(TestCase):
         )
 
         self.assertEqual(top_contributors[0], (self.users[2].username, 5))
-        self.assertEqual(top_contributors[1], (self.users[0].username, 4))
-        self.assertEqual(top_contributors[2], (self.users[3].username, 3))
-        self.assertEqual(top_contributors[3], (self.users[1].username, 2))
+        self.assertEqual(top_contributors[1], (self.users[0].username, 3))
+        self.assertEqual(top_contributors[2], (self.users[3].username, 2))
+        self.assertEqual(top_contributors[3], (self.users[1].username, 1))
         self.assertEqual(top_contributors[4], (self.users[4].username, 1))
