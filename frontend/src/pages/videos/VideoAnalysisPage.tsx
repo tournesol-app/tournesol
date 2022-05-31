@@ -24,7 +24,7 @@ import { VideoSerializerWithCriteria } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
-import linkifyHtml from 'linkify-html';
+import linkifyStr from 'linkify-string';
 
 export const VideoAnalysis = ({
   video,
@@ -42,10 +42,7 @@ export const VideoAnalysis = ({
   const shouldDisplayCharts = criteriaScores && criteriaScores.length > 0;
 
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
-  const linkifiedDescription = linkifyHtml(
-    video.description || '',
-    linkifyOpts
-  );
+  const linkifiedDescription = linkifyStr(video.description || '', linkifyOpts);
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
