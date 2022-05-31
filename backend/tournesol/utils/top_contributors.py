@@ -4,15 +4,16 @@ Shortcuts functions related to the contributors.
 
 import collections
 from datetime import datetime, timedelta
+from typing import List, Tuple
 
 from tournesol.models.comparisons import Comparison
 from tournesol.models.ratings import ContributorRating
 
 
-def get_last_month_top_public_contributors(poll_name):
+def get_last_month_top_public_contributors(poll_name: str) -> List[Tuple]:
     """
-    Return the top contributors of the previous month, based on the number of
-    their public comparisons.
+    Return the top contributors of the previous month with their number of
+    comparisons, ordered by this number of comparisons.
     """
 
     now = datetime.now()
