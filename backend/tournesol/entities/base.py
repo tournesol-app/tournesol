@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Iterable, Type
+from typing import Dict, Iterable, List, Type
 
 from django.utils import timezone
 from django.utils.functional import cached_property
