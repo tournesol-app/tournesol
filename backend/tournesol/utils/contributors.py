@@ -3,8 +3,10 @@ Shortcuts functions related to the contributors.
 """
 
 import collections
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List, Tuple
+
+from django.utils import timezone
 
 from tournesol.models.comparisons import Comparison
 from tournesol.models.ratings import ContributorRating
@@ -16,8 +18,10 @@ def get_last_month_top_public_contributors(poll_name: str) -> List[Tuple]:
     comparisons, ordered by this number of comparisons.
     """
 
-    now = datetime.now()
-    last_month = datetime(now.year, now.month, 1) - timedelta(days=15)
+    now = timezone.now()
+    last_month = timezone.datetime(
+        now.year, now.month, 1, tzinfo=timezone.get_current_timezone()
+    ) - timedelta(days=15)
 
     public_ratings = (
         ContributorRating.objects.filter(is_public=True, poll__name=poll_name)

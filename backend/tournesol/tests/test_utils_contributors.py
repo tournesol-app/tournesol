@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.test import TestCase
+from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
@@ -56,8 +57,10 @@ class UtilsContributorsTestCase(TestCase):
 
         self.comparisons = [ComparisonFactory(**c) for c in comparisons_parameters]
 
-        now = datetime.now()
-        last_month = datetime(now.year, now.month, 1) - timedelta(days=15)
+        now = timezone.now()
+        last_month = timezone.datetime(
+            now.year, now.month, 1, tzinfo=timezone.get_current_timezone()
+        ) - timedelta(days=15)
 
         for comparison in self.comparisons:
             Comparison.objects.filter(pk=comparison.pk).update(datetime_add=last_month)
