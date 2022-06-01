@@ -10,7 +10,7 @@
     "activatePersonalScores": "Display personal scores"
   },
   "criteriaBarChart": {
-    "scoreTooltip": "Score calculated by Tournesol",
+    "scoreTooltip": "Collective score",
     "personalScoreTooltip": "Your personal score"
   },
   "dialogBox": {
