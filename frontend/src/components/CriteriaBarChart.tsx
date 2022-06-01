@@ -297,7 +297,7 @@ const SVGCriterionIcon = ({
         width={36}
         height={36}
         title={getCriteriaLabel(criterion)}
-        placement="bottom-start"
+        placement="right"
         arrow
       />
     </>
