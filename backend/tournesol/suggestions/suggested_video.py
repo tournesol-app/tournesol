@@ -14,6 +14,8 @@ class SuggestedVideo:
     global_video_score: float
     suggestibility_normalization: float
     NEW_NODE_CONNECTION_SCORE = 0.5
+    NEW_NODE_SCORE_UNCERTAINTY = 1
+    NEW_NODE_SCORE = 0
 
     user_pref: float = 0
 
@@ -23,6 +25,8 @@ class SuggestedVideo:
     ):
         if from_uid is not None:
             self.uid = from_uid
+        self.global_video_score = self.NEW_NODE_SCORE
+        self.global_video_score_uncertainty = self.NEW_NODE_SCORE_UNCERTAINTY
         self.suggestibility_normalization = 1
 
     def __eq__(self, __o: SuggestedVideo) -> bool:
