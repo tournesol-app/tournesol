@@ -10,7 +10,7 @@ from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.ratings import ContributorRatingFactory
-from tournesol.utils.contributors import get_last_month_top_public_contributors
+from tournesol.utils.contributors import get_top_public_contributors_last_month
 
 
 class UtilsContributorsTestCase(TestCase):
@@ -90,7 +90,7 @@ class UtilsContributorsTestCase(TestCase):
 
         top_contributors = [
             (contrib.username, contrib.n_comparisons)
-            for contrib in get_last_month_top_public_contributors(
+            for contrib in get_top_public_contributors_last_month(
                 poll_name=self.poll.name
             ).iterator()
         ]
