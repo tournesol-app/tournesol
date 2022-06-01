@@ -5,7 +5,7 @@ Shortcut functions related to the contributors.
 from django.db.models.query import RawQuerySet
 from django.utils import timezone
 
-from tournesol.models.comparisons import Comparison
+from core.models.user import User
 
 
 def get_top_public_contributors_last_month(
@@ -48,8 +48,8 @@ def get_top_public_contributors(
         Return the top 20 contributors of February 2022 for the poll 'videos'.
     """
 
-    return Comparison.objects.raw(
-        f"""
+    return User.objects.raw(
+        """
         WITH public_comparisons AS (
             SELECT
                 core_user.username,
@@ -77,13 +77,13 @@ def get_top_public_contributors(
               ON rating_2.entity_id = tournesol_comparison.entity_2_id
              AND rating_2.user_id = tournesol_comparison.user_id
 
-            WHERE tournesol_poll.name = '{poll_name}'
+            WHERE tournesol_poll.name = %(poll_name)s
 
               -- keep only comparisons from the last month
               AND EXTRACT('month' from tournesol_comparison.datetime_add)
-                = {month}
+                = %(month)s
               AND EXTRACT('year' from tournesol_comparison.datetime_add)
-                = {year}
+                = %(year)s
 
               -- keep only public ratings
               AND rating_1.is_public = true
@@ -97,6 +97,7 @@ def get_top_public_contributors(
         FROM public_comparisons
         GROUP BY user_id, username
         ORDER BY n_comparisons DESC
-        LIMIT {top};
-    """
+        LIMIT %(top)s;
+    """,
+        {"poll_name": poll_name, "month": month, "year": year, "top": top},
     )
