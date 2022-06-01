@@ -2,6 +2,14 @@
   "components": {
     "filtersButton": "filters"
   },
+  "personalCriteriaScores": {
+    "chartTooltip": "Personal score: {{score}}",
+    "reasonWhyItCannotBeActivated": {
+      "notLoggedIn": "You must be logged in to display personal scores.",
+      "noPersonalScore": "You have not compared this video yet."
+    },
+    "activatePersonalScores": "Display personal scores"
+  },
   "dialogBox": {
     "continue": "continue"
   },
@@ -239,7 +247,8 @@
   "stats": {
     "activeUsers": "Active users",
     "comparisons": "Comparisons",
-    "ratedVideos": "Rated videos"
+    "ratedVideos": "Rated videos",
+    "ratedCandidates": "Rated candidates"
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
@@ -286,7 +295,7 @@
     "donateByPaypal": "By PayPal",
     "publicDatabase": "Public Database",
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
-    "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{videoCount}} videos.",
+    "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Trusted email domains",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited voting right to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
@@ -337,6 +346,12 @@
       "criteriaScores": {
         "title": "Scores per criterion"
       }
+    },
+    "generic": {
+      "compare": "Compare"
+    },
+    "video": {
+      "description": "Description (from YouTube)"
     }
   },
   "entityNotFound": {
@@ -371,10 +386,7 @@
     "getTheExtensionButton": "Get the extension",
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity.",
-    "videos": {
-      "start": "Start" 
-    }
+    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",

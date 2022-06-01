@@ -130,7 +130,7 @@ const getTournesolComponent = () => {
 
     const video_thumb = document.createElement('img');
     video_thumb.className = 'video_thumb';
-    video_thumb.src = `https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`;
+    video_thumb.src = `https://img.youtube.com/vi/${video.metadata.video_id}/mqdefault.jpg`;
     thumb_div.append(video_thumb);
 
     const video_duration = document.createElement('p');
@@ -139,7 +139,7 @@ const getTournesolComponent = () => {
     // Convert SECONDS to hh:mm:ss or mm:ss format depending on the duration
 
     var formatted_video_duration = convertDurationToClockDuration(
-      video.duration
+      video.metadata.duration
     );
 
     video_duration.append(document.createTextNode(formatted_video_duration));
@@ -153,12 +153,12 @@ const getTournesolComponent = () => {
 
     const video_title = document.createElement('h2');
     video_title.className = 'video_title';
-    video_title.append(video.name);
+    video_title.append(video.metadata.name);
     details_div.append(video_title);
 
     const video_uploader = document.createElement('p');
     video_uploader.className = 'video_text';
-    video_uploader.append(video.uploader);
+    video_uploader.append(video.metadata.uploader);
     details_div.append(video_uploader);
 
     const video_score = document.createElement('p');
@@ -166,13 +166,13 @@ const getTournesolComponent = () => {
     video_score.innerHTML = `🌻 <strong>${video.tournesol_score.toFixed(
       0
     )} &nbsp·&nbsp</strong>
-         ${video.rating_n_ratings} comparisons by ${video.rating_n_contributors}
+         ${video.n_comparisons} comparisons by ${video.n_contributors}
          contributors`;
     details_div.append(video_score);
 
     const video_link = document.createElement('a');
     video_link.className = 'video_link';
-    video_link.href = '/watch?v=' + video.video_id;
+    video_link.href = '/watch?v=' + video.metadata.video_id;
     video_box.append(video_link);
 
     video_box.append(details_div);

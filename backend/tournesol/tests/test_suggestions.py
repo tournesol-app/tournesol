@@ -21,6 +21,7 @@ from tournesol.tests.factories.scaling import ContributorScalingFactory
 class SuggestionAPITestCase(TestCase):
     # users available in the test
     _user = "username"
+    _user_no_comparison = "absent"
     _other = "other_username"
     _central_scaled_user = "central_user"
 
@@ -57,6 +58,7 @@ class SuggestionAPITestCase(TestCase):
 
         # Populate the user table
         self.user = UserFactory(username=self._user)
+        self.user_no_comparison = UserFactory(username=self._user_no_comparison)
         self.other = UserFactory(username=self._other)
         self.central_scaled_user = UserFactory(username=self._central_scaled_user, is_staff=True)
         now = datetime.datetime.now()
@@ -74,6 +76,78 @@ class SuggestionAPITestCase(TestCase):
             VideoFactory(metadata__video_id=self._uid_08.split(":")[1]),
             VideoFactory(metadata__video_id=self._uid_09.split(":")[1]),
         ]
+
+        # Populate the rating table - is already done ?
+        for i, v in enumerate(self.videos[5:]):
+            contributor_rating = ContributorRatingFactory(
+                poll__name=self.poll.name,
+                entity=v,
+                user=self.other,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0,
+            )
+        for i, v in enumerate(self.videos[:5]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=2.2,
+            )
+        for i, v in enumerate(self.videos[:3]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.central_scaled_user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0.125,
+            )
+        for i, v in enumerate(self.videos[7:]):
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.central_scaled_user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0.25,
+            )
+        contributor_rating = ContributorRatingFactory(
+            poll=self.poll,
+            entity=self.videos[4],
+            user=self.user_no_comparison,
+            is_public=True,
+        )
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=contributor_rating,
+            criteria=self._criteria,
+            score=0,
+        )
+        contributor_rating = ContributorRatingFactory(
+            poll=self.poll,
+            entity=self.videos[6],
+            user=self.user_no_comparison,
+            is_public=True,
+        )
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=contributor_rating,
+            criteria=self._criteria,
+            score=0,
+        )
 
         # Populate the comparison table
         self.comparisons = [
@@ -180,6 +254,13 @@ class SuggestionAPITestCase(TestCase):
                 duration_ms=205,
                 datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
+            ComparisonFactory(
+                user=self.user_no_comparison,
+                entity_1=self.videos[4],
+                entity_2=self.videos[6],
+                duration_ms=404,
+                datetime_lastedit=now + datetime.timedelta(minutes=2),
+            ),
         ]
 
         # CriteriaRankFactory(poll=self.poll, criteria__name="largely_recommended")
@@ -221,49 +302,13 @@ class SuggestionAPITestCase(TestCase):
             scale_uncertainty=0,
             translation_uncertainty=0.0,
         )
-        # Populate the rating table - is already done ?
-        for i, v in enumerate(self.videos[:5]):
-            contributor_rating = ContributorRatingFactory(
-                poll=self.poll,
-                entity=v,
-                user=self.other,
-                is_public=True,
-            )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=contributor_rating,
-                criteria=self._criteria,
-                score=0,
-            )
-        for i, v in enumerate(self.videos[5:]):
-            contributor_rating = ContributorRatingFactory(
-                poll=self.poll,
-                entity=v,
-                user=self.user,
-                is_public=True,
-            )
-            ContributorRatingCriteriaScoreFactory(
-                contributor_rating=contributor_rating,
-                criteria=self._criteria,
-                score=2.2,
-            )
-        contributor_rating = ContributorRatingFactory(
-            poll=self.poll,
-            entity=self.videos[5],
-            user=self.central_scaled_user,
-            is_public=True,
-        )
-        ContributorRatingCriteriaScoreFactory(
-            contributor_rating=contributor_rating,
-            criteria=self._criteria,
-            score=0,
-        )
 
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
     def test_class_instantiation(self):
         local_poll = self.poll
-        Graph(None, local_poll, self._criteria)
+        Graph(self.user, local_poll, self._criteria)
         actual_store = _SuggesterStore()
         actual_store.get_suggester(self.poll)
 
@@ -285,6 +330,11 @@ class SuggestionAPITestCase(TestCase):
         suggester.get_first_video_recommendation(self.user, 6)
         assert self.user.id in suggester._user_specific_graphs.keys()
 
+    def test_absent_user_does_not_crash(self):
+        suggester = SuggestionProvider(self.poll)
+        vid = suggester.get_first_video_recommendation(self.user_no_comparison, 6)
+        suggester.get_second_video_recommendation(self.user_no_comparison, vid[0].uid, 6)
+
 # This would be nice to test, but this property is not easy to compute...
     def test_most_informative_vid_given_first(self):
         suggester = SuggestionProvider(self.poll)
@@ -301,8 +351,9 @@ class SuggestionAPITestCase(TestCase):
         )
         last_vid_score = 1000
         for v in user2_videos:
-            assert v.video2_score[user_videos[0]] <= last_vid_score
-            last_vid_score = v.video2_score[user_videos[0]]
+            v_score = v.score_computation(user_videos[0]) + v.graph_sparsity
+            assert v_score <= last_vid_score
+            last_vid_score = v_score
 
     def test_suggestions_personalization(self):
         suggester = SuggestionProvider(self.poll)
@@ -316,13 +367,13 @@ class SuggestionAPITestCase(TestCase):
 
         all_the_same = True
         user_second_videos_a = suggester.get_second_video_recommendation(
-            self.user,
+            self.central_scaled_user,
             user_videos[0].uid,
             8
         )
         user_second_videos_b = suggester.get_second_video_recommendation(
-            self.user,
-            user_videos[0].uid,
+            self.central_scaled_user,
+            user_videos[-1].uid,
             8
         )
         for v1, v2 in zip(user_second_videos_a, user_second_videos_b):

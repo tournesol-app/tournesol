@@ -24,7 +24,11 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
         gap: '16px',
       }}
     >
-      <EntityCard compact entity={entity_a} />
+      <EntityCard
+        compact
+        entity={entity_a}
+        entityTypeConfig={{ video: { displayPlayer: false } }}
+      />
       <Box
         sx={{
           position: 'relative',
@@ -52,7 +56,11 @@ const ComparisonThumbnail = ({ comparison }: { comparison: Comparison }) => {
           </Fab>
         </Tooltip>
       </Box>
-      <EntityCard compact entity={entity_b} />
+      <EntityCard
+        compact
+        entity={entity_b}
+        entityTypeConfig={{ video: { displayPlayer: false } }}
+      />
     </Box>
   );
 };

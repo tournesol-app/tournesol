@@ -18,6 +18,15 @@ code {
     monospace;
 }
 
+/**
+ * Classes used in the last resorts, when components don't provide the `sx`
+ * attribute. Like `Link` from the react-router-dom package.
+ */
+
+.full-width {
+  width: 100%;
+}
+
 .no-decoration {
   text-decoration: none;
 }

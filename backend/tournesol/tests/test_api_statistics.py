@@ -98,11 +98,20 @@ class StatisticsAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        video_count = response.data["video_count"]
-        last_month_video_count = response.data["last_month_video_count"]
+        polls = response.data["polls"]
+        video_poll = [poll for poll in polls if poll["name"] == "videos"][0]
+
+        video_count = video_poll["compared_entities"]["total"]
+        last_month_video_count = video_poll["compared_entities"]["added_last_month"]
 
         self.assertEqual(video_count, len(self._list_of_videos))
         self.assertEqual(last_month_video_count, 2)
+
+        comparison_count = video_poll["comparisons"]["total"]
+        last_month_comparison_count = video_poll["comparisons"]["added_last_month"]
+
+        self.assertEqual(comparison_count, len(self._list_of_comparisons))
+        self.assertEqual(last_month_comparison_count, 2)
 
     def test_user_stats(self):
         """
@@ -118,29 +127,9 @@ class StatisticsAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        user_count = response.data["user_count"]
-        last_month_user_count = response.data["last_month_user_count"]
+        active_users = response.data["active_users"]
+        user_count = active_users["total"]
+        last_month_user_count = active_users["joined_last_month"]
 
         self.assertEqual(user_count, len(self._list_of_users))
         self.assertEqual(last_month_user_count, 1)
-
-    def test_comparison_stats(self):
-        """
-        An anonymous user can get statistics about comparisons.
-        """
-
-        client = APIClient()
-
-        response = client.get(
-            reverse("tournesol:statistics_detail"),
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        comparison_count = response.data["comparison_count"]
-        last_month_comparison_count = response.data["last_month_comparison_count"]
-
-        print(self._list_of_comparisons)
-        self.assertEqual(comparison_count, len(self._list_of_comparisons))
-        self.assertEqual(last_month_comparison_count, 2)

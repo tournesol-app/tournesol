@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "rest_registration",
+    "vouch",
 ]
 
 REST_REGISTRATION_MAIN_URL = server_settings.get(
@@ -82,6 +83,7 @@ REST_REGISTRATION = {
     "REGISTER_VERIFICATION_ENABLED": True,
     "REGISTER_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "verify-user/",
     "REGISTER_VERIFICATION_ONE_TIME_USE": True,
+    "SEND_RESET_PASSWORD_LINK_USER_FINDER": "core.utils.rest_registration.users.find_user_by_send_reset_password_link_data",
     "RESET_PASSWORD_VERIFICATION_ENABLED": True,
     "RESET_PASSWORD_VERIFICATION_URL": REST_REGISTRATION_MAIN_URL + "reset-password/",
     "RESET_PASSWORD_FAIL_WHEN_USER_NOT_FOUND": False,  # to be set to True to prevent user enumeration

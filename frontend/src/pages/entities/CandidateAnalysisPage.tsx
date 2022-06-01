@@ -20,7 +20,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
   const { baseUrl } = useCurrentPoll();
 
   return (
-    <Container>
+    <Container sx={{ maxWidth: '1000px !important' }}>
       <Box py={2}>
         {/* Top level section, containing links and maybe more in the future. */}
         <Box mb={2} display="flex" justifyContent="flex-end">
@@ -34,7 +34,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
           </Button>
         </Box>
 
-        {/* Entity section, with its title and scores. */}
+        {/* Entity section, with its picture, title and scores. */}
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <EntityImagery entity={entity} compact={true} />
@@ -42,7 +42,11 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
           <Grid item xs={12}>
             <Paper>
               <Box p={1}>
-                <EntityCardTitle title={entity.metadata.name} compact={false} />
+                <EntityCardTitle
+                  uid={entity.uid}
+                  title={entity.metadata.name}
+                  compact={false}
+                />
                 <EntityCardScores
                   entity={entity}
                   showTournesolScore={
@@ -54,7 +58,7 @@ const CandidateAnalysisPage = ({ entity }: Props) => {
             </Paper>
           </Grid>
 
-          {/* data visualization */}
+          {/* Data visualization. */}
           <Grid item xs={12} sm={12} md={6}>
             <Paper>
               <Box

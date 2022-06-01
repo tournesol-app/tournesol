@@ -1,3 +1,5 @@
+from django.db.models import F
+
 from core.models.user import User as UserDB
 from tournesol.models import ContributorRatingCriteriaScore, Poll
 from tournesol.suggestions.suggested_video import SuggestedVideo
@@ -24,14 +26,19 @@ class SuggestedUser:
             )
             .filter(contributor_rating__poll__name=concerned_poll.name)
             .filter(criteria=local_criteria)
+            .values(
+                "uncertainty",
+                "score",
+                uid=F("contributor_rating__entity__uid")
+            )
         )
 
         self.score_uncertainties = {}
         self.scores = {}
         for rating in contributor_ratings:
-            corresponding_video = entity_to_video[rating.contributor_rating.entity.uid]
-            self.score_uncertainties[corresponding_video] = rating.uncertainty
-            self.scores[corresponding_video] = rating.score
+            corresponding_video = entity_to_video[rating["uid"]]
+            self.score_uncertainties[corresponding_video] = rating["uncertainty"]
+            self.scores[corresponding_video] = rating["score"]
 
     @property
     def theta(self):

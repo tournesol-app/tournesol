@@ -350,11 +350,34 @@ class AccountsRegisterTestCase(TestCase):
 
 class AccountsResetPasswordTestCase(TestCase):
     """
-    TestCase of the /accounts/reset-password/ API.
+    TestCase of the two API:
 
-    Even if this API is provided by a third-party package, its default
-    behaviour has been customized, and thus needs to be tested.
+        /accounts/reset-password/ and
+        /accounts/send-reset-password-link/
+
+    Even if these APIs are provided by a third-party package, their default
+    behaviours has been customized, and thus need to be tested.
     """
+
+    def test_send_reset_password_link_is_non_case_sensitive(self):
+        """
+        An anonymous user can ask for a reset password link by using a
+        lower/upper variant of its email address.
+        """
+        client = APIClient()
+        UserFactory(
+            email="non-sensitive@example.org",
+            is_active=True,
+        )
+
+        resp = client.post(
+            "/accounts/send-reset-password-link/",
+            data={
+                "login": "NON-sensitive@example.org",
+            },
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 200, resp.content)
 
     @patch("rest_registration.utils.signers.DataSigner.verify", new=lambda x: True)
     def test_reset_password_force_user_activation(self):

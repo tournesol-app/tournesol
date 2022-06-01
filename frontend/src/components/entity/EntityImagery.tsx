@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { Avatar, Box } from '@mui/material';
-import { TypeEnum } from 'src/services/openapi';
-import { convertDurationToClockDuration } from 'src/utils/video';
-import { RelatedEntityObject } from 'src/utils/types';
+import { Link as RouterLink } from 'react-router-dom';
 
-const PlayerWrapper = React.forwardRef(function PlayerWrapper(
+import { Avatar, Box } from '@mui/material';
+
+import { useCurrentPoll } from 'src/hooks';
+import { TypeEnum } from 'src/services/openapi';
+import { JSONValue, RelatedEntityObject } from 'src/utils/types';
+import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
+
+export const DurationWrapper = React.forwardRef(function DurationWrapper(
   {
     duration,
     children,
@@ -26,22 +30,19 @@ const PlayerWrapper = React.forwardRef(function PlayerWrapper(
       height="100%"
       onClick={() => setIsDurationVisible(false)}
       ref={ref}
-      sx={{
-        minWidth: '240px',
-        minHeight: '135px',
-      }}
     >
       {isDurationVisible && formattedDuration && (
         <Box
           position="absolute"
           bottom={0}
           right={0}
-          bgcolor="rgba(0,0,0,0.5)"
           color="#fff"
+          bgcolor="rgba(0,0,0,0.5)"
           px={1}
           fontFamily="system-ui, arial, sans-serif"
           fontSize="0.8em"
           fontWeight="bold"
+          lineHeight={1.5}
           sx={{ pointerEvents: 'none' }}
         >
           {formattedDuration}
@@ -68,7 +69,7 @@ export const VideoPlayer = ({
       light
       width="100%"
       height="100%"
-      wrapper={PlayerWrapper}
+      wrapper={DurationWrapper}
       duration={duration}
       controls={controls}
     />
@@ -78,30 +79,63 @@ export const VideoPlayer = ({
 const EntityImagery = ({
   entity,
   compact = false,
+  config = {},
 }: {
   entity: RelatedEntityObject;
   compact?: boolean;
+  config?: { [k: string]: { [k: string]: JSONValue } };
 }) => {
-  if (entity.type === TypeEnum.VIDEO) {
-    const player = (
-      <VideoPlayer
-        videoId={entity.metadata.video_id}
-        duration={entity.metadata.duration}
-      />
-    );
+  const { baseUrl } = useCurrentPoll();
+  const videoConfig = config[TypeEnum.VIDEO] ?? {};
 
-    if (compact) {
-      return (
-        <Box
-          sx={{
-            aspectRatio: '16 / 9',
-          }}
-        >
-          {player}
-        </Box>
-      );
-    }
-    return player;
+  if (entity.type === TypeEnum.VIDEO) {
+    return (
+      <>
+        {/* Display the video player by default, unless otherwise configured. */}
+        {videoConfig?.displayPlayer ?? true ? (
+          <Box
+            sx={{
+              aspectRatio: '16 / 9',
+              width: '100%',
+            }}
+          >
+            <VideoPlayer
+              videoId={entity.metadata.video_id}
+              duration={entity.metadata.duration}
+            />
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            alignItems="center"
+            bgcolor="black"
+            width="100%"
+            // prevent the RouterLink to add few extra pixels
+            lineHeight={0}
+            sx={{
+              '& > img': {
+                flex: 1,
+              },
+            }}
+          >
+            <RouterLink
+              to={`${baseUrl}/entities/${entity.uid}`}
+              className="full-width"
+            >
+              <DurationWrapper duration={entity.metadata.duration}>
+                <img
+                  className="full-width"
+                  src={`https://i.ytimg.com/vi/${idFromUid(
+                    entity.uid
+                  )}/mqdefault.jpg`}
+                  alt={entity.metadata.name}
+                />
+              </DurationWrapper>
+            </RouterLink>
+          </Box>
+        )}
+      </>
+    );
   }
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {
     return (
@@ -119,15 +153,17 @@ const EntityImagery = ({
         {compact ? (
           <img src={entity.metadata.image_url} alt={entity.metadata.name} />
         ) : (
-          <Avatar
-            alt={entity?.metadata?.name || ''}
-            src={entity?.metadata?.image_url || ''}
-            sx={{
-              width: '60px',
-              height: '60px',
-              m: 2,
-            }}
-          />
+          <RouterLink to={`${baseUrl}/entities/${entity.uid}`}>
+            <Avatar
+              alt={entity?.metadata?.name || ''}
+              src={entity?.metadata?.image_url || ''}
+              sx={{
+                width: '60px',
+                height: '60px',
+                m: 2,
+              }}
+            />
+          </RouterLink>
         )}
       </Box>
     );

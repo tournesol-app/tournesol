@@ -13,24 +13,28 @@ import {
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
+import { TypeEnum } from 'src/services/openapi';
+import { ActionList, JSONValue, RelatedEntityObject } from 'src/utils/types';
+
 import EntityCardTitle from './EntityCardTitle';
+import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
 import EntityMetadata from './EntityMetadata';
 import { entityCardMainSx } from './style';
-import { RelatedEntityObject, ActionList } from 'src/utils/types';
-import EntityCardScores from './EntityCardScores';
-import { TypeEnum } from 'src/services/openapi';
 
 const EntityCard = ({
   entity,
   actions = [],
   settings = [],
   compact = false,
+  entityTypeConfig,
 }: {
   entity: RelatedEntityObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
+  // Configuration specific to the entity type.
+  entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -55,8 +59,21 @@ const EntityCard = ({
 
   return (
     <Grid container sx={entityCardMainSx}>
-      <Grid item xs={12} sm={compact ? 12 : 'auto'}>
-        <EntityImagery entity={entity} compact={compact} />
+      <Grid
+        item
+        xs={12}
+        sm={compact ? 12 : 'auto'}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          ...(compact ? {} : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+        }}
+      >
+        <EntityImagery
+          entity={entity}
+          compact={compact}
+          config={entityTypeConfig}
+        />
       </Grid>
       <Grid
         item
@@ -69,7 +86,11 @@ const EntityCard = ({
         container
         direction="column"
       >
-        <EntityCardTitle title={entity.metadata.name} compact={compact} />
+        <EntityCardTitle
+          uid={entity.uid}
+          title={entity.metadata.name}
+          compact={compact}
+        />
         <EntityMetadata entity={entity} />
         {displayEntityCardScores()}
       </Grid>
@@ -80,6 +101,7 @@ const EntityCard = ({
         sx={{
           display: 'flex',
           alignItems: 'end',
+          justifyContent: 'space-between',
           flexDirection: 'column',
           [theme.breakpoints.down('sm')]: {
             flexDirection: 'row',

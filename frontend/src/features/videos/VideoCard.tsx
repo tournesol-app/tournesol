@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
 import {
   Grid,
@@ -22,8 +23,10 @@ import VideoCardScores from './VideoCardScores';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import { entityCardMainSx } from 'src/components/entity/style';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
-import { VideoPlayer } from 'src/components/entity/EntityImagery';
+import { DurationWrapper } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
+import { useCurrentPoll } from 'src/hooks';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   youtube_complements: {
@@ -55,7 +58,6 @@ function VideoCard({
   actions = [],
   settings = [],
   compact = false,
-  controls = true,
   personalScore,
   showPlayer = true,
 }: {
@@ -63,13 +65,14 @@ function VideoCard({
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
-  controls?: boolean;
   personalScore?: number;
   showPlayer?: boolean;
 }) {
-  const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
+
+  const { t } = useTranslation();
+  const { baseUrl } = useCurrentPoll();
 
   const videoId = videoIdFromEntity(video);
 
@@ -85,13 +88,40 @@ function VideoCard({
           item
           xs={12}
           sm={compact ? 12 : 'auto'}
-          sx={{ aspectRatio: '16 / 9', width: '240px !important' }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            ...(compact
+              ? {}
+              : { minWidth: '240px', maxWidth: { sm: '240px' } }),
+          }}
         >
-          <VideoPlayer
-            videoId={videoId}
-            duration={video.duration}
-            controls={controls}
-          />
+          <Box
+            display="flex"
+            alignItems="center"
+            bgcolor="black"
+            width="100%"
+            // prevent the RouterLink to add few extra pixels
+            lineHeight={0}
+            sx={{
+              '& > img': {
+                flex: 1,
+              },
+            }}
+          >
+            <RouterLink
+              to={`${baseUrl}/entities/${UID_YT_NAMESPACE}${videoId}`}
+              className="full-width"
+            >
+              <DurationWrapper duration={video.duration || undefined}>
+                <img
+                  className="full-width"
+                  src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
+                  alt={video.name}
+                />
+              </DurationWrapper>
+            </RouterLink>
+          </Box>
         </Grid>
       )}
       <Grid
@@ -105,7 +135,7 @@ function VideoCard({
         container
         direction="column"
       >
-        <EntityCardTitle title={video.name} compact={compact} />
+        <EntityCardTitle uid={video.uid} title={video.name} compact={compact} />
         <VideoMetadata
           views={video.views}
           publicationDate={video.publication_date}
@@ -122,6 +152,7 @@ function VideoCard({
         sx={{
           display: 'flex',
           alignItems: 'end',
+          justifyContent: 'space-between',
           flexDirection: 'column',
           [theme.breakpoints.down('sm')]: {
             flexDirection: 'row',
@@ -190,7 +221,12 @@ export const RowVideoCard = ({ video }: { video: VideoObject }) => {
         />
       </Box>
       <Box flex={1}>
-        <EntityCardTitle title={video.name} titleMaxLines={1} fontSize="1em" />
+        <EntityCardTitle
+          uid={video.uid}
+          title={video.name}
+          titleMaxLines={1}
+          fontSize="1em"
+        />
         <VideoMetadata
           views={video.views}
           uploader={video.uploader}

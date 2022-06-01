@@ -2,6 +2,14 @@
   "components": {
     "filtersButton": "filtres"
   },
+  "personalCriteriaScores": {
+    "chartTooltip": "Score personnel: {{score}}",
+    "reasonWhyItCannotBeActivated": {
+      "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
+      "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
+    },
+    "activatePersonalScores": "Afficher les scores personnels"
+  },
   "dialogBox": {
     "continue": "continuer"
   },
@@ -245,7 +253,8 @@
   "stats": {
     "activeUsers": "Utilisateurs actifs",
     "comparisons": "Comparaisons",
-    "ratedVideos": "Vidéos notées"
+    "ratedVideos": "Vidéos notées",
+    "ratedCandidates": "Candidats notés"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
@@ -292,7 +301,7 @@
     "donateByPaypal": "Par PayPal",
     "publicDatabase": "Base de données publique",
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
-    "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{videoCount}} vidéos. ❤️",
+    "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
     "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
@@ -343,6 +352,12 @@
       "criteriaScores": {
         "title": "Scores par critère"
       }
+    },
+    "generic": {
+      "compare": "Comparer"
+    },
+    "video": {
+      "description": "Description (provenant de YouTube)"
     }
   },
   "entityNotFound": {
@@ -377,10 +392,7 @@
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité.",
-    "videos": {
-      "start": "Commencer"
-    }
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -461,7 +473,7 @@
     "diversity_inclusion": "'Diversité et inclusion' vise à identifier les contenus qui favorisent une vision plus diverse et inclusive de la grande diversité des ethnies, des croyances et des préférences de l'humanité.",
     "better_habits": "'Encourage à de meilleures habitudes' vise à mettre en valeur les contenus qui incitent et motivent les spectateurs à s'améliorer en adoptant de meilleures habitudes plus saines pour soi, pour la société ou pour la planète.",
     "backfire_risk": "'Résistant aux retours négatifs/Résiste aux mauvaises interprétations' vise à mesurer la probabilité qu'un contenu créé un malentendu avec le spectateur: plus le risque que l'utilisateur comprenne mal ou réagisse négativement aux informations présentées est élevé, plus ce critère sera noté haut.",
-    "reliability": "'Reliable & not misleading' vise à mesurer la fiabilité des informations présentées dans un contenu et/ou à prendre la mesure dans laquelle ces informations peuvent être trompeuses."
+    "reliability": "'Fiable & non trompeur' vise à mesurer la fiabilité des informations présentées dans un contenu et/ou à prendre la mesure dans laquelle ces informations peuvent être trompeuses."
   },
   "language": {
     "af": "Afrikaans",

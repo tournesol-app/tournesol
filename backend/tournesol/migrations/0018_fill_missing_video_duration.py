@@ -1,7 +1,9 @@
 import logging
 from django.db import migrations
 from django.utils import timezone
+from django.utils.dateparse import parse_duration
 from tournesol.utils.api_youtube import get_video_metadata, VideoNotFound
+
 
 def refresh_youtube_metadata(video):
     """
@@ -27,12 +29,15 @@ def refresh_youtube_metadata(video):
         "publication_date",
         "uploader",
         "views",
-        "duration",
-        "metadata_timestamp",
     ]
     for f in fields:
         setattr(video, f, metadata[f])
-    logging.info("Saving metadata for video %s. Duration: %s", video.video_id, video.duration)
+
+    video.duration = parse_duration(str(metadata["duration"]))
+    video.metadata_timestamp = timezone.now()
+    logging.info(
+        "Saving metadata for video %s. Duration: %s", video.video_id, video.duration
+    )
     video.save(update_fields=fields)
 
 
@@ -48,7 +53,7 @@ def forward_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournesol', '0017_video_views_as_bigint'),
+        ("tournesol", "0017_video_views_as_bigint"),
     ]
 
     operations = [

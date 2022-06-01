@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
-from django.db.models import Avg, QuerySet
+from django.db.models import Avg, F, QuerySet
 
 from tournesol.models import (
     ContributorRatingCriteriaScore,
@@ -12,7 +10,8 @@ from tournesol.models import (
     Poll,
 )
 from tournesol.suggestions.suggested_user import SuggestedUser
-from tournesol.suggestions.suggested_video import SuggestedVideo, SuggestedUserVideo
+from tournesol.suggestions.suggested_user_video import SuggestedUserVideo
+from tournesol.suggestions.suggested_video import SuggestedVideo
 
 
 class CompleteGraph:
@@ -21,14 +20,12 @@ class CompleteGraph:
     LAMBDA_THRESHOLD = 0.5
     MIN_SCALING_ACCURACY = 0.5
 
-    def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
+    def __init__(self, local_poll: Poll, local_criteria):
         self.local_user_mean: float = 0
-        self.video_comparison_reference = SuggestedVideo(None)
         self.dirty = True
         self.edges = []
         self.graph = {}
         self.NEW_NODE_CONNECTION_SCORE = 0.5
-        self._local_user = local_user
         self._nodes = []
         self.uid_to_index = {}
         self._local_poll = local_poll
@@ -57,8 +54,6 @@ class CompleteGraph:
 
         node_b.nb_comparison_with[node_a.uid] += 1
         node_a.nb_comparison_with[node_b.uid] += 1
-        node_a.comparison_nb += 1
-        node_b.comparison_nb += 1
 
         if node_a <= node_b:
             self.edges.append((node_a, node_b))
@@ -78,21 +73,19 @@ class CompleteGraph:
         the video scores otherwise
         """
         if self.dirty:
-            entity_criteria_scores: QuerySet = EntityCriteriaScore.default_scores().filter(
-                comparison__poll__name=self._local_poll.name
-            ).filter(criteria=self._local_criteria)
+            entity_criteria_scores: QuerySet = (
+                EntityCriteriaScore.default_scores().filter(
+                    poll__name=self._local_poll.name,
+                    criteria=self._local_criteria
+                )
+                .values("uncertainty", "score", uid=F("entity__uid"))
+            )
             for ecs in entity_criteria_scores:
-                act_vid = self._nodes[self.uid_to_index[ecs.entity.uid]]
-                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
-                act_vid._global_video_score_uncertainty = ecs.uncertainty
-                act_vid._global_video_score = ecs.score
-                for n in self._nodes:
-                    act_vid.video2_score[n] = (
-                            self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
-                    )
-
-    def prepare_for_sorting(self, first_video_id: str = ""):
-        self.video_comparison_reference.uid = first_video_id
+                act_vid = self._nodes[self.uid_to_index[ecs["uid"]]]
+                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs["uncertainty"]
+                act_vid.global_video_score_uncertainty = ecs["uncertainty"]
+                act_vid.global_video_score = ecs["score"]
+            self.dirty = False
 
 
 class Graph(CompleteGraph):
@@ -117,20 +110,38 @@ class Graph(CompleteGraph):
     distance_matrix: dict[SuggestedVideo, dict[SuggestedVideo, int]]
     similarity_matrix: np.array
 
-    def __init__(self, local_user: Optional[SuggestedUser], local_poll: Poll, local_criteria):
-        super().__init__(local_user, local_poll, local_criteria)
+    def __init__(self, local_user: SuggestedUser, local_poll: Poll, local_criteria):
+        super().__init__(local_poll, local_criteria)
+        self._local_user = local_user
 
     def add_node(self, new_node: SuggestedVideo):
         if new_node.uid not in self.uid_to_index:
-            actual_new_node = SuggestedUserVideo(self.video_comparison_reference, new_node, self._local_user)
+            actual_new_node = SuggestedUserVideo(
+                new_node,
+                self._local_user
+            )
             self.uid_to_index[actual_new_node.uid] = len(self.nodes)
             self._nodes.append(actual_new_node)
             self.graph[actual_new_node] = []
-            for n in self._nodes:
-                n.nb_comparison_with[actual_new_node.uid] = 0
-                actual_new_node.nb_comparison_with[n.uid] = 0
         else:
             print("Warning, trying to insert already present node")
+
+    def add_edge(self, node_a: SuggestedVideo, node_b: SuggestedVideo):
+        if node_a not in self._nodes:
+            self.add_node(node_a)
+        if node_b not in self._nodes:
+            self.add_node(node_b)
+
+        if node_a <= node_b:
+            self.edges.append((node_a, node_b))
+            self.graph[node_a].append(node_b)
+            self.graph[node_b].append(node_a)
+        else:
+            self.edges.append((node_b, node_a))
+            self.graph[node_a].append(node_b)
+            self.graph[node_b].append(node_a)
+
+        self.dirty = True
 
     def build_adjacency_matrix(self):
         self.adjacency_matrix = np.zeros((len(self.nodes), len(self.nodes)))
@@ -205,7 +216,6 @@ class Graph(CompleteGraph):
         while len(unvisited) > 0:
             future_visits = set()
             for act_vid in waiting_for_visit:
-                # act_vid = waiting_for_visit.pop()
                 visited.append(act_vid)
                 unvisited.remove(act_vid)
                 act_graph.add_node(act_vid)
@@ -246,11 +256,17 @@ class Graph(CompleteGraph):
             self.build_adjacency_matrix()
             self.build_distance_matrix()
             self.build_similarity_matrix()
-            self.local_user_scaling = ContributorScaling.objects \
-                .filter(user__id=self._local_user.uid) \
-                .filter(poll__name=self._local_poll.name) \
-                .filter(criteria=self._local_criteria) \
-                .get()
+            try:
+                self.local_user_scaling = ContributorScaling.objects \
+                    .filter(user__id=self._local_user.uid) \
+                    .filter(poll__name=self._local_poll.name) \
+                    .filter(criteria=self._local_criteria) \
+                    .get()
+            except ContributorScaling.DoesNotExist:
+                self.local_user_scaling = ContributorScaling(
+                    scale_uncertainty=0,
+                    translation_uncertainty=0
+                )
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
                         contributor_rating__user__id=self._local_user.uid)
@@ -281,10 +297,10 @@ class Graph(CompleteGraph):
                             and vb in scaling_factor_increasing_videos
                     ):
                         va.video1_score = 1
-                        va.video2_score[vb] = 1
+                        va._graph_sparsity_score = 1
                     else:
                         va.video1_score = 0
-                        va.video2_score[vb] = 0
+                        va._graph_sparsity_score = 0
         # Once the scaling factor is high enough, check what video should gain
         # information being compared by the user
         else:
@@ -304,11 +320,11 @@ class Graph(CompleteGraph):
                         if eigenvalues[1] > self.LAMBDA_THRESHOLD:
                             u_index = sg.uid_to_index[vb.uid]
                             v_index = sg.uid_to_index[va.uid]
-                            va.video2_score[vb] = sg.similarity_matrix[u_index, v_index]
+                            va._graph_sparsity_score = sg.similarity_matrix[u_index, v_index]
                         elif va.uid not in sg.uid_to_index:
-                            va.video2_score[vb] = 1
+                            va._graph_sparsity_score = 1
                         else:
-                            va.video2_score[vb] = 0
+                            va._graph_sparsity_score = 0
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
                         va.beta[vb] = user.delta_theta.get(vb, actual_scaling_accuracy) + \
@@ -319,5 +335,4 @@ class Graph(CompleteGraph):
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
-                    for va in self.nodes:
-                        va.video2_score[vb] += va.beta[vb] / max_beta
+                    vb.suggestibility_normalization = max(max_beta, 1)

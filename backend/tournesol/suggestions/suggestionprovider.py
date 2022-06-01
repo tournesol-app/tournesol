@@ -1,8 +1,10 @@
-from django.db.models import Q, QuerySet
+from typing import Optional
+
+from django.db.models import F, Q, QuerySet
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
-from tournesol.suggestions.graph import Graph, CompleteGraph
+from tournesol.suggestions.graph import CompleteGraph, Graph
 from tournesol.suggestions.suggested_user import SuggestedUser as RecommendationUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
 
@@ -13,7 +15,6 @@ class SuggestionProvider:
     """
     # Entity to specific video structure dictionary
     _entity_to_video: dict[str, SuggestedVideo]
-    _comparison_reference_video: SuggestedVideo
     # Graph containing all videos and existing comparisons, used to get the video preferences
     _complete_graph: CompleteGraph
     # Dictionary linking a user to its comparison graph, used to get its information gain
@@ -25,7 +26,6 @@ class SuggestionProvider:
         It must not be called before the DB is ready, as it will call it while constructing the
         complete graph
         """
-        self._comparison_reference_video = SuggestedVideo(None)
         self._entity_to_video = {}
         self._user_specific_graphs = {}
         self.poll = actual_poll
@@ -33,35 +33,31 @@ class SuggestionProvider:
         # build complete graph
         comparison_queryset: QuerySet = ComparisonCriteriaScore.objects \
             .filter(comparison__poll__name=self.poll.name) \
-            .filter(criteria=self.criteria)
-        self._complete_graph = Graph(None, self.poll, self.criteria)
+            .filter(criteria=self.criteria) \
+            .values(uid1=F('comparison__entity_1__uid'), uid2=F('comparison__entity_2__uid'))
+        self._complete_graph = CompleteGraph(self.poll, self.criteria)
 
         for c in comparison_queryset:
             # Checks if each compared Entity has already been translated to a SuggestedVideo object
             # and translates it otherwise
-            if c.comparison.entity_1.uid not in self._entity_to_video.keys():
-                self._entity_to_video[c.comparison.entity_1.uid] = SuggestedVideo(
-                    self._comparison_reference_video, from_entity=c.comparison.entity_1
-                )
-
+            uid1 = c["uid1"]
+            uid2 = c["uid2"]
+            if uid1 not in self._entity_to_video:
+                self._entity_to_video[uid1] = SuggestedVideo(from_uid=uid1)
                 self._complete_graph.add_node(
-                    self._entity_to_video[c.comparison.entity_1.uid]
+                    self._entity_to_video[uid1]
                 )
 
-            if c.comparison.entity_2.uid not in self._entity_to_video.keys():
-                self._entity_to_video[c.comparison.entity_2.uid] = SuggestedVideo(
-                    self._comparison_reference_video, from_entity=c.comparison.entity_2
-                )
-
+            if uid2 not in self._entity_to_video:
+                self._entity_to_video[uid2] = SuggestedVideo(from_uid=uid2)
                 self._complete_graph.add_node(
-                    self._entity_to_video[c.comparison.entity_2.uid]
+                    self._entity_to_video[uid2]
                 )
 
             self._complete_graph.add_edge(
-                self._entity_to_video[c.comparison.entity_1.uid],
-                self._entity_to_video[c.comparison.entity_2.uid],
+                self._entity_to_video[uid1],
+                self._entity_to_video[uid2],
             )
-        self._complete_graph.compute_offline_parameters([])
 
         # create required user graphs (none at first in fact)
 
@@ -75,11 +71,11 @@ class SuggestionProvider:
         req_entities = Entity.objects \
             .filter(Q(comparisons_entity_1__poll__name=self.poll.name) |
                     Q(comparisons_entity_2__poll__name=self.poll.name))\
-            .filter(Q(comparisons_entity_1__user__is_staff=True) |
-                    Q(comparisons_entity_2__user__is_staff=True))\
-            .distinct()
-
-        return list(map(lambda entity: self._entity_to_video[entity.uid], req_entities))
+            .filter(Q(comparisons_entity_1__user__in=User.supertrusted_seed_users()) |
+                    Q(comparisons_entity_2__user__in=User.supertrusted_seed_users()))\
+            .distinct() \
+            .values_list("uid", flat=True)
+        return [self._entity_to_video[uid] for uid in req_entities]
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
         """
@@ -97,6 +93,7 @@ class SuggestionProvider:
         """
         # for requests => look at ml->inputs
         scale_aug_videos = self._get_user_comparability_augmenting_videos()
+        self._complete_graph.compute_offline_parameters([])
         for g in self._user_specific_graphs.values():
             # Will be cached, do at registration
             g.compute_offline_parameters(scale_aug_videos)
@@ -117,13 +114,17 @@ class SuggestionProvider:
         # build user graph
         query: QuerySet = (
             ComparisonCriteriaScore.objects
-                                   .filter(comparison__poll__name=self.poll.name)
-                                   .filter(criteria=self.criteria)
-                                   .filter(comparison__user__email=new_user.email)
+            .filter(comparison__poll__name=self.poll.name)
+            .filter(criteria=self.criteria)
+            .filter(comparison__user=new_user)
+            .values(
+                uid1=F("comparison__entity_1__uid"),
+                uid2=F("comparison__entity_2__uid"),
+            )
         )
         for c in query:
-            va = self._entity_to_video[c.comparison.entity_1.uid]
-            vb = self._entity_to_video[c.comparison.entity_2.uid]
+            va = self._entity_to_video[c["uid1"]]
+            vb = self._entity_to_video[c["uid2"]]
             self._user_specific_graphs[new_user.id].add_edge(va, vb)
 
     def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
@@ -132,7 +133,7 @@ class SuggestionProvider:
         up to date
         """
         self._complete_graph.add_edge(va, vb)
-        if user.id in self._user_specific_graphs.keys():
+        if user.id in self._user_specific_graphs:
             self._user_specific_graphs[user.id].add_edge(va, vb)
 
     def get_first_video_recommendation(
@@ -145,19 +146,18 @@ class SuggestionProvider:
         nb_video_required videos
         """
         # Lazily load the user graph
-        if user.id not in self._user_specific_graphs.keys():
+        if user.id not in self._user_specific_graphs:
             self.register_new_user(user)
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
-        self._comparison_reference_video.uid = ""
-        user_graph.prepare_for_sorting()
+        self._complete_graph.compute_offline_parameters([])
 
         # Prepare the set of videos to sort, taking the videos present in the graph
         # and append the ones that are not yet compared by the user
-        considered_vid_list = self._prepare_video_list(user)
+        considered_vid_list = self._prepare_video_list(user, None)
 
         max_vid_pref = 0
         # Todo : take into account the rate later list / already seen videos ?
@@ -166,6 +166,7 @@ class SuggestionProvider:
             if v.user_pref > max_vid_pref:
                 max_vid_pref = v.user_pref
 
+        # todo explain that
         for i in range(nb_video_required):
             act_preference_goal = (nb_video_required - i) / (nb_video_required + 1) * max_vid_pref
             for v in considered_vid_list:
@@ -173,7 +174,6 @@ class SuggestionProvider:
                 if act_user_pref >= act_preference_goal and v not in result:
                     result.append(v)
                     break
-        result.reverse()
         return result
 
     def get_second_video_recommendation(
@@ -187,19 +187,23 @@ class SuggestionProvider:
         comparison with respect to first_video and returning nb_video_required videos
         """
         # Lazily load the user graphs
-        if user.id not in self._user_specific_graphs.keys():
+        if user.id not in self._user_specific_graphs:
             self.register_new_user(user)
         result = []
 
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
-        self._comparison_reference_video.uid = first_video_id
-        user_graph.prepare_for_sorting(first_video_id)
+        self._complete_graph.compute_offline_parameters([])
+
+        if first_video_id not in self._complete_graph.uid_to_index:
+            return []
+
+        first_video = self._complete_graph.nodes[self._complete_graph.uid_to_index[first_video_id]]
 
         # Prepare the set of videos to sort, taking the videos present in the graph and append
         # the ones that are not yet compared by the user
-        considered_vid_list = self._prepare_video_list(user)
+        considered_vid_list = self._prepare_video_list(user, first_video)
 
         max_vid_pref = 0
         for v in considered_vid_list:
@@ -218,10 +222,9 @@ class SuggestionProvider:
                 ):
                     result.append(v)
                     break
-        result.reverse()
         return result
 
-    def _prepare_video_list(self, user: User):
+    def _prepare_video_list(self, user: User, first_video: Optional[SuggestedVideo]):
         """
         Function used in the video recommendations, to prepare the set of videos to choose the
         recommendation from
@@ -234,5 +237,8 @@ class SuggestionProvider:
 
         considered_vid.update(tmp)
         considered_vid_list = list(considered_vid)
-        considered_vid_list.sort(reverse=True)
+        if first_video is not None:
+            considered_vid_list.sort(reverse=True, key=lambda x: x.score_computation(first_video))
+        else:
+            considered_vid_list.sort(reverse=True, key=lambda x: x.video1_score)
         return considered_vid_list
