@@ -4,6 +4,7 @@ from typing import Dict, Iterable, List, Type
 
 from django.utils import timezone
 from django.utils.functional import cached_property
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
 from tournesol import models
@@ -36,7 +37,24 @@ class EntityType(ABC):
         self.instance = entity
 
     @classmethod
-    def get_allowed_filter_funcs(cls) -> Dict:
+    def validate_meta_filter_field(cls, field: str) -> None:
+        """
+        Raise `ValidationError` if `field` is invalid.
+
+        A field is considered invalid if it contains the special string "__".
+        This string is used by the Django's ORM to follow foreign keys, to
+        navigate through fields' sub-properties and to invoke field lookups.
+
+        Forbidding its usage prevents the users to trigger unexpected Django's
+        ORM features, time-consuming or CPU heavy operations.
+        """
+        if "__" in field:
+            raise ValidationError(
+                f'The metatada field `{field}` cannot contain the special string "__".'
+            )
+
+    @classmethod
+    def get_allowed_meta_filter_funcs(cls) -> Dict:
         """
         Return a `dict` representing functions allowed in the metadata filter.
 
@@ -46,7 +64,7 @@ class EntityType(ABC):
         return cls.metadata_allowed_filter_func
 
     @classmethod
-    def get_allowed_filter_lookups(cls) -> List[str]:
+    def get_allowed_meta_filter_lookups(cls) -> List[str]:
         """
         Return a `list` of lookups allowed in the metadata filter.
 
@@ -56,31 +74,31 @@ class EntityType(ABC):
         return cls.metadata_allowed_filter_lookups
 
     @classmethod
-    def _get_filter_func(cls, asked_func: str):
+    def _get_meta_filter_func(cls, asked_func: str):
         """
         If `asked_func` is present in the allowed metadata filter functions,
         return the matching callable, return `None` instead.
         """
-        allowed_funcs = cls.get_allowed_filter_funcs()
+        allowed_funcs = cls.get_allowed_meta_filter_funcs()
 
         if asked_func in allowed_funcs:
             return allowed_funcs[asked_func]
         return None
 
     @classmethod
-    def cast_filter_value(cls, value, asked_func):
+    def cast_meta_filter_value(cls, value, asked_func):
         """
         If `asked_func` is present in the allowed metadata filter functions,
         call it with value as a positional argument and return the result.
         """
-        func = cls._get_filter_func(asked_func)
+        func = cls._get_meta_filter_func(asked_func)
 
         if func:
             return func(value)
         return value
 
     @classmethod
-    def get_filter_operation(cls, operation: str) -> Iterable[str]:
+    def get_meta_filter_operation(cls, operation: str) -> Iterable[str]:
         """
         Return a field, its potential lookup, and its potential cast function
         from an `operation` string.
@@ -130,18 +148,11 @@ class EntityType(ABC):
         return field, lookup, func
 
     @classmethod
-    def filter_date_lte(cls, qs, dt):
-        return qs.filter(add_time__lte=dt)
-
-    @classmethod
-    def filter_date_gte(cls, qs, dt):
-        return qs.filter(add_time__gte=dt)
-
-    @classmethod
     def filter_metadata(cls, qst, filters):
         for operation, values in filters:
 
-            field, lookup, func = cls.get_filter_operation(operation)
+            field, lookup, func = cls.get_meta_filter_operation(operation)
+            cls.validate_meta_filter_field(field)
 
             if len(values) > 1:
                 qst = qst.filter(**{"metadata__" + field + "__in": values})
@@ -149,17 +160,25 @@ class EntityType(ABC):
                 qstring = field
 
                 # The lookup must be explicitly allowed to be applied.
-                if lookup and lookup in cls.get_allowed_filter_lookups():
+                if lookup and lookup in cls.get_allowed_meta_filter_lookups():
                     qstring += f"__{lookup}"
 
                 filtered_value = values[0]
                 # The function must be explicitly allowed to be applied.
                 if func:
-                    filtered_value = cls.cast_filter_value(filtered_value, func)
+                    filtered_value = cls.cast_meta_filter_value(filtered_value, func)
 
                 qst = qst.filter(**{"metadata__" + qstring: filtered_value})
 
         return qst
+
+    @classmethod
+    def filter_date_lte(cls, qs, dt):
+        return qs.filter(add_time__lte=dt)
+
+    @classmethod
+    def filter_date_gte(cls, qs, dt):
+        return qs.filter(add_time__gte=dt)
 
     @classmethod
     @abstractmethod
