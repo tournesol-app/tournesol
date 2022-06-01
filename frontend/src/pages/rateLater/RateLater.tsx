@@ -7,11 +7,7 @@ import Typography from '@mui/material/Typography';
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { ApiError, VideoRateLater } from 'src/services/openapi';
-import {
-  CompareNowAction,
-  RemoveFromRateLater,
-  AnalysisPageLink,
-} from 'src/utils/action';
+import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
 import {
   ContentBox,
@@ -108,7 +104,6 @@ const RateLaterPage = () => {
   const videos = rateLaterList.map((r) => r.video);
   const rateLaterPageActions = [
     CompareNowAction,
-    AnalysisPageLink,
     RemoveFromRateLater(loadList),
   ];
 
