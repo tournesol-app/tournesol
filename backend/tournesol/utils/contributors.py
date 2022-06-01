@@ -65,7 +65,7 @@ def get_top_public_contributors(
             JOIN core_user
               ON core_user.id = tournesol_comparison.user_id
 
-            -- this JOIN allows to filter by public ratings for the entity_1 
+            -- this JOIN allows to filter by public ratings for the entity_1
             -- the poll has been already filtered, no need to filter it again
             JOIN tournesol_contributorrating AS rating_1
               ON rating_1.entity_id = tournesol_comparison.entity_1_id
