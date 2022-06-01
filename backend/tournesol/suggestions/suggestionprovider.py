@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db.models import Q, QuerySet
+from django.db.models import F, Q, QuerySet
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity, Poll
@@ -33,33 +33,30 @@ class SuggestionProvider:
         # build complete graph
         comparison_queryset: QuerySet = ComparisonCriteriaScore.objects \
             .filter(comparison__poll__name=self.poll.name) \
-            .filter(criteria=self.criteria)
+            .filter(criteria=self.criteria) \
+            .values(uid1=F('comparison__entity_1__uid'), uid2=F('comparison__entity_2__uid'))
         self._complete_graph = CompleteGraph(self.poll, self.criteria)
 
         for c in comparison_queryset:
             # Checks if each compared Entity has already been translated to a SuggestedVideo object
             # and translates it otherwise
-            if c.comparison.entity_1.uid not in self._entity_to_video:
-                self._entity_to_video[c.comparison.entity_1.uid] = SuggestedVideo(
-                    from_entity=c.comparison.entity_1
-                )
-
+            uid1 = c["uid1"]
+            uid2 = c["uid2"]
+            if uid1 not in self._entity_to_video:
+                self._entity_to_video[uid1] = SuggestedVideo(from_uid=uid1)
                 self._complete_graph.add_node(
-                    self._entity_to_video[c.comparison.entity_1.uid]
+                    self._entity_to_video[uid1]
                 )
 
-            if c.comparison.entity_2.uid not in self._entity_to_video:
-                self._entity_to_video[c.comparison.entity_2.uid] = SuggestedVideo(
-                    from_entity=c.comparison.entity_2
-                )
-
+            if uid2 not in self._entity_to_video:
+                self._entity_to_video[uid2] = SuggestedVideo(from_uid=uid2)
                 self._complete_graph.add_node(
-                    self._entity_to_video[c.comparison.entity_2.uid]
+                    self._entity_to_video[uid2]
                 )
 
             self._complete_graph.add_edge(
-                self._entity_to_video[c.comparison.entity_1.uid],
-                self._entity_to_video[c.comparison.entity_2.uid],
+                self._entity_to_video[uid1],
+                self._entity_to_video[uid2],
             )
 
         # create required user graphs (none at first in fact)
@@ -74,11 +71,11 @@ class SuggestionProvider:
         req_entities = Entity.objects \
             .filter(Q(comparisons_entity_1__poll__name=self.poll.name) |
                     Q(comparisons_entity_2__poll__name=self.poll.name))\
-            .filter(Q(comparisons_entity_1__user__is_staff=True) |
-                    Q(comparisons_entity_2__user__is_staff=True))\
-            .distinct()
-
-        return list(map(lambda entity: self._entity_to_video[entity.uid], req_entities))
+            .filter(Q(comparisons_entity_1__user__in=User.supertrusted_seed_users()) |
+                    Q(comparisons_entity_2__user__in=User.supertrusted_seed_users()))\
+            .distinct() \
+            .values_list("uid", flat=True)
+        return [self._entity_to_video[uid] for uid in req_entities]
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
         """
@@ -117,13 +114,17 @@ class SuggestionProvider:
         # build user graph
         query: QuerySet = (
             ComparisonCriteriaScore.objects
-                                   .filter(comparison__poll__name=self.poll.name)
-                                   .filter(criteria=self.criteria)
-                                   .filter(comparison__user=new_user)
+            .filter(comparison__poll__name=self.poll.name)
+            .filter(criteria=self.criteria)
+            .filter(comparison__user=new_user)
+            .values(
+                uid1=F("comparison__entity_1__uid"),
+                uid2=F("comparison__entity_2__uid"),
+            )
         )
         for c in query:
-            va = self._entity_to_video[c.comparison.entity_1.uid]
-            vb = self._entity_to_video[c.comparison.entity_2.uid]
+            va = self._entity_to_video[c["uid1"]]
+            vb = self._entity_to_video[c["uid2"]]
             self._user_specific_graphs[new_user.id].add_edge(va, vb)
 
     def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
@@ -194,6 +195,9 @@ class SuggestionProvider:
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
         self._complete_graph.compute_offline_parameters([])
+
+        if first_video_id not in self._complete_graph.uid_to_index:
+            return []
 
         first_video = self._complete_graph.nodes[self._complete_graph.uid_to_index[first_video_id]]
 

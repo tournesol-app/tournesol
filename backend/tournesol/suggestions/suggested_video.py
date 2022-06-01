@@ -3,8 +3,6 @@ from __future__ import annotations
 from functools import total_ordering
 from typing import Optional
 
-from tournesol.models import Entity
-
 
 @total_ordering
 class SuggestedVideo:
@@ -17,14 +15,14 @@ class SuggestedVideo:
     suggestibility_normalization: float
     NEW_NODE_CONNECTION_SCORE = 0.5
 
-    user_pref: int = 0
+    user_pref: float = 0
 
     def __init__(
             self,
-            from_entity: Optional[Entity] = None
+            from_uid: Optional[str] = None
     ):
-        if from_entity is not None:
-            self.uid = from_entity.uid
+        if from_uid is not None:
+            self.uid = from_uid
         self.suggestibility_normalization = 1
 
     def __eq__(self, __o: SuggestedVideo) -> bool:

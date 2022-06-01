@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
-from django.db.models import Avg, QuerySet
+from django.db.models import Avg, F, QuerySet
 
 from tournesol.models import (
     ContributorRatingCriteriaScore,
@@ -73,14 +73,18 @@ class CompleteGraph:
         the video scores otherwise
         """
         if self.dirty:
-            entity_criteria_scores: QuerySet = EntityCriteriaScore.default_scores().filter(
-                poll__name=self._local_poll.name
-            ).filter(criteria=self._local_criteria)
+            entity_criteria_scores: QuerySet = (
+                EntityCriteriaScore.default_scores().filter(
+                    poll__name=self._local_poll.name,
+                    criteria=self._local_criteria
+                )
+                .values("uncertainty", "score", uid=F("entity__uid"))
+            )
             for ecs in entity_criteria_scores:
-                act_vid = self._nodes[self.uid_to_index[ecs.entity.uid]]
-                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs.uncertainty
-                act_vid.global_video_score_uncertainty = ecs.uncertainty
-                act_vid.global_video_score = ecs.score
+                act_vid = self._nodes[self.uid_to_index[ecs["uid"]]]
+                act_vid.video1_score = self.NEW_NODE_CONNECTION_SCORE + ecs["uncertainty"]
+                act_vid.global_video_score_uncertainty = ecs["uncertainty"]
+                act_vid.global_video_score = ecs["score"]
             self.dirty = False
 
 
@@ -259,8 +263,10 @@ class Graph(CompleteGraph):
                     .filter(criteria=self._local_criteria) \
                     .get()
             except ContributorScaling.DoesNotExist:
-                self.local_user_scaling = type('', (object,), {"scale_uncertainty": 0,
-                                                               "translation_uncertainty": 0})()
+                self.local_user_scaling = ContributorScaling(
+                    scale_uncertainty=0,
+                    translation_uncertainty=0
+                )
             self.local_user_mean = (
                 ContributorRatingCriteriaScore.objects.filter(
                         contributor_rating__user__id=self._local_user.uid)
