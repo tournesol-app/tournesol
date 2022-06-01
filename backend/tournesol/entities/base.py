@@ -10,9 +10,6 @@ from tournesol import models
 
 UID_DELIMITER = ":"
 
-DEFAULT_ALLOWED_FILTER_FUNCS = {'int': int, 'str': str}
-DEFAULT_ALLOWED_FILTER_LOOKUPS = ['gt', 'gte', 'lt', 'lte']
-
 
 class EntityType(ABC):
 
@@ -21,6 +18,19 @@ class EntityType(ABC):
     # and to the `entity_type` in Poll.
     name: str
     metadata_serializer_class: Type[Serializer]
+
+    # Configuration related to the metadata filter, that can be overridden by
+    # child classes.
+
+    # Allows API consumers to ask for these functions to be called on the
+    # filtered value.
+    metadata_allowed_filter_func = {"int": int, "str": str}
+    # Allows API consumers to use these Django's field lookups on the filtered
+    # field.
+    metadata_allowed_filter_lookups = ["gt", "gte", "lt", "lte"]
+    # This symbol delimits the field:lookup:func in the metadata filter
+    # operation string.
+    metadata_filter_operation_delimiter = ":"
 
     def __init__(self, entity: "models.Entity"):
         self.instance = entity
@@ -33,7 +43,7 @@ class EntityType(ABC):
         The keys are arbitrary strings representing the desired function, and
         the value their matching callable.
         """
-        return DEFAULT_ALLOWED_FILTER_FUNCS
+        return cls.metadata_allowed_filter_func
 
     @classmethod
     def get_allowed_filter_lookups(cls) -> List[str]:
@@ -43,7 +53,7 @@ class EntityType(ABC):
         The values must match the Django field lookups, see:
             https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups-1
         """
-        return DEFAULT_ALLOWED_FILTER_LOOKUPS
+        return cls.metadata_allowed_filter_lookups
 
     @classmethod
     def _get_filter_func(cls, asked_func: str):
@@ -105,7 +115,7 @@ class EntityType(ABC):
             This operation will filter entities having a metadata duration
             exactly equal to the provided integer value.
         """
-        split_op = operation.split(':')
+        split_op = operation.split(cls.metadata_filter_operation_delimiter)
 
         field = split_op[0]
         lookup = None
@@ -140,7 +150,7 @@ class EntityType(ABC):
 
                 # The lookup must be explicitly allowed to be applied.
                 if lookup and lookup in cls.get_allowed_filter_lookups():
-                    qstring += f'__{lookup}'
+                    qstring += f"__{lookup}"
 
                 filtered_value = values[0]
                 # The function must be explicitly allowed to be applied.
