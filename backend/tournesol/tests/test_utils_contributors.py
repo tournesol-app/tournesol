@@ -61,7 +61,9 @@ class UtilsContributorsTestCase(TestCase):
             dict(user=self.users[4], entity_1=self.entities[0], entity_2=self.entities[1]),
         ]
 
-        self.comparisons = [ComparisonFactory(**comp) for comp in comparisons_parameters]
+        self.comparisons = [
+            ComparisonFactory(**comp) for comp in comparisons_parameters
+        ]
 
         now = timezone.now()
         last_month = timezone.datetime(
@@ -86,9 +88,12 @@ class UtilsContributorsTestCase(TestCase):
     def test_get_last_month_top_public_contributors(self):
         """Test top public contributor of the previous month."""
 
-        top_contributors = get_last_month_top_public_contributors(
-            poll_name=self.poll.name
-        )
+        top_contributors = [
+            (contrib.username, contrib.n_comparisons)
+            for contrib in get_last_month_top_public_contributors(
+                poll_name=self.poll.name
+            ).iterator()
+        ]
 
         self.assertEqual(top_contributors[0], (self.users[2].username, 5))
         self.assertEqual(top_contributors[1], (self.users[0].username, 3))
