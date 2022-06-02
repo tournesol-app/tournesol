@@ -216,8 +216,6 @@ def add_expander_cursor_position():
         st.plotly_chart(fig)
 
 
-
-
 st.title("Comparisons Public Dataset")
 
 # Load public dataset (the function is cached to not overload the API)

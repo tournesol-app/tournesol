@@ -165,8 +165,6 @@ def add_expander_detailed_correlation():
         st.plotly_chart(fig)
 
 
-# def app():
-
 st.title("Tournesol scores")
 
 # Load public dataset (the function is cached to not overload the API)
