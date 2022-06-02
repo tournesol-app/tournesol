@@ -1,14 +1,16 @@
 import streamlit as st
 from PIL import Image
 
-from pages import page_public_dataset, page_tournesol_scores
+# from pages import page_public_dataset, page_tournesol_scores
 
 st.session_state.data = None
 
-PAGES = {
-    "Comparisons Public Dataset": page_public_dataset,
-    "Tournesol Scores": page_tournesol_scores,
-}
+# PAGES = {
+#     "Comparisons Public Dataset": page_public_dataset,
+#     "Tournesol Scores": page_tournesol_scores,
+# }
+
+st.markdown("# Main page 🎈")
 
 # === Side bar ==================================
 
@@ -22,7 +24,10 @@ st.sidebar.markdown(
     " of [tournesol.app](https://tournesol.app)"
 )
 
-# Page navigation
-selection = st.sidebar.radio("Navigation", list(PAGES.keys()))
-page = PAGES[selection]
-page.app()
+
+st.sidebar.markdown("# Main page 🎈")
+
+# # Page navigation
+# selection = st.sidebar.radio("Navigation", list(PAGES.keys()))
+# page = PAGES[selection]
+# page.app()

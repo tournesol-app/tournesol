@@ -216,27 +216,27 @@ def add_expander_cursor_position():
         st.plotly_chart(fig)
 
 
-def app():
 
-    st.title("Comparisons Public Dataset")
 
-    # Load public dataset (the function is cached to not overload the API)
-    st.session_state.df = set_df()
+st.title("Comparisons Public Dataset")
 
-    # Select users
-    add_expander_select_user()
+# Load public dataset (the function is cached to not overload the API)
+st.session_state.df = set_df()
 
-    # Plot raw data
-    add_expander_raw_data()
+# Select users
+add_expander_select_user()
 
-    # Statistics
-    add_expander_statistics()
+# Plot raw data
+add_expander_raw_data()
 
-    # Correlation coefficients
-    add_expander_correlation_coefficients()
+# Statistics
+add_expander_statistics()
 
-    # Detailed correlation
-    add_expander_detailed_correlation()
+# Correlation coefficients
+add_expander_correlation_coefficients()
 
-    # Cursor position
-    add_expander_cursor_position()
+# Detailed correlation
+add_expander_detailed_correlation()
+
+# Cursor position
+add_expander_cursor_position()

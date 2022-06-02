@@ -165,24 +165,24 @@ def add_expander_detailed_correlation():
         st.plotly_chart(fig)
 
 
-def app():
+# def app():
 
-    st.title("Tournesol scores")
+st.title("Tournesol scores")
 
-    # Load public dataset (the function is cached to not overload the API)
-    st.session_state.df_scores = api_get_tournesol_scores()
+# Load public dataset (the function is cached to not overload the API)
+st.session_state.df_scores = api_get_tournesol_scores()
 
-    # Select uploaders
-    add_expander_select_filters()
+# Select uploaders
+add_expander_select_filters()
 
-    # Table of video data
-    add_expander_video_data()
+# Table of video data
+add_expander_video_data()
 
-    # Table of average values by channel
-    add_expander_avg_values()
+# Table of average values by channel
+add_expander_avg_values()
 
-    # Correlation coefficients
-    add_expander_correlation_coefficients()
+# Correlation coefficients
+add_expander_correlation_coefficients()
 
-    # Detailed correlation
-    add_expander_detailed_correlation()
+# Detailed correlation
+add_expander_detailed_correlation()
