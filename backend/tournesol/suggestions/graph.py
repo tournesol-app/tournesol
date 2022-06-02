@@ -12,6 +12,7 @@ from tournesol.models import (
 from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_user_video import SuggestedUserVideo
 from tournesol.suggestions.suggested_video import SuggestedVideo
+from typing import Optional
 
 
 class CompleteGraph:
@@ -66,7 +67,10 @@ class CompleteGraph:
 
         self.dirty = True
 
-    def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
+    def compute_offline_parameters(
+            self,
+            scaling_factor_increasing_videos: Optional[list[SuggestedVideo]] = None
+    ):
         """
         Function computing the offline parameters, including the adjacency matrix, its
         normalization, the distance matrix and the similarity matrix if the graph is a user graph,

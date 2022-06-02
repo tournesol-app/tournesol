@@ -93,7 +93,7 @@ class SuggestionProvider:
         """
         # for requests => look at ml->inputs
         scale_aug_videos = self._get_user_comparability_augmenting_videos()
-        self._complete_graph.compute_offline_parameters([])
+        self._complete_graph.compute_offline_parameters()
         for g in self._user_specific_graphs.values():
             # Will be cached, do at registration
             g.compute_offline_parameters(scale_aug_videos)
