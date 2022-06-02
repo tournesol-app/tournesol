@@ -10,7 +10,7 @@ from utils import CRITERIA, CRITERI_EXT, MSG_NO_DATA, TCOLOR, api_get_tournesol_
 def add_sidebar_select_channels():
 
     st.sidebar.title("Select channel(s)")
-    
+
     st.sidebar.markdown(
         "You can select one or several YouTube channels."
         " If you select none, all channels will be use."

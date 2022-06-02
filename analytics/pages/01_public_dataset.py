@@ -203,14 +203,10 @@ def add_expander_cursor_position():
 
             for user in selected_users:
                 df_user = df[df["public_username"] == user]
-                fig.add_trace(
-                    go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21)
-                )
+                fig.add_trace(go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21))
 
         else:
-            fig.add_trace(
-                go.Histogram(x=df[selected_crit], name="all users", nbinsx=21)
-            )
+            fig.add_trace(go.Histogram(x=df[selected_crit], name="all users", nbinsx=21))
 
         fig.update_layout(barmode="overlay")
         fig.update_traces(opacity=0.7)
