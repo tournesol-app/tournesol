@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 import numpy as np
 from django.db.models import Avg, F, QuerySet
 
@@ -12,7 +14,6 @@ from tournesol.models import (
 from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_user_video import SuggestedUserVideo
 from tournesol.suggestions.suggested_video import SuggestedVideo
-from typing import Optional
 
 
 class CompleteGraph:
