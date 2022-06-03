@@ -82,5 +82,5 @@ def trust_algo():
     voting_weight = rescale(trust_vector, trust_status)
     for k, u in enumerate(users):
         u.trust_score = float(voting_weight[k])
-        u.save()
+        u.save(update_fields=["trust_score"])
     return True
