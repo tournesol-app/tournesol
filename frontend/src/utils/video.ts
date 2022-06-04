@@ -1,6 +1,6 @@
-import { VideoService, UsersService } from 'src/services/openapi';
+import { VideoService, UsersService, TypeEnum } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from './constants';
-import { VideoObject } from './types';
+import { RelatedEntityObject, VideoObject } from './types';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
