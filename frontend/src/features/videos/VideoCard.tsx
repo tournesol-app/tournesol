@@ -10,11 +10,9 @@ import {
   useMediaQuery,
   useTheme,
   Theme,
-  Stack,
 } from '@mui/material';
 
 import { ActionList, VideoObject } from 'src/utils/types';
-import { useVideoMetadata } from './VideoApi';
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
@@ -23,7 +21,6 @@ import { videoIdFromEntity } from 'src/utils/video';
 import VideoCardScores from './VideoCardScores';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import { entityCardMainSx } from 'src/components/entity/style';
-import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 import { DurationWrapper } from 'src/components/entity/EntityImagery';
 import { VideoMetadata } from 'src/components/entity/EntityMetadata';
 import { useCurrentPoll } from 'src/hooks';
@@ -204,61 +201,5 @@ function VideoCard({
     </Grid>
   );
 }
-
-export const RowVideoCard = ({ video }: { video: VideoObject }) => {
-  return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      gap={1}
-      height="70px"
-      sx={entityCardMainSx}
-    >
-      <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
-        <img
-          height="100%"
-          src={`https://i.ytimg.com/vi/${video.video_id}/mqdefault.jpg`}
-        />
-      </Box>
-      <Stack gap="4px">
-        <EntityCardTitle
-          uid={video.uid}
-          title={video.name}
-          titleMaxLines={1}
-          fontSize="1em"
-        />
-        <VideoMetadata
-          views={video.views}
-          uploader={video.uploader}
-          publicationDate={video.publication_date}
-          withLinks={false}
-        />
-      </Stack>
-    </Box>
-  );
-};
-
-export const VideoCardFromId = ({
-  videoId,
-  variant = 'full',
-  ...rest
-}: {
-  videoId: string;
-  variant: 'full' | 'compact' | 'row';
-  [propname: string]: unknown;
-}) => {
-  const video = useVideoMetadata(videoId);
-  if (video == null || !video.video_id) {
-    return <EmptyEntityCard compact={variant === 'compact'} />;
-  }
-  if (variant === 'compact') {
-    return <VideoCard video={video} compact {...rest} />;
-  }
-  if (variant === 'row') {
-    return <RowVideoCard video={video} {...rest} />;
-  }
-  return <VideoCard video={video} {...rest} />;
-};
 
 export default VideoCard;

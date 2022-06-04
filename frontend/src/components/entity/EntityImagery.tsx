@@ -84,58 +84,62 @@ const EntityImagery = ({
 }: {
   entity: RelatedEntityObject;
   compact?: boolean;
-  config?: { [k: string]: { [k: string]: JSONValue } };
+  config?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {
   const { baseUrl } = useCurrentPoll();
   const videoConfig = config[TypeEnum.VIDEO] ?? {};
 
   if (entity.type === TypeEnum.VIDEO) {
+    if (videoConfig.displayPlayer ?? true) {
+      return (
+        <Box
+          sx={{
+            aspectRatio: '16 / 9',
+            width: '100%',
+          }}
+        >
+          <VideoPlayer
+            videoId={entity.metadata.video_id}
+            duration={entity.metadata.duration}
+          />
+        </Box>
+      );
+    }
+
+    const thumbnail = (
+      <DurationWrapper duration={entity.metadata.duration}>
+        <img
+          className="full-width"
+          src={`https://i.ytimg.com/vi/${idFromUid(entity.uid)}/mqdefault.jpg`}
+          alt={entity.metadata.name}
+        />
+      </DurationWrapper>
+    );
+
     return (
-      <>
-        {/* Display the video player by default, unless otherwise configured. */}
-        {videoConfig?.displayPlayer ?? true ? (
-          <Box
-            sx={{
-              aspectRatio: '16 / 9',
-              width: '100%',
-            }}
-          >
-            <VideoPlayer
-              videoId={entity.metadata.video_id}
-              duration={entity.metadata.duration}
-            />
-          </Box>
-        ) : (
-          <Box
-            display="flex"
-            alignItems="center"
-            bgcolor="black"
-            width="100%"
+      <Box
+        display="flex"
+        alignItems="center"
+        bgcolor="black"
+        width="100%"
+        sx={{
+          '& img': {
             // prevent the RouterLink to add few extra pixels
-            lineHeight={0}
-            sx={{
-              '& > img': {
-                flex: 1,
-              },
-            }}
+            display: 'block',
+          },
+        }}
+      >
+        {videoConfig.thumbnailLink ?? true ? (
+          <RouterLink
+            to={`${baseUrl}/entities/${entity.uid}`}
+            className="full-width"
           >
-            <RouterLink
-              to={`${baseUrl}/entities/${entity.uid}`}
-              className="full-width"
-            >
-              <DurationWrapper duration={entity.metadata.duration}>
-                <img
-                  className="full-width"
-                  src={`https://i.ytimg.com/vi/${idFromUid(
-                    entity.uid
-                  )}/mqdefault.jpg`}
-                  alt={entity.metadata.name}
-                />
-              </DurationWrapper>
-            </RouterLink>
-          </Box>
+            {thumbnail}
+          </RouterLink>
+        ) : (
+          thumbnail
         )}
-      </>
+      </Box>
     );
   }
   if (entity.type === TypeEnum.CANDIDATE_FR_2022) {

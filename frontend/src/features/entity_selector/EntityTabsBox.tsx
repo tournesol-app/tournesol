@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Tabs, Tab, Paper, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
-import { VideoCardFromId } from '../videos/VideoCard';
+import { RowEntityCard } from 'src/components/entity/EntityCard';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -83,14 +83,8 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
       {options.length > 0 ? (
         <ul>
           {options.map((entity) => (
-            <li
-              key={entity.metadata.video_id}
-              onClick={() => onSelectEntity(entity.uid)}
-            >
-              <VideoCardFromId
-                videoId={entity.metadata.video_id}
-                variant="row"
-              />
+            <li key={entity.uid} onClick={() => onSelectEntity(entity.uid)}>
+              <RowEntityCard entity={entity} />
             </li>
           ))}
         </ul>
