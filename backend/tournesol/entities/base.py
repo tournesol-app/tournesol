@@ -81,9 +81,7 @@ class EntityType(ABC):
         """
         allowed_funcs = cls.get_allowed_meta_filter_funcs()
 
-        if asked_func in allowed_funcs:
-            return allowed_funcs[asked_func]
-        return None
+        return allowed_funcs.get(asked_func)
 
     @classmethod
     def cast_meta_filter_value(cls, value, asked_func):
