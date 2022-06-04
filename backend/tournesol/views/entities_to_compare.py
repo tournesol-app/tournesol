@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
+from tournesol.models import Entity
 from tournesol.models.poll import DEFAULT_POLL_NAME
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.suggestions.suggester_store import SuggesterStore
@@ -34,9 +35,15 @@ class EntitiesToCompareView(PollScopedViewMixin, ListAPIView):
         opt_first_entity = self.request.query_params.get("first_entity_uid")
         limit = int(self.request.query_params.get("limit", 10))
         if opt_first_entity is None:
-            entities = suggester.get_first_video_recommendation(user, limit)
+            suggestions = suggester.get_first_video_recommendation(user, limit)
         else:
-            entities = suggester.get_second_video_recommendation(user, opt_first_entity, limit)
+            suggestions = suggester.get_second_video_recommendation(user, opt_first_entity, limit)
 
-        ser = self.get_serializer(entities, many=True)
+        entities = {
+            e.uid: e
+            for e in Entity.objects.filter(
+                uid__in=(s.uid for s in suggestions)
+            )
+        }
+        ser = self.get_serializer([entities[s.uid] for s in suggestions], many=True)
         return Response({"results": ser.data})
