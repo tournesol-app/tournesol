@@ -17,6 +17,7 @@ from .views.contributor_recommendations import (
 from .views.criteria_correlations import ContributorCriteriaCorrelationsView
 from .views.email_domains import EmailDomainsList
 from .views.entities import EntitiesViewSet
+from .views.entities_to_compare import EntitiesToCompareView
 from .views.exports import (
     ExportAllView,
     ExportComparisonsView,
@@ -57,6 +58,11 @@ urlpatterns = [
         name="export_comparisons",
     ),
     path("users/me/exports/all/", ExportAllView.as_view(), name="export_all"),
+    path(
+        "users/me/entities_to_compare/<str:poll_name>/",
+        EntitiesToCompareView.as_view(),
+        name="get_entities_to_compare",
+    ),
     path(
         "exports/comparisons/",
         ExportPublicComparisonsView.as_view(),
