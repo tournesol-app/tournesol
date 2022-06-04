@@ -18,7 +18,7 @@ import {
 } from 'src/utils/constants';
 import { Entity, UsersService } from 'src/services/openapi';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
-import { getRecommendedVideos } from 'src/features/recommendation/RecommendationApi';
+import { getRecommendations } from 'src/features/recommendation/RecommendationApi';
 
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
@@ -76,8 +76,13 @@ const VideoInput = ({ value, onChange }: Props) => {
         name: 'recommendations',
         label: t('entitySelector.recommendations'),
         fetch: async () => {
-          const response = await getRecommendedVideos('?date=Month', []);
-          return (response.results ?? []).map(videoToEntity);
+          const response = await getRecommendations(
+            'videos',
+            10,
+            '?date=Month',
+            []
+          );
+          return response.results ?? [];
         },
       },
     ],

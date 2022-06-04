@@ -35,6 +35,7 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        minHeight: '160px',
         ul: {
           flexGrow: 1,
           listStyleType: 'none',

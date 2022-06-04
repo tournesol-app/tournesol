@@ -173,3 +173,18 @@ export const convertDurationToClockDuration = (duration: number) => {
   const seconds = roundToTwoDigits(duration % 60);
   return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
 };
+
+export const videoToEntity = (video: VideoObject): RelatedEntityObject => ({
+  uid: video.uid,
+  type: TypeEnum.VIDEO,
+  metadata: {
+    name: video.name,
+    description: video.description,
+    publication_date: video.publication_date,
+    uploader: video.uploader,
+    language: video.language,
+    duration: video.duration,
+    video_id: video.video_id,
+    views: video.views,
+  },
+});
