@@ -49,7 +49,7 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
         li: {
           cursor: 'pointer',
           '&:hover': {
-            bgcolor: 'grey.50',
+            bgcolor: 'grey.100',
           },
           '&:first-of-type': {
             marginTop: 1,

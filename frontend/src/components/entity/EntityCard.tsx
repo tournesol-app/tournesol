@@ -180,6 +180,7 @@ export const RowEntityCard = ({ entity }: { entity: RelatedEntityObject }) => {
           uid={entity.uid}
           title={entity.metadata.name}
           titleMaxLines={1}
+          withLink={false}
           fontSize="1em"
         />
         {entity.type == TypeEnum.VIDEO && (
