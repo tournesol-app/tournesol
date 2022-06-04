@@ -86,9 +86,9 @@
   "entitySelector": {
     "newVideo": "Selectionner une nouvelle vidéo automatiquement",
     "autoEntityButton": "Auto",
-    "rateLater": "À comparer plus tard",
-    "recentlyCompared": "Comparé recemment",
-    "recommendations": "Recommandations",
+    "rateLater": "À comparer",
+    "recentlyCompared": "Comparées",
+    "recommendations": "Top du mois",
     "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
     "backButton": "Retour"
   },

@@ -84,8 +84,8 @@
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
     "rateLater": "Rate later",
-    "recentlyCompared": "Recently compared",
-    "recommendations": "Recommendations",
+    "recentlyCompared": "Compared",
+    "recommendations": "Top of the month",
     "pasteUrlOrVideoId": "Paste URL or Video ID",
     "backButton": "Back"
   },
