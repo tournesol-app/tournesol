@@ -169,8 +169,10 @@ class Graph(CompleteGraph):
 
     def build_distance_matrix(self):
         # Compute sigma here
-        self.sigma = 1
         self.distance_matrix = {key: {key2: 0 for key2 in self.nodes} for key in self.nodes}
+        if len(self.nodes) == 0:
+            self.sigma = 1
+            return
         total_max_dist = 0
         for v in self.nodes:
             self.bfs(v, give_distances=True, on_all_sub_graphs=False)
@@ -278,7 +280,7 @@ class Graph(CompleteGraph):
                 .filter(criteria=self._local_criteria)
                 .filter(contributor_rating__poll__name=self._local_poll.name)
                 .aggregate(mean=Avg("score"))
-            )["mean"]
+            )["mean"] or 0.0
 
             self.compute_information_gain(scaling_factor_increasing_videos)
 

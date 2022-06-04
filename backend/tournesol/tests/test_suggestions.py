@@ -380,3 +380,13 @@ class SuggestionAPITestCase(TestCase):
             if v1 != v2:
                 all_the_same = False
         assert not all_the_same
+
+    def test_suggestions_for_new_user(self):
+        new_user = UserFactory()
+        suggester = SuggestionProvider(self.poll)
+
+        suggestions = suggester.get_first_video_recommendation(new_user, 6)
+        assert len(suggestions) == 6
+
+        suggestions = suggester.get_second_video_recommendation(new_user, self.videos[9].uid, 6)
+        assert len(suggestions) == 6
