@@ -153,7 +153,7 @@ class SuggestionProvider:
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
-        self._complete_graph.compute_offline_parameters([])
+        self._complete_graph.compute_offline_parameters()
 
         # Prepare the set of videos to sort, taking the videos present in the graph
         # and append the ones that are not yet compared by the user
@@ -194,7 +194,7 @@ class SuggestionProvider:
         # Give the first video id to the graph so the sorting will take that into account
         user_graph = self._user_specific_graphs[user.id]
         user_graph.compute_offline_parameters(self._get_user_comparability_augmenting_videos())
-        self._complete_graph.compute_offline_parameters([])
+        self._complete_graph.compute_offline_parameters()
 
         if first_video_id not in self._complete_graph.uid_to_index:
             return []
