@@ -60,6 +60,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__publication_date="2021-01-02",
             metadata__uploader="_test_uploader_2",
             metadata__language="fr",
+            metadata__duration=10,
             tournesol_score=2.2,
             rating_n_contributors=3,
         )
@@ -67,6 +68,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__publication_date="2021-01-03",
             metadata__uploader="_test_uploader_2",
             metadata__language="pt",
+            metadata__duration=120,
             tournesol_score=3.3,
             rating_n_contributors=4,
         )
@@ -74,6 +76,7 @@ class PollsRecommendationsTestCase(TestCase):
             metadata__publication_date="2021-01-04",
             metadata__uploader="_test_uploader_3",
             metadata__language="it",
+            metadata__duration=240,
             tournesol_score=4.4,
             rating_n_contributors=5,
         )
@@ -259,6 +262,78 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
+
+    def test_anon_can_list_videos_filtered_by_duration_exact(self):
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration]=10"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 0)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration::int]=10"
+        )
+
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["metadata"]["duration"], 10)
+
+    def test_anon_can_list_videos_filtered_by_duration_lt(self):
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration:lt:int]=120"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["metadata"]["duration"], 10)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration:lte:int]=120"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["metadata"]["duration"], 120)
+        self.assertEqual(results[1]["metadata"]["duration"], 10)
+
+    def test_anon_can_list_videos_filtered_by_duration_gt(self):
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration:gt:int]=120"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["metadata"]["duration"], 240)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration:gte:int]=120"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["metadata"]["duration"], 240)
+        self.assertEqual(results[1]["metadata"]["duration"], 120)
+
+    def test_anon_can_list_videos_filtered_by_duration_illegal(self):
+        """
+        The special string "__" must be forbidden in any metadata filter
+        field.
+        """
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration__lte::int]=10"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_can_list_recommendations_with_score_mode(self):
         response = self.client.get(

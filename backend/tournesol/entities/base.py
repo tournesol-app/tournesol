@@ -1,9 +1,10 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Type
+from typing import Dict, Iterable, List, Type
 
 from django.utils import timezone
 from django.utils.functional import cached_property
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
 from tournesol import models
@@ -19,8 +20,155 @@ class EntityType(ABC):
     name: str
     metadata_serializer_class: Type[Serializer]
 
+    # Configuration related to the metadata filter, that can be overridden by
+    # child classes.
+
+    # Allows API consumers to ask for these functions to be called on the
+    # filtered value.
+    metadata_allowed_filter_func = {"int": int, "str": str}
+    # Allows API consumers to use these Django's field lookups on the filtered
+    # field.
+    metadata_allowed_filter_lookups = ["gt", "gte", "lt", "lte"]
+    # This symbol delimits the field:lookup:func in the metadata filter
+    # operation string.
+    metadata_filter_operation_delimiter = ":"
+
     def __init__(self, entity: "models.Entity"):
         self.instance = entity
+
+    @classmethod
+    def validate_meta_filter_field(cls, field: str) -> None:
+        """
+        Raise `ValidationError` if `field` is invalid.
+
+        A field is considered invalid if it contains the special string "__".
+        This string is used by the Django's ORM to follow foreign keys, to
+        navigate through fields' sub-properties and to invoke field lookups.
+
+        Forbidding its usage prevents the users to trigger unexpected Django's
+        ORM features, time-consuming or CPU heavy operations.
+        """
+        if "__" in field:
+            raise ValidationError(
+                f'The metatada field `{field}` cannot contain the special string "__".'
+            )
+
+    @classmethod
+    def get_allowed_meta_filter_funcs(cls) -> Dict:
+        """
+        Return a `dict` representing functions allowed in the metadata filter.
+
+        The keys are arbitrary strings representing the desired function, and
+        the value their matching callable.
+        """
+        return cls.metadata_allowed_filter_func
+
+    @classmethod
+    def get_allowed_meta_filter_lookups(cls) -> List[str]:
+        """
+        Return a `list` of lookups allowed in the metadata filter.
+
+        The values must match the Django field lookups, see:
+            https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups-1
+        """
+        return cls.metadata_allowed_filter_lookups
+
+    @classmethod
+    def _get_meta_filter_func(cls, asked_func: str):
+        """
+        If `asked_func` is present in the allowed metadata filter functions,
+        return the matching callable, return `None` instead.
+        """
+        allowed_funcs = cls.get_allowed_meta_filter_funcs()
+
+        return allowed_funcs.get(asked_func)
+
+    @classmethod
+    def cast_meta_filter_value(cls, value, asked_func):
+        """
+        If `asked_func` is present in the allowed metadata filter functions,
+        call it with value as a positional argument and return the result.
+        """
+        func = cls._get_meta_filter_func(asked_func)
+
+        if func:
+            return func(value)
+        return value
+
+    @classmethod
+    def get_meta_filter_operation(cls, operation: str) -> Iterable[str]:
+        """
+        Return a field, its potential lookup, and its potential cast function
+        from an `operation` string.
+
+        The `operation` string must follow the standard:
+
+            "{field}:{lookup}:{func}"
+
+        Where:
+            - {field} is the field on which the filter is applied
+            - {lookup} is the optional Django field lookup applied to the field
+            - {func} is the optional function to apply on the filtered value
+
+        Ex 1:
+
+            get_filter_operation("duration")
+
+            This operation will filter entities having a metadata duration
+            exactly equal to the provided string value.
+
+        Ex 2:
+
+            get_filter_operation("duration:lte:int")
+
+            This operation will filter entities having a metadata duration
+            inferior or equal to the provided integer value.
+
+        Ex 3
+
+            get_filter_operation("duration::int")
+
+            This operation will filter entities having a metadata duration
+            exactly equal to the provided integer value.
+        """
+        split_op = operation.split(cls.metadata_filter_operation_delimiter)
+
+        field = split_op[0]
+        lookup = None
+        func = None
+
+        if len(split_op) > 1:
+            lookup = split_op[1]
+
+        if len(split_op) > 2:
+            func = split_op[2]
+
+        return field, lookup, func
+
+    @classmethod
+    def filter_metadata(cls, qst, filters):
+        for operation, values in filters:
+
+            field, lookup, func = cls.get_meta_filter_operation(operation)
+            cls.validate_meta_filter_field(field)
+
+            if len(values) > 1:
+                qst = qst.filter(**{"metadata__" + field + "__in": values})
+            else:
+                qstring = field
+
+                # The lookup must be explicitly allowed to be applied.
+                if lookup and lookup in cls.get_allowed_meta_filter_lookups():
+                    qstring += f"__{lookup}"
+
+                filtered_value = values[0]
+                # The function must be explicitly allowed to be applied.
+                if func:
+                    filtered_value = cls.cast_meta_filter_value(filtered_value, func)
+
+                qst = qst.filter(**{"metadata__" + qstring: filtered_value})
+
+        return qst
 
     @classmethod
     def filter_date_lte(cls, qs, dt):
@@ -29,16 +177,6 @@ class EntityType(ABC):
     @classmethod
     def filter_date_gte(cls, qs, dt):
         return qs.filter(add_time__gte=dt)
-
-    @classmethod
-    def filter_metadata(cls, qst, filters):
-        for key, values in filters:
-            if len(values) > 1:
-                qst = qst.filter(**{"metadata__" + key + "__in": values})
-            else:
-                qst = qst.filter(**{"metadata__" + key: values[0]})
-
-        return qst
 
     @classmethod
     @abstractmethod

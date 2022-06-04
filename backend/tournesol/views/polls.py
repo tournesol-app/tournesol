@@ -54,11 +54,15 @@ logger = logging.getLogger(__name__)
                 description="Filter by one or more metadata.",
                 examples=[
                     OpenApiExample(
-                        name="Some filters available for videos.",
+                        name="Videos - some examples",
                         value={"language": "fr,pt", "uploader": "kurzgesagtES"},
                     ),
                     OpenApiExample(
-                        name="Some filters available for candidates.",
+                        name="Videos - videos of 8 minutes or less (480 sec)",
+                        value={"duration:lte:int": "480"},
+                    ),
+                    OpenApiExample(
+                        name="Candidates - some examples",
                         value={
                             "name": "A candidate full name",
                             "youtube_channel_id": "channel ID",
@@ -128,7 +132,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         else:
             return queryset.filter(
                 rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
-                tournesol_score__gt=0
+                tournesol_score__gt=0,
             )
 
     def _build_criteria_weight_condition(
@@ -204,8 +208,7 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
             request, poll, when="all_criteria_scores__criteria"
         )
         queryset = (
-            queryset
-            .filter(
+            queryset.filter(
                 all_criteria_scores__poll=poll,
                 all_criteria_scores__score_mode=score_mode,
             )
@@ -213,7 +216,8 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
                 total_score=Sum(
                     F("all_criteria_scores__score") * criteria_weight,
                 )
-            ).filter(total_score__isnull=False)
+            )
+            .filter(total_score__isnull=False)
         )
         return queryset.with_prefetched_scores(poll_name=poll.name, mode=score_mode)
 
