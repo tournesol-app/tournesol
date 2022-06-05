@@ -162,7 +162,7 @@ export const RowEntityCard = ({ entity }: { entity: RelatedEntityObject }) => {
       alignItems="center"
       gap={1}
       height="70px"
-      sx={entityCardMainSx}
+      sx={{ ...entityCardMainSx, bgcolor: 'transparent' }}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
         <EntityImagery
