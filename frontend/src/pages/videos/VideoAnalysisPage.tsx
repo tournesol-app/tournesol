@@ -25,6 +25,7 @@ import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCrit
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
+import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 
 export const VideoAnalysis = ({
   video,
@@ -99,7 +100,7 @@ export const VideoAnalysis = ({
 
           {/* Data visualization. */}
           {shouldDisplayCharts && (
-            <>
+            <SelectedCriterionProvider>
               <Grid item xs={12} sm={12} md={6}>
                 <Paper>
                   <Box
@@ -139,7 +140,7 @@ export const VideoAnalysis = ({
                   </Box>
                 </Paper>
               </Grid>
-            </>
+            </SelectedCriterionProvider>
           )}
         </Grid>
       </Box>

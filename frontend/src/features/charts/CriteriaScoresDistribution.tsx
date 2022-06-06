@@ -15,6 +15,7 @@ import { Box } from '@mui/material';
 import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import { useCurrentPoll } from 'src/hooks';
 import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
+import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
 
 const displayScore = (score: number) => (10 * score).toFixed(0);
 
@@ -91,11 +92,8 @@ interface CriteriaScoresDistributionProps {
 const CriteriaScoresDistribution = ({
   uid,
 }: CriteriaScoresDistributionProps) => {
-  const { name: pollName, options } = useCurrentPoll();
-
-  const mainCriterionName = options?.mainCriterionName || '';
-  const [selectedCriteria, setSelectedCriteria] =
-    useState<string>(mainCriterionName);
+  const { name: pollName } = useCurrentPoll();
+  const { selectedCriterion, setSelectedCriterion } = useSelectedCriterion();
 
   const [criteriaScoresDistribution, setCriteriaScoresDistribution] = useState<
     CriteriaDistributionScore[]
@@ -116,17 +114,17 @@ const CriteriaScoresDistribution = ({
   const criteriaDistributionScore = useMemo(
     () =>
       criteriaScoresDistribution.find(
-        ({ criteria }) => criteria === selectedCriteria
+        ({ criteria: criterion }) => criterion === selectedCriterion
       ),
-    [selectedCriteria, criteriaScoresDistribution]
+    [selectedCriterion, criteriaScoresDistribution]
   );
 
   return (
     <>
       <Box px={2} pt={1} pb={1}>
         <CriteriaSelector
-          criteria={selectedCriteria}
-          setCriteria={setSelectedCriteria}
+          criteria={selectedCriterion}
+          setCriteria={setSelectedCriterion}
         />
       </Box>
       {criteriaDistributionScore && (

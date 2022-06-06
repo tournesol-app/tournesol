@@ -5,6 +5,7 @@ import React, {
   useMemo,
   createContext,
   useContext,
+  useCallback,
 } from 'react';
 import {
   VideoSerializerWithCriteria,
@@ -19,12 +20,14 @@ import { useTranslation } from 'react-i18next';
 import { lighten } from 'src/utils/color';
 import { Tooltip } from '@mui/material';
 import useResizeObserver from '@react-hook/resize-observer';
+import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
 
 const barMargin = 40; // The horizontal margin around the bar (must be enough for the icon and the score value)
 const criterionChartHeight = 40; // The height of a single criterion chart (circle + icon + bars)
 const scoreBarHeight = 10;
 const scoreBarsSpacing = 4;
 const scoreLabelSpacingWithBar = 4;
+const selectedCriterionBackgroundColor = 'rgb(238, 238, 238)';
 
 interface ChartContextValue {
   data: CriterionChartScores[];
@@ -309,6 +312,7 @@ const CriterionLabel = ({ index }: { index: number }) => {
   const criterionScores = data[index];
   const { criterion } = criterionScores;
   const color = criterionColor(criterion);
+  const { selectedCriterion } = useSelectedCriterion();
 
   return (
     <>
@@ -318,7 +322,11 @@ const CriterionLabel = ({ index }: { index: number }) => {
         r={16}
         stroke={color}
         strokeWidth="4"
-        fill="white"
+        fill={
+          criterion === selectedCriterion
+            ? selectedCriterionBackgroundColor
+            : 'white'
+        }
       />
       <SVGCriterionIcon
         criterion={criterion}
@@ -346,6 +354,19 @@ const AxisLine = () => {
   );
 };
 
+const SelectedCriterionIndicator = ({ index }: { index: number }) => {
+  return (
+    <rect
+      x={0}
+      y={criterionChartHeight * index}
+      width="100%"
+      height={criterionChartHeight}
+      fill={selectedCriterionBackgroundColor}
+      rx="4"
+    />
+  );
+};
+
 const SizedBarChart = ({
   data,
   personalScoresActivated,
@@ -357,6 +378,8 @@ const SizedBarChart = ({
   domain: number[];
   width: number;
 }) => {
+  const { selectedCriterion, setSelectedCriterion } = useSelectedCriterion();
+
   const height = criterionChartHeight * data.length;
 
   const contextValue = useMemo<ChartContextValue>(
@@ -370,11 +393,41 @@ const SizedBarChart = ({
     [data, domain, width, height, personalScoresActivated]
   );
 
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const handleClick = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const clickY = event.clientY;
+      const containerY = svgRef.current?.getBoundingClientRect().top;
+      if (containerY === undefined) return;
+
+      const y = clickY - containerY;
+      const index = Math.floor(y / criterionChartHeight);
+
+      if (index < 0 || index >= data.length) return;
+      const { criterion } = data[index];
+
+      setSelectedCriterion(criterion);
+    },
+    [data, setSelectedCriterion]
+  );
+
   return (
     <ChartContext.Provider value={contextValue}>
-      <svg width={width} height={height}>
+      <svg
+        width={width}
+        height={height}
+        ref={svgRef}
+        onClick={handleClick}
+        style={{ cursor: 'pointer' }}
+      >
         {data.map(({ criterion }, index) => (
           <React.Fragment key={criterion}>
+            {criterion === selectedCriterion && (
+              <SelectedCriterionIndicator index={index} />
+            )}
             <ScoreBar index={index} personal={false} />
             <ScoreBar index={index} personal={true} />
             <CriterionLabel index={index} />
