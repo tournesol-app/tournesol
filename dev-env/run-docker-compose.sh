@@ -34,11 +34,34 @@ function compose_up_with_compose_plugin() {
 function compose_up(){
   if command -v docker-compose
   then
-    echo "docker-compose found"
+    echo "compose_up : docker-compose found"
     compose_up_with_docker_compose "$@"
   else
-    echo "docker-compose not found, trying with docker"
+    echo "compose_up : docker-compose not found, trying with docker"
     compose_up_with_compose_plugin "$@"
+  fi
+}
+
+function compose_down_with_docker_compose() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker-compose down
+}
+
+function compose_down_with_compose_plugin() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker compose down
+}
+
+function compose_down(){
+  if command -v docker-compose
+  then
+    echo "compose_down : docker-compose found"
+    compose_down_with_docker_compose
+  else
+    echo "compose_down : docker-compose not found, trying with docker"
+    compose_down_with_compose_plugin
   fi
 }
 
@@ -63,6 +86,13 @@ if [[ "${1:-""}" == 'restart' ]]; then
   compose_up
   wait_for is_front_ready "front"
   echo "You can now access Tournesol on http://localhost:3000"
+  exit
+fi
+
+if [[ "${1:-""}" == 'stop' ]]; then
+  echo "Stopping dev containers..."
+  compose_down
+  echo "Docker containers are stopped."
   exit
 fi
 
