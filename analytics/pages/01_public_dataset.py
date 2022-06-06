@@ -9,26 +9,27 @@ from sklearn.linear_model import LinearRegression
 from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
 
-def add_expander_select_user():
+def add_sidebar_select_user():
 
-    with st.expander("Select user(s)"):
+    st.sidebar.title("Select user(s)")
 
-        st.markdown(
-            "You can select one or several users. If you select none the entire public data set will be use."
-        )
+    st.sidebar.markdown(
+        "You can select one or several users. "
+        "If you select none the entire public data set will be use."
+    )
 
-        if not isinstance(st.session_state.df, pd.DataFrame):
-            st.warning(MSG_NO_DATA)
-            return
+    if not isinstance(st.session_state.df, pd.DataFrame):
+        st.sidebar.warning(MSG_NO_DATA)
+        return
 
-        df = st.session_state.df
-        all_users = df["public_username"].unique()
-        selected_users = st.multiselect("", all_users)
-        if len(selected_users):
-            df = df[df["public_username"].isin(selected_users)]
-        st.session_state.df = df
-        st.session_state.all_users = all_users
-        st.session_state.selected_users = selected_users
+    df = st.session_state.df
+    all_users = df["public_username"].unique()
+    selected_users = st.sidebar.multiselect("", all_users)
+    if len(selected_users):
+        df = df[df["public_username"].isin(selected_users)]
+    st.session_state.df = df
+    st.session_state.all_users = all_users
+    st.session_state.selected_users = selected_users
 
 
 def add_expander_raw_data():
@@ -202,41 +203,35 @@ def add_expander_cursor_position():
 
             for user in selected_users:
                 df_user = df[df["public_username"] == user]
-                fig.add_trace(
-                    go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21)
-                )
+                fig.add_trace(go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21))
 
         else:
-            fig.add_trace(
-                go.Histogram(x=df[selected_crit], name="all users", nbinsx=21)
-            )
+            fig.add_trace(go.Histogram(x=df[selected_crit], name="all users", nbinsx=21))
 
         fig.update_layout(barmode="overlay")
         fig.update_traces(opacity=0.7)
         st.plotly_chart(fig)
 
 
-def app():
+st.title("Comparisons Public Dataset")
 
-    st.title("Comparisons Public Dataset")
+# Load public dataset (the function is cached to not overload the API)
+st.session_state.df = set_df()
 
-    # Load public dataset (the function is cached to not overload the API)
-    st.session_state.df = set_df()
+# Select users
+add_sidebar_select_user()
 
-    # Select users
-    add_expander_select_user()
+# Plot raw data
+add_expander_raw_data()
 
-    # Plot raw data
-    add_expander_raw_data()
+# Statistics
+add_expander_statistics()
 
-    # Statistics
-    add_expander_statistics()
+# Correlation coefficients
+add_expander_correlation_coefficients()
 
-    # Correlation coefficients
-    add_expander_correlation_coefficients()
+# Detailed correlation
+add_expander_detailed_correlation()
 
-    # Detailed correlation
-    add_expander_detailed_correlation()
-
-    # Cursor position
-    add_expander_cursor_position()
+# Cursor position
+add_expander_cursor_position()

@@ -7,28 +7,28 @@ import streamlit as st
 from utils import CRITERIA, CRITERI_EXT, MSG_NO_DATA, TCOLOR, api_get_tournesol_scores
 
 
-def add_expander_select_filters():
+def add_sidebar_select_channels():
 
-    with st.expander("Select channel(s)"):
+    st.sidebar.title("Select channel(s)")
 
-        st.markdown(
-            "You can select one or several YouTube channels."
-            " If you select none, all channels will be use."
-        )
+    st.sidebar.markdown(
+        "You can select one or several YouTube channels."
+        " If you select none, all channels will be use."
+    )
 
-        if not isinstance(st.session_state.df_scores, pd.DataFrame):
-            st.warning(MSG_NO_DATA)
-            return
+    if not isinstance(st.session_state.df_scores, pd.DataFrame):
+        st.sidebar.warning(MSG_NO_DATA)
+        return
 
-        df = st.session_state.df_scores
-        all_uploaders = df["uploader"].unique()
-        selected_uploaders = st.multiselect("", all_uploaders)
-        if len(selected_uploaders):
-            df = df[df["uploader"].isin(selected_uploaders)]
+    df = st.session_state.df_scores
+    all_uploaders = df["uploader"].unique()
+    selected_uploaders = st.sidebar.multiselect("", all_uploaders)
+    if len(selected_uploaders):
+        df = df[df["uploader"].isin(selected_uploaders)]
 
-        st.session_state.df_scores = df
-        st.session_state.all_uploaders = all_uploaders
-        st.session_state.selected_uploaders = selected_uploaders
+    st.session_state.df_scores = df
+    st.session_state.all_uploaders = all_uploaders
+    st.session_state.selected_uploaders = selected_uploaders
 
 
 def add_expander_video_data():
@@ -165,24 +165,22 @@ def add_expander_detailed_correlation():
         st.plotly_chart(fig)
 
 
-def app():
+st.title("Tournesol scores")
 
-    st.title("Tournesol scores")
+# Load public dataset (the function is cached to not overload the API)
+st.session_state.df_scores = api_get_tournesol_scores()
 
-    # Load public dataset (the function is cached to not overload the API)
-    st.session_state.df_scores = api_get_tournesol_scores()
+# Select uploaders
+add_sidebar_select_channels()
 
-    # Select uploaders
-    add_expander_select_filters()
+# Table of video data
+add_expander_video_data()
 
-    # Table of video data
-    add_expander_video_data()
+# Table of average values by channel
+add_expander_avg_values()
 
-    # Table of average values by channel
-    add_expander_avg_values()
+# Correlation coefficients
+add_expander_correlation_coefficients()
 
-    # Correlation coefficients
-    add_expander_correlation_coefficients()
-
-    # Detailed correlation
-    add_expander_detailed_correlation()
+# Detailed correlation
+add_expander_detailed_correlation()
