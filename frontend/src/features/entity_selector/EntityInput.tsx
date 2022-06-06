@@ -28,9 +28,10 @@ import { useLoginState } from 'src/hooks';
 interface Props {
   value: string;
   onChange: (value: string) => void;
+  otherUid: string | null;
 }
 
-const VideoInput = ({ value, onChange }: Props) => {
+const VideoInput = ({ value, onChange, otherUid }: Props) => {
   const { t } = useTranslation();
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const inputRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,19 @@ const VideoInput = ({ value, onChange }: Props) => {
 
   const tabs: EntitiesTab[] = useMemo(
     () => [
+      {
+        name: 'suggestions',
+        label: t('entitySelector.suggestions'),
+        fetch: async () => {
+          const response = await UsersService.usersMeEntitiesToCompareList({
+            pollName: YOUTUBE_POLL_NAME,
+            limit: 20,
+            firstEntityUid: otherUid || undefined,
+          });
+          return response.results ?? [];
+        },
+        disabled: !isLoggedIn,
+      },
       {
         name: 'rate-later',
         label: t('entitySelector.rateLater'),
@@ -78,7 +92,7 @@ const VideoInput = ({ value, onChange }: Props) => {
         fetch: async () => {
           const response = await getRecommendations(
             'videos',
-            10,
+            20,
             '?date=Month',
             []
           );
@@ -86,7 +100,7 @@ const VideoInput = ({ value, onChange }: Props) => {
         },
       },
     ],
-    [t, isLoggedIn]
+    [t, isLoggedIn, otherUid]
   );
 
   return (

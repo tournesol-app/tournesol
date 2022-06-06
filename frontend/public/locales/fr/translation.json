@@ -86,6 +86,7 @@
   "entitySelector": {
     "newVideo": "Selectionner une nouvelle vidéo automatiquement",
     "autoEntityButton": "Auto",
+    "suggestions": "Suggestions",
     "rateLater": "À comparer",
     "recentlyCompared": "Comparées",
     "recommendations": "Top du mois",
@@ -261,10 +262,10 @@
     "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
   },
   "stats": {
-    "activeUsers": "Utilisateurs actifs",
-    "comparisons": "Comparaisons",
     "ratedVideos": "Vidéos notées",
-    "ratedCandidates": "Candidats notés"
+    "ratedCandidates": "Candidats notés",
+    "activeUsers": "Utilisateurs actifs",
+    "comparisons": "Comparaisons"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",

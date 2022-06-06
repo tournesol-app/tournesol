@@ -83,6 +83,7 @@
   "entitySelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
+    "suggestions": "Suggestions",
     "rateLater": "Rate later",
     "recentlyCompared": "Compared",
     "recommendations": "Top of the month",
@@ -255,10 +256,10 @@
     "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
   },
   "stats": {
-    "activeUsers": "Active users",
-    "comparisons": "Comparisons",
     "ratedVideos": "Rated videos",
-    "ratedCandidates": "Rated candidates"
+    "ratedCandidates": "Rated candidates",
+    "activeUsers": "Active users",
+    "comparisons": "Comparisons"
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
