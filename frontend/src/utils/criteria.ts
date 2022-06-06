@@ -25,4 +25,4 @@ const criterionColors: { [criteria: string]: string } = {
 };
 
 export const criterionColor = (criterion: string) =>
-  criterionColors[criterion] || '#506ad4';
+  criterionColors[criterion] || '#ffc800';
