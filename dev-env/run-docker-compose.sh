@@ -19,10 +19,27 @@ function is_front_ready() {
   curl -s localhost:3000 --max-time 1 -o /dev/null
 }
 
-function compose_up() {
+function compose_up_with_docker_compose() {
   DB_UID=$(id -u) \
   DB_GID=$(id -g) \
   docker-compose up --build --force-recreate -d "$@"
+}
+
+function compose_up_with_compose_plugin() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker compose up --build --force-recreate -d "$@"
+}
+
+function compose_up(){
+  if command -v docker-compose
+  then
+    echo "docker-compose found"
+    compose_up_with_docker_compose "$@"
+  else
+    echo "docker-compose not found, trying with docker"
+    compose_up_with_compose_plugin "$@"
+  fi
 }
 
 function wait_for() {
