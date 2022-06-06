@@ -13,6 +13,7 @@ export const criteriaIcon = (criteriaName: string) => {
 };
 
 const criterionColors: { [criteria: string]: string } = {
+  largely_recommended: '#ffc800',
   reliability: '#4F77DD',
   importance: '#DC8A5D',
   engaging: '#DFC642',
@@ -25,4 +26,4 @@ const criterionColors: { [criteria: string]: string } = {
 };
 
 export const criterionColor = (criterion: string) =>
-  criterionColors[criterion] || '#ffc800';
+  criterionColors[criterion] || '#506ad4';
