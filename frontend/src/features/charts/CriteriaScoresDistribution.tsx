@@ -16,6 +16,7 @@ import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import { useCurrentPoll } from 'src/hooks';
 import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
 import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
+import { criterionColor } from 'src/utils/criteria';
 
 const displayScore = (score: number) => (10 * score).toFixed(0);
 
@@ -36,8 +37,10 @@ const binLabel = (index: number, bins: number[], t: TFunction) => {
 };
 
 const CriteriaScoresDistributionChart = ({
+  criterion,
   criteriaDistributionScore,
 }: {
+  criterion: string;
   criteriaDistributionScore: CriteriaDistributionScore;
 }) => {
   const { t } = useTranslation();
@@ -56,6 +59,8 @@ const CriteriaScoresDistributionChart = ({
     (value: number) => [value, t('criteriaScoresDistribution.label')],
     [t]
   );
+
+  const barColor = criterionColor(criterion);
 
   return (
     <ResponsiveContainer width="100%" height={360}>
@@ -79,7 +84,7 @@ const CriteriaScoresDistributionChart = ({
           }}
         />
         <Tooltip formatter={tooltipFormatter} />
-        <Bar dataKey="value" fill="#1282b2" />
+        <Bar dataKey="value" fill={barColor} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -130,6 +135,7 @@ const CriteriaScoresDistribution = ({
       {criteriaDistributionScore && (
         <Box py={1}>
           <CriteriaScoresDistributionChart
+            criterion={selectedCriterion}
             criteriaDistributionScore={criteriaDistributionScore}
           />
         </Box>
