@@ -37,7 +37,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useLoginState();
   const fullScreenModal = useMediaQuery(
-    (theme: Theme) => `${theme.breakpoints.down('sm')} or (pointer: coarse)`,
+    (theme: Theme) => `${theme.breakpoints.down('sm')}, (pointer: coarse)`,
     { noSsr: true }
   );
 
