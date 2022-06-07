@@ -18,6 +18,18 @@ if (document.body) {
   document.addEventListener('DOMContentLoaded', addRateLaterButton);
 }
 
+function getYtButtonsContainer() {
+  return (
+    // 2022-06-06: container used by Youtube redesign will be searched first.
+    document.querySelector(
+      '#menu.ytd-watch-metadata #top-level-buttons-computed'
+    ) ||
+    document.querySelector(
+      '#menu.ytd-video-primary-info-renderer #top-level-buttons-computed'
+    )
+  );
+}
+
 function addRateLaterButton() {
   const videoId = new URL(location.href).searchParams.get('v');
 
@@ -38,14 +50,10 @@ function addRateLaterButton() {
      ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the button
      ** Note: using .children[index] when child has no id
      */
-    if (
-      !document.getElementById('menu-container') ||
-      !document.getElementById('menu-container').children['menu'] ||
-      !document.getElementById('menu-container').children['menu'].children[0] ||
-      !document.getElementById('menu-container').children['menu'].children[0]
-        .children['top-level-buttons-computed']
-    )
+    const buttonsContainer = getYtButtonsContainer();
+    if (!buttonsContainer) {
       return;
+    }
 
     // If the button already exists, don't create a new one
     if (document.getElementById('tournesol-rate-button')) {
@@ -102,9 +110,9 @@ function addRateLaterButton() {
     };
 
     // Insert after like and dislike buttons
-    const div =
-      document.getElementById('menu-container').children['menu'].children[0]
-        .children['top-level-buttons-computed'];
-    div.insertBefore(rateLaterButton, div.children[2]);
+    buttonsContainer.insertBefore(
+      rateLaterButton,
+      buttonsContainer.children[2]
+    );
   }
 }

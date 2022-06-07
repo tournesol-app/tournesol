@@ -10,6 +10,7 @@ button#tournesol-rate-button {
   vertical-align: middle;
   text-transform: uppercase;
   font-weight: 500;
+  height: 36px;
 }
 
 button#tournesol-rate-button:disabled {
