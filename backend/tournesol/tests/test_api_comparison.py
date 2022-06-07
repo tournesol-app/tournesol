@@ -17,6 +17,7 @@ from tournesol.models import (
     Entity,
     EntityCriteriaScore,
     Poll,
+    VideoRateLater,
 )
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
@@ -936,6 +937,41 @@ class ComparisonApiTestCase(TestCase):
         self.assertContains(
             response, "not a valid criteria", status_code=status.HTTP_400_BAD_REQUEST
         )
+
+    def test_comparing_removes_from_rate_later(self):
+        """
+        Comparing a video multiple time removes it from the rate later list
+        """
+        self.client.force_authenticate(user=self.user)
+        video_main, *videos = (VideoFactory() for _ in range(5))
+
+        def compare(uid_1, uid_2):
+            response = self.client.post(
+                self.comparisons_base_url,
+                {
+                "entity_a": {"uid": uid_1},
+                "entity_b": {"uid": uid_2},
+                "criteria_scores": [
+                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                ],
+                "duration_ms": 103,
+            },
+                format="json",
+            )
+
+        self.client.post(
+            "/users/me/video_rate_later/",
+            {"video": {"video_id": video_main.video_id}},
+            format="json",
+        )
+        compare(video_main.uid, videos[0].uid)
+        # Video main should still be in the rate later list
+        self.assertEqual(VideoRateLater.objects.filter(video=video_main).count(), 1)
+        for video in videos[1:]:
+            compare(video_main.uid, video.uid)
+        # Video main should not be in the rate later list after >= 4 comparisons
+        self.assertEqual(VideoRateLater.objects.filter(video=video_main).count(), 0)
+
 
 
 class ComparisonWithMehestanTest(TransactionTestCase):
