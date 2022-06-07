@@ -32,8 +32,7 @@ function compose_up_with_compose_plugin() {
 }
 
 function compose_up(){
-  if command -v docker-compose
-  then
+  if command -v docker-compose ; then
     echo "compose_up : docker-compose found"
     compose_up_with_docker_compose "$@"
   else
@@ -55,8 +54,7 @@ function compose_down_with_compose_plugin() {
 }
 
 function compose_down(){
-  if command -v docker-compose
-  then
+  if command -v docker-compose ; then
     echo "compose_down : docker-compose found"
     compose_down_with_docker_compose
   else
