@@ -37,7 +37,12 @@ function compose_up(){
     compose_up_with_docker_compose "$@"
   else
     echo "compose_up : docker-compose not found, trying with docker"
-    compose_up_with_compose_plugin "$@"
+    if docker compose version ; then
+      compose_up_with_compose_plugin "$@"
+    else
+      echo "please install either docker-compose or docker-compose-plugin "
+      exit 1
+    fi
   fi
 }
 
@@ -59,7 +64,12 @@ function compose_down(){
     compose_down_with_docker_compose
   else
     echo "compose_down : docker-compose not found, trying with docker"
-    compose_down_with_compose_plugin
+    if docker compose version ; then
+      compose_down_with_compose_plugin
+    else
+      echo "please install either docker-compose or docker-compose-plugin "
+      exit 1
+    fi
   fi
 }
 
