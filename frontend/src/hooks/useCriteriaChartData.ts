@@ -32,6 +32,13 @@ export interface UseCriteriaChartDataValue {
   domain: number[]; // Minimum and maximum score values that should be displayed (scores in data may be outside this domain)
 }
 
+interface ScoreByCriterion {
+  [criterion: string]: {
+    score: number | undefined;
+    clippedScore: number | undefined;
+  };
+}
+
 const useCriteriaChartData = ({
   video,
   entity,
@@ -45,7 +52,7 @@ const useCriteriaChartData = ({
   );
   const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 
-  const { name: pollName } = useCurrentPoll();
+  const { name: pollName, criterias: pollCriteria } = useCurrentPoll();
 
   const { personalScoresActivated, personalCriteriaScores } =
     usePersonalCriteriaScores();
@@ -67,27 +74,33 @@ const useCriteriaChartData = ({
     if (!personalScoresActivated || personalCriteriaScores === undefined)
       return {};
 
-    const result: {
-      [criterion: string]: {
-        score: number | undefined;
-        clippedScore: number | undefined;
+    const result: ScoreByCriterion = {};
+    personalCriteriaScores.forEach(({ criteria: criterion, score }) => {
+      result[criterion] = {
+        score,
+        clippedScore: clipScore(score),
       };
-    } = {};
-    personalCriteriaScores.forEach(
-      ({ criteria: criterion, score }) =>
-        (result[criterion] = {
-          score,
-          clippedScore: clipScore(score),
-        })
-    );
+    });
     return result;
   }, [personalScoresActivated, personalCriteriaScores, clipScore]);
+
+  const scoreByCriterion = useMemo(() => {
+    const result: ScoreByCriterion = {};
+    criteriaScores.forEach(({ criteria: criterion, score }) => {
+      result[criterion] = {
+        score,
+        clippedScore: clipScore(score),
+      };
+    });
+    return result;
+  }, [criteriaScores, clipScore]);
 
   const data = useMemo<CriterionChartScores[]>(() => {
     if (!shouldDisplayChart) return [];
 
-    return criteriaScores.map(({ score, criteria: criterion }) => {
-      const clippedScore = clipScore(score);
+    return pollCriteria.map((pollCriterion) => {
+      const criterion = pollCriterion.name;
+      const { score, clippedScore } = scoreByCriterion[criterion] || {};
       const { score: personalScore, clippedScore: clippedPersonalScore } =
         personalScoreByCriterion[criterion] || {};
       return {
@@ -98,7 +111,12 @@ const useCriteriaChartData = ({
         clippedPersonalScore,
       };
     });
-  }, [shouldDisplayChart, criteriaScores, personalScoreByCriterion, clipScore]);
+  }, [
+    shouldDisplayChart,
+    pollCriteria,
+    scoreByCriterion,
+    personalScoreByCriterion,
+  ]);
 
   return {
     shouldDisplayChart,

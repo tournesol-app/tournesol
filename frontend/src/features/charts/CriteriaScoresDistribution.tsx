@@ -15,6 +15,8 @@ import { Box } from '@mui/material';
 import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import { useCurrentPoll } from 'src/hooks';
 import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
+import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
+import { criterionColor } from 'src/utils/criteria';
 
 const displayScore = (score: number) => (10 * score).toFixed(0);
 
@@ -35,8 +37,10 @@ const binLabel = (index: number, bins: number[], t: TFunction) => {
 };
 
 const CriteriaScoresDistributionChart = ({
+  criterion,
   criteriaDistributionScore,
 }: {
+  criterion: string;
   criteriaDistributionScore: CriteriaDistributionScore;
 }) => {
   const { t } = useTranslation();
@@ -55,6 +59,8 @@ const CriteriaScoresDistributionChart = ({
     (value: number) => [value, t('criteriaScoresDistribution.label')],
     [t]
   );
+
+  const barColor = criterionColor(criterion);
 
   return (
     <ResponsiveContainer width="100%" height={360}>
@@ -78,7 +84,7 @@ const CriteriaScoresDistributionChart = ({
           }}
         />
         <Tooltip formatter={tooltipFormatter} />
-        <Bar dataKey="value" fill="#1282b2" />
+        <Bar dataKey="value" fill={barColor} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -91,11 +97,8 @@ interface CriteriaScoresDistributionProps {
 const CriteriaScoresDistribution = ({
   uid,
 }: CriteriaScoresDistributionProps) => {
-  const { name: pollName, options } = useCurrentPoll();
-
-  const mainCriterionName = options?.mainCriterionName || '';
-  const [selectedCriteria, setSelectedCriteria] =
-    useState<string>(mainCriterionName);
+  const { name: pollName } = useCurrentPoll();
+  const { selectedCriterion, setSelectedCriterion } = useSelectedCriterion();
 
   const [criteriaScoresDistribution, setCriteriaScoresDistribution] = useState<
     CriteriaDistributionScore[]
@@ -116,22 +119,23 @@ const CriteriaScoresDistribution = ({
   const criteriaDistributionScore = useMemo(
     () =>
       criteriaScoresDistribution.find(
-        ({ criteria }) => criteria === selectedCriteria
+        ({ criteria: criterion }) => criterion === selectedCriterion
       ),
-    [selectedCriteria, criteriaScoresDistribution]
+    [selectedCriterion, criteriaScoresDistribution]
   );
 
   return (
     <>
       <Box px={2} pt={1} pb={1}>
         <CriteriaSelector
-          criteria={selectedCriteria}
-          setCriteria={setSelectedCriteria}
+          criteria={selectedCriterion}
+          setCriteria={setSelectedCriterion}
         />
       </Box>
       {criteriaDistributionScore && (
         <Box py={1}>
           <CriteriaScoresDistributionChart
+            criterion={selectedCriterion}
             criteriaDistributionScore={criteriaDistributionScore}
           />
         </Box>
