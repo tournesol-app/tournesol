@@ -3,12 +3,15 @@
     "filtersButton": "filtres"
   },
   "personalCriteriaScores": {
-    "chartTooltip": "Score personnel: {{score}}",
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
       "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
     },
     "activatePersonalScores": "Afficher les scores personnels"
+  },
+  "criteriaBarChart": {
+    "scoreTooltip": "Score collectif",
+    "personalScoreTooltip": "Votre score personnel"
   },
   "dialogBox": {
     "continue": "continuer"
