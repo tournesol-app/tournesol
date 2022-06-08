@@ -7,6 +7,7 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  Stack,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -19,7 +20,7 @@ import { ActionList, JSONValue, RelatedEntityObject } from 'src/utils/types';
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
 import EntityImagery from './EntityImagery';
-import EntityMetadata from './EntityMetadata';
+import EntityMetadata, { VideoMetadata } from './EntityMetadata';
 import { entityCardMainSx } from './style';
 
 const EntityCard = ({
@@ -150,6 +151,48 @@ const EntityCard = ({
         </Grid>
       )}
     </Grid>
+  );
+};
+
+export const RowEntityCard = ({ entity }: { entity: RelatedEntityObject }) => {
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      gap={1}
+      height="70px"
+      sx={{ ...entityCardMainSx, bgcolor: 'transparent' }}
+    >
+      <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
+        <EntityImagery
+          entity={entity}
+          config={{
+            [TypeEnum.VIDEO]: {
+              displayPlayer: false,
+              thumbnailLink: false,
+            },
+          }}
+        />
+      </Box>
+      <Stack gap="4px">
+        <EntityCardTitle
+          uid={entity.uid}
+          title={entity.metadata.name}
+          titleMaxLines={1}
+          withLink={false}
+          fontSize="1em"
+        />
+        {entity.type == TypeEnum.VIDEO && (
+          <VideoMetadata
+            views={entity.metadata.views}
+            uploader={entity.metadata.uploader}
+            publicationDate={entity.metadata.publication_date}
+            withLinks={false}
+          />
+        )}
+      </Stack>
+    </Box>
   );
 };
 

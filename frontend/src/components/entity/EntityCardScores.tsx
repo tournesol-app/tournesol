@@ -121,7 +121,7 @@ const EntityCardScores = ({
         flexWrap="wrap"
         alignItems="center"
         columnGap="12px"
-        paddingBottom={1}
+        py={1}
       >
         {showTournesolScore &&
           'tournesol_score' in entity &&
