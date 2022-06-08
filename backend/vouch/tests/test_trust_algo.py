@@ -119,7 +119,15 @@ class UnitTest(TestCase):
         )
 
     def test_trust_algo(self):
+        users = list(user.User.objects.all())
+        for u in users:
+            self.assertIsNone(u.trust_score)
         trust_algo()
         users = list(user.User.objects.all())
         assert users[1].trust_score >= 0.9999999
         assert users[9].trust_score == pytest.approx(0, 0.00000001)
+        vouch18 = Voucher(by=self.user_1, to=self.user_8, trust_value=100.0)
+        vouch18.save()
+        trust_algo()
+        users = list(user.User.objects.all())
+        assert users[8].trust_score > 0.00001
