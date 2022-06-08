@@ -136,7 +136,7 @@ echo 'Creating Superuser:'
 USERNAME="${1:-"user"}"
 PASSWORD="${2:-"tournesol"}"
 EMAIL="${3:-"superuser@example.com"}"
-"$CURRENT_DIR/../backend/dev-env/create-superuser.exp" "$USERNAME" "$PASSWORD" "$EMAIL"
+docker exec tournesol-dev-api bash -c "echo \"from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$USERNAME', '$EMAIL', '$PASSWORD')\" | python manage.py shell"
 
 echo 'Creating OAuth Application:'
 # OAUTH_CLIENT_ID="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)" || true
