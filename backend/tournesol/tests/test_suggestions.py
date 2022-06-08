@@ -390,3 +390,15 @@ class SuggestionAPITestCase(TestCase):
 
         suggestions = suggester.get_second_video_recommendation(new_user, self.videos[9].uid, 6)
         assert len(suggestions) == 6
+
+    def test_suggestions_with_new_video_without_score(self):
+        new_video = VideoFactory()
+        ComparisonCriteriaScoreFactory(
+            comparison__user=self.central_scaled_user,
+            comparison__entity_1=new_video,
+            comparison__entity_2=self.videos[0],
+            criteria=self._criteria,
+        )
+        suggester = SuggestionProvider(self.poll)
+        suggestions = suggester.get_second_video_recommendation(self.central_scaled_user, self.videos[0].uid, 6)
+        assert len(suggestions) == 6
