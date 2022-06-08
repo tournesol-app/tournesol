@@ -32,13 +32,14 @@ function compose_up_with_compose_plugin() {
 }
 
 function compose_up(){
-  if command -v docker-compose ; then
-    echo "compose_up : docker-compose found"
-    compose_up_with_docker_compose "$@"
-  else
-    echo "compose_up : docker-compose not found, trying with docker"
-    if docker compose version ; then
+  if docker compose version ; then
+      echo "compose_up : docker-compose-plugin found"
       compose_up_with_compose_plugin "$@"
+  else
+    echo "compose_up : docker-compose-plugin not found, trying to find docker-compose command"
+    if command -v docker-compose ; then
+      echo "compose_up : docker-compose found"
+      compose_up_with_docker_compose "$@"
     else
       echo "please install either docker-compose or docker-compose-plugin "
       exit 1
@@ -46,26 +47,27 @@ function compose_up(){
   fi
 }
 
-function compose_down_with_docker_compose() {
+function compose_stop_with_docker_compose() {
   DB_UID=$(id -u) \
   DB_GID=$(id -g) \
-  docker-compose down
+  docker-compose stop
 }
 
-function compose_down_with_compose_plugin() {
+function compose_stop_with_compose_plugin() {
   DB_UID=$(id -u) \
   DB_GID=$(id -g) \
-  docker compose down
+  docker compose stop
 }
 
-function compose_down(){
-  if command -v docker-compose ; then
-    echo "compose_down : docker-compose found"
-    compose_down_with_docker_compose
+function compose_stop(){
+  if docker compose version ; then
+      echo "compose_stop: docker-compose-plugin found"
+      compose_stop_with_compose_plugin
   else
-    echo "compose_down : docker-compose not found, trying with docker"
-    if docker compose version ; then
-      compose_down_with_compose_plugin
+    echo "compose_stop : docker-compose-plugin not found, trying to find docker-compose command"
+    if command -v docker-compose ; then
+      echo "compose_stop : docker-compose found"
+      compose_stop_with_docker_compose
     else
       echo "please install either docker-compose or docker-compose-plugin "
       exit 1
@@ -99,7 +101,7 @@ fi
 
 if [[ "${1:-""}" == 'stop' ]]; then
   echo "Stopping dev containers..."
-  compose_down
+  compose_stop
   echo "Docker containers are stopped."
   exit
 fi
