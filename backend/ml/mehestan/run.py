@@ -23,6 +23,9 @@ from .individual import compute_individual_score
 
 logger = logging.getLogger(__name__)
 
+POLL_SCALING_QUANTILE_MARKER = 0.95
+POLL_SCALING_SCORE_AT_MARKER = 90
+
 
 def get_individual_scores(
     ml_input: MlInput, criteria: str, single_user_id: Optional[int] = None
@@ -49,12 +52,20 @@ def update_user_scores(poll: Poll, user: User):
     for criteria in poll.criterias_list:
         scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
         scores["criteria"] = criteria
+
+        # TODO: apply individual scaling and poll scaling
+    
         save_contributor_scores(
             poll, scores, single_criteria=criteria, single_user_id=user.pk
         )
 
 
-def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
+def _run_mehestan_for_criterion(
+        criteria: str,
+        ml_input: MlInput,
+        poll_pk: int,
+        update_poll_scaling=False,
+    ):
     """
     Run Mehestan for the given criterion, in the given poll.
     """
@@ -75,8 +86,25 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
-    save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
 
+    if update_poll_scaling:
+        global_scores = get_global_scores(
+            scaled_scores,
+            score_mode=ScoreMode.DEFAULT
+        )
+        # TODO: compute percentiles and a,b
+        a , b = (1.0, 0.0)
+        
+        poll.scale = a
+        poll.translation = b
+        poll.save(update_fields=["scale", "translation"])
+    
+    # Apply poll scaling
+    scaled_scores["score"] = scaled_scores["scores"] * poll.scale + poll.translation
+    scaled_scores["uncertainly"] *= poll.scale
+
+    save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
+        
     for mode in ScoreMode:
         global_scores = get_global_scores(scaled_scores, score_mode=mode)
         global_scores["criteria"] = criteria

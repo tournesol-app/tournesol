@@ -35,6 +35,14 @@ class Poll(models.Model):
         " and comparisons can't be created, updated or deleted by users.",
     )
 
+    @property
+    def scale(self):
+        return 1.0
+
+    @property
+    def offset(self):
+        return 0.0
+
     @classmethod
     def default_poll(cls) -> "Poll":
         poll, _created = cls.objects.get_or_create(
