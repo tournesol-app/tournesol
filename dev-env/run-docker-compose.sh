@@ -32,7 +32,7 @@ function compose_up_with_compose_plugin() {
 }
 
 function compose_up(){
-  if docker compose version ; then
+  if docker compose version 2>/dev/null; then
       echo "compose_up : docker-compose-plugin found"
       compose_up_with_compose_plugin "$@"
   else
@@ -60,7 +60,7 @@ function compose_stop_with_compose_plugin() {
 }
 
 function compose_stop(){
-  if docker compose version ; then
+  if docker compose version 2>/dev/null; then
       echo "compose_stop: docker-compose-plugin found"
       compose_stop_with_compose_plugin
   else
