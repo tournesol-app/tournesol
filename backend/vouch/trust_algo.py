@@ -18,7 +18,7 @@ def normalize_trust_values(C, trust_status):
         vouching_size = np.sum(np.array(C[i]) > 0, axis=0)
         for j in range(len(C[0])):
             trust_indic = int(trust_status[j] > 0)
-            vouch_indic = int(C[i][j] > 0)  
+            vouch_indic = int(C[i][j] > 0)
             C[i][j] = ALPHA / (ALPHA * trust_size + vouching_size) * trust_indic
             C[i][j] += 1 / (ALPHA * trust_size + vouching_size) * vouch_indic
     return C
@@ -65,10 +65,10 @@ def trust_algo():
     # create a matrix C where entry c_ij is the trust value user i gave to user j
 
     C_ = np.zeros([nb_users, nb_users], dtype=float)
-    for v in Voucher.objects.all():
+    for v in Voucher.objects.iterator():
         i = users.index(v.by)
         j = users.index(v.to)
-        C_[i][j] = v.trust_value 
+        C_[i][j] = v.trust_value
     # improved eigen trust algorithm
     p = trust_status
     p = p/np.sum(p)
