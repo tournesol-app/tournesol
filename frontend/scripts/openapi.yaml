@@ -597,16 +597,20 @@ paths:
         description: Filter by one or more metadata.
         style: deepObject
         examples:
-          SomeFiltersAvailableForVideos.:
+          Videos-SomeExamples:
             value:
               language: fr,pt
               uploader: kurzgesagtES
-            summary: Some filters available for videos.
-          SomeFiltersAvailableForCandidates.:
+            summary: Videos - some examples
+          Videos-VideosOf8MinutesOrLess(480Sec):
+            value:
+              duration:lte:int: '480'
+            summary: Videos - videos of 8 minutes or less (480 sec)
+          Candidates-SomeExamples:
             value:
               name: A candidate full name
               youtube_channel_id: channel ID
-            summary: Some filters available for candidates.
+            summary: Candidates - some examples
       - in: query
         name: score_mode
         schema:
@@ -864,16 +868,20 @@ paths:
         description: Filter by one or more metadata.
         style: deepObject
         examples:
-          SomeFiltersAvailableForVideos.:
+          Videos-SomeExamples:
             value:
               language: fr,pt
               uploader: kurzgesagtES
-            summary: Some filters available for videos.
-          SomeFiltersAvailableForCandidates.:
+            summary: Videos - some examples
+          Videos-VideosOf8MinutesOrLess(480Sec):
+            value:
+              duration:lte:int: '480'
+            summary: Videos - videos of 8 minutes or less (480 sec)
+          Candidates-SomeExamples:
             value:
               name: A candidate full name
               youtube_channel_id: channel ID
-            summary: Some filters available for candidates.
+            summary: Candidates - some examples
       tags:
       - users
       security:
@@ -1348,6 +1356,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContributorCriteriaCorrelations'
           description: ''
+  /users/me/entities_to_compare/{poll_name}/:
+    get:
+      operationId: users_me_entities_to_compare_list
+      description: Retrieve a list of recommendations to compare for the logged user
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: first_entity_uid
+        schema:
+          type: string
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntityNoExtraFieldList'
+          description: ''
   /users/me/exports/all/:
     get:
       operationId: users_me_exports_all_retrieve
@@ -1514,16 +1560,20 @@ paths:
         description: Filter by one or more metadata.
         style: deepObject
         examples:
-          SomeFiltersAvailableForVideos.:
+          Videos-SomeExamples:
             value:
               language: fr,pt
               uploader: kurzgesagtES
-            summary: Some filters available for videos.
-          SomeFiltersAvailableForCandidates.:
+            summary: Videos - some examples
+          Videos-VideosOf8MinutesOrLess(480Sec):
+            value:
+              duration:lte:int: '480'
+            summary: Videos - videos of 8 minutes or less (480 sec)
+          Candidates-SomeExamples:
             value:
               name: A candidate full name
               youtube_channel_id: channel ID
-            summary: Some filters available for candidates.
+            summary: Candidates - some examples
       tags:
       - users
       security:
@@ -2190,9 +2240,8 @@ components:
           readOnly: true
         type:
           $ref: '#/components/schemas/TypeEnum'
-        metadata:
-          type: object
-          additionalProperties: {}
+        is_public:
+          type: boolean
           readOnly: true
         tournesol_score:
           type: number
@@ -2200,17 +2249,18 @@ components:
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        total_score:
-          type: number
-          format: float
-        is_public:
-          type: boolean
-          readOnly: true
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        total_score:
+          type: number
+          format: float
       required:
       - criteria_scores
       - is_public
@@ -2912,7 +2962,7 @@ components:
         bio:
           type: string
           nullable: true
-          description: Self-description (degree, biography, ...)
+          description: Self-description (other degrees, biography, ...)
         comment_anonymously:
           type: boolean
           description: Comment anonymously by-default
@@ -3007,6 +3057,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
+        trust_score:
+          type: number
+          format: float
+          nullable: true
+          description: The global trust score assigned to the user based on the vouching
+            mechanism.
         is_trusted:
           type: boolean
     PoliticalAffiliationEnum:
@@ -3195,7 +3251,7 @@ components:
         bio:
           type: string
           nullable: true
-          description: Self-description (degree, biography, ...)
+          description: Self-description (other degrees, biography, ...)
         comment_anonymously:
           type: boolean
           description: Comment anonymously by-default
@@ -3290,6 +3346,12 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
+        trust_score:
+          type: number
+          format: float
+          nullable: true
+          description: The global trust score assigned to the user based on the vouching
+            mechanism.
       required:
       - email
       - id
@@ -3341,7 +3403,7 @@ components:
         bio:
           type: string
           nullable: true
-          description: Self-description (degree, biography, ...)
+          description: Self-description (other degrees, biography, ...)
         comment_anonymously:
           type: boolean
           description: Comment anonymously by-default
@@ -3436,6 +3498,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
+        trust_score:
+          type: number
+          format: float
+          nullable: true
+          description: The global trust score assigned to the user based on the vouching
+            mechanism.
         password_confirm:
           type: string
           writeOnly: true
@@ -4018,7 +4086,7 @@ components:
         bio:
           type: string
           nullable: true
-          description: Self-description (degree, biography, ...)
+          description: Self-description (other degrees, biography, ...)
         comment_anonymously:
           type: boolean
           description: Comment anonymously by-default
@@ -4113,6 +4181,12 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
+        trust_score:
+          type: number
+          format: float
+          nullable: true
+          description: The global trust score assigned to the user based on the vouching
+            mechanism.
         is_trusted:
           type: boolean
       required:
@@ -4159,7 +4233,7 @@ components:
         bio:
           type: string
           nullable: true
-          description: Self-description (degree, biography, ...)
+          description: Self-description (other degrees, biography, ...)
         comment_anonymously:
           type: boolean
           description: Comment anonymously by-default
@@ -4254,6 +4328,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
+        trust_score:
+          type: number
+          format: float
+          nullable: true
+          description: The global trust score assigned to the user based on the vouching
+            mechanism.
         is_trusted:
           type: boolean
       required:
