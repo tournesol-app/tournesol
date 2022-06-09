@@ -214,9 +214,9 @@
     "allTime": "Toujours",
     "uploadDate": "Mises en ligne depuis",
     "duration": {
-      "title": "Durée",
+      "title": "Durée (minutes)",
       "max": {
-        "label": "max (minutes)"
+        "label": "max"
       }
     },
     "allLanguages": "Toutes",

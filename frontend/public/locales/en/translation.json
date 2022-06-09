@@ -208,9 +208,9 @@
     "allTime": "All time",
     "uploadDate": "Uploaded",
     "duration": {
-      "title": "Duration",
+      "title": "Duration (minutes)",
       "max": {
-        "label": "max (minutes)"
+        "label": "max"
       }
     },
     "allLanguages": "All languages",

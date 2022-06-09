@@ -8,14 +8,23 @@ import { TitledSection } from 'src/components';
 
 interface Props {
   value: number;
-  onChange: (value: string) => void;
+  onChangeCallback: (value: string) => void;
 }
 
 function DurationFilter(props: Props) {
   const { t } = useTranslation();
 
+  const [duration, setDuration] = React.useState<string>('');
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    props.onChange(event.target.value);
+    const value: string = event.target.value;
+    setDuration(value);
+    props.onChangeCallback(value);
+  };
+
+  const clearMaxDuration = () => {
+    setDuration('');
+    props.onChangeCallback('');
   };
 
   return (
@@ -29,6 +38,7 @@ function DurationFilter(props: Props) {
         type="number"
         name="duration_lte"
         label={t('filter.duration.max.label')}
+        value={duration}
         onChange={handleChange}
         InputProps={{
           endAdornment: (
@@ -36,6 +46,7 @@ function DurationFilter(props: Props) {
               <IconButton
                 aria-label={t('filter.duration.max.clearAriaLabel')}
                 edge="end"
+                onClick={clearMaxDuration}
               >
                 <Clear />
               </IconButton>

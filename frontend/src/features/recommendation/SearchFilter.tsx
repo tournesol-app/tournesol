@@ -102,7 +102,9 @@ function SearchFilter() {
                 <Box mt={2}>
                   <DurationFilter
                     value={1}
-                    onChange={(value) => setFilter('duration_lte', value)}
+                    onChangeCallback={(value) =>
+                      setFilter('duration_lte', value)
+                    }
                   />
                 </Box>
               </Grid>
