@@ -3,7 +3,7 @@
 ## Quick start
 
 ### Requirements:
-* docker-compose (or docker compose plugin)
+* `docker-compose-plugin` (or `docker-compose`)
 * curl
 * expect
 
