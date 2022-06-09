@@ -123,8 +123,11 @@ class SuggestionProvider:
             )
         )
         for c in query:
-            va = self._entity_to_video[c["uid1"]]
-            vb = self._entity_to_video[c["uid2"]]
+            uid1, uid2 = c["uid1"], c["uid2"]
+            if uid1 not in self._entity_to_video or uid2 not in self._entity_to_video:
+                continue
+            va = self._entity_to_video[uid1]
+            vb = self._entity_to_video[uid2]
             self._user_specific_graphs[new_user.id].add_edge(va, vb)
 
     def register_user_comparison(self, user: User, va: SuggestedVideo, vb: SuggestedVideo):
