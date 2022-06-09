@@ -17,8 +17,11 @@ function get_current_tab_video_id() {
   }).then(get_tab_video_id);
 }
 
-function rate_now(e) {
-  const button = e.target;
+/**
+ * Open the Tournesol comparison page in a new tab.
+ */
+function rateNowAction(event) {
+  const button = event.target;
   get_current_tab_video_id().then(
     (videoId) => {
       chrome.tabs.create({
@@ -27,13 +30,18 @@ function rate_now(e) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a Youtube video page.');
+      button.setAttribute('data-error', 'Not a YouTube video page.');
     }
   );
 }
 
-function rate_later(e) {
-  const button = e.target;
+/**
+ * Add the video to the user's rate-later list.
+ *
+ * If the user is not logged, display the login iframe.
+ */
+function addToRateLaterAction(event) {
+  const button = event.target;
   get_current_tab_video_id().then(
     async (videoId) => {
       button.disabled = true;
@@ -61,26 +69,38 @@ function rate_later(e) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a Youtube video page.');
+      button.setAttribute('data-error', 'Not a YouTube video page.');
     }
   );
 }
 
-function details(e) {
-  const button = e.target;
+/**
+ * Open the Tournesol entity analysis page in a new tab.
+ */
+function openAnalysisPageAction(event) {
+  const button = event.target;
   get_current_tab_video_id().then(
     (videoId) => {
-      chrome.tabs.create({ url: `https://tournesol.app/video/${videoId}` });
+      chrome.tabs.create({
+        url: `https://tournesol.app/entities/yt:${videoId}`,
+      });
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a Youtube video page.');
+      button.setAttribute('data-error', 'Not a YouTube video page.');
     }
   );
 }
 
+/**
+ * Create the action menu.
+ */
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('rate_now').addEventListener('click', rate_now);
-  document.getElementById('rate_later').addEventListener('click', rate_later);
-  document.getElementById('details').addEventListener('click', details);
+  document.getElementById('rate_now').addEventListener('click', rateNowAction);
+  document
+    .getElementById('rate_later')
+    .addEventListener('click', addToRateLaterAction);
+  document
+    .getElementById('details')
+    .addEventListener('click', openAnalysisPageAction);
 });
