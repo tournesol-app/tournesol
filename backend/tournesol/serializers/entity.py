@@ -8,11 +8,11 @@ from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.fields import CharField, FloatField, ListField, RegexField
 from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
 
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE, VideoEntity
 from tournesol.models import Entity, EntityCriteriaScore
 from tournesol.utils.api_youtube import VideoNotFound
+from tournesol.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 
 
 class VideoSerializer(ModelSerializer):

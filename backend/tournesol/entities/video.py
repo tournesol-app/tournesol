@@ -4,8 +4,8 @@ from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
 
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 from tournesol.serializers.metadata import VideoMetadata
+from tournesol.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 
 from .base import UID_DELIMITER, EntityType
 

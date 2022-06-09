@@ -6,7 +6,6 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from core.utils.constants import COMPARISON_MAX
 from tournesol.models import ComparisonCriteriaScore, ContributorRatingCriteriaScore
 from tournesol.serializers.inconsistencies import (
     Length3CyclesFilterSerializer,
@@ -14,6 +13,7 @@ from tournesol.serializers.inconsistencies import (
     ScoreInconsistenciesFilterSerializer,
     ScoreInconsistenciesSerializer,
 )
+from tournesol.utils.constants import COMPARISON_MAX
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
