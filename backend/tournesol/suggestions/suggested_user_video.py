@@ -18,11 +18,11 @@ class SuggestedUserVideo(SuggestedVideo):
 
     @property
     def score(self):
-        return self.local_user.scores[self]
+        return self.local_user.scores.get(self, 0)
 
     @property
     def score_uncertainty(self):
-        return self.local_user.score_uncertainties[self]
+        return self.local_user.score_uncertainties.get(self, 0)
 
     @property
     def graph_sparsity(self):
