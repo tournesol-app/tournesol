@@ -76,7 +76,10 @@ const getMetadataFilter = (
     }
 
     if (durationLteFilter) {
-      metadata['duration:lte:int'] = durationLteFilter;
+      // from minutes to seconds
+      metadata['duration:lte:int'] = (
+        parseInt(durationLteFilter) * 60
+      ).toString();
     }
   }
 
