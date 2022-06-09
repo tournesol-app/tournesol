@@ -81,7 +81,9 @@ function openAnalysisPageAction(event) {
   const button = event.target;
   get_current_tab_video_id().then(
     (videoId) => {
-      chrome.tabs.create({ url: `https://tournesol.app/entities/yt:${videoId}` });
+      chrome.tabs.create({
+        url: `https://tournesol.app/entities/yt:${videoId}`,
+      });
     },
     () => {
       button.disabled = true;
@@ -95,6 +97,10 @@ function openAnalysisPageAction(event) {
  */
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('rate_now').addEventListener('click', rateNowAction);
-  document.getElementById('rate_later').addEventListener('click', addToRateLaterAction);
-  document.getElementById('details').addEventListener('click', openAnalysisPageAction);
+  document
+    .getElementById('rate_later')
+    .addEventListener('click', addToRateLaterAction);
+  document
+    .getElementById('details')
+    .addEventListener('click', openAnalysisPageAction);
 });
