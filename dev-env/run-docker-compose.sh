@@ -19,10 +19,60 @@ function is_front_ready() {
   curl -s localhost:3000 --max-time 1 -o /dev/null
 }
 
-function compose_up() {
+function compose_up_with_docker_compose() {
   DB_UID=$(id -u) \
   DB_GID=$(id -g) \
   docker-compose up --build --force-recreate -d "$@"
+}
+
+function compose_up_with_compose_plugin() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker compose up --build --force-recreate -d "$@"
+}
+
+function compose_up(){
+  if docker compose version 2>/dev/null; then
+      echo "compose_up : docker-compose-plugin found"
+      compose_up_with_compose_plugin "$@"
+  else
+    echo "compose_up : docker-compose-plugin not found, trying to find docker-compose command"
+    if command -v docker-compose ; then
+      echo "compose_up : docker-compose found"
+      compose_up_with_docker_compose "$@"
+    else
+      echo "please install either docker-compose or docker-compose-plugin "
+      exit 1
+    fi
+  fi
+}
+
+function compose_stop_with_docker_compose() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker-compose stop
+}
+
+function compose_stop_with_compose_plugin() {
+  DB_UID=$(id -u) \
+  DB_GID=$(id -g) \
+  docker compose stop
+}
+
+function compose_stop(){
+  if docker compose version 2>/dev/null; then
+      echo "compose_stop: docker-compose-plugin found"
+      compose_stop_with_compose_plugin
+  else
+    echo "compose_stop : docker-compose-plugin not found, trying to find docker-compose command"
+    if command -v docker-compose ; then
+      echo "compose_stop : docker-compose found"
+      compose_stop_with_docker_compose
+    else
+      echo "please install either docker-compose or docker-compose-plugin "
+      exit 1
+    fi
+  fi
 }
 
 function wait_for() {
@@ -46,6 +96,13 @@ if [[ "${1:-""}" == 'restart' ]]; then
   compose_up
   wait_for is_front_ready "front"
   echo "You can now access Tournesol on http://localhost:3000"
+  exit
+fi
+
+if [[ "${1:-""}" == 'stop' ]]; then
+  echo "Stopping dev containers..."
+  compose_stop
+  echo "Docker containers are stopped."
   exit
 fi
 
