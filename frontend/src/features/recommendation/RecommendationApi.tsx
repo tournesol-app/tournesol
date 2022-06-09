@@ -63,6 +63,7 @@ const getMetadataFilter = (
 
   // build a filter for the YouTube poll
   if (pollName === YOUTUBE_POLL_NAME) {
+    const durationLteFilter = params.get('duration_lte');
     const languageFilter = params.get('language');
     const uploaderFilter = params.get('uploader');
 
@@ -72,6 +73,10 @@ const getMetadataFilter = (
 
     if (uploaderFilter) {
       metadata['uploader'] = uploaderFilter;
+    }
+
+    if (durationLteFilter) {
+      metadata['duration:lte:int'] = durationLteFilter;
     }
   }
 

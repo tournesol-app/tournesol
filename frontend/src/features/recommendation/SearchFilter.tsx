@@ -17,6 +17,7 @@ import {
 } from 'src/utils/constants';
 import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 import { ScoreModeEnum } from 'src/features/recommendation/RecommendationApi';
+import DurationFilter from './DurationFilter';
 /**
  * Filter options for Videos recommendations
  *
@@ -98,6 +99,12 @@ function SearchFilter() {
                   value={filterParams.get(recommendationFilters.language) ?? ''}
                   onChange={handleLanguageChange}
                 />
+                <Box mt={2}>
+                  <DurationFilter
+                    value={1}
+                    onChange={(value) => setFilter('duration_lte', value)}
+                  />
+                </Box>
               </Grid>
             </>
           )}
