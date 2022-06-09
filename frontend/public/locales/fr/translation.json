@@ -213,6 +213,12 @@
     "thisYear": "Une année",
     "allTime": "Toujours",
     "uploadDate": "Mises en ligne depuis",
+    "duration": {
+      "title": "Durée",
+      "max": {
+        "label": "max (minutes)"
+      }
+    },
     "allLanguages": "Toutes",
     "language": "Langues",
     "scoreMode": {

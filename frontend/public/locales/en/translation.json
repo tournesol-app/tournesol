@@ -207,6 +207,12 @@
     "thisYear": "A year ago",
     "allTime": "All time",
     "uploadDate": "Uploaded",
+    "duration": {
+      "title": "Duration",
+      "max": {
+        "label": "max (minutes)"
+      }
+    },
     "allLanguages": "All languages",
     "language": "Language",
     "scoreMode": {
