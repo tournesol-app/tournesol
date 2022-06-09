@@ -51,10 +51,9 @@ def prepare_tweet(video):
 
     # Replace "@" by a smaller "@" to avoid false mentions in the tweet
     video_title = video.metadata["name"].replace("@", "﹫")
-    
+
     # Replace "." in between words to avoid in the tweet false detection of links
     video_title = re.sub(r"\b(?:\.)\b", "｡", video_title)
-
 
     # Generate the text of the tweet
     tweet_text = settings.tweet_text_template[language].format(
