@@ -185,7 +185,7 @@ class TestTournesolBot(TestCase):
         )
 
         tweet_special_characters = (
-            "Aujourd'hui, je recommande 'Tournesol｡app is great! But automatic mention ﹫twitter "
+            "Aujourd'hui, je recommande 'Tournesol․app is great! But automatic mention ﹫twitter "
             "are not... 🌻' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
             "contributeurs, critères favoris:"
             "\n- Important & actionnable"
