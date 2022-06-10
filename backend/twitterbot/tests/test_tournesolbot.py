@@ -168,8 +168,6 @@ class TestTournesolBot(TestCase):
             "Tournesol is great! But this title is way to long to fit in one tweet🌻 #tournesol"
         )
 
-        print(prepare_tweet(self.videos[8]))
-
         tweet_text_too_long = (
             "Aujourd'hui, je recommande 'Tournesol is great! But this title is way to long to fit "
             "in one tweet...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
@@ -180,6 +178,22 @@ class TestTournesolBot(TestCase):
         )
 
         assert prepare_tweet(self.videos[8]) == tweet_text_too_long
+        
+        # Test replacement of special characters in the video title
+        self.videos[8].metadata["name"] = (
+            "Tournesol.app is great! But automatic mention @twitter are not... 🌻"
+        )
+
+        tweet_special_characters = (
+            "Aujourd'hui, je recommande 'Tournesol․app is great! But automatic mention ﹫twitter "
+            "are not... 🌻' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
+            "contributeurs, critères favoris:"
+            "\n- Important & actionnable"
+            "\n- Stimulant & suscite la réflexion"
+            "\nyoutu.be/AAAAAAAAAAA"
+        )
+
+        assert prepare_tweet(self.videos[8]) == tweet_special_characters
 
     def test_get_video_recommendations(self):
         """

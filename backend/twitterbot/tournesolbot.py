@@ -1,4 +1,5 @@
 import random
+import re
 
 from core.utils.time import time_ago
 from tournesol.models import Entity
@@ -48,8 +49,11 @@ def prepare_tweet(video):
         CriteriaLocale.objects.filter(language=language).values_list("criteria__name", "label")
     )
 
-    # Replace "@" by "at" to avoid false mentions in the tweet
-    video_title = video.metadata["name"].replace("@", "at")
+    # Replace "@" by a smaller "@" to avoid false mentions in the tweet
+    video_title = video.metadata["name"].replace("@", "﹫")
+
+    # Replace "." in between words to avoid in the tweet false detection of links
+    video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
 
     # Generate the text of the tweet
     tweet_text = settings.tweet_text_template[language].format(
