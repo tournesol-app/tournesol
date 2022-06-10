@@ -1,5 +1,6 @@
 import random
 import re
+from scripts.discord.discord_api import publish_on_discord
 
 from core.utils.time import time_ago
 from tournesol.models import Entity
@@ -159,6 +160,12 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
 
     # Tweet the video
     resp = twitterbot.api.update_status(tweet_text)
+
+    # Post the tweet on Discord
+    publish_on_discord(
+        discord_channel="#test_discord_api",
+        message=f"https://twitter.com/{bot_name}/status/{resp.id}",
+    )
 
     # Add the video to the TweetInfo table
     TweetInfo.objects.create(
