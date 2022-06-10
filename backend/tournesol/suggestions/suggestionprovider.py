@@ -75,16 +75,25 @@ class SuggestionProvider:
                     Q(comparisons_entity_2__user__in=User.supertrusted_seed_users()))\
             .distinct() \
             .values_list("uid", flat=True)
-        return [self._entity_to_video[uid] for uid in req_entities]
+        return [
+            video
+            for uid in req_entities
+            if (video := self._entity_to_video.get(uid)) is not None
+        ]
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
         """
         Function to get the list of videos of the user's rate later list
         """
-        req_entities = Entity.objects \
-            .filter(type=self.poll.name) \
-            .filter(videoratelater__user=user)
-        return list(map(lambda entity: self._entity_to_video[entity.uid], req_entities))
+        rate_later_uids = Entity.objects \
+            .filter(type=self.poll.entity_type) \
+            .filter(videoratelater__user=user) \
+            .values_list("uid", flat=True)
+        return [
+            video
+            for uid in rate_later_uids
+            if (video := self._entity_to_video.get(uid)) is not None
+        ]
 
     def do_offline_computation(self):
         """

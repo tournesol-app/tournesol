@@ -3,6 +3,7 @@ import datetime
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from core.models.user import EmailDomain
 from core.tests.factories.user import UserFactory
 from tournesol.models import Poll
 from tournesol.suggestions.graph import Graph
@@ -60,7 +61,14 @@ class SuggestionAPITestCase(TestCase):
         self.user = UserFactory(username=self._user)
         self.user_no_comparison = UserFactory(username=self._user_no_comparison)
         self.other = UserFactory(username=self._other)
-        self.central_scaled_user = UserFactory(username=self._central_scaled_user, is_staff=True)
+        EmailDomain.objects.create(
+            domain="@trusted.test", status=EmailDomain.STATUS_ACCEPTED
+        )
+        self.central_scaled_user = UserFactory(
+            username=self._central_scaled_user,
+            email="staff@trusted.test",
+            is_staff=True
+        )
         now = datetime.datetime.now()
 
         # Populate the video table
@@ -405,5 +413,9 @@ class SuggestionAPITestCase(TestCase):
             comparison__entity_2=self.videos[0],
             criteria=self._criteria,
         )
+
+        suggestions = suggester.get_first_video_recommendation(self.central_scaled_user, 6)
+        assert len(suggestions) == 6
+
         suggestions = suggester.get_second_video_recommendation(self.central_scaled_user, self.videos[0].uid, 6)
         assert len(suggestions) == 6
