@@ -1428,6 +1428,47 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /users/me/inconsistencies/length_3_cycles/{poll_name}:
+    get:
+      operationId: users_me_inconsistencies_length_3_cycles_retrieve
+      description: |-
+        List the cycles of length 3 in the comparisons graphs.
+
+        These "graphs" (one graph per criteria) are modeled by considering
+        entities as nodes, and comparisons as directed edges.
+
+        A cycle between 3 entities A, B, C is when A is preferred to
+        B, which is preferred to C, which is preferred to A (A > B > C > A).
+        Longer cycles are ignored, because it would be too long to count.
+
+        A "comparison trio" is any set of 3 entities that are all compared to each other.
+        The ratio cycles_count / comparison_trios_count can be used as an indicator of consistency.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: date_gte
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Restrict the search to comparisons done or edited after this date.
+          Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`).
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Length3Cycles'
+          description: ''
   /users/me/inconsistencies/score/{poll_name}:
     get:
       operationId: users_me_inconsistencies_score_retrieve
@@ -1454,7 +1495,7 @@ paths:
           type: string
           format: date-time
         description: |-
-          Restrict the search to entities created or edited after this date.
+          Restrict the search to comparisons done or edited after this date.
           Accepted formats: ISO 8601 datetime (e.g `2021-12-01T12:45:00`).
       tags:
       - users
@@ -2233,15 +2274,9 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
-          readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        is_public:
-          type: boolean
+        metadata:
+          type: object
+          additionalProperties: {}
           readOnly: true
         tournesol_score:
           type: number
@@ -2254,13 +2289,19 @@ components:
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
         total_score:
           type: number
           format: float
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        is_public:
+          type: boolean
+          readOnly: true
       required:
       - criteria_scores
       - is_public
@@ -2287,6 +2328,41 @@ components:
       - bins
       - criteria
       - distribution
+    Cycle:
+      type: object
+      description: Serializer for one cycle of length 3
+      properties:
+        criteria:
+          type: string
+        entity_1_uid:
+          type: string
+        entity_2_uid:
+          type: string
+        entity_3_uid:
+          type: string
+      required:
+      - criteria
+      - entity_1_uid
+      - entity_2_uid
+      - entity_3_uid
+    CyclesStats:
+      type: object
+      description: |-
+        Stats for each criteria
+
+        Includes the number of cycles, and the number of "comparison trios". This refers
+        to any 3 entities that all have a comparison to each other.
+
+        A useful metric could be the ratio of cycles (= cycles_count / comparison_trios_count).
+        We could consider that the better this ratio is, the more consistent the comparisons are.
+      properties:
+        cycles_count:
+          type: integer
+        comparison_trios_count:
+          type: integer
+      required:
+      - comparison_trios_count
+      - cycles_count
     DefaultSendResetPasswordLink:
       type: object
       description: |-
@@ -2469,6 +2545,27 @@ components:
       - Female
       - Male
       type: string
+    Length3Cycles:
+      type: object
+      description: |-
+        Return statistics about length-3 cycles in
+        the contributor's comparisons.
+      properties:
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cycle'
+        stats:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CyclesStats'
+          title: criteria
+      required:
+      - count
+      - results
+      - stats
     MoralPhilosophyEnum:
       enum:
       - Not Specified
@@ -3960,7 +4057,7 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/ScoreInconsistenciesStats'
-          title: criterion
+          title: criteria
       required:
       - count
       - results
@@ -3968,7 +4065,7 @@ components:
     ScoreInconsistenciesStats:
       type: object
       description: |-
-        Return some statistics for each criterion,
+        Return some statistics for each criteria,
         to be able to compare the results for the different criteria
       properties:
         mean_inconsistency:
@@ -3989,7 +4086,7 @@ components:
         inconsistency:
           type: number
           format: float
-        criterion:
+        criteria:
           type: string
         entity_1_uid:
           type: string
@@ -4009,7 +4106,7 @@ components:
           format: float
       required:
       - comparison_score
-      - criterion
+      - criteria
       - entity_1_rating
       - entity_1_uid
       - entity_2_rating

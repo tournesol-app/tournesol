@@ -21,7 +21,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         self.client = APIClient()
 
         self.poll = Poll.default_poll()
-        self.criterion = self.poll.criterias_list[0]
+        self.criteria = self.poll.criterias_list[0]
 
         self.user1 = UserFactory()
         self.user2 = UserFactory()
@@ -50,7 +50,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             [
                 ContributorRatingCriteriaScore(
                     contributor_rating=contributor_rating,
-                    criteria=self.criterion,
+                    criteria=self.criteria,
                     score=1,
                     uncertainty=0,
                 )
@@ -209,7 +209,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
-            criteria=self.criterion,
+            criteria=self.criteria,
             score=-1,
         )
 
@@ -246,19 +246,19 @@ class ContributorRecommendationsApiTestCase(TestCase):
         user = UserFactory()
         self.client.force_authenticate(user)
 
-        criterion_score = 1.8
+        criteria_score = 1.8
         weight = 2
 
         entity = EntityFactory(tournesol_score=1)
         rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating,
-            criteria=self.criterion,
-            score=criterion_score,
+            criteria=self.criteria,
+            score=criteria_score,
         )
 
         response = self.client.get(
-            f"/users/me/recommendations/{self.poll.name}?weights%5B{self.criterion}%5D={weight}",
+            f"/users/me/recommendations/{self.poll.name}?weights%5B{self.criteria}%5D={weight}",
             format="json",
         )
         self.assertEqual(response.status_code, 200)
@@ -269,10 +269,10 @@ class ContributorRecommendationsApiTestCase(TestCase):
         )
         self.assertEqual(
             response.data["results"][0]["criteria_scores"][0]["score"],
-            criterion_score,
+            criteria_score,
         )
         self.assertEqual(
-            response.data["results"][0]["total_score"], criterion_score * weight
+            response.data["results"][0]["total_score"], criteria_score * weight
         )
 
         # user2's score on this entity must not affect user1's recommendations
@@ -281,12 +281,12 @@ class ContributorRecommendationsApiTestCase(TestCase):
         )
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=rating2,
-            criteria=self.criterion,
+            criteria=self.criteria,
             score=-5,
         )
 
         response = self.client.get(
-            f"/users/me/recommendations/{self.poll.name}?weights%5B{self.criterion}%5D={weight}",
+            f"/users/me/recommendations/{self.poll.name}?weights%5B{self.criteria}%5D={weight}",
             format="json",
         )
 
@@ -299,10 +299,10 @@ class ContributorRecommendationsApiTestCase(TestCase):
         # It shouldn't have changed, other users' ratings are ignored
         self.assertEqual(
             response.data["results"][0]["criteria_scores"][0]["score"],
-            criterion_score,
+            criteria_score,
         )
         self.assertEqual(
-            response.data["results"][0]["total_score"], criterion_score * weight
+            response.data["results"][0]["total_score"], criteria_score * weight
         )
 
     def test_recommendations_are_sorted_by_descending_total_score(self):
@@ -314,7 +314,7 @@ class ContributorRecommendationsApiTestCase(TestCase):
             rating = ContributorRatingFactory(user=user, entity=entity, is_public=True)
             ContributorRatingCriteriaScoreFactory(
                 contributor_rating=rating,
-                criteria=self.criterion,
+                criteria=self.criteria,
                 score=score,
             )
 
