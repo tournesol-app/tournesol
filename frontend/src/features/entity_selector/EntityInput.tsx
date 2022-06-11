@@ -99,6 +99,19 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
           return response.results ?? [];
         },
       },
+      {
+        name: 'unconnected',
+        label: t('entitySelector.unconnected'),
+        fetch: async () => {
+          const response = await UsersService.usersMeUnconnectedEntitiesList({
+            pollName: YOUTUBE_POLL_NAME,
+            uid: otherUid || '',
+            limit: 20,
+          });
+          return response.results ?? [];
+        },
+        disabled: !isLoggedIn || !otherUid,
+      },
     ],
     [t, isLoggedIn, otherUid]
   );
