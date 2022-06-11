@@ -3,6 +3,7 @@ import { Tabs, Tab, Paper, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RelatedEntityObject } from 'src/utils/types';
 import { RowEntityCard } from 'src/components/entity/EntityCard';
+import LoaderWrapper from 'src/components/LoaderWrapper';
 
 interface Props {
   tabs: EntitiesTab[];
@@ -16,9 +17,22 @@ export interface EntitiesTab {
   disabled?: boolean;
 }
 
+export enum TabStatus {
+  Ok = 'ok',
+  Loading = 'loading',
+  Error = 'error',
+}
+
+const TabError = ({ message }: { message: string }) => (
+  <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
+    {message}
+  </Typography>
+);
+
 const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
+  const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
   const [options, setOptions] = useState<RelatedEntityObject[]>([]);
 
   useEffect(() => {
@@ -26,7 +40,18 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
     if (!tab) {
       return;
     }
-    tab.fetch().then(setOptions);
+
+    const loadTab = async () => {
+      setStatus(TabStatus.Loading);
+      try {
+        setOptions(await tab.fetch());
+        setStatus(TabStatus.Ok);
+      } catch {
+        setStatus(TabStatus.Error);
+      }
+    };
+
+    loadTab();
   }, [tabs, tabValue]);
 
   return (
@@ -81,19 +106,21 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
           <Tab key={name} value={name} label={label} disabled={disabled} />
         ))}
       </Tabs>
-      {options.length > 0 ? (
-        <ul>
-          {options.map((entity) => (
-            <li key={entity.uid} onClick={() => onSelectEntity(entity.uid)}>
-              <RowEntityCard entity={entity} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
-          {t('tabsBox.emptyList')}
-        </Typography>
-      )}
+      <LoaderWrapper isLoading={status === TabStatus.Loading}>
+        {status === TabStatus.Error ? (
+          <TabError message={t('tabsBox.errorOnLoading')} />
+        ) : options.length > 0 ? (
+          <ul>
+            {options.map((entity) => (
+              <li key={entity.uid} onClick={() => onSelectEntity(entity.uid)}>
+                <RowEntityCard entity={entity} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <TabError message={t('tabsBox.emptyList')} />
+        )}
+      </LoaderWrapper>
     </Paper>
   );
 };
