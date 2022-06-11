@@ -5,7 +5,7 @@
 
 This section covers how to set up a production-like environment in a virtual machine.
 
-This personal environment allows developppers to work on the Ansible deployment recipe and to test their modifications. If you want to work of the Tournesol application code, use the `dev-env` instead.
+This personal environment allows developers to work on the Ansible deployment recipe and to test their modifications. If you want to work of the Tournesol application code, use the `dev-env` instead.
 
 
 - Fetch the Debian Bullseye Image and verify it: `./base-image/fetch-debian-image.sh`
@@ -33,7 +33,7 @@ This personal environment allows developppers to work on the Ansible deployment 
   - login as root using your hypervisor interface, install `sudo` and add your user into the `sudo` group: `apt install sudo && gpasswd -a <username> sudo`
   - make sure to be able to reach port 22 of the VM somehow (could be a port forward in your hypervisor)
   
-If for any reason you're not able to set up a virtual machine on your computer - your hardware have missing virtualization capabilities, or is not powerful enough - you can still use a remote virtual machine from a Cloud provider. Some Cloud providers offer free credits for new users, but it can get costly if you rent a powerful server and forget to stop it after use. Note this installation method **is not supported** by the team and you might encouter unexpected issues. 
+If for any reason you're not able to set up a virtual machine on your computer - your hardware have missing virtualization capabilities, or is not powerful enough - you can still use a remote virtual machine from a Cloud provider. Some Cloud providers offer free credits for new users, but it can get costly if you rent a powerful server and forget to stop it after use. Note this installation method **is not supported** by the team, and you might encounter unexpected issues. 
 
 
 ## Provisioning
@@ -92,7 +92,7 @@ To run the playbook on the staging VM without changing the secrets, first fetch 
 source ./ansible/scripts/get-vm-secrets.sh
 ```
 
-You can do the same with another VM or a different user name:
+You can do the same with another VM or a different username:
 
 ```bash
 source ./ansible/scripts/get-vm-secrets.sh "tournesol-vm" "jst"
