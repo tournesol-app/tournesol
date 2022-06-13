@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 
 
 class VideoMetadata(serializers.Serializer):

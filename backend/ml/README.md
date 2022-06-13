@@ -21,7 +21,7 @@ Calculating video scores from users' comparisons.
 
 * Define hyperparameters in hyperparameters.gin.
 
-* Edit dev/experiments.py run_experiment() to choose input data and outpout prints.
+* Edit dev/experiments.py run_experiment() to choose input data and output prints.
 
 * Use the dev training command to run dev.experiments.run_experiment
 ``python manage.py ml_train_dev``

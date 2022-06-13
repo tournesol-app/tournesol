@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models import F, ObjectDoesNotExist, Q
 
 from core.models import User
-from core.utils.constants import COMPARISON_MAX
+from tournesol.utils.constants import COMPARISON_MAX
 
 from .poll import Poll
 
