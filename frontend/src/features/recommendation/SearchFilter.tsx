@@ -72,7 +72,7 @@ function SearchFilter() {
                 item
                 xs={6}
                 md={3}
-                lg={2}
+                lg={3}
                 data-testid="search-date-safe-filter"
               >
                 <DateFilter
@@ -92,7 +92,7 @@ function SearchFilter() {
                 item
                 xs={6}
                 md={3}
-                lg={2}
+                lg={3}
                 data-testid="search-language-filter"
               >
                 <LanguageFilter
