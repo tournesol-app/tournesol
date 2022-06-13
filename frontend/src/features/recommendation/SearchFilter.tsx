@@ -101,7 +101,7 @@ function SearchFilter() {
                 />
                 <Box mt={2}>
                   <DurationFilter
-                    value={1}
+                    value={filterParams.get('duration_lte') ?? ''}
                     onChangeCallback={(value) =>
                       setFilter('duration_lte', value)
                     }
