@@ -101,9 +101,13 @@ function SearchFilter() {
                 />
                 <Box mt={2}>
                   <DurationFilter
-                    value={filterParams.get('duration_lte') ?? ''}
-                    onChangeCallback={(value) =>
+                    valueMax={filterParams.get('duration_lte') ?? ''}
+                    valueMin={filterParams.get('duration_gte') ?? ''}
+                    onChangeMaxCallback={(value) =>
                       setFilter('duration_lte', value)
+                    }
+                    onChangeMinCallback={(value) =>
+                      setFilter('duration_gte', value)
                     }
                   />
                 </Box>

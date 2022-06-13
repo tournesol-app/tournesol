@@ -216,7 +216,12 @@
     "duration": {
       "title": "Durée (minutes)",
       "max": {
-        "label": "max"
+        "label": "max",
+        "clearAriaLabel": "Effacer la durée max"
+      },
+      "min": {
+        "label": "min",
+        "clearAriaLabel": "Effacer la durée min"
       }
     },
     "allLanguages": "Toutes",

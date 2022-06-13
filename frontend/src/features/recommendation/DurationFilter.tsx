@@ -9,39 +9,65 @@ import { TitledSection } from 'src/components';
 const TYPING_DELAY = 400;
 
 interface DurationFilterProps {
-  value: string;
-  onChangeCallback: (value: string) => void;
+  valueMax: string;
+  valueMin: string;
+  onChangeMaxCallback: (value: string) => void;
+  onChangeMinCallback: (value: string) => void;
 }
 
 /**
- * Display a `TextField` of type number, calling a callback when the input
- * value changes.
+ * Display two `TextField` of type number, calling different callbacks when
+ * on of their input values change.
  *
  * The `TYPING_DELAY` ensures the user has the time to type several digit
  * before triggering the callback.
  */
-function DurationFilter({ value, onChangeCallback }: DurationFilterProps) {
+function DurationFilter({
+  valueMax,
+  valueMin,
+  onChangeMaxCallback,
+  onChangeMinCallback,
+}: DurationFilterProps) {
   const { t } = useTranslation();
 
-  const [duration, setDuration] = useState<string>(value);
+  const [maxDuration, setMaxDuration] = useState<string>(valueMax);
+  const [minDuration, setMinDuration] = useState<string>(valueMin);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
-    setDuration(value);
+    setMaxDuration(value);
+  };
+
+  const handleChangeMin = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value;
+    setMinDuration(value);
   };
 
   const clearMaxDuration = () => {
-    setDuration('');
-    onChangeCallback('');
+    setMaxDuration('');
+    onChangeMaxCallback('');
+  };
+
+  const clearMinDuration = () => {
+    setMinDuration('');
+    onChangeMinCallback('');
   };
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => onChangeCallback(duration),
+      () => onChangeMaxCallback(maxDuration),
       TYPING_DELAY
     );
     return () => clearTimeout(timeOutId);
-  }, [duration, onChangeCallback]);
+  }, [maxDuration, onChangeMaxCallback]);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(
+      () => onChangeMinCallback(minDuration),
+      TYPING_DELAY
+    );
+    return () => clearTimeout(timeOutId);
+  }, [minDuration, onChangeMinCallback]);
 
   return (
     <TitledSection title={t('filter.duration.title')}>
@@ -54,8 +80,8 @@ function DurationFilter({ value, onChangeCallback }: DurationFilterProps) {
         type="number"
         name="duration_lte"
         label={t('filter.duration.max.label')}
-        value={duration}
-        onChange={handleChange}
+        value={maxDuration}
+        onChange={handleChangeMax}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -70,6 +96,32 @@ function DurationFilter({ value, onChangeCallback }: DurationFilterProps) {
           ),
         }}
         data-testid="filter-duration-lte"
+      />
+      <TextField
+        margin="dense"
+        fullWidth
+        size="small"
+        color="secondary"
+        variant="outlined"
+        type="number"
+        name="duration_gte"
+        label={t('filter.duration.min.label')}
+        value={minDuration}
+        onChange={handleChangeMin}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={t('filter.duration.min.clearAriaLabel')}
+                edge="end"
+                onClick={clearMinDuration}
+              >
+                <Clear />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        data-testid="filter-duration-gte"
       />
     </TitledSection>
   );
