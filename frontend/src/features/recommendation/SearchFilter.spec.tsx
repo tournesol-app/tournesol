@@ -100,6 +100,7 @@ describe('Filters feature', () => {
 
     // Check the duration filter presence
     expect(screen.getByTestId('filter-duration-lte')).toBeVisible();
+    expect(screen.getByTestId('filter-duration-gte')).toBeVisible();
 
     // Check criteria filters presence
     expect(screen.getByLabelText('multiple criteria')).toBeVisible();
@@ -237,14 +238,34 @@ describe('Filters feature', () => {
       .getByTestId('filter-duration-lte')
       .querySelector('input');
 
-    fireEvent.change(filter, { target: { value: '40' } });
-
-    // Wait for a duration > to the TYPING_DURATION of the `DurationFilter`
-    // component.
-    await new Promise((resolve) => setTimeout(resolve, 401));
+    await act(async () => {
+      fireEvent.change(filter, { target: { value: '40' } });
+      expect(pushSpy).toHaveBeenCalledTimes(0);
+      await new Promise((resolve) => setTimeout(resolve, 410));
+      expect(pushSpy).toHaveBeenCalledTimes(1);
+    });
 
     expect(pushSpy).toHaveBeenLastCalledWith({
       search: 'duration_lte=40',
+    });
+  });
+
+  it('Can select a minimum duration', async () => {
+    clickOnShowMore();
+
+    const filter = screen
+      .getByTestId('filter-duration-gte')
+      .querySelector('input');
+
+    await act(async () => {
+      fireEvent.change(filter, { target: { value: '20' } });
+      expect(pushSpy).toHaveBeenCalledTimes(0);
+      await new Promise((resolve) => setTimeout(resolve, 410));
+      expect(pushSpy).toHaveBeenCalledTimes(1);
+    });
+
+    expect(pushSpy).toHaveBeenLastCalledWith({
+      search: 'duration_gte=20',
     });
   });
 

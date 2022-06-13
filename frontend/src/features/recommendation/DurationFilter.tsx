@@ -11,8 +11,7 @@ const TYPING_DELAY = 400;
 interface DurationFilterProps {
   valueMax: string;
   valueMin: string;
-  onChangeMaxCallback: (value: string) => void;
-  onChangeMinCallback: (value: string) => void;
+  onChangeCallback: (filter: { param: string; value: string }) => void;
 }
 
 /**
@@ -25,8 +24,7 @@ interface DurationFilterProps {
 function DurationFilter({
   valueMax,
   valueMin,
-  onChangeMaxCallback,
-  onChangeMinCallback,
+  onChangeCallback,
 }: DurationFilterProps) {
   const { t } = useTranslation();
 
@@ -45,29 +43,31 @@ function DurationFilter({
 
   const clearMaxDuration = () => {
     setMaxDuration('');
-    onChangeMaxCallback('');
+    onChangeCallback({ param: 'duration_lte', value: '' });
   };
 
   const clearMinDuration = () => {
     setMinDuration('');
-    onChangeMinCallback('');
+    onChangeCallback({ param: 'duration_gte', value: '' });
   };
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => onChangeMaxCallback(maxDuration),
+      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
       TYPING_DELAY
     );
+
     return () => clearTimeout(timeOutId);
-  }, [maxDuration, onChangeMaxCallback]);
+  }, [maxDuration, onChangeCallback]);
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => onChangeMinCallback(minDuration),
+      () => onChangeCallback({ param: 'duration_gte', value: minDuration }),
       TYPING_DELAY
     );
+
     return () => clearTimeout(timeOutId);
-  }, [minDuration, onChangeMinCallback]);
+  }, [minDuration, onChangeCallback]);
 
   return (
     <TitledSection title={t('filter.duration.title')}>
