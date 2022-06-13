@@ -69,6 +69,7 @@ function DurationFilter({ value, onChangeCallback }: DurationFilterProps) {
             </InputAdornment>
           ),
         }}
+        data-testid="filter-duration-lte"
       />
     </TitledSection>
   );

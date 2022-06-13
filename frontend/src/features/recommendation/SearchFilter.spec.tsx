@@ -98,6 +98,9 @@ describe('Filters feature', () => {
     );
     expect(queryAllByTestId(languageFilter, 'autocomplete')).toHaveLength(1);
 
+    // Check the duration filter presence
+    expect(screen.getByTestId('filter-duration-lte')).toBeVisible();
+
     // Check criteria filters presence
     expect(screen.getByLabelText('multiple criteria')).toBeVisible();
   }
@@ -224,6 +227,24 @@ describe('Filters feature', () => {
       action: 'remove',
       language: 'language.de',
       expectInUrl: '',
+    });
+  });
+
+  it('Can select a maximum duration', async () => {
+    clickOnShowMore();
+
+    const filter = screen
+      .getByTestId('filter-duration-lte')
+      .querySelector('input');
+
+    fireEvent.change(filter, { target: { value: '40' } });
+
+    // Wait for a duration > to the TYPING_DURATION of the `DurationFilter`
+    // component.
+    await new Promise((resolve) => setTimeout(resolve, 401));
+
+    expect(pushSpy).toHaveBeenLastCalledWith({
+      search: 'duration_lte=40',
     });
   });
 
