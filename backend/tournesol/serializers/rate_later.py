@@ -7,7 +7,7 @@ from tournesol.models import Entity, RateLater
 from tournesol.serializers.entity import RelatedVideoSerializer
 
 
-class VideoRateLaterSerializer(ModelSerializer):
+class RateLaterSerializer(ModelSerializer):
     video = RelatedVideoSerializer()
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 

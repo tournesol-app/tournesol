@@ -46,7 +46,7 @@ class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
     score = 1
 
 
-class VideoRateLaterFactory(factory.django.DjangoModelFactory):
+class RateLaterFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = RateLater

@@ -6,12 +6,12 @@ from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import Entity, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.entity import VideoFactory, VideoRateLaterFactory
+from tournesol.tests.factories.entity import VideoFactory, RateLaterFactory
 
 
-class VideoRateLaterApi(TestCase):
+class RateLaterApi(TestCase):
     """
-    TestCase of the VideoRateLater API.
+    TestCase of the RateLater API.
 
     For each endpoint, the TestCase performs the following tests:
         - authorization checks
@@ -31,7 +31,7 @@ class VideoRateLaterApi(TestCase):
 
     def setUp(self):
         """
-        Set-up a minimal set of data to test the VideoRateLater API.
+        Set-up a minimal set of data to test the RateLater API.
 
         At least two users are required, each of them having a distinct rate
         later list.
@@ -42,8 +42,8 @@ class VideoRateLaterApi(TestCase):
         video1 = VideoFactory(metadata__name=self._users_video)
         video2 = VideoFactory(metadata__name=self._others_video)
 
-        VideoRateLaterFactory(user=user1, video=video1)
-        VideoRateLaterFactory(user=user2, video=video2)
+        RateLaterFactory(user=user1, video=video1)
+        RateLaterFactory(user=user2, video=video2)
 
     def test_anonymous_cant_list(self):
         """
@@ -239,12 +239,12 @@ class VideoRateLaterApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        self.assertEqual(user.videoratelaters.count(), 1)
+        self.assertEqual(user.ratelaters.count(), 1)
         response = client.delete(
             f"/users/me/video_rate_later/{video.video_id}/"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(user.videoratelaters.count(), 0)
+        self.assertEqual(user.ratelaters.count(), 0)
 
     def test_automatically_removed_after_4_comparisons(self):
         """

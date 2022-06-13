@@ -10,13 +10,13 @@ from rest_framework.permissions import IsAuthenticated
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.models import RateLater
-from tournesol.serializers.video_rate_later import VideoRateLaterSerializer
+from tournesol.serializers.rate_later import RateLaterSerializer
 
 
 @extend_schema_view(
     post=extend_schema(
         responses={
-            200: VideoRateLaterSerializer,
+            200: RateLaterSerializer,
             409: OpenApiResponse(
                 description="Conflict: the video is already in the rate later list,"
                 " or there is an other error with the database query."
@@ -24,12 +24,12 @@ from tournesol.serializers.video_rate_later import VideoRateLaterSerializer
         }
     )
 )
-class VideoRateLaterList(generics.ListCreateAPIView):
+class RateLaterList(generics.ListCreateAPIView):
     """
     List all videos of a user's rate later list, or add a video to the list.
     """
 
-    serializer_class = VideoRateLaterSerializer
+    serializer_class = RateLaterSerializer
     permission_classes = [IsAuthenticated]
     queryset = RateLater.objects.none()
 
@@ -41,12 +41,12 @@ class VideoRateLaterList(generics.ListCreateAPIView):
     get=extend_schema(description="Fetch a video from user's rate later list"),
     delete=extend_schema(description="Delete a video from user's rate later list"),
 )
-class VideoRateLaterDetail(generics.RetrieveDestroyAPIView):
+class RateLaterDetail(generics.RetrieveDestroyAPIView):
     """
     Retrieve, or delete a video from a user's rate later list.
     """
 
-    serializer_class = VideoRateLaterSerializer
+    serializer_class = RateLaterSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):

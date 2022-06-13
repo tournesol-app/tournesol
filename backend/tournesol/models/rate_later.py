@@ -14,13 +14,13 @@ class RateLater(models.Model):
         to=User,
         on_delete=models.CASCADE,
         help_text="Person who saves the video",
-        related_name="videoratelaters",
+        related_name="ratelaters",
     )
     video = models.ForeignKey(
         to="Entity",
         on_delete=models.CASCADE,
         help_text="Video in the rate later list",
-        related_name="videoratelaters",
+        related_name="ratelaters",
     )
 
     datetime_add = models.DateTimeField(
