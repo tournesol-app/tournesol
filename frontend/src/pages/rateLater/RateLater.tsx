@@ -45,9 +45,7 @@ const RateLaterPage = () => {
   const [offset, setOffset] = React.useState(0);
   const [videoCount, setVideoCount] = React.useState<number | null>(null);
   const videoListTopRef = React.useRef<HTMLDivElement>(null);
-  const [rateLaterList, setRateLaterList] = React.useState<RateLater[]>(
-    []
-  );
+  const [rateLaterList, setRateLaterList] = React.useState<RateLater[]>([]);
   const limit = 20;
 
   const loadList = useCallback(async () => {
