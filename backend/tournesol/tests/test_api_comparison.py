@@ -17,7 +17,7 @@ from tournesol.models import (
     Entity,
     EntityCriteriaScore,
     Poll,
-    VideoRateLater,
+    RateLater,
 )
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
@@ -949,13 +949,13 @@ class ComparisonApiTestCase(TestCase):
             response = self.client.post(
                 self.comparisons_base_url,
                 {
-                "entity_a": {"uid": uid_1},
-                "entity_b": {"uid": uid_2},
-                "criteria_scores": [
-                    {"criteria": "largely_recommended", "score": 10, "weight": 10}
-                ],
-                "duration_ms": 103,
-            },
+                    "entity_a": {"uid": uid_1},
+                    "entity_b": {"uid": uid_2},
+                    "criteria_scores": [
+                        {"criteria": "largely_recommended", "score": 10, "weight": 10}
+                    ],
+                    "duration_ms": 103,
+                },
                 format="json",
             )
 
@@ -966,12 +966,11 @@ class ComparisonApiTestCase(TestCase):
         )
         compare(video_main.uid, videos[0].uid)
         # Video main should still be in the rate later list
-        self.assertEqual(VideoRateLater.objects.filter(video=video_main).count(), 1)
+        self.assertEqual(RateLater.objects.filter(video=video_main).count(), 1)
         for video in videos[1:]:
             compare(video_main.uid, video.uid)
         # Video main should not be in the rate later list after >= 4 comparisons
-        self.assertEqual(VideoRateLater.objects.filter(video=video_main).count(), 0)
-
+        self.assertEqual(RateLater.objects.filter(video=video_main).count(), 0)
 
 
 class ComparisonWithMehestanTest(TransactionTestCase):
@@ -1008,8 +1007,8 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         # user2 has no contributor scores before the comparison is submitted
         self.assertEqual(
             ContributorRatingCriteriaScore.objects
-                .filter(contributor_rating__user=self.user2)
-                .count(),
+            .filter(contributor_rating__user=self.user2)
+            .count(),
             0
         )
 
@@ -1017,7 +1016,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         resp = self.client.post(
             f"/users/me/comparisons/{self.poll.name}",
             data={
-                "entity_a":{
+                "entity_a": {
                     "uid": self.entities[0].uid
                 },
                 "entity_b": {
@@ -1038,8 +1037,8 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         # Individual scores related to the new comparison have been computed
         self.assertEqual(
             ContributorRatingCriteriaScore.objects
-                .filter(contributor_rating__user=self.user2)
-                .count(),
+            .filter(contributor_rating__user=self.user2)
+            .count(),
             2
         )
         # The score related to the less prefered entity is negative
@@ -1079,7 +1078,8 @@ class ComparisonApiWithInactivePoll(TestCase):
         self.assertEqual(len(resp.data["results"]), 1)
 
     def test_user_can_get_existing_comparison(self):
-        resp = self.client.get(f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
+        resp = self.client.get(
+            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["entity_a"]["uid"], self.videos[0].uid)
 
@@ -1110,7 +1110,8 @@ class ComparisonApiWithInactivePoll(TestCase):
         )
 
     def test_user_cannot_delete_comparison(self):
-        resp = self.client.delete(f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
+        resp = self.client.delete(
+            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
         self.assertContains(
             resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
         )

@@ -5,7 +5,7 @@ import string
 import factory
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import Entity, EntityCriteriaScore, VideoRateLater
+from tournesol.models import Entity, EntityCriteriaScore, RateLater
 
 
 class EntityFactory(factory.django.DjangoModelFactory):
@@ -49,7 +49,7 @@ class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
 class VideoRateLaterFactory(factory.django.DjangoModelFactory):
 
     class Meta:
-        model = VideoRateLater
+        model = RateLater
 
     video = factory.SubFactory(VideoFactory)
     user = factory.SubFactory(UserFactory)

@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
-from tournesol.models import VideoRateLater
+from tournesol.models import RateLater
 from tournesol.serializers.video_rate_later import VideoRateLaterSerializer
 
 
@@ -31,10 +31,10 @@ class VideoRateLaterList(generics.ListCreateAPIView):
 
     serializer_class = VideoRateLaterSerializer
     permission_classes = [IsAuthenticated]
-    queryset = VideoRateLater.objects.none()
+    queryset = RateLater.objects.none()
 
     def get_queryset(self):
-        return VideoRateLater.objects.filter(user=self.request.user)
+        return RateLater.objects.filter(user=self.request.user)
 
 
 @extend_schema_view(
@@ -51,9 +51,9 @@ class VideoRateLaterDetail(generics.RetrieveDestroyAPIView):
 
     def get_object(self):
         """Fetch a given video or returns 404"""
-        video_rate_later = get_object_or_404(
-            VideoRateLater,
+        rate_later = get_object_or_404(
+            RateLater,
             user__pk=self.request.user.pk,
             video__uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
         )
-        return video_rate_later
+        return rate_later

@@ -4,7 +4,8 @@ Models for Tournesol app
 
 from .comparisons import Comparison, ComparisonCriteriaScore
 from .criteria import Criteria, CriteriaLocale, CriteriaRank
-from .entity import Entity, VideoRateLater
+from .rate_later import RateLater
+from .entity import Entity
 from .entity_score import EntityCriteriaScore
 from .poll import Poll
 from .ratings import ContributorRating, ContributorRatingCriteriaScore

@@ -16,11 +16,11 @@ from django.utils import timezone
 from django.utils.html import format_html
 from tqdm.auto import tqdm
 
-from core.models import User
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
+from tournesol.models.rate_later import RateLater
 from tournesol.serializers.metadata import VideoMetadata
 
 LANGUAGES = settings.LANGUAGES
@@ -132,7 +132,7 @@ class Entity(models.Model):
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
         if n_comparisons >= 4:
-            VideoRateLater.objects.filter(user=user, video=self).delete()
+            RateLater.objects.filter(user=user, video=self).delete()
 
     @property
     def entity_cls(self):
@@ -315,37 +315,6 @@ class Entity(models.Model):
         if hasattr(self, "_prefetched_criteria_scores"):
             return list(self._prefetched_criteria_scores)
         return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))
-
-
-class VideoRateLater(models.Model):
-    """List of videos that a person wants to rate later."""
-
-    user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        help_text="Person who saves the video",
-        related_name="videoratelaters",
-    )
-    video = models.ForeignKey(
-        to=Entity,
-        on_delete=models.CASCADE,
-        help_text="Video in the rate later list",
-        related_name="videoratelaters",
-    )
-
-    datetime_add = models.DateTimeField(
-        auto_now_add=True,
-        help_text="Time the video was added to the" " rate later list",
-        null=True,
-        blank=True,
-    )
-
-    class Meta:
-        unique_together = ["user", "video"]
-        ordering = ["user", "-datetime_add"]
-
-    def __str__(self):
-        return f"{self.user}/{self.video}@{self.datetime_add}"
 
 
 class CriteriaDistributionScore:
