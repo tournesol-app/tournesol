@@ -1,6 +1,6 @@
 describe('Rate-later page', () => {
   before(() => {
-    cy.sql("TRUNCATE tournesol_videoratelater");
+    cy.sql("TRUNCATE tournesol_ratelater");
   })
 
   it('can add video to rate-later list', () => {

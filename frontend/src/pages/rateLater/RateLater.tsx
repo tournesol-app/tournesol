@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 
 import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
-import { ApiError, VideoRateLater } from 'src/services/openapi';
+import { ApiError, RateLater } from 'src/services/openapi';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { UsersService } from 'src/services/openapi';
 import {
@@ -45,7 +45,7 @@ const RateLaterPage = () => {
   const [offset, setOffset] = React.useState(0);
   const [videoCount, setVideoCount] = React.useState<number | null>(null);
   const videoListTopRef = React.useRef<HTMLDivElement>(null);
-  const [rateLaterList, setRateLaterList] = React.useState<VideoRateLater[]>(
+  const [rateLaterList, setRateLaterList] = React.useState<RateLater[]>(
     []
   );
   const limit = 20;
