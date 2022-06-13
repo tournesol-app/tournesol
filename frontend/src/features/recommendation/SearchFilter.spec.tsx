@@ -241,12 +241,11 @@ describe('Filters feature', () => {
     await act(async () => {
       fireEvent.change(filter, { target: { value: '40' } });
       expect(pushSpy).toHaveBeenCalledTimes(0);
-      await new Promise((resolve) => setTimeout(resolve, 410));
-      expect(pushSpy).toHaveBeenCalledTimes(1);
+      await new Promise((resolve) => setTimeout(resolve, 800));
     });
 
     expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'duration_lte=40',
+      search: 'duration_gte=&duration_lte=40',
     });
   });
 
@@ -260,12 +259,11 @@ describe('Filters feature', () => {
     await act(async () => {
       fireEvent.change(filter, { target: { value: '20' } });
       expect(pushSpy).toHaveBeenCalledTimes(0);
-      await new Promise((resolve) => setTimeout(resolve, 410));
-      expect(pushSpy).toHaveBeenCalledTimes(1);
+      await new Promise((resolve) => setTimeout(resolve, 800));
     });
 
     expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'duration_gte=20',
+      search: 'duration_lte=&duration_gte=20',
     });
   });
 

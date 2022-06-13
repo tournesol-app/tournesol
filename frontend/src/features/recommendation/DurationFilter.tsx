@@ -6,7 +6,8 @@ import { Clear } from '@mui/icons-material';
 
 import { TitledSection } from 'src/components';
 
-const TYPING_DELAY = 400;
+// in milliseconds
+const TYPING_DELAY = 300;
 
 interface DurationFilterProps {
   valueMax: string;
