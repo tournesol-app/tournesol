@@ -6,7 +6,7 @@ from core.models import User
 from core.tests.factories.user import UserFactory
 from tournesol.models import Entity, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.entity import VideoFactory, RateLaterFactory
+from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
 
 
 class RateLaterApi(TestCase):

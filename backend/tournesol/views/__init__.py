@@ -6,5 +6,5 @@ Main tournesol API endpoints
 
 from .comparison import *
 from .polls import *
-from .video import *
 from .rate_later import *
+from .video import *

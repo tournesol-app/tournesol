@@ -31,6 +31,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
+from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -40,7 +41,6 @@ from .views.stats import StatisticsView
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
-from .views.rate_later import RateLaterDetail, RateLaterList
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
