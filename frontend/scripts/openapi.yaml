@@ -1694,7 +1694,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedVideoRateLaterList'
+                $ref: '#/components/schemas/PaginatedRateLaterList'
           description: ''
     post:
       operationId: users_me_video_rate_later_create
@@ -1706,13 +1706,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VideoRateLaterRequest'
+              $ref: '#/components/schemas/RateLaterRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/VideoRateLaterRequest'
+              $ref: '#/components/schemas/RateLaterRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/VideoRateLaterRequest'
+              $ref: '#/components/schemas/RateLaterRequest'
         required: true
       security:
       - oauth2:
@@ -1722,7 +1722,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoRateLater'
+                $ref: '#/components/schemas/RateLater'
           description: ''
         '409':
           description: 'Conflict: the video is already in the rate later list, or
@@ -1747,7 +1747,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoRateLater'
+                $ref: '#/components/schemas/RateLater'
           description: ''
     delete:
       operationId: users_me_video_rate_later_destroy
@@ -2274,21 +2274,18 @@ components:
     ContributorRecommendations:
       type: object
       properties:
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        tournesol_score:
-          type: number
-          format: float
-          nullable: true
-          description: The aggregated of all criteria for all users in a specific
-            poll.
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        is_public:
+          type: boolean
+          readOnly: true
         type:
           $ref: '#/components/schemas/TypeEnum'
         total_score:
@@ -2299,9 +2296,12 @@ components:
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
+        tournesol_score:
+          type: number
+          format: float
+          nullable: true
+          description: The aggregated of all criteria for all users in a specific
+            poll.
       required:
       - criteria_scores
       - is_public
@@ -2949,6 +2949,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
+    PaginatedRateLaterList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RateLater'
     PaginatedRecommendationList:
       type: object
       properties:
@@ -2969,26 +2989,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Recommendation'
-    PaginatedVideoRateLaterList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/VideoRateLater'
     PaginatedVideoSerializerWithCriteriaList:
       type: object
       properties:
@@ -3244,6 +3244,20 @@ components:
       - Unknown
       - Other
       type: string
+    RateLater:
+      type: object
+      properties:
+        video:
+          $ref: '#/components/schemas/RelatedVideo'
+      required:
+      - video
+    RateLaterRequest:
+      type: object
+      properties:
+        video:
+          $ref: '#/components/schemas/RelatedVideoRequest'
+      required:
+      - video
     Recommendation:
       type: object
       properties:
@@ -4565,20 +4579,6 @@ components:
       - uploader
       - video_id
       - views
-    VideoRateLater:
-      type: object
-      properties:
-        video:
-          $ref: '#/components/schemas/RelatedVideo'
-      required:
-      - video
-    VideoRateLaterRequest:
-      type: object
-      properties:
-        video:
-          $ref: '#/components/schemas/RelatedVideoRequest'
-      required:
-      - video
     VideoRequest:
       type: object
       properties:
