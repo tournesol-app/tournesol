@@ -50,6 +50,9 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
 
   const tabs: EntitiesTab[] = useMemo(
     () => [
+      /*
+      The suggestions tab is commented for now. We are investigating
+      performance issue.
       {
         name: 'suggestions',
         label: t('entitySelector.suggestions'),
@@ -63,6 +66,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
         },
         disabled: !isLoggedIn,
       },
+      */
       {
         name: 'rate-later',
         label: t('entitySelector.rateLater'),
