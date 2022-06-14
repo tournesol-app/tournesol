@@ -9,8 +9,8 @@ describe('Recommendations page', () => {
         cy.location('search').should('contain', 'language=en');
         cy.go('back');
         cy.location('pathname').should('equal', '/');
-      })
-  
+      });
+
       describe('Filter - upload date', () => {
         it('must propose 5 timedelta', () => {
           cy.visit('/');
@@ -23,7 +23,7 @@ describe('Recommendations page', () => {
           cy.contains('A month ago', {matchCase: false}).should('be.visible');
           cy.contains('A year ago', {matchCase: false}).should('be.visible');
           cy.contains('All time', {matchCase: false}).should('be.visible');
-        })
+        });
 
         it('must filter by month by default ', () => {
           cy.visit('/');
@@ -39,7 +39,7 @@ describe('Recommendations page', () => {
 
           // Currently there is no recent video in the development data.
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
-        })
+        });
 
         it('allows to filter: a year ago', () => {
           cy.visit('/recommendations?unsafe=true');
@@ -53,8 +53,8 @@ describe('Recommendations page', () => {
           cy.location('search').should('contain', 'date=Year');
           cy.contains('Showing videos 1 to', {matchCase: false}).should('be.visible');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('not.exist');
-        })
-        
+        });
+
         it('shows no videos for 1 day ago', () => {
           cy.visit('/recommendations?unsafe=true');
           cy.contains('Filters', {matchCase: false}).click();
@@ -62,7 +62,7 @@ describe('Recommendations page', () => {
           cy.get('input[type=checkbox][name="Today"]').check();
           cy.get('input[type=checkbox][name="Today"]').should('be.checked');
           cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
-        })
+        });
 
         it('allows to filter: all time', () => {
           cy.visit('/recommendations?unsafe=true');
@@ -78,5 +78,22 @@ describe('Recommendations page', () => {
         })
       });
     });
+    describe('List of recommendations', () => {
+      it('entities\'s thumbnails are clickable', () => {
+        cy.visit('/recommendations?unsafe=true&date=');
+
+        const thumbnail = cy.get('img.entity-thumbnail').first();
+        thumbnail.click();
+        cy.location('pathname').should('match', /^\/entities\//);
+      });
+
+      it('entities\'s titles are clickable', () => {
+        cy.visit('/recommendations?unsafe=true&date=');
+
+        const videoCard = cy.get('div[data-testid=video-card-info]').first();
+        videoCard.find('h6').click();
+        cy.location('pathname').should('match', /^\/entities\//);
+      });
+    });
   });
-})
+});
