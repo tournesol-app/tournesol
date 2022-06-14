@@ -69,7 +69,7 @@ class TrustAlgoTestCse(TestCase):
             ]
         )
 
-    def test_normalization(self):
+    def test_normalize_trust_values(self):
         C = np.random.rand(10, 10)
         user_trust = np.random.randint(2, size=10)
         C_normalized = normalize_trust_values(C, user_trust)
