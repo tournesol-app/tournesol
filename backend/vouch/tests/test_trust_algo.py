@@ -14,7 +14,6 @@ from django.test import TestCase
 
 # ========== unit tests - trustalgo ===============
 # ensure normalization works
-@pytest.mark.django_db
 class UnitTest(TestCase):
     # create users and connections
     _user_0 = "username_0"
