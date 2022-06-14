@@ -109,7 +109,7 @@ const EntityImagery = ({
     const thumbnail = (
       <DurationWrapper duration={entity.metadata.duration}>
         <img
-          className="full-width"
+          className="full-width entity-thumbnail"
           src={`https://i.ytimg.com/vi/${idFromUid(entity.uid)}/mqdefault.jpg`}
           alt={entity.metadata.name}
         />

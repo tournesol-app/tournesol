@@ -85,7 +85,14 @@ class SimpleAllConnectedTest(TestCase):
             f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
 
+        # Make sure that no side-effect affects subsequent requests
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/",
+            format="json",
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 0)
 
