@@ -62,11 +62,9 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
         flexDirection: 'column',
         minHeight: '160px',
         ul: {
-          flexGrow: 1,
           listStyleType: 'none',
           p: 0,
           m: 0,
-          overflowY: 'scroll',
           maxHeight: '40vh',
           '.MuiModal-root &': {
             maxHeight: 'none',
@@ -106,7 +104,10 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
           <Tab key={name} value={name} label={label} disabled={disabled} />
         ))}
       </Tabs>
-      <LoaderWrapper isLoading={status === TabStatus.Loading}>
+      <LoaderWrapper
+        isLoading={status === TabStatus.Loading}
+        sx={{ overflowY: 'scroll' }}
+      >
         {status === TabStatus.Error ? (
           <TabError message={t('tabsBox.errorOnLoading')} />
         ) : options.length > 0 ? (
