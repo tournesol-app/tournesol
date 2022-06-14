@@ -2,16 +2,9 @@
   "components": {
     "filtersButton": "filters"
   },
-  "personalCriteriaScores": {
-    "reasonWhyItCannotBeActivated": {
-      "notLoggedIn": "You must be logged in to display personal scores.",
-      "noPersonalScore": "You have not compared this video yet."
-    },
-    "activatePersonalScores": "Display personal scores"
-  },
   "criteriaBarChart": {
-    "scoreTooltip": "Collective score",
-    "personalScoreTooltip": "Your personal score"
+    "personalScoreTooltip": "Your personal score",
+    "scoreTooltip": "Collective score"
   },
   "dialogBox": {
     "continue": "continue"
@@ -44,6 +37,13 @@
     "showingCounts": "Showing {{itemTypeText}} {{firstShowing}} to {{lastShowing}} of {{total}}",
     "nextButton": "Next {{limit}}",
     "comparisons": "comparisons"
+  },
+  "personalCriteriaScores": {
+    "reasonWhyItCannotBeActivated": {
+      "notLoggedIn": "You must be logged in to display personal scores.",
+      "noPersonalScore": "You have not compared this video yet."
+    },
+    "activatePersonalScores": "Display personal scores"
   },
   "stackedCard": {
     "showAll": "Show all"
@@ -80,13 +80,20 @@
     "goToComparison": "Go to comparison"
   },
   "submit": "submit",
-  "videoSelector": {
+  "entitySelector": {
     "newVideo": "Select a new video automatically",
     "autoEntityButton": "Auto",
-    "pasteUrlOrVideoId": "Paste URL or Video ID"
+    "suggestions": "Suggestions",
+    "rateLater": "Rate later",
+    "recentlyCompared": "Compared",
+    "recommendations": "Top of the month",
+    "unconnected": "To connect",
+    "pasteUrlOrVideoId": "Paste URL or Video ID",
+    "backButton": "Back"
   },
   "tabsBox": {
-    "emptyList": "This list is empty"
+    "errorOnLoading": "An error occurred while loading the results.",
+    "emptyList": "This list is empty."
   },
   "stackedCandidatesPaper": {
     "title_one": "Your ranking of the candidates",
@@ -251,10 +258,10 @@
     "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
   },
   "stats": {
-    "activeUsers": "Active users",
-    "comparisons": "Comparisons",
     "ratedVideos": "Rated videos",
-    "ratedCandidates": "Rated candidates"
+    "ratedCandidates": "Rated candidates",
+    "activeUsers": "Active users",
+    "comparisons": "Comparisons"
   },
   "notifications": {
     "errorOccurred": "Sorry an error has occurred.",
@@ -464,7 +471,6 @@
     "institutions_democracy": "Topics related to the organization of political life, democracy, territories and collectivities, public service and overseas",
     "labour_economy": "Topics related to jobs, unemployment, purchasing power, taxation, public deficits and debt",
     "solidarity": "Topics related to societal issues, inequality and discrimination, disability, violence against women and immigration",
-    "reliability": "Is the presented information trustworthy, robustly backed and properly nuanced?",
     "pedagogy": "How efficiently does the content guide viewers in their understanding?",
     "importance": "Can additional focus on this topic have a significantly positive impact on the world?",
     "layman_friendly": "How understandable is it, without prior knowledge?",
@@ -472,7 +478,8 @@
     "engaging": "Does it catch people's attention, spark curiosity and invite to question previous beliefs?",
     "diversity_inclusion": "Does it promote tolerance, compassion and wider moral considerations?",
     "better_habits": "Does it make people adopt habits that benefit themselves and beyond?",
-    "backfire_risk": "Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?"
+    "backfire_risk": "Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?",
+    "reliability": "Is the presented information trustworthy, robustly backed and properly nuanced?"
   },
   "language": {
     "af": "Afrikaans",

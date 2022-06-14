@@ -42,7 +42,7 @@ const AutoEntityButton = ({
   }
 
   return (
-    <Tooltip title={`${t('videoSelector.newVideo')}`} aria-label="new_video">
+    <Tooltip title={`${t('entitySelector.newVideo')}`} aria-label="new_video">
       {/* A <span> element is required to allow wrapping a disabled button.  */}
       <span>
         <Button
@@ -54,7 +54,7 @@ const AutoEntityButton = ({
           startIcon={<Autorenew />}
           sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem' } }}
         >
-          {t('videoSelector.autoEntityButton')}
+          {t('entitySelector.autoEntityButton')}
         </Button>
       </span>
     </Tooltip>

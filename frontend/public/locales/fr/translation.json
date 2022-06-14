@@ -2,16 +2,9 @@
   "components": {
     "filtersButton": "filtres"
   },
-  "personalCriteriaScores": {
-    "reasonWhyItCannotBeActivated": {
-      "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
-      "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
-    },
-    "activatePersonalScores": "Afficher les scores personnels"
-  },
   "criteriaBarChart": {
-    "scoreTooltip": "Score collectif",
-    "personalScoreTooltip": "Votre score personnel"
+    "personalScoreTooltip": "Votre score personnel",
+    "scoreTooltip": "Score collectif"
   },
   "dialogBox": {
     "continue": "continuer"
@@ -48,6 +41,13 @@
     "nextButton": "{{limit}} suiv.",
     "comparisons": "comparaisons"
   },
+  "personalCriteriaScores": {
+    "reasonWhyItCannotBeActivated": {
+      "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
+      "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
+    },
+    "activatePersonalScores": "Afficher les scores personnels"
+  },
   "stackedCard": {
     "showAll": "Tout montrer"
   },
@@ -83,13 +83,20 @@
     "goToComparison": "Voir la comparaison"
   },
   "submit": "enregistrer",
-  "videoSelector": {
+  "entitySelector": {
     "newVideo": "Selectionner une nouvelle vidéo automatiquement",
     "autoEntityButton": "Auto",
-    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo"
+    "suggestions": "Suggestions",
+    "rateLater": "À comparer",
+    "recentlyCompared": "Comparées",
+    "recommendations": "Top du mois",
+    "unconnected": "À relier",
+    "pasteUrlOrVideoId": "Coller une URL ou un ID de vidéo",
+    "backButton": "Retour"
   },
   "tabsBox": {
-    "emptyList": "Cette liste est vide"
+    "errorOnLoading": "Une erreur est survenue lors du chargement des résultats.",
+    "emptyList": "Cette liste est vide."
   },
   "stackedCandidatesPaper": {
     "title_one": "Votre classement des candidat.e.s",
@@ -257,10 +264,10 @@
     "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
   },
   "stats": {
-    "activeUsers": "Utilisateurs actifs",
-    "comparisons": "Comparaisons",
     "ratedVideos": "Vidéos notées",
-    "ratedCandidates": "Candidats notés"
+    "ratedCandidates": "Candidats notés",
+    "activeUsers": "Utilisateurs actifs",
+    "comparisons": "Comparaisons"
   },
   "notifications": {
     "errorOccurred": "Désolé, une erreur est survenue.",
@@ -471,7 +478,6 @@
     "institutions_democracy": "Les sujets liés à l'organisation de la vie politique, à la démocratie, aux territoires et collectivités, à la fonction publique et à l'Outre-mer",
     "labour_economy": "Les sujets liés aux emplois, au chômage, au pouvoir d'achat, à la fiscalité, au déficits publiques et la dette",
     "solidarity": "Les sujets liés aux enjeux sociétaux, aux inégalités et discrimination, au handicap, aux violences faites aux femmes et à l'immigration",
-    "reliability": "Les informations présentées sont-elles dignes de confiance et correctement nuancées? Reposent-elles sur des bases solides?",
     "pedagogy": "À quel point les spectateurs sont-ils guidés dans leur compréhension?",
     "importance": "Le fait d'accorder plus d'attention à ce sujet peut-il significativement améliorer le monde?",
     "layman_friendly": "Est-ce facilement compréhensible, avec peu de connaissances préalables?",
@@ -479,7 +485,8 @@
     "engaging": "Est-ce captivant? Est-ce que ça attise la curiosité et invite à réexaminer des croyances?",
     "diversity_inclusion": "Cela favorise-t-il tolérance, compassion et élargissement de nos considérations morales?",
     "better_habits": "Est-ce que ça fait adopter des habitudes bénéfiques, pour soi-même et au-delà?",
-    "backfire_risk": "Est-ce adapté aux spectateurs ayant des opinions opposées? Le risque de malentendus ou de réactions indésirables est-il faible?"
+    "backfire_risk": "Est-ce adapté aux spectateurs ayant des opinions opposées? Le risque de malentendus ou de réactions indésirables est-il faible?",
+    "reliability": "Les informations présentées sont-elles dignes de confiance et correctement nuancées? Reposent-elles sur des bases solides?"
   },
   "language": {
     "af": "Afrikaans",
