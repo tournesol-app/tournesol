@@ -3,16 +3,16 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from tournesol.errors import ConflictError
-from tournesol.models import Entity, VideoRateLater
+from tournesol.models import Entity, RateLater
 from tournesol.serializers.entity import RelatedVideoSerializer
 
 
-class VideoRateLaterSerializer(ModelSerializer):
+class RateLaterSerializer(ModelSerializer):
     video = RelatedVideoSerializer()
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = VideoRateLater
+        model = RateLater
         fields = ["user", "video"]
 
     def create(self, validated_data):

@@ -31,6 +31,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
+from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -40,7 +41,6 @@ from .views.stats import StatisticsView
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
-from .views.video_rate_later import VideoRateLaterDetail, VideoRateLaterList
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
@@ -89,15 +89,15 @@ urlpatterns = [
         ComparisonDetailApi.as_view(),
         name="poll_comparisons_me_detail",
     ),
-    # VideoRateLater API
+    # RateLater API
     path(
         "users/me/video_rate_later/",
-        VideoRateLaterList.as_view(),
+        RateLaterList.as_view(),
         name="video_rate_later_list",
     ),
     path(
         "users/me/video_rate_later/<str:video_id>/",
-        VideoRateLaterDetail.as_view(),
+        RateLaterDetail.as_view(),
         name="video_rate_later_detail",
     ),
     # Ratings API

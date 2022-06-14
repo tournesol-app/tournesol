@@ -1,18 +1,17 @@
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.models import Entity, VideoRateLater
+from tournesol.models import Entity, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.entity import VideoFactory, VideoRateLaterFactory
+from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
 
 
-class VideoRateLaterApi(TestCase):
+class RateLaterApi(TestCase):
     """
-    TestCase of the VideoRateLater API.
+    TestCase of the RateLater API.
 
     For each endpoint, the TestCase performs the following tests:
         - authorization checks
@@ -32,7 +31,7 @@ class VideoRateLaterApi(TestCase):
 
     def setUp(self):
         """
-        Set-up a minimal set of data to test the VideoRateLater API.
+        Set-up a minimal set of data to test the RateLater API.
 
         At least two users are required, each of them having a distinct rate
         later list.
@@ -43,8 +42,8 @@ class VideoRateLaterApi(TestCase):
         video1 = VideoFactory(metadata__name=self._users_video)
         video2 = VideoFactory(metadata__name=self._others_video)
 
-        VideoRateLaterFactory(user=user1, video=video1)
-        VideoRateLaterFactory(user=user2, video=video2)
+        RateLaterFactory(user=user1, video=video1)
+        RateLaterFactory(user=user2, video=video2)
 
     def test_anonymous_cant_list(self):
         """
@@ -63,7 +62,7 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        video_rate_later = VideoRateLater.objects.select_related("video").filter(
+        video_rate_later = RateLater.objects.select_related("video").filter(
             user=user
         )
         client.force_authenticate(user=user)
@@ -119,7 +118,8 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(metadata__name=self._others_video).video_id}}
+        data = {"video": {"video_id": Entity.objects.get(
+            metadata__name=self._others_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -156,7 +156,8 @@ class VideoRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(metadata__name=self._users_video).video_id}}
+        data = {"video": {"video_id": Entity.objects.get(
+            metadata__name=self._users_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -176,7 +177,8 @@ class VideoRateLaterApi(TestCase):
 
         user = User.objects.get(username=self._user)
         other = User.objects.get(username=self._other)
-        data = {"video": {"video_id": Entity.objects.get(metadata__name=self._users_video).video_id}}
+        data = {"video": {"video_id": Entity.objects.get(
+            metadata__name=self._users_video).video_id}}
 
         client.force_authenticate(user=user)
 
@@ -237,12 +239,12 @@ class VideoRateLaterApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        self.assertEqual(user.videoratelaters.count(), 1)
+        self.assertEqual(user.ratelaters.count(), 1)
         response = client.delete(
             f"/users/me/video_rate_later/{video.video_id}/"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(user.videoratelaters.count(), 0)
+        self.assertEqual(user.ratelaters.count(), 0)
 
     def test_automatically_removed_after_4_comparisons(self):
         """
@@ -250,13 +252,13 @@ class VideoRateLaterApi(TestCase):
         """
         user = User.objects.get(username=self._user)
         other_user = User.objects.get(username=self._other)
-        video = VideoRateLater.objects.filter(user=user).first().video
+        video = RateLater.objects.filter(user=user).first().video
 
         # Video should not be removed after 2 comparisons
         ComparisonFactory(user=user, entity_2=video)
         ComparisonFactory(user=user, entity_1=video)
         video.auto_remove_from_rate_later(user)
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 1)
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 1)
 
         # Video is not removed when compared by other user
         ComparisonFactory(user=other_user, entity_2=video)
@@ -264,23 +266,23 @@ class VideoRateLaterApi(TestCase):
         ComparisonFactory(user=other_user, entity_1=video)
         ComparisonFactory(user=other_user, entity_1=video)
         video.auto_remove_from_rate_later(user)
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 1)
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 1)
 
         # Video should not be removed after 3 comparisons
         ComparisonFactory(user=user, entity_2=video)
         video.auto_remove_from_rate_later(user)
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 1)
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 1)
 
         # Video is not removed when comparing unrelated videos
         ComparisonFactory(user=user)
         ComparisonFactory(user=user)
         video.auto_remove_from_rate_later(user)
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 1)
-        
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 1)
+
         # Video should be removed after 4 comparisons
         ComparisonFactory(user=user, entity_2=video)
         video.auto_remove_from_rate_later(user)
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 0)
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 0)
 
         # Video can be added again
         client = APIClient()
@@ -291,9 +293,9 @@ class VideoRateLaterApi(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 1)
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 1)
 
         # Video is removed again after one new comparison
         ComparisonFactory(user=user, entity_2=video)
         video.auto_remove_from_rate_later(user)
-        self.assertEqual(VideoRateLater.objects.filter(user=user, video=video).count(), 0)
+        self.assertEqual(RateLater.objects.filter(user=user, video=video).count(), 0)
