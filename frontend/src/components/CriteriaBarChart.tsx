@@ -21,6 +21,8 @@ import { lighten } from 'src/utils/color';
 import { Tooltip } from '@mui/material';
 import useResizeObserver from '@react-hook/resize-observer';
 import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const barMargin = 40; // The horizontal margin around the bar (must be enough for the icon and the score value)
 const criterionChartHeight = 40; // The height of a single criterion chart (circle + icon + bars)
@@ -230,6 +232,27 @@ const ScoreTooltip = ({
   });
   const { t } = useTranslation();
 
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const { placement, popperProps } = useMemo(() => {
+    if (smallScreen)
+      return {
+        placement: 'top',
+        popperProps: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, -10],
+              },
+            },
+          ],
+        },
+      };
+    else return { placement: 'right' };
+  }, [smallScreen]);
+
   if (personal && !personalScoresActivated) return null;
 
   const tooltip = personal
@@ -256,7 +279,8 @@ const ScoreTooltip = ({
       width={width + 2}
       height={height + extraVerticalSize}
       title={tooltip}
-      placement="right"
+      placement={placement}
+      PopperProps={popperProps}
       arrow
     />
   );
@@ -421,7 +445,7 @@ const SizedBarChart = ({
         height={height}
         ref={svgRef}
         onClick={handleClick}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
       >
         {data.map(({ criterion }, index) => (
           <React.Fragment key={criterion}>
