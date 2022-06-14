@@ -445,7 +445,7 @@ const SizedBarChart = ({
         height={height}
         ref={svgRef}
         onClick={handleClick}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
       >
         {data.map(({ criterion }, index) => (
           <React.Fragment key={criterion}>
