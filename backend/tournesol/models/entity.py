@@ -123,8 +123,8 @@ class Entity(models.Model):
 
     def auto_remove_from_rate_later(self, user):
         """
-        When called, the entity will be removed from the VideoRateLater
-        list if it has 4 or more comparisons
+        When called, the entity is removed from the user's RateLater list if
+        it has been compared at least 4 times.
         """
         from .comparisons import Comparison
 
