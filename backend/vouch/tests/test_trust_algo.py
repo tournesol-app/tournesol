@@ -3,7 +3,6 @@ All test cases of the trust algorithm.
 """
 
 import numpy as np
-import pytest
 from django.test import TestCase
 
 from core.models import user
@@ -74,7 +73,7 @@ class TrustAlgoTestCse(TestCase):
         user_trust = np.random.randint(2, size=10)
         C_normalized = normalize_trust_values(C, user_trust)
         for k in range(len(C_normalized[0])):
-            assert np.sum(C_normalized[k]) == pytest.approx(1, 0.00000001)
+            self.assertAlmostEqual(np.sum(C_normalized[k]), 1)
 
     def test_get_trust_vector(self):
         # compute trust vector given C and p
@@ -85,32 +84,31 @@ class TrustAlgoTestCse(TestCase):
         trust_vec = get_trust_vector(C_normalized, p)
 
         # ensure it sums to 1
-        assert np.sum(trust_vec) == pytest.approx(1, 0.00000001)
+        self.assertAlmostEqual(np.sum(trust_vec), 1)
         # ensure sum_trusted >= a
-        assert np.sum([trust_vec[i] for i in range(len(trust_vec)) if p[i] > 0]) >= 0.2
+        self.assertTrue(np.sum([trust_vec[i] for i in range(len(trust_vec)) if p[i] > 0]) >= 0.2)
         # ensure that untrusted users than aren't vouched for don't get trust
         p[9] = 0
         C[:, 9] = 0
         p = p/np.sum(p)
         C_normalized = normalize_trust_values(C, p)
         trust_vec = get_trust_vector(C_normalized, p)
-        assert trust_vec[9] == pytest.approx(0, 0.00000001)
+        self.assertAlmostEqual(trust_vec[9], 0)
 
     def test_rescale(self):
         trust_vect = np.random.randint(0, 100, 10)
         trust_vect = trust_vect/np.sum(trust_vect)
         trust_stat = np.random.randint(0, 2, 10)
-        min_idx = 100
         min_idx = np.argmin([trust_vect[i] if trust_stat[i] ==
                             1 else 2 for i in range(len(trust_vect))])
         scale_fac = trust_vect[min_idx]
         rescaled = rescale(trust_vect, trust_stat)
-        assert rescaled[min_idx] == pytest.approx(1, 0.00000001)
+        self.assertAlmostEqual(rescaled[min_idx], 1)
         for i in range(len(trust_stat)):
-            assert rescaled[i] * scale_fac == pytest.approx(trust_vect[i], 0.00000001)
+            self.assertAlmostEqual(rescaled[i] * scale_fac, trust_vect[i])
 
             if trust_stat[i] > 0:
-                assert rescaled[i] >= 0.999999999
+                self.assertTrue(rescaled[i] >= 0.999999999)
 
     def test_trust_algo(self):
         users = list(user.User.objects.all())
@@ -118,12 +116,12 @@ class TrustAlgoTestCse(TestCase):
             self.assertIsNone(u.trust_score)
         trust_algo()
         users = list(user.User.objects.all())
-        assert users[1].trust_score >= 0.9999999
-        assert users[2].trust_score > 0.00001
-        assert users[9].trust_score == pytest.approx(0, 0.00000001)
-        assert users[8].trust_score == pytest.approx(0, 0.00000001)
+        self.assertTrue(users[1].trust_score >= 0.9999999)
+        self.assertTrue(users[2].trust_score > 0.00001)
+        self.assertAlmostEqual(users[9].trust_score, 0)
+        self.assertAlmostEqual(users[8].trust_score, 0)
         vouch18 = Voucher(by=self.user_1, to=self.user_8, trust_value=100.0)
         vouch18.save()
         trust_algo()
         users = list(user.User.objects.all())
-        assert users[8].trust_score > 0.00001
+        self.assertTrue(users[8].trust_score > 0.00001)
