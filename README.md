@@ -39,7 +39,7 @@ on [Discord][tournesol-discord-join].
  - [Structure of the repository](#structure-of-the-repository)
  - [Set-up](#set-up)
  - [Contributing](#contributing)
- - [Licenses](#licenses)
+ - [Copyright & Licenses](#copyright--licenses)
 
 ## Structure of the repository
 
@@ -73,12 +73,15 @@ The code source of the project exists thanks to
 
 Thank you very much!
 
-## Licenses
+## Copyright & Licenses
 
 The Tournesol project has chosen to distribute its software and its other
 productions under the terms of different licenses.
 
 See the [LICENSE.md](./LICENSE.md) file for the exhaustive list.
+
+You can find the copyright notice of each software and other production in
+their dedicated `README.md` file.
 
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
 
