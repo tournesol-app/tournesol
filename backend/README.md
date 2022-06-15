@@ -11,6 +11,7 @@ The API of the Tournesol platform, made with Python and Django.
 - [Tests](#tests)
 - [Code Quality](#code-quality)
 - [F.A.Q.](#faq)
+- [Copyright & License](#copyright-&-license)
 
 ## Install
 
@@ -218,6 +219,26 @@ quality checks manually.
 
 As we do not want to make the developers to have complex and error-prone local
 setups, we decided to add the code quality checks only in the CI for now.
+
+## Copyright & License
+
+Copyright 2021-2022 Association Tournesol and contributors.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+Included license:
+ - [AGPL-3.0-or-later](./LICENSE)
 
 [dev-env-readme]: https://github.com/tournesol-app/tournesol/blob/main/dev-env/README.md
 
