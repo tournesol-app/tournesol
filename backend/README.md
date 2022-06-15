@@ -11,7 +11,7 @@ The API of the Tournesol platform, made with Python and Django.
 - [Tests](#tests)
 - [Code Quality](#code-quality)
 - [F.A.Q.](#faq)
-- [Copyright & License](#copyright-&-license)
+- [Copyright & License](#copyright--license)
 
 ## Install
 
