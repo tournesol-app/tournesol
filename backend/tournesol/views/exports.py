@@ -12,8 +12,8 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.models import Comparison, ContributorRating
-from tournesol.models.poll import DEFAULT_POLL_NAME
+from tournesol.lib.public_dataset import get_dataset
+from tournesol.models import Comparison, Poll
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -45,10 +45,10 @@ def write_comparisons_file(request, write_target):
     )
 
 
-def write_public_comparisons_file(request, write_target):
+def write_public_comparisons_file(poll_name: str, write_target) -> None:
     """
-    Writes all public comparisons data as a CSV file to write_target which can be
-    among other options an HttpResponse or a StringIO
+    Retrieve all public comparisons' data, and write them as CSV in
+    `write_target`, an object supporting the Python file API.
     """
     fieldnames = [
         "public_username",
@@ -60,40 +60,16 @@ def write_public_comparisons_file(request, write_target):
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
-    public_data = (
-        ContributorRating.objects
-        .filter(is_public=True, poll__name=DEFAULT_POLL_NAME)
-        .select_related("user", "entity")
-    )
-    serialized_comparisons = []
-    public_videos = set((rating.user, rating.entity) for rating in public_data)
-    comparisons = (
-        Comparison.objects
-        .filter(poll__name=DEFAULT_POLL_NAME)
-        .select_related("entity_1", "entity_2", "user")
-        .prefetch_related("criteria_scores")
-    )
-    public_comparisons = [
-        comparison
-        for comparison in comparisons
-        if (
-            (comparison.user, comparison.entity_1) in public_videos
-            and (comparison.user, comparison.entity_2) in public_videos
-        )
-    ]
-    public_usernames = [comparison.user.username for comparison in public_comparisons]
-    serialized_comparisons = ComparisonSerializer(public_comparisons, many=True).data
     writer.writerows(
         {
-            "public_username": public_username,
-            "video_a": comparison["entity_a"]["uid"].split(UID_DELIMITER)[1],
-            "video_b": comparison["entity_b"]["uid"].split(UID_DELIMITER)[1],
-            **criteria_score,
+            "public_username": comparison.username,
+            "video_a": comparison.uid_a.split(UID_DELIMITER)[1],
+            "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
+            "criteria": comparison.criteria,
+            "weight": comparison.weight,
+            "score": comparison.score,
         }
-        for (public_username, comparison) in zip(
-            public_usernames, serialized_comparisons
-        )
-        for criteria_score in comparison["criteria_scores"]
+        for comparison in get_dataset(poll_name).iterator()
     )
 
 
@@ -126,7 +102,7 @@ class ExportPublicComparisonsView(APIView):
         response[
             "Content-Disposition"
         ] = 'attachment; filename="tournesol_public_export.csv"'
-        write_public_comparisons_file(request, response)
+        write_public_comparisons_file(Poll.default_poll().name, response)
         return response
 
 
@@ -169,7 +145,9 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
     def get(self, request, *args, **kwargs):
         poll = self.poll_from_url
         response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = f'attachment; filename="proof_of_vote_{poll.name}.csv"'
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="proof_of_vote_{poll.name}.csv"'
 
         fieldnames = [
             "user_id",
@@ -182,12 +160,8 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
         writer.writeheader()
         writer.writerows(
             {**d, "signature": poll.get_proof_of_vote(d["user_id"])}
-            for d in User.objects.filter(comparisons__poll=poll)
-            .values(
-                "username",
-                "email",
-                n_comparisons=Count("*"),
-                user_id=F("id")
+            for d in User.objects.filter(comparisons__poll=poll).values(
+                "username", "email", n_comparisons=Count("*"), user_id=F("id")
             )
         )
         return response
