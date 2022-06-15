@@ -66,19 +66,18 @@ class SuggestionProvider:
         Function called to get the videos to recommend while the scale and translation
         uncertainties of the user are not high enough
         """
-        # I want all entities from the current poll compared by supertrusted user
-        # todo create alias to properly detect supertrusted ?
-        supertrusted_comparisons = Comparison.objects.filter(
-            poll=self.poll,
-            user__in=User.supertrusted_seed_users()
-        )
-        req_entities = (
-            Entity.objects.filter(
-                Q(comparisons_entity_1__in=supertrusted_comparisons)
-                | Q(comparisons_entity_2__in=supertrusted_comparisons)
-            )
-            .distinct()
-            .values_list("uid", flat=True)
+
+        # Fetch all entities compared by supertrusted users in the current poll
+        req_entities = set(
+            Entity.objects
+                .filter(comparisons_entity_1__user__in=User.supertrusted_seed_users())
+                .distinct()
+                .values_list("uid", flat=True)
+        ).union(
+            Entity.objects
+                .filter(comparisons_entity_2__user__in=User.supertrusted_seed_users())
+                .distinct()
+                .values_list("uid", flat=True)
         )
 
         return [
