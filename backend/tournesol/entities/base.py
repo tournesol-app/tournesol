@@ -50,7 +50,9 @@ class EntityType(ABC):
         """
         if "__" in field:
             raise ValidationError(
-                f'The metatada field `{field}` cannot contain the special string "__".'
+                {
+                    "_url_metadata": f'The metatada field `{field}` cannot contain the special string "__".'
+                }
             )
 
     @classmethod
