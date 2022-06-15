@@ -1,11 +1,10 @@
-from tokenize import String
 import numpy as np
 import pandas as pd
 
 R_MAX = 10  # Maximum score for a comparison in the input
 ALPHA = 0.01  # Signal-to-noise hyperparameter
 
-def apply_online_update_on_individual_score(all_comparison_user: pd.DataFrame,uid_a: String, uid_b : String, previous_scores: pd.DataFrame):
+def apply_online_update_on_individual_score(all_comparison_user: pd.DataFrame,uid_a: str, uid_b : str, previous_scores: pd.DataFrame):
     scores = all_comparison_user[["entity_a", "entity_b", "score"]]
     if (uid_a,uid_b) not in { twotuple_entity_id for (twotuple_entity_id, _) in scores.groupby(["entity_a","entity_b"])}  \
     and \
