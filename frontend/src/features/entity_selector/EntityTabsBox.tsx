@@ -41,17 +41,26 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
       return;
     }
 
+    let aborted = false;
     const loadTab = async () => {
       setStatus(TabStatus.Loading);
       try {
-        setOptions(await tab.fetch());
-        setStatus(TabStatus.Ok);
+        const results = await tab.fetch();
+        if (!aborted) {
+          setOptions(results);
+          setStatus(TabStatus.Ok);
+        }
       } catch {
-        setStatus(TabStatus.Error);
+        if (!aborted) {
+          setStatus(TabStatus.Error);
+        }
       }
     };
 
     loadTab();
+    return () => {
+      aborted = true;
+    };
   }, [tabs, tabValue]);
 
   return (
