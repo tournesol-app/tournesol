@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.lib.public_dataset import get_dataset
-from tournesol.models import Comparison
+from tournesol.models import Comparison, Poll
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -45,7 +45,7 @@ def write_comparisons_file(request, write_target):
     )
 
 
-def write_public_comparisons_file(write_target) -> None:
+def write_public_comparisons_file(poll_name: str, write_target) -> None:
     """
     Retrieve all public comparisons' data, and write them as CSV in
     `write_target`, an object supporting the Python file API.
@@ -69,7 +69,7 @@ def write_public_comparisons_file(write_target) -> None:
             "weight": comparison.weight,
             "score": comparison.score,
         }
-        for comparison in get_dataset()
+        for comparison in get_dataset(poll_name)
     )
 
 
@@ -102,7 +102,7 @@ class ExportPublicComparisonsView(APIView):
         response[
             "Content-Disposition"
         ] = 'attachment; filename="tournesol_public_export.csv"'
-        write_public_comparisons_file(response)
+        write_public_comparisons_file(Poll.default_poll().name, response)
         return response
 
 

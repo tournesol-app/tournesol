@@ -1,25 +1,24 @@
 """
 The public dataset library.
 """
-
 from django.db.models import QuerySet
 
-from tournesol.models.comparisons import Comparison
 
-
-def get_dataset() -> QuerySet:
+def get_dataset(poll_name: str) -> QuerySet:
     """
     Retrieve the public dataset from the database and return a non-evaluated
     Django `RawQuerySet`.
     """
-    Comparison.objects.raw(
+    from tournesol.models.comparisons import Comparison
+
+    return Comparison.objects.raw(
         """
         SELECT
             tournesol_comparison.id,
 
             core_user.username,
-            entity_1.uid AS entity_a,
-            entity_2.uid AS entity_b,
+            entity_1.uid AS uid_a,
+            entity_2.uid AS uid_b,
             comparisoncriteriascore.criteria,
             comparisoncriteriascore.weight,
             comparisoncriteriascore.score
@@ -54,9 +53,10 @@ def get_dataset() -> QuerySet:
           ON rating_2.entity_id = tournesol_comparison.entity_2_id
          AND rating_2.user_id = tournesol_comparison.user_id
 
-        WHERE tournesol_poll.name = 'videos'
+        WHERE tournesol_poll.name = %(poll_name)s
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
-        """
+        """,
+        {"poll_name": poll_name},
     )
