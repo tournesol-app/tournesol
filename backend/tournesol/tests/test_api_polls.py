@@ -263,6 +263,20 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(resp.data["count"], 0)
         self.assertEqual(resp.data["results"], [])
 
+    def test_anon_cannot_use_forbidden_strings_in_metadata_filter(self):
+        response = self.client.get("/polls/videos/recommendations/?metadata[__]=10")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration__lte]=10"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(
+            "/polls/videos/recommendations/?metadata[duration__lte::int]=10"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_anon_can_list_videos_filtered_by_duration_exact(self):
         response = self.client.get(
             "/polls/videos/recommendations/?metadata[duration]=10"
