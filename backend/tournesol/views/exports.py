@@ -69,7 +69,7 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
             "weight": comparison.weight,
             "score": comparison.score,
         }
-        for comparison in get_dataset(poll_name)
+        for comparison in get_dataset(poll_name).iterator()
     )
 
 
