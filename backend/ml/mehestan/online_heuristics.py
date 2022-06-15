@@ -7,6 +7,7 @@ from ml.outputs import (
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
 )
+from .global_scores import  get_global_scores
 
 
 R_MAX = 10  # Maximum score for a comparison in the input
@@ -69,10 +70,32 @@ def run_online_heuristics(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str,
     previous_individual_raw_scores=ml_input.get_scores(user_id)
     apply_online_update_on_individual_score(all_comparison_user,uid_a,uid_b, previous_individual_raw_scores)
     save_contributor_scores(poll, previous_individual_raw_scores, single_criteria=criteria)
-    s,tau=ml_input.get_scaling_factors(user_id)
-    previous_individual_raw_scores=s*previous_individual_raw_scores+tau
+    all_user_scalings=ml_input.get_all_scaling_factors()
+    
+    all_indiv_score_a=ml_input.get_indiv_score_for_entity(entity_id=uid_a,criteria=criteria)
+    all_indiv_score_b=ml_input.get_indiv_score_for_entity(entity_id=uid_b,criteria=criteria)
+    #user_id 	entity_id 	score 	uncertainty 	criteria
+    all_indiv_score=all_indiv_score_a.concat(all_indiv_score_b)
+    
+    df=all_indiv_score.merge(ml_input.get_ratings_properties(), how="inner",on="user_id")
+    df["is_public"].fillna(False, inplace=True)
+    df["is_trusted"].fillna(False, inplace=True)
+    df["is_supertrusted"].fillna(False, inplace=True)
+    df=df.merge(all_user_scalings,how="left", on="user_id")
+    df["s"].fillna(1, inplace=True)
+    df["tau"].fillna(0, inplace=True)
+    df["delta_s"].fillna(0, inplace=True)
+    df["delta_tau"].fillna(0, inplace=True)
+    df["uncertainty"] = (
+        df["s"] * df["uncertainty"]
+        + df["delta_s"] * df["score"].abs()
+        + df["delta_tau"]
+    )
+    df["score"] = df["score"] * df["s"] + df["tau"]
+    df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
+    partial_scaled_scores_for_ab=df
     for mode in ScoreMode:
-        global_scores = get_global_scores(scaled_scores, score_mode=mode)
+        global_scores = get_global_scores(partial_scaled_scores_for_ab, score_mode=mode)
         global_scores["criteria"] = criteria
         save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
 
