@@ -12,8 +12,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.models import Comparison, ContributorRating
-from tournesol.models.poll import DEFAULT_POLL_NAME
+from tournesol.models import Comparison
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -45,10 +44,10 @@ def write_comparisons_file(request, write_target):
     )
 
 
-def write_public_comparisons_file(request, write_target):
+def write_public_comparisons_file(write_target) -> None:
     """
-    Writes all public comparisons data as a CSV file to write_target which can be
-    among other options an HttpResponse or a StringIO
+    Retrieve all public comparisons' data, and write them as CSV in
+    `write_target`, an object supporting the Python file API.
     """
     fieldnames = [
         "public_username",
@@ -106,7 +105,7 @@ def write_public_comparisons_file(request, write_target):
         WHERE tournesol_poll.name = 'videos'
           -- keep only public ratings
           AND rating_1.is_public = true
-          AND rating_2.is_public = true;
+          AND rating_2.is_public = true
         """
     )
     writer.writerows(
@@ -151,7 +150,7 @@ class ExportPublicComparisonsView(APIView):
         response[
             "Content-Disposition"
         ] = 'attachment; filename="tournesol_public_export.csv"'
-        write_public_comparisons_file(request, response)
+        write_public_comparisons_file(response)
         return response
 
 
