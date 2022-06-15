@@ -74,7 +74,6 @@ def run_online_heuristics(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str,
     
     all_indiv_score_a=ml_input.get_indiv_score_for_entity(entity_id=uid_a,criteria=criteria)
     all_indiv_score_b=ml_input.get_indiv_score_for_entity(entity_id=uid_b,criteria=criteria)
-    #user_id 	entity_id 	score 	uncertainty 	criteria
     all_indiv_score=all_indiv_score_a.concat(all_indiv_score_b)
     
     df=all_indiv_score.merge(ml_input.get_ratings_properties(), how="inner",on="user_id")

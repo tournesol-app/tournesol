@@ -7,7 +7,8 @@ from django.db.models.expressions import RawSQL
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity
-from tournesol.models.ratings import ContributorRating
+from tournesol.models.ratings import ContributorRating, ContributorRatingCriteriaScore
+from tournesol.models.scaling import ContributorScaling
 
 
 class MlInput(ABC):
@@ -44,6 +45,17 @@ class MlInput(ABC):
             * `is_supertrusted`: bool
         """
         pass
+
+    @abstractmethod
+    def get_all_scaling_factors(self) -> pd.DataFrame:
+        pass
+
+    @abstractmethod
+    def get_indiv_score_for_entity(self,
+        criteria: Optional[str] = None,
+        user_id: Optional[int] = None,) -> pd.DataFrame:
+        pass
+    
 
 
 class MlInputFromPublicDataset(MlInput):
@@ -206,3 +218,74 @@ class MlInputFromDb(MlInput):
                 ]
             )
         return pd.DataFrame(values)
+
+
+    def get_all_scaling_factors(self):
+        values = (
+            ContributorScaling.objects.filter(
+                poll__name=self.poll_name,
+            )
+            .values(
+                "user_id",
+                s=F("scale"),
+                tau=F("translation"),
+                delta_s=F("scale_uncertainty"),
+                delta_tau=F("translation_uncertainty"),
+            )
+        )
+        if len(values) == 0:
+            return pd.DataFrame(
+                columns=[
+                    "user_id",
+                    "s",
+                    "tau",
+                    "delta_s",
+                    "delta_tau",
+                ]
+            )
+        return pd.DataFrame(values)
+
+
+
+    def get_indiv_score_for_entity(
+        self, criteria=None, user_id=None
+    ) -> pd.DataFrame:
+  
+
+        scores_queryset = ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll__name=self.poll_name
+        )
+        if criteria is not None:
+            scores_queryset = scores_queryset.filter(contributor_rating__criteria=criteria)
+
+
+        if user_id is not None:
+            scores_queryset = scores_queryset.filter(contributor_rating__comparison__user_id=user_id)
+
+        values = scores_queryset.values(
+            "user_id",
+            "entity_id",
+            "score",
+            "uncertainty",
+            "criteria",
+        )
+        if len(values) > 0:
+            df = pd.DataFrame(values)
+            return df[
+                ["user_id",
+                "entity_id",
+                "score",
+                "uncertainty",
+                "criteria",
+                ]
+            ]
+
+        return pd.DataFrame(
+            columns=[
+                "user_id",
+                "entity_id",
+                "score",
+                "uncertainty",
+                "criteria",
+            ]
+        )
