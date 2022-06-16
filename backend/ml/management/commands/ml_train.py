@@ -1,6 +1,8 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from matplotlib.style import use
+from backend.ml.mehestan.online_heuristics import run_online_heuristics
 
 from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
@@ -115,9 +117,22 @@ class Command(BaseCommand):
             action="store_true",
             help="Skip ML run on untrusted users (for Licchavi only)",
         )
+        parser.add_argument(
+            "--online-heuristic",
+            action="store_true",
+            help="Run online heuristic for used_id, uid_a, uid_b",
+        )
+        parser.add_argument('user_id', nargs=1, type=int)
+        parser.add_argument('uid_a', nargs=1, type=str)
+        parser.add_argument('uid_b', nargs=1, type=str)
+
 
     def handle(self, *args, **options):
         skip_untrusted = options["skip_untrusted"]
+        online_heuristic= options["online_heuristic"]
+        user_id = options["user_id"]
+        uid_a = options["uid_a"]
+        uid_b = options["uid_b"]
         if TOURNESOL_DEV:
             logging.error("You must turn TOURNESOL_DEV to 0 to use this")
         else:  # production
@@ -134,6 +149,9 @@ class Command(BaseCommand):
                         logging.info("Licchavi for poll %s: Process on all users", poll.name)
                         process_licchavi(poll, ml_input, trusted_only=False)
                 elif poll.algorithm == ALGORITHM_MEHESTAN:
-                    run_mehestan(ml_input=ml_input, poll=poll)
+                    if online_heuristic:
+                        run_online_heuristics(ml_input=ml_input, poll=poll, user_id=user_id, uid_a=uid_a, uid_b=uid_b)
+                    else:
+                        run_mehestan(ml_input=ml_input, poll=poll)
                 else:
                     raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
