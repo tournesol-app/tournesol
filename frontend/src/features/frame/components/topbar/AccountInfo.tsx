@@ -51,7 +51,13 @@ const LoggedInActions = () => {
         onClick={handleProfileClick}
         sx={accountLoginButtonSx}
         startIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
-        endIcon={menuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
+        endIcon={
+          menuAnchor ? (
+            <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
+          ) : (
+            <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
+          )
+        }
       >
         {loginState.username}
       </Button>
