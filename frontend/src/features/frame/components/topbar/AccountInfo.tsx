@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Grid } from '@mui/material';
-import { AccountCircle } from '@mui/icons-material';
+import { AccountCircle, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
@@ -50,7 +50,8 @@ const LoggedInActions = () => {
         color="inherit"
         onClick={handleProfileClick}
         sx={accountLoginButtonSx}
-        endIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
+        startIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
+        endIcon={menuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
       >
         {loginState.username}
       </Button>
