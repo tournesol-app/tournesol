@@ -93,6 +93,7 @@ def _run_online_heuristics_for_criterion(
     )
     all_user_scalings = ml_input.get_all_scaling_factors()
 
+    #user_id 	entity_id 	score 	uncertainty 	criteria
     all_indiv_score_a = ml_input.get_indiv_score(entity_id=uid_a, criteria=criteria)
     all_indiv_score_b = ml_input.get_indiv_score(entity_id=uid_b, criteria=criteria)
     all_indiv_score = all_indiv_score_a.concat(all_indiv_score_b)
@@ -160,7 +161,6 @@ def run_online_heuristics(
     os.register_at_fork(before=db.connections.close_all)
 
     # compute each criterion in parallel
-
     partial_online_heuristics = partial(
         _run_online_heuristics_for_criterion,
         ml_input=ml_input,
@@ -169,6 +169,7 @@ def run_online_heuristics(
         uid_b=uid_b,
         user_id=user_id,
     )
+    
     with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
         for _ in pool.imap_unordered(
             partial_online_heuristics,

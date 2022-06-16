@@ -256,20 +256,25 @@ class MlInputFromDb(MlInput):
         )
         if criteria is not None:
             scores_queryset = scores_queryset.filter(
-                contributor_rating__criteria=criteria
+                criteria=criteria
             )
 
         if user_id is not None:
             scores_queryset = scores_queryset.filter(
-                contributor_rating__comparison__user_id=user_id
+                contributor_rating__user_id=user_id
             )
 
+        if entity_id is not None:
+            scores_queryset = scores_queryset.filter(
+                contributor_rating__entity_id=entity_id
+            )
+        
         values = scores_queryset.values(
-            "user_id",
-            "entity_id",
             "score",
             "uncertainty",
             "criteria",
+            user_id=F("contributor_rating__user_id"),
+            entity_id=F("contributor_rating__entity_id"),
         )
         if len(values) > 0:
             df = pd.DataFrame(values)

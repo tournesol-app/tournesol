@@ -1,7 +1,6 @@
 import logging
 
 from django.core.management.base import BaseCommand
-from matplotlib.style import use
 from ml.mehestan.online_heuristics import run_online_heuristics
 
 from core.models import User
