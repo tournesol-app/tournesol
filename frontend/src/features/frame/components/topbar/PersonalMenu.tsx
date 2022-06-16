@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 import {
   Divider,
@@ -26,6 +25,7 @@ const PersonalMenu = ({
   onLogoutClick,
 }: PersonalMenuProps) => {
   const { t } = useTranslation();
+  const location = useLocation();
 
   const open = Boolean(menuAnchor);
 
@@ -43,6 +43,7 @@ const PersonalMenu = ({
         component={RouterLink}
         to="/settings/profile"
         onClick={onItemClick}
+        selected={'/settings/profile' === location.pathname}
       >
         <ListItemIcon>
           <AccountCircle fontSize="small" />
@@ -53,6 +54,7 @@ const PersonalMenu = ({
         component={RouterLink}
         to="/settings/account"
         onClick={onItemClick}
+        selected={'/settings/account' === location.pathname}
       >
         <ListItemIcon>
           <Settings fontSize="small" />
