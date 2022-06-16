@@ -1,3 +1,9 @@
+import logging
+import os
+from functools import partial
+from multiprocessing import Pool
+from typing import Optional
+from django import db
 import numpy as np
 import pandas as pd
 from ml.inputs import MlInput
@@ -7,8 +13,11 @@ from ml.outputs import (
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
 )
+from tournesol.models import Poll
+
 from .global_scores import  get_global_scores
 
+logger = logging.getLogger(__name__)
 
 R_MAX = 10  # Maximum score for a comparison in the input
 ALPHA = 0.01  # Signal-to-noise hyperparameter
@@ -65,7 +74,8 @@ def apply_online_update_on_individual_score(all_comparison_user: pd.DataFrame,ui
     previous_individual_raw_scores[uid_b]=theta_star_b
 
 
-def run_online_heuristics(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str,criteria :str, poll:Poll):
+def _run_online_heuristics_for_criterion(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str,criteria :str, poll_pk:int):
+    poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user=ml_input.get_comparisons(criteria = criteria,user_id = user_id)
     previous_individual_raw_scores=ml_input.get_indiv_score(user_id=user_id)
     apply_online_update_on_individual_score(all_comparison_user,uid_a,uid_b, previous_individual_raw_scores)
@@ -99,3 +109,45 @@ def run_online_heuristics(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str,
         save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
 
     save_tournesol_score_as_sum_of_criteria(poll)    
+
+def run_online_heuristics(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str, poll:Poll):
+    """
+    This function use multiprocessing.
+
+        1. Always close all database connections in the main process before
+           creating forks. Django will automatically re-create new database
+           connections when needed.
+
+        2. Do not pass Django model's instances as arguments to the function
+           run by child processes. Using such instances in child processes
+           will raise an exception: connection already closed.
+
+        3. Do not fork the main process within a code block managed by
+           a single database transaction.
+
+    See the indications to close the database connections:
+        - https://www.psycopg.org/docs/usage.html#thread-and-process-safety
+        - https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT
+
+    See how django handles database connections:
+        - https://docs.djangoproject.com/en/4.0/ref/databases/#connection-management
+    """
+    logger.info("Online Heuristic Mehestan for poll '%s': Start", poll.name)
+
+    # Avoid passing model's instances as arguments to the function run by the
+    # child processes. See this method docstring.
+    poll_pk = poll.pk
+    criteria = poll.criterias_list
+
+    os.register_at_fork(before=db.connections.close_all)
+
+    # compute each criterion in parallel
+    with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
+        for _ in pool.imap_unordered(
+            partial(_run_online_heuristics_for_criterion, ml_input=ml_input, poll_pk=poll_pk,uid_a=uid_a, uid_b=uid_b, user_id=user_id),
+            criteria,
+        ):
+            pass
+
+    save_tournesol_score_as_sum_of_criteria(poll)
+    logger.info("Online Heuristic Mehestan for poll '%s': Done", poll.name)
