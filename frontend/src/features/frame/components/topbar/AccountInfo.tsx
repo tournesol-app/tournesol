@@ -45,6 +45,7 @@ const LoggedInActions = () => {
   return (
     <>
       <Button
+        id="personal-menu-button"
         variant="outlined"
         color="inherit"
         onClick={handleProfileClick}

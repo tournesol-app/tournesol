@@ -12,7 +12,8 @@ describe('Login', () => {
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
     cy.location('pathname').should('equal', '/');
     cy.contains('Log in').should('not.exist');
-    cy.contains('user').click();
+
+    cy.get('button#personal-menu-button').click();
     cy.contains('Logout').should('be.visible');
   })
 
@@ -25,8 +26,10 @@ describe('Login', () => {
     cy.location('pathname').should('equal', '/');
     cy.contains('.MuiToolbar-root', 'user1').should('be.visible');
     cy.contains('Log in').should('not.exist');
-    cy.contains('user').click();
-    cy.contains('Logout').should('be.visible').click();
+
+    cy.get('button#personal-menu-button').click();
+    cy.get('#personal-menu').contains('Logout').click();
+
     cy.contains('Log in').should('be.visible');
   })
 
@@ -39,8 +42,10 @@ describe('Login', () => {
     cy.location('pathname').should('equal', '/');
     cy.contains('.MuiToolbar-root', 'user1').should('be.visible');
     cy.contains('Log in').should('not.exist');
-    cy.contains('user').click();
-    cy.contains('Logout').should('be.visible').click();
+
+    cy.get('button#personal-menu-button').click();
+    cy.get('#personal-menu').contains('Logout').click();
+
     cy.contains('Log in').should('be.visible');
   })
 })
