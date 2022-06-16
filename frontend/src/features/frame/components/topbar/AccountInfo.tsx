@@ -2,8 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Grid } from '@mui/material';
-import { AccountCircle } from '@mui/icons-material';
+import {
+  Button,
+  Divider,
+  Grid,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from '@mui/material';
+import { AccountCircle, Logout, Settings } from '@mui/icons-material';
 
 import { useLoginState, useNotifications } from 'src/hooks';
 import { revokeAccessToken } from '../../../login/loginAPI';
@@ -22,6 +30,17 @@ const LoggedInActions = () => {
 
   const { logout, loginState } = useLoginState();
 
+  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(menuAnchor);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setMenuAnchor(null);
+  };
+
   const logoutProcess = async () => {
     if (loginState.refresh_token) {
       await revokeAccessToken(loginState.refresh_token).catch(() => {
@@ -36,26 +55,41 @@ const LoggedInActions = () => {
       <Button
         variant="outlined"
         color="inherit"
+        onClick={handleClick}
         sx={accountLoginButtonSx}
-        onClick={logoutProcess}
-      >
-        {t('logoutButton')}
-      </Button>
-      <Button
-        variant="text"
-        color="secondary"
-        component={Link}
-        to="/settings/profile"
-        sx={{
-          textTransform: 'initial',
-          fontWeight: 'bold',
-          borderWidth: '2px',
-          color: 'text.primary',
-        }}
         endIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
       >
         {loginState.username}
       </Button>
+      <Menu
+        id="personal-menu"
+        open={open}
+        anchorEl={menuAnchor}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem component={Link} to="/settings/profile" onClick={handleClose}>
+          <ListItemIcon>
+            <AccountCircle fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Profile</ListItemText>
+        </MenuItem>
+        <MenuItem component={Link} to="/settings/account" onClick={handleClose}>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Account</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={logoutProcess}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Logout</ListItemText>
+        </MenuItem>
+      </Menu>
     </>
   );
 };
