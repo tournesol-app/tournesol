@@ -2,7 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 from matplotlib.style import use
-from backend.ml.mehestan.online_heuristics import run_online_heuristics
+from ml.mehestan.online_heuristics import run_online_heuristics
 
 from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
@@ -122,9 +122,9 @@ class Command(BaseCommand):
             action="store_true",
             help="Run online heuristic for used_id, uid_a, uid_b",
         )
-        parser.add_argument('user_id', nargs=1, type=int)
-        parser.add_argument('uid_a', nargs=1, type=str)
-        parser.add_argument('uid_b', nargs=1, type=str)
+        parser.add_argument('--user_id', nargs=1, type=int)
+        parser.add_argument('--uid_a', nargs=1, type=str)
+        parser.add_argument('--uid_b', nargs=1, type=str)
 
 
     def handle(self, *args, **options):
