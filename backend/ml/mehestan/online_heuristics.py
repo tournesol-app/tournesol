@@ -67,13 +67,13 @@ def apply_online_update_on_individual_score(all_comparison_user: pd.DataFrame,ui
 
 def run_online_heuristics(ml_input: MlInput, uid_a: str, uid_b:str, user_id:str,criteria :str, poll:Poll):
     all_comparison_user=ml_input.get_comparisons(criteria = criteria,user_id = user_id)
-    previous_individual_raw_scores=ml_input.get_scores(user_id)
+    previous_individual_raw_scores=ml_input.get_indiv_score(user_id=user_id)
     apply_online_update_on_individual_score(all_comparison_user,uid_a,uid_b, previous_individual_raw_scores)
     save_contributor_scores(poll, previous_individual_raw_scores, single_criteria=criteria)
     all_user_scalings=ml_input.get_all_scaling_factors()
     
-    all_indiv_score_a=ml_input.get_indiv_score_for_entity(entity_id=uid_a,criteria=criteria)
-    all_indiv_score_b=ml_input.get_indiv_score_for_entity(entity_id=uid_b,criteria=criteria)
+    all_indiv_score_a=ml_input.get_indiv_score(entity_id=uid_a,criteria=criteria)
+    all_indiv_score_b=ml_input.get_indiv_score(entity_id=uid_b,criteria=criteria)
     all_indiv_score=all_indiv_score_a.concat(all_indiv_score_b)
     
     df=all_indiv_score.merge(ml_input.get_ratings_properties(), how="inner",on="user_id")

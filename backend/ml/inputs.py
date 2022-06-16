@@ -47,14 +47,18 @@ class MlInput(ABC):
         pass
 
     @abstractmethod
-    def get_all_scaling_factors(self) -> pd.DataFrame:
+    def get_all_scaling_factors(self,
+        user_id: Optional[int] = None) -> pd.DataFrame:
         pass
 
     @abstractmethod
-    def get_indiv_score_for_entity(self,
+    def get_indiv_score(self,
         criteria: Optional[str] = None,
-        user_id: Optional[int] = None,) -> pd.DataFrame:
+        entity_id: Optional[str] = None,
+        user_id: Optional[int] = None) -> pd.DataFrame:
         pass
+
+    
     
 
 
@@ -220,19 +224,20 @@ class MlInputFromDb(MlInput):
         return pd.DataFrame(values)
 
 
-    def get_all_scaling_factors(self):
-        values = (
-            ContributorScaling.objects.filter(
-                poll__name=self.poll_name,
-            )
-            .values(
+    def get_all_scaling_factors(self,
+        user_id=None):
+        scores_queryset=ContributorScaling.objects.filter(
+                poll__name=self.poll_name)
+        if user_id is not None:
+            scores_queryset = scores_queryset.filter(user_id=user_id)
+
+        values = scores_queryset.values(
                 "user_id",
                 s=F("scale"),
                 tau=F("translation"),
                 delta_s=F("scale_uncertainty"),
                 delta_tau=F("translation_uncertainty"),
             )
-        )
         if len(values) == 0:
             return pd.DataFrame(
                 columns=[
@@ -247,8 +252,8 @@ class MlInputFromDb(MlInput):
 
 
 
-    def get_indiv_score_for_entity(
-        self, criteria=None, user_id=None
+    def get_indiv_score(
+        self, criteria=None, user_id=None, entity_id=None
     ) -> pd.DataFrame:
   
 
@@ -289,3 +294,5 @@ class MlInputFromDb(MlInput):
                 "criteria",
             ]
         )
+
+
