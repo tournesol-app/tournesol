@@ -12,8 +12,8 @@ describe('Login', () => {
     cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
     cy.location('pathname').should('equal', '/');
     cy.contains('Log in').should('not.exist');
-    cy.contains('Logout').click();
-    cy.contains('Log in').should('be.visible');
+    cy.contains('user').click();
+    cy.contains('Logout').should('be.visible');
   })
 
   it('can login with email and logout', () => {
@@ -25,7 +25,8 @@ describe('Login', () => {
     cy.location('pathname').should('equal', '/');
     cy.contains('.MuiToolbar-root', 'user1').should('be.visible');
     cy.contains('Log in').should('not.exist');
-    cy.contains('Logout').click();
+    cy.contains('user').click();
+    cy.contains('Logout').should('be.visible').click();
     cy.contains('Log in').should('be.visible');
   })
 
@@ -38,7 +39,8 @@ describe('Login', () => {
     cy.location('pathname').should('equal', '/');
     cy.contains('.MuiToolbar-root', 'user1').should('be.visible');
     cy.contains('Log in').should('not.exist');
-    cy.contains('Logout').click();
+    cy.contains('user').click();
+    cy.contains('Logout').should('be.visible').click();
     cy.contains('Log in').should('be.visible');
   })
 })
