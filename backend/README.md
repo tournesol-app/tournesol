@@ -23,10 +23,6 @@ section.
 
 ### Automatic installation (recommended)
 
-#### Required packages
-
-- [expect](https://core.tcl-lang.org/expect/index)
-
 #### Procedure
 
 Use the procedure in the `dev-env`'s [README.md][dev-env-readme] to

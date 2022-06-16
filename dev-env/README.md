@@ -5,7 +5,6 @@
 ### Requirements:
 * `docker-compose-plugin` (or `docker-compose`)
 * curl
-* expect
 
 ### Start the containers
 
