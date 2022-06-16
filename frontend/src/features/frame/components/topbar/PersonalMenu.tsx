@@ -10,7 +10,8 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { AccountCircle, Logout, Settings } from '@mui/icons-material';
+import { Logout } from '@mui/icons-material';
+import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
 
 interface PersonalMenuProps {
   menuAnchor: null | HTMLElement;
@@ -41,28 +42,21 @@ const PersonalMenu = ({
       }}
     >
       <MenuList dense sx={{ py: 0 }}>
-        <MenuItem
-          component={RouterLink}
-          to="/settings/profile"
-          onClick={onItemClick}
-          selected={'/settings/profile' === location.pathname}
-        >
-          <ListItemIcon>
-            <AccountCircle fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>{t('profile')}</ListItemText>
-        </MenuItem>
-        <MenuItem
-          component={RouterLink}
-          to="/settings/account"
-          onClick={onItemClick}
-          selected={'/settings/account' === location.pathname}
-        >
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>{t('settings.account')}</ListItemText>
-        </MenuItem>
+        {/* -- settings section -- */}
+        {settingsMenu(t).map((item: TournesolMenuItemType) => (
+          <MenuItem
+            key={item.id}
+            component={RouterLink}
+            to={item.to}
+            onClick={onItemClick}
+            selected={item.to === location.pathname}
+          >
+            <ListItemIcon>
+              <item.icon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{item.text}</ListItemText>
+          </MenuItem>
+        ))}
         <Divider />
         <MenuItem onClick={onLogoutClick}>
           <ListItemIcon>
