@@ -47,19 +47,17 @@ class MlInput(ABC):
         pass
 
     @abstractmethod
-    def get_all_scaling_factors(self,
-        user_id: Optional[int] = None) -> pd.DataFrame:
+    def get_all_scaling_factors(self, user_id: Optional[int] = None) -> pd.DataFrame:
         pass
 
     @abstractmethod
-    def get_indiv_score(self,
+    def get_indiv_score(
+        self,
         criteria: Optional[str] = None,
         entity_id: Optional[str] = None,
-        user_id: Optional[int] = None) -> pd.DataFrame:
+        user_id: Optional[int] = None,
+    ) -> pd.DataFrame:
         pass
-
-    
-    
 
 
 class MlInputFromPublicDataset(MlInput):
@@ -199,7 +197,9 @@ class MlInputFromDb(MlInput):
                     When(user__in=User.trusted_users(), then=True), default=False
                 ),
                 is_supertrusted=Case(
-                    When(user__in=self.get_supertrusted_users().values("id"), then=True),
+                    When(
+                        user__in=self.get_supertrusted_users().values("id"), then=True
+                    ),
                     default=False,
                 ),
             )
@@ -223,21 +223,18 @@ class MlInputFromDb(MlInput):
             )
         return pd.DataFrame(values)
 
-
-    def get_all_scaling_factors(self,
-        user_id=None):
-        scores_queryset=ContributorScaling.objects.filter(
-                poll__name=self.poll_name)
+    def get_all_scaling_factors(self, user_id=None):
+        scores_queryset = ContributorScaling.objects.filter(poll__name=self.poll_name)
         if user_id is not None:
             scores_queryset = scores_queryset.filter(user_id=user_id)
 
         values = scores_queryset.values(
-                "user_id",
-                s=F("scale"),
-                tau=F("translation"),
-                delta_s=F("scale_uncertainty"),
-                delta_tau=F("translation_uncertainty"),
-            )
+            "user_id",
+            s=F("scale"),
+            tau=F("translation"),
+            delta_s=F("scale_uncertainty"),
+            delta_tau=F("translation_uncertainty"),
+        )
         if len(values) == 0:
             return pd.DataFrame(
                 columns=[
@@ -250,22 +247,22 @@ class MlInputFromDb(MlInput):
             )
         return pd.DataFrame(values)
 
-
-
     def get_indiv_score(
         self, criteria=None, user_id=None, entity_id=None
     ) -> pd.DataFrame:
-  
 
         scores_queryset = ContributorRatingCriteriaScore.objects.filter(
             contributor_rating__poll__name=self.poll_name
         )
         if criteria is not None:
-            scores_queryset = scores_queryset.filter(contributor_rating__criteria=criteria)
-
+            scores_queryset = scores_queryset.filter(
+                contributor_rating__criteria=criteria
+            )
 
         if user_id is not None:
-            scores_queryset = scores_queryset.filter(contributor_rating__comparison__user_id=user_id)
+            scores_queryset = scores_queryset.filter(
+                contributor_rating__comparison__user_id=user_id
+            )
 
         values = scores_queryset.values(
             "user_id",
@@ -277,11 +274,12 @@ class MlInputFromDb(MlInput):
         if len(values) > 0:
             df = pd.DataFrame(values)
             return df[
-                ["user_id",
-                "entity_id",
-                "score",
-                "uncertainty",
-                "criteria",
+                [
+                    "user_id",
+                    "entity_id",
+                    "score",
+                    "uncertainty",
+                    "criteria",
                 ]
             ]
 
@@ -294,5 +292,3 @@ class MlInputFromDb(MlInput):
                 "criteria",
             ]
         )
-
-

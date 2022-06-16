@@ -91,7 +91,9 @@ def save_licchavi_data(
             if contributor_id not in trusted_user_ids
         ]
 
-    save_contributor_scores(poll, contributor_scores_to_save, trusted_filter=trusted_only)
+    save_contributor_scores(
+        poll, contributor_scores_to_save, trusted_filter=trusted_only
+    )
 
 
 def process_licchavi(poll: Poll, ml_input: MlInputFromDb, trusted_only=True):
@@ -122,14 +124,13 @@ class Command(BaseCommand):
             action="store_true",
             help="Run online heuristic for used_id, uid_a, uid_b",
         )
-        parser.add_argument('--user_id', nargs=1, type=int)
-        parser.add_argument('--uid_a', nargs=1, type=str)
-        parser.add_argument('--uid_b', nargs=1, type=str)
-
+        parser.add_argument("--user_id", nargs=1, type=int)
+        parser.add_argument("--uid_a", nargs=1, type=str)
+        parser.add_argument("--uid_b", nargs=1, type=str)
 
     def handle(self, *args, **options):
         skip_untrusted = options["skip_untrusted"]
-        online_heuristic= options["online_heuristic"]
+        online_heuristic = options["online_heuristic"]
         user_id = options["user_id"]
         uid_a = options["uid_a"]
         uid_b = options["uid_b"]
@@ -141,16 +142,26 @@ class Command(BaseCommand):
 
                 if poll.algorithm == ALGORITHM_LICCHAVI:
                     # Run for trusted users
-                    logging.info("Licchavi for poll %s: Process on trusted users", poll.name)
+                    logging.info(
+                        "Licchavi for poll %s: Process on trusted users", poll.name
+                    )
                     process_licchavi(poll, ml_input, trusted_only=True)
 
                     if not skip_untrusted:
                         # Run for all users including non trusted users
-                        logging.info("Licchavi for poll %s: Process on all users", poll.name)
+                        logging.info(
+                            "Licchavi for poll %s: Process on all users", poll.name
+                        )
                         process_licchavi(poll, ml_input, trusted_only=False)
                 elif poll.algorithm == ALGORITHM_MEHESTAN:
                     if online_heuristic:
-                        run_online_heuristics(ml_input=ml_input, poll=poll, user_id=user_id, uid_a=uid_a, uid_b=uid_b)
+                        run_online_heuristics(
+                            ml_input=ml_input,
+                            poll=poll,
+                            user_id=user_id,
+                            uid_a=uid_a,
+                            uid_b=uid_b,
+                        )
                     else:
                         run_mehestan(ml_input=ml_input, poll=poll)
                 else:
