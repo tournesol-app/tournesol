@@ -2,9 +2,11 @@ import logging
 import os
 from functools import partial
 from multiprocessing import Pool
-from django import db
+
 import numpy as np
 import pandas as pd
+from django import db
+
 from ml.inputs import MlInput
 from ml.outputs import (
     save_contributor_scores,
