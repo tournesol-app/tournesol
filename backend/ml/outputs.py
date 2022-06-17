@@ -18,8 +18,10 @@ from tournesol.models.entity_score import ScoreMode
 
 
 def save_entity_scores(
-    poll, entity_scores: Union[pd.DataFrame, Iterable[tuple]], single_criteria=None,
-    score_mode=ScoreMode.DEFAULT
+    poll,
+    entity_scores: Union[pd.DataFrame, Iterable[tuple]],
+    single_criteria=None,
+    score_mode=ScoreMode.DEFAULT,
 ):
     if isinstance(entity_scores, pd.DataFrame):
         scores_iterator = entity_scores[
@@ -32,7 +34,9 @@ def save_entity_scores(
     scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
 
     with transaction.atomic():
-        scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll, score_mode=score_mode)
+        scores_to_delete = EntityCriteriaScore.objects.filter(
+            poll=poll, score_mode=score_mode
+        )
         if single_criteria:
             scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
         scores_to_delete.delete()
@@ -148,6 +152,20 @@ def save_contributor_scores(
             )
             for contributor_id, video_id, criteria, score, uncertainty in scores_list
         )
+
+
+def update_contributor_score(
+    poll: Poll, uid: str, user_id: str, score: float, criteria: str
+):
+    query_score_to_update = ContributorRatingCriteriaScore.objects.filter(
+        contributor_rating__poll=poll,
+        criteria=criteria,
+        contributor_rating__user_id=user_id,
+        contributor_rating__entity_id=uid,
+    )
+    contributor_rating_criteria_score = query_score_to_update.first()
+    contributor_rating_criteria_score.score = score
+    contributor_rating_criteria_score.save()
 
 
 def save_contributor_scalings(poll: Poll, criteria: str, scalings: pd.DataFrame):

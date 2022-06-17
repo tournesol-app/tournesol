@@ -2,6 +2,7 @@ import logging
 import os
 from functools import partial
 from multiprocessing import Pool
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -9,7 +10,7 @@ from django import db
 
 from ml.inputs import MlInput
 from ml.outputs import (
-    save_contributor_scores,
+    update_contributor_score,
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
 )
@@ -24,12 +25,12 @@ R_MAX = 10  # Maximum score for a comparison in the input
 ALPHA = 0.01  # Signal-to-noise hyperparameter
 
 
-def apply_online_update_on_individual_score(
+def get_new_scores_from_online_update(
     all_comparison_user: pd.DataFrame,
     uid_a: str,
     uid_b: str,
     previous_individual_raw_scores: pd.DataFrame,
-):
+) -> Tuple[float]:
     scores = all_comparison_user[["entity_a", "entity_b", "score"]]
     if (uid_a, uid_b) not in {
         twotuple_entity_id
@@ -38,7 +39,11 @@ def apply_online_update_on_individual_score(
         twotuple_entity_id
         for (twotuple_entity_id, _) in scores.groupby(["entity_a", "entity_b"])
     }:
-        return
+        logger.error(
+            "get_new_scores_from_online_update : no comparison found for '%s' with '%s'",
+            uid_a,
+            uid_b,
+        )
 
     scores_sym = pd.concat(
         [
@@ -76,9 +81,7 @@ def apply_online_update_on_individual_score(
 
     theta_star_a = L_tilde_a - (U_ab * previous_individual_raw_scores)[uid_a]
     theta_star_b = L_tilde_b - (U_ab * previous_individual_raw_scores)[uid_b]
-
-    previous_individual_raw_scores[uid_a] = theta_star_a
-    previous_individual_raw_scores[uid_b] = theta_star_b
+    return (theta_star_a, theta_star_b)
 
 
 def _run_online_heuristics_for_criterion(
@@ -87,11 +90,14 @@ def _run_online_heuristics_for_criterion(
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user = ml_input.get_comparisons(criteria=criteria, user_id=user_id)
     previous_individual_raw_scores = ml_input.get_indiv_score(user_id=user_id)
-    apply_online_update_on_individual_score(
+    theta_star_a, theta_star_b = get_new_scores_from_online_update(
         all_comparison_user, uid_a, uid_b, previous_individual_raw_scores
     )
-    save_contributor_scores(
-        poll, previous_individual_raw_scores, single_criteria=criteria
+    update_contributor_score(
+        poll=poll, uid=uid_a, user_id=user_id, score=theta_star_a, criteria=criteria
+    )
+    update_contributor_score(
+        poll=poll, uid=uid_b, user_id=user_id, score=theta_star_b, criteria=criteria
     )
     all_user_scalings = ml_input.get_all_scaling_factors()
     all_indiv_score_a = ml_input.get_indiv_score(entity_id=uid_a, criteria=criteria)
