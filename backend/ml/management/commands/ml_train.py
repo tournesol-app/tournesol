@@ -154,13 +154,18 @@ class Command(BaseCommand):
                         process_licchavi(poll, ml_input, trusted_only=False)
                 elif poll.algorithm == ALGORITHM_MEHESTAN:
                     if online_heuristic:
-                        run_online_heuristics(
-                            ml_input=ml_input,
-                            poll=poll,
-                            user_id=user_id,
-                            uid_a=uid_a,
-                            uid_b=uid_b,
-                        )
+                        if user_id is None or uid_a is None or uid_b is None:
+                            logging.warn(
+                                "You should provide user_id, uid_a, uid_b with --online-heuristic"
+                            )
+                        else:
+                            run_online_heuristics(
+                                ml_input=ml_input,
+                                poll=poll,
+                                user_id=user_id,
+                                uid_a=uid_a,
+                                uid_b=uid_b,
+                            )
                     else:
                         run_mehestan(ml_input=ml_input, poll=poll)
                 else:
