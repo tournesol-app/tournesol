@@ -255,9 +255,7 @@ class MlInputFromDb(MlInput):
             contributor_rating__poll__name=self.poll_name
         )
         if criteria is not None:
-            scores_queryset = scores_queryset.filter(
-                criteria=criteria
-            )
+            scores_queryset = scores_queryset.filter(criteria=criteria)
 
         if user_id is not None:
             scores_queryset = scores_queryset.filter(
@@ -268,7 +266,7 @@ class MlInputFromDb(MlInput):
             scores_queryset = scores_queryset.filter(
                 contributor_rating__entity_id=entity_id
             )
-        
+
         values = scores_queryset.values(
             "score",
             "uncertainty",
