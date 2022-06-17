@@ -123,9 +123,9 @@ class Command(BaseCommand):
             action="store_true",
             help="Run online heuristic for used_id, uid_a, uid_b",
         )
-        parser.add_argument("--user_id", nargs=1, type=int)
-        parser.add_argument("--uid_a", nargs=1, type=str)
-        parser.add_argument("--uid_b", nargs=1, type=str)
+        parser.add_argument("--user_id")
+        parser.add_argument("--uid_a")
+        parser.add_argument("--uid_b")
 
     def handle(self, *args, **options):
         skip_untrusted = options["skip_untrusted"]

@@ -80,7 +80,7 @@ def apply_online_update_on_individual_score(
 
 
 def _run_online_heuristics_for_criterion(
-    ml_input: MlInput, uid_a: str, uid_b: str, user_id: str, criteria: str, poll_pk: int
+    criteria: str, ml_input: MlInput, uid_a: str, uid_b: str, user_id: str, poll_pk: int
 ):
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user = ml_input.get_comparisons(criteria=criteria, user_id=user_id)
@@ -167,6 +167,7 @@ def run_online_heuristics(
         uid_b=uid_b,
         user_id=user_id,
     )
+
     with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
         for _ in pool.imap_unordered(
             partial_online_heuristics,
