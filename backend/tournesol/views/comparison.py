@@ -9,10 +9,13 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
-from ml.mehestan.run import update_user_scores
+from ml.mehestan.online_heuristics import update_user_scores
 from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
-from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
+from tournesol.serializers.comparison import (
+    ComparisonSerializer,
+    ComparisonUpdateSerializer,
+)
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
@@ -122,7 +125,12 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(self.request.user)
         if poll.algorithm == ALGORITHM_MEHESTAN:
-            update_user_scores(poll, user=self.request.user)
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.request.data["entity_a"]["uid"],
+                uid_b=self.request.data["entity_b"]["uid"],
+            )
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
@@ -215,13 +223,23 @@ class ComparisonDetailApi(
         super().perform_update(serializer)
         poll = self.poll_from_url
         if poll.algorithm == ALGORITHM_MEHESTAN:
-            update_user_scores(poll, user=self.request.user)
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.request.data["entity_a"]["uid"],
+                uid_b=self.request.data["entity_b"]["uid"],
+            )
 
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
         poll = self.poll_from_url
         if poll.algorithm == ALGORITHM_MEHESTAN:
-            update_user_scores(poll, user=self.request.user)
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.request.data["entity_a"]["uid"],
+                uid_b=self.request.data["entity_b"]["uid"],
+            )
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""

@@ -8,11 +8,12 @@ import numpy as np
 import pandas as pd
 from django import db
 
-from ml.inputs import MlInput
+from core.models import User
+from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
-    update_contributor_score,
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
+    update_contributor_score,
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
@@ -185,3 +186,10 @@ def run_online_heuristics(
 
     save_tournesol_score_as_sum_of_criteria(poll)
     logger.info("Online Heuristic Mehestan for poll '%s': Done", poll.name)
+
+
+def update_user_scores(poll: Poll, user: User, uid_a: str, uid_b: str):
+    ml_input = MlInputFromDb(poll_name=poll.name)
+    run_online_heuristics(
+        ml_input=ml_input, uid_a=uid_a, uid_b=uid_b, user_id=user.pk, poll=poll
+    )

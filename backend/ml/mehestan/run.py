@@ -7,8 +7,7 @@ from typing import Optional
 import pandas as pd
 from django import db
 
-from core.models import User
-from ml.inputs import MlInput, MlInputFromDb
+from ml.inputs import MlInput
 from ml.outputs import (
     save_contributor_scalings,
     save_contributor_scores,
@@ -44,16 +43,6 @@ def get_individual_scores(
     return result[["user_id", "entity_id", "score", "uncertainty"]]
 
 
-def update_user_scores(poll: Poll, user: User):
-    ml_input = MlInputFromDb(poll_name=poll.name)
-    for criteria in poll.criterias_list:
-        scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
-        scores["criteria"] = criteria
-        save_contributor_scores(
-            poll, scores, single_criteria=criteria, single_user_id=user.pk
-        )
-
-
 def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
     """
     Run Mehestan for the given criterion, in the given poll.
@@ -87,7 +76,9 @@ def _run_mehestan_for_criterion(criteria: str, ml_input: MlInput, poll_pk: int):
             criteria,
             mode,
         )
-        save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
+        save_entity_scores(
+            poll, global_scores, single_criteria=criteria, score_mode=mode
+        )
 
     logger.info(
         "Mehestan for poll '%s': done with crit '%s'",
