@@ -1,11 +1,11 @@
 import logging
 
 from django.core.management.base import BaseCommand
-from ml.mehestan.online_heuristics import run_online_heuristics
 
 from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
 from ml.inputs import MlInputFromDb
+from ml.mehestan.online_heuristics import run_online_heuristics
 from ml.mehestan.run import run_mehestan
 from ml.outputs import (
     save_contributor_scores,

@@ -6,13 +6,13 @@ from django import db
 import numpy as np
 import pandas as pd
 from ml.inputs import MlInput
-from tournesol.models.entity_score import ScoreMode
 from ml.outputs import (
     save_contributor_scores,
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
 )
 from tournesol.models import Poll
+from tournesol.models.entity_score import ScoreMode
 
 from .global_scores import get_global_scores
 
@@ -92,8 +92,6 @@ def _run_online_heuristics_for_criterion(
         poll, previous_individual_raw_scores, single_criteria=criteria
     )
     all_user_scalings = ml_input.get_all_scaling_factors()
-
-    #user_id 	entity_id 	score 	uncertainty 	criteria
     all_indiv_score_a = ml_input.get_indiv_score(entity_id=uid_a, criteria=criteria)
     all_indiv_score_b = ml_input.get_indiv_score(entity_id=uid_b, criteria=criteria)
     all_indiv_score = all_indiv_score_a.concat(all_indiv_score_b)
@@ -169,7 +167,6 @@ def run_online_heuristics(
         uid_b=uid_b,
         user_id=user_id,
     )
-    
     with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
         for _ in pool.imap_unordered(
             partial_online_heuristics,
