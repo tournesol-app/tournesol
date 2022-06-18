@@ -3,9 +3,10 @@ Rate later element related.
 """
 
 from django.db import models
-from .poll import Poll
 
 from core.models import User
+
+from .poll import Poll
 
 
 class RateLater(models.Model):
