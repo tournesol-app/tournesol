@@ -155,13 +155,13 @@ def save_contributor_scores(
 
 
 def update_contributor_score(
-    poll: Poll, uid: str, user_id: str, score: float, criteria: str
+    poll: Poll, entity_id: str, user_id: str, score: float, criteria: str
 ):
     query_score_to_update = ContributorRatingCriteriaScore.objects.filter(
         contributor_rating__poll=poll,
         criteria=criteria,
         contributor_rating__user_id=user_id,
-        contributor_rating__entity_id=uid,
+        contributor_rating__entity_id=entity_id,
     )
     contributor_rating_criteria_score = query_score_to_update.first()
     contributor_rating_criteria_score.score = score

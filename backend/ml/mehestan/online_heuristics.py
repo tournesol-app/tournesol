@@ -45,7 +45,6 @@ def get_new_scores_from_online_update(
             uid_a,
             uid_b,
         )
-
     scores_sym = pd.concat(
         [
             scores,
@@ -90,19 +89,56 @@ def _run_online_heuristics_for_criterion(
 ):
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user = ml_input.get_comparisons(criteria=criteria, user_id=user_id)
+    print(all_comparison_user)
+    if all_comparison_user.empty:
+        logger.warn(
+            "_run_online_heuristics_for_criterion : no comparison  for criteria '%s'",
+            criteria,
+        )
+        return
+    if (
+        all_comparison_user[
+            (all_comparison_user.entity_a == uid_a)
+            & (all_comparison_user.entity_b == uid_b)
+        ].empty
+        and all_comparison_user[
+            (all_comparison_user.entity_a == uid_b)
+            & (all_comparison_user.entity_b == uid_a)
+        ].empty
+    ):
+        logger.warn(
+            "_run_online_heuristics_for_criterion : no comparison found for '%s' with '%s' and criteria '%s'",
+            uid_a,
+            uid_b,
+            criteria,
+        )
+        return
     previous_individual_raw_scores = ml_input.get_indiv_score(user_id=user_id)
     theta_star_a, theta_star_b = get_new_scores_from_online_update(
         all_comparison_user, uid_a, uid_b, previous_individual_raw_scores
     )
+    print(theta_star_a, theta_star_b)
     update_contributor_score(
-        poll=poll, uid=uid_a, user_id=user_id, score=theta_star_a, criteria=criteria
+        poll=poll,
+        entity_id=entity_id_a,
+        user_id=user_id,
+        score=theta_star_a,
+        criteria=criteria,
     )
     update_contributor_score(
-        poll=poll, uid=uid_b, user_id=user_id, score=theta_star_b, criteria=criteria
+        poll=poll,
+        entity_id=entity_id_b,
+        user_id=user_id,
+        score=theta_star_b,
+        criteria=criteria,
     )
     all_user_scalings = ml_input.get_all_scaling_factors()
-    all_indiv_score_a = ml_input.get_indiv_score(entity_id=uid_a, criteria=criteria)
-    all_indiv_score_b = ml_input.get_indiv_score(entity_id=uid_b, criteria=criteria)
+    all_indiv_score_a = ml_input.get_indiv_score(
+        entity_id=entity_id_a, criteria=criteria
+    )
+    all_indiv_score_b = ml_input.get_indiv_score(
+        entity_id=entity_id_b, criteria=criteria
+    )
     all_indiv_score = all_indiv_score_a.concat(all_indiv_score_b)
 
     df = all_indiv_score.merge(

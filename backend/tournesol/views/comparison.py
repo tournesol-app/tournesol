@@ -226,8 +226,8 @@ class ComparisonDetailApi(
             update_user_scores(
                 poll,
                 user=self.request.user,
-                uid_a=self.request.data["entity_a"]["uid"],
-                uid_b=self.request.data["entity_b"]["uid"],
+                uid_a=self.kwargs["uid_a"],
+                uid_b=self.kwargs["uid_b"],
             )
 
     def perform_destroy(self, instance):
@@ -237,8 +237,8 @@ class ComparisonDetailApi(
             update_user_scores(
                 poll,
                 user=self.request.user,
-                uid_a=self.request.data["entity_a"]["uid"],
-                uid_b=self.request.data["entity_b"]["uid"],
+                uid_a=self.kwargs["uid_a"],
+                uid_b=self.kwargs["uid_b"],
             )
 
     def get(self, request, *args, **kwargs):
