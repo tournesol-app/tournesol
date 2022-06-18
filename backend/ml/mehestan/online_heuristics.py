@@ -80,8 +80,9 @@ def get_new_scores_from_online_update(
     U_ab = -k / Kaa_np[:, None]
     U_ab = U_ab.fillna(0)
 
-    theta_star_a = L_tilde_a - (U_ab * previous_individual_raw_scores)[uid_a]
-    theta_star_b = L_tilde_b - (U_ab * previous_individual_raw_scores)[uid_b]
+    dot_product = U_ab.dot(previous_individual_raw_scores)
+    theta_star_a = L_tilde_a - dot_product[dot_product.index == uid_a].values
+    theta_star_b = L_tilde_b - dot_product[dot_product.index == uid_b].values
     return (theta_star_a, theta_star_b)
 
 
@@ -121,6 +122,9 @@ def _run_online_heuristics_for_criterion(
     previous_individual_raw_scores = previous_individual_raw_scores[
         ["entity_id", "score"]
     ]
+    previous_individual_raw_scores = previous_individual_raw_scores.set_index(
+        "entity_id"
+    )
     theta_star_a, theta_star_b = get_new_scores_from_online_update(
         all_comparison_user, entity_id_a, entity_id_b, previous_individual_raw_scores
     )
@@ -145,7 +149,7 @@ def _run_online_heuristics_for_criterion(
     all_indiv_score_b = ml_input.get_indiv_score(
         entity_id=entity_id_b, criteria=criteria
     )
-    all_indiv_score = all_indiv_score_a.concat(all_indiv_score_b)
+    all_indiv_score = pd.concat([all_indiv_score_a,all_indiv_score_b])
 
     df = all_indiv_score.merge(
         ml_input.get_ratings_properties(), how="inner", on="user_id"
