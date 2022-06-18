@@ -132,7 +132,7 @@ class Entity(models.Model):
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
         if n_comparisons >= 4:
-            RateLater.objects.filter(user=user, video=self).delete()
+            RateLater.objects.filter(user=user, entity=self).delete()
 
     @property
     def entity_cls(self):

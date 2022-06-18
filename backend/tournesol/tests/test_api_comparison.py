@@ -966,11 +966,11 @@ class ComparisonApiTestCase(TestCase):
         )
         compare(video_main.uid, videos[0].uid)
         # Video main should still be in the rate later list
-        self.assertEqual(RateLater.objects.filter(video=video_main).count(), 1)
+        self.assertEqual(RateLater.objects.filter(entity=video_main).count(), 1)
         for video in videos[1:]:
             compare(video_main.uid, video.uid)
         # Video main should not be in the rate later list after >= 4 comparisons
-        self.assertEqual(RateLater.objects.filter(video=video_main).count(), 0)
+        self.assertEqual(RateLater.objects.filter(entity=video_main).count(), 0)
 
 
 class ComparisonWithMehestanTest(TransactionTestCase):
