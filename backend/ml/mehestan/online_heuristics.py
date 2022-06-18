@@ -15,6 +15,7 @@ from ml.outputs import (
     save_tournesol_score_as_sum_of_criteria,
     update_contributor_score,
 )
+from tournesol.models import Entity
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
 
@@ -89,7 +90,8 @@ def _run_online_heuristics_for_criterion(
 ):
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user = ml_input.get_comparisons(criteria=criteria, user_id=user_id)
-    print(all_comparison_user)
+    entity_id_a = Entity.objects.get(uid=uid_a).pk
+    entity_id_b = Entity.objects.get(uid=uid_b).pk
     if all_comparison_user.empty:
         logger.warn(
             "_run_online_heuristics_for_criterion : no comparison  for criteria '%s'",
@@ -98,26 +100,30 @@ def _run_online_heuristics_for_criterion(
         return
     if (
         all_comparison_user[
-            (all_comparison_user.entity_a == uid_a)
-            & (all_comparison_user.entity_b == uid_b)
+            (all_comparison_user.entity_a == entity_id_a)
+            & (all_comparison_user.entity_b == entity_id_b)
         ].empty
         and all_comparison_user[
-            (all_comparison_user.entity_a == uid_b)
-            & (all_comparison_user.entity_b == uid_a)
+            (all_comparison_user.entity_a == entity_id_b)
+            & (all_comparison_user.entity_b == entity_id_a)
         ].empty
     ):
         logger.warn(
             "_run_online_heuristics_for_criterion : no comparison found for '%s' with '%s' and criteria '%s'",
-            uid_a,
-            uid_b,
+            entity_id_a,
+            entity_id_b,
             criteria,
         )
         return
-    previous_individual_raw_scores = ml_input.get_indiv_score(user_id=user_id)
-    theta_star_a, theta_star_b = get_new_scores_from_online_update(
-        all_comparison_user, uid_a, uid_b, previous_individual_raw_scores
+    previous_individual_raw_scores = ml_input.get_indiv_score(
+        user_id=user_id, criteria=criteria
     )
-    print(theta_star_a, theta_star_b)
+    previous_individual_raw_scores = previous_individual_raw_scores[
+        ["entity_id", "score"]
+    ]
+    theta_star_a, theta_star_b = get_new_scores_from_online_update(
+        all_comparison_user, entity_id_a, entity_id_b, previous_individual_raw_scores
+    )
     update_contributor_score(
         poll=poll,
         entity_id=entity_id_a,
