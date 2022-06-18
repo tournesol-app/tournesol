@@ -51,5 +51,5 @@ class RateLaterFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = RateLater
 
-    video = factory.SubFactory(VideoFactory)
+    entity = factory.SubFactory(EntityFactory)
     user = factory.SubFactory(UserFactory)

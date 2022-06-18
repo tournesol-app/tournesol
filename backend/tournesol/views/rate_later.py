@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
-from tournesol.models import RateLater
+from tournesol.models import Entity, Poll, RateLater
 from tournesol.serializers.rate_later import RateLaterSerializer
 
 
@@ -51,9 +51,11 @@ class RateLaterDetail(generics.RetrieveDestroyAPIView):
 
     def get_object(self):
         """Fetch a given video or returns 404"""
+
         rate_later = get_object_or_404(
             RateLater,
             user__pk=self.request.user.pk,
-            video__uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
+            entity=Entity.get_from_video_id(self.kwargs["video_id"]),
+            poll=Poll.default_poll(),
         )
         return rate_later
