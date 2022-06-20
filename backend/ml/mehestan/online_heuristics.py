@@ -110,7 +110,8 @@ def _run_online_heuristics_for_criterion(
         ].empty
     ):
         logger.warn(
-            "_run_online_heuristics_for_criterion : no comparison found for '%s' with '%s' and criteria '%s'",
+            "_run_online_heuristics_for_criterion :  \
+            no comparison found for '%s' with '%s' and criteria '%s'",
             entity_id_a,
             entity_id_b,
             criteria,
