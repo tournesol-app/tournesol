@@ -24,7 +24,7 @@ def get_annotated_ratings():
         .annotate(count=Func("id", function="Count"))
         .values("count")
     )
-    return ContributorRating.objects.annotate(
+    return ContributorRating.objects.with_scaled_scores().annotate(
         n_comparisons=Subquery(comparison_counts)
     ).order_by("-entity__metadata__publication_date", "-pk")
 
@@ -83,7 +83,6 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                 poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0
             )
             .select_related("entity")
-            .prefetch_related("criteria_scores")
         )
         is_public = self.request.query_params.get("is_public")
         if is_public:

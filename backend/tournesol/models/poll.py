@@ -35,13 +35,15 @@ class Poll(models.Model):
         " and comparisons can't be created, updated or deleted by users.",
     )
 
-    @property
-    def scale(self):
-        return 1.0
+    scale = models.FloatField(
+        default=1.0,
+        help_text="Scale factor to apply on scores (applied only for Mehestan)"
+    )
 
-    @property
-    def offset(self):
-        return 0.0
+    translation = models.FloatField(
+        default=0.0,
+        help_text="Offset value to apply on scores (applied only for Mehestan)"
+    )
 
     @classmethod
     def default_poll(cls) -> "Poll":

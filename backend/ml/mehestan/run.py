@@ -4,6 +4,7 @@ from functools import partial
 from multiprocessing import Pool
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 from django import db
 
@@ -23,8 +24,8 @@ from .individual import compute_individual_score
 
 logger = logging.getLogger(__name__)
 
-POLL_SCALING_QUANTILE_MARKER = 0.95
-POLL_SCALING_SCORE_AT_MARKER = 90
+POLL_SCALING_QUANTILE = 0.95
+POLL_SCALING_SCORE_AT_QUANTILE = 90
 
 
 def get_individual_scores(
@@ -52,20 +53,17 @@ def update_user_scores(poll: Poll, user: User):
     for criteria in poll.criterias_list:
         scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
         scores["criteria"] = criteria
-
-        # TODO: apply individual scaling and poll scaling
-    
         save_contributor_scores(
             poll, scores, single_criteria=criteria, single_user_id=user.pk
         )
 
 
-def _run_mehestan_for_criterion(
-        criteria: str,
-        ml_input: MlInput,
-        poll_pk: int,
-        update_poll_scaling=False,
-    ):
+def run_mehestan_for_criterion(
+    criteria: str,
+    ml_input: MlInput,
+    poll_pk: int,
+    update_poll_scaling=False,
+):
     """
     Run Mehestan for the given criterion, in the given poll.
     """
@@ -86,25 +84,26 @@ def _run_mehestan_for_criterion(
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
+    save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
 
-    if update_poll_scaling:
-        global_scores = get_global_scores(
-            scaled_scores,
-            score_mode=ScoreMode.DEFAULT
+    if update_poll_scaling and len(indiv_scores) > 0:
+        global_scores = get_global_scores(scaled_scores, score_mode=ScoreMode.DEFAULT)
+
+        low_quantile, high_quantile = np.quantile(
+            global_scores["score"], [1 - POLL_SCALING_QUANTILE, POLL_SCALING_QUANTILE]
         )
-        # TODO: compute percentiles and a,b
-        a , b = (1.0, 0.0)
-        
-        poll.scale = a
-        poll.translation = b
-        poll.save(update_fields=["scale", "translation"])
-    
-    # Apply poll scaling
-    scaled_scores["score"] = scaled_scores["scores"] * poll.scale + poll.translation
-    scaled_scores["uncertainly"] *= poll.scale
 
-    save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
-        
+        if high_quantile != low_quantile:
+            a = 2 * POLL_SCALING_SCORE_AT_QUANTILE / (high_quantile - low_quantile)
+            b = POLL_SCALING_SCORE_AT_QUANTILE - (high_quantile * a)
+            poll.scale = a
+            poll.translation = b
+            poll.save(update_fields=["scale", "translation"])
+
+    # Apply poll scaling
+    scaled_scores["score"] = scaled_scores["score"] * poll.scale + poll.translation
+    scaled_scores["uncertainty"] *= poll.scale
+
     for mode in ScoreMode:
         global_scores = get_global_scores(scaled_scores, score_mode=mode)
         global_scores["criteria"] = criteria
@@ -115,7 +114,9 @@ def _run_mehestan_for_criterion(
             criteria,
             mode,
         )
-        save_entity_scores(poll, global_scores, single_criteria=criteria, score_mode=mode)
+        save_entity_scores(
+            poll, global_scores, single_criteria=criteria, score_mode=mode
+        )
 
     logger.info(
         "Mehestan for poll '%s': done with crit '%s'",
@@ -155,11 +156,24 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
 
     os.register_at_fork(before=db.connections.close_all)
 
+    # Run Mehestan for main criterion:
+    # Global scores for other criteria will use the poll scaling computed
+    # based on this criterion. That's why it needs to run first, before other
+    # criteria can be parallelized.
+    run_mehestan_for_criterion(
+        ml_input=ml_input,
+        poll_pk=poll_pk,
+        criteria=poll.main_criteria,
+        update_poll_scaling=True,
+    )
+
     # compute each criterion in parallel
-    with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
+    remaining_criteria = [c for c in criteria if c != poll.main_criteria]
+    cpu_count = os.cpu_count() or 2
+    with Pool(processes=max(1, cpu_count - 1)) as pool:
         for _ in pool.imap_unordered(
-            partial(_run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
-            criteria,
+            partial(run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),
+            remaining_criteria,
         ):
             pass
 

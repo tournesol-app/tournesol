@@ -29,9 +29,12 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
         queryset = queryset.prefetch_related(
             Prefetch(
                 "contributorvideoratings",
-                queryset=ContributorRating.objects.filter(poll=poll, user=user),
+                queryset=(
+                    ContributorRating.objects
+                    .filter(poll=poll, user=user)
+                    .with_scaled_scores()
+                )
             ),
-            "contributorvideoratings__criteria_scores",
         )
 
         return queryset.annotate(

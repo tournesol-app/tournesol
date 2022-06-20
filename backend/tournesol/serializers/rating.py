@@ -2,7 +2,7 @@ from django.db.models import Q
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import BooleanField, CharField, SerializerMethodField
+from rest_framework.fields import BooleanField, CharField, FloatField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from tournesol.models import ContributorRating, ContributorRatingCriteriaScore, Entity
@@ -10,6 +10,9 @@ from tournesol.serializers.entity import EntityNoExtraFieldSerializer, RelatedEn
 
 
 class ContributorCriteriaScore(ModelSerializer):
+    score = FloatField(source="scaled_score")
+    uncertainty = FloatField(source="scaled_uncertainty")
+
     class Meta:
         model = ContributorRatingCriteriaScore
         fields = ["criteria", "score", "uncertainty"]
