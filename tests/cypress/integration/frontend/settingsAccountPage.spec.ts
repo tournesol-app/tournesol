@@ -61,7 +61,9 @@ describe('Settings - account page', () => {
       cy.get('input[name=password_confirm]').type(newPaswsword).type('{enter}');
       cy.contains('Password changed successfully');
 
-      cy.contains('Logout').click();
+      cy.get('button#personal-menu-button').click();
+      cy.get('#personal-menu').contains('Logout').click();
+
       cy.focused().type(username);
 
       // old password must not work anymore

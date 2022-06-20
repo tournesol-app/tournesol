@@ -19,7 +19,7 @@ describe('Password reset', () => {
       // Login with the new password
       cy.get('input[name=username]').type('username-pwreset');
       cy.get('input[name=password]').type('tournesol-new-password').type('{enter}');
-      cy.contains('a[href="/settings/profile"]', 'username-pwreset').should('be.visible');
+      cy.contains('button#personal-menu-button', 'username-pwreset').should('be.visible');
     })
   });
 })
