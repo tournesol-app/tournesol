@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -24,13 +24,20 @@ const LoggedInActions = () => {
   const { logout, loginState } = useLoginState();
 
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMenuAnchor(event.currentTarget);
+    // Dynamically define the anchor the first time the user click on the
+    // profile button.
+    if (menuAnchor === null) {
+      setMenuAnchor(event.currentTarget);
+    }
+
+    setIsMenuOpen(true);
   };
 
   const handleMenuClose = () => {
-    setMenuAnchor(null);
+    setIsMenuOpen(false);
   };
 
   const logoutProcess = async () => {
@@ -52,7 +59,7 @@ const LoggedInActions = () => {
         sx={accountLoginButtonSx}
         startIcon={<AccountCircle sx={{ fontSize: '36px' }} color="action" />}
         endIcon={
-          menuAnchor ? (
+          isMenuOpen ? (
             <ArrowDropUp sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
           ) : (
             <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.42)' }} />
@@ -62,6 +69,7 @@ const LoggedInActions = () => {
         {loginState.username}
       </Button>
       <PersonalMenu
+        open={isMenuOpen}
         menuAnchor={menuAnchor}
         onClose={handleMenuClose}
         onItemClick={handleMenuClose}

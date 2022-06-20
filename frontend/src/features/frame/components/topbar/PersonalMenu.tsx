@@ -15,6 +15,7 @@ import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
 
 interface PersonalMenuProps {
   menuAnchor: null | HTMLElement;
+  open: boolean;
   onClose: (event: React.MouseEvent<HTMLElement>) => void;
   onItemClick: (event: React.MouseEvent<HTMLElement>) => void;
   onLogoutClick: () => void;
@@ -22,14 +23,13 @@ interface PersonalMenuProps {
 
 const PersonalMenu = ({
   menuAnchor,
+  open,
   onClose,
   onItemClick,
   onLogoutClick,
 }: PersonalMenuProps) => {
   const { t } = useTranslation();
   const location = useLocation();
-
-  const open = Boolean(menuAnchor);
 
   return (
     <Menu
