@@ -15,8 +15,8 @@ import {
   YOUTUBE_POLL_NAME,
   PRESIDENTIELLE_2022_POLL_NAME,
 } from 'src/utils/constants';
+import { ScoreModeEnum } from 'src/utils/api/recommendations';
 import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
-import { ScoreModeEnum } from 'src/features/recommendation/RecommendationApi';
 
 /**
  * Filter options for Videos recommendations

@@ -32,21 +32,6 @@ function RatingsFilter() {
           <Grid item xs={12} sm={6} md={5}>
             <MarkAllRatingsMenu />
           </Grid>
-          {/*
-          <Grid item xs={12} sm={6} md={5}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={filterParams.get('sortBy') === 'personalScores'}
-                  onChange={(_, checked) => {
-                    setFilter('sortBy', checked ? 'personalScores' : '');
-                  }}
-                />
-              }
-              label={t<string>('ratings.sortByPersonalScore')}
-            />
-          </Grid>
-          */}
         </Grid>
       </Collapse>
     </Box>

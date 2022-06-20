@@ -190,11 +190,18 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   }
 };
 
-export const getRecommendationPageName = (t: TFunction, pollName: string) => {
+export const getRecommendationPageName = (
+  t: TFunction,
+  pollName: string,
+  personal?: boolean
+) => {
   switch (pollName) {
     case PRESIDENTIELLE_2022_POLL_NAME:
       return t('recommendationsPage.title.results');
     default:
+      if (personal) {
+        return t('recommendationsPage.title.personalRecommendations');
+      }
       return t('recommendationsPage.title.recommendations');
   }
 };
@@ -232,6 +239,7 @@ export const polls: Array<SelectablePoll> = [
     defaultAnonEntityActions: [],
     defaultRecoLanguageDiscovery: true,
     defaultRecoSearchParams: 'date=Month',
+    allowPublicPersonalRecommendations: true,
     mainCriterionName: 'largely_recommended',
     displayOrder: 10,
     path: '/',

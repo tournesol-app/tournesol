@@ -1,5 +1,5 @@
 describe('Recommendations page', () => {
-  describe('Poll - video', () => {
+  describe('Poll - videos', () => {
     describe('Search filters', () => {
       it('sets default languages properly and backward navigation works', () => {
         cy.visit('/');

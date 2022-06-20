@@ -13,15 +13,15 @@ import { Router } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 
-import * as RecommendationApi from 'src/features/recommendation/RecommendationApi';
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
+import { PollsService } from 'src/services/openapi';
 import { theme } from 'src/theme';
+import * as RecommendationApi from 'src/utils/api/recommendations';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
 } from 'src/utils/recommendationsLanguages';
-import { PollsService } from 'src/services/openapi';
 
 const EntityList = () => null;
 jest.mock('src/features/entities/EntityList', () => EntityList);
