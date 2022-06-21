@@ -182,7 +182,7 @@ def _run_online_heuristics_for_criterion(
 
 
 def run_online_heuristics(
-    ml_input: MlInput, uid_a: str, uid_b: str, user_id: str, poll: Poll
+    ml_input: MlInput, uid_a: str, uid_b: str, user_id: str, poll: Poll, parallel_computing:bool=True
 ):
     """
     This function use multiprocessing.
@@ -212,9 +212,6 @@ def run_online_heuristics(
     poll_pk = poll.pk
     criteria = poll.criterias_list
 
-    os.register_at_fork(before=db.connections.close_all)
-
-    # compute each criterion in parallel
     partial_online_heuristics = partial(
         _run_online_heuristics_for_criterion,
         ml_input=ml_input,
@@ -223,13 +220,22 @@ def run_online_heuristics(
         uid_b=uid_b,
         user_id=user_id,
     )
+    if parallel_computing:
+        os.register_at_fork(before=db.connections.close_all)
 
-    with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
-        for _ in pool.imap_unordered(
-            partial_online_heuristics,
-            criteria,
-        ):
-            pass
+        # compute each criterion in parallel
+        with Pool(processes=max(1, os.cpu_count() - 1)) as pool:
+            for _ in pool.imap_unordered(
+                partial_online_heuristics,
+                criteria,
+            ):
+                pass
+    else:
+        for criterion in criteria:
+            logger.info("Sequential Online Heuristic Mehestan  \
+                for poll '%s  for criterion '%s': Start ", poll.name, criterion)
+
+            partial_online_heuristics(criterion)
 
     save_tournesol_score_as_sum_of_criteria(poll)
     logger.info("Online Heuristic Mehestan for poll '%s': Done", poll.name)
@@ -238,5 +244,5 @@ def run_online_heuristics(
 def update_user_scores(poll: Poll, user: User, uid_a: str, uid_b: str):
     ml_input = MlInputFromDb(poll_name=poll.name)
     run_online_heuristics(
-        ml_input=ml_input, uid_a=uid_a, uid_b=uid_b, user_id=user.pk, poll=poll
+        ml_input=ml_input, uid_a=uid_a, uid_b=uid_b, user_id=user.pk, poll=poll, parallel_computing=False)
     )

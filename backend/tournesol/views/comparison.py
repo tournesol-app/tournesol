@@ -121,13 +121,13 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(self.request.user)
-        # if poll.algorithm == ALGORITHM_MEHESTAN:
-        #     update_user_scores(
-        #         poll,
-        #         user=self.request.user,
-        #         uid_a=self.request.data["entity_a"]["uid"],
-        #         uid_b=self.request.data["entity_b"]["uid"],
-        #     )
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.request.data["entity_a"]["uid"],
+                uid_b=self.request.data["entity_b"]["uid"],
+            )
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
