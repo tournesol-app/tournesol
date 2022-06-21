@@ -7,9 +7,10 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 
 interface Props {
   tabs: EntitiesTab[];
-  onSelectEntity: (entityUid: string) => void;
+  onSelectEntity?: (entityUid: string) => void;
   width?: string | number;
   maxHeight?: string | number;
+  withLink?: boolean;
 }
 
 export interface EntitiesTab {
@@ -36,6 +37,7 @@ const EntityTabsBox = ({
   onSelectEntity,
   width = 'min(700px, 100vw)',
   maxHeight = '40vh',
+  withLink = false,
 }: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
@@ -87,7 +89,7 @@ const EntityTabsBox = ({
           },
         },
         li: {
-          cursor: 'pointer',
+          cursor: onSelectEntity && 'pointer',
           '&:hover': {
             bgcolor: 'grey.100',
           },
@@ -129,8 +131,11 @@ const EntityTabsBox = ({
         ) : options.length > 0 ? (
           <ul>
             {options.map((entity) => (
-              <li key={entity.uid} onClick={() => onSelectEntity(entity.uid)}>
-                <RowEntityCard entity={entity} />
+              <li
+                key={entity.uid}
+                onClick={onSelectEntity && (() => onSelectEntity(entity.uid))}
+              >
+                <RowEntityCard entity={entity} withLink={withLink} />
               </li>
             ))}
           </ul>

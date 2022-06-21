@@ -15,8 +15,6 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const handleEntitySelect = () => undefined;
-
   const tabs: EntitiesTab[] = useMemo(() => {
     const tabs = [];
     if (uploader)
@@ -54,14 +52,7 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
     return tabs;
   }, [t, pollName, uploader, contextUid]);
 
-  return (
-    <SelectorListBox
-      tabs={tabs}
-      onSelectEntity={handleEntitySelect}
-      width="auto"
-      maxHeight="none"
-    />
-  );
+  return <SelectorListBox tabs={tabs} width="auto" maxHeight="none" withLink />;
 };
 
 export default ContextualRecommendations;
