@@ -300,8 +300,14 @@ class RatingApi(TestCase):
         rating = ContributorRating.objects.get(
             poll=self.poll_videos, user=self.user1, entity=self.video1
         )
-
         self.assertEqual(rating.is_public, False)
+
+        # Create contributor score, that will be returned in the PATCH response
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=rating,
+            criteria="test-criteria",
+            score=3,
+        )
 
         response = self.client.patch(
             "{}{}/".format(self.ratings_base_url, self.video1.uid),
