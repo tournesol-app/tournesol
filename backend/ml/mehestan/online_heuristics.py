@@ -180,7 +180,6 @@ def _run_online_heuristics_for_criterion(
             poll, global_scores, single_criteria=criteria, score_mode=mode
         )
 
-    save_tournesol_score_as_sum_of_criteria(poll)
 
 
 def run_online_heuristics(
