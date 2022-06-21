@@ -47,7 +47,9 @@ class MlInput(ABC):
         pass
 
     @abstractmethod
-    def get_all_scaling_factors(self, user_id: Optional[int] = None) -> pd.DataFrame:
+    def get_all_scaling_factors(
+        self, user_id: Optional[int] = None, criteria: Optional[str] = None
+    ) -> pd.DataFrame:
         pass
 
     @abstractmethod
@@ -223,11 +225,12 @@ class MlInputFromDb(MlInput):
             )
         return pd.DataFrame(values)
 
-    def get_all_scaling_factors(self, user_id=None):
+    def get_all_scaling_factors(self, user_id=None, criteria=None):
         scores_queryset = ContributorScaling.objects.filter(poll__name=self.poll_name)
         if user_id is not None:
             scores_queryset = scores_queryset.filter(user_id=user_id)
-
+        if criteria is not None:
+            scores_queryset = scores_queryset.filter(criteria=criteria)
         values = scores_queryset.values(
             "user_id",
             s=F("scale"),

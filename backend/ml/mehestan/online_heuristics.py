@@ -28,22 +28,22 @@ ALPHA = 0.01  # Signal-to-noise hyperparameter
 
 def get_new_scores_from_online_update(
     all_comparison_user: pd.DataFrame,
-    uid_a: str,
-    uid_b: str,
+    id_entity_a: str,
+    id_entity_b: str,
     previous_individual_raw_scores: pd.DataFrame,
 ) -> Tuple[float]:
     scores = all_comparison_user[["entity_a", "entity_b", "score"]]
-    if (uid_a, uid_b) not in {
+    if (id_entity_a, id_entity_b) not in {
         twotuple_entity_id
         for (twotuple_entity_id, _) in scores.groupby(["entity_a", "entity_b"])
-    } and (uid_b, uid_a) not in {
+    } and (id_entity_b, id_entity_a) not in {
         twotuple_entity_id
         for (twotuple_entity_id, _) in scores.groupby(["entity_a", "entity_b"])
     }:
         logger.error(
             "get_new_scores_from_online_update : no comparison found for '%s' with '%s'",
-            uid_a,
-            uid_b,
+            id_entity_a,
+            id_entity_b,
         )
     scores_sym = pd.concat(
         [
@@ -73,15 +73,21 @@ def get_new_scores_from_online_update(
     Kaa_np = np.array(k.sum(axis=1) + ALPHA)
 
     L_tilde = L / Kaa_np
-    L_tilde_a = L_tilde[uid_a]
-    L_tilde_b = L_tilde[uid_b]
+    L_tilde_a = L_tilde[id_entity_a]
+    L_tilde_b = L_tilde[id_entity_b]
 
     U_ab = -k / Kaa_np[:, None]
     U_ab = U_ab.fillna(0)
 
+    if not previous_individual_raw_scores.index.isin([id_entity_a]).any():
+        previous_individual_raw_scores.loc[id_entity_a] = 0.0
+
+    if not previous_individual_raw_scores.index.isin([id_entity_b]).any():
+        previous_individual_raw_scores.loc[id_entity_b] = 0.0
+
     dot_product = U_ab.dot(previous_individual_raw_scores)
-    theta_star_a = L_tilde_a - dot_product[dot_product.index == uid_a].values
-    theta_star_b = L_tilde_b - dot_product[dot_product.index == uid_b].values
+    theta_star_a = L_tilde_a - dot_product[dot_product.index == id_entity_a].values
+    theta_star_b = L_tilde_b - dot_product[dot_product.index == id_entity_b].values
     return (theta_star_a, theta_star_b)
 
 
@@ -142,7 +148,7 @@ def _run_online_heuristics_for_criterion(
         score=theta_star_b,
         criteria=criteria,
     )
-    all_user_scalings = ml_input.get_all_scaling_factors()
+    all_user_scalings = ml_input.get_all_scaling_factors(criteria=criteria)
     all_indiv_score_a = ml_input.get_indiv_score(
         entity_id=entity_id_a, criteria=criteria
     )
@@ -150,16 +156,18 @@ def _run_online_heuristics_for_criterion(
         entity_id=entity_id_b, criteria=criteria
     )
     all_indiv_score = pd.concat([all_indiv_score_a, all_indiv_score_b])
-
+    print(all_indiv_score)
     df = all_indiv_score.merge(
         ml_input.get_ratings_properties(), how="inner", on=["user_id", "entity_id"]
     )
-
+    print(df)
     df["is_public"].fillna(False, inplace=True)
     df["is_trusted"].fillna(False, inplace=True)
     df["is_supertrusted"].fillna(False, inplace=True)
 
     df = df.merge(all_user_scalings, how="left", on="user_id")
+    print("3")
+    print(df)
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
     df["delta_s"].fillna(0, inplace=True)
@@ -182,7 +190,12 @@ def _run_online_heuristics_for_criterion(
 
 
 def run_online_heuristics(
-    ml_input: MlInput, uid_a: str, uid_b: str, user_id: str, poll: Poll, parallel_computing:bool=True
+    ml_input: MlInput,
+    uid_a: str,
+    uid_b: str,
+    user_id: str,
+    poll: Poll,
+    parallel_computing: bool = True,
 ):
     """
     This function use multiprocessing.
@@ -232,8 +245,12 @@ def run_online_heuristics(
                 pass
     else:
         for criterion in criteria:
-            logger.info("Sequential Online Heuristic Mehestan  \
-                for poll '%s  for criterion '%s': Start ", poll.name, criterion)
+            logger.info(
+                "Sequential Online Heuristic Mehestan  \
+                for poll '%s  for criterion '%s': Start ",
+                poll.name,
+                criterion,
+            )
 
             partial_online_heuristics(criterion)
 
@@ -244,5 +261,10 @@ def run_online_heuristics(
 def update_user_scores(poll: Poll, user: User, uid_a: str, uid_b: str):
     ml_input = MlInputFromDb(poll_name=poll.name)
     run_online_heuristics(
-        ml_input=ml_input, uid_a=uid_a, uid_b=uid_b, user_id=user.pk, poll=poll, parallel_computing=False)
+        ml_input=ml_input,
+        uid_a=uid_a,
+        uid_b=uid_b,
+        user_id=user.pk,
+        poll=poll,
+        parallel_computing=False,
     )

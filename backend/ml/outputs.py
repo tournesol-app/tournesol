@@ -164,8 +164,9 @@ def update_contributor_score(
         contributor_rating__entity_id=entity_id,
     )
     contributor_rating_criteria_score = query_score_to_update.first()
-    contributor_rating_criteria_score.score = score
-    contributor_rating_criteria_score.save()
+    if contributor_rating_criteria_score:
+        contributor_rating_criteria_score.score = score
+        contributor_rating_criteria_score.save()
 
 
 def save_contributor_scalings(poll: Poll, criteria: str, scalings: pd.DataFrame):
