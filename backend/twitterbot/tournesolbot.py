@@ -1,7 +1,9 @@
 import random
 import re
+from pathlib import Path
 
-from core.lib.discord.api import write_in_channel
+from tournesol.utils.contributors import get_top_public_contributors_last_month
+import matplotlib.pyplot as plt
 from core.utils.time import time_ago
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
@@ -131,8 +133,7 @@ def select_a_video(tweetable_videos):
     # Chose a random video weighted by tournesol score
 
     selected_video = random.choices(  # not a cryptographic use # nosec B311
-        tweetable_videos,
-        weights=tournesol_score_list
+        tweetable_videos, weights=tournesol_score_list
     )[0]
 
     return selected_video
@@ -183,3 +184,9 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
         tweet_id=resp.id,
         bot_name=bot_name,
     )
+
+
+def generate_top_contributor_figure() -> Path:
+    """Generate a figure with the top contributor of each video."""
+
+    pass

@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -5,7 +6,12 @@ from django.test import TestCase
 from core.utils.time import time_ago
 from tournesol.models import Entity
 from tournesol.tests.factories.entity import VideoCriteriaScoreFactory, VideoFactory
-from twitterbot.tournesolbot import get_best_criteria, get_video_recommendations, prepare_tweet
+from twitterbot.tournesolbot import (
+    generate_top_contributor_figure,
+    get_best_criteria,
+    get_video_recommendations,
+    prepare_tweet,
+)
 
 
 class TestTournesolBot(TestCase):
@@ -221,3 +227,11 @@ class TestTournesolBot(TestCase):
         assert get_video_recommendations("en")[0] == self.videos[4]
 
         assert not get_video_recommendations("de")
+        
+    def test_generate_top_contributor_figure(self):
+        """
+        Test function generate_top_contributor_figure.
+        """
+
+        figure_path = generate_top_contributor_figure()
+        assert figure_path.exists()
