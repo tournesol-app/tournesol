@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import SelectorListBox, {
   EntitiesTab,
 } from 'src/features/entity_selector/EntityTabsBox';
-import { PollsService } from 'src/services/openapi';
+import { PollsService, UsersService } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 interface Props {
@@ -36,6 +36,21 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
           return results.filter((entity) => entity.uid !== contextUid);
         },
       });
+    tabs.push({
+      name: 'comparedWith',
+      label: t('contextualRecommendations.comparedWith'),
+      fetch: async () => {
+        const response = await UsersService.usersMeComparisonsListFiltered({
+          pollName,
+          uid: contextUid,
+          limit: 20,
+        });
+        const results = response.results ?? [];
+        return results.map(({ entity_a, entity_b }) =>
+          entity_a.uid === contextUid ? entity_b : entity_a
+        );
+      },
+    });
     return tabs;
   }, [t, pollName, uploader, contextUid]);
 

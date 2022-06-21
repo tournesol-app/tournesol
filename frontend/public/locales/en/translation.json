@@ -220,7 +220,8 @@
   },
   "options": "Options",
   "contextualRecommendations": {
-    "channel": "Channel"
+    "channel": "Channel",
+    "comparedWith": "Compared with"
   },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
