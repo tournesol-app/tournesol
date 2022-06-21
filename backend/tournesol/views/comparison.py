@@ -12,10 +12,7 @@ from rest_framework import exceptions, generics, mixins
 from ml.mehestan.online_heuristics import update_user_scores
 from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
-from tournesol.serializers.comparison import (
-    ComparisonSerializer,
-    ComparisonUpdateSerializer,
-)
+from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 

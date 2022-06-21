@@ -15,8 +15,7 @@ from ml.outputs import (
     save_tournesol_score_as_sum_of_criteria,
     update_contributor_score,
 )
-from tournesol.models import Entity
-from tournesol.models import Poll
+from tournesol.models import Entity, Poll
 from tournesol.models.entity_score import ScoreMode
 
 from .global_scores import get_global_scores
