@@ -20,6 +20,7 @@ from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
+from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.models.rate_later import RateLater
 from tournesol.serializers.metadata import VideoMetadata
 
@@ -197,16 +198,18 @@ class Entity(models.Model):
 
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of criteria score per criteria for the entity"""
-        min_score_base = -1.0
-        max_score_base = 1.0
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            min_score_base = -100.0
+            max_score_base = 100.0
+        else:
+            min_score_base = -1.0
+            max_score_base = 1.0
 
         # Fetch data with QuerySet
         contributor_rating_criteria_score_list = [
             list(contributor_rating.criteria_scores.all())
             for contributor_rating in
-            self.contributorvideoratings.filter(poll=poll, is_public=True).prefetch_related(
-                "criteria_scores"
-            )
+            self.contributorvideoratings.filter(poll=poll, is_public=True).with_scaled_scores()
         ]
 
         contributor_rating_criteria_score_flatten_list = [
@@ -215,7 +218,7 @@ class Entity(models.Model):
         # Format data into dictionnary
         scores_dict = defaultdict(list)
         for element in contributor_rating_criteria_score_flatten_list:
-            scores_dict[element.criteria].append(element.score)
+            scores_dict[element.criteria].append(element.scaled_score)
 
         # Create object
         criteria_distributions = []
