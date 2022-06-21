@@ -26,6 +26,7 @@ import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
+import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 
 export const VideoAnalysis = ({
   video,
@@ -46,102 +47,116 @@ export const VideoAnalysis = ({
   const linkifiedDescription = linkifyStr(video.description || '', linkifyOpts);
 
   return (
-    <Container sx={{ maxWidth: '1000px !important' }}>
+    <Container sx={{ maxWidth: '1300px !important' }}>
       <Box py={2}>
-        {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end">
-          <Button
-            color="secondary"
-            variant="contained"
-            endIcon={<CompareIcon />}
-            component={RouterLink}
-            to={`${baseUrl}/comparison?uidA=${uid}`}
-          >
-            {t('entityAnalysisPage.generic.compare')}
-          </Button>
-        </Box>
+        <Grid container spacing={1}>
+          <Grid item md={9} sm={12}>
+            {/* Top level section, containing links and maybe more in the future. */}
+            <Box mb={2} display="flex" justifyContent="flex-end">
+              <Button
+                color="secondary"
+                variant="contained"
+                endIcon={<CompareIcon />}
+                component={RouterLink}
+                to={`${baseUrl}/comparison?uidA=${uid}`}
+              >
+                {t('entityAnalysisPage.generic.compare')}
+              </Button>
+            </Box>
 
-        {/* Entity section, with its player, title, scores and actions. */}
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
-            <VideoPlayer
-              videoId={video.video_id}
-              duration={video.duration}
-              controls
+            {/* Entity section, with its player, title, scores and actions. */}
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={12} sx={{ aspectRatio: '16 / 9' }}>
+                <VideoPlayer
+                  videoId={video.video_id}
+                  duration={video.duration}
+                  controls
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <VideoCard video={video} actions={actions} showPlayer={false} />
+              </Grid>
+              <Grid item xs={12}>
+                <CollapseButton
+                  expanded={descriptionCollapsed}
+                  onClick={() => {
+                    setDescriptionCollapsed(!descriptionCollapsed);
+                  }}
+                >
+                  {t('entityAnalysisPage.video.description')}
+                </CollapseButton>
+                <Collapse
+                  in={descriptionCollapsed}
+                  timeout="auto"
+                  unmountOnExit
+                >
+                  <Typography paragraph>
+                    <Box
+                      style={
+                        descriptionCollapsed
+                          ? { display: 'block' }
+                          : { display: 'none' }
+                      }
+                      dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
+                      fontSize="0.9em"
+                      whiteSpace="pre-wrap"
+                    />
+                  </Typography>
+                </Collapse>
+              </Grid>
+
+              {/* Data visualization. */}
+              {shouldDisplayCharts && (
+                <SelectedCriterionProvider>
+                  <Grid item xs={12} sm={12} md={6}>
+                    <Paper>
+                      <Box
+                        p={1}
+                        bgcolor="rgb(238, 238, 238)"
+                        display="flex"
+                        justifyContent="center"
+                      >
+                        <Typography variant="h5">
+                          {t('entityAnalysisPage.chart.criteriaScores.title')}
+                        </Typography>
+                      </Box>
+                      <PersonalCriteriaScoresContextProvider uid={uid}>
+                        <Box px={2} pt={1}>
+                          <PersonalScoreCheckbox />
+                        </Box>
+                        <Box p={1}>
+                          <CriteriaBarChart video={video} />
+                        </Box>
+                      </PersonalCriteriaScoresContextProvider>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6}>
+                    <Paper>
+                      <Box
+                        p={1}
+                        bgcolor="rgb(238, 238, 238)"
+                        display="flex"
+                        justifyContent="center"
+                      >
+                        <Typography variant="h5">
+                          {t('criteriaScoresDistribution.title')}
+                        </Typography>
+                      </Box>
+                      <Box p={1}>
+                        <CriteriaScoresDistribution uid={uid} />
+                      </Box>
+                    </Paper>
+                  </Grid>
+                </SelectedCriterionProvider>
+              )}
+            </Grid>
+          </Grid>
+          <Grid item md={3} sm={12}>
+            <ContextualRecommendations
+              contextUid={uid}
+              uploader={video.uploader || undefined}
             />
           </Grid>
-          <Grid item xs={12}>
-            <VideoCard video={video} actions={actions} showPlayer={false} />
-          </Grid>
-          <Grid item xs={12}>
-            <CollapseButton
-              expanded={descriptionCollapsed}
-              onClick={() => {
-                setDescriptionCollapsed(!descriptionCollapsed);
-              }}
-            >
-              {t('entityAnalysisPage.video.description')}
-            </CollapseButton>
-            <Collapse in={descriptionCollapsed} timeout="auto" unmountOnExit>
-              <Typography paragraph>
-                <Box
-                  style={
-                    descriptionCollapsed
-                      ? { display: 'block' }
-                      : { display: 'none' }
-                  }
-                  dangerouslySetInnerHTML={{ __html: linkifiedDescription }}
-                  fontSize="0.9em"
-                  whiteSpace="pre-wrap"
-                />
-              </Typography>
-            </Collapse>
-          </Grid>
-
-          {/* Data visualization. */}
-          {shouldDisplayCharts && (
-            <SelectedCriterionProvider>
-              <Grid item xs={12} sm={12} md={6}>
-                <Paper>
-                  <Box
-                    p={1}
-                    bgcolor="rgb(238, 238, 238)"
-                    display="flex"
-                    justifyContent="center"
-                  >
-                    <Typography variant="h5">
-                      {t('entityAnalysisPage.chart.criteriaScores.title')}
-                    </Typography>
-                  </Box>
-                  <PersonalCriteriaScoresContextProvider uid={uid}>
-                    <Box px={2} pt={1}>
-                      <PersonalScoreCheckbox />
-                    </Box>
-                    <Box p={1}>
-                      <CriteriaBarChart video={video} />
-                    </Box>
-                  </PersonalCriteriaScoresContextProvider>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={12} md={6}>
-                <Paper>
-                  <Box
-                    p={1}
-                    bgcolor="rgb(238, 238, 238)"
-                    display="flex"
-                    justifyContent="center"
-                  >
-                    <Typography variant="h5">
-                      {t('criteriaScoresDistribution.title')}
-                    </Typography>
-                  </Box>
-                  <Box p={1}>
-                    <CriteriaScoresDistribution uid={uid} />
-                  </Box>
-                </Paper>
-              </Grid>
-            </SelectedCriterionProvider>
-          )}
         </Grid>
       </Box>
     </Container>

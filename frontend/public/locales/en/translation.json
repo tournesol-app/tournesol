@@ -219,6 +219,9 @@
     "compareVideosButton": "Compare videos"
   },
   "options": "Options",
+  "contextualRecommendations": {
+    "channel": "Channel"
+  },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
     "deleteYourAccount": "Delete your account",

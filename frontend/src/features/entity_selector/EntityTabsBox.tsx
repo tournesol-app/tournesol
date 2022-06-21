@@ -8,6 +8,7 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 interface Props {
   tabs: EntitiesTab[];
   onSelectEntity: (entityUid: string) => void;
+  width?: string | number;
 }
 
 export interface EntitiesTab {
@@ -29,7 +30,11 @@ const TabError = ({ message }: { message: string }) => (
   </Typography>
 );
 
-const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
+const EntityTabsBox = ({
+  tabs,
+  onSelectEntity,
+  width = 'min(700px, 100vw)',
+}: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
@@ -88,7 +93,7 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
             marginTop: 1,
           },
         },
-        width: 'min(700px, 100vw)',
+        width: width,
         bgcolor: 'white',
         overflow: 'hidden',
         flexGrow: 1,
