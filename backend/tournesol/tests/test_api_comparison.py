@@ -998,7 +998,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    def test_update_individual_scores_after_new_comparison(self):
+    def test_update_individual_scores_after_new_comparison_without_online_heuristics(self):
         call_command("ml_train")
 
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
@@ -1034,6 +1034,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.assertEqual(resp.status_code, 201, resp.content)
 
+        call_command("ml_train")
         # Individual scores related to the new comparison have been computed
         self.assertEqual(
             ContributorRatingCriteriaScore.objects
