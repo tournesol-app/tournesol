@@ -181,7 +181,6 @@ def _run_online_heuristics_for_criterion(
         )
 
 
-
 def run_online_heuristics(
     ml_input: MlInput, uid_a: str, uid_b: str, user_id: str, poll: Poll
 ):
