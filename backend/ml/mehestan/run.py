@@ -87,7 +87,11 @@ def run_mehestan_for_criterion(
     save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
 
     if update_poll_scaling and len(indiv_scores) > 0:
-        global_scores = get_global_scores(scaled_scores, score_mode=ScoreMode.DEFAULT)
+        global_scores = get_global_scores(
+            scaled_scores,
+            score_mode=ScoreMode.DEFAULT,
+            poll_scale=1.0
+        )
 
         low_quantile, high_quantile = np.quantile(
             global_scores["score"], [1 - POLL_SCALING_QUANTILE, POLL_SCALING_QUANTILE]
@@ -105,7 +109,7 @@ def run_mehestan_for_criterion(
     scaled_scores["uncertainty"] *= poll.scale
 
     for mode in ScoreMode:
-        global_scores = get_global_scores(scaled_scores, score_mode=mode)
+        global_scores = get_global_scores(scaled_scores, score_mode=mode, poll_scale=poll.scale)
         global_scores["criteria"] = criteria
 
         logger.info(
