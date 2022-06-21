@@ -44,6 +44,7 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
       tabs={tabs}
       onSelectEntity={handleEntitySelect}
       width="auto"
+      maxHeight="none"
     />
   );
 };

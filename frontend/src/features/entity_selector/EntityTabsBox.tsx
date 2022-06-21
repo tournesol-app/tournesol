@@ -9,6 +9,7 @@ interface Props {
   tabs: EntitiesTab[];
   onSelectEntity: (entityUid: string) => void;
   width?: string | number;
+  maxHeight?: string | number;
 }
 
 export interface EntitiesTab {
@@ -34,6 +35,7 @@ const EntityTabsBox = ({
   tabs,
   onSelectEntity,
   width = 'min(700px, 100vw)',
+  maxHeight = '40vh',
 }: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
@@ -79,7 +81,7 @@ const EntityTabsBox = ({
           listStyleType: 'none',
           p: 0,
           m: 0,
-          maxHeight: '40vh',
+          maxHeight,
           '.MuiModal-root &': {
             maxHeight: 'none',
           },
