@@ -101,7 +101,7 @@ class RateLaterApi(TestCase):
         An anonymous user can't add a video.
         """
         client = APIClient()
-        data = {"video.video_id": "random_video_id"}
+        data = {"entity.uid": "yt:random_video_id"}
 
         response = client.post(
             "/users/me/video_rate_later/",
@@ -118,8 +118,8 @@ class RateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(
-            metadata__name=self._others_video).video_id}}
+        data = {"entity": {"uid": Entity.objects.get(
+            metadata__name=self._others_video).uid}}
 
         client.force_authenticate(user=user)
 
@@ -156,8 +156,8 @@ class RateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(
-            metadata__name=self._users_video).video_id}}
+        data = {"entity": {"uid": Entity.objects.get(
+            metadata__name=self._users_video).uid}}
 
         client.force_authenticate(user=user)
 
@@ -289,7 +289,7 @@ class RateLaterApi(TestCase):
         client.force_authenticate(user=user)
         response = client.post(
             "/users/me/video_rate_later/",
-            {"video": {"video_id": entity.video_id}},
+            {"entity": {"uid": entity.uid}},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
