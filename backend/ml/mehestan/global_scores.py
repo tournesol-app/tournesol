@@ -306,7 +306,8 @@ def compute_scaled_scores(
 
 
 def get_global_scores(
-    scaled_individual_scores: pd.DataFrame, score_mode: ScoreMode, poll_scale: float
+    scaled_individual_scores: pd.DataFrame,
+    score_mode: ScoreMode
 ):
     df = scaled_individual_scores.copy(deep=False)
 
@@ -370,10 +371,9 @@ def get_global_scores(
         w = scores.voting_weight
         theta = scores.score
         delta = scores.uncertainty
-        W_scaled = W / poll_scale
-        rho = QrMed(2 * W_scaled, w, theta, delta)
-        rho_uncertainty = QrUnc(2 * W_scaled, 1, w, theta, delta, qr_med=rho)
-        rho_deviation = QrDev(2 * W_scaled, 1, w, theta, delta, qr_med=rho)
+        rho = QrMed(2 * W, w, theta, delta)
+        rho_uncertainty = QrUnc(2 * W, 1, w, theta, delta, qr_med=rho)
+        rho_deviation = QrDev(2 * W, 1, w, theta, delta, qr_med=rho)
         global_scores[entity_id] = {
             "score": rho,
             "uncertainty": rho_uncertainty,

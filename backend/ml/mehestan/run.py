@@ -1,6 +1,7 @@
 import logging
 import os
 from functools import partial
+from math import tau
 from multiprocessing import Pool
 from typing import Optional
 
@@ -18,14 +19,16 @@ from ml.outputs import (
 )
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
+from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 from .global_scores import compute_scaled_scores, get_global_scores
 from .individual import compute_individual_score
 
 logger = logging.getLogger(__name__)
 
-POLL_SCALING_QUANTILE = 0.95
-POLL_SCALING_SCORE_AT_QUANTILE = 90
+MAX_SCORE = MEHESTAN_MAX_SCALED_SCORE
+POLL_SCALING_QUANTILE = 0.99
+POLL_SCALING_SCORE_AT_QUANTILE = 50.0
 
 
 def get_individual_scores(
@@ -90,27 +93,29 @@ def run_mehestan_for_criterion(
         global_scores = get_global_scores(
             scaled_scores,
             score_mode=ScoreMode.DEFAULT,
-            poll_scale=1.0
         )
-
-        low_quantile, high_quantile = np.quantile(
-            global_scores["score"], [1 - POLL_SCALING_QUANTILE, POLL_SCALING_QUANTILE]
-        )
-
-        if high_quantile != low_quantile:
-            a = 2 * POLL_SCALING_SCORE_AT_QUANTILE / (high_quantile - low_quantile)
-            b = POLL_SCALING_SCORE_AT_QUANTILE - (high_quantile * a)
-            poll.scale = a
-            poll.translation = b
-            poll.save(update_fields=["scale", "translation"])
-
-    # Apply poll scaling
-    scaled_scores["score"] = scaled_scores["score"] * poll.scale + poll.translation
-    scaled_scores["uncertainty"] *= poll.scale
 
     for mode in ScoreMode:
-        global_scores = get_global_scores(scaled_scores, score_mode=mode, poll_scale=poll.scale)
+        global_scores = get_global_scores(scaled_scores, score_mode=mode)
         global_scores["criteria"] = criteria
+
+        if update_poll_scaling and mode == ScoreMode.DEFAULT:
+            quantile_value = np.quantile(global_scores["score"], POLL_SCALING_QUANTILE)
+            scale = (
+                np.tan(POLL_SCALING_SCORE_AT_QUANTILE * tau / (4 * MAX_SCORE))
+                / quantile_value
+            )
+            poll.scale = scale
+            poll.save(update_fields=["scale"])
+
+        # Apply poll scaling
+        global_scores["uncertainty"] *= (
+            4 * MAX_SCORE / tau * poll.scale
+            / (1 + (poll.scale * global_scores["score"]) ** 2)
+        )
+        global_scores["score"] = (
+            4 * MAX_SCORE / tau * np.arctan(global_scores["score"] * poll.scale)
+        )
 
         logger.info(
             "Mehestan for poll '%s': scores computed for crit '%s' and mode '%s'",

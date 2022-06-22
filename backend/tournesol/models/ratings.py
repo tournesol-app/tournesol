@@ -1,19 +1,45 @@
 """
 Models for Tournesol's main functions related to contributor's ratings
 """
+from math import tau
 
 from django.db import models
-from django.db.models import F, FilteredRelation, Func, Prefetch, Q
+from django.db.models import Case, F, FilteredRelation, Func, Prefetch, Q, When
 from django.db.models.functions import Coalesce
 
 from core.models import User
+from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 from .entity import Entity
-from .poll import Poll
+from .poll import ALGORITHM_MEHESTAN, Poll
 
 
 class ContributorRatingQueryset(models.QuerySet):
     def with_scaled_scores(self):
+        scaled_score_expression = Case(
+            When(
+                contributor_rating__poll__algorithm=ALGORITHM_MEHESTAN,
+                then=(
+                    4. * MEHESTAN_MAX_SCALED_SCORE / tau
+                    * Func(
+                        F("indiv_scaled_score") * F("contributor_rating__poll__scale"),
+                        function="ATAN"
+                    )
+                )
+            ),
+            default=F("indiv_scaled_score")
+        )
+        scaled_uncertainty_expression = Case(
+            When(
+                contributor_rating__poll__algorithm=ALGORITHM_MEHESTAN,
+                then=(
+                    F("indiv_scaled_uncertainty")
+                    * 4. * MEHESTAN_MAX_SCALED_SCORE / tau * F("contributor_rating__poll__scale")
+                    / (1. + (F("contributor_rating__poll__scale") * F("indiv_scaled_score"))**2.)
+                )
+            ),
+            default=F("indiv_scaled_uncertainty")
+        )
         return self.prefetch_related(Prefetch(
             "criteria_scores",
             queryset=(
@@ -44,13 +70,8 @@ class ContributorRatingQueryset(models.QuerySet):
                     )
                 )
                 .annotate(
-                    scaled_score=(
-                        F("contributor_rating__poll__scale") * F("indiv_scaled_score")
-                        + F("contributor_rating__poll__translation")
-                    ),
-                    scaled_uncertainty=(
-                        F("contributor_rating__poll__scale") * F("indiv_scaled_uncertainty")
-                    )
+                    scaled_score=scaled_score_expression,
+                    scaled_uncertainty=scaled_uncertainty_expression,
                 )
             ))
         )
