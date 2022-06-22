@@ -20,8 +20,7 @@ easily add them to their rate-later list.
   - [Code Quality](#code-quality)
   - [Upating the version](#updating-the-version)
 - [Release a new version](#release-a-new-version)
-- [License](#license)
-
+- [Copyright & License](#copyright--license)
 
 ## Development guidelines
 
@@ -70,9 +69,25 @@ Given a version number `MAJOR.MINOR.PATCH`, increment the:
 To release the extension on Chrome or Mozilla Firefox, run the script `./build.sh`
 and upload the generated .zip file in the corresponding extension web store.
 
-## License
+## Copyright & License
 
-See the [LICENSE.md](./src/LICENSE) file.
+Copyright 2021-2022 Association Tournesol and contributors.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+Included license:
+ - [AGPL-3.0-or-later](./LICENSE)
 
 [download-chrome]: https://chrome.google.com/webstore/detail/tournesol-extension/nidimbejmadpggdgooppinedbggeacla
 [download-firefox]: https://addons.mozilla.org/en-US/firefox/addon/tournesol-extension/

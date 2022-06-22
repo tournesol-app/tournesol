@@ -9,6 +9,9 @@ We pledge to respect users freedom by using
 Commons licenses, we seek to use licenses
 [approved for Free Cultural Works][cc-freeculturalworks] as much as possible.
 
+You can find the copyright notice of each software and other production in
+their dedicated `README.md` file.
+
 ## GNU Affero General Public License v3.0 or later
 
 ![GNU AGPL v3.0 logo](./docs/logos/agplv3-with-text-162x68.png)

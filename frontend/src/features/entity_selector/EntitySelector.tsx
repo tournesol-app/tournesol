@@ -195,7 +195,11 @@ const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
         />
       </Box>
       <Box mx={1} marginBottom={1}>
-        <EntityInput value={inputValue || uid} onChange={handleChange} />
+        <EntityInput
+          value={inputValue || uid}
+          onChange={handleChange}
+          otherUid={otherUid}
+        />
       </Box>
 
       {rating ? (

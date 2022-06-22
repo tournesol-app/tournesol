@@ -49,9 +49,12 @@ class EntityType(ABC):
         ORM features, time-consuming or CPU heavy operations.
         """
         if "__" in field:
-            raise ValidationError(
-                f'The metatada field `{field}` cannot contain the special string "__".'
-            )
+            # fmt: off
+            raise ValidationError({
+                "_url_metadata":
+                    f'The metatada field `{field}` cannot contain the special string "__".'
+            })
+            # fmt: on
 
     @classmethod
     def get_allowed_meta_filter_funcs(cls) -> Dict:

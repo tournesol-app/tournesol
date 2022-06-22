@@ -25,7 +25,9 @@ describe('Settings - profile page', () => {
       cy.get('input[name=username]').clear().type(user1NewUsername).type('{enter}');
       cy.contains('Profile changed successfully');
 
-      cy.contains('Logout').click();
+      cy.get('button#personal-menu-button').click();
+      cy.get('#personal-menu').contains('Logout').click();
+
       cy.focused().type(user1username);
 
       // old username must not work anymore
@@ -50,7 +52,9 @@ describe('Settings - profile page', () => {
       cy.get('input[name=username]').clear().type(user2username).type('{enter}');
       cy.contains('A user with that username already exists.');
 
-      cy.contains('Logout').click();
+      cy.get('button#personal-menu-button').click();
+      cy.get('#personal-menu').contains('Logout').click();
+
       cy.focused().type(user2username);
 
       // the desired username must not work (because already taken)

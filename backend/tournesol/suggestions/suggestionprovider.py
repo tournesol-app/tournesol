@@ -3,7 +3,7 @@ from typing import Optional
 from django.db.models import F, Q, QuerySet
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore, Entity, Poll
+from tournesol.models import Comparison, ComparisonCriteriaScore, Entity, Poll
 from tournesol.suggestions.graph import CompleteGraph, Graph
 from tournesol.suggestions.suggested_user import SuggestedUser as RecommendationUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
@@ -68,13 +68,19 @@ class SuggestionProvider:
         """
         # I want all entities from the current poll compared by supertrusted user
         # todo create alias to properly detect supertrusted ?
-        req_entities = Entity.objects \
-            .filter(Q(comparisons_entity_1__poll__name=self.poll.name) |
-                    Q(comparisons_entity_2__poll__name=self.poll.name))\
-            .filter(Q(comparisons_entity_1__user__in=User.supertrusted_seed_users()) |
-                    Q(comparisons_entity_2__user__in=User.supertrusted_seed_users()))\
-            .distinct() \
+        supertrusted_comparisons = Comparison.objects.filter(
+            poll=self.poll,
+            user__in=User.supertrusted_seed_users()
+        )
+        req_entities = (
+            Entity.objects.filter(
+                Q(comparisons_entity_1__in=supertrusted_comparisons)
+                | Q(comparisons_entity_2__in=supertrusted_comparisons)
+            )
+            .distinct()
             .values_list("uid", flat=True)
+        )
+
         return [
             video
             for uid in req_entities
