@@ -88,6 +88,25 @@ def get_new_scores_from_online_update(
     dot_product = U_ab.dot(previous_individual_raw_scores)
     theta_star_a = L_tilde_a - dot_product[dot_product.index == id_entity_a].values
     theta_star_b = L_tilde_b - dot_product[dot_product.index == id_entity_b].values
+
+    previous_individual_raw_scores.loc[id_entity_a] = theta_star_a
+    previous_individual_raw_scores.loc[id_entity_b] = theta_star_b
+
+    K_diag = pd.DataFrame(
+        data=np.diag(k.sum(axis=1) + ALPHA),
+        index=k.index,
+        columns=k.index,
+    )
+    sigma2 = (
+        1.0 + (np.nansum(k * (l - previous_individual_raw_scores) ** 2) / 2)
+    ) / len(scores)
+
+    print(Kaa_np)
+    print(K_diag)
+    delta_star = pd.Series(np.sqrt(sigma2) / np.sqrt(K_diag), index=K_diag.index)
+
+    print("delta_star", delta_star)
+
     return (theta_star_a, theta_star_b)
 
 
