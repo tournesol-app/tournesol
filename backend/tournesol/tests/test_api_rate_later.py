@@ -138,7 +138,7 @@ class RateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": "newvideo001"}}
+        data = {"entity": {"uid": "yt:newvideo001"}}
 
         client.force_authenticate(user=user)
         response = client.post(

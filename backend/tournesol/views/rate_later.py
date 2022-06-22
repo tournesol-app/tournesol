@@ -7,10 +7,24 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.entities.base import UID_DELIMITER
-from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.models import Entity, Poll, RateLater
 from tournesol.serializers.rate_later import RateLaterSerializer
+
+
+class VideosScopedViewMixin():
+    def initial(self, request, *args, **kwargs):
+        """
+        Runs anything that needs to occur prior to calling the method handler.
+        """
+        super().initial(request, *args, **kwargs)
+
+        # make the default poll
+        self.poll_from_url = Poll.default_poll()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["poll"] = Poll.default_poll()
+        return context
 
 
 @extend_schema_view(
@@ -24,7 +38,7 @@ from tournesol.serializers.rate_later import RateLaterSerializer
         }
     )
 )
-class RateLaterList(generics.ListCreateAPIView):
+class RateLaterList(VideosScopedViewMixin, generics.ListCreateAPIView):
     """
     List all videos of a user's rate later list, or add a video to the list.
     """
@@ -34,14 +48,14 @@ class RateLaterList(generics.ListCreateAPIView):
     queryset = RateLater.objects.none()
 
     def get_queryset(self):
-        return RateLater.objects.filter(user=self.request.user)
+        return RateLater.objects.filter(user=self.request.user, poll=Poll.default_poll())
 
 
 @extend_schema_view(
     get=extend_schema(description="Fetch a video from user's rate later list"),
     delete=extend_schema(description="Delete a video from user's rate later list"),
 )
-class RateLaterDetail(generics.RetrieveDestroyAPIView):
+class RateLaterDetail(VideosScopedViewMixin, generics.RetrieveDestroyAPIView):
     """
     Retrieve, or delete a video from a user's rate later list.
     """
@@ -55,7 +69,7 @@ class RateLaterDetail(generics.RetrieveDestroyAPIView):
         rate_later = get_object_or_404(
             RateLater,
             user__pk=self.request.user.pk,
-            entity=Entity.get_from_video_id(self.kwargs["video_id"]),
+            entity=Entity.get_from_video_id(self.kwargs["uid"]),
             poll=Poll.default_poll(),
         )
         return rate_later

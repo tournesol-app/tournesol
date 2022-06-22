@@ -96,7 +96,7 @@ urlpatterns = [
         name="video_rate_later_list",
     ),
     path(
-        "users/me/video_rate_later/<str:video_id>/",
+        "users/me/video_rate_later/<str:uid>/",
         RateLaterDetail.as_view(),
         name="video_rate_later_detail",
     ),

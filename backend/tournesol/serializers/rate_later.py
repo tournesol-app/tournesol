@@ -3,26 +3,23 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from tournesol.errors import ConflictError
-from tournesol.models import Entity, Poll, RateLater
-from tournesol.serializers.entity import EntityNoExtraFieldSerializer
-from tournesol.serializers.poll import PollSerializer
+from tournesol.models import Entity, RateLater
+from tournesol.serializers.entity import RelatedEntitySerializer
 
 
 class RateLaterSerializer(ModelSerializer):
-    entity = EntityNoExtraFieldSerializer(read_only=True)
-    poll = PollSerializer(read_only=True)
+    entity = RelatedEntitySerializer()
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = RateLater
-        fields = ["user", "entity", "poll"]
-        read_only_fields = ["entity", "poll"]
+        fields = ["user", "entity"]
 
     def create(self, validated_data):
-        video_id = validated_data.pop("video")["video_id"]
-        entity = Entity.get_from_video_id(video_id)
-        poll = Poll.default_poll()
+        uid = validated_data.pop("entity")["uid"]
+        entity = Entity.objects.get(uid=uid)
+        poll = self.context["poll"]
         try:
-            return super().create({"entity": entity, "poll": poll})
+            return super().create({"entity": entity, "poll": poll, **validated_data})
         except IntegrityError:
             raise ConflictError
