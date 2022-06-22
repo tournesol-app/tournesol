@@ -998,7 +998,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    def test_update_individual_scores_after_new_comparison_without_online_heuristics(self):
+    def test_update_individual_scores_after_new_comparison_with_mehestan_run_after_update(self):
         call_command("ml_train")
 
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)

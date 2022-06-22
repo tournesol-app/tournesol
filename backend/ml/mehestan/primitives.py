@@ -26,11 +26,11 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
         x = x.to_numpy()
     if isinstance(delta, pd.Series):
         delta = delta.to_numpy()
-    delta_2 = delta**2
+    delta_2 = delta ** 2
 
     def L_prime(m: float):
         x_minus_m = x - m
-        return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m**2))
+        return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m ** 2))
 
     m_low = -1.0
     while L_prime(m_low) > 0:
@@ -82,7 +82,7 @@ def QrUnc(
     if qr_med is None:
         qr_med = QrMed(W, w, x, delta)
     qr_dev = QrDev(W, default_dev, w, x, delta, qr_med=qr_med)
-    delta_2 = delta**2
+    delta_2 = delta ** 2
     h = W + np.sum(
         w * np.minimum(1, delta_2 * (delta_2 + (x - qr_med) ** 2) ** (-3 / 2))
     )
