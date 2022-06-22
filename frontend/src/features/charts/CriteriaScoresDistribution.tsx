@@ -18,7 +18,7 @@ import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
 import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
 import { criterionColor } from 'src/utils/criteria';
 
-const displayScore = (score: number) => (10 * score).toFixed(0);
+const displayScore = (score: number) => score.toFixed(0);
 
 const binLabel = (index: number, bins: number[], t: TFunction) => {
   if (index === 0)
