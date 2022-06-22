@@ -1,4 +1,6 @@
 {
+  "name": "tournesol-extension",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
