@@ -5,6 +5,7 @@ import SelectorListBox, {
 } from 'src/features/entity_selector/EntityTabsBox';
 import { PollsService, UsersService } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { useLoginState } from 'src/hooks/useLoginState';
 
 interface Props {
   contextUid: string;
@@ -14,6 +15,7 @@ interface Props {
 const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+  const { isLoggedIn } = useLoginState();
 
   const tabs: EntitiesTab[] = useMemo(() => {
     const tabs = [];
@@ -48,9 +50,10 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
           entity_a.uid === contextUid ? entity_b : entity_a
         );
       },
+      disabled: !isLoggedIn,
     });
     return tabs;
-  }, [t, pollName, uploader, contextUid]);
+  }, [t, pollName, uploader, contextUid, isLoggedIn]);
 
   return <SelectorListBox tabs={tabs} width="auto" maxHeight="none" withLink />;
 };
