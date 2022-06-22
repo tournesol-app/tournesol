@@ -250,7 +250,7 @@ class Graph(CompleteGraph):
         for i, u in enumerate(self.nodes):
             for j, v in enumerate(self.nodes):
                 exponent = (self.distance_matrix[u][v]) ** 2 / self.sigma ** 2
-                self.similarity_matrix[i][j] = np.e ** exponent
+                self.similarity_matrix[i][j] = np.e ** (-exponent)
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
         """
@@ -289,7 +289,6 @@ class Graph(CompleteGraph):
         Function used to compute the estimated information gain
         """
         # First try to increase the scaling accuracy of the user if necessary
-        user = self._local_user
         scale_uncertainty = self.local_user_scaling.scale_uncertainty
         translation_uncertainty = self.local_user_scaling.translation_uncertainty
 
@@ -334,11 +333,8 @@ class Graph(CompleteGraph):
                             va._graph_sparsity_score = 0
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
-                        va.beta[vb] = user.delta_theta.get(vb, actual_scaling_accuracy) + \
-                            user.delta_theta.get(va, actual_scaling_accuracy) / (
-                                user.theta.get(vb, self.local_user_mean) -
-                                user.theta.get(va, self.local_user_mean) + 1
-                            )
+                        va.suggestibility_normalization = 1
+                        va.beta[vb] = va.score_computation(vb)
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
