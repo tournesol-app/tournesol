@@ -155,7 +155,12 @@ def save_contributor_scores(
 
 
 def update_contributor_score(
-    poll: Poll, entity_id: str, user_id: str, score: float, criteria: str
+    poll: Poll,
+    entity_id: str,
+    user_id: str,
+    score: float,
+    criteria: str,
+    uncertainty: str,
 ):
     query_score_to_update = ContributorRatingCriteriaScore.objects.filter(
         contributor_rating__poll=poll,
@@ -166,6 +171,7 @@ def update_contributor_score(
     contributor_rating_criteria_score = query_score_to_update.first()
     if contributor_rating_criteria_score:
         contributor_rating_criteria_score.score = score
+        contributor_rating_criteria_score.uncertainty = uncertainty
         contributor_rating_criteria_score.save()
 
 

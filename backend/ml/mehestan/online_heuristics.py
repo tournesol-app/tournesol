@@ -92,22 +92,28 @@ def get_new_scores_from_online_update(
     previous_individual_raw_scores.loc[id_entity_a] = theta_star_a
     previous_individual_raw_scores.loc[id_entity_b] = theta_star_b
 
+    # Compute uncertainties
+    scores_series = previous_individual_raw_scores.squeeze()
+    scores_np = scores_series.to_numpy()
+    theta_star_ab = pd.DataFrame(
+        np.subtract.outer(scores_np, scores_np),
+        index=scores_series.index,
+        columns=scores_series.index,
+    )
     K_diag = pd.DataFrame(
         data=np.diag(k.sum(axis=1) + ALPHA),
         index=k.index,
         columns=k.index,
     )
-    sigma2 = (
-        1.0 + (np.nansum(k * (l - previous_individual_raw_scores) ** 2) / 2)
-    ) / len(scores)
+    sigma2 = (1.0 + (np.nansum(k * (l - theta_star_ab) ** 2) / 2)) / len(scores)
 
-    print(Kaa_np)
-    print(K_diag)
-    delta_star = pd.Series(np.sqrt(sigma2) / np.sqrt(K_diag), index=K_diag.index)
+    delta_star = pd.Series(
+        np.sqrt(sigma2) / np.sqrt(np.diag(K_diag)), index=K_diag.index
+    )
+    delta_star_a = delta_star[id_entity_a]
+    delta_star_b = delta_star[id_entity_b]
 
-    print("delta_star", delta_star)
-
-    return (theta_star_a, theta_star_b)
+    return (theta_star_a, delta_star_a, theta_star_b, delta_star_b)
 
 
 def _run_online_heuristics_for_criterion(
@@ -150,7 +156,12 @@ def _run_online_heuristics_for_criterion(
     previous_individual_raw_scores = previous_individual_raw_scores.set_index(
         "entity_id"
     )
-    theta_star_a, theta_star_b = get_new_scores_from_online_update(
+    (
+        theta_star_a,
+        delta_star_a,
+        theta_star_b,
+        delta_star_b,
+    ) = get_new_scores_from_online_update(
         all_comparison_user, entity_id_a, entity_id_b, previous_individual_raw_scores
     )
     update_contributor_score(
@@ -159,6 +170,7 @@ def _run_online_heuristics_for_criterion(
         user_id=user_id,
         score=theta_star_a,
         criteria=criteria,
+        uncertainty=delta_star_a,
     )
     update_contributor_score(
         poll=poll,
@@ -166,6 +178,7 @@ def _run_online_heuristics_for_criterion(
         user_id=user_id,
         score=theta_star_b,
         criteria=criteria,
+        uncertainty=delta_star_b,
     )
     all_user_scalings = ml_input.get_all_scaling_factors(criteria=criteria)
     all_indiv_score_a = ml_input.get_indiv_score(
@@ -175,18 +188,15 @@ def _run_online_heuristics_for_criterion(
         entity_id=entity_id_b, criteria=criteria
     )
     all_indiv_score = pd.concat([all_indiv_score_a, all_indiv_score_b])
-    print(all_indiv_score)
+
     df = all_indiv_score.merge(
         ml_input.get_ratings_properties(), how="inner", on=["user_id", "entity_id"]
     )
-    print(df)
     df["is_public"].fillna(False, inplace=True)
     df["is_trusted"].fillna(False, inplace=True)
     df["is_supertrusted"].fillna(False, inplace=True)
 
     df = df.merge(all_user_scalings, how="left", on="user_id")
-    print("3")
-    print(df)
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
     df["delta_s"].fillna(0, inplace=True)

@@ -30,14 +30,10 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
 
     def L_prime(m: float):
         x_minus_m = x - m
-        print(W, w, x, m, delta_2)
-        result = W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m**2))
-        print("result", result)
-        return result
+        return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m**2))
 
     m_low = -1.0
     while L_prime(m_low) > 0:
-        print(m_low)
         m_low *= 2
 
     m_up = 1.0
