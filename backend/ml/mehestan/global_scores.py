@@ -307,7 +307,6 @@ def compute_scaled_scores(
 
 def get_global_scores(scaled_individual_scores: pd.DataFrame, score_mode: ScoreMode):
     df = scaled_individual_scores.copy(deep=False)
-
     if score_mode == ScoreMode.TRUSTED_ONLY:
         df = df[df["is_trusted"]]
         df["voting_weight"] = 1

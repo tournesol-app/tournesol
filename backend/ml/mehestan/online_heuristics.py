@@ -11,9 +11,9 @@ from django import db
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
+    insert_or_update_contributor_score,
     save_entity_scores,
     save_tournesol_score_as_sum_of_criteria,
-    update_contributor_score,
 )
 from tournesol.models import Entity, Poll
 from tournesol.models.entity_score import ScoreMode
@@ -121,10 +121,11 @@ def _run_online_heuristics_for_criterion(
 ):
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user = ml_input.get_comparisons(criteria=criteria, user_id=user_id)
+    print("co", all_comparison_user.dtypes)
     entity_id_a = Entity.objects.get(uid=uid_a).pk
     entity_id_b = Entity.objects.get(uid=uid_b).pk
     if all_comparison_user.empty:
-        logger.warn(
+        logger.warning(
             "_run_online_heuristics_for_criterion : no comparison  for criteria '%s'",
             criteria,
         )
@@ -139,7 +140,7 @@ def _run_online_heuristics_for_criterion(
             & (all_comparison_user.entity_b == entity_id_a)
         ].empty
     ):
-        logger.warn(
+        logger.warning(
             "_run_online_heuristics_for_criterion :  \
             no comparison found for '%s' with '%s' and criteria '%s'",
             entity_id_a,
@@ -164,7 +165,8 @@ def _run_online_heuristics_for_criterion(
     ) = get_new_scores_from_online_update(
         all_comparison_user, entity_id_a, entity_id_b, previous_individual_raw_scores
     )
-    update_contributor_score(
+
+    insert_or_update_contributor_score(
         poll=poll,
         entity_id=entity_id_a,
         user_id=user_id,
@@ -172,7 +174,7 @@ def _run_online_heuristics_for_criterion(
         criteria=criteria,
         uncertainty=delta_star_a,
     )
-    update_contributor_score(
+    insert_or_update_contributor_score(
         poll=poll,
         entity_id=entity_id_b,
         user_id=user_id,
@@ -180,13 +182,30 @@ def _run_online_heuristics_for_criterion(
         criteria=criteria,
         uncertainty=delta_star_b,
     )
+
     all_user_scalings = ml_input.get_all_scaling_factors(criteria=criteria)
     all_indiv_score_a = ml_input.get_indiv_score(
         entity_id=entity_id_a, criteria=criteria
     )
+    if all_indiv_score_a.empty:
+        logger.warning(
+            "_run_online_heuristics_for_criterion :  \
+            no individual score found for '%s' and criteria '%s'",
+            entity_id_a,
+            criteria,
+        )
+        return
     all_indiv_score_b = ml_input.get_indiv_score(
         entity_id=entity_id_b, criteria=criteria
     )
+    if all_indiv_score_b.empty:
+        logger.warning(
+            "_run_online_heuristics_for_criterion :  \
+            no individual score found for '%s' and criteria '%s'",
+            entity_id_b,
+            criteria,
+        )
+        return
     all_indiv_score = pd.concat([all_indiv_score_a, all_indiv_score_b])
 
     df = all_indiv_score.merge(

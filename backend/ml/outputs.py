@@ -154,13 +154,13 @@ def save_contributor_scores(
         )
 
 
-def update_contributor_score(
+def insert_or_update_contributor_score(
     poll: Poll,
     entity_id: str,
     user_id: str,
     score: float,
     criteria: str,
-    uncertainty: str,
+    uncertainty: float,
 ):
     query_score_to_update = ContributorRatingCriteriaScore.objects.filter(
         contributor_rating__poll=poll,
@@ -173,6 +173,14 @@ def update_contributor_score(
         contributor_rating_criteria_score.score = score
         contributor_rating_criteria_score.uncertainty = uncertainty
         contributor_rating_criteria_score.save()
+    else:
+        data = [(user_id, entity_id, criteria, score, uncertainty)]
+        scores = pd.DataFrame(
+            data, columns=["user_id", "entity_id", "criteria", "score", "uncertainty"]
+        )
+        save_contributor_scores(
+            poll, scores, single_criteria=criteria, single_user_id=user_id
+        )
 
 
 def save_contributor_scalings(poll: Poll, criteria: str, scalings: pd.DataFrame):

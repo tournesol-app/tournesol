@@ -273,7 +273,6 @@ class MlInputFromDb(MlInput):
         values = scores_queryset.values(
             "score",
             "uncertainty",
-            "criteria",
             user_id=F("contributor_rating__user_id"),
             entity_id=F("contributor_rating__entity_id"),
         )
@@ -285,7 +284,6 @@ class MlInputFromDb(MlInput):
                     "entity_id",
                     "score",
                     "uncertainty",
-                    "criteria",
                 ]
             ]
 
@@ -295,6 +293,5 @@ class MlInputFromDb(MlInput):
                 "entity_id",
                 "score",
                 "uncertainty",
-                "criteria",
             ]
         )
