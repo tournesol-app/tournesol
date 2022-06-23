@@ -1050,9 +1050,10 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         )
         self.assertLess(user_score.score, 0)
 
-        # Global scores and individual scores related to other users are unchanged
+        # new individual scores 4+2=6
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 4)
+        # new Global scores 4+1=5
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 5)
 
 
 class ComparisonApiWithInactivePoll(TestCase):
