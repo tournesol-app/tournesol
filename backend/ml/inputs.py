@@ -4,6 +4,8 @@ from typing import Optional
 import pandas as pd
 from django.db.models import Case, F, QuerySet, When
 from django.db.models.expressions import RawSQL
+from mehestan.global_scores import compute_scaled_scores
+from mehestan.run import get_individual_scores
 
 from core.models import User
 from tournesol.models import ComparisonCriteriaScore, Entity
@@ -95,6 +97,19 @@ class MlInputFromPublicDataset(MlInput):
         df["is_public"] = True
         top_users = df.value_counts("user_id").index[:6]
         df["is_trusted"] = df["is_supertrusted"] = df["user_id"].isin(top_users)
+        return df
+
+    def get_all_scaling_factors(self, user_id=None, criteria=None):
+        _, all_scaling=compute_scaled_scores(
+    ml_input=self, individual_scores=self.get_indiv_score(self,criteria=criteria,user_id=user_id)
+        return all_scaling
+
+    def get_indiv_score(
+        self, criteria=None, user_id=None, entity_id=None
+    ) -> pd.DataFrame:
+        df=get_individual_scores(ml_input=self, criteria=criteria, single_user_id=user_id)
+        if entity_id:
+            df=df[df.entity_id==entity_id]
         return df
 
 
