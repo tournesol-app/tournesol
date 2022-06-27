@@ -30,7 +30,6 @@ const ContextualRecommendations = ({ contextUid, uploader }: Props) => {
             metadata: {
               uploader,
             },
-            unsafe: true,
           });
           const results = response.results ?? [];
           return results.filter((entity) => entity.uid !== contextUid);
