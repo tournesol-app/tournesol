@@ -22,6 +22,11 @@ APPROXIMATION_ERROR = 1e-8
 # as opposed to the explicit vouches, each of which is of unit value.
 IMPLICIT_PRETRUST_VOUCH = 0.1
 
+# The algorithm guarantees that every pretrusted user is allocated a voting right
+# which is at least MIN_PRETRUST_VOTING_RIGHT
+# Moreover all users' voting rights will be at most 1
+MIN_PRETRUST_VOTING_RIGHT = 0.8
+
 
 def normalize_vouch_matrix(vouch_matrix: NDArray, pretrust: NDArray) -> NDArray:
     """
@@ -71,15 +76,20 @@ def compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust: NDArr
     return new_relative_trust
 
 
-def compute_voting_rights(relative_trust, pretrust):
+def compute_voting_rights(relative_posttrust, pretrust):
     """
     Go from ratio of trust to actual voting weight that should be assigned to
     users given the trust the network puts in them.
     """
     min_relative_trust_of_pretrusted = np.amin(
-        [relative_trust[u] for u in range(len(relative_trust)) if pretrust[u] > 0]
+        [relative_posttrust[u] for u in range(len(relative_posttrust)) if pretrust[u] > 0]
     )
-    return np.array(relative_trust) / min_relative_trust_of_pretrusted
+    scale = MIN_PRETRUST_VOTING_RIGHT / min_relative_trust_of_pretrusted
+    scaled_relative_trust = np.array(relative_posttrust) * scale
+    clipped_relative_trust = np.array([
+        min(scaled_relative_trust[u],1) for u in range(len(relative_posttrust))
+    ])
+    return clipped_relative_trust
 
 
 def trust_algo():
