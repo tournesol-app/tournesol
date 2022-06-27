@@ -1,14 +1,12 @@
 import numpy as np
 from numpy.typing import NDArray
+from django.db.models import Q
 from vouch.models import Voucher
 from core.models import user
-from django.db.models import Q
 
-"""
-In this algorithm, we leverage pretrust (e.g., based on email domains) and vouching
-to securely assign voting rights to a wider set of contributors.
-The algorithm inputs pretrust status and a vouching directed graph.
-"""
+# In this algorithm, we leverage pretrust (e.g., based on email domains) and vouching
+# to securely assign voting rights to a wider set of contributors.
+# The algorithm inputs pretrust status and a vouching directed graph.
 
 # If PRETRUST_BIAS == 1, then vouching yields no voting rights to non-pretrusted users.
 # If PRETRUST_BIAS is close to 0, then pre-trust vanishes (which is very unsafe).
@@ -87,7 +85,7 @@ def compute_voting_rights(relative_posttrust, pretrust):
     scale = MIN_PRETRUST_VOTING_RIGHT / min_relative_trust_of_pretrusted
     scaled_relative_trust = np.array(relative_posttrust) * scale
     clipped_relative_trust = np.array([
-        min(scaled_relative_trust[u],1) for u in range(len(relative_posttrust))
+        min(scaled_relative_trust[u], 1) for u in range(len(relative_posttrust))
     ])
     return clipped_relative_trust
 
@@ -112,10 +110,10 @@ def trust_algo():
 
     # Import vouching matrix
     vouch_matrix = np.zeros([nb_users, nb_users], dtype=float)
-    for v in Voucher.objects.iterator():
-        voucher = users.index(v.by)
-        vouchee = users.index(v.to)
-        vouch_matrix[voucher][vouchee] = v.trust_value
+    for vouch in Voucher.objects.iterator():
+        voucher = users.index(vouch.by)
+        vouchee = users.index(vouch.to)
+        vouch_matrix[voucher][vouchee] = vouch.trust_value
 
     # Compute relative posttrust
     normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrust)
@@ -124,7 +122,7 @@ def trust_algo():
 
     # Turn relative_posttrust into voting rights
     voting_rights = compute_voting_rights(relative_posttrust, pretrust)
-    for user_no, u in enumerate(users):
-        u.trust_score = float(voting_rights[user_no])
-        u.save(update_fields=["trust_score"])
+    for user_no, user_model in enumerate(users):
+        user_model.trust_score = float(voting_rights[user_no])
+        user_model.save(update_fields=["trust_score"])
     return True
