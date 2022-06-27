@@ -9,6 +9,7 @@ interface Props {
   tabs: EntitiesTab[];
   onSelectEntity?: (entityUid: string) => void;
   width?: string | number;
+  elevation?: number;
   maxHeight?: string | number;
   withLink?: boolean;
 }
@@ -36,6 +37,7 @@ const EntityTabsBox = ({
   tabs,
   onSelectEntity,
   width = 'min(700px, 100vw)',
+  elevation = 1,
   maxHeight = '40vh',
   withLink = false,
 }: Props) => {
@@ -74,7 +76,7 @@ const EntityTabsBox = ({
 
   return (
     <Paper
-      elevation={10}
+      elevation={elevation}
       sx={{
         display: 'flex',
         flexDirection: 'column',

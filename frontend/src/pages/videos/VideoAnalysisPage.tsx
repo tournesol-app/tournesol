@@ -40,7 +40,7 @@ export const VideoAnalysis = ({
 
   return (
     <Box p={2}>
-      <Grid container spacing={1}>
+      <Grid container spacing={2}>
         <Grid item md={8} sm={12}>
           {/* Top level section, containing links and maybe more in the future. */}
           <Box mb={2} display="flex" justifyContent="flex-end">
