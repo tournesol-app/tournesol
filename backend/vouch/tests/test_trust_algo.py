@@ -9,7 +9,7 @@ from core.models import user
 from core.models.user import EmailDomain
 from core.tests.factories.user import UserFactory
 from vouch.models import Voucher
-from vouch.trust_algo import get_trust_vector, normalize_trust_values, rescale, trust_algo
+from vouch.trust_algo import normalize_vouch_matrix, compute_relative_posttrust, compute_voting_rights, trust_algo, PRETRUST_BIAS
 
 
 class TrustAlgoTestCse(TestCase):
@@ -23,6 +23,7 @@ class TrustAlgoTestCse(TestCase):
     _user_7 = "username_7"
     _user_8 = "username_8"
     _user_9 = "username_9"
+    _nb_users = 10
 
     def setUp(self) -> None:
         self.user_0 = UserFactory(username=self._user_0)
@@ -69,46 +70,49 @@ class TrustAlgoTestCse(TestCase):
         )
 
     def test_normalize_trust_values(self):
-        C = np.random.rand(10, 10)
-        user_trust = np.random.randint(2, size=10)
-        C_normalized = normalize_trust_values(C, user_trust)
-        for k in range(len(C_normalized[0])):
-            self.assertAlmostEqual(np.sum(C_normalized[k]), 1)
+        vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
+        user_trust = np.random.randint(2, size=self._nb_users)
+        normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, user_trust)
+        for user in range(self._nb_users):
+            self.assertAlmostEqual(np.sum(normalized_vouch_matrix[user]), 1)
 
     def test_get_trust_vector(self):
-        # compute trust vector given C and p
-        C = np.random.rand(10, 10)
-        p = np.random.randint(2, size=10)
-        p = p/np.sum(p)
-        C_normalized = normalize_trust_values(C, p)
-        trust_vec = get_trust_vector(C_normalized, p)
+        vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
+        pretrust = np.random.randint(2, size=self._nb_users)
+        relative_pretrust = pretrust/np.sum(pretrust)
+        normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrust)
+        relative_posttrust = compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust)
 
         # ensure it sums to 1
-        self.assertAlmostEqual(np.sum(trust_vec), 1)
-        # ensure sum_trusted >= a
-        self.assertTrue(np.sum([trust_vec[i] for i in range(len(trust_vec)) if p[i] > 0]) >= 0.2)
+        self.assertAlmostEqual(np.sum(relative_posttrust), 1)
+        # ensure sum_trusted >= PRETRUST_BIAS
+        self.assertTrue(
+            np.sum([relative_posttrust[user] for user in range(len(relative_posttrust)) if pretrust[user] > 0]) >= PRETRUST_BIAS
+        )
         # ensure that untrusted users than aren't vouched for don't get trust
-        p[9] = 0
-        C[:, 9] = 0
-        p = p/np.sum(p)
-        C_normalized = normalize_trust_values(C, p)
-        trust_vec = get_trust_vector(C_normalized, p)
-        self.assertAlmostEqual(trust_vec[9], 0)
+        untrusted_user = self._nb_users - 1
+        pretrust[untrusted_user] = 0
+        vouch_matrix[:, untrusted_user] = 0
+        relative_pretrust = pretrust/np.sum(pretrust)
+        normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrust)
+        relative_posttrust = compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust)
+        self.assertAlmostEqual(relative_posttrust[untrusted_user], 0)
 
     def test_rescale(self):
-        trust_vect = np.random.randint(0, 100, 10)
-        trust_vect = trust_vect/np.sum(trust_vect)
-        trust_stat = np.random.randint(0, 2, 10)
-        min_idx = np.argmin([trust_vect[i] if trust_stat[i] ==
-                            1 else 2 for i in range(len(trust_vect))])
-        scale_fac = trust_vect[min_idx]
-        rescaled = rescale(trust_vect, trust_stat)
-        self.assertAlmostEqual(rescaled[min_idx], 1)
-        for i in range(len(trust_stat)):
-            self.assertAlmostEqual(rescaled[i] * scale_fac, trust_vect[i])
-
-            if trust_stat[i] > 0:
-                self.assertTrue(rescaled[i] >= 0.999999999)
+        posttrust = np.random.randint(0, 100, self._nb_users)
+        relative_posttrust = posttrust/np.sum(posttrust)
+        pretrust = np.random.randint(2, size=self._nb_users)
+        min_idx = np.argmin(
+            [relative_posttrust[user] if pretrust[user] == 1 else float('inf') for user in range(self._nb_users)]
+        )
+        scale_fac = relative_posttrust[min_idx]
+        voting_rights = compute_voting_rights(relative_posttrust, pretrust)
+        
+        self.assertAlmostEqual(voting_rights[min_idx], 1)
+        for user in range(self._nb_users):
+            self.assertAlmostEqual(voting_rights[user] * scale_fac, relative_posttrust[user])
+            if pretrust[user] > 0:
+                self.assertTrue(voting_rights[user] >= 0.999999999)
 
     def test_trust_algo(self):
         users = list(user.User.objects.all())
