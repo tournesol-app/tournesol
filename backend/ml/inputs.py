@@ -100,16 +100,22 @@ class MlInputFromPublicDataset(MlInput):
         return df
 
     def get_all_scaling_factors(self, user_id=None, criteria=None):
-        _, all_scaling=compute_scaled_scores(
-    ml_input=self, individual_scores=self.get_indiv_score(self,criteria=criteria,user_id=user_id)
+        _, all_scaling = compute_scaled_scores(
+            ml_input=self,
+            individual_scores=self.get_indiv_score(
+                self, criteria=criteria, user_id=user_id
+            ),
+        )
         return all_scaling
 
     def get_indiv_score(
         self, criteria=None, user_id=None, entity_id=None
     ) -> pd.DataFrame:
-        df=get_individual_scores(ml_input=self, criteria=criteria, single_user_id=user_id)
+        df = get_individual_scores(
+            ml_input=self, criteria=criteria, single_user_id=user_id
+        )
         if entity_id:
-            df=df[df.entity_id==entity_id]
+            df = df[df.entity_id == entity_id]
         return df
 
 

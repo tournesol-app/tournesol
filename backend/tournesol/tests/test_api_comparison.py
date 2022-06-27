@@ -20,10 +20,7 @@ from tournesol.models import (
     RateLater,
 )
 from tournesol.models.poll import ALGORITHM_MEHESTAN
-from tournesol.tests.factories.comparison import (
-    ComparisonCriteriaScoreFactory,
-    ComparisonFactory,
-)
+from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import CriteriaRankFactory, PollFactory
 
