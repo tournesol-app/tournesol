@@ -69,14 +69,14 @@ class TrustAlgoTestCse(TestCase):
             ]
         )
 
-    def test_normalize_trust_values(self):
+    def test_normalize_vouch_matrix(self):
         vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
         user_trust = np.random.randint(2, size=self._nb_users)
         normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, user_trust)
         for user in range(self._nb_users):
             self.assertAlmostEqual(np.sum(normalized_vouch_matrix[user]), 1)
 
-    def test_get_trust_vector(self):
+    def test_compute_relative_posttrust(self):
         vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
         pretrust = np.random.randint(2, size=self._nb_users)
         relative_pretrust = pretrust/np.sum(pretrust)
@@ -98,7 +98,7 @@ class TrustAlgoTestCse(TestCase):
         relative_posttrust = compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust)
         self.assertAlmostEqual(relative_posttrust[untrusted_user], 0)
 
-    def test_rescale(self):
+    def test_compute_voting_rights(self):
         posttrust = np.random.randint(0, 100, self._nb_users)
         relative_posttrust = posttrust/np.sum(posttrust)
         pretrust = np.random.randint(2, size=self._nb_users)
