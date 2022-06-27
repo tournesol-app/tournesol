@@ -171,7 +171,11 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
           anchorEl={inputRef.current}
           onClose={() => setSuggestionsOpen(false)}
         >
-          <SelectorListBox tabs={tabs} onSelectEntity={handleOptionClick} />
+          <SelectorListBox
+            tabs={tabs}
+            onSelectEntity={handleOptionClick}
+            elevation={10}
+          />
         </SelectorPopper>
       </Box>
     </ClickAwayListener>

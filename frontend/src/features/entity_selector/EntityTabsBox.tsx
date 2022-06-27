@@ -7,7 +7,11 @@ import LoaderWrapper from 'src/components/LoaderWrapper';
 
 interface Props {
   tabs: EntitiesTab[];
-  onSelectEntity: (entityUid: string) => void;
+  onSelectEntity?: (entityUid: string) => void;
+  width?: string | number;
+  elevation?: number;
+  maxHeight?: string | number;
+  withLink?: boolean;
 }
 
 export interface EntitiesTab {
@@ -29,7 +33,14 @@ const TabError = ({ message }: { message: string }) => (
   </Typography>
 );
 
-const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
+const EntityTabsBox = ({
+  tabs,
+  onSelectEntity,
+  width = 'min(700px, 100vw)',
+  elevation = 1,
+  maxHeight = '40vh',
+  withLink = false,
+}: Props) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(tabs[0]?.name);
   const [status, setStatus] = useState<TabStatus>(TabStatus.Ok);
@@ -65,7 +76,7 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
 
   return (
     <Paper
-      elevation={10}
+      elevation={elevation}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -74,13 +85,13 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
           listStyleType: 'none',
           p: 0,
           m: 0,
-          maxHeight: '40vh',
+          maxHeight,
           '.MuiModal-root &': {
             maxHeight: 'none',
           },
         },
         li: {
-          cursor: 'pointer',
+          cursor: onSelectEntity && 'pointer',
           '&:hover': {
             bgcolor: 'grey.100',
           },
@@ -88,7 +99,7 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
             marginTop: 1,
           },
         },
-        width: 'min(700px, 100vw)',
+        width: width,
         bgcolor: 'white',
         overflow: 'hidden',
         flexGrow: 1,
@@ -122,8 +133,11 @@ const EntityTabsBox = ({ tabs, onSelectEntity }: Props) => {
         ) : options.length > 0 ? (
           <ul>
             {options.map((entity) => (
-              <li key={entity.uid} onClick={() => onSelectEntity(entity.uid)}>
-                <RowEntityCard entity={entity} />
+              <li
+                key={entity.uid}
+                onClick={onSelectEntity && (() => onSelectEntity(entity.uid))}
+              >
+                <RowEntityCard entity={entity} withLink={withLink} />
               </li>
             ))}
           </ul>

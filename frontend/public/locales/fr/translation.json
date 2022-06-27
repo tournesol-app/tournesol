@@ -225,6 +225,10 @@
     "compareVideosButton": "Comparer des vidéos"
   },
   "options": "Options",
+  "contextualRecommendations": {
+    "channel": "Chaîne",
+    "comparedWith": "Comparé avec"
+  },
   "settings": {
     "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
     "deleteYourAccount": "Supprimer votre compte",
