@@ -20,7 +20,10 @@ from tournesol.models import (
     RateLater,
 )
 from tournesol.models.poll import ALGORITHM_MEHESTAN
-from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
+from tournesol.tests.factories.comparison import (
+    ComparisonCriteriaScoreFactory,
+    ComparisonFactory,
+)
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import CriteriaRankFactory, PollFactory
 
@@ -887,9 +890,7 @@ class ComparisonApiTestCase(TestCase):
 
     @patch("tournesol.utils.api_youtube.get_video_metadata")
     def test_metadata_refresh_on_comparison_creation(self, mock_get_video_metadata):
-        mock_get_video_metadata.return_value = {
-            "views": "42000"
-        }
+        mock_get_video_metadata.return_value = {"views": "42000"}
 
         user = UserFactory(username="non_existing_user")
         self.client.force_authenticate(user=user)
@@ -998,36 +999,31 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    def test_update_individual_scores_after_new_comparison_with_mehestan_run_after_update(self):
+    def test_update_individual_scores_after_new_comparison_with_mehestan_run_after_update(
+        self,
+    ):
         call_command("ml_train")
 
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 4)
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 4
+        )
 
         # user2 has no contributor scores before the comparison is submitted
         self.assertEqual(
-            ContributorRatingCriteriaScore.objects
-            .filter(contributor_rating__user=self.user2)
-            .count(),
-            0
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=self.user2
+            ).count(),
+            0,
         )
 
         self.client.force_authenticate(self.user2)
         resp = self.client.post(
             f"/users/me/comparisons/{self.poll.name}",
             data={
-                "entity_a": {
-                    "uid": self.entities[0].uid
-                },
-                "entity_b": {
-                    "uid": self.entities[2].uid
-                },
-                "criteria_scores": [
-                    {
-                        "criteria": "criteria1",
-                        "score": 3
-                    }
-                ]
+                "entity_a": {"uid": self.entities[0].uid},
+                "entity_b": {"uid": self.entities[2].uid},
+                "criteria_scores": [{"criteria": "criteria1", "score": 3}],
             },
             format="json",
         )
@@ -1037,10 +1033,10 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         call_command("ml_train")
         # Individual scores related to the new comparison have been computed
         self.assertEqual(
-            ContributorRatingCriteriaScore.objects
-            .filter(contributor_rating__user=self.user2)
-            .count(),
-            2
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=self.user2
+            ).count(),
+            2,
         )
         # The score related to the less prefered entity is negative
         user_score = ContributorRatingCriteriaScore.objects.get(
@@ -1053,7 +1049,62 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         # new individual scores 4+2=6
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
         # new Global scores 4+1=5
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 5)
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
+        )
+
+    def test_update_individual_scores_after_new_comparison_with_online_heuristic_update(
+        self,
+    ):
+        call_command("ml_train")
+
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 4
+        )
+
+        # user2 has no contributor scores before the comparison is submitted
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=self.user2
+            ).count(),
+            0,
+        )
+
+        self.client.force_authenticate(self.user2)
+        resp = self.client.post(
+            f"/users/me/comparisons/{self.poll.name}",
+            data={
+                "entity_a": {"uid": self.entities[0].uid},
+                "entity_b": {"uid": self.entities[2].uid},
+                "criteria_scores": [{"criteria": "criteria1", "score": 3}],
+            },
+            format="json",
+        )
+
+        self.assertEqual(resp.status_code, 201, resp.content)
+
+        # Individual scores related to the new comparison have been computed
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=self.user2
+            ).count(),
+            2,
+        )
+        # The score related to the less prefered entity is negative
+        user_score = ContributorRatingCriteriaScore.objects.get(
+            contributor_rating__user=self.user2,
+            contributor_rating__entity=self.entities[0],
+            criteria="criteria1",
+        )
+        self.assertLess(user_score.score, 0)
+
+        # new individual scores 4+2=6
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
+        # new Global scores 4+1=5
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
+        )
 
 
 class ComparisonApiWithInactivePoll(TestCase):
@@ -1081,20 +1132,21 @@ class ComparisonApiWithInactivePoll(TestCase):
 
     def test_user_can_get_existing_comparison(self):
         resp = self.client.get(
-            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
+            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/"
+        )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["entity_a"]["uid"], self.videos[0].uid)
 
     def test_user_cannot_create_comparison(self):
-        resp = self.client.post(f"/users/me/comparisons/{self.poll.name}", data={
-            "entity_a": {
-                "uid": "uid1"
+        resp = self.client.post(
+            f"/users/me/comparisons/{self.poll.name}",
+            data={
+                "entity_a": {"uid": "uid1"},
+                "entity_b": {"uid": "uid2"},
+                "criteria_scores": [],
             },
-            "entity_b": {
-                "uid": "uid2"
-            },
-            "criteria_scores": [],
-        }, format="json")
+            format="json",
+        )
         self.assertContains(
             resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
         )
@@ -1102,10 +1154,8 @@ class ComparisonApiWithInactivePoll(TestCase):
     def test_user_cannot_update_comparison(self):
         resp = self.client.put(
             f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/",
-            data={
-                "criteria_scores": []
-            },
-            format="json"
+            data={"criteria_scores": []},
+            format="json",
         )
         self.assertContains(
             resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
@@ -1113,7 +1163,8 @@ class ComparisonApiWithInactivePoll(TestCase):
 
     def test_user_cannot_delete_comparison(self):
         resp = self.client.delete(
-            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/")
+            f"/users/me/comparisons/{self.poll.name}/{self.videos[0].uid}/{self.videos[1].uid}/"
+        )
         self.assertContains(
             resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
         )
