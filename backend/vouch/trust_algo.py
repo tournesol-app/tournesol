@@ -14,12 +14,12 @@ The algorithm inputs pretrust status and a vouching directed graph.
 # If PRETRUST_BIAS is close to 0, then pre-trust vanishes (which is very unsafe).
 PRETRUST_BIAS = 0.2
 
-# Voting rights are computed iteratively, which yields an approximate solution. 
+# Voting rights are computed iteratively, which yields an approximate solution.
 APPROXIMATION_ERROR = 1e-8
 
 # In our model, users that vouch for few (if any) implicitly vouch for pre-trusted users.
-# IMPLICIT_PRETRUST_VOUCH is the implicit amount of vouch given to pretrusted, 
-# as opposed to the explicit vouches, each of which is of unit value
+# IMPLICIT_PRETRUST_VOUCH is the implicit amount of vouch given to pretrusted,
+# as opposed to the explicit vouches, each of which is of unit value.
 IMPLICIT_PRETRUST_VOUCH = 0.1
 
 
@@ -31,13 +31,13 @@ def normalize_vouch_matrix(vouch_matrix: NDArray, pretrust: NDArray) -> NDArray:
     - Vouchers that explicitly vouch for many barely vouch for pretrusted users
 
     Keyword arguments:
-    vouch_matrix -- A 2 dimensional array of vouch values. 
+    vouch_matrix -- A 2 dimensional array of vouch values.
          The 1st dimension is the voucher, the 2nd is the vouchee.
          vouch_matrix[voucher][vouchee] > 0 if voucher vouched for vouchee.
     pretrust -- pretrust[u] > 0 if u is pretrusted.
     """
     normalized_vouch_matrix = np.zeros(vouch_matrix.shape)
-    
+
     nb_users = len(pretrust)                                 # Number of users
     nb_pretrusted = np.sum(np.array(pretrust) > 0, axis=0)   # Number of pretrusted users
 
@@ -46,13 +46,14 @@ def normalize_vouch_matrix(vouch_matrix: NDArray, pretrust: NDArray) -> NDArray:
         normalization_constant = IMPLICIT_PRETRUST_VOUCH * nb_pretrusted + n_vouches_by_voucher
         for vouchee in range(nb_users):
             if pretrust[vouchee] > 0:
-                normalized_vouch_matrix[voucher][vouchee] += IMPLICIT_PRETRUST_VOUCH / normalization_constant
+                normalized_vouch_matrix[voucher][vouchee] \
+                    += IMPLICIT_PRETRUST_VOUCH / normalization_constant
             if vouch_matrix[voucher][vouchee] > 0:
                 normalized_vouch_matrix[voucher][vouchee] += 1 / normalization_constant
     return normalized_vouch_matrix
 
 
-def compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust:NDArray):
+def compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust: NDArray):
     """
     Return a vector of global trust values per user, given the vouchers in the
     network and the set of pre-trusted users. This part comes directly from
@@ -63,7 +64,8 @@ def compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust:NDArra
     delta = 10
     while delta >= APPROXIMATION_ERROR:
         new_relative_trust = normalized_vouch_matrix.T.dot(relative_trust)
-        new_relative_trust = (1 - PRETRUST_BIAS) * new_relative_trust + PRETRUST_BIAS * relative_pretrust
+        new_relative_trust = (1 - PRETRUST_BIAS) * new_relative_trust \
+            + PRETRUST_BIAS * relative_pretrust
         delta = np.linalg.norm(new_relative_trust - relative_trust)
         relative_trust = new_relative_trust
     return new_relative_trust
@@ -109,7 +111,7 @@ def trust_algo():
     normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrust)
     relative_pretrust = pretrust / np.sum(pretrust)
     relative_posttrust = compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust)
-    
+
     # Turn relative_posttrust into voting rights
     voting_rights = compute_voting_rights(relative_posttrust, pretrust)
     for user_no, u in enumerate(users):
