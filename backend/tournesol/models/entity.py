@@ -209,7 +209,9 @@ class Entity(models.Model):
         contributor_rating_criteria_score_list = [
             list(contributor_rating.criteria_scores.all())
             for contributor_rating in
-            self.contributorvideoratings.filter(poll=poll, is_public=True).with_scaled_scores()
+            self.contributorvideoratings.filter(poll=poll, is_public=True).prefetch_related(
+                "criteria_scores"
+            )
         ]
 
         contributor_rating_criteria_score_flatten_list = [
@@ -218,7 +220,7 @@ class Entity(models.Model):
         # Format data into dictionnary
         scores_dict = defaultdict(list)
         for element in contributor_rating_criteria_score_flatten_list:
-            scores_dict[element.criteria].append(element.scaled_score)
+            scores_dict[element.criteria].append(element.score)
 
         # Create object
         criteria_distributions = []

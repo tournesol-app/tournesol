@@ -1,10 +1,13 @@
+from math import tau as TAU
 from typing import List
 
+import numpy as np
 from django.core.signing import Signer
 from django.db import models
 from django.utils.functional import cached_property
 
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS, VideoEntity
+from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 DEFAULT_POLL_NAME = "videos"
 
@@ -35,14 +38,10 @@ class Poll(models.Model):
         " and comparisons can't be created, updated or deleted by users.",
     )
 
-    scale = models.FloatField(
-        default=1.0,
+    sigmoid_scale = models.FloatField(
+        null=True,
+        default=None,
         help_text="Scale factor to apply on scores (applied only for Mehestan)"
-    )
-
-    translation = models.FloatField(
-        default=0.0,
-        help_text="Offset value to apply on scores (applied only for Mehestan)"
     )
 
     @classmethod
@@ -93,3 +92,11 @@ class Poll(models.Model):
         """
         signer = Signer(salt=f"proof_of_vote:{self.name}")
         return signer.sign(f"{user_id:05d}")
+
+    @property
+    def scale_function(self):
+        if self.algorithm == ALGORITHM_MEHESTAN and self.sigmoid_scale is not None:
+            def scale(x):
+                return 4 * MEHESTAN_MAX_SCALED_SCORE / TAU * np.arctan(self.sigmoid_scale * x)
+            return scale
+        return lambda x: x

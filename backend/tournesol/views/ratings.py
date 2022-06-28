@@ -24,7 +24,7 @@ def get_annotated_ratings():
         .annotate(count=Func("id", function="Count"))
         .values("count")
     )
-    return ContributorRating.objects.with_scaled_scores().annotate(
+    return ContributorRating.objects.annotate(
         n_comparisons=Subquery(comparison_counts)
     ).order_by("-entity__metadata__publication_date", "-pk")
 

@@ -15,6 +15,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from tournesol.models import Entity, Poll
 from tournesol.models.entity_score import ScoreMode
+from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.entity import EntityCriteriaDistributionSerializer
 from tournesol.serializers.poll import (
     PollSerializer,
@@ -142,10 +143,12 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         Return a `Case()` expression associating for each criterion the weight
         provided in the URL parameters.
         """
+        any_weight_in_request = False
         criteria_cases = []
         for crit in poll.criterias_list:
             raw_weight = request.query_params.get(f"weights[{crit}]")
             if raw_weight is not None:
+                any_weight_in_request = True
                 try:
                     weight = int(raw_weight)
                 except ValueError as value_error:
@@ -155,6 +158,12 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             else:
                 weight = 10
             criteria_cases.append(When(**{when: crit}, then=weight))
+
+        if not any_weight_in_request and poll.algorithm == ALGORITHM_MEHESTAN:
+            criteria_cases = [
+                When(**{when: poll.main_criteria}, then=1.0)
+            ]
+
         return Case(*criteria_cases, default=0)
 
 
@@ -207,19 +216,20 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         criteria_weight = self._build_criteria_weight_condition(
             request, poll, when="all_criteria_scores__criteria"
         )
-        queryset = (
-            queryset.filter(
-                all_criteria_scores__poll=poll,
-                all_criteria_scores__score_mode=score_mode,
-            )
-            .annotate(
-                total_score=Sum(
-                    F("all_criteria_scores__score") * criteria_weight,
-                )
-            )
-            .filter(total_score__isnull=False)
+        queryset = queryset.filter(
+            all_criteria_scores__poll=poll,
+            all_criteria_scores__score_mode=score_mode,
         )
-        return queryset.with_prefetched_scores(poll_name=poll.name, mode=score_mode)
+
+        queryset = queryset.annotate(
+            total_score=Sum(
+                F("all_criteria_scores__score") * criteria_weight,
+            )
+        )
+
+        return queryset.filter(total_score__isnull=False).with_prefetched_scores(
+            poll_name=poll.name, mode=score_mode
+        )
 
     def get_queryset(self):
         poll = self.poll_from_url

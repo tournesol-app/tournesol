@@ -1,7 +1,7 @@
 import logging
 import os
 from functools import partial
-from math import tau
+from math import tau as TAU
 from multiprocessing import Pool
 from typing import Optional
 
@@ -56,6 +56,13 @@ def update_user_scores(poll: Poll, user: User):
     for criteria in poll.criterias_list:
         scores = get_individual_scores(ml_input, criteria, single_user_id=user.pk)
         scores["criteria"] = criteria
+        scores.rename(
+            columns={
+                "score": "raw_score",
+                "uncertainty": "raw_uncertainty",
+            },
+            inplace=True
+        )
         save_contributor_scores(
             poll, scores, single_criteria=criteria, single_user_id=user.pk
         )
@@ -87,7 +94,6 @@ def run_mehestan_for_criterion(
 
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
-    save_contributor_scores(poll, indiv_scores, single_criteria=criteria)
 
     if update_poll_scaling and len(indiv_scores) > 0:
         global_scores = get_global_scores(
@@ -102,20 +108,23 @@ def run_mehestan_for_criterion(
         if update_poll_scaling and mode == ScoreMode.DEFAULT:
             quantile_value = np.quantile(global_scores["score"], POLL_SCALING_QUANTILE)
             scale = (
-                np.tan(POLL_SCALING_SCORE_AT_QUANTILE * tau / (4 * MAX_SCORE))
+                np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE))
                 / quantile_value
             )
-            poll.scale = scale
-            poll.save(update_fields=["scale"])
+            poll.sigmoid_scale = scale
+            poll.save(update_fields=["sigmoid_scale"])
 
         # Apply poll scaling
-        global_scores["uncertainty"] *= (
-            4 * MAX_SCORE / tau * poll.scale
-            / (1 + (poll.scale * global_scores["score"]) ** 2)
+        scale_function = poll.scale_function
+        global_scores["uncertainty"] = 0.5 * (
+            scale_function(global_scores["score"] + global_scores["uncertainty"])
+            - scale_function(global_scores["score"] - global_scores["uncertainty"])
         )
-        global_scores["score"] = (
-            4 * MAX_SCORE / tau * np.arctan(global_scores["score"] * poll.scale)
+        global_scores["deviation"] = 0.5 * (
+            scale_function(global_scores["score"] + global_scores["deviation"])
+            - scale_function(global_scores["score"] - global_scores["deviation"])
         )
+        global_scores["score"] = scale_function(global_scores["score"])
 
         logger.info(
             "Mehestan for poll '%s': scores computed for crit '%s' and mode '%s'",
@@ -126,6 +135,17 @@ def run_mehestan_for_criterion(
         save_entity_scores(
             poll, global_scores, single_criteria=criteria, score_mode=mode
         )
+
+    scale_function = poll.scale_function
+    scaled_scores["raw_score"] = scaled_scores["score"]
+    scaled_scores["raw_uncertainty"] = scaled_scores["uncertainty"]
+    scaled_scores["uncertainty"] = 0.5 * (
+        scale_function(scaled_scores["raw_score"] + scaled_scores["raw_uncertainty"])
+        - scale_function(scaled_scores["raw_score"] - scaled_scores["raw_uncertainty"])
+    )
+    scaled_scores["score"] = scale_function(scaled_scores["raw_score"])
+    scaled_scores["criteria"] = criteria
+    save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
 
     logger.info(
         "Mehestan for poll '%s': done with crit '%s'",
