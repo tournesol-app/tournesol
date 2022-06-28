@@ -47,9 +47,7 @@ export const VideoAnalysis = ({
       gap="16px"
       justifyContent="space-between"
     >
-      <Box
-        width={{ sm: '100%', xs: '100%', md: '65%', lg: '64.9%', xl: '64.8%' }}
-      >
+      <Box flex={2} minWidth={{ xs: '100%', md: null }}>
         {/* Top level section, containing links and maybe more in the future. */}
         <Box mb={2} display="flex" justifyContent="flex-end">
           <Button
@@ -146,9 +144,7 @@ export const VideoAnalysis = ({
           )}
         </Grid>
       </Box>
-      <Box
-        width={{ sm: '100%', xs: '100%', md: '33%', lg: '33.5%', xl: '34%' }}
-      >
+      <Box flex={1}>
         <ContextualRecommendations
           contextUid={uid}
           uploader={video.uploader || undefined}
