@@ -22,14 +22,16 @@ def save_entity_scores(
     entity_scores: Union[pd.DataFrame, Iterable[tuple]],
     single_criteria=None,
     score_mode=ScoreMode.DEFAULT,
+    delete_all: Optional[bool] = True,
 ):
     if isinstance(entity_scores, pd.DataFrame):
         scores_iterator = entity_scores[
             ["entity_id", "criteria", "score", "uncertainty", "deviation"]
         ].itertuples(index=False)
+        set_entity_id = set(entity_scores.entity_id)
     else:
         scores_iterator = entity_scores
-
+        set_entity_id = {entity_id for entity_id, _, _, _ in scores_iterator}
     # Support scores iterator without deviation
     scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
 
@@ -39,6 +41,9 @@ def save_entity_scores(
         )
         if single_criteria:
             scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
+        if set_entity_id and not delete_all:
+            scores_to_delete = scores_to_delete.filter(entity_id__in=set_entity_id)
+
         scores_to_delete.delete()
 
         EntityCriteriaScore.objects.bulk_create(
@@ -78,6 +83,7 @@ def save_contributor_scores(
     trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
     single_user_id: Optional[int] = None,
+    delete_all: Optional[bool] = True,
 ):
     if isinstance(contributor_scores, pd.DataFrame):
         scores_list = list(
@@ -142,7 +148,8 @@ def save_contributor_scores(
         )
 
     with transaction.atomic():
-        scores_to_delete.delete()
+        if delete_all:
+            scores_to_delete.delete()
         ContributorRatingCriteriaScore.objects.bulk_create(
             ContributorRatingCriteriaScore(
                 contributor_rating_id=rating_ids[(contributor_id, video_id)],
@@ -179,7 +186,11 @@ def insert_or_update_contributor_score(
             data, columns=["user_id", "entity_id", "criteria", "score", "uncertainty"]
         )
         save_contributor_scores(
-            poll, scores, single_criteria=criteria, single_user_id=user_id
+            poll,
+            scores,
+            single_criteria=criteria,
+            single_user_id=user_id,
+            delete_all=False,
         )
 
 

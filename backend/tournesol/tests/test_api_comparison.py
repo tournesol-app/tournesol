@@ -996,7 +996,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    def test_update_individual_scores_after_new_comparison_with_mehestan_run_after_update(
+    def test_update_individual_and_global_scores_after_new_comparison_with_mehestan_run_after_update(
         self,
     ):
         call_command("ml_train")
