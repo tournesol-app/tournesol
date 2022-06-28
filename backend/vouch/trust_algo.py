@@ -26,7 +26,7 @@ IMPLICIT_PRETRUST_VOUCH = 0.1
 MIN_PRETRUST_VOTING_RIGHT = 0.8
 
 
-def normalize_vouch_matrix(vouch_matrix: NDArray, pretrust: NDArray) -> NDArray:
+def normalize_vouch_matrix(vouch_matrix: NDArray, pretrusts: NDArray) -> NDArray:
     """
     Vouch matrix normalization guarantees three properties:
     - The sum of normalized vouches given by a voucher equals 1.
@@ -37,18 +37,18 @@ def normalize_vouch_matrix(vouch_matrix: NDArray, pretrust: NDArray) -> NDArray:
     vouch_matrix -- A 2 dimensional array of vouch values.
          The 1st dimension is the voucher, the 2nd is the vouchee.
          vouch_matrix[voucher][vouchee] > 0 if voucher vouched for vouchee.
-    pretrust -- pretrust[u] > 0 if u is pretrusted.
+    pretrusts -- pretrusts[u] > 0 if u is pretrusted.
     """
     normalized_vouch_matrix = np.zeros(vouch_matrix.shape)
 
-    nb_users = len(pretrust)                                 # Number of users
-    nb_pretrusted = np.sum(np.array(pretrust) > 0, axis=0)   # Number of pretrusted users
+    nb_users = len(pretrusts)                                 # Number of users
+    nb_pretrusted = np.sum(np.array(pretrusts) > 0, axis=0)   # Number of pretrusted users
 
     for voucher in range(nb_users):
         n_vouches_by_voucher = np.sum(np.array(vouch_matrix[voucher]) > 0, axis=0)
         normalization_constant = IMPLICIT_PRETRUST_VOUCH * nb_pretrusted + n_vouches_by_voucher
         for vouchee in range(nb_users):
-            if pretrust[vouchee] > 0:
+            if pretrusts[vouchee] > 0:
                 normalized_vouch_matrix[voucher][vouchee] \
                     += IMPLICIT_PRETRUST_VOUCH / normalization_constant
             if vouch_matrix[voucher][vouchee] > 0:
@@ -56,38 +56,38 @@ def normalize_vouch_matrix(vouch_matrix: NDArray, pretrust: NDArray) -> NDArray:
     return normalized_vouch_matrix
 
 
-def compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust: NDArray):
+def compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts: NDArray):
     """
     Return a vector of global trust values per user, given the vouchers in the
     network and the set of pre-trusted users. This part comes directly from
     EigenTrust.
     """
-    relative_trust = relative_pretrust
-    new_relative_trust = relative_trust
+    relative_trusts = relative_pretrusts
+    new_relative_trusts = relative_trusts
     delta = 10
     while delta >= APPROXIMATION_ERROR:
-        new_relative_trust = normalized_vouch_matrix.T.dot(relative_trust)
-        new_relative_trust = (1 - PRETRUST_BIAS) * new_relative_trust \
-            + PRETRUST_BIAS * relative_pretrust
-        delta = np.linalg.norm(new_relative_trust - relative_trust)
-        relative_trust = new_relative_trust
-    return new_relative_trust
+        new_relative_trusts = normalized_vouch_matrix.T.dot(relative_trusts)
+        new_relative_trusts = (1 - PRETRUST_BIAS) * new_relative_trusts \
+            + PRETRUST_BIAS * new_relative_trusts
+        delta = np.linalg.norm(new_relative_trusts - relative_trusts)
+        relative_trusts = new_relative_trusts
+    return new_relative_trusts
 
 
-def compute_voting_rights(relative_posttrust, pretrust):
+def compute_voting_rights(relative_posttrusts, pretrusts):
     """
     Go from ratio of trust to actual voting weight that should be assigned to
     users given the trust the network puts in them.
     """
-    min_relative_trust_of_pretrusted = np.amin(
-        [relative_posttrust[u] for u in range(len(relative_posttrust)) if pretrust[u] > 0]
+    min_relative_trusts_of_pretrusteds = np.amin(
+        [relative_posttrusts[u] for u in range(len(relative_posttrusts)) if pretrusts[u] > 0]
     )
-    scale = MIN_PRETRUST_VOTING_RIGHT / min_relative_trust_of_pretrusted
-    scaled_relative_trust = np.array(relative_posttrust) * scale
-    clipped_relative_trust = np.array([
-        min(scaled_relative_trust[u], 1) for u in range(len(relative_posttrust))
+    scale = MIN_PRETRUST_VOTING_RIGHT / min_relative_trusts_of_pretrusteds
+    scaled_relative_trusts = np.array(relative_posttrusts) * scale
+    clipped_relative_trusts = np.array([
+        min(scaled_relative_trusts[u], 1) for u in range(len(relative_posttrusts))
     ])
-    return clipped_relative_trust
+    return clipped_relative_trusts
 
 
 def trust_algo():
@@ -105,7 +105,7 @@ def trust_algo():
             _is_trusted=Q(pk__in=user.User.trusted_users())
         )
     )
-    pretrust = [int(u._is_trusted) for u in users]
+    pretrusts = [int(u._is_trusted) for u in users]
     nb_users = len(users)
 
     # Import vouching matrix
@@ -115,13 +115,13 @@ def trust_algo():
         vouchee = users.index(vouch.to)
         vouch_matrix[voucher][vouchee] = vouch.trust_value
 
-    # Compute relative posttrust
-    normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrust)
-    relative_pretrust = pretrust / np.sum(pretrust)
-    relative_posttrust = compute_relative_posttrust(normalized_vouch_matrix, relative_pretrust)
+    # Compute relative posttrusts
+    normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
+    relative_pretrusts = pretrusts / np.sum(pretrusts)
+    relative_posttrusts = compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts)
 
     # Turn relative_posttrust into voting rights
-    voting_rights = compute_voting_rights(relative_posttrust, pretrust)
+    voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
     for user_no, user_model in enumerate(users):
         user_model.trust_score = float(voting_rights[user_no])
         user_model.save(update_fields=["trust_score"])
