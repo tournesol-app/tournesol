@@ -198,7 +198,7 @@ def run_mehestan(ml_input: MlInput, poll: Poll):
 
     # compute each criterion in parallel
     remaining_criteria = [c for c in criteria if c != poll.main_criteria]
-    cpu_count = os.cpu_count() or 2
+    cpu_count = os.cpu_count() or 1
     with Pool(processes=max(1, cpu_count - 1)) as pool:
         for _ in pool.imap_unordered(
             partial(run_mehestan_for_criterion, ml_input=ml_input, poll_pk=poll_pk),

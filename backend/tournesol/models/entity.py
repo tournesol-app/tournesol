@@ -23,6 +23,7 @@ from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.models.rate_later import RateLater
 from tournesol.serializers.metadata import VideoMetadata
+from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 LANGUAGES = settings.LANGUAGES
 
@@ -199,8 +200,8 @@ class Entity(models.Model):
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of criteria score per criteria for the entity"""
         if poll.algorithm == ALGORITHM_MEHESTAN:
-            min_score_base = -100.0
-            max_score_base = 100.0
+            min_score_base = -MEHESTAN_MAX_SCALED_SCORE
+            max_score_base = MEHESTAN_MAX_SCALED_SCORE
         else:
             min_score_base = -1.0
             max_score_base = 1.0

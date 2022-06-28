@@ -54,20 +54,6 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
             entity__uid=self.kwargs["uid"],
         )
 
-    def update(self, request, *args, **kwargs):
-        # DRF currently individates the prefetch cache after the update is applied.
-        # As a result the queryset annotations on criteria scores are lost when serializing
-        # the response. This custom implementation is a workaround to remove the invalidation
-        # of prefetched criteria scores. To remove, after this limitation is fixed in
-        # https://github.com/encode/django-rest-framework/pull/8043
-
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
 
 @extend_schema_view(
     get=extend_schema(
