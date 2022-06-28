@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
 import { Box, Button, Collapse, Grid, Paper, Typography } from '@mui/material';
-import CompareIcon from '@mui/icons-material/Compare';
+import { Compare } from '@mui/icons-material';
 
+import CopyToClipboardButton from 'src/components/buttons/CopyToClipboardButton';
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
@@ -49,11 +50,12 @@ export const VideoAnalysis = ({
     >
       <Box flex={2} minWidth={{ xs: '100%', md: null }}>
         {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end">
+        <Box mb={2} display="flex" justifyContent="flex-end" gap="8px">
+          <CopyToClipboardButton />
           <Button
             color="secondary"
             variant="contained"
-            endIcon={<CompareIcon />}
+            endIcon={<Compare />}
             component={RouterLink}
             to={`${baseUrl}/comparison?uidA=${uid}`}
           >
