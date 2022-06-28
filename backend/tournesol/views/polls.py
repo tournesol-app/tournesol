@@ -161,7 +161,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
         if not any_weight_in_request and poll.algorithm == ALGORITHM_MEHESTAN:
             criteria_cases = [
-                When(**{when: poll.main_criteria}, then=1.0)
+                When(**{when: poll.main_criteria}, then=1)
             ]
 
         return Case(*criteria_cases, default=0)

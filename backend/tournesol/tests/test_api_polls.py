@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from tournesol.models import Poll
+from tournesol.models.poll import ALGORITHM_MEHESTAN, DEFAULT_POLL_NAME
 from tournesol.tests.factories.entity import (
     EntityFactory,
     UserFactory,
@@ -364,6 +365,17 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(results[1]["total_score"], 4.0)
         self.assertEqual(results[2]["uid"], self.video_2.uid)
         self.assertEqual(results[2]["total_score"], -2.0)
+
+    def test_can_list_recommendations_with_mehestan_default_weights(self):
+        Poll.objects.filter(name=DEFAULT_POLL_NAME).update(
+            algorithm=ALGORITHM_MEHESTAN
+        )
+        response = self.client.get(
+            "/polls/videos/recommendations/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.data["results"]
+        self.assertEqual(len(results), 3)
 
 
 class PollsEntityTestCase(TestCase):
