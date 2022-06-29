@@ -1,8 +1,9 @@
 streamlit==1.10.0
-numpy==1.22.0 
+numpy==1.22.4
 seaborn==0.11.1
 matplotlib==3.3.4
 pillow==9.0.1
 plotly==5.5.0
 scikit-learn==0.24.2
 requests==2.25.1
+
