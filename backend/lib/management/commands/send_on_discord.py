@@ -1,11 +1,11 @@
 """
 Post a message in a channel of the Tournesol's Discord server
 """
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
 from lib.discord.api import publish_on_discord
-from settings import settings
 
 
 class Command(BaseCommand):
@@ -32,13 +32,12 @@ class Command(BaseCommand):
 
         discord_channel = options["channel"]
 
-        # TODO: replace "settings.APP_CORE" when I now the correct place cor the management cmd
-        if discord_channel not in settings.APP_CORE:
+        if discord_channel not in settings.DISCORD_WEBHOOKS:
             raise CommandError(
                 f"The Discord channel '{discord_channel}' does not exist"
             )
 
-        webhook_url = settings.APP_CORE[discord_channel]
+        webhook_url = settings.DISCORD_WEBHOOKS[discord_channel]
 
         # display the configuration if more verbosity is asked
         if options.get("verbosity", 1) > 1:
