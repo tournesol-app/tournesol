@@ -32,12 +32,12 @@ class Command(BaseCommand):
 
         discord_channel = options["channel"]
 
-        if discord_channel not in settings.DISCORD_WEBHOOKS:
+        if discord_channel not in settings.DISCORD_CHANNEL_WEBHOOKS:
             raise CommandError(
                 f"The Discord channel '{discord_channel}' does not exist"
             )
 
-        webhook_url = settings.DISCORD_WEBHOOKS[discord_channel]
+        webhook_url = settings.DISCORD_CHANNEL_WEBHOOKS[discord_channel]
 
         # display the configuration if more verbosity is asked
         if options.get("verbosity", 1) > 1:
