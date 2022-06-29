@@ -243,7 +243,7 @@ export const polls: Array<SelectablePoll> = [
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,
     tutorialDialogs: getVideosTutorialDialogs,
-    tutorialRedirectTo: '/comparison',
+    tutorialRedirectTo: '/comparisons',
   },
 ];
 
