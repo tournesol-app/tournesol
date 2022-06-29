@@ -9,10 +9,17 @@ from core.models import user
 from core.models.user import EmailDomain
 from core.tests.factories.user import UserFactory
 from vouch.models import Voucher
-from vouch.trust_algo import normalize_vouch_matrix, compute_relative_posttrusts, \
-    compute_voting_rights, trust_algo, PRETRUST_BIAS, MIN_PRETRUST_VOTING_RIGHT
+from vouch.trust_algo import (
+    MIN_PRETRUST_VOTING_RIGHT,
+    PRETRUST_BIAS,
+    compute_relative_posttrusts,
+    compute_voting_rights,
+    normalize_vouch_matrix,
+    trust_algo,
+)
 
 EPSILON = 0.0000001
+
 
 class TrustAlgoTestCse(TestCase):
     _user_0 = "username_0"
@@ -71,30 +78,43 @@ class TrustAlgoTestCse(TestCase):
             ]
         )
 
-    # The normalized vouch matrix must be row-stochastic, 
-    # i.e. each voucher's total vouch must equal 1 
     def test_normalize_vouch_matrix(self):
+        """
+        The normalized vouch matrix must be row-stochastic, i.e. each
+        voucher's total vouch must equal 1.
+        """
         vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
         user_trusts = np.random.randint(2, size=self._nb_users)
         normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, user_trusts)
         for u in range(self._nb_users):
             self.assertAlmostEqual(np.sum(normalized_vouch_matrix[u]), 1)
 
-    # The sum of of relative post trusts must equal 1
-    # Posttrusts must also assign at least PRETRUST_BIAS to pretrusted users
-    # Finally, it should assign a zero trust to non-pretrusted non-vouched users
     def test_compute_relative_posttrusts(self):
+        """
+        The sum of relative post trusts must equal 1. Posttrusts must also
+        assign at least `PRETRUST_BIAS` to pretrusted users. Finally, it
+        should assign a zero trust to non-pretrusted non-vouched users.
+        """
         vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
         pretrusts = np.random.randint(2, size=self._nb_users)
-        relative_pretrusts = pretrusts/np.sum(pretrusts)
+        relative_pretrusts = pretrusts / np.sum(pretrusts)
         normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
-        relative_posttrusts = compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts)
+        relative_posttrusts = compute_relative_posttrusts(
+            normalized_vouch_matrix, relative_pretrusts
+        )
 
         # ensure it sums to 1
         self.assertAlmostEqual(np.sum(relative_posttrusts), 1)
         # ensure sum_trusted >= PRETRUST_BIAS
         self.assertTrue(
-            np.sum([relative_posttrusts[u] for u in range(len(relative_posttrusts)) if pretrusts[u] > 0]) >= PRETRUST_BIAS
+            np.sum(
+                [
+                    relative_posttrusts[u]
+                    for u in range(len(relative_posttrusts))
+                    if pretrusts[u] > 0
+                ]
+            )
+            >= PRETRUST_BIAS
         )
         # ensure that all pretrusted users have a positive relative posttrust
         for relative_posttrust, pretrust in zip(relative_posttrusts, pretrusts):
@@ -105,33 +125,45 @@ class TrustAlgoTestCse(TestCase):
         untrusted_user = self._nb_users - 1
         pretrusts[untrusted_user] = 0
         vouch_matrix[:, untrusted_user] = 0
-        relative_pretrusts = pretrusts/np.sum(pretrusts)
+        relative_pretrusts = pretrusts / np.sum(pretrusts)
         normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
-        relative_posttrusts = compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts)
+        relative_posttrusts = compute_relative_posttrusts(
+            normalized_vouch_matrix, relative_pretrusts
+        )
         self.assertAlmostEqual(relative_posttrusts[untrusted_user], 0)
 
-    # The voting rights of pretrusted users must be at least MIN_PRETRUST_VOTING_RIGHT
-    # Moreover, unless the voting right is clipped to 1, it must be proportional to posttrust
     def test_compute_voting_rights(self):
+        """
+        The voting rights of pretrusted users must be at least
+        `MIN_PRETRUST_VOTING_RIGHT`. Moreover, unless the voting right is
+        clipped to 1, it must be proportional to posttrust.
+        """
         pretrusts = np.random.randint(2, size=self._nb_users)
         posttrusts = np.random.randint(20, 100, self._nb_users)
         for u in range(len(pretrusts)):
             if pretrusts[u] == 0 and np.random.rand() < 0.5:
                 posttrusts[u] = 0
-        relative_posttrusts = posttrusts/np.sum(posttrusts)
+        relative_posttrusts = posttrusts / np.sum(posttrusts)
         min_idx = np.argmin(
-            [relative_posttrusts[u] if pretrusts[u] == 1 else float('inf') for u in range(self._nb_users)]
+            [
+                relative_posttrusts[u] if pretrusts[u] == 1 else float("inf")
+                for u in range(self._nb_users)
+            ]
         )
         scale_fac = relative_posttrusts[min_idx] / MIN_PRETRUST_VOTING_RIGHT
         voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
-        
+
         self.assertAlmostEqual(voting_rights[min_idx], MIN_PRETRUST_VOTING_RIGHT)
         for u in range(self._nb_users):
             self.assertTrue(voting_rights[u] >= -EPSILON)
             self.assertTrue(voting_rights[u] <= 1 + EPSILON)
-            self.assertTrue(voting_rights[u] * scale_fac <= relative_posttrusts[u] + EPSILON)
+            self.assertTrue(
+                voting_rights[u] * scale_fac <= relative_posttrusts[u] + EPSILON
+            )
             if voting_rights[u] < 1 - EPSILON:
-                self.assertAlmostEqual(voting_rights[u], relative_posttrusts[u] / scale_fac)
+                self.assertAlmostEqual(
+                    voting_rights[u], relative_posttrusts[u] / scale_fac
+                )
             if pretrusts[u] > 0:
                 self.assertTrue(voting_rights[u] >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
 

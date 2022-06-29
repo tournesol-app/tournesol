@@ -1,8 +1,9 @@
 import numpy as np
-from numpy.typing import NDArray
 from django.db.models import Q
-from vouch.models import Voucher
+from numpy.typing import NDArray
+
 from core.models import user
+from vouch.models import Voucher
 
 # In this algorithm, we leverage pretrust (e.g., based on email domains) and vouching
 # to securely assign voting rights to a wider set of contributors.
@@ -41,16 +42,21 @@ def normalize_vouch_matrix(vouch_matrix: NDArray, pretrusts: NDArray) -> NDArray
     """
     normalized_vouch_matrix = np.zeros(vouch_matrix.shape)
 
-    nb_users = len(pretrusts)                                 # Number of users
-    nb_pretrusted = np.sum(np.array(pretrusts) > 0, axis=0)   # Number of pretrusted users
+    nb_users = len(pretrusts)  # Number of users
+    nb_pretrusted = np.sum(
+        np.array(pretrusts) > 0, axis=0
+    )  # Number of pretrusted users
 
     for voucher in range(nb_users):
         n_vouches_by_voucher = np.sum(np.array(vouch_matrix[voucher]) > 0, axis=0)
-        normalization_constant = IMPLICIT_PRETRUST_VOUCH * nb_pretrusted + n_vouches_by_voucher
+        normalization_constant = (
+            IMPLICIT_PRETRUST_VOUCH * nb_pretrusted + n_vouches_by_voucher
+        )
         for vouchee in range(nb_users):
             if pretrusts[vouchee] > 0:
-                normalized_vouch_matrix[voucher][vouchee] \
-                    += IMPLICIT_PRETRUST_VOUCH / normalization_constant
+                normalized_vouch_matrix[voucher][vouchee] += (
+                    IMPLICIT_PRETRUST_VOUCH / normalization_constant
+                )
             if vouch_matrix[voucher][vouchee] > 0:
                 normalized_vouch_matrix[voucher][vouchee] += 1 / normalization_constant
     return normalized_vouch_matrix
@@ -67,8 +73,9 @@ def compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts: NDA
     delta = 10
     while delta >= APPROXIMATION_ERROR:
         new_relative_trusts = normalized_vouch_matrix.T.dot(relative_trusts)
-        new_relative_trusts = (1 - PRETRUST_BIAS) * new_relative_trusts \
-            + PRETRUST_BIAS * new_relative_trusts
+        new_relative_trusts = (
+            1 - PRETRUST_BIAS
+        ) * new_relative_trusts + PRETRUST_BIAS * new_relative_trusts
         delta = np.linalg.norm(new_relative_trusts - relative_trusts)
         relative_trusts = new_relative_trusts
     return new_relative_trusts
@@ -118,7 +125,9 @@ def trust_algo():
     # Compute relative posttrusts
     normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
     relative_pretrusts = pretrusts / np.sum(pretrusts)
-    relative_posttrusts = compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts)
+    relative_posttrusts = compute_relative_posttrusts(
+        normalized_vouch_matrix, relative_pretrusts
+    )
 
     # Turn relative_posttrust into voting rights
     voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
