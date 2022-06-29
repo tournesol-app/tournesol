@@ -79,32 +79,6 @@ function DurationFilter({
         color="secondary"
         variant="outlined"
         type="number"
-        name="duration_lte"
-        label={t('filter.duration.max.label')}
-        value={maxDuration}
-        onChange={handleChangeMax}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={t('filter.duration.max.clearAriaLabel')}
-                edge="end"
-                onClick={clearMaxDuration}
-              >
-                <Clear />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        data-testid="filter-duration-lte"
-      />
-      <TextField
-        margin="dense"
-        fullWidth
-        size="small"
-        color="secondary"
-        variant="outlined"
-        type="number"
         name="duration_gte"
         label={t('filter.duration.min.label')}
         value={minDuration}
@@ -123,6 +97,32 @@ function DurationFilter({
           ),
         }}
         data-testid="filter-duration-gte"
+      />
+      <TextField
+        margin="dense"
+        fullWidth
+        size="small"
+        color="secondary"
+        variant="outlined"
+        type="number"
+        name="duration_lte"
+        label={t('filter.duration.max.label')}
+        value={maxDuration}
+        onChange={handleChangeMax}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={t('filter.duration.max.clearAriaLabel')}
+                edge="end"
+                onClick={clearMaxDuration}
+              >
+                <Clear />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        data-testid="filter-duration-lte"
       />
     </TitledSection>
   );
