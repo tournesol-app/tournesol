@@ -83,6 +83,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                 poll=self.poll_from_url, user=self.request.user, n_comparisons__gt=0
             )
             .select_related("entity")
+            .prefetch_related("criteria_scores")
         )
         is_public = self.request.query_params.get("is_public")
         if is_public:
