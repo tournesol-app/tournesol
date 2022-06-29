@@ -4,6 +4,7 @@ from typing import Optional
 
 import numpy as np
 from django.db.models import Avg, F, QuerySet
+from scipy.sparse.csgraph import shortest_path
 
 from tournesol.models import (
     ContributorRatingCriteriaScore,
@@ -104,7 +105,6 @@ class Graph(CompleteGraph):
     _nodes: list[SuggestedUserVideo]  # todo clean that, use default dict functions
     uid_to_index: dict[str, int]
     graph: dict[SuggestedVideo, list[SuggestedVideo]]
-    sigma: float
     dirty: bool
     _local_user: SuggestedUser
     local_user_scaling: ContributorScaling
@@ -112,7 +112,6 @@ class Graph(CompleteGraph):
     adjacency_matrix: np.array
     normalized_adjacency_matrix: np.array
 
-    distance_matrix: dict[SuggestedVideo, dict[SuggestedVideo, int]]
     similarity_matrix: np.array
 
     def __init__(self, local_user: SuggestedUser, local_poll: Poll, local_criteria):
@@ -163,49 +162,6 @@ class Graph(CompleteGraph):
         inv_deg_sqrt = np.sqrt(np.linalg.inv(degree_matrix))
         self.normalized_adjacency_matrix = inv_deg_sqrt @ self.adjacency_matrix @ inv_deg_sqrt
 
-    def build_distance_matrix(self):
-        # Compute sigma here
-        self.distance_matrix = {key: {key2: 0 for key2 in self.nodes} for key in self.nodes}
-        if len(self.nodes) == 0:
-            self.sigma = 1
-            return
-        total_max_dist = 0
-        for v in self.nodes:
-            self.bfs(v, give_distances=True, on_all_sub_graphs=False)
-            total_max_dist += max(self.distance_matrix[v].values())
-        self.sigma = total_max_dist / len(self.nodes)
-
-    def bfs(self, starting_node: SuggestedVideo, give_distances=True, on_all_sub_graphs=False):
-        visited: list[SuggestedVideo] = []
-        waiting_for_visit: list[SuggestedVideo] = [starting_node]
-        future_visits: set[SuggestedVideo]
-        unvisited: list[SuggestedVideo] = self.nodes.copy()
-
-        act_root = starting_node
-        depth = 0
-
-        while len(unvisited) > 0:
-            future_visits = set()
-            for act_vid in waiting_for_visit:
-                visited.append(act_vid)
-                unvisited.remove(act_vid)
-                if give_distances:
-                    self.distance_matrix[act_root][act_vid] = depth
-                    self.distance_matrix[act_vid][act_root] = depth
-                for v in self.graph[act_vid]:
-                    if v not in visited and v not in waiting_for_visit:
-                        future_visits.add(v)
-            if len(future_visits) == 0 and len(unvisited) > 0:
-                if on_all_sub_graphs:
-                    act_root = unvisited.pop()
-                    future_visits.add(act_root)
-                    depth = 0
-                else:
-                    break
-            else:
-                depth += 1
-            waiting_for_visit = list(future_visits)
-
     def find_connected_sub_graphs(self) -> set[Graph]:
         visited: list[SuggestedVideo] = []
         waiting_for_visit: list[SuggestedVideo] = []
@@ -242,11 +198,17 @@ class Graph(CompleteGraph):
         return len(self.find_connected_sub_graphs()) == 1
 
     def build_similarity_matrix(self):
-        self.similarity_matrix = np.zeros((len(self.nodes), len(self.nodes)))
-        for i, u in enumerate(self.nodes):
-            for j, v in enumerate(self.nodes):
-                exponent = (self.distance_matrix[u][v]) ** 2 / self.sigma ** 2
-                self.similarity_matrix[i][j] = np.e ** (-exponent)
+        distance_matrix = shortest_path(self.adjacency_matrix, directed=False)
+        if len(self.nodes) == 0:
+            sigma = 1
+        else:
+            total_max_dist = distance_matrix.max(
+                axis=0,
+                where=np.isfinite(distance_matrix),
+                initial=1
+            ).sum()
+            sigma = total_max_dist / len(self.nodes)
+        self.similarity_matrix = np.exp(-(distance_matrix ** 2) / sigma ** 2)
 
     def compute_offline_parameters(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
         """
@@ -257,7 +219,6 @@ class Graph(CompleteGraph):
         if self.dirty:
             self.dirty = False
             self.build_adjacency_matrix()
-            self.build_distance_matrix()
             self.build_similarity_matrix()
             try:
                 self.local_user_scaling = ContributorScaling.objects \
