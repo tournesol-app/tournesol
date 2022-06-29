@@ -207,6 +207,17 @@
     "thisYear": "A year ago",
     "allTime": "All time",
     "uploadDate": "Uploaded",
+    "duration": {
+      "title": "Duration (minutes)",
+      "max": {
+        "label": "max",
+        "clearAriaLabel": "Clear the max duration"
+      },
+      "min": {
+        "label": "min",
+        "clearAriaLabel": "Clear the min duration"
+      }
+    },
     "allLanguages": "All languages",
     "language": "Language",
     "scoreMode": {

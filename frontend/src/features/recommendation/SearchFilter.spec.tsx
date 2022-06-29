@@ -98,6 +98,10 @@ describe('Filters feature', () => {
     );
     expect(queryAllByTestId(languageFilter, 'autocomplete')).toHaveLength(1);
 
+    // Check the duration filter presence
+    expect(screen.getByTestId('filter-duration-lte')).toBeVisible();
+    expect(screen.getByTestId('filter-duration-gte')).toBeVisible();
+
     // Check criteria filters presence
     expect(screen.getByLabelText('multiple criteria')).toBeVisible();
   }
@@ -224,6 +228,42 @@ describe('Filters feature', () => {
       action: 'remove',
       language: 'language.de',
       expectInUrl: '',
+    });
+  });
+
+  it('Can select a maximum duration', async () => {
+    clickOnShowMore();
+
+    const filter = screen
+      .getByTestId('filter-duration-lte')
+      .querySelector('input');
+
+    await act(async () => {
+      fireEvent.change(filter, { target: { value: '40' } });
+      expect(pushSpy).toHaveBeenCalledTimes(0);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    });
+
+    expect(pushSpy).toHaveBeenLastCalledWith({
+      search: 'duration_gte=&duration_lte=40',
+    });
+  });
+
+  it('Can select a minimum duration', async () => {
+    clickOnShowMore();
+
+    const filter = screen
+      .getByTestId('filter-duration-gte')
+      .querySelector('input');
+
+    await act(async () => {
+      fireEvent.change(filter, { target: { value: '20' } });
+      expect(pushSpy).toHaveBeenCalledTimes(0);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    });
+
+    expect(pushSpy).toHaveBeenLastCalledWith({
+      search: 'duration_lte=&duration_gte=20',
     });
   });
 
