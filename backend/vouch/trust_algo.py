@@ -80,13 +80,13 @@ def compute_voting_rights(relative_posttrusts, pretrusts):
     users given the trust the network puts in them.
     """
     min_relative_trusts_of_pretrusteds = np.amin(
-        [relative_posttrusts[u] for u in range(len(relative_posttrusts)) if pretrusts[u] > 0]
+        relative_posttrusts,
+        where=pretrusts > 0,
+        initial=MIN_PRETRUST_VOTING_RIGHT,
     )
     scale = MIN_PRETRUST_VOTING_RIGHT / min_relative_trusts_of_pretrusteds
     scaled_relative_trusts = np.array(relative_posttrusts) * scale
-    clipped_relative_trusts = np.array([
-        min(scaled_relative_trusts[u], 1) for u in range(len(relative_posttrusts))
-    ])
+    clipped_relative_trusts = scaled_relative_trusts.clip(max=1)
     return clipped_relative_trusts
 
 
@@ -105,7 +105,7 @@ def trust_algo():
             _is_trusted=Q(pk__in=user.User.trusted_users())
         )
     )
-    pretrusts = [int(u._is_trusted) for u in users]
+    pretrusts = np.array([int(u._is_trusted) for u in users])
     nb_users = len(users)
 
     # Import vouching matrix
