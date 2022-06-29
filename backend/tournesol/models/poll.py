@@ -41,7 +41,8 @@ class Poll(models.Model):
     sigmoid_scale = models.FloatField(
         null=True,
         default=None,
-        help_text="Scale factor to apply on scores (applied only for Mehestan)"
+        help_text="Scaling factor multiplied by score before the sigmoid function is applied."
+        " Updated automatically on each run. (Mehestan only)."
     )
 
     @classmethod

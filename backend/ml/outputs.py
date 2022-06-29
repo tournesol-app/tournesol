@@ -78,8 +78,62 @@ def save_tournesol_scores(poll):
     Entity.objects.bulk_update(entities, ["tournesol_score"])
 
 
+def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
+    """
+    Apply individual and poll-level scalings based on input "raw_score", and "raw_uncertainty".
+
+    Params:
+        poll: Poll,
+        contributor_scores: DataFrame with columns:
+            user_id: int
+            entity_id: int
+            criteria: str
+            raw_score: float
+            raw_uncertainty: float
+
+    Returns:
+        DataFrame with additional columns "score" and "uncertainty".
+    """
+    if poll.algorithm != ALGORITHM_MEHESTAN:
+        contributor_scores["score"] = contributor_scores["raw_score"]
+        contributor_scores["uncertainty"] = contributor_scores["raw_uncertainty"]
+        return contributor_scores
+
+    ml_input = MlInputFromDb(poll_name=poll.name)
+    scalings = ml_input.get_user_scalings().set_index(["user_id", "criteria"])
+    contributor_scores = contributor_scores.join(
+        scalings,
+        on=["user_id", "criteria"],
+        how="left"
+    )
+    contributor_scores["scale"].fillna(1, inplace=True)
+    contributor_scores["translation"].fillna(0, inplace=True)
+    contributor_scores["scale_uncertainty"].fillna(0, inplace=True)
+    contributor_scores["translation_uncertainty"].fillna(0, inplace=True)
+
+    # Apply individual scaling
+    contributor_scores["uncertainty"] = (
+        contributor_scores["scale"] * contributor_scores["raw_uncertainty"]
+        + contributor_scores["scale_uncertainty"] * contributor_scores["raw_score"].abs()
+        + contributor_scores["translation_uncertainty"]
+    )
+    contributor_scores["score"] = (
+        contributor_scores["raw_score"] * contributor_scores["scale"]
+        + contributor_scores["translation"]
+    )
+
+    # Apply poll scaling
+    scale_function = poll.scale_function
+    contributor_scores["uncertainty"] = 0.5 * (
+        scale_function(contributor_scores["score"] + contributor_scores["uncertainty"])
+        - scale_function(contributor_scores["score"] - contributor_scores["uncertainty"])
+    )
+    contributor_scores["score"] = scale_function(contributor_scores["score"])
+    return contributor_scores
+
+
 def save_contributor_scores(
-    poll,
+    poll: Poll,
     contributor_scores,
     trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
@@ -92,40 +146,9 @@ def save_contributor_scores(
         )
 
     if "score" not in contributor_scores:
-        if poll.algorithm == ALGORITHM_MEHESTAN:
-            ml_input = MlInputFromDb(poll_name=poll.name)
-            scalings = ml_input.get_user_scalings().set_index(["user_id", "criteria"])
-            contributor_scores = contributor_scores.join(
-                scalings,
-                on=["user_id", "criteria"],
-                how="left"
-            )
-            contributor_scores["scale"].fillna(1, inplace=True)
-            contributor_scores["translation"].fillna(0, inplace=True)
-            contributor_scores["scale_uncertainty"].fillna(0, inplace=True)
-            contributor_scores["translation_uncertainty"].fillna(0, inplace=True)
-
-            # Apply individual scaling
-            contributor_scores["uncertainty"] = (
-                contributor_scores["scale"] * contributor_scores["raw_uncertainty"]
-                + contributor_scores["scale_uncertainty"] * contributor_scores["raw_score"].abs()
-                + contributor_scores["translation_uncertainty"]
-            )
-            contributor_scores["score"] = (
-                contributor_scores["raw_score"] * contributor_scores["scale"]
-                + contributor_scores["translation"]
-            )
-
-            # Apply poll scaling
-            scale_function = poll.scale_function
-            contributor_scores["uncertainty"] = 0.5 * (
-                scale_function(contributor_scores["score"] + contributor_scores["uncertainty"])
-                - scale_function(contributor_scores["score"] - contributor_scores["uncertainty"])
-            )
-            contributor_scores["score"] = scale_function(contributor_scores["score"])
-        else:
-            contributor_scores["score"] = contributor_scores["raw_score"]
-            contributor_scores["uncertainty"] = contributor_scores["raw_uncertainty"]
+        # Scaled "score" and "uncertainty" need to be computed
+        # based on raw_score and raw_uncertainty
+        contributor_scores = apply_score_scalings(poll, contributor_scores)
 
     ratings = ContributorRating.objects.filter(poll=poll)
     if single_user_id is not None:

@@ -95,12 +95,6 @@ def run_mehestan_for_criterion(
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
 
-    if update_poll_scaling and len(indiv_scores) > 0:
-        global_scores = get_global_scores(
-            scaled_scores,
-            score_mode=ScoreMode.DEFAULT,
-        )
-
     for mode in ScoreMode:
         global_scores = get_global_scores(scaled_scores, score_mode=mode)
         global_scores["criteria"] = criteria

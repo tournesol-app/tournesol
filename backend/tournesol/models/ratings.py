@@ -58,12 +58,12 @@ class ContributorRatingCriteriaScore(models.Model):
     score = models.FloatField(
         default=0,
         blank=False,
-        help_text="Score for the given criteria",
+        help_text="Score for the given criteria, after individual and poll scalings applied",
     )
     uncertainty = models.FloatField(
         default=0,
         blank=False,
-        help_text="Uncertainty about the entity score for the given criteria",
+        help_text="Uncertainty about the criteria score",
     )
     raw_score = models.FloatField(
         default=0,
