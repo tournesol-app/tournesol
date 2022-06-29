@@ -40,9 +40,9 @@ export const videoWithScoresFromRecommendation = (
  * Return a random entity with uid not included in the `exclude` array.
  */
 export const selectRandomEntity = (
-  entities: Array<Entity>,
+  entities: Array<Entity | Recommendation>,
   exclude: string[]
-): Entity => {
+): Entity | Recommendation => {
   const filtered = entities.filter((entity) => !exclude.includes(entity.uid));
 
   return filtered[Math.floor(Math.random() * filtered.length)];
