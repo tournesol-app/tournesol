@@ -333,8 +333,7 @@ class Graph(CompleteGraph):
                             va._graph_sparsity_score = 0
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
-                        va.suggestibility_normalization = 1
-                        va.beta[vb] = va.score_computation(vb)
+                        va.beta[vb] = va.uncertainty_diminution(vb)
                         if max_beta < va.beta[vb]:
                             max_beta = va.beta[vb]
                 for vb in sg.nodes:
