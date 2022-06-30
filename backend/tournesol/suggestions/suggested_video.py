@@ -41,12 +41,15 @@ class SuggestedVideo:
     def __hash__(self):
         return self.uid.__hash__()
 
-    def score_computation(self, reference: SuggestedVideo):
+    def uncertainty_diminution(self, reference: SuggestedVideo):
         return (
             (self.score_uncertainty + reference.score_uncertainty)
             / (abs(self.score - reference.score) + 1)
-            / self.suggestibility_normalization
         )
+
+    def score_computation(self, reference: SuggestedVideo):
+        return (self.uncertainty_diminution(reference)
+                / self.suggestibility_normalization) + self.graph_sparsity
 
     @property
     def score(self):
