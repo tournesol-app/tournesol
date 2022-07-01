@@ -69,6 +69,11 @@ class SuggestionAPITestCase(TestCase):
             email="staff@trusted.test",
             is_staff=True
         )
+        self.sparsity_comparison_user = UserFactory(
+            username="SparseUser",
+            email="spared@trusted.test",
+            is_staff=True
+        )
         now = datetime.datetime.now()
 
         # Populate the video table
@@ -133,6 +138,18 @@ class SuggestionAPITestCase(TestCase):
                 contributor_rating=contributor_rating,
                 criteria=self._criteria,
                 score=0.25,
+            )
+        for v in self.videos:
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.sparsity_comparison_user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0,
             )
         contributor_rating = ContributorRatingFactory(
             poll=self.poll,
@@ -271,6 +288,24 @@ class SuggestionAPITestCase(TestCase):
             ),
         ]
 
+        for i, va in enumerate(self.videos[1:]):
+            for j, vb in enumerate(self.videos[i+2:]):
+                self.comparisons.append(ComparisonFactory(
+                    user=self.sparsity_comparison_user,
+                    entity_1=va,
+                    entity_2=vb,
+                    duration_ms=501 + i * 20 + j,
+                    datetime_lastedit=now + datetime.timedelta(minutes=2),
+                ))
+
+        self.comparisons.append(ComparisonFactory(
+            user=self.sparsity_comparison_user,
+            entity_1=self.videos[0],
+            entity_2=self.videos[4],
+            duration_ms=501,
+            datetime_lastedit=now + datetime.timedelta(minutes=2),
+        ))
+
         # CriteriaRankFactory(poll=self.poll, criteria__name="largely_recommended")
         # Populate the ComparisonCriteriaScore table
         for c in self.comparisons:
@@ -359,7 +394,7 @@ class SuggestionAPITestCase(TestCase):
         )
         last_vid_score = 1000
         for v in user2_videos:
-            v_score = v.score_computation(user_videos[0]) + v.graph_sparsity
+            v_score = v.score_computation(user_videos[0]) + v.graph_sparsity(user_videos[0])
             assert v_score <= last_vid_score
             last_vid_score = v_score
 
@@ -398,6 +433,30 @@ class SuggestionAPITestCase(TestCase):
 
         suggestions = suggester.get_second_video_recommendation(new_user, self.videos[9].uid, 6)
         assert len(suggestions) == 6
+
+    def test_sparsification_metric(self):
+        suggester = SuggestionProvider(self.poll)
+        suggester.get_first_video_recommendation(self.sparsity_comparison_user, 6)
+        user_graph = suggester._user_specific_graphs[self.sparsity_comparison_user.id]
+
+        for n in user_graph.nodes:
+            if n.uid == self.videos[0].uid:
+                alone_node = n
+                break
+
+        for n in user_graph.nodes:
+            max_value = n.graph_sparsity(alone_node)
+            for m in user_graph.nodes:
+                assert n.graph_sparsity(m) <= max_value
+
+    def test_similarity_bounded_value(self):
+        suggester = SuggestionProvider(self.poll)
+        suggester.get_first_video_recommendation(self.sparsity_comparison_user, 6)
+        user_graph = suggester._user_specific_graphs[self.sparsity_comparison_user.id]
+
+        for n in user_graph.nodes:
+            for m in user_graph.nodes:
+                assert n.score_computation(m) <= 2
 
     def test_suggestions_with_new_videos(self):
         new_video = VideoFactory()
