@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
-import { Clear } from '@mui/icons-material';
+//import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
+//import { Clear } from '@mui/icons-material';
+import { Slider } from '@mui/material';
 
 import { TitledSection } from 'src/components';
 
