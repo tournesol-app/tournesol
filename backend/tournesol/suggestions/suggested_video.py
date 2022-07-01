@@ -49,7 +49,7 @@ class SuggestedVideo:
 
     def score_computation(self, reference: SuggestedVideo):
         return (self.uncertainty_diminution(reference)
-                / self.suggestibility_normalization) + self.graph_sparsity
+                / self.suggestibility_normalization) + self.graph_sparsity(reference)
 
     @property
     def score(self):
@@ -59,8 +59,7 @@ class SuggestedVideo:
     def score_uncertainty(self):
         return self.global_video_score_uncertainty
 
-    @property
-    def graph_sparsity(self):
+    def graph_sparsity(self, reference: SuggestedVideo):
         return self.NEW_NODE_CONNECTION_SCORE
 
     @property

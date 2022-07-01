@@ -303,10 +303,10 @@ class Graph(CompleteGraph):
                             and vb in scaling_factor_increasing_videos
                     ):
                         va.video1_score = 1
-                        va._graph_sparsity_score = 1
+                        va._graph_sparsity_score[vb] = 1
                     else:
                         va.video1_score = 0
-                        va._graph_sparsity_score = 0
+                        va._graph_sparsity_score[vb] = 0
         # Once the scaling factor is high enough, check what video should gain
         # information being compared by the user
         else:
@@ -326,11 +326,11 @@ class Graph(CompleteGraph):
                         if eigenvalues[1] > self.LAMBDA_THRESHOLD:
                             u_index = sg.uid_to_index[vb.uid]
                             v_index = sg.uid_to_index[va.uid]
-                            va._graph_sparsity_score = sg.similarity_matrix[u_index, v_index]
+                            va._graph_sparsity_score[vb] = sg.similarity_matrix[u_index, v_index]
                         elif va.uid not in sg.uid_to_index:
-                            va._graph_sparsity_score = 1
+                            va._graph_sparsity_score[vb] = 1
                         else:
-                            va._graph_sparsity_score = 0
+                            va._graph_sparsity_score[vb] = 0
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
                         va.beta[vb] = va.uncertainty_diminution(vb)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
 
@@ -11,7 +13,7 @@ class SuggestedUserVideo(SuggestedVideo):
             local_user: SuggestedUser
     ):
         super().__init__()
-        self._graph_sparsity_score = 0
+        self._graph_sparsity_score = {}
         self.uid = parent.uid
         self.nb_comparison_with = parent.nb_comparison_with
         self.local_user = local_user
@@ -24,6 +26,5 @@ class SuggestedUserVideo(SuggestedVideo):
     def score_uncertainty(self):
         return self.local_user.score_uncertainties.get(self, 0)
 
-    @property
-    def graph_sparsity(self):
-        return self._graph_sparsity_score
+    def graph_sparsity(self, reference: SuggestedUserVideo):
+        return self._graph_sparsity_score.get(reference, 0)
