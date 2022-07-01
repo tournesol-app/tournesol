@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
 import { Clear } from '@mui/icons-material';
 
 import { TitledSection } from 'src/components';
@@ -22,7 +22,7 @@ interface DurationFilterProps {
  * The `TYPING_DELAY` ensures the user has the time to type several digit
  * before triggering the callback.
  */
-function DurationFilter({
+/* function DurationFilter({
   valueMax,
   valueMin,
   onChangeCallback,
@@ -126,6 +126,82 @@ function DurationFilter({
       />
     </TitledSection>
   );
+}*/
+
+function DurationFilter2({
+  valueMax,
+  valueMin,
+  onChangeCallback,
+}: DurationFilterProps) {
+  const { t } = useTranslation();
+
+  const [maxDuration, setMaxDuration] = useState<string>(valueMax);
+  const [minDuration, setMinDuration] = useState<string>(valueMin);
+
+  const handleChange = (event: Event, newValue: number | number[]) => {
+    const [minVal, maxVal] = Array.isArray(newValue)
+      ? newValue
+      : [newValue, newValue];
+    setMinDuration(minVal.toString());
+    setMaxDuration(maxVal.toString());
+  };
+
+  useEffect(() => {
+    const timeOutId = setTimeout(
+      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
+      TYPING_DELAY
+    );
+
+    return () => clearTimeout(timeOutId);
+  }, [maxDuration, onChangeCallback]);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(
+      () => onChangeCallback({ param: 'duration_gte', value: minDuration }),
+      TYPING_DELAY
+    );
+
+    return () => clearTimeout(timeOutId);
+  }, [minDuration, onChangeCallback]);
+
+  const marks = [
+    {
+      value: 0,
+      label: '0min',
+    },
+    {
+      value: 20,
+      label: '20min',
+    },
+    {
+      value: 40,
+      label: '40min',
+    },
+    {
+      value: 60,
+      label: '1h',
+    },
+    {
+      value: 120,
+      label: '2h',
+    },
+    {
+      value: 1440,
+      label: '1j',
+    },
+  ];
+
+  return (
+    <TitledSection title={t('filter.duration.title')}>
+      <Slider
+        getAriaLabel={() => 'Duration range'}
+        onChange={handleChange}
+        valueLabelDisplay="auto"
+        defaultValue={[parseInt(minDuration), parseInt(maxDuration)]}
+        marks={marks}
+      />
+    </TitledSection>
+  );
 }
 
-export default DurationFilter;
+export default DurationFilter2;
