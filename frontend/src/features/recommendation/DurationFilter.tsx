@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-//import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
-//import { Clear } from '@mui/icons-material';
-import { Slider } from '@mui/material';
+import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
+import { Clear } from '@mui/icons-material';
 
 import { TitledSection } from 'src/components';
 
@@ -129,7 +128,7 @@ interface DurationFilterProps {
   );
 }*/
 
-function DurationFilter2({
+function DurationFilter({
   valueMax,
   valueMin,
   onChangeCallback,
@@ -145,6 +144,26 @@ function DurationFilter2({
       : [newValue, newValue];
     setMinDuration(minVal.toString());
     setMaxDuration(maxVal.toString());
+  };
+
+  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value;
+    setMaxDuration(value);
+  };
+
+  const handleChangeMin = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value;
+    setMinDuration(value);
+  };
+
+  const clearMaxDuration = () => {
+    setMaxDuration('');
+    onChangeCallback({ param: 'duration_lte', value: '' });
+  };
+
+  const clearMinDuration = () => {
+    setMinDuration('');
+    onChangeCallback({ param: 'duration_gte', value: '' });
   };
 
   useEffect(() => {
@@ -201,8 +220,60 @@ function DurationFilter2({
         defaultValue={[parseInt(minDuration), parseInt(maxDuration)]}
         marks={marks}
       />
+      <TextField
+        margin="dense"
+        fullWidth
+        size="small"
+        color="secondary"
+        variant="outlined"
+        type="number"
+        name="duration_gte"
+        label={t('filter.duration.min.label')}
+        value={minDuration}
+        onChange={handleChangeMin}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={t('filter.duration.min.clearAriaLabel')}
+                edge="end"
+                onClick={clearMinDuration}
+              >
+                <Clear />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        data-testid="filter-duration-gte"
+      />
+      <TextField
+        margin="dense"
+        fullWidth
+        size="small"
+        color="secondary"
+        variant="outlined"
+        type="number"
+        name="duration_lte"
+        label={t('filter.duration.max.label')}
+        value={maxDuration}
+        onChange={handleChangeMax}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={t('filter.duration.max.clearAriaLabel')}
+                edge="end"
+                onClick={clearMaxDuration}
+              >
+                <Clear />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        data-testid="filter-duration-lte"
+      />
     </TitledSection>
   );
 }
 
-export default DurationFilter2;
+export default DurationFilter;
