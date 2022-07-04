@@ -151,21 +151,17 @@ class Graph(CompleteGraph):
     def build_adjacency_matrix(self):
         self.adjacency_matrix = np.zeros((len(self.nodes), len(self.nodes)))
         self.normalized_adjacency_matrix = self.adjacency_matrix.copy()
+        degree_matrix = self.adjacency_matrix.copy()
 
         for u, v in self.edges:
             u_index = self.uid_to_index[u.uid]
             v_index = self.uid_to_index[v.uid]
             self.adjacency_matrix[u_index][v_index] = 1
             self.adjacency_matrix[v_index][u_index] = 1
-        for u, v in self.edges:
-            u_index = self.uid_to_index[u.uid]
-            v_index = self.uid_to_index[v.uid]
-            self.normalized_adjacency_matrix[u_index][v_index] = 1 / sum(
-                self.adjacency_matrix[u_index]
-            )
-            self.normalized_adjacency_matrix[v_index][u_index] = 1 / sum(
-                self.adjacency_matrix[u_index]
-            )
+            degree_matrix[u_index][u_index] += 1
+            degree_matrix[v_index][v_index] += 1
+        inv_deg_sqrt = np.sqrt(np.linalg.inv(degree_matrix))
+        self.normalized_adjacency_matrix = inv_deg_sqrt @ self.adjacency_matrix @ inv_deg_sqrt
 
     def build_distance_matrix(self):
         # Compute sigma here
@@ -293,9 +289,9 @@ class Graph(CompleteGraph):
         translation_uncertainty = self.local_user_scaling.translation_uncertainty
 
         weighted_scaling_uncertainty = scale_uncertainty * self.local_user_mean
-        actual_scaling_accuracy = weighted_scaling_uncertainty + translation_uncertainty
+        actual_scaling_uncertainty = weighted_scaling_uncertainty + translation_uncertainty
 
-        if actual_scaling_accuracy < self.MIN_SCALING_ACCURACY:
+        if actual_scaling_uncertainty > self.MIN_SCALING_ACCURACY:
             for va in self._nodes:
                 for vb in self._nodes:
                     if (
