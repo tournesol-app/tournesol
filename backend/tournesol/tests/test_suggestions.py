@@ -1,5 +1,6 @@
 import datetime
 
+import numpy as np
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -258,20 +259,26 @@ class SuggestionAPITestCase(TestCase):
             ),
         ]
 
-        # Here we created a comparison graph very dense between all the videos but one
-        for i, va in enumerate(self.videos[1:]):
-            for j, vb in enumerate(self.videos[i+2:]):
+        # Here we created a comparison graph very dense between all the videos but two
+        for i, va in enumerate(self.videos[2:]):
+            for j, vb in enumerate(self.videos[i+3:]):
                 self.comparisons.append(ComparisonFactory(
                     user=self.sparsity_comparison_user,
                     entity_1=va,
                     entity_2=vb,
                 ))
 
+        # We then link the last nodes by only one link
+        self.comparisons.append(ComparisonFactory(
+            user=self.sparsity_comparison_user,
+            entity_1=self.videos[1],
+            entity_2=self.videos[4],
+        ))
         # We then link the last node by only one link
         self.comparisons.append(ComparisonFactory(
             user=self.sparsity_comparison_user,
             entity_1=self.videos[0],
-            entity_2=self.videos[4],
+            entity_2=self.videos[1],
         ))
 
         # CriteriaRankFactory(poll=self.poll, criteria__name="largely_recommended")
@@ -407,15 +414,32 @@ class SuggestionAPITestCase(TestCase):
         suggester.get_first_video_recommendation(self.sparsity_comparison_user, 6)
         user_graph = suggester._user_specific_graphs[self.sparsity_comparison_user.id]
 
+        assert np.linalg.eigvalsh(user_graph.normalized_adjacency_matrix)[-1] == 1
+
         for n in user_graph.nodes:
             if n.uid == self.videos[0].uid:
                 alone_node = n
-                break
+            elif n.uid == self.videos[1].uid:
+                bridge_node = n
 
         for n in user_graph.nodes:
-            max_value = n.graph_sparsity(alone_node)
-            for m in user_graph.nodes:
-                assert n.graph_sparsity(m) <= max_value
+            if n != bridge_node and n != alone_node:
+                max_value = n.graph_sparsity(alone_node)
+                bridge_value = n.graph_sparsity(bridge_node)
+                assert bridge_value < max_value
+                base_value = -1
+                for m in user_graph.nodes:
+                    if n == m:
+                        continue
+                    if base_value == -1 and m not in {bridge_node, alone_node}:
+                        base_value = n.graph_sparsity(m)
+                        assert base_value <= bridge_value
+                    if m == alone_node:
+                        assert n.graph_sparsity(m) == max_value
+                    elif m == bridge_node:
+                        assert n.graph_sparsity(m) == bridge_value
+                    else:
+                        assert n.graph_sparsity(m) == base_value
 
     def test_similarity_bounded_value(self):
         suggester = SuggestionProvider(self.poll)
