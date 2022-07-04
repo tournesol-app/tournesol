@@ -101,7 +101,7 @@ class Graph(CompleteGraph):
     # not necessarily the best data structure,
     # I still have to find out what is the best one between the two
     edges: list[tuple[SuggestedVideo, SuggestedVideo]]
-    _nodes: list[SuggestedVideo]  # todo clean that, use default dict functions
+    _nodes: list[SuggestedUserVideo]  # todo clean that, use default dict functions
     uid_to_index: dict[str, int]
     graph: dict[SuggestedVideo, list[SuggestedVideo]]
     sigma: float
@@ -296,8 +296,8 @@ class Graph(CompleteGraph):
         actual_scaling_accuracy = weighted_scaling_uncertainty + translation_uncertainty
 
         if actual_scaling_accuracy < self.MIN_SCALING_ACCURACY:
-            for va in self.nodes:
-                for vb in self.nodes:
+            for va in self._nodes:
+                for vb in self._nodes:
                     if (
                             va in scaling_factor_increasing_videos
                             and vb in scaling_factor_increasing_videos
@@ -319,11 +319,11 @@ class Graph(CompleteGraph):
                 eigenvalues = np.linalg.eigvalsh(sg.normalized_adjacency_matrix)
                 max_beta = 0
                 for vb in sg.nodes:
-                    for va in self.nodes:
-                        # In the case the eigen value is big enough
+                    for va in self._nodes:
+                        # In the case the second highest eigen value is big enough
                         # => the graph is poorly connected,
                         # so we should improve connectivity
-                        if eigenvalues[1] > self.LAMBDA_THRESHOLD:
+                        if eigenvalues[-2] > self.LAMBDA_THRESHOLD:
                             u_index = sg.uid_to_index[vb.uid]
                             v_index = sg.uid_to_index[va.uid]
                             va._graph_sparsity_score[vb] = sg.similarity_matrix[u_index, v_index]
