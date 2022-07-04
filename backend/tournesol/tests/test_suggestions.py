@@ -182,29 +182,21 @@ class SuggestionAPITestCase(TestCase):
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[1],
-                duration_ms=102,
-                datetime_lastedit=now,
             ),
             ComparisonFactory(
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[2],
-                duration_ms=105,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             ComparisonFactory(
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[3],
-                duration_ms=108,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             ComparisonFactory(
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[4],
-                duration_ms=111,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             # "other" will have comparisons for elements 2 by 2 for videos 5 to 9, each time only
             #             # the video to the next and then the last video to the first
@@ -212,98 +204,74 @@ class SuggestionAPITestCase(TestCase):
                 user=self.other,
                 entity_1=self.videos[5],
                 entity_2=self.videos[6],
-                duration_ms=302,
-                datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[6],
                 entity_2=self.videos[7],
-                duration_ms=304,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[7],
                 entity_2=self.videos[8],
-                duration_ms=306,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[8],
                 entity_2=self.videos[9],
-                duration_ms=308,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[5],
                 entity_2=self.videos[9],
-                duration_ms=310,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             # "central" user also has some comparisons, but not that much
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[9],
-                duration_ms=201,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[1],
-                duration_ms=202,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[8],
                 entity_2=self.videos[9],
-                duration_ms=203,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[1],
                 entity_2=self.videos[8],
-                duration_ms=204,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[2],
                 entity_2=self.videos[7],
-                duration_ms=205,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.user_no_comparison,
                 entity_1=self.videos[4],
                 entity_2=self.videos[6],
-                duration_ms=404,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
         ]
 
+        # Here we created a comparison graph very dense between all the videos but one
         for i, va in enumerate(self.videos[1:]):
             for j, vb in enumerate(self.videos[i+2:]):
                 self.comparisons.append(ComparisonFactory(
                     user=self.sparsity_comparison_user,
                     entity_1=va,
                     entity_2=vb,
-                    duration_ms=501 + i * 20 + j,
-                    datetime_lastedit=now + datetime.timedelta(minutes=2),
                 ))
 
+        # We then link the last node by only one link
         self.comparisons.append(ComparisonFactory(
             user=self.sparsity_comparison_user,
             entity_1=self.videos[0],
             entity_2=self.videos[4],
-            duration_ms=501,
-            datetime_lastedit=now + datetime.timedelta(minutes=2),
         ))
 
         # CriteriaRankFactory(poll=self.poll, criteria__name="largely_recommended")
@@ -394,7 +362,7 @@ class SuggestionAPITestCase(TestCase):
         )
         last_vid_score = 1000
         for v in user2_videos:
-            v_score = v.score_computation(user_videos[0]) + v.graph_sparsity(user_videos[0])
+            v_score = v.score_computation(user_videos[0])
             assert v_score <= last_vid_score
             last_vid_score = v_score
 
