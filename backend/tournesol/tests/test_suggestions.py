@@ -75,7 +75,6 @@ class SuggestionAPITestCase(TestCase):
             email="spared@trusted.test",
             is_staff=True
         )
-        now = datetime.datetime.now()
 
         # Populate the video table
         self.videos = [

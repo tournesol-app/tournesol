@@ -320,9 +320,9 @@ class Graph(CompleteGraph):
                         # => the graph is poorly connected,
                         # so we should improve connectivity
                         if eigenvalues[-2] > self.LAMBDA_THRESHOLD:
-                            u_index = sg.uid_to_index[vb.uid]
-                            v_index = sg.uid_to_index[va.uid]
-                            va._graph_sparsity_score[vb] = 1 - sg.similarity_matrix[u_index, v_index]
+                            ui = sg.uid_to_index[vb.uid]
+                            vi = sg.uid_to_index[va.uid]
+                            va._graph_sparsity_score[vb] = 1 - sg.similarity_matrix[ui, vi]
                         elif va.uid not in sg.uid_to_index:
                             va._graph_sparsity_score[vb] = 1
                         else:
