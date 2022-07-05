@@ -413,7 +413,7 @@ class SuggestionAPITestCase(TestCase):
         suggester.get_first_video_recommendation(self.sparsity_comparison_user, 6)
         user_graph = suggester._user_specific_graphs[self.sparsity_comparison_user.id]
 
-        assert np.linalg.eigvalsh(user_graph.normalized_adjacency_matrix)[-1] == 1
+        assert np.linalg.eigvalsh(user_graph.normalized_adjacency_matrix)[-1] - 1 < 10e-8
 
         for n in user_graph.nodes:
             if n.uid == self.videos[0].uid:
