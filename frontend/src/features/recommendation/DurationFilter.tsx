@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
 import { Clear } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+//import backgroundImage from "/logos/Tournesol_minilogo.png";
 
 import { TitledSection } from 'src/components';
 
@@ -14,6 +16,12 @@ interface DurationFilterProps {
   valueMin: string;
   onChangeCallback: (filter: { param: string; value: string }) => void;
 }
+
+const TournesolSlider = styled(Slider)(() => ({
+  '& .MuiSlider-thumb': {
+    backgroundImage: `url("https://github.com/tournesol-app/tournesol/blob/main/frontend/public/logos/Tournesol_Logo.png")`,
+  },
+}));
 
 /**
  * Display two `TextField` of type number, calling different callbacks when
@@ -31,13 +39,15 @@ function DurationFilter({
 
   const [maxDuration, setMaxDuration] = useState<string>(valueMax);
   const [minDuration, setMinDuration] = useState<string>(valueMin);
+  const breaks = [0, 100, 200, 300, 400, 500, 600];
+  const labels = [0, 2, 5, 10, 20, 60, 120];
 
   const handleChange = (event: Event, newValue: number | number[]) => {
     const [minVal, maxVal] = Array.isArray(newValue)
       ? newValue
       : [newValue, newValue];
-    setMinDuration(minVal.toString());
-    setMaxDuration(maxVal.toString());
+    setMinDuration(Math.round(calculateValue(minVal)).toString());
+    setMaxDuration(Math.round(calculateValue(maxVal)).toString());
   };
 
   const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,33 +88,6 @@ function DurationFilter({
     return () => clearTimeout(timeOutId);
   }, [minDuration, onChangeCallback]);
 
-  const marks = [
-    {
-      value: 0,
-      label: '0min',
-    },
-    {
-      value: 20,
-      label: '20min',
-    },
-    {
-      value: 40,
-      label: '40min',
-    },
-    {
-      value: 60,
-      label: '1h',
-    },
-    {
-      value: 120,
-      label: '2h',
-    },
-    {
-      value: 1440,
-      label: '1j',
-    },
-  ];
-
   function valueLabelFormat(value: number) {
     let seconds = Math.round(value * 60);
     if (seconds < 60) {
@@ -124,8 +107,6 @@ function DurationFilter({
   }
 
   function calculateValue(value: number) {
-    const breaks = [0, 100, 200, 300, 400, 500, 600];
-    const labels = [0, 2, 5, 10, 20, 60, 120];
     for (let i = 0; i < breaks.length; i++) {
       const min = breaks[i - 1];
       const max = breaks[i];
@@ -138,17 +119,31 @@ function DurationFilter({
     return 120;
   }
 
+  function correspondingValue(value: number) {
+    for (let i = 0; i < labels.length; i++) {
+      const min = labels[i - 1];
+      const max = labels[i];
+      if (value < max) {
+        const pc = (value - min) / (max - min);
+        const res = breaks[i - 1] + pc * (breaks[i] - breaks[i - 1]);
+        return res;
+      }
+    }
+    return 600;
+  }
+
+  const marks = [
+    { value: 0, label: '0s' },
+    { value: 100, label: '2m' },
+    { value: 200, label: '5m' },
+    { value: 300, label: '10m' },
+    { value: 400, label: '20m' },
+    { value: 500, label: '1h' },
+    { value: 600, label: '>2h' },
+  ];
+
   return (
     <TitledSection title={t('filter.duration.title')}>
-      <Slider
-        getAriaLabel={() => 'Duration range'}
-        onChange={handleChange}
-        valueLabelDisplay="auto"
-        getAriaValueText={valueLabelFormat}
-        defaultValue={[parseInt(minDuration), parseInt(maxDuration)]}
-        marks={marks}
-        scale={calculateValue}
-      />
       <TextField
         margin="dense"
         fullWidth
@@ -200,6 +195,21 @@ function DurationFilter({
           ),
         }}
         data-testid="filter-duration-lte"
+      />
+      <TournesolSlider
+        min={Math.min(...breaks)}
+        max={Math.max(...breaks)}
+        getAriaLabel={() => 'Duration range'}
+        onChange={handleChange}
+        valueLabelDisplay="auto"
+        getAriaValueText={valueLabelFormat}
+        valueLabelFormat={valueLabelFormat}
+        defaultValue={[
+          correspondingValue(parseInt(minDuration)),
+          correspondingValue(parseInt(maxDuration)),
+        ]}
+        marks={marks}
+        scale={calculateValue}
       />
     </TitledSection>
   );
