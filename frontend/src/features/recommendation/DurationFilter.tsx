@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next';
 
 import { IconButton, InputAdornment, TextField, Slider } from '@mui/material';
 import { Clear } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-//import backgroundImage from "/logos/Tournesol_minilogo.png";
 
 import { TitledSection } from 'src/components';
 
@@ -16,12 +14,6 @@ interface DurationFilterProps {
   valueMin: string;
   onChangeCallback: (filter: { param: string; value: string }) => void;
 }
-
-const TournesolSlider = styled(Slider)(() => ({
-  '& .MuiSlider-thumb': {
-    backgroundImage: `url("https://github.com/tournesol-app/tournesol/blob/main/frontend/public/logos/Tournesol_Logo.png")`,
-  },
-}));
 
 /**
  * Display two `TextField` of type number, calling different callbacks when
@@ -43,11 +35,13 @@ function DurationFilter({
   const labels = [0, 2, 5, 10, 20, 60, 120];
 
   const handleChange = (event: Event, newValue: number | number[]) => {
-    const [minVal, maxVal] = Array.isArray(newValue)
+    let [minVal, maxVal] = Array.isArray(newValue)
       ? newValue
       : [newValue, newValue];
-    setMinDuration(Math.round(calculateValue(minVal)).toString());
-    setMaxDuration(Math.round(calculateValue(maxVal)).toString());
+    minVal = Math.round(calculateValue(minVal));
+    maxVal = Math.round(calculateValue(maxVal));
+    setMinDuration(minVal.toString());
+    setMaxDuration(maxVal.toString());
   };
 
   const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,7 +190,7 @@ function DurationFilter({
         }}
         data-testid="filter-duration-lte"
       />
-      <TournesolSlider
+      <Slider
         min={Math.min(...breaks)}
         max={Math.max(...breaks)}
         getAriaLabel={() => 'Duration range'}
@@ -205,6 +199,10 @@ function DurationFilter({
         getAriaValueText={valueLabelFormat}
         valueLabelFormat={valueLabelFormat}
         defaultValue={[
+          correspondingValue(parseInt(minDuration)),
+          correspondingValue(parseInt(maxDuration)),
+        ]}
+        value={[
           correspondingValue(parseInt(minDuration)),
           correspondingValue(parseInt(maxDuration)),
         ]}
