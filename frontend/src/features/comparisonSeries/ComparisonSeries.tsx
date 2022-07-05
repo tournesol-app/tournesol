@@ -5,7 +5,7 @@ import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { Entity } from 'src/services/openapi';
+import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
@@ -19,7 +19,7 @@ const MIN_LENGTH = 2;
 interface Props {
   dialogs?: OrderedDialogs;
   generateInitial?: boolean;
-  getAlternatives?: () => Promise<Array<Entity>>;
+  getAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   length: number;
   // redirect to this URL when the series is over
   redirectTo?: string;
@@ -63,7 +63,9 @@ const ComparisonSeries = ({
   // tell the `Comparison` to refresh the left entity, or the right one
   const [refreshLeft, setRefreshLeft] = useState(false);
   // a limited list of entities that can be used to suggest new comparisons
-  const [alternatives, setAlternatives] = useState<Array<Entity>>([]);
+  const [alternatives, setAlternatives] = useState<
+    Array<Entity | Recommendation>
+  >([]);
   // an array of already made comparisons, allowing to not suggest two times the
   // same comparison to a user, formatted like this ['uidA/uidB', 'uidA/uidC']
   const [comparisonsMade, setComparisonsMade] = useState<Array<string>>([]);
@@ -87,7 +89,9 @@ const ComparisonSeries = ({
    * series.
    */
   useEffect(() => {
-    async function getAlternativesAsync(getAlts: () => Promise<Array<Entity>>) {
+    async function getAlternativesAsync(
+      getAlts: () => Promise<Array<Entity | Recommendation>>
+    ) {
       const alts = await getAlts();
       if (alts.length > 0) {
         setAlternatives(alts);
@@ -197,7 +201,7 @@ const ComparisonSeries = ({
    * @param uidB The current value of the `uidB` URL parameter
    */
   const genInitialComparisonParams = (
-    from: Array<Entity>,
+    from: Array<Entity | Recommendation>,
     comparisons: Array<string>,
     uidA: string,
     uidB: string

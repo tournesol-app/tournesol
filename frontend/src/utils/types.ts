@@ -88,7 +88,7 @@ export type SelectablePoll = {
   tutorialLength?: number;
   // can be used by comparison series to limit the pool of entities
   // that are suggested after each comparison
-  tutorialAlternatives?: () => Promise<Array<Entity>>;
+  tutorialAlternatives?: () => Promise<Array<Entity | Recommendation>>;
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
   // redirect to this page after the last comparison is submitted
   tutorialRedirectTo?: string;
