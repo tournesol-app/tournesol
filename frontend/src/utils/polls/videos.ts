@@ -9,8 +9,8 @@ let VIDEOS: Promise<Recommendation[]> | null = null;
  *
  * The recommendations returned:
  *   - are safe recommendations
- *   - are in the TOP 40 of all-time recommendations
- *   - have a maximum duration of 5 minutes
+ *   - are in the TOP 100 of all-time recommendations...
+ *   - ...having a maximum duration of 5 minutes
  *
  * TODO:
  *   - make the recommendations' language match the user language
@@ -22,7 +22,7 @@ export function getTutorialVideos(): Promise<Recommendation[]> {
   }
 
   const minutesMax = 5;
-  const top = 40;
+  const top = 100;
 
   const metadata = {
     'duration:lte:int': 60 * minutesMax,
