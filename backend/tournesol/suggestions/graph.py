@@ -224,7 +224,7 @@ class Graph(CompleteGraph):
                 act_graph.add_node(act_vid)
                 for v in self.graph[act_vid]:
                     act_graph.add_edge(act_vid, v)
-                    if v not in visited and v not in waiting_for_visit:
+                    if v not in visited and v not in waiting_for_visit and v in unvisited:
                         future_visits.add(v)
 
             if len(future_visits) == 0 and len(unvisited) > 0:
@@ -232,7 +232,7 @@ class Graph(CompleteGraph):
                 act_graph = Graph(
                     self._local_user, self._local_poll, self._local_criteria
                 )
-                future_visits.add(unvisited.pop())
+                future_visits.add(unvisited[0])
             waiting_for_visit = list(future_visits)
 
         result.add(act_graph)
@@ -291,7 +291,7 @@ class Graph(CompleteGraph):
         weighted_scaling_uncertainty = scale_uncertainty * self.local_user_mean
         actual_scaling_uncertainty = weighted_scaling_uncertainty + translation_uncertainty
 
-        if actual_scaling_uncertainty > self.MIN_SCALING_ACCURACY:
+        if actual_scaling_uncertainty > self.MIN_SCALING_ACCURACY or len(self.nodes) == 0:
             for va in self._nodes:
                 for vb in self._nodes:
                     if (
