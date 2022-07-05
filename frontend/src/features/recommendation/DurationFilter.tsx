@@ -10,8 +10,8 @@ import { TitledSection } from 'src/components';
 const TYPING_DELAY = 300;
 
 interface DurationFilterProps {
-  valueMax: string;
   valueMin: string;
+  valueMax: string;
   onChangeCallback: (filter: { param: string; value: string }) => void;
 }
 
@@ -23,14 +23,14 @@ interface DurationFilterProps {
  * before triggering the callback.
  */
 function DurationFilter({
-  valueMax,
   valueMin,
+  valueMax,
   onChangeCallback,
 }: DurationFilterProps) {
   const { t } = useTranslation();
 
-  const [maxDuration, setMaxDuration] = useState<string>(valueMax);
   const [minDuration, setMinDuration] = useState<string>(valueMin);
+  const [maxDuration, setMaxDuration] = useState<string>(valueMax);
 
   const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -42,14 +42,14 @@ function DurationFilter({
     setMinDuration(value);
   };
 
-  const clearMaxDuration = () => {
-    setMaxDuration('');
-    onChangeCallback({ param: 'duration_lte', value: '' });
-  };
-
   const clearMinDuration = () => {
     setMinDuration('');
     onChangeCallback({ param: 'duration_gte', value: '' });
+  };
+
+  const clearMaxDuration = () => {
+    setMaxDuration('');
+    onChangeCallback({ param: 'duration_lte', value: '' });
   };
 
   useEffect(() => {
