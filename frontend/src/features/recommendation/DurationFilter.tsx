@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import { Clear } from '@mui/icons-material';
+import { Slider } from '@mui/material';
 
 import { TitledSection } from 'src/components';
 
-// in milliseconds
-const TYPING_DELAY = 300;
+const TYPING_DELAY = 30; // in milliseconds
+const INFINITE_DURATION = 100000; //approximately 2 months long
 
 interface DurationFilterProps {
   valueMax: string;
@@ -15,13 +14,6 @@ interface DurationFilterProps {
   onChangeCallback: (filter: { param: string; value: string }) => void;
 }
 
-/**
- * Display two `TextField` of type number, calling different callbacks when
- * on of their input values change.
- *
- * The `TYPING_DELAY` ensures the user has the time to type several digit
- * before triggering the callback.
- */
 function DurationFilter({
   valueMax,
   valueMin,
@@ -31,25 +23,17 @@ function DurationFilter({
 
   const [maxDuration, setMaxDuration] = useState<string>(valueMax);
   const [minDuration, setMinDuration] = useState<string>(valueMin);
+  const breaks = [0, 100, 200, 300, 400, 500, 600, 700];
+  const labels = [0, 2, 5, 10, 20, 60, 120, 480];
 
-  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value: string = event.target.value;
-    setMaxDuration(value);
-  };
-
-  const handleChangeMin = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value: string = event.target.value;
-    setMinDuration(value);
-  };
-
-  const clearMaxDuration = () => {
-    setMaxDuration('');
-    onChangeCallback({ param: 'duration_lte', value: '' });
-  };
-
-  const clearMinDuration = () => {
-    setMinDuration('');
-    onChangeCallback({ param: 'duration_gte', value: '' });
+  const handleChange = (event: Event, newValue: number | number[]) => {
+    let [minVal, maxVal] = Array.isArray(newValue)
+      ? newValue
+      : [newValue, newValue];
+    minVal = Math.round(calculateValue(minVal));
+    maxVal = Math.round(calculateValue(maxVal));
+    setMinDuration(minVal.toString());
+    setMaxDuration(maxVal.toString());
   };
 
   useEffect(() => {
@@ -70,59 +54,81 @@ function DurationFilter({
     return () => clearTimeout(timeOutId);
   }, [minDuration, onChangeCallback]);
 
+  function valueLabelFormat(value: number) {
+    let seconds = Math.round(value * 60);
+    if (seconds < 60) {
+      return `${seconds}s`;
+    } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60);
+      seconds = Math.round(seconds - minutes * 60);
+      return seconds < 10
+        ? `${minutes}m0${seconds}s`
+        : `${minutes}m${seconds}s`;
+    } else if (value < Math.max(...labels)) {
+      const hours = Math.floor(value / 60);
+      const minutes = Math.round(value - hours * 60);
+      return minutes < 10 ? `${hours}h0${minutes}m` : `${hours}h${minutes}m`;
+    }
+    return `>8h`;
+  }
+
+  function calculateValue(value: number) {
+    for (let i = 0; i < breaks.length; i++) {
+      const min = breaks[i - 1];
+      const max = breaks[i];
+      if (value < max) {
+        const pc = (value - min) / (max - min);
+        const res = labels[i - 1] + pc * (labels[i] - labels[i - 1]);
+        return res;
+      }
+    }
+    return INFINITE_DURATION;
+  }
+
+  function correspondingValue(value: number) {
+    for (let i = 0; i < labels.length; i++) {
+      const min = labels[i - 1];
+      const max = labels[i];
+      if (value < max) {
+        const pc = (value - min) / (max - min);
+        const res = breaks[i - 1] + pc * (breaks[i] - breaks[i - 1]);
+        return res;
+      }
+    }
+    return Math.max(...breaks);
+  }
+
+  const marks = [
+    { value: 0, label: '0s' },
+    { value: 100, label: '2m' },
+    { value: 200, label: '5m' },
+    { value: 300, label: '10m' },
+    { value: 400, label: '20m' },
+    { value: 500, label: '1h' },
+    { value: 600, label: '2h' },
+    { value: 700, label: '>8h' },
+  ];
+
   return (
     <TitledSection title={t('filter.duration.title')}>
-      <TextField
-        margin="dense"
-        fullWidth
-        size="small"
-        color="secondary"
-        variant="outlined"
-        type="number"
-        name="duration_gte"
-        label={t('filter.duration.min.label')}
-        value={minDuration}
-        onChange={handleChangeMin}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={t('filter.duration.min.clearAriaLabel')}
-                edge="end"
-                onClick={clearMinDuration}
-              >
-                <Clear />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        data-testid="filter-duration-gte"
-      />
-      <TextField
-        margin="dense"
-        fullWidth
-        size="small"
-        color="secondary"
-        variant="outlined"
-        type="number"
-        name="duration_lte"
-        label={t('filter.duration.max.label')}
-        value={maxDuration}
-        onChange={handleChangeMax}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={t('filter.duration.max.clearAriaLabel')}
-                edge="end"
-                onClick={clearMaxDuration}
-              >
-                <Clear />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        data-testid="filter-duration-lte"
+      <Slider
+        min={Math.min(...breaks)}
+        max={Math.max(...breaks)}
+        getAriaLabel={() => 'Duration range'}
+        onChange={handleChange}
+        valueLabelDisplay="auto"
+        getAriaValueText={valueLabelFormat}
+        valueLabelFormat={valueLabelFormat}
+        defaultValue={[
+          correspondingValue(parseInt(minDuration)),
+          correspondingValue(parseInt(maxDuration)),
+        ]}
+        value={[
+          correspondingValue(parseInt(minDuration)),
+          correspondingValue(parseInt(maxDuration)),
+        ]}
+        marks={marks}
+        scale={calculateValue}
       />
     </TitledSection>
   );

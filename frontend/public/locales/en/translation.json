@@ -208,15 +208,7 @@
     "allTime": "All time",
     "uploadDate": "Uploaded",
     "duration": {
-      "title": "Duration (minutes)",
-      "max": {
-        "label": "max",
-        "clearAriaLabel": "Clear the max duration"
-      },
-      "min": {
-        "label": "min",
-        "clearAriaLabel": "Clear the min duration"
-      }
+      "title": "Duration"
     },
     "allLanguages": "All languages",
     "language": "Language",

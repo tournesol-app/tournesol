@@ -17,9 +17,9 @@ export const useListFilter = ({
       searchParams.delete(key);
     }
     // Reset pagination if filters change
-    if (key !== 'offset') {
-      searchParams.delete('offset');
-    }
+    //if (key !== 'offset') {
+    //  searchParams.delete('offset');
+    //}
     history.push({ search: searchParams.toString() });
   };
 
