@@ -6,8 +6,7 @@ from django.db.models import Case, F, QuerySet, When
 from django.db.models.expressions import RawSQL
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore, Entity
-from tournesol.models.ratings import ContributorRating
+from tournesol.models import ComparisonCriteriaScore, ContributorRating, ContributorScaling, Entity
 
 
 class MlInput(ABC):
@@ -203,6 +202,42 @@ class MlInputFromDb(MlInput):
                     "is_public",
                     "is_trusted",
                     "is_supertrusted",
+                ]
+            )
+        return pd.DataFrame(values)
+
+    def get_user_scalings(self, user_id=None) -> pd.DataFrame:
+        """Fetch saved invidiual scalings
+        Returns:
+        - ratings_df: DataFrame with columns
+            * `user_id`: int
+            * `criteria`: str
+            * `scale`: float
+            * `scale_uncertainty`: float
+            * `translation`: float
+            * `translation_uncertainty`: float
+        """
+
+        scalings = ContributorScaling.objects.filter(poll__name=self.poll_name)
+        if user_id is not None:
+            scalings = scalings.filter(user_id=user_id)
+        values = scalings.values(
+            "user_id",
+            "criteria",
+            "scale",
+            "scale_uncertainty",
+            "translation",
+            "translation_uncertainty"
+        )
+        if len(values) == 0:
+            return pd.DataFrame(
+                columns=[
+                    "user_id",
+                    "criteria",
+                    "scale",
+                    "scale_uncertainty",
+                    "translation",
+                    "translation_uncertainty"
                 ]
             )
         return pd.DataFrame(values)

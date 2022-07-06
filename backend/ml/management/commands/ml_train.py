@@ -6,11 +6,7 @@ from core.models import User
 from ml.core import TOURNESOL_DEV, ml_run
 from ml.inputs import MlInputFromDb
 from ml.mehestan.run import run_mehestan
-from ml.outputs import (
-    save_contributor_scores,
-    save_entity_scores,
-    save_tournesol_score_as_sum_of_criteria,
-)
+from ml.outputs import save_contributor_scores, save_entity_scores, save_tournesol_scores
 from tournesol.models import Poll
 from tournesol.models.poll import ALGORITHM_LICCHAVI, ALGORITHM_MEHESTAN
 
@@ -64,7 +60,7 @@ def save_licchavi_data(
 
     if trusted_only:
         save_entity_scores(poll, entity_scores)
-        save_tournesol_score_as_sum_of_criteria(poll)
+        save_tournesol_scores(poll)
         contributor_scores_to_save = [
             (contributor_id, video_id, criteria, score, uncertainty)
             for (

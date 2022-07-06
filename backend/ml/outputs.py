@@ -15,6 +15,9 @@ from tournesol.models import (
     Poll,
 )
 from tournesol.models.entity_score import ScoreMode
+from tournesol.models.poll import ALGORITHM_MEHESTAN
+
+from .inputs import MlInputFromDb
 
 
 def save_entity_scores(
@@ -54,50 +57,114 @@ def save_entity_scores(
         )
 
 
-def save_tournesol_score_as_sum_of_criteria(poll):
+def save_tournesol_scores(poll):
     entities = []
     for entity in (
         Entity.objects.filter(all_criteria_scores__poll=poll)
         .distinct()
         .with_prefetched_scores(poll_name=poll.name)
     ):
-        entity.tournesol_score = 10 * sum(
-            criterion.score for criterion in entity.criteria_scores
-        )
+        if poll.algorithm == ALGORITHM_MEHESTAN:
+            # The tournesol score is simply the score associated with the main criteria
+            entity.tournesol_score = next(
+                (s.score for s in entity.criteria_scores if s.criteria == poll.main_criteria),
+                None
+            )
+        else:
+            entity.tournesol_score = 10 * sum(
+                criterion.score for criterion in entity.criteria_scores
+            )
         entities.append(entity)
     Entity.objects.bulk_update(entities, ["tournesol_score"])
 
 
+def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
+    """
+    Apply individual and poll-level scalings based on input "raw_score", and "raw_uncertainty".
+
+    Params:
+        poll: Poll,
+        contributor_scores: DataFrame with columns:
+            user_id: int
+            entity_id: int
+            criteria: str
+            raw_score: float
+            raw_uncertainty: float
+
+    Returns:
+        DataFrame with additional columns "score" and "uncertainty".
+    """
+    if poll.algorithm != ALGORITHM_MEHESTAN:
+        contributor_scores["score"] = contributor_scores["raw_score"]
+        contributor_scores["uncertainty"] = contributor_scores["raw_uncertainty"]
+        return contributor_scores
+
+    ml_input = MlInputFromDb(poll_name=poll.name)
+    scalings = ml_input.get_user_scalings().set_index(["user_id", "criteria"])
+    contributor_scores = contributor_scores.join(
+        scalings,
+        on=["user_id", "criteria"],
+        how="left"
+    )
+    contributor_scores["scale"].fillna(1, inplace=True)
+    contributor_scores["translation"].fillna(0, inplace=True)
+    contributor_scores["scale_uncertainty"].fillna(0, inplace=True)
+    contributor_scores["translation_uncertainty"].fillna(0, inplace=True)
+
+    # Apply individual scaling
+    contributor_scores["uncertainty"] = (
+        contributor_scores["scale"] * contributor_scores["raw_uncertainty"]
+        + contributor_scores["scale_uncertainty"] * contributor_scores["raw_score"].abs()
+        + contributor_scores["translation_uncertainty"]
+    )
+    contributor_scores["score"] = (
+        contributor_scores["raw_score"] * contributor_scores["scale"]
+        + contributor_scores["translation"]
+    )
+
+    # Apply poll scaling
+    scale_function = poll.scale_function
+    contributor_scores["uncertainty"] = 0.5 * (
+        scale_function(contributor_scores["score"] + contributor_scores["uncertainty"])
+        - scale_function(contributor_scores["score"] - contributor_scores["uncertainty"])
+    )
+    contributor_scores["score"] = scale_function(contributor_scores["score"])
+    return contributor_scores
+
+
 def save_contributor_scores(
-    poll,
+    poll: Poll,
     contributor_scores,
     trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
     single_user_id: Optional[int] = None,
 ):
-    if isinstance(contributor_scores, pd.DataFrame):
-        scores_list = list(
-            contributor_scores[
-                ["user_id", "entity_id", "criteria", "score", "uncertainty"]
-            ].itertuples(index=False)
+    if not isinstance(contributor_scores, pd.DataFrame):
+        contributor_scores = pd.DataFrame(
+            contributor_scores,
+            columns=["user_id", "entity_id", "criteria", "raw_score", "raw_uncertainty"]
         )
-    else:
-        scores_list = list(contributor_scores)
+
+    if "score" not in contributor_scores:
+        # Scaled "score" and "uncertainty" need to be computed
+        # based on raw_score and raw_uncertainty
+        contributor_scores = apply_score_scalings(poll, contributor_scores)
 
     ratings = ContributorRating.objects.filter(poll=poll)
     if single_user_id is not None:
         ratings = ratings.filter(user_id=single_user_id)
 
     rating_ids = {
-        (contributor_id, video_id): rating_id
-        for rating_id, contributor_id, video_id in ratings.values_list(
+        (contributor_id, entity_id): rating_id
+        for rating_id, contributor_id, entity_id in ratings.values_list(
             "id", "user_id", "entity_id"
         )
     }
     ratings_to_create = set(
-        (contributor_id, video_id)
-        for contributor_id, video_id, _, _, _ in scores_list
-        if (contributor_id, video_id) not in rating_ids
+        (contributor_id, entity_id)
+        for contributor_id, entity_id
+        in contributor_scores[["user_id", "entity_id"]].itertuples(index=False)
+        if (contributor_id, entity_id) not in rating_ids
     )
     ContributorRating.objects.bulk_create(
         (
@@ -141,12 +208,15 @@ def save_contributor_scores(
         scores_to_delete.delete()
         ContributorRatingCriteriaScore.objects.bulk_create(
             ContributorRatingCriteriaScore(
-                contributor_rating_id=rating_ids[(contributor_id, video_id)],
-                criteria=criteria,
-                score=score,
-                uncertainty=uncertainty,
+                contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],
+                criteria=row.criteria,
+                score=row.score,
+                uncertainty=row.uncertainty,
+                raw_score=row.raw_score,
+                raw_uncertainty=row.raw_uncertainty
             )
-            for contributor_id, video_id, criteria, score, uncertainty in scores_list
+            for _, row
+            in contributor_scores.iterrows()
         )
 
 

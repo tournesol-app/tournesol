@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 
-R_MAX = 10  # Maximum score for a comparison in the input
+from tournesol.utils.constants import COMPARISON_MAX
+
+R_MAX = COMPARISON_MAX  # Maximum score for a comparison in the input
 ALPHA = 0.01  # Signal-to-noise hyperparameter
 
 

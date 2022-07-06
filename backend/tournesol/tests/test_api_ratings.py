@@ -300,16 +300,33 @@ class RatingApi(TestCase):
         rating = ContributorRating.objects.get(
             poll=self.poll_videos, user=self.user1, entity=self.video1
         )
-
         self.assertEqual(rating.is_public, False)
+
+        # Create contributor score, that will be returned in the PATCH response
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=rating,
+            criteria="test-criteria",
+            score=3,
+        )
 
         response = self.client.patch(
             "{}{}/".format(self.ratings_base_url, self.video1.uid),
             data={"is_public": True},
             format="json",
         )
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["is_public"], True, response.json())
+        self.assertEqual(response_data["is_public"], True)
+        self.assertEqual(
+            response_data["criteria_scores"],
+            [
+                {
+                    "criteria": "test-criteria",
+                    "score": 3.0,
+                    "uncertainty": 0.0,
+                }
+            ],
+        )
         rating.refresh_from_db()
         self.assertEqual(rating.is_public, True)
 

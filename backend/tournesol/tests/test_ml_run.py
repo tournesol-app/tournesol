@@ -168,3 +168,9 @@ class TestMlTrainMehestan(TransactionTestCase):
         # Scaling uncertainties are not defined for supertrusted users
         self.assertIsNone(scaling.scale_uncertainty)
         self.assertIsNone(scaling.translation_uncertainty)
+
+        # Check tournesol score is saved and scaled correctly
+        self.video1.refresh_from_db()
+        self.video2.refresh_from_db()
+        self.assertGreater(self.video1.tournesol_score, 20)
+        self.assertLess(self.video2.tournesol_score, -20)

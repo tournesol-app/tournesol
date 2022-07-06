@@ -58,12 +58,20 @@ class ContributorRatingCriteriaScore(models.Model):
     score = models.FloatField(
         default=0,
         blank=False,
-        help_text="Score for the given criteria",
+        help_text="Score for the given criteria, after individual and poll scalings applied",
     )
     uncertainty = models.FloatField(
         default=0,
         blank=False,
-        help_text="Uncertainty about the video's score for the given criteria",
+        help_text="Uncertainty about the criteria score",
+    )
+    raw_score = models.FloatField(
+        default=0,
+        help_text="Computed individual score without any scaling applied",
+    )
+    raw_uncertainty = models.FloatField(
+        default=0,
+        help_text="Computed individual uncertainty without any scaling applied",
     )
 
     class Meta:
