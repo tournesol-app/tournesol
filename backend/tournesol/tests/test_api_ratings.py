@@ -314,8 +314,19 @@ class RatingApi(TestCase):
             data={"is_public": True},
             format="json",
         )
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["is_public"], True, response.json())
+        self.assertEqual(response_data["is_public"], True)
+        self.assertEqual(
+            response_data["criteria_scores"],
+            [
+                {
+                    "criteria": "test-criteria",
+                    "score": 3.0,
+                    "uncertainty": 0.0,
+                }
+            ],
+        )
         rating.refresh_from_db()
         self.assertEqual(rating.is_public, True)
 
