@@ -6,9 +6,13 @@ from django.db.models import Case, F, QuerySet, When
 from django.db.models.expressions import RawSQL
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore, Entity
-from tournesol.models.ratings import ContributorRating, ContributorRatingCriteriaScore
-from tournesol.models.scaling import ContributorScaling
+from tournesol.models import (
+    ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorScaling,
+    Entity,
+    ContributorRatingCriteriaScore,
+)
 
 
 class MlInput(ABC):
@@ -47,7 +51,7 @@ class MlInput(ABC):
         pass
 
     @abstractmethod
-    def get_all_scaling_factors(
+    def get_user_scalings(
         self, user_id: Optional[int] = None, criteria: Optional[str] = None
     ) -> pd.DataFrame:
         pass
@@ -97,7 +101,7 @@ class MlInputFromPublicDataset(MlInput):
         df["is_trusted"] = df["is_supertrusted"] = df["user_id"].isin(top_users)
         return df
 
-    def get_all_scaling_factors(self, user_id=None, criteria=None):
+    def get_user_scalings(self, user_id=None, criteria=None):
         # _, all_scaling = compute_scaled_scores(
         #     ml_input=self,
         #     individual_scores=self.get_indiv_score(
@@ -246,27 +250,38 @@ class MlInputFromDb(MlInput):
             )
         return pd.DataFrame(values)
 
-    def get_all_scaling_factors(self, user_id=None, criteria=None):
-        scores_queryset = ContributorScaling.objects.filter(poll__name=self.poll_name)
+    def get_user_scalings(self, user_id=None) -> pd.DataFrame:
+        """Fetch saved invidiual scalings
+        Returns:
+        - ratings_df: DataFrame with columns
+            * `user_id`: int
+            * `criteria`: str
+            * `scale`: float
+            * `scale_uncertainty`: float
+            * `translation`: float
+            * `translation_uncertainty`: float
+        """
+
+        scalings = ContributorScaling.objects.filter(poll__name=self.poll_name)
         if user_id is not None:
-            scores_queryset = scores_queryset.filter(user_id=user_id)
-        if criteria is not None:
-            scores_queryset = scores_queryset.filter(criteria=criteria)
-        values = scores_queryset.values(
+            scalings = scalings.filter(user_id=user_id)
+        values = scalings.values(
             "user_id",
-            s=F("scale"),
-            tau=F("translation"),
-            delta_s=F("scale_uncertainty"),
-            delta_tau=F("translation_uncertainty"),
+            "criteria",
+            "scale",
+            "scale_uncertainty",
+            "translation",
+            "translation_uncertainty",
         )
         if len(values) == 0:
             return pd.DataFrame(
                 columns=[
                     "user_id",
-                    "s",
-                    "tau",
-                    "delta_s",
-                    "delta_tau",
+                    "criteria",
+                    "scale",
+                    "scale_uncertainty",
+                    "translation",
+                    "translation_uncertainty",
                 ]
             )
         return pd.DataFrame(values)

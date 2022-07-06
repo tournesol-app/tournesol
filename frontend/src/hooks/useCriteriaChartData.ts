@@ -13,8 +13,8 @@ const between = (a: number, b: number, x: number | undefined): number => {
   return Math.min(b, Math.max(a, x || 0));
 };
 
-const SCORE_MIN = -1;
-const SCORE_MAX = 1;
+const SCORE_MIN = -100;
+const SCORE_MAX = 100;
 const DOMAIN = [SCORE_MIN, SCORE_MAX];
 
 export interface CriterionChartScores {
@@ -62,10 +62,9 @@ const useCriteriaChartData = ({
       between(
         SCORE_MIN,
         SCORE_MAX,
-        // TODO: below is a bad hack necessary because scores on multiple
-        // polls are not scaled in the same way. We should have a simpler
-        // manner to address this.
-        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 4 * score : score
+        // Below is a bad hack necessary because scores on "presidentielle2022"
+        // are frozen, and the latest Mehestan scaling is not applied on this poll.
+        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 400 * score : score
       ),
     [pollName]
   );

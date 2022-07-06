@@ -107,7 +107,7 @@ class TestTournesolBot(TestCase):
         Entity.objects.filter(pk=self.videos[8].pk).update(add_time=time_ago(days=76))
 
         # Define reliability score for videos 0 to 7
-        for i, reliability_score in enumerate([0.29, 0.32, 0.76, 0.55, 0.22, -0.1, 0.25, 0.25]):
+        for i, reliability_score in enumerate([29, 32, 76, 55, 22, -10, 25, 25]):
             VideoCriteriaScoreFactory(
                 entity=self.videos[i],
                 criteria="reliability",
@@ -117,30 +117,30 @@ class TestTournesolBot(TestCase):
         VideoCriteriaScoreFactory(
             entity=self.videos[8], criteria="largely_recommended", score=0.35
         )
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="reliability", score=0.32)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="importance", score=0.52)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="engaging", score=0.38)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="pedagogy", score=0.31)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="layman_friendly", score=0.26)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="reliability", score=32)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="importance", score=52)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="engaging", score=38)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="pedagogy", score=31)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="layman_friendly", score=26)
         VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="entertaining_relaxing", score=0.14
+            entity=self.videos[8], criteria="entertaining_relaxing", score=14
         )
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="better_habits", score=0.12)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="better_habits", score=12)
         VideoCriteriaScoreFactory(entity=self.videos[8], criteria="diversity_inclusion", score=0.0)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="backfire_risk", score=-0.02)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="backfire_risk", score=-2)
 
     def test_get_best_criteria(self):
 
         criteria_in_order = [
-            ("importance", 0.52),
-            ("engaging", 0.38),
-            ("reliability", 0.32),
-            ("pedagogy", 0.31),
-            ("layman_friendly", 0.26),
-            ("entertaining_relaxing", 0.14),
-            ("better_habits", 0.12),
-            ("diversity_inclusion", 0.0),
-            ("backfire_risk", -0.02),
+            ("importance", 52),
+            ("engaging", 38),
+            ("reliability", 32),
+            ("pedagogy", 31),
+            ("layman_friendly", 26),
+            ("entertaining_relaxing", 14),
+            ("better_habits", 12),
+            ("diversity_inclusion", 0),
+            ("backfire_risk", -2),
         ]
 
         assert get_best_criteria(self.videos[8], 9) == criteria_in_order

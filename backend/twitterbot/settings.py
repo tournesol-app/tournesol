@@ -1,7 +1,7 @@
 # Quality criteria
 MIN_NB_CONTRIBUTORS = 5
 MIN_NB_RATINGS = 15
-MIN_RELIABILITY_SCORE = 0.1
+MIN_RELIABILITY_SCORE = 10
 MIN_TOURNESOL_SCORE = 10
 
 # Date range for videos to be considered

@@ -1,16 +1,37 @@
 import { TFunction } from 'react-i18next';
-import { EntitiesService, Entity, TypeEnum } from 'src/services/openapi';
+import { PollsService, Recommendation } from 'src/services/openapi';
 import { OrderedDialogs } from 'src/utils/types';
 
-let VIDEOS: Promise<Entity[]> | null = null;
+let VIDEOS: Promise<Recommendation[]> | null = null;
 
-export function getTutorialVideos(): Promise<Entity[]> {
+/**
+ * Return a list of `Recommendation` for the tutorial.
+ *
+ * The recommendations returned:
+ *   - are safe recommendations
+ *   - are in the TOP 100 of all-time recommendations...
+ *   - ...having a maximum duration of 5 minutes
+ *
+ * TODO:
+ *   - make the recommendations' language match the user language
+ *   - if no reco. are available in this language, use `en`?
+ */
+export function getTutorialVideos(): Promise<Recommendation[]> {
   if (VIDEOS != null) {
     return VIDEOS;
   }
-  VIDEOS = EntitiesService.entitiesList({
-    type: TypeEnum.VIDEO,
-    limit: 8,
+
+  const minutesMax = 5;
+  const top = 100;
+
+  const metadata = {
+    'duration:lte:int': 60 * minutesMax,
+  };
+
+  VIDEOS = PollsService.pollsRecommendationsList({
+    name: 'videos',
+    metadata: metadata,
+    limit: top,
   }).then((data) => data.results ?? []);
   return VIDEOS;
 }

@@ -31,7 +31,7 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
                 "contributorvideoratings",
                 queryset=ContributorRating.objects.filter(poll=poll, user=user),
             ),
-            "contributorvideoratings__criteria_scores",
+            "contributorvideoratings__criteria_scores"
         )
 
         return queryset.annotate(
