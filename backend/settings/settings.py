@@ -376,6 +376,8 @@ VIDEO_METADATA_EXPIRE_SECONDS = 2 * 24 * 3600  # 2 days
 
 RECOMMENDATIONS_MIN_CONTRIBUTORS = 2
 
+UPDATE_MEHESTAN_SCORES_ON_COMPARISON = False
+
 # Configuration of the app `core`
 # See the documentation for the complete description.
 APP_CORE = {

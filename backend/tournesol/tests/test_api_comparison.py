@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.core.management import call_command
 from django.db.models import ObjectDoesNotExist, Q
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -998,6 +998,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_update_individual_scores_after_new_comparison(self):
         call_command("ml_train")
 
