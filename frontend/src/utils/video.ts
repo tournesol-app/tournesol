@@ -4,7 +4,7 @@ import { RelatedEntityObject, VideoObject } from './types';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu.be\/)([A-Za-z0-9-_]+)/
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu.be\/|tournesol\.app\/entities\/yt:)([A-Za-z0-9-_]+)/
   );
   const id = matchUrl ? matchUrl[1] : idOrUrl.trim();
   if (isVideoIdValid(id)) {
