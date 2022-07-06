@@ -214,15 +214,7 @@
     "allTime": "Toujours",
     "uploadDate": "Mises en ligne depuis",
     "duration": {
-      "title": "Durée (minutes)",
-      "max": {
-        "label": "max",
-        "clearAriaLabel": "Effacer la durée max"
-      },
-      "min": {
-        "label": "min",
-        "clearAriaLabel": "Effacer la durée min"
-      }
+      "title": "Durée"
     },
     "allLanguages": "Toutes",
     "language": "Langues",
