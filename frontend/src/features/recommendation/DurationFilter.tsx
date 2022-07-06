@@ -5,8 +5,7 @@ import { Slider } from '@mui/material';
 
 import { TitledSection } from 'src/components';
 
-// in milliseconds
-const TYPING_DELAY = 30;
+const TYPING_DELAY = 30; // in milliseconds
 const INFINITE_DURATION = 100000; //approximately 2 months long
 
 interface DurationFilterProps {
