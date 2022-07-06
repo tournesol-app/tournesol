@@ -154,7 +154,13 @@ const EntityCard = ({
   );
 };
 
-export const RowEntityCard = ({ entity }: { entity: RelatedEntityObject }) => {
+export const RowEntityCard = ({
+  entity,
+  withLink = false,
+}: {
+  entity: RelatedEntityObject;
+  withLink?: boolean;
+}) => {
   return (
     <Box
       display="flex"
@@ -170,7 +176,7 @@ export const RowEntityCard = ({ entity }: { entity: RelatedEntityObject }) => {
           config={{
             [TypeEnum.VIDEO]: {
               displayPlayer: false,
-              thumbnailLink: false,
+              thumbnailLink: withLink,
             },
           }}
         />
@@ -180,7 +186,7 @@ export const RowEntityCard = ({ entity }: { entity: RelatedEntityObject }) => {
           uid={entity.uid}
           title={entity.metadata.name}
           titleMaxLines={1}
-          withLink={false}
+          withLink={withLink}
           fontSize="1em"
         />
         {entity.type == TypeEnum.VIDEO && (

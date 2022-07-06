@@ -1,4 +1,22 @@
 {
+  "entityAnalysisPage": {
+    "generic": {
+      "copy": "Copier URI",
+      "copied": "Copié !",
+      "compare": "Comparer"
+    },
+    "candidate": {
+      "goToGlobalRanking": "Voir le classement global"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores par critère"
+      }
+    },
+    "video": {
+      "description": "Description (provenant de YouTube)"
+    }
+  },
   "components": {
     "filtersButton": "filtres"
   },
@@ -148,9 +166,9 @@
     "storageErrorReloadPageAfterApplyingChanges": "Après avoir appliqué ces changements, veuillez rafraîchir cette page."
   },
   "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
-  "logoutButton": "Se déconnecter",
   "loginButton": "Se connecter",
   "joinUsButton": "S'inscrire",
+  "logoutButton": "Se déconnecter",
   "topbar": {
     "search": "Rechercher"
   },
@@ -195,6 +213,17 @@
     "thisYear": "Une année",
     "allTime": "Toujours",
     "uploadDate": "Mises en ligne depuis",
+    "duration": {
+      "title": "Durée (minutes)",
+      "max": {
+        "label": "max",
+        "clearAriaLabel": "Effacer la durée max"
+      },
+      "min": {
+        "label": "min",
+        "clearAriaLabel": "Effacer la durée min"
+      }
+    },
     "allLanguages": "Toutes",
     "language": "Langues",
     "scoreMode": {
@@ -225,6 +254,10 @@
     "compareVideosButton": "Comparer des vidéos"
   },
   "options": "Options",
+  "contextualRecommendations": {
+    "channel": "Chaîne",
+    "comparedWith": "Comparé avec"
+  },
   "settings": {
     "typeKeywordDeleteAccount": "Écrivez les mots <1>{{DELETE_ACCOUNT_KEYWORD}}</1> dans le champ ci-dessous pour déverrouiller la suppression de votre compte.",
     "deleteYourAccount": "Supprimer votre compte",
@@ -251,15 +284,14 @@
     "profileChangedSuccessfully": "Profil bien mis à jour.",
     "captionUsernameWillAppearInPublicDatabase": "Votre nom d'utilisateur apparaîtra dans les données publiques de Tournesol, si vous choisissez de rendre publique au moins l'une de vos données. Vous pouvez le changer à n'importe quel moment.",
     "updateProfile": "Mettre à jour le profil",
-    "account": "Compte",
     "title": "Paramètres",
+    "account": "Compte",
     "changeEmailAddress": "Changer d'adresse e-mail",
     "changePassword": "Changer de mot de passe",
     "exportAllData": "Télécharger vos données",
     "deleteAccount": "Supprimer votre compte"
   },
   "username": "Nom d'utilisateur",
-  "profile": "Profil",
   "metrics": {
     "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
   },
@@ -357,22 +389,6 @@
     "listHasNbComparisons_other": "Vous avez déjà fait <1>{{comparisonCount}}</1> comparaisons.",
     "title": "Mes comparaisons"
   },
-  "entityAnalysisPage": {
-    "candidate": {
-      "goToGlobalRanking": "Voir le classement global"
-    },
-    "chart": {
-      "criteriaScores": {
-        "title": "Scores par critère"
-      }
-    },
-    "generic": {
-      "compare": "Comparer"
-    },
-    "video": {
-      "description": "Description (provenant de YouTube)"
-    }
-  },
   "entityNotFound": {
     "404": {
       "title": "Non trouvée",
@@ -443,6 +459,7 @@
     "title": "À comparer plus tard"
   },
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
+  "profile": "Profil",
   "signup": {
     "successMessage": "Bravo !<1></1>Un lien de vérification vient d'être envoyé à <3>{{email}}</3> .",
     "title": "Inscription",

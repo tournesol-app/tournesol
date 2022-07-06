@@ -2,17 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
-import {
-  Box,
-  Button,
-  Collapse,
-  Container,
-  Grid,
-  Paper,
-  Typography,
-} from '@mui/material';
-import CompareIcon from '@mui/icons-material/Compare';
+import { Box, Button, Collapse, Grid, Paper, Typography } from '@mui/material';
+import { Compare } from '@mui/icons-material';
 
+import CopyToClipboardButton from 'src/components/buttons/CopyToClipboardButton';
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
@@ -26,6 +19,7 @@ import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
+import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 
 export const VideoAnalysis = ({
   video,
@@ -46,14 +40,22 @@ export const VideoAnalysis = ({
   const linkifiedDescription = linkifyStr(video.description || '', linkifyOpts);
 
   return (
-    <Container sx={{ maxWidth: '1000px !important' }}>
-      <Box py={2}>
+    <Box
+      p={2}
+      display="flex"
+      flexDirection="row"
+      flexWrap="wrap"
+      gap="16px"
+      justifyContent="space-between"
+    >
+      <Box flex={2} minWidth={{ xs: '100%', md: null }}>
         {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end">
+        <Box mb={2} display="flex" justifyContent="flex-end" gap="8px">
+          <CopyToClipboardButton />
           <Button
             color="secondary"
             variant="contained"
-            endIcon={<CompareIcon />}
+            endIcon={<Compare />}
             component={RouterLink}
             to={`${baseUrl}/comparison?uidA=${uid}`}
           >
@@ -144,7 +146,13 @@ export const VideoAnalysis = ({
           )}
         </Grid>
       </Box>
-    </Container>
+      <Box flex={1}>
+        <ContextualRecommendations
+          contextUid={uid}
+          uploader={video.uploader || undefined}
+        />
+      </Box>
+    </Box>
   );
 };
 

@@ -17,6 +17,7 @@ import {
 } from 'src/utils/constants';
 import { saveRecommendationsLanguages } from 'src/utils/recommendationsLanguages';
 import { ScoreModeEnum } from 'src/features/recommendation/RecommendationApi';
+
 /**
  * Filter options for Videos recommendations
  *
@@ -71,7 +72,7 @@ function SearchFilter() {
                 item
                 xs={6}
                 md={3}
-                lg={2}
+                lg={3}
                 data-testid="search-date-safe-filter"
               >
                 <DateFilter
@@ -91,13 +92,27 @@ function SearchFilter() {
                 item
                 xs={6}
                 md={3}
-                lg={2}
+                lg={3}
                 data-testid="search-language-filter"
               >
                 <LanguageFilter
                   value={filterParams.get(recommendationFilters.language) ?? ''}
                   onChange={handleLanguageChange}
                 />
+                {/* TOFIX:
+                  - the min filter doesn't work on Firefox desktop
+                  - the pagination doesn't work when the filter is active
+
+                <Box mt={2}>
+                  <DurationFilter
+                    valueMax={filterParams.get('duration_lte') ?? ''}
+                    valueMin={filterParams.get('duration_gte') ?? ''}
+                    onChangeCallback={(filter) =>
+                      setFilter(filter.param, filter.value)
+                    }
+                  />
+                </Box>
+                */}
               </Grid>
             </>
           )}

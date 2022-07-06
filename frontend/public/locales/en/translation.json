@@ -1,4 +1,22 @@
 {
+  "entityAnalysisPage": {
+    "generic": {
+      "copy": "Copy URI",
+      "copied": "Copied!",
+      "compare": "Compare"
+    },
+    "candidate": {
+      "goToGlobalRanking": "Go to global ranking"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores per criterion"
+      }
+    },
+    "video": {
+      "description": "Description (from YouTube)"
+    }
+  },
   "components": {
     "filtersButton": "filters"
   },
@@ -143,9 +161,9 @@
     "storageErrorReloadPageAfterApplyingChanges": "After applying these changes, please reload this page."
   },
   "logoutNonImpactingError": "A non impacting error occurred during your logout.",
-  "logoutButton": "Logout",
   "loginButton": "Log in",
   "joinUsButton": "Join us",
+  "logoutButton": "Logout",
   "topbar": {
     "search": "Search"
   },
@@ -189,6 +207,17 @@
     "thisYear": "A year ago",
     "allTime": "All time",
     "uploadDate": "Uploaded",
+    "duration": {
+      "title": "Duration (minutes)",
+      "max": {
+        "label": "max",
+        "clearAriaLabel": "Clear the max duration"
+      },
+      "min": {
+        "label": "min",
+        "clearAriaLabel": "Clear the min duration"
+      }
+    },
     "allLanguages": "All languages",
     "language": "Language",
     "scoreMode": {
@@ -219,6 +248,10 @@
     "compareVideosButton": "Compare videos"
   },
   "options": "Options",
+  "contextualRecommendations": {
+    "channel": "Channel",
+    "comparedWith": "Compared with"
+  },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
     "deleteYourAccount": "Delete your account",
@@ -245,15 +278,14 @@
     "profileChangedSuccessfully": "Profile changed successfully",
     "captionUsernameWillAppearInPublicDatabase": "Your username will appear in the Tournesol public database if you choose to make any of your data on Tournesol public. You can change it at any time.",
     "updateProfile": "Update profile",
-    "account": "Account",
     "title": "Settings",
+    "account": "Account",
     "changeEmailAddress": "Change email address",
     "changePassword": "Change password",
     "exportAllData": "Export all data",
     "deleteAccount": "Delete account"
   },
   "username": "Username",
-  "profile": "Profile",
   "metrics": {
     "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
   },
@@ -351,22 +383,6 @@
     "title": "My comparisons",
     "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
-  "entityAnalysisPage": {
-    "candidate": {
-      "goToGlobalRanking": "Go to global ranking"
-    },
-    "chart": {
-      "criteriaScores": {
-        "title": "Scores per criterion"
-      }
-    },
-    "generic": {
-      "compare": "Compare"
-    },
-    "video": {
-      "description": "Description (from YouTube)"
-    }
-  },
   "entityNotFound": {
     "404": {
       "title": "Not found",
@@ -436,6 +452,7 @@
     "title": "My rate-later list"
   },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
+  "profile": "Profile",
   "signup": {
     "successMessage": "Success!<1></1>A verification link has been sent to <3>{{email}}</3> .",
     "title": "Account creation",

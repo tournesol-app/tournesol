@@ -127,6 +127,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
                 user=self.request.user,
                 uid_a=self.request.data["entity_a"]["uid"],
                 uid_b=self.request.data["entity_b"]["uid"],
+                delete_comparison_case=False,
             )
 
 
@@ -225,6 +226,7 @@ class ComparisonDetailApi(
                 user=self.request.user,
                 uid_a=self.kwargs["uid_a"],
                 uid_b=self.kwargs["uid_b"],
+                delete_comparison_case=False,
             )
 
     def perform_destroy(self, instance):
@@ -236,6 +238,7 @@ class ComparisonDetailApi(
                 user=self.request.user,
                 uid_a=self.kwargs["uid_a"],
                 uid_b=self.kwargs["uid_b"],
+                delete_comparison_case=True,
             )
 
     def get(self, request, *args, **kwargs):
