@@ -2,7 +2,7 @@
 Administration interface of the `tournesol` app
 """
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
 from django.urls import reverse
@@ -81,8 +81,11 @@ class EntityAdmin(admin.ModelAdmin):
 
     @admin.action(description="Force metadata refresh of selected entities")
     def update_metadata(self, request, queryset: QuerySet[Entity]):
+        count = 0
         for entity in queryset.iterator():
             entity.inner.refresh_metadata(force=True)
+            count += 1
+        messages.info(request, f"finished refreshing the metadata of the {count} entities")
 
     @staticmethod
     @admin.display(description="name", ordering="metadata__name")
