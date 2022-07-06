@@ -31,14 +31,14 @@ class VoucherTestCase(TestCase):
         Voucher.objects.bulk_create(
             [
                 # user_1 has given one voucher
-                Voucher(by=self.user_1, to=self.user_2, trust_value=12),
+                Voucher(by=self.user_1, to=self.user_2, vouch_value=12),
                 # user_2 has given two vouchers
-                Voucher(by=self.user_2, to=self.user_1, trust_value=21),
-                Voucher(by=self.user_2, to=self.user_3, trust_value=23),
+                Voucher(by=self.user_2, to=self.user_1, vouch_value=21),
+                Voucher(by=self.user_2, to=self.user_3, vouch_value=23),
                 # user_3 has given three vouchers
-                Voucher(by=self.user_3, to=self.user_1, trust_value=31),
-                Voucher(by=self.user_3, to=self.user_2, trust_value=32),
-                Voucher(by=self.user_3, to=self.user_4, trust_value=34),
+                Voucher(by=self.user_3, to=self.user_1, vouch_value=31),
+                Voucher(by=self.user_3, to=self.user_2, vouch_value=32),
+                Voucher(by=self.user_3, to=self.user_4, vouch_value=34),
                 # user_0 has given / received zero voucher
             ]
         )
@@ -50,7 +50,7 @@ class VoucherTestCase(TestCase):
         """
         vouchers, exists = Voucher.get_given_to(self.user_3)
         self.assertEqual(vouchers.count(), 1)
-        self.assertEqual(vouchers[0].trust_value, 23)
+        self.assertEqual(vouchers[0].vouch_value, 23)
         self.assertEqual(vouchers[0].by, self.user_2)
         self.assertEqual(vouchers[0].to, self.user_3)
         self.assertEqual(exists, True)
@@ -69,7 +69,7 @@ class VoucherTestCase(TestCase):
         for voucher in vouchers:
             self.assertEqual(voucher.to, self.user_2)
             self.assertIn(voucher.by, [self.user_1, self.user_3])
-            self.assertIn(voucher.trust_value, [12, 32])
+            self.assertIn(voucher.vouch_value, [12, 32])
 
     def test_get_given_to_with_zero(self) -> None:
         """
@@ -86,7 +86,7 @@ class VoucherTestCase(TestCase):
         """
         vouchers, exists = Voucher.get_given_by(self.user_1)
         self.assertEqual(vouchers.count(), 1)
-        self.assertEqual(vouchers[0].trust_value, 12)
+        self.assertEqual(vouchers[0].vouch_value, 12)
         self.assertEqual(vouchers[0].by, self.user_1)
         self.assertEqual(vouchers[0].to, self.user_2)
         self.assertEqual(exists, True)
@@ -105,7 +105,7 @@ class VoucherTestCase(TestCase):
         for voucher in vouchers:
             self.assertEqual(voucher.by, self.user_3)
             self.assertIn(voucher.to, [self.user_1, self.user_2, self.user_4])
-            self.assertIn(voucher.trust_value, [31, 32, 34])
+            self.assertIn(voucher.vouch_value, [31, 32, 34])
 
     def test_get_given_by_with_zero(self) -> None:
         """

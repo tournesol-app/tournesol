@@ -33,9 +33,9 @@ class Voucher(models.Model):
     is_public = models.BooleanField(
         default=False, help_text="Should the voucher be public?"
     )
-    trust_value = models.FloatField(
+    vouch_value = models.FloatField(
         default=0,
-        help_text="The trust value given by the vouching user to receiving user.",
+        help_text="The vouch value given by the vouching user to receiving user.",
     )
 
     @staticmethod
