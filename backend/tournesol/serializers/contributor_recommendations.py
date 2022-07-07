@@ -6,19 +6,22 @@ from tournesol.serializers.rating import ContributorCriteriaScore
 
 
 class ContributorRecommendationsSerializer(RecommendationSerializer):
+    """
+    An entity recommended by a user.
+
+    In addition to the fields inherited from `RecommendationSerializer`, this
+    serializer also display the public status of the `ContributorRating`
+    related to the trio poll / entity / user.
+
+    Note that the fields `n_comparisons` and `n_contributors` contain
+    the collective values, and are not specific to the user.
+    """
     is_public = SerializerMethodField()
     criteria_scores = SerializerMethodField()
 
     class Meta(RecommendationSerializer.Meta):
-        # By default, `n_comparisons` and `n_contributors` take all
-        # contributors into account, so they are removed here to not add
-        # confusion in the contributor recommendations. We could choose to
-        # display the `n_comparisons` of the selected contributor by computing
-        # it here.
         fields = list(
             set(RecommendationSerializer.Meta.fields)
-            - {"n_comparisons"}
-            - {"n_contributors"}
             | {"is_public"}
         )
 
