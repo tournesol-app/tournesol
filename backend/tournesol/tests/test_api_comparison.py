@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.core.management import call_command
 from django.db.models import ObjectDoesNotExist, Q
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -996,6 +996,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_update_individual_and_global_scores_after_new_comparison_with_mehestan_run_after_update(
         self,
     ):
@@ -1053,6 +1054,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
             EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
         )
 
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_update_individual_scores_after_new_comparison_with_online_heuristic_update(
         self,
     ):
@@ -1160,6 +1162,7 @@ class ComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_insert_individual_scores_after_new_comparison_with_online_heuristic_update(
         self,
     ):
@@ -1222,6 +1225,7 @@ class ComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
             EntityCriteriaScore.objects.filter(score_mode="default").count(), 2
         )
 
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_update_individual_scores_after_new_comparison_with_online_heuristic_update(
         self,
     ):
@@ -1275,6 +1279,7 @@ class ComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
             EntityCriteriaScore.objects.filter(score_mode="default").count(), 2
         )
 
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     def test_delete_individual_scores_after_new_comparison_with_online_heuristic_update(
         self,
     ):
@@ -1307,7 +1312,7 @@ class ComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
             contributor_rating__entity=self.entities[0],
             criteria="criteria1",
         )
-        self.assertLess(user_score.score, 10)
+        self.assertLess(user_score.score, 200)
 
         contrib_after_update = set(
             ContributorRatingCriteriaScore.objects.all().values_list()
@@ -1323,6 +1328,7 @@ class ComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
         self.assertEqual(
             EntityCriteriaScore.objects.filter(score_mode="default").count(), 2
         )
+
 
 class ComparisonApiWithInactivePoll(TestCase):
     def setUp(self):

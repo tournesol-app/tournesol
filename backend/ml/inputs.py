@@ -9,9 +9,9 @@ from core.models import User
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
+    ContributorRatingCriteriaScore,
     ContributorScaling,
     Entity,
-    ContributorRatingCriteriaScore,
 )
 
 

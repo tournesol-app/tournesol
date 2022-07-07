@@ -9,7 +9,8 @@ import numpy as np
 import pandas as pd
 from django import db
 
-from ml.inputs import MlInput
+from core.models.user import User
+from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
     save_contributor_scalings,
     save_contributor_scores,
@@ -60,7 +61,7 @@ def update_user_scores(poll: Poll, user: User):
                 "score": "raw_score",
                 "uncertainty": "raw_uncertainty",
             },
-            inplace=True
+            inplace=True,
         )
         save_contributor_scores(
             poll, scores, single_criteria=criteria, single_user_id=user.pk

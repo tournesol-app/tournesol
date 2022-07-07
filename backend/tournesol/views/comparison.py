@@ -2,6 +2,7 @@
 API endpoints to interact with the contributor's comparisons.
 """
 
+from django.conf import settings
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist, Q
 from django.http import Http404
@@ -121,7 +122,10 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(self.request.user)
-        if poll.algorithm == ALGORITHM_MEHESTAN:
+        if (
+            settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON
+            and poll.algorithm == ALGORITHM_MEHESTAN
+        ):
             update_user_scores(
                 poll,
                 user=self.request.user,
@@ -220,7 +224,10 @@ class ComparisonDetailApi(
     def perform_update(self, serializer):
         super().perform_update(serializer)
         poll = self.poll_from_url
-        if poll.algorithm == ALGORITHM_MEHESTAN:
+        if (
+            settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON
+            and poll.algorithm == ALGORITHM_MEHESTAN
+        ):
             update_user_scores(
                 poll,
                 user=self.request.user,
@@ -232,7 +239,10 @@ class ComparisonDetailApi(
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
         poll = self.poll_from_url
-        if poll.algorithm == ALGORITHM_MEHESTAN:
+        if (
+            settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON
+            and poll.algorithm == ALGORITHM_MEHESTAN
+        ):
             update_user_scores(
                 poll,
                 user=self.request.user,

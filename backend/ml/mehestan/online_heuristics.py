@@ -13,16 +13,17 @@ from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
     insert_or_update_contributor_score,
     save_entity_scores,
-    save_tournesol_score_as_sum_of_criteria,
+    save_tournesol_scores,
 )
 from tournesol.models import Entity, Poll
 from tournesol.models.entity_score import ScoreMode
+from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 from .global_scores import get_global_scores
 
 logger = logging.getLogger(__name__)
 
-R_MAX = 10  # Maximum score for a comparison in the input
+R_MAX = MEHESTAN_MAX_SCALED_SCORE
 ALPHA = 0.01  # Signal-to-noise hyperparameter
 
 
@@ -165,7 +166,7 @@ def calculate_global_scores_in_all_score_mode(
 def apply_scaling_on_individual_scores_online_heuristics(
     criteria: str, ml_input: MlInput, entity_id_a: int, entity_id_b: int
 ):
-    all_user_scalings = ml_input.get_all_scaling_factors(criteria=criteria)
+    all_user_scalings = ml_input.get_user_scalings()
     all_indiv_score_a = ml_input.get_indiv_score(
         entity_id=entity_id_a, criteria=criteria
     )
@@ -198,17 +199,21 @@ def apply_scaling_on_individual_scores_online_heuristics(
     df["is_supertrusted"].fillna(False, inplace=True)
 
     df = df.merge(all_user_scalings, how="left", on="user_id")
-    df["s"].fillna(1, inplace=True)
-    df["tau"].fillna(0, inplace=True)
-    df["delta_s"].fillna(0, inplace=True)
-    df["delta_tau"].fillna(0, inplace=True)
+    df["scale"].fillna(1, inplace=True)
+    df["translation"].fillna(0, inplace=True)
+    df["scale_uncertainty"].fillna(0, inplace=True)
+    df["translation_uncertainty"].fillna(0, inplace=True)
     df["uncertainty"] = (
-        df["s"] * df["uncertainty"]
-        + df["delta_s"] * df["score"].abs()
-        + df["delta_tau"]
+        df["scale"] * df["uncertainty"]
+        + df["scale_uncertainty"] * df["score"].abs()
+        + df["translation_uncertainty"]
     )
-    df["score"] = df["score"] * df["s"] + df["tau"]
-    df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
+    df["score"] = df["score"] * df["scale"] + df["translation"]
+    df.drop(
+        ["scale", "translation", "scale_uncertainty", "translation_uncertainty"],
+        axis=1,
+        inplace=True,
+    )
     return df
 
 
@@ -359,7 +364,7 @@ def run_online_heuristics(
 
             partial_online_heuristics(criterion)
 
-    save_tournesol_score_as_sum_of_criteria(poll)
+    save_tournesol_scores(poll)
     logger.info("Online Heuristic Mehestan for poll '%s': Done", poll.name)
 
 
