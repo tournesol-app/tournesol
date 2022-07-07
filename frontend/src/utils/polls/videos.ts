@@ -1,6 +1,7 @@
 import { TFunction } from 'react-i18next';
 import { PollsService, Recommendation } from 'src/services/openapi';
 import { OrderedDialogs } from 'src/utils/types';
+import { recommendationsLanguagesFromNavigator } from 'src/utils/recommendationsLanguages';
 
 let VIDEOS: Promise<Recommendation[]> | null = null;
 
@@ -11,22 +12,22 @@ let VIDEOS: Promise<Recommendation[]> | null = null;
  *   - are safe recommendations
  *   - are in the TOP 100 of all-time recommendations...
  *   - ...having a maximum duration of 5 minutes
+ *   - are filtered according to the user's navigator languages
  *
  * TODO:
- *   - make the recommendations' language match the user language
- *   - if no reco. are available in this language, use `en`?
+ *   - if no reco. are available in the navigator languages, use `en`?
  */
 export function getTutorialVideos(): Promise<Recommendation[]> {
   if (VIDEOS != null) {
     return VIDEOS;
   }
+  const metadata: Record<string, string | string[]> = {};
 
   const minutesMax = 5;
   const top = 100;
 
-  const metadata = {
-    'duration:lte:int': 60 * minutesMax,
-  };
+  metadata['duration:lte:int'] = (60 * minutesMax).toString();
+  metadata['language'] = recommendationsLanguagesFromNavigator().split(',');
 
   VIDEOS = PollsService.pollsRecommendationsList({
     name: 'videos',
