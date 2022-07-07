@@ -1,7 +1,14 @@
+/**
+ * Functions and shortcuts used to interact with the Tournesol's recommendations
+ * API.
+ */
+
 import {
+  PaginatedContributorRecommendationsList,
   PaginatedRecommendationList,
   PollCriteria,
   PollsService,
+  UsersService,
 } from 'src/services/openapi';
 import {
   PRESIDENTIELLE_2022_POLL_NAME,
@@ -102,7 +109,7 @@ export enum ScoreModeEnum {
 }
 
 /**
- * Return the recommendations of a given poll.
+ * Return the collective recommendations of a given poll.
  */
 export const getRecommendations = async (
   pollName: string,
@@ -150,6 +157,48 @@ export const getRecommendations = async (
         : pollOptions?.unsafeDefault,
       metadata: getMetadataFilter(pollName, params),
       scoreMode: (params.get('score_mode') as ScoreModeEnum) ?? undefined,
+      weights: criteriaWeights,
+    });
+  } catch (err) {
+    console.error(err);
+    return {
+      results: [],
+      count: 0,
+    };
+  }
+};
+
+/**
+ * Return a user's public personal recommendations in a given poll.
+ */
+export const getPublicPersonalRecommendations = async (
+  username: string,
+  pollName: string,
+  limit: number,
+  searchString: string,
+  criterias: PollCriteria[],
+  pollOptions?: SelectablePoll
+): Promise<PaginatedContributorRecommendationsList> => {
+  const params = new URLSearchParams(searchString);
+
+  buildDateURLParameter(pollName, params);
+
+  const criteriaWeights = Object.fromEntries(
+    criterias.map((c) => [c.name, getParamValueAsNumber(params, c.name)])
+  );
+
+  try {
+    return await UsersService.usersRecommendationsList({
+      username: username,
+      pollName: pollName,
+      limit: limit,
+      offset: getParamValueAsNumber(params, 'offset'),
+      search: params.get('search') ?? undefined,
+      dateGte: params.get('date_gte') ?? undefined,
+      unsafe: params.has('unsafe')
+        ? params.get('unsafe') === 'true'
+        : pollOptions?.unsafeDefault,
+      metadata: getMetadataFilter(pollName, params),
       weights: criteriaWeights,
     });
   } catch (err) {

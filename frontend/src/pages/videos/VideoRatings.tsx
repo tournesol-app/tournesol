@@ -6,9 +6,7 @@ import { Box, Button, Divider } from '@mui/material';
 import type {
   ContributorRating,
   PaginatedContributorRatingList,
-  PaginatedContributorRecommendationsList,
 } from 'src/services/openapi';
-import type { RelatedEntityObject } from 'src/utils/types';
 import Pagination from 'src/components/Pagination';
 import { UsersService } from 'src/services/openapi';
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
@@ -17,6 +15,7 @@ import {
   RatingsContext,
 } from 'src/features/videos/PublicStatusAction';
 import RatingsFilter from 'src/features/ratings/RatingsFilter';
+import { scrollToTop } from 'src/utils/ui';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 
@@ -50,12 +49,6 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
 const VideoRatingsPage = () => {
   const { name: pollName, options } = useCurrentPoll();
   const [ratings, setRatings] = useState<PaginatedContributorRatingList>({});
-  const [recommendations, setRecommendations] =
-    useState<PaginatedContributorRecommendationsList>({});
-  const [entities, setEntities] = useState<RelatedEntityObject[]>([]);
-  const [personalScores, setPersonalScores] = useState<{
-    [uid: string]: number;
-  }>({});
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const history = useHistory();
@@ -63,12 +56,13 @@ const VideoRatingsPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
-  const videoCount = ratings.count || recommendations.count || 0;
+  const videoCount = ratings.count || 0;
   const hasFilter = searchParams.get('isPublic') != null;
 
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
     history.push({ search: searchParams.toString() });
+    scrollToTop();
   };
 
   const loadData = useCallback(async () => {
@@ -76,45 +70,13 @@ const VideoRatingsPage = () => {
     const urlParams = new URLSearchParams(location.search);
     const isPublicParam = urlParams.get('isPublic');
     const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
-    const sortBy = urlParams.get('sortBy');
-
-    setRecommendations({});
-    setRatings({});
-    setPersonalScores({});
-
-    if (sortBy === null) {
-      const response = await UsersService.usersMeContributorRatingsList({
-        pollName,
-        limit,
-        offset,
-        isPublic,
-      });
-      const entities = (response.results || []).map(
-        (rating: ContributorRating) => rating.entity
-      );
-      setRatings(response);
-      setEntities(entities);
-    } else if (sortBy === 'personalScores') {
-      const response = await UsersService.usersMeRecommendationsList({
-        pollName,
-        limit,
-        offset,
-      });
-      const entities = response.results || [];
-      const personalScores = Object.fromEntries(
-        (response.results || []).map(({ uid, total_score }) => [
-          uid,
-          total_score,
-        ])
-      );
-      setRecommendations(response);
-      setEntities(entities);
-      setPersonalScores(personalScores);
-    } else {
-      setIsLoading(false);
-      throw new Error('Unknown sort key: ' + sortBy);
-    }
-
+    const response = await UsersService.usersMeContributorRatingsList({
+      pollName,
+      limit,
+      offset,
+      isPublic,
+    });
+    setRatings(response);
     setIsLoading(false);
   }, [offset, location.search, pollName]);
 
@@ -122,6 +84,9 @@ const VideoRatingsPage = () => {
     loadData();
   }, [loadData]);
 
+  const entities = (ratings.results || []).map(
+    (rating: ContributorRating) => rating.entity
+  );
   const uidToRating = Object.fromEntries(
     (ratings.results || []).map((rating) => [rating.entity.uid, rating])
   );
@@ -167,7 +132,6 @@ const VideoRatingsPage = () => {
             entities={entities}
             settings={[PublicStatusAction]}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
-            personalScores={personalScores}
           />
         </LoaderWrapper>
         {!isLoading && videoCount > 0 && (

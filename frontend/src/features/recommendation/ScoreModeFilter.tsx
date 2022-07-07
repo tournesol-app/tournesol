@@ -4,8 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Link, Tooltip } from '@mui/material';
 import { HelpOutline } from '@mui/icons-material';
 import { ChoicesFilterSection } from 'src/components';
-
-import { ScoreModeEnum } from 'src/features/recommendation/RecommendationApi';
+import { ScoreModeEnum } from 'src/utils/api/recommendations';
 
 interface Props {
   value: string;

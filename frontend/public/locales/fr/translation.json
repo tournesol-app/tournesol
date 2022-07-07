@@ -168,6 +168,9 @@
   "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
   "loginButton": "Se connecter",
   "joinUsButton": "S'inscrire",
+  "personalMenu": {
+    "yourRecommendations": "Mes recommandations"
+  },
   "logoutButton": "Se déconnecter",
   "topbar": {
     "search": "Rechercher"
@@ -458,6 +461,16 @@
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
   },
+  "recommendationsPage": {
+    "chips": {
+      "by": "d'après"
+    },
+    "title": {
+      "results": "Résultats",
+      "personalRecommendations": "Recommandations personnelles",
+      "recommendations": "Recommandations"
+    }
+  },
   "noVideoCorrespondsToSearchCriterias": "Aucune vidéo ne correspond à vos critères de recherche.",
   "profile": "Profil",
   "signup": {
@@ -565,12 +578,6 @@
     "videos": "vidéos",
     "entityCandidate": "candidat",
     "entityVideo": "vidéo"
-  },
-  "recommendationsPage": {
-    "title": {
-      "results": "Résultats",
-      "recommendations": "Recommandations"
-    }
   },
   "presidentielle2022": {
     "dialogs": {

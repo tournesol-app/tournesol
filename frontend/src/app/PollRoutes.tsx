@@ -30,6 +30,8 @@ const PollRoutes = ({ pollName }: Props) => {
     isReady,
   } = useCurrentPoll();
   const disabledItems = options?.disabledRouteIds ?? [];
+  const allowPublicPersonalRecommendations =
+    options?.allowPublicPersonalRecommendations ?? false;
 
   useEffect(() => {
     if (currentPollName !== pollName || !isReady) {
@@ -53,7 +55,7 @@ const PollRoutes = ({ pollName }: Props) => {
       type: PublicRoute,
     },
     {
-      id: RouteID.Recommendations,
+      id: RouteID.CollectiveRecommendations,
       url: 'recommendations',
       page: RecommendationPage,
       type: PublicRoute,
@@ -95,6 +97,15 @@ const PollRoutes = ({ pollName }: Props) => {
       type: PrivateRoute,
     },
   ];
+
+  if (allowPublicPersonalRecommendations) {
+    routes.push({
+      id: RouteID.PublicPersonalRecommendationsPage,
+      url: 'users/:username/recommendations',
+      page: RecommendationPage,
+      type: PublicRoute,
+    });
+  }
 
   return (
     <Switch>

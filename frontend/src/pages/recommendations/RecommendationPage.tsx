@@ -1,33 +1,67 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@mui/material';
 
-import type { PaginatedRecommendationList } from 'src/services/openapi';
-import LoaderWrapper from 'src/components/LoaderWrapper';
+import { Box } from '@mui/material';
+import { Person } from '@mui/icons-material';
+
+import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
 import Pagination from 'src/components/Pagination';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
-import { getRecommendations } from 'src/features/recommendation/RecommendationApi';
-import { ContentBox, ContentHeader } from 'src/components';
-
+import type {
+  PaginatedContributorRecommendationsList,
+  PaginatedRecommendationList,
+} from 'src/services/openapi';
+import {
+  getPublicPersonalRecommendations,
+  getRecommendations,
+} from 'src/utils/api/recommendations';
+import { getRecommendationPageName } from 'src/utils/constants';
 import {
   saveRecommendationsLanguages,
   loadRecommendationsLanguages,
   recommendationsLanguagesFromNavigator,
 } from 'src/utils/recommendationsLanguages';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { getRecommendationPageName } from 'src/utils/constants';
 
+/**
+ * Display a collective or personal recommendations.
+ *
+ * The page also display a the search filters allowed in the current poll.
+ */
 function RecommendationsPage() {
   const { t } = useTranslation();
 
   const history = useHistory();
   const location = useLocation();
-  const { name: pollName, criterias, options } = useCurrentPoll();
+  const { baseUrl, name: pollName, criterias, options } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
 
-  const prov: PaginatedRecommendationList = {
+  const allowPublicPersonalRecommendations =
+    options?.allowPublicPersonalRecommendations ?? false;
+  const { username } = useParams<{ username: string }>();
+
+  // Can be compared to the current pathname, to determine if the
+  // desired recommendations are collective or personal.
+  const collectiveRecoPathname = `${baseUrl}/recommendations`;
+
+  const displayPersonalRecommendations = useMemo((): boolean => {
+    return (
+      allowPublicPersonalRecommendations &&
+      location.pathname !== collectiveRecoPathname &&
+      username !== undefined
+    );
+  }, [
+    allowPublicPersonalRecommendations,
+    collectiveRecoPathname,
+    location.pathname,
+    username,
+  ]);
+
+  const prov:
+    | PaginatedRecommendationList
+    | PaginatedContributorRecommendationsList = {
     count: 0,
     results: [],
   };
@@ -73,31 +107,58 @@ function RecommendationsPage() {
 
     const fetchEntities = async () => {
       setIsLoading(true);
-      setEntities(
-        (await getRecommendations(
-          pollName,
-          limit,
-          location.search,
-          criterias,
-          options
-        )) || []
-      );
+
+      if (displayPersonalRecommendations) {
+        // Get personal recommendations.
+        setEntities(
+          (await getPublicPersonalRecommendations(
+            username,
+            pollName,
+            limit,
+            location.search,
+            criterias,
+            options
+          )) || []
+        );
+      } else {
+        // Get collective recommendations.
+        setEntities(
+          (await getRecommendations(
+            pollName,
+            limit,
+            location.search,
+            criterias,
+            options
+          )) || []
+        );
+      }
+
       setIsLoading(false);
     };
     fetchEntities();
   }, [
     autoLanguageDiscovery,
     criterias,
+    displayPersonalRecommendations,
     history,
     location.search,
+    options,
     pollName,
     searchParams,
-    options,
+    username,
   ]);
 
   return (
     <>
-      <ContentHeader title={getRecommendationPageName(t, pollName)} />
+      {displayPersonalRecommendations ? (
+        <ContentHeader
+          title={getRecommendationPageName(t, pollName, true)}
+          chipIcon={<Person />}
+          chipLabel={t('recommendationsPage.chips.by') + ` ${username}`}
+        />
+      ) : (
+        <ContentHeader title={getRecommendationPageName(t, pollName)} />
+      )}
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box px={{ xs: 2, sm: 0 }}>
           <SearchFilter />
