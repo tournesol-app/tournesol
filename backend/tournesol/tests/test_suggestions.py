@@ -1,5 +1,6 @@
 import datetime
 
+import numpy as np
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -69,7 +70,11 @@ class SuggestionAPITestCase(TestCase):
             email="staff@trusted.test",
             is_staff=True
         )
-        now = datetime.datetime.now()
+        self.sparsity_comparison_user = UserFactory(
+            username="SparseUser",
+            email="spared@trusted.test",
+            is_staff=True
+        )
 
         # Populate the video table
         self.videos = [
@@ -134,6 +139,18 @@ class SuggestionAPITestCase(TestCase):
                 criteria=self._criteria,
                 score=0.25,
             )
+        for v in self.videos:
+            contributor_rating = ContributorRatingFactory(
+                poll=self.poll,
+                entity=v,
+                user=self.sparsity_comparison_user,
+                is_public=True,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=contributor_rating,
+                criteria=self._criteria,
+                score=0,
+            )
         contributor_rating = ContributorRatingFactory(
             poll=self.poll,
             entity=self.videos[4],
@@ -165,29 +182,21 @@ class SuggestionAPITestCase(TestCase):
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[1],
-                duration_ms=102,
-                datetime_lastedit=now,
             ),
             ComparisonFactory(
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[2],
-                duration_ms=105,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             ComparisonFactory(
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[3],
-                duration_ms=108,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             ComparisonFactory(
                 user=self.user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[4],
-                duration_ms=111,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
             ),
             # "other" will have comparisons for elements 2 by 2 for videos 5 to 9, each time only
             #             # the video to the next and then the last video to the first
@@ -195,81 +204,81 @@ class SuggestionAPITestCase(TestCase):
                 user=self.other,
                 entity_1=self.videos[5],
                 entity_2=self.videos[6],
-                duration_ms=302,
-                datetime_lastedit=now + datetime.timedelta(minutes=3),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[6],
                 entity_2=self.videos[7],
-                duration_ms=304,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[7],
                 entity_2=self.videos[8],
-                duration_ms=306,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[8],
                 entity_2=self.videos[9],
-                duration_ms=308,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[5],
                 entity_2=self.videos[9],
-                duration_ms=310,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             # "central" user also has some comparisons, but not that much
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[9],
-                duration_ms=201,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[0],
                 entity_2=self.videos[1],
-                duration_ms=202,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[8],
                 entity_2=self.videos[9],
-                duration_ms=203,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[1],
                 entity_2=self.videos[8],
-                duration_ms=204,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.central_scaled_user,
                 entity_1=self.videos[2],
                 entity_2=self.videos[7],
-                duration_ms=205,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
             ComparisonFactory(
                 user=self.user_no_comparison,
                 entity_1=self.videos[4],
                 entity_2=self.videos[6],
-                duration_ms=404,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
             ),
         ]
+
+        # Here we created a comparison graph very dense between all the videos but two
+        for i, va in enumerate(self.videos[2:]):
+            for j, vb in enumerate(self.videos[i+3:]):
+                self.comparisons.append(ComparisonFactory(
+                    user=self.sparsity_comparison_user,
+                    entity_1=va,
+                    entity_2=vb,
+                ))
+
+        # We then link the last nodes by only one link
+        self.comparisons.append(ComparisonFactory(
+            user=self.sparsity_comparison_user,
+            entity_1=self.videos[1],
+            entity_2=self.videos[4],
+        ))
+        # We then link the last node by only one link
+        self.comparisons.append(ComparisonFactory(
+            user=self.sparsity_comparison_user,
+            entity_1=self.videos[0],
+            entity_2=self.videos[1],
+        ))
 
         # CriteriaRankFactory(poll=self.poll, criteria__name="largely_recommended")
         # Populate the ComparisonCriteriaScore table
@@ -359,7 +368,7 @@ class SuggestionAPITestCase(TestCase):
         )
         last_vid_score = 1000
         for v in user2_videos:
-            v_score = v.score_computation(user_videos[0]) + v.graph_sparsity
+            v_score = v.score_computation(user_videos[0])
             assert v_score <= last_vid_score
             last_vid_score = v_score
 
@@ -398,6 +407,47 @@ class SuggestionAPITestCase(TestCase):
 
         suggestions = suggester.get_second_video_recommendation(new_user, self.videos[9].uid, 6)
         assert len(suggestions) == 6
+
+    def test_sparsification_metric(self):
+        suggester = SuggestionProvider(self.poll)
+        suggester.get_first_video_recommendation(self.sparsity_comparison_user, 6)
+        user_graph = suggester._user_specific_graphs[self.sparsity_comparison_user.id]
+
+        assert np.linalg.eigvalsh(user_graph.normalized_adjacency_matrix)[-1] - 1 < 10e-8
+
+        for n in user_graph.nodes:
+            if n.uid == self.videos[0].uid:
+                alone_node = n
+            elif n.uid == self.videos[1].uid:
+                bridge_node = n
+
+        for n in user_graph.nodes:
+            if n != bridge_node and n != alone_node:
+                max_value = n.graph_sparsity(alone_node)
+                bridge_value = n.graph_sparsity(bridge_node)
+                assert bridge_value < max_value
+                base_value = -1
+                for m in user_graph.nodes:
+                    if n == m:
+                        continue
+                    if base_value == -1 and m not in {bridge_node, alone_node}:
+                        base_value = n.graph_sparsity(m)
+                        assert base_value <= bridge_value
+                    if m == alone_node:
+                        assert n.graph_sparsity(m) == max_value
+                    elif m == bridge_node:
+                        assert n.graph_sparsity(m) == bridge_value
+                    else:
+                        assert n.graph_sparsity(m) == base_value
+
+    def test_similarity_bounded_value(self):
+        suggester = SuggestionProvider(self.poll)
+        suggester.get_first_video_recommendation(self.sparsity_comparison_user, 6)
+        user_graph = suggester._user_specific_graphs[self.sparsity_comparison_user.id]
+
+        for n in user_graph.nodes:
+            for m in user_graph.nodes:
+                assert n.score_computation(m) <= 2
 
     def test_suggestions_with_new_videos(self):
         new_video = VideoFactory()

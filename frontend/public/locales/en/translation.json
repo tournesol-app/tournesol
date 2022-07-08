@@ -163,6 +163,9 @@
   "logoutNonImpactingError": "A non impacting error occurred during your logout.",
   "loginButton": "Log in",
   "joinUsButton": "Join us",
+  "personalMenu": {
+    "yourRecommendations": "My recommendations"
+  },
   "logoutButton": "Logout",
   "topbar": {
     "search": "Search"
@@ -451,6 +454,16 @@
   "myRateLaterListPage": {
     "title": "My rate-later list"
   },
+  "recommendationsPage": {
+    "chips": {
+      "by": "by"
+    },
+    "title": {
+      "results": "Results",
+      "personalRecommendations": "Personal recommendations",
+      "recommendations": "Recommendations"
+    }
+  },
   "noVideoCorrespondsToSearchCriterias": "No video corresponds to your search criterias.",
   "profile": "Profile",
   "signup": {
@@ -558,12 +571,6 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
-  },
-  "recommendationsPage": {
-    "title": {
-      "results": "Results",
-      "recommendations": "Recommendations"
-    }
   },
   "presidentielle2022": {
     "dialogs": {

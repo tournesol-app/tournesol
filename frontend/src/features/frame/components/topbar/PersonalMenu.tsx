@@ -10,8 +10,9 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { Logout } from '@mui/icons-material';
+import { Logout, VideoLibrary } from '@mui/icons-material';
 import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 
 interface PersonalMenuProps {
   menuAnchor: null | HTMLElement;
@@ -30,6 +31,11 @@ const PersonalMenu = ({
 }: PersonalMenuProps) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { baseUrl, options } = useCurrentPoll();
+  const { loginState } = useLoginState();
+
+  const allowPublicPersonalRecommendations =
+    options?.allowPublicPersonalRecommendations ?? false;
 
   return (
     <Menu
@@ -42,6 +48,21 @@ const PersonalMenu = ({
       }}
     >
       <MenuList dense sx={{ py: 0 }}>
+        {/* -- my things section -- */}
+        {allowPublicPersonalRecommendations && [
+          <MenuItem
+            key="public-personal-recommendations"
+            component={RouterLink}
+            to={`${baseUrl}/users/${loginState.username}/recommendations?date=`}
+            onClick={onItemClick}
+          >
+            <ListItemIcon>
+              <VideoLibrary fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t('personalMenu.yourRecommendations')}</ListItemText>
+          </MenuItem>,
+          <Divider key="my-things-divider" />,
+        ]}
         {/* -- settings section -- */}
         {settingsMenu(t).map((item: TournesolMenuItemType) => (
           <MenuItem

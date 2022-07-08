@@ -1,3 +1,8 @@
+/**
+ * Functions and shortcuts used to interact with the Tournesol's comparisons
+ * API.
+ */
+
 import { Comparison, UsersService } from 'src/services/openapi';
 
 export async function getUserComparisons(

@@ -131,7 +131,7 @@ const SideBar = () => {
       displayText: t('menu.home'),
     },
     {
-      id: RouteID.Recommendations,
+      id: RouteID.CollectiveRecommendations,
       targetUrl: `${path}recommendations${defaultRecoSearchParams}`,
       IconComponent:
         pollName === YOUTUBE_POLL_NAME ? VideoLibrary : TableRowsIcon,

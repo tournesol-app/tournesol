@@ -37,15 +37,19 @@ export type VideoObject = Video | VideoSerializerWithCriteria;
  * place a route id is required.
  */
 export enum RouteID {
+  // public and collective routes
   Home = 'home',
-  Recommendations = 'recommendations',
+  CollectiveRecommendations = 'collectiveRecommendations',
   EntityAnalysis = 'entityAnalysis',
+  About = 'about',
+  // public yet personal routes
+  PublicPersonalRecommendationsPage = 'publicPersonalRecommendations',
+  // private and personal routes
   Comparison = 'comparison',
   MyComparisons = 'myComparisons',
   MyComparedItems = 'myComparedItems',
   MyRateLaterList = 'myRateLaterList',
   MyFeedback = 'myFeedback',
-  About = 'about',
 }
 
 export type OrderedDialogs = {
@@ -69,6 +73,8 @@ export type SelectablePoll = {
   // the recommendation link. can be date=Month to retrieve the entities
   // uploaded during the last month for instance
   defaultRecoSearchParams?: string;
+  // enable or disable the public personal recommendations feature.
+  allowPublicPersonalRecommendations?: boolean;
   displayOrder: number;
   // the main criteria name. useful in some situations, like when you want
   // to exclude it from the rated high / rated low metric of the `EntityCard`
