@@ -307,8 +307,8 @@ class MlInputFromDb(MlInput):
             )
 
         values = scores_queryset.values(
-            "score",
-            "uncertainty",
+            "raw_score",
+            "raw_uncertainty",
             user_id=F("contributor_rating__user_id"),
             entity_id=F("contributor_rating__entity_id"),
         )
@@ -318,8 +318,8 @@ class MlInputFromDb(MlInput):
                 [
                     "user_id",
                     "entity_id",
-                    "score",
-                    "uncertainty",
+                    "raw_score",
+                    "raw_uncertainty",
                 ]
             ]
 
@@ -327,7 +327,7 @@ class MlInputFromDb(MlInput):
             columns=[
                 "user_id",
                 "entity_id",
-                "score",
-                "uncertainty",
+                "raw_score",
+                "raw_uncertainty",
             ]
         )

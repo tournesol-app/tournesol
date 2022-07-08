@@ -10,8 +10,8 @@ from django import db
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
-from ml.outputs import (
-    insert_or_update_contributor_score,
+from ml.outputs import (  # insert_or_update_contributor_score,
+    save_contributor_scores,
     save_entity_scores,
     save_tournesol_scores,
 )
@@ -20,6 +20,10 @@ from tournesol.models.entity_score import ScoreMode
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 from .global_scores import get_global_scores
+from .poll_scaling import (
+    apply_poll_scaling_on_global_scores,
+    apply_poll_scaling_on_individual_scaled_scores,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +126,23 @@ def _run_online_heuristics_for_criterion(
     poll_pk: int,
     delete_comparison_case: bool,
 ):
+    """
+    This function apply the online heuristics for a criteria. There is 3 cases :
+    1. a new comparison has been made
+    2. a comparison has been updated
+    3. a comparison has been deleted
+
+    * For each case, this function need to know which entities
+        are being concerned as input and what to do
+    * For each case, we first check if the input are compliant
+        with the data (check_requirements_are_good_for_online_heuristics)
+    * For each case, then we read the previous raw scores
+        (compute_and_update_individual_scores_online_heuristics) and compute new scores
+    * For each case, we reapply scaling (individual) from previous scale
+    * For each case, we compute new global scores for the two entities
+        and we apply poll level scaling at global scores
+
+    """
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_user = ml_input.get_comparisons(criteria=criteria, user_id=user_id)
     entity_id_a = Entity.objects.get(uid=uid_a).pk
@@ -131,7 +152,14 @@ def _run_online_heuristics_for_criterion(
     ):
         return
     compute_and_update_individual_scores_online_heuristics(
-        criteria, ml_input, user_id, poll, all_comparison_user, entity_id_a, entity_id_b
+        criteria,
+        ml_input,
+        user_id,
+        poll,
+        all_comparison_user,
+        entity_id_a,
+        entity_id_b,
+        delete_comparison_case,
     )
 
     partial_scaled_scores_for_ab = apply_scaling_on_individual_scores_online_heuristics(
@@ -141,6 +169,13 @@ def _run_online_heuristics_for_criterion(
     if not partial_scaled_scores_for_ab.empty:
         calculate_global_scores_in_all_score_mode(
             criteria, poll, partial_scaled_scores_for_ab
+        )
+        apply_poll_scaling_on_individual_scaled_scores(
+            poll, partial_scaled_scores_for_ab
+        )
+        partial_scaled_scores_for_ab["criteria"] = criteria
+        save_contributor_scores(
+            poll, partial_scaled_scores_for_ab, single_criteria=criteria
         )
 
 
@@ -154,6 +189,9 @@ def calculate_global_scores_in_all_score_mode(
             df_partial_scaled_scores_for_ab, score_mode=mode
         )
         global_scores["criteria"] = criteria
+
+        apply_poll_scaling_on_global_scores(poll, global_scores)
+
         save_entity_scores(
             poll,
             global_scores,
@@ -204,11 +242,11 @@ def apply_scaling_on_individual_scores_online_heuristics(
     df["scale_uncertainty"].fillna(0, inplace=True)
     df["translation_uncertainty"].fillna(0, inplace=True)
     df["uncertainty"] = (
-        df["scale"] * df["uncertainty"]
-        + df["scale_uncertainty"] * df["score"].abs()
+        df["scale"] * df["raw_uncertainty"]
+        + df["scale_uncertainty"] * df["raw_score"].abs()
         + df["translation_uncertainty"]
     )
-    df["score"] = df["score"] * df["scale"] + df["translation"]
+    df["score"] = df["raw_score"] * df["scale"] + df["translation"]
     df.drop(
         ["scale", "translation", "scale_uncertainty", "translation_uncertainty"],
         axis=1,
@@ -260,12 +298,19 @@ def compute_and_update_individual_scores_online_heuristics(
     df_all_comparison_user: pd.DataFrame,
     entity_id_a: int,
     entity_id_b: int,
+    delete_comparison_case: bool = False,
 ):
+    """
+    this function apply the online heuristics to raw score for the user and the concerned entities
+    1. we get all the previous scores from the user and the criteria
+    2. we compute the new raw_score and raw_uncertainty (get_new_scores_from_online_update)
+    3. we save the new raw_score
+    """
     previous_individual_raw_scores = ml_input.get_indiv_score(
         user_id=user_id, criteria=criteria
     )
     previous_individual_raw_scores = previous_individual_raw_scores[
-        ["entity_id", "score"]
+        ["entity_id", "raw_score"]
     ]
     previous_individual_raw_scores = previous_individual_raw_scores.set_index(
         "entity_id"
@@ -278,23 +323,28 @@ def compute_and_update_individual_scores_online_heuristics(
     ) = get_new_scores_from_online_update(
         df_all_comparison_user, entity_id_a, entity_id_b, previous_individual_raw_scores
     )
-
-    insert_or_update_contributor_score(
-        poll=poll,
-        entity_id=entity_id_a,
-        user_id=user_id,
-        score=theta_star_a,
-        criteria=criteria,
-        uncertainty=delta_star_a,
+    return (
+        theta_star_a,
+        delta_star_a,
+        theta_star_b,
+        delta_star_b,
     )
-    insert_or_update_contributor_score(
-        poll=poll,
-        entity_id=entity_id_b,
-        user_id=user_id,
-        score=theta_star_b,
-        criteria=criteria,
-        uncertainty=delta_star_b,
-    )
+    # insert_or_update_contributor_score(
+    #     poll=poll,
+    #     entity_id=entity_id_a,
+    #     user_id=user_id,
+    #     raw_score=theta_star_a,
+    #     criteria=criteria,
+    #     raw_uncertainty=delta_star_a,
+    # )
+    # insert_or_update_contributor_score(
+    #     poll=poll,
+    #     entity_id=entity_id_b,
+    #     user_id=user_id,
+    #     raw_score=theta_star_b,
+    #     criteria=criteria,
+    #     raw_uncertainty=delta_star_b,
+    # )
 
 
 def run_online_heuristics(

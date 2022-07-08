@@ -246,9 +246,9 @@ def insert_or_update_contributor_score(
     poll: Poll,
     entity_id: str,
     user_id: str,
-    score: float,
+    raw_score: float,
     criteria: str,
-    uncertainty: float,
+    raw_uncertainty: float,
 ):
     query_score_to_update = ContributorRatingCriteriaScore.objects.filter(
         contributor_rating__poll=poll,
@@ -258,11 +258,11 @@ def insert_or_update_contributor_score(
     )
     contributor_rating_criteria_score = query_score_to_update.first()
     if contributor_rating_criteria_score:
-        contributor_rating_criteria_score.score = score
-        contributor_rating_criteria_score.uncertainty = uncertainty
+        contributor_rating_criteria_score.score = raw_score
+        contributor_rating_criteria_score.uncertainty = raw_uncertainty
         contributor_rating_criteria_score.save()
     else:
-        data = [(user_id, entity_id, criteria, score, uncertainty)]
+        data = [(user_id, entity_id, criteria, raw_score, raw_uncertainty)]
         scores = pd.DataFrame(
             data, columns=["user_id", "entity_id", "criteria", "raw_score", "raw_uncertainty"]
         )
