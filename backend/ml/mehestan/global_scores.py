@@ -176,7 +176,8 @@ def compute_scaling(
             n_scores = user_scores.set_index("uid").loc[common_uids]
 
             tau_nqmab = (
-                s_dict.get(user_m, 1) * m_scores.raw_score - s_dict[user_n] * n_scores.raw_score
+                s_dict.get(user_m, 1) * m_scores.raw_score
+                - s_dict[user_n] * n_scores.raw_score
             )
             delta_tau_nqmab = (
                 s_dict[user_n] * n_scores.raw_uncertainty
@@ -271,6 +272,7 @@ def compute_scaled_scores(
     df["is_trusted"].fillna(False, inplace=True)
     df["is_supertrusted"].fillna(False, inplace=True)
 
+    # Apply scaling for supertrusted
     df = df.join(supertrusted_scaling, on="user_id")
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
@@ -278,6 +280,7 @@ def compute_scaled_scores(
     df["uncertainty"] = df["raw_uncertainty"] * df["s"]
     df.drop(["s", "tau"], axis=1, inplace=True)
 
+    # Apply scaling for non_supertrusted
     logging.debug(
         "Computing scaling for %s non_supertrusted, based on %s supertrusted",
         len(non_supertrusted_users),
@@ -290,20 +293,26 @@ def compute_scaled_scores(
         reference_users=supertrusted_users,
         compute_uncertainties=True,
     )
-
+    df["supertrusted_users_temp"] = 1
     df = df.join(non_supertrusted_scaling, on="user_id")
+    df["supertrusted_users_temp"].fillna(0, inplace=True)
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
     df["delta_s"].fillna(0, inplace=True)
     df["delta_tau"].fillna(0, inplace=True)
-    df["uncertainty"] = (
+    df.loc[df["supertrusted_users_temp"] == 0, "uncertainty"] = (
         df["s"] * df["raw_uncertainty"]
         + df["delta_s"] * df["raw_score"].abs()
         + df["delta_tau"]
     )
-    df["score"] = df["raw_score"] * df["s"] + df["tau"]
-    df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
-
+    df.loc[df["supertrusted_users_temp"] == 0, "score"] = (
+        df["raw_score"] * df["s"] + df["tau"]
+    )
+    df.drop(
+        ["s", "tau", "delta_s", "delta_tau", "supertrusted_users_temp"],
+        axis=1,
+        inplace=True,
+    )
     all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
     return df, all_scalings
 
