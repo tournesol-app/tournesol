@@ -17,9 +17,8 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { Entity, UsersService } from 'src/services/openapi';
+import { getRecommendations } from 'src/utils/api/recommendations';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
-import { getRecommendations } from 'src/features/recommendation/RecommendationApi';
-
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
 import { videoToEntity } from 'src/utils/video';

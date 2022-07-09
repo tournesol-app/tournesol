@@ -49,9 +49,7 @@ def get_individual_scores(
         individual_scores.append(scores.reset_index())
 
     if len(individual_scores) == 0:
-        return pd.DataFrame(
-            columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"]
-        )
+        return pd.DataFrame(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
 
     result = pd.concat(individual_scores, ignore_index=True, copy=False)
     return result[["user_id", "entity_id", "raw_score", "raw_uncertainty"]]
