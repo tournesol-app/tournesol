@@ -10,8 +10,8 @@ from tournesol.tests.factories.entity import VideoFactory
 
 class SimpleAllConnectedTest(TestCase):
     """
-    TestCase for the unconnected entities API. ``
-    In this simple test, all video are connected to the user
+    TestCase for the unconnected entities API.
+    In this simple test, all video are connected to the user.
     """
 
     def setUp(self):
@@ -99,7 +99,7 @@ class SimpleAllConnectedTest(TestCase):
 
 class NonConnectedEntityTest(TestCase):
     """
-    TestCase for the unconnected entities API where an entity don't have any comparison
+    TestCase for the unconnected entities API where an entity don't have any comparison.
     """
 
     def setUp(self):
@@ -143,7 +143,7 @@ class NonConnectedEntityTest(TestCase):
 class AdvancedAllConnectedTest(TestCase):
     """
     TestCase for the unconnected entities API. 
-    In this Advanced test, all video are not necessary connecter to the user
+    In this Advanced test, all video are not necessarily connected to the user.
     """
 
     def setUp(self):
