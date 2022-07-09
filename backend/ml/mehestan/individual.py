@@ -62,7 +62,7 @@ def compute_individual_score(scores: pd.DataFrame):
     result = pd.DataFrame(
         {
             "raw_score": theta_star,
-            "aw_uncertainty": delta_star,
+            "raw_uncertainty": delta_star,
         }
     )
     result.index.name = "entity_id"
