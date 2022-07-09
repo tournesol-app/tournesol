@@ -1,6 +1,7 @@
 from urllib.parse import quote
 
 import requests
+from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
 
 from tournesol.serializers.metadata import CandidateMetadata
@@ -18,11 +19,20 @@ class CandidateEntity(EntityType):
     metadata_serializer_class = CandidateMetadata
 
     @classmethod
-    def filter_search(cls, qs, query):
-        from tournesol.models import Entity
+    def filter_search(cls, qs, text_to_search: str, languages=None):
+        return super().filter_search(qs, text_to_search, "fr")
 
+    @classmethod
+    def search_without_vector_field(cls, qs, query):
+        from tournesol.models import Entity
         return qs.filter(
-            pk__in=Entity.objects.filter(Q(metadata__name__icontains=query))
+            pk__in=Entity.objects.filter(
+                Q(uid__icontains=query)
+                | Q(metadata__name__icontains=query)
+                | Q(metadata__frwiki_title__icontains=query)
+                | Q(metadata__youtube_channel_id__icontains=query)
+                | Q(metadata__twitter_username__icontains=query)
+            )
         )
 
     @classmethod
@@ -83,3 +93,16 @@ class CandidateEntity(EntityType):
             metadata["twitter_username"] = get_property_value("P2002")
 
         self.instance.metadata = metadata
+
+    @classmethod
+    def build_search_vector(cls, entity) -> None:
+
+        if entity.type == TYPE_CANDIDATE:
+            entity.search_vector = \
+                SearchVector("uid", weight="A", config="french") + \
+                SearchVector("metadata__name", weight="A", config="french") + \
+                SearchVector("metadata__frwiki_title", weight="B", config="french") + \
+                SearchVector("metadata__youtube_channel_id", weight="B", config="french") + \
+                SearchVector("metadata__twitter_username", weight="B", config="french")
+
+            entity.save(update_fields=["search_vector"])

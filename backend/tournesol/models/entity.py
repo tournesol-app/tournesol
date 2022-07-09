@@ -9,6 +9,8 @@ from typing import List
 
 import numpy as np
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Prefetch, Q
@@ -54,6 +56,9 @@ class Entity(models.Model):
 
     class Meta:
         verbose_name_plural = "entities"
+        indexes = (
+            GinIndex(name="search_index", fields=['search_vector']),
+        )
 
     objects = EntityQueryset.as_manager()
 
@@ -109,6 +114,24 @@ class Entity(models.Model):
         default=0,
         help_text="Total number of certified contributors who rated the video",
     )
+
+    # This contains indexed words, used for the full-text search
+    # These words are filtered (no "stop word"), stemmed and weighted in a language-specific manner
+    search_vector = SearchVectorField(editable=False, null=True)
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        """
+        Automatically refresh the metadata text search vector.
+
+        This would be hard to do with PostgreSQL triggers because
+        there are different weights and configs, and the
+        format of the metadata can vary with the entity type.
+        """
+        super().save(force_insert, force_update, *args, **kwargs)
+
+        if not (("update_fields" in kwargs) and ("search_vector" in kwargs["update_fields"])):
+            if self.type in ENTITY_TYPE_NAME_TO_CLASS:
+                self.entity_cls.build_search_vector(self)
 
     def update_n_ratings(self):
         from .comparisons import Comparison
@@ -294,12 +317,14 @@ class Entity(models.Model):
                 f"Unexpected errors in video metadata format: {serializer.errors}"
             )
 
-        return cls.objects.create(
+        entity = cls.objects.create(
             type=TYPE_VIDEO,
             uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
             metadata=metadata,
             metadata_timestamp=timezone.now(),
         )
+
+        return entity
 
     @classmethod
     def get_from_video_id(cls, video_id):
