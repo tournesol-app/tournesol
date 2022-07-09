@@ -2,6 +2,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Iterable, List, Type
 
+from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.db.models import F, Value
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.exceptions import ValidationError
@@ -183,11 +185,6 @@ class EntityType(ABC):
 
     @classmethod
     @abstractmethod
-    def filter_search(cls, qs, query: str):
-        raise NotImplementedError
-
-    @classmethod
-    @abstractmethod
     def get_uid_regex(cls, namespace: str) -> str:
         """Get a regex able to validate the entity UID."""
         raise NotImplementedError
@@ -220,12 +217,70 @@ class EntityType(ABC):
             return
 
         self.instance.last_metadata_request_at = timezone.now()
-        if save:
-            self.instance.save(update_fields=["last_metadata_request_at"])
 
         self.update_metadata_field()
         # Ensure that the metadata format is valid after refresh
         self.instance.metadata = self.cleaned_metadata
         self.instance.metadata_timestamp = timezone.now()
         if save:
-            self.instance.save(update_fields=["metadata", "metadata_timestamp"])
+            self.instance.save(
+                update_fields=["last_metadata_request_at", "metadata", "metadata_timestamp"]
+            )
+
+    @classmethod
+    def filter_search(cls, qs, text_to_search: str, languages=None):
+        """
+        Filter the queryset by verifying if the text string appears in the metadata.
+
+        Postgres returns a ranking between 0 and 1 of the entities, based on how many
+        times it appears and on which part of the metadata (e.g. finding
+        it in the title will return a higher ranking than finding it in the
+        description). The queryset is annotated with this ranking, that we call
+        "relevance".
+
+        It is currently implemented based on the PostgreSQL full-text search.
+        If there is someday a need for high performances, we could
+        switch to ElasticSearch. But this would require managing a
+        specific server (and thus a new container).
+        """
+        from tournesol.utils.video_language import language_to_postgres_config
+
+        search_query = None
+        if languages:
+            if isinstance(languages, str):
+                languages = [languages]
+
+            for language in languages:
+                pg_language = language_to_postgres_config(language)
+                if pg_language:
+                    if search_query:
+                        search_query |= SearchQuery(text_to_search, config=pg_language)
+                    else:
+                        search_query = SearchQuery(text_to_search, config=pg_language)
+
+        if search_query:
+            qs = qs.filter(search_vector=search_query)
+            qs = qs.annotate(relevance=SearchRank(F("search_vector"), search_query))
+        else:
+            # Languages not supported by Postgres, or no language provided
+            qs = cls.search_without_vector_field(qs, text_to_search)
+            qs = qs.annotate(relevance=Value(1.0))
+
+        return qs
+
+    @classmethod
+    @abstractmethod
+    def search_without_vector_field(cls, qs, query):
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def build_search_vector(cls, entity) -> None:
+        raise NotImplementedError
+
+    @staticmethod
+    def build_all_search_vectors() -> None:
+        from tournesol.entities import ENTITY_TYPE_NAME_TO_CLASS
+
+        for entity in models.Entity.objects.iterator():
+            ENTITY_TYPE_NAME_TO_CLASS[entity.type].build_search_vector(entity)
