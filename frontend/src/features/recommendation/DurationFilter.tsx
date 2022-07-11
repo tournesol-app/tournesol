@@ -32,14 +32,14 @@ function DurationFilter({
   const [minDuration, setMinDuration] = useState<string>(valueMin);
   const [maxDuration, setMaxDuration] = useState<string>(valueMax);
 
-  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value: string = event.target.value;
-    setMaxDuration(value);
-  };
-
   const handleChangeMin = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
     setMinDuration(value);
+  };
+
+  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value;
+    setMaxDuration(value);
   };
 
   const clearMinDuration = () => {
@@ -52,14 +52,22 @@ function DurationFilter({
     onChangeCallback({ param: 'duration_lte', value: '' });
   };
 
+  /**
+   * This effect ensures the states of the component are updated when the
+   * props are updated.
+   *
+   * This case happens when the user goes back in the navigation history after
+   * having set a `minDuration` or a `maxDuration`.
+   */
   useEffect(() => {
-    const timeOutId = setTimeout(
-      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
-      TYPING_DELAY
-    );
-
-    return () => clearTimeout(timeOutId);
-  }, [maxDuration, onChangeCallback]);
+    if (valueMin !== minDuration) {
+      setMinDuration(valueMin);
+    }
+    if (valueMax !== maxDuration) {
+      setMaxDuration(valueMax);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valueMin, valueMax]);
 
   useEffect(() => {
     const timeOutId = setTimeout(
@@ -68,7 +76,18 @@ function DurationFilter({
     );
 
     return () => clearTimeout(timeOutId);
-  }, [minDuration, onChangeCallback]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minDuration]);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(
+      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
+      TYPING_DELAY
+    );
+
+    return () => clearTimeout(timeOutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxDuration]);
 
   return (
     <TitledSection title={t('filter.duration.title')}>
