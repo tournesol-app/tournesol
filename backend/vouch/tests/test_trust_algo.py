@@ -53,27 +53,27 @@ class TrustAlgoTestCse(TestCase):
             [
                 # user_0 has given zero voucher
                 # user_1 has given three vouchers
-                Voucher(by=self.user_1, to=self.user_0, vouch_value=10),
-                Voucher(by=self.user_1, to=self.user_3, vouch_value=13),
-                Voucher(by=self.user_1, to=self.user_7, vouch_value=17),
+                Voucher(by=self.user_1, to=self.user_0, value=10),
+                Voucher(by=self.user_1, to=self.user_3, value=13),
+                Voucher(by=self.user_1, to=self.user_7, value=17),
                 # user_2 has given one voucher
-                Voucher(by=self.user_2, to=self.user_5, vouch_value=15),
+                Voucher(by=self.user_2, to=self.user_5, value=15),
                 # user_3 has given two vouchers
-                Voucher(by=self.user_3, to=self.user_1, vouch_value=31),
-                Voucher(by=self.user_3, to=self.user_5, vouch_value=35),
+                Voucher(by=self.user_3, to=self.user_1, value=31),
+                Voucher(by=self.user_3, to=self.user_5, value=35),
                 # user_4 has given one voucher
-                Voucher(by=self.user_4, to=self.user_7, vouch_value=47),
+                Voucher(by=self.user_4, to=self.user_7, value=47),
                 # user_5 has given one voucher
-                Voucher(by=self.user_5, to=self.user_1, vouch_value=51),
+                Voucher(by=self.user_5, to=self.user_1, value=51),
                 # user_6 has given zero voucher
                 # user_7 has given two vouchers
-                Voucher(by=self.user_7, to=self.user_1, vouch_value=71),
-                Voucher(by=self.user_7, to=self.user_2, vouch_value=72),
+                Voucher(by=self.user_7, to=self.user_1, value=71),
+                Voucher(by=self.user_7, to=self.user_2, value=72),
                 # user_8 has given one voucher
-                Voucher(by=self.user_8, to=self.user_3, vouch_value=83),
+                Voucher(by=self.user_8, to=self.user_3, value=83),
                 # user_9 has given two vouchers
-                Voucher(by=self.user_9, to=self.user_4, vouch_value=94),
-                Voucher(by=self.user_9, to=self.user_5, vouch_value=95),
+                Voucher(by=self.user_9, to=self.user_4, value=94),
+                Voucher(by=self.user_9, to=self.user_5, value=95),
             ]
         )
 
@@ -178,7 +178,7 @@ class TrustAlgoTestCse(TestCase):
         self.assertAlmostEqual(users[9].voting_right, 0)
         self.assertAlmostEqual(users[8].voting_right, 0)
 
-        vouch18 = Voucher(by=self.user_1, to=self.user_8, vouch_value=100.0)
+        vouch18 = Voucher(by=self.user_1, to=self.user_8, value=100.0)
         vouch18.save()
         trust_algo()
         users = list(User.objects.all())

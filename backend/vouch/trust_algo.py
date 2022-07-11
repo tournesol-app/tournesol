@@ -120,7 +120,7 @@ def trust_algo():
     for vouch in Voucher.objects.iterator():
         voucher = users.index(vouch.by)
         vouchee = users.index(vouch.to)
-        vouch_matrix[voucher][vouchee] = vouch.vouch_value
+        vouch_matrix[voucher][vouchee] = vouch.value
 
     # Compute relative posttrusts
     normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
