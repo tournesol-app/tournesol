@@ -10,8 +10,8 @@ from tournesol.tests.factories.entity import VideoFactory
 
 class SimpleAllConnectedTestCase(TestCase):
     """
-    A test case of the unconnected entities API, where all video are
-    connected to the tested user.
+    A test case of the unconnected entities API, where all entities are
+    connected with each other by the tested user.
     """
 
     def setUp(self):
@@ -100,9 +100,10 @@ class SimpleAllConnectedTestCase(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
-class NonConnectedEntityTest(TestCase):
+class NonConnectedEntityTestCase(TestCase):
     """
-    TestCase for the unconnected entities API where an entity don't have any comparison.
+    A test case of the unconnected entities API, where an entity doesn't have
+    any comparison.
     """
 
     def setUp(self):
@@ -111,7 +112,7 @@ class NonConnectedEntityTest(TestCase):
         self.poll_videos = Poll.default_poll()
         self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
-        # Create video without comparison
+        # Create video without comparison.
         video_1 = VideoFactory()
         video_2 = VideoFactory()
         video_3 = VideoFactory()
@@ -146,7 +147,7 @@ class NonConnectedEntityTest(TestCase):
 class AdvancedAllConnectedTestCase(TestCase):
     """
     A test case of the unconnected entities API, where all video are
-    not necessarily connected to the tested user.
+    not necessarily connected together to by tested user.
     """
 
     def setUp(self):
@@ -179,6 +180,11 @@ class AdvancedAllConnectedTestCase(TestCase):
         )
 
     def test_all_linked_should_return_empty(self):
+        """
+        An authenticated user must get an empty list, when all of its compared
+        entities are connected, even if they are not individually connected to
+        each other.
+        """
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
