@@ -148,12 +148,15 @@ class SingleGraphOneIsolatedEntityTestCase(TestCase):
         self.assertEqual(response.data["count"], 3)
 
 
-class SingleGraphAllConnectedTestCase(TestCase):
+class SingleGraphNonReducibleDistanceTestCase(TestCase):
     """
     A test case of the unconnected entities API.
 
     Here, all entities are not necessarily connected together to by the tested
     user, yet forming a single graph.
+
+    No entity is distant enough from any other entity to be considered
+    connectable.
     """
 
     def setUp(self):
@@ -188,8 +191,8 @@ class SingleGraphAllConnectedTestCase(TestCase):
     def test_all_linked_must_return_empty(self):
         """
         An authenticated user must get an empty list, when all of its compared
-        entities are connected, even if they are not individually connected to
-        each other.
+        entities are connected, and close enough to each other, even if they
+        are not individually connected to each other.
         """
         self.client.force_authenticate(self.user_1)
 
@@ -216,9 +219,11 @@ class TwoIsolatedGraphsTestCase(TestCase):
         self.poll_videos = Poll.default_poll()
         self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
+        # First graph.
         video_1 = VideoFactory()
         video_2 = VideoFactory()
         video_3 = VideoFactory()
+        # Second graph.
         video_4 = VideoFactory()
         video_5 = VideoFactory()
 
@@ -259,13 +264,19 @@ class TwoIsolatedGraphsTestCase(TestCase):
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
             list(map(lambda x: x["uid"], response.data["results"])),
-            list(map(lambda x: x.uid, self.unrelated_video))
+            list(map(lambda x: x.uid, self.unrelated_video)),
         )
 
 
-class AdvancedNotAllConnectedTest(TestCase):
+class SingleGraphReducibleDistanceTestCase(TestCase):
     """
-    TestCase for the unconnected entities API.
+    A test case of the unconnected entities API.
+
+    Here, all entities are not necessarily connected together to by the tested
+    user, yet forming a single graph.
+
+    Some entities are distant enough from a given entity, that they are considered
+    connectable by the API.
     """
 
     def setUp(self):
@@ -280,6 +291,7 @@ class AdvancedNotAllConnectedTest(TestCase):
         video_3 = VideoFactory()
         video_4 = VideoFactory()
         video_5 = VideoFactory()
+        # Distant entities.
         video_6 = VideoFactory()
         video_7 = VideoFactory()
 
@@ -329,6 +341,6 @@ class AdvancedNotAllConnectedTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            [entity['uid'] for entity in response.data["results"]],
-            [entity.uid for entity in self.unrelated_video]
+            [entity["uid"] for entity in response.data["results"]],
+            [entity.uid for entity in self.unrelated_video],
         )
