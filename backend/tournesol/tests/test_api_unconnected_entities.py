@@ -136,7 +136,7 @@ class SingleGraphOneIsolatedEntityTestCase(TestCase):
             entity_2=video_4,
         )
 
-    def test_no_link_should_return_all(self):
+    def test_no_link_must_return_all(self):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
@@ -185,7 +185,7 @@ class SingleGraphAllConnectedTestCase(TestCase):
             entity_2=video_3,
         )
 
-    def test_all_linked_should_return_empty(self):
+    def test_all_linked_must_return_empty(self):
         """
         An authenticated user must get an empty list, when all of its compared
         entities are connected, even if they are not individually connected to
@@ -247,7 +247,7 @@ class TwoIsolatedGraphsTestCase(TestCase):
             entity_2=video_5,
         )
 
-    def test_should_return_non_connected_entity(self):
+    def test_must_return_non_connected_entities(self):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
@@ -318,7 +318,7 @@ class AdvancedNotAllConnectedTest(TestCase):
             entity_2=video_1,
         )
 
-    def test_should_return_non_connected_entity(self):
+    def test_must_return_non_connected_entities(self):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
