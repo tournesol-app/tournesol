@@ -8,10 +8,12 @@ from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 
 
-class SimpleAllConnectedTestCase(TestCase):
+class SingleGraphAllConnectedToAllTestCase(TestCase):
     """
-    A test case of the unconnected entities API, where all entities are
-    connected with each other by the tested user.
+    A test case of the unconnected entities API.
+
+    Here, all entities are connected with each other by the tested user,
+    forming a single graph.
     """
 
     def setUp(self):
@@ -100,10 +102,12 @@ class SimpleAllConnectedTestCase(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
-class NonConnectedEntityTestCase(TestCase):
+class SingleGraphOneIsolatedEntityTestCase(TestCase):
     """
-    A test case of the unconnected entities API, where an entity doesn't have
-    any comparison.
+    A test case of the unconnected entities API.
+
+    Here, there is an entity that doesn't have any comparison with the tested
+    user's graph.
     """
 
     def setUp(self):
@@ -144,10 +148,12 @@ class NonConnectedEntityTestCase(TestCase):
         self.assertEqual(response.data["count"], 3)
 
 
-class AdvancedAllConnectedTestCase(TestCase):
+class SingleGraphAllConnectedTestCase(TestCase):
     """
-    A test case of the unconnected entities API, where all video are
-    not necessarily connected together to by tested user.
+    A test case of the unconnected entities API.
+
+    Here, all entities are not necessarily connected together to by the tested
+    user, yet forming a single graph.
     """
 
     def setUp(self):
@@ -196,9 +202,12 @@ class AdvancedAllConnectedTestCase(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
-class SimpleNotAllConnectedTestCase(TestCase):
+class TwoIsolatedGraphsTestCase(TestCase):
     """
-    TestCase for the unconnected entities API.
+    A test case of the unconnected entities API.
+
+    Here, we test two graphs of connected entities that have no connection
+    with each other.
     """
 
     def setUp(self):
