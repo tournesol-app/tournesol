@@ -8,10 +8,10 @@ from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 
 
-class SimpleAllConnectedTest(TestCase):
+class SimpleAllConnectedTestCase(TestCase):
     """
-    TestCase for the unconnected entities API.
-    In this simple test, all video are connected to the user.
+    A test case of the unconnected entities API, where all video are
+    connected to the tested user.
     """
 
     def setUp(self):
@@ -50,7 +50,10 @@ class SimpleAllConnectedTest(TestCase):
             entity_2=video_5,
         )
 
-    def test_not_authenticated_cannot_show_unconnected_entities(self):
+    def test_anon_get_401(self):
+        """
+        An anonymous user must not be able to list its unconnected entities.
+        """
         response = self.client.get(
             f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
@@ -58,7 +61,7 @@ class SimpleAllConnectedTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_without_uid_show_not_found(self):
+    def test_auth_get_404_with_no_uid(self):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
@@ -68,7 +71,7 @@ class SimpleAllConnectedTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_with_unknown_uid_show_not_found(self):
+    def test_auth_get_404_with_unknown_uid(self):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
@@ -78,7 +81,7 @@ class SimpleAllConnectedTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_all_connected_video_shouldnt_return_entities(self):
+    def test_auth_get_empty_when_all_entities_are_connected(self):
         self.client.force_authenticate(self.user_1)
 
         response = self.client.get(
@@ -88,7 +91,7 @@ class SimpleAllConnectedTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 0)
 
-        # Make sure that no side-effect affects subsequent requests
+        # Make sure that no side-effect affects subsequent requests.
         response = self.client.get(
             f"{self.user_base_url}/{self.video_source.uid}/",
             format="json",
@@ -140,10 +143,10 @@ class NonConnectedEntityTest(TestCase):
         self.assertEqual(response.data["count"], 3)
 
 
-class AdvancedAllConnectedTest(TestCase):
+class AdvancedAllConnectedTestCase(TestCase):
     """
-    TestCase for the unconnected entities API. 
-    In this Advanced test, all video are not necessarily connected to the user.
+    A test case of the unconnected entities API, where all video are
+    not necessarily connected to the tested user.
     """
 
     def setUp(self):
@@ -187,7 +190,7 @@ class AdvancedAllConnectedTest(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
-class SimpleNotAllConnectedTest(TestCase):
+class SimpleNotAllConnectedTestCase(TestCase):
     """
     TestCase for the unconnected entities API.
     """
