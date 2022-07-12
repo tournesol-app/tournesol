@@ -344,3 +344,47 @@ class SingleGraphReducibleDistanceTestCase(TestCase):
             [entity["uid"] for entity in response.data["results"]],
             [entity.uid for entity in self.unrelated_video],
         )
+
+    def test_non_connected_entities_ordering(self):
+        """
+        The entities returned for an authenticated user, must be ordered by
+        their ascending number of comparisons made by this user.
+        """
+        video_a = VideoFactory()
+        video_b = VideoFactory()
+
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_a,
+            entity_2=self.unrelated_video[0],
+        )
+
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_b,
+            entity_2=self.unrelated_video[0],
+        )
+
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_b,
+            entity_2=self.unrelated_video[1],
+        )
+
+        self.client.force_authenticate(self.user_1)
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/",
+            format="json",
+        )
+
+        results = response.data["results"]
+        # The first entity must be `video_a`, as it has 1 comparison.
+        self.assertEqual(results[0]["uid"], video_a.uid)
+
+        # The 2nd and 3rd entities must be in the list of entities having 2
+        # comparisons.
+        self.assertIn(results[1]["uid"], [video_b.uid, self.unrelated_video[1].uid])
+        self.assertIn(results[2]["uid"], [video_b.uid, self.unrelated_video[1].uid])
+
+        # The fourth entity must be `self.unrelated_video[0]` with 3 comparisons.
+        self.assertEqual(results[3]["uid"], self.unrelated_video[0].uid)
