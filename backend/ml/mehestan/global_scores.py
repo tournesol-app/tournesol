@@ -62,8 +62,8 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     )
     pairs.set_index(["uid_a", "uid_b"], inplace=True)
     return pairs.loc[
-        np.abs(pairs.raw_score_a - pairs.raw_score_b)
-        >= 2 * (pairs.raw_uncertainty_a + pairs.raw_uncertainty_b)
+        np.abs(pairs.score_a - pairs.score_b)
+        >= 2 * (pairs.uncertainty_a + pairs.uncertainty_b)
     ]
 
 
@@ -219,8 +219,8 @@ def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFr
     rp.set_index(["user_id", "entity_id"], inplace=True)
     rp = rp[rp.is_supertrusted]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
-    df["score"]=df["raw_score"]
-    df["uncertainty"]=df["raw_uncertainty"]
+    df["score"] = df["raw_score"]
+    df["uncertainty"] = df["raw_uncertainty"]
     return compute_scaling(df, ml_input=ml_input)
 
 
