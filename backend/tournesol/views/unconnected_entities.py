@@ -1,29 +1,31 @@
 """
-API endpoints to show unconnected entities
+API endpoints interacting with unconnected entities.
 """
 from collections import defaultdict
 
+from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
+from tournesol.models import Comparison, Entity
+from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
-
-from ..models import Comparison, Entity
-from ..serializers.entity import EntityNoExtraFieldSerializer
 
 
 @extend_schema_view(
-    get=extend_schema(description="Show unconnected entities for the current user")
+    get=extend_schema(
+        description="List unconnected entities of the current user from a target entity"
+                    " and the user's graph of comparisons (entities are vertices and"
+                    " comparisons are edges)."
+    )
 )
-class UnconnectedEntitiesView(
-    PollScopedViewMixin,
-    generics.ListAPIView
-):
+class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
     """
-    API view for showing unconnected entities
+    List unconnected entities.
     """
+
     serializer_class = EntityNoExtraFieldSerializer
     permission_classes = [IsAuthenticated]
 
@@ -63,4 +65,17 @@ class UnconnectedEntitiesView(
             user_all_entities.add(entity_1_id)
             user_all_entities.add(entity_2_id)
 
-        return Entity.objects.filter(id__in=user_all_entities - user_related_entities)
+        # Order the entities by number of comparisons so that the logged user
+        # is invited to compare entities with the least comparisons first.
+        comparison_counts = (
+            Comparison.objects.filter(user=self.request.user)
+            .filter(Q(entity_1=OuterRef("pk")) | Q(entity_2=OuterRef("pk")))
+            .annotate(count=Func("id", function="Count"))
+            .values("count")
+        )
+
+        return (
+            Entity.objects.filter(id__in=user_all_entities - user_related_entities)
+            .annotate(n_comparisons=Subquery(comparison_counts))
+            .order_by("n_comparisons")
+        )
