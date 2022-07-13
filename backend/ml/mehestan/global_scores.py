@@ -49,7 +49,7 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     that are significantly different, according to the contributor scores.
     (Used for collaborative preference scaling)
     """
-    scores = scores[["uid", "raw_score", "raw_uncertainty"]]
+    scores = scores[["uid", "score", "uncertainty"]]
     left, right = np.triu_indices(len(scores), k=1)
     pairs = (
         scores.iloc[left]
