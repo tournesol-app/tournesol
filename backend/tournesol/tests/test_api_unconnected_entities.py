@@ -1,3 +1,12 @@
+"""
+All test cases related to the unconnected entities API.
+
+For a given user, we consider entities and its comparisons as a graph. Entities
+are vertices and comparisons edges.
+
+See: https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
+"""
+
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -8,12 +17,14 @@ from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 
 
-class SingleGraphAllConnectedToAllTestCase(TestCase):
+class CompleteGraphTestCase(TestCase):
     """
     A test case of the unconnected entities API.
 
     Here, all entities are connected with each other by the tested user,
-    forming a single graph.
+    forming a complete graph.
+
+    See: https://en.wikipedia.org/wiki/Complete_graph
     """
 
     def setUp(self):
@@ -102,7 +113,7 @@ class SingleGraphAllConnectedToAllTestCase(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
-class SingleGraphOneIsolatedEntityTestCase(TestCase):
+class IsolatedVertexTestCase(TestCase):
     """
     A test case of the unconnected entities API.
 
@@ -148,12 +159,12 @@ class SingleGraphOneIsolatedEntityTestCase(TestCase):
         self.assertEqual(response.data["count"], 3)
 
 
-class SingleGraphNonReducibleDistanceTestCase(TestCase):
+class ConnectGraphNonReducibleDistanceTestCase(TestCase):
     """
     A test case of the unconnected entities API.
 
     Here, all entities are not necessarily connected together to by the tested
-    user, yet forming a single graph.
+    user, yet forming a connected graph.
 
     No entity is distant enough from any other entity to be considered
     connectable.
@@ -205,75 +216,12 @@ class SingleGraphNonReducibleDistanceTestCase(TestCase):
         self.assertEqual(response.data["count"], 0)
 
 
-class TwoIsolatedGraphsTestCase(TestCase):
-    """
-    A test case of the unconnected entities API.
-
-    Here, we test two graphs of connected entities that have no connection
-    with each other.
-    """
-
-    def setUp(self):
-        self.client = APIClient()
-        self.user_1 = UserFactory()
-        self.poll_videos = Poll.default_poll()
-        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
-
-        # First graph.
-        video_1 = VideoFactory()
-        video_2 = VideoFactory()
-        video_3 = VideoFactory()
-        # Second graph.
-        video_4 = VideoFactory()
-        video_5 = VideoFactory()
-
-        self.unrelated_video = [video_4, video_5]
-
-        self.video_source = video_1
-
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_1,
-            entity_2=video_2,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_1,
-            entity_2=video_3,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_2,
-            entity_2=video_3,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_4,
-            entity_2=video_5,
-        )
-
-    def test_must_return_non_connected_entities(self):
-        self.client.force_authenticate(self.user_1)
-
-        response = self.client.get(
-            f"{self.user_base_url}/{self.video_source.uid}/",
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], 2)
-        self.assertEqual(
-            list(map(lambda x: x["uid"], response.data["results"])),
-            list(map(lambda x: x.uid, self.unrelated_video)),
-        )
-
-
-class SingleGraphReducibleDistanceTestCase(TestCase):
+class ConnectedGraphReducibleDistanceTestCase(TestCase):
     """
     A test case of the unconnected entities API.
 
     Here, all entities are not necessarily connected together to by the tested
-    user, yet forming a single graph.
+    user, yet forming a connected graph.
 
     Some entities are distant enough from a given entity, that they are considered
     connectable by the API.
@@ -388,3 +336,66 @@ class SingleGraphReducibleDistanceTestCase(TestCase):
 
         # The fourth entity must be `self.unrelated_video[0]` with 3 comparisons.
         self.assertEqual(results[3]["uid"], self.unrelated_video[0].uid)
+
+
+class TwoIsolatedGraphComponentsTestCase(TestCase):
+    """
+    A test case of the unconnected entities API.
+
+    Here, we test two components of connected entities that have no connection
+    with each other.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user_1 = UserFactory()
+        self.poll_videos = Poll.default_poll()
+        self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
+
+        # First component of the graph.
+        video_1 = VideoFactory()
+        video_2 = VideoFactory()
+        video_3 = VideoFactory()
+        # Second component of the graph.
+        video_4 = VideoFactory()
+        video_5 = VideoFactory()
+
+        self.unrelated_video = [video_4, video_5]
+
+        self.video_source = video_1
+
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_1,
+            entity_2=video_2,
+        )
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_1,
+            entity_2=video_3,
+        )
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_2,
+            entity_2=video_3,
+        )
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=video_4,
+            entity_2=video_5,
+        )
+
+    def test_must_return_non_connected_entities(self):
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(
+            list(map(lambda x: x["uid"], response.data["results"])),
+            list(map(lambda x: x.uid, self.unrelated_video)),
+        )
