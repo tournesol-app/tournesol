@@ -99,8 +99,8 @@ describe('Filters feature', () => {
     expect(queryAllByTestId(languageFilter, 'autocomplete')).toHaveLength(1);
 
     // Check the duration filter presence
-    // expect(screen.getByTestId('filter-duration-lte')).toBeVisible();
-    // expect(screen.getByTestId('filter-duration-gte')).toBeVisible();
+    expect(screen.getByTestId('filter-duration-lte')).toBeVisible();
+    expect(screen.getByTestId('filter-duration-gte')).toBeVisible();
 
     // Check criteria filters presence
     expect(screen.getByLabelText('multiple criteria')).toBeVisible();
@@ -230,8 +230,6 @@ describe('Filters feature', () => {
       expectInUrl: '',
     });
   });
-  /* TODO:
-    - enable these tests when the DurationFilter is fixed
 
   it('Can select a maximum duration', async () => {
     clickOnShowMore();
@@ -267,7 +265,7 @@ describe('Filters feature', () => {
     expect(pushSpy).toHaveBeenLastCalledWith({
       search: 'duration_lte=&duration_gte=20',
     });
-  });*/
+  });
 
   it('Can fold and unfold the multiple criteria', () => {
     clickOnShowMore();
