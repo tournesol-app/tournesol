@@ -220,6 +220,8 @@ def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFr
     rp.set_index(["user_id", "entity_id"], inplace=True)
     rp = rp[rp.is_supertrusted]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
+    df["score"] = df["raw_score"]
+    df["uncertainty"] = df["raw_uncertainty"]
     return compute_scaling(df, ml_input=ml_input)
 
 

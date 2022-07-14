@@ -10,8 +10,8 @@ import { TitledSection } from 'src/components';
 const TYPING_DELAY = 300;
 
 interface DurationFilterProps {
-  valueMax: string;
   valueMin: string;
+  valueMax: string;
   onChangeCallback: (filter: { param: string; value: string }) => void;
 }
 
@@ -23,28 +23,23 @@ interface DurationFilterProps {
  * before triggering the callback.
  */
 function DurationFilter({
-  valueMax,
   valueMin,
+  valueMax,
   onChangeCallback,
 }: DurationFilterProps) {
   const { t } = useTranslation();
 
-  const [maxDuration, setMaxDuration] = useState<string>(valueMax);
   const [minDuration, setMinDuration] = useState<string>(valueMin);
-
-  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value: string = event.target.value;
-    setMaxDuration(value);
-  };
+  const [maxDuration, setMaxDuration] = useState<string>(valueMax);
 
   const handleChangeMin = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
     setMinDuration(value);
   };
 
-  const clearMaxDuration = () => {
-    setMaxDuration('');
-    onChangeCallback({ param: 'duration_lte', value: '' });
+  const handleChangeMax = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value;
+    setMaxDuration(value);
   };
 
   const clearMinDuration = () => {
@@ -52,14 +47,27 @@ function DurationFilter({
     onChangeCallback({ param: 'duration_gte', value: '' });
   };
 
-  useEffect(() => {
-    const timeOutId = setTimeout(
-      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
-      TYPING_DELAY
-    );
+  const clearMaxDuration = () => {
+    setMaxDuration('');
+    onChangeCallback({ param: 'duration_lte', value: '' });
+  };
 
-    return () => clearTimeout(timeOutId);
-  }, [maxDuration, onChangeCallback]);
+  /**
+   * This effect ensures the states of the component are updated when the
+   * props are updated.
+   *
+   * This case happens when the user goes back in the navigation history after
+   * having set a `minDuration` or a `maxDuration`.
+   */
+  useEffect(() => {
+    if (valueMin !== minDuration) {
+      setMinDuration(valueMin);
+    }
+    if (valueMax !== maxDuration) {
+      setMaxDuration(valueMax);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valueMin, valueMax]);
 
   useEffect(() => {
     const timeOutId = setTimeout(
@@ -68,7 +76,18 @@ function DurationFilter({
     );
 
     return () => clearTimeout(timeOutId);
-  }, [minDuration, onChangeCallback]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minDuration]);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(
+      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
+      TYPING_DELAY
+    );
+
+    return () => clearTimeout(timeOutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxDuration]);
 
   return (
     <TitledSection title={t('filter.duration.title')}>

@@ -3,6 +3,7 @@ import { Collapse, Grid, Box } from '@mui/material';
 
 import { CollapseButton } from 'src/components';
 import { useCurrentPoll, useListFilter } from 'src/hooks';
+import DurationFilter from 'src/features/recommendation/DurationFilter';
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
 import CriteriaFilter from './CriteriaFilter';
@@ -46,6 +47,11 @@ function SearchFilter() {
       saveRecommendationsLanguages(value);
       setFilter(recommendationFilters.language, value);
     },
+    [setFilter]
+  );
+
+  const setFilterCallback = useCallback(
+    (filter) => setFilter(filter.param, filter.value),
     [setFilter]
   );
 
@@ -99,20 +105,13 @@ function SearchFilter() {
                   value={filterParams.get(recommendationFilters.language) ?? ''}
                   onChange={handleLanguageChange}
                 />
-                {/* TOFIX:
-                  - the min filter doesn't work on Firefox desktop
-                  - the pagination doesn't work when the filter is active
-
                 <Box mt={2}>
                   <DurationFilter
                     valueMax={filterParams.get('duration_lte') ?? ''}
                     valueMin={filterParams.get('duration_gte') ?? ''}
-                    onChangeCallback={(filter) =>
-                      setFilter(filter.param, filter.value)
-                    }
+                    onChangeCallback={setFilterCallback}
                   />
                 </Box>
-                */}
               </Grid>
             </>
           )}
