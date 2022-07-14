@@ -219,6 +219,8 @@ def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFr
     rp.set_index(["user_id", "entity_id"], inplace=True)
     rp = rp[rp.is_supertrusted]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
+    df["score"] = df["raw_score"]
+    df["uncertainty"] = df["raw_uncertainty"]
     return compute_scaling(df, ml_input=ml_input)
 
 
@@ -230,6 +232,8 @@ def compute_scaled_scores(
         - scaled individual scores: Dataframe with columns
             * `user_id`
             * `entity_id`
+            * `raw_score`
+            * `raw_uncertainty`
             * `score`
             * `uncertainty`
             * `is_public`
@@ -246,6 +250,8 @@ def compute_scaled_scores(
             columns=[
                 "user_id",
                 "entity_id",
+                "raw_score",
+                "raw_uncertainty",
                 "score",
                 "uncertainty",
                 "is_public",
@@ -255,26 +261,26 @@ def compute_scaled_scores(
         )
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
-
     supertrusted_scaling = get_scaling_for_supertrusted(ml_input, individual_scores)
     rp = ml_input.get_ratings_properties()
 
     non_supertrusted_users = rp["user_id"][~rp.is_supertrusted].unique()
     supertrusted_users = rp["user_id"][rp.is_supertrusted].unique()
-
     rp.set_index(["user_id", "entity_id"], inplace=True)
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="left")
     df["is_public"].fillna(False, inplace=True)
     df["is_trusted"].fillna(False, inplace=True)
     df["is_supertrusted"].fillna(False, inplace=True)
 
+    # Apply scaling for supertrusted
     df = df.join(supertrusted_scaling, on="user_id")
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
-    df["score"] = df["s"] * df["score"] + df["tau"]
-    df["uncertainty"] *= df["s"]
+    df["score"] = df["s"] * df["raw_score"] + df["tau"]
+    df["uncertainty"] = df["raw_uncertainty"] * df["s"]
     df.drop(["s", "tau"], axis=1, inplace=True)
 
+    # Apply scaling for non_supertrusted
     logging.debug(
         "Computing scaling for %s non_supertrusted, based on %s supertrusted",
         len(non_supertrusted_users),
@@ -289,28 +295,29 @@ def compute_scaled_scores(
     )
 
     df = df.join(non_supertrusted_scaling, on="user_id")
+    df["is_supertrusted"].fillna(False, inplace=True)
+
     df["s"].fillna(1, inplace=True)
     df["tau"].fillna(0, inplace=True)
     df["delta_s"].fillna(0, inplace=True)
     df["delta_tau"].fillna(0, inplace=True)
-    df["uncertainty"] = (
-        df["s"] * df["uncertainty"]
-        + df["delta_s"] * df["score"].abs()
+    df.loc[~df["is_supertrusted"], "uncertainty"] = (
+        df["s"] * df["raw_uncertainty"]
+        + df["delta_s"] * df["raw_score"].abs()
         + df["delta_tau"]
     )
-    df["score"] = df["score"] * df["s"] + df["tau"]
-    df.drop(["s", "tau", "delta_s", "delta_tau"], axis=1, inplace=True)
-
+    df.loc[~df["is_supertrusted"], "score"] = df["raw_score"] * df["s"] + df["tau"]
+    df.drop(
+        ["s", "tau", "delta_s", "delta_tau"],
+        axis=1,
+        inplace=True,
+    )
     all_scalings = pd.concat([supertrusted_scaling, non_supertrusted_scaling])
     return df, all_scalings
 
 
-def get_global_scores(
-    scaled_individual_scores: pd.DataFrame,
-    score_mode: ScoreMode
-):
+def get_global_scores(scaled_individual_scores: pd.DataFrame, score_mode: ScoreMode):
     df = scaled_individual_scores.copy(deep=False)
-
     if score_mode == ScoreMode.TRUSTED_ONLY:
         df = df[df["is_trusted"]]
         df["voting_weight"] = 1

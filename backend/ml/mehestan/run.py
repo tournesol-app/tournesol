@@ -45,10 +45,10 @@ def get_individual_scores(
         individual_scores.append(scores.reset_index())
 
     if len(individual_scores) == 0:
-        return pd.DataFrame(columns=["user_id", "entity_id", "score", "uncertainty"])
+        return pd.DataFrame(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
 
     result = pd.concat(individual_scores, ignore_index=True, copy=False)
-    return result[["user_id", "entity_id", "score", "uncertainty"]]
+    return result[["user_id", "entity_id", "raw_score", "raw_uncertainty"]]
 
 
 def update_user_scores(poll: Poll, user: User):
@@ -131,13 +131,11 @@ def run_mehestan_for_criterion(
         )
 
     scale_function = poll.scale_function
-    scaled_scores["raw_score"] = scaled_scores["score"]
-    scaled_scores["raw_uncertainty"] = scaled_scores["uncertainty"]
     scaled_scores["uncertainty"] = 0.5 * (
-        scale_function(scaled_scores["raw_score"] + scaled_scores["raw_uncertainty"])
-        - scale_function(scaled_scores["raw_score"] - scaled_scores["raw_uncertainty"])
+        scale_function(scaled_scores["score"] + scaled_scores["uncertainty"])
+        - scale_function(scaled_scores["score"] - scaled_scores["uncertainty"])
     )
-    scaled_scores["score"] = scale_function(scaled_scores["raw_score"])
+    scaled_scores["score"] = scale_function(scaled_scores["score"])
     scaled_scores["criteria"] = criteria
     save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
 
