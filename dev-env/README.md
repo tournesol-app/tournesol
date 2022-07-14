@@ -1,12 +1,10 @@
-# Create a development environment with `docker-compose`
+# Starting the development environment
 
-## Quick start
-
-### Requirements:
+## Requirements:
 * `docker-compose-plugin` (or `docker-compose`)
 * curl
 
-### Start the containers
+## Start the containers
 
 ```bash
 ./run-docker-compose.sh
@@ -33,7 +31,7 @@ Then, the application is accessible on http://localhost:3000.
 The created database includes metadata about ~ 5000 videos, as well as 5 sample accounts with usernames
 `user1`, `user2`, `user3`, `user4` and `user5`, and password `tournesol`.
 
-#### Rebuild the containers while preserving the database
+## Rebuild the containers while preserving the database
 
 By default, the database content is initialized with test data.
 To recreate the containers (e.g to update the backend dependencies) while preserving the data, use:
