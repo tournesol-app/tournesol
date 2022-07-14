@@ -81,8 +81,8 @@ if [[ "$system_info" =~ "wsl" ]] ||
   export DB_UID=0
   export DB_GID=0
 else
-  export DB_UID=$(uid -u)
-  export DB_GID=$(uid -g)
+  export DB_UID=$(id -u)
+  export DB_GID=$(id -g)
 fi
 
 if [[ "${1:-""}" == 'restart' ]]; then
