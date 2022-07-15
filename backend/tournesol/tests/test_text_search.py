@@ -5,11 +5,7 @@ from rest_framework.test import APIClient
 from tournesol.entities.candidate import TYPE_CANDIDATE
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Poll
-from tournesol.tests.factories.entity import (
-    EntityFactory,
-    UserFactory,
-    VideoFactory,
-)
+from tournesol.tests.factories.entity import EntityFactory, UserFactory, VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
 from tournesol.tests.factories.ratings import (
