@@ -218,13 +218,13 @@
     "uploadDate": "Mises en ligne depuis",
     "duration": {
       "title": "Durée (minutes)",
-      "max": {
-        "label": "max",
-        "clearAriaLabel": "Effacer la durée max"
-      },
       "min": {
         "label": "min",
         "clearAriaLabel": "Effacer la durée min"
+      },
+      "max": {
+        "label": "max",
+        "clearAriaLabel": "Effacer la durée max"
       }
     },
     "allLanguages": "Toutes",
@@ -410,11 +410,13 @@
       "tournesolDescription": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif transparent.",
       "whyCompareCandidates": "Initialement conçue pour la recommendation de vidéos d'utilité publique, Tournesol vous propose aujourd'hui de comparer les candidats à l'élection présidentielle française 2022. Ainsi, vous obtiendrez un aperçu de la façon dont les algorithmes de Tournesol analysent les préférences que vous exprimez.",
       "dataUsage": "Les données enregistrées ne seront jamais dévoilées aux autres utilisateurs, et ne serviront  qu'à la recherche dans l'éthique des algorithmes et en intelligence artificielle.",
+      "respondToSurvey": "Répondre au sondage"
+    },
+    "generic": {
       "createAccount": "Créer un compte",
       "start": "Commencer",
       "pollIsClosed": "Le scrutin est maintenant fermé.",
-      "seeResults": "Voir les résultats",
-      "respondToSurvey": "Répondre au sondage"
+      "seeResults": "Voir les résultats"
     },
     "contributeTitle": "Participez !",
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",

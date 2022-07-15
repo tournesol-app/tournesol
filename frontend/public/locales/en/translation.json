@@ -212,13 +212,13 @@
     "uploadDate": "Uploaded",
     "duration": {
       "title": "Duration (minutes)",
-      "max": {
-        "label": "max",
-        "clearAriaLabel": "Clear the max duration"
-      },
       "min": {
         "label": "min",
         "clearAriaLabel": "Clear the min duration"
+      },
+      "max": {
+        "label": "max",
+        "clearAriaLabel": "Clear the max duration"
       }
     },
     "allLanguages": "All languages",
@@ -404,11 +404,13 @@
       "tournesolDescription": "Tournesol is an open source platform which proposes a tool for collaborative decision.",
       "whyCompareCandidates": "Initially developped to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about your explicited preferences.",
       "dataUsage": "Submitted data will never be revealed to other users, and will only be used to help research on the ethics of algorithms and artificial intelligence.",
+      "respondToSurvey": "Respond to survey"
+    },
+    "generic": {
       "createAccount": "Create account",
       "start": "Start",
       "pollIsClosed": "The poll is now closed.",
-      "seeResults": "See the results",
-      "respondToSurvey": "Respond to survey"
+      "seeResults": "See the results"
     },
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
