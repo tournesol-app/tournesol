@@ -8,7 +8,6 @@ from tournesol.models import Poll
 from tournesol.tests.factories.entity import (
     EntityFactory,
     UserFactory,
-    VideoCriteriaScoreFactory,
     VideoFactory,
 )
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
@@ -37,14 +36,13 @@ class TextSearchTestCase(TestCase):
 
         self.query = "fruit"
 
-        self.field = "10 best fruit cake recipes"
-        self.unrelated_field = "This sentence will contain no common word with the query"
+        self.text = "10 best fruit cake recipes"
+        self.unrelated_text = "This sentence will contain no common word with the query"
 
         self.language = "en"
-        self.language_unknown_by_postgres = "et"  # Estonian
 
         self.url_base = f"/polls/{self.poll.name}/recommendations/"
-        self.url = self.url_base + \
+        self.url_with_params = self.url_base + \
                    f"?metadata[language]={self.language}&search={self.query}"
 
         self.client = APIClient()
@@ -52,10 +50,10 @@ class TextSearchTestCase(TestCase):
 
         self.setup_score = 5.0
         self.setup_entity = self._create_rated_entity(
-            field1=self.field,
+            field1=self.text,
             criteria_score=self.setup_score,
         )
-        self._create_rated_entity(field1=self.unrelated_field, criteria_score=self.setup_score)
+        self._create_rated_entity(field1=self.unrelated_text, criteria_score=self.setup_score)
 
         self.setup_results_count = 1
 
@@ -69,7 +67,7 @@ class TextSearchTestCase(TestCase):
         """
         Helper function to create a rated entity, with an indexed metadata.
 
-        The fields contain the text indexed for the search.
+        The metadata text fields contain the text indexed for the search.
         They depend on the entity type. Their weights are arbitrarily
         fixed in build_search_vector.
 
@@ -134,20 +132,20 @@ class TextSearchTestCase(TestCase):
     def _make_url(self, search_query, language="en"):
         return self.url_base + f"?metadata[language]={language}&search={search_query}"
 
-    def test_fields(self):
+    def test_videos_are_searchable_by_metadata(self):
         """
-        Test that the 4 fields can be used for full-text search.
+        Test that the 4 text fields can be used for full-text search.
         Most of the tests, including this one, are on the default poll.
 
-        (videos en candidates both have 4 indexed fields, but there
-        could be more on less than that with future entity types)
+        (videos and candidates both have 4 indexed metadata fields, but
+        there could be more on less than that with future entity types)
         """
-        self._create_rated_entity(field1=self.field)
-        self._create_rated_entity(field2=self.field)
-        self._create_rated_entity(field3=self.field)
-        self._create_rated_entity(field4=self.field)
+        self._create_rated_entity(field1=self.text)
+        self._create_rated_entity(field2=self.text)
+        self._create_rated_entity(field3=self.text)
+        self._create_rated_entity(field4=self.text)
 
-        response = self.client.get(self.url, format="json")
+        response = self.client.get(self.url_with_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 4 + self.setup_results_count)
@@ -170,7 +168,7 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
 
-    def test_candidates(self):
+    def test_candidates_are_searchable_by_metadata(self):
         """
         The text search is not very useful for candidates,
         but verify anyway that it is functional.
@@ -201,8 +199,8 @@ class TextSearchTestCase(TestCase):
         """
         self.client.force_authenticate(self.user)
 
-        self._create_rated_entity(field1=self.field)
-        self._create_rated_entity(field1=self.unrelated_field)
+        self._create_rated_entity(field1=self.text)
+        self._create_rated_entity(field1=self.unrelated_text)
 
         response = self.client.get(
             f"/users/me/recommendations/{self.poll.name}"
@@ -218,8 +216,8 @@ class TextSearchTestCase(TestCase):
         Verify that the full-text search works for public
         contributor recommendations
         """
-        self._create_rated_entity(field1=self.field)
-        self._create_rated_entity(field1=self.unrelated_field)
+        self._create_rated_entity(field1=self.text)
+        self._create_rated_entity(field1=self.unrelated_text)
 
         response = self.client.get(
             f"/users/{self.user.username}/recommendations/{self.poll.name}"
@@ -323,12 +321,12 @@ class TextSearchTestCase(TestCase):
 
     def test_languages_filter(self):
         """
-        There should be a filter on the entities' languages
+        Only entities matching the query languages must be returned.
         """
-        self._create_rated_entity(field1=self.field, language="fr")
-        self._create_rated_entity(field1=self.field, language="fr")
+        self._create_rated_entity(field1=self.text, language="fr")
+        self._create_rated_entity(field1=self.text, language="fr")
 
-        response = self.client.get(self.url, format="json")
+        response = self.client.get(self.url_with_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_results_count)
@@ -339,8 +337,8 @@ class TextSearchTestCase(TestCase):
         each entity should have a relevance score equal to the
         max relevance score over all languages.
         """
-        self._create_rated_entity(field1=self.field, language="en")
-        self._create_rated_entity(field1=self.field, language="fr")
+        self._create_rated_entity(field1=self.text, language="en")
+        self._create_rated_entity(field1=self.text, language="fr")
 
         response = self.client.get(
             self.url_base + f"?metadata[language]=en&metadata[language]=fr&search={self.query}",
@@ -361,7 +359,8 @@ class TextSearchTestCase(TestCase):
         Just check that the search still works.
         """
         word = "kook"
-        self._create_rated_entity(field1=word, language="et")
+        language_unknown_by_postgres = "et"  # Estonian
+        self._create_rated_entity(field1=word, language=language_unknown_by_postgres)
 
         response = self.client.get(
             self._make_url(word, "et"),
@@ -379,13 +378,13 @@ class TextSearchTestCase(TestCase):
         scores = [.3, -4.7, 6.0, 0.0, 8.1, -10.0, -2.4, -2.3, 1.2, 1.1]
         entities = []
         for score in scores:
-            entities.append(self._create_rated_entity(field1=self.field, criteria_score=score))
+            entities.append(self._create_rated_entity(field1=self.text, criteria_score=score))
 
         entities = [self.setup_entity] + entities
         scores = [self.setup_score] + scores
         self.assertEqual(len(scores), len(entities))
 
-        response = self.client.get(self.url + "&unsafe=true", format="json")
+        response = self.client.get(self.url_with_params + "&unsafe=true", format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], len(scores))
@@ -396,17 +395,14 @@ class TextSearchTestCase(TestCase):
             entity = entities[scores.index(score)]
             self.assertEqual(response.data["results"][index]["uid"], entity.uid)
 
-    def test_public_recommendations_sorting_depends_on_total_score(self):
+    def test_public_contributor_recommendations_sorting_depends_on_total_score(self):
         """
-        If the relevance is the same, the results with higher
-        total score (or "weighted score") should appear first.
-
-        Test it for public and private contributor recommendations
+        Same test as above, but for public contributor recommendations.
         """
         scores = [.3, -4.7, 6.0, 0.0, 8.1, -10.0, -2.4, -2.3, 1.2, 1.1]
         entities = []
         for score in scores:
-            entities.append(self._create_rated_entity(field1=self.field, criteria_score=score))
+            entities.append(self._create_rated_entity(field1=self.text, criteria_score=score))
 
         entities = [self.setup_entity] + entities
         scores = [self.setup_score] + scores
@@ -427,17 +423,14 @@ class TextSearchTestCase(TestCase):
             entity = entities[scores.index(score)]
             self.assertEqual(response.data["results"][index]["uid"], entity.uid)
 
-    def test_private_recommendations_sorting_depends_on_total_score(self):
+    def test_private_contributor_recommendations_sorting_depends_on_total_score(self):
         """
-        If the relevance is the same, the results with higher
-        total score (or "weighted score") should appear first.
-
-        Test it for public and private contributor recommendations
+        Same test as above, but for private contributor recommendations.
         """
         scores = [.3, -4.7, 6.0, 0.0, 8.1, -10.0, -2.4, -2.3, 1.2, 1.1]
         entities = []
         for score in scores:
-            entities.append(self._create_rated_entity(field1=self.field, criteria_score=score))
+            entities.append(self._create_rated_entity(field1=self.text, criteria_score=score))
 
         entities = [self.setup_entity] + entities
         scores = [self.setup_score] + scores
@@ -459,14 +452,14 @@ class TextSearchTestCase(TestCase):
             entity = entities[scores.index(score)]
             self.assertEqual(response.data["results"][index]["uid"], entity.uid)
 
-    def test_fields_weights(self):
+    def test_videos_fields_weights(self):
         """
-        The words in each field do not carry the same importance.
+        The words in each text field do not carry the same importance.
         e.g., the words in the title are more important than
         those in the descriptions.
 
-        In the function build_search_vector, each field is associated
-        with a weight.
+        In the function build_search_vector, each text field is
+        associated with a weight.
 
         In Postgres, there are only 4 type of weights ("A", "B", "C", "D"),
         which have by default the value (1.0, 0.4, 0.2, 0.1). The only
@@ -479,11 +472,11 @@ class TextSearchTestCase(TestCase):
         appear in 2nd position (even if it's score is slightly higher).
         """
         other_entity = self._create_rated_entity(
-            field4=self.field,
+            field4=self.text,
             criteria_score=self.setup_score + 0.1,
         )
 
-        response = self.client.get(self.url, format="json")
+        response = self.client.get(self.url_with_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
@@ -541,21 +534,21 @@ class TextSearchTestCase(TestCase):
 
     def test_multiple_matches(self):
         """
-        If the word appears twice in a field, it should give a higher
+        If the word appears twice in a text field, it should give a higher
         score than if it appears only once.
         """
         query = "onion"
-        relevant_field = "how to cook an onion cake with onions"
-        less_relevant_field = "how to cook an onion cake"
-        unrelated_field = "how to build a house"
+        relevant_text = "how to cook an onion cake with onions"
+        less_relevant_text = "how to cook an onion cake"
+        unrelated_text = "how to build a house"
 
         # Check that the relevance compensates for the lower score
-        relevant_entity = self._create_rated_entity(field1=relevant_field, criteria_score=1.0)
+        relevant_entity = self._create_rated_entity(field1=relevant_text, criteria_score=1.0)
         less_relevant_entity = self._create_rated_entity(
-            field1=less_relevant_field,
+            field1=less_relevant_text,
             criteria_score=1.1
         )
-        self._create_rated_entity(field1=unrelated_field, criteria_score=1.2)
+        self._create_rated_entity(field1=unrelated_text, criteria_score=1.2)
 
         response = self.client.get(
             self._make_url(query),
@@ -567,23 +560,23 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
         self.assertEqual(response.data["results"][1]["uid"], less_relevant_entity.uid)
 
-    def test_public_recommendations_multiple_matches(self):
+    def test_public_contributor_recommendations_multiple_matches(self):
         """
-        If the word appears twice in a field, it should give a higher
+        If the word appears twice in a text field, it should give a higher
         score than if it appears only once.
         """
         query = "onion"
-        relevant_field = "how to cook an onion cake with onions"
-        less_relevant_field = "how to cook an onion cake"
-        unrelated_field = "how to build a house"
+        relevant_text = "how to cook an onion cake with onions"
+        less_relevant_text = "how to cook an onion cake"
+        unrelated_text = "how to build a house"
 
         # Check that the relevance compensates for the lower score
-        relevant_entity = self._create_rated_entity(field1=relevant_field, criteria_score=1.0)
+        relevant_entity = self._create_rated_entity(field1=relevant_text, criteria_score=1.0)
         less_relevant_entity = self._create_rated_entity(
-            field1=less_relevant_field,
+            field1=less_relevant_text,
             criteria_score=1.1
         )
-        self._create_rated_entity(field1=unrelated_field, criteria_score=1.2)
+        self._create_rated_entity(field1=unrelated_text, criteria_score=1.2)
 
         response = self.client.get(
             f"/users/{self.user.username}/recommendations/{self.poll.name}"
@@ -596,23 +589,23 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
         self.assertEqual(response.data["results"][1]["uid"], less_relevant_entity.uid)
 
-    def test_private_recommendations_multiple_matches(self):
+    def test_private_contributor_recommendations_multiple_matches(self):
         """
-        If the word appears twice in a field, it should give a higher
+        If the word appears twice in a text field, it should give a higher
         score than if it appears only once.
         """
         query = "onion"
-        relevant_field = "how to cook an onion cake with onions"
-        less_relevant_field = "how to cook an onion cake"
-        unrelated_field = "how to build a house"
+        relevant_text = "how to cook an onion cake with onions"
+        less_relevant_text = "how to cook an onion cake"
+        unrelated_text = "how to build a house"
 
         # Check that the relevance compensates for the lower score
-        relevant_entity = self._create_rated_entity(field1=relevant_field, criteria_score=1.0)
+        relevant_entity = self._create_rated_entity(field1=relevant_text, criteria_score=1.0)
         less_relevant_entity = self._create_rated_entity(
-            field1=less_relevant_field,
+            field1=less_relevant_text,
             criteria_score=1.1
         )
-        self._create_rated_entity(field1=unrelated_field, criteria_score=1.2)
+        self._create_rated_entity(field1=unrelated_text, criteria_score=1.2)
 
         self.client.force_authenticate(self.user)
         response = self.client.get(
@@ -629,21 +622,19 @@ class TextSearchTestCase(TestCase):
     def test_multiple_words(self):
         """
         Test with multiple words in the query.
-        Leave the freedom to accept or reject an entity for
-        which only 1 of the query words appears.
+        
+        Consider that if any of the 2 query words is not in
+        the text field, the entity should not be returned.
         """
         sentence_query = "onion sauce"
-        relevant_field = "how to cook an onion sauce"
-        less_relevant_field = "how to cook an onion cake"
-        unrelated_field = "how to build a house"
+        relevant_text = "how to cook an onion sauce"
+        less_relevant_text = "how to cook an onion cake"
+        unrelated_text = "how to build a house"
 
         # Check that the relevance compensates for the lower score
-        relevant_entity = self._create_rated_entity(field1=relevant_field, criteria_score=1.0)
-        less_relevant_entity = self._create_rated_entity(
-            field1=less_relevant_field,
-            criteria_score=1.1
-        )
-        self._create_rated_entity(field1=unrelated_field, criteria_score=1.2)
+        relevant_entity = self._create_rated_entity(field1=relevant_text, criteria_score=1.0)
+        self._create_rated_entity(field1=less_relevant_text, criteria_score=1.1)
+        self._create_rated_entity(field1=unrelated_text, criteria_score=1.2)
 
         response = self.client.get(
             self._make_url(sentence_query),
@@ -651,11 +642,8 @@ class TextSearchTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["count"], [1, 2])
+        self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.data["results"][0]["uid"], relevant_entity.uid)
-        if response.data["count"] == 2:
-            # Not mandatory whether to accept it or not
-            self.assertEqual(response.data["results"][1]["uid"], less_relevant_entity.uid)
 
     def test_case_insensitive(self):
 
@@ -698,14 +686,14 @@ class TextSearchTestCase(TestCase):
         Check that videos that have a negative score are
         still filtered correctly.
         """
-        self._create_rated_entity(field1=self.field, unsafe=True)
+        self._create_rated_entity(field1=self.text, unsafe=True)
 
-        response = self.client.get(self.url, format="json")
+        response = self.client.get(self.url_with_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_results_count)
 
-        response = self.client.get(self.url + "&unsafe=true", format="json")
+        response = self.client.get(self.url_with_params + "&unsafe=true", format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_results_count + 1)

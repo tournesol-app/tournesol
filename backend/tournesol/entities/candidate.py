@@ -27,11 +27,11 @@ class CandidateEntity(EntityType):
         from tournesol.models import Entity
         return qs.filter(
             pk__in=Entity.objects.filter(
-                Q(uid__icontains=query)
-                | Q(metadata__name__icontains=query)
-                | Q(metadata__frwiki_title__icontains=query)
-                | Q(metadata__youtube_channel_id__icontains=query)
-                | Q(metadata__twitter_username__icontains=query)
+                Q(uid__icontains=query) |
+                Q(metadata__name__icontains=query) |
+                Q(metadata__frwiki_title__icontains=query) |
+                Q(metadata__youtube_channel_id__icontains=query) |
+                Q(metadata__twitter_username__icontains=query)
             )
         )
 

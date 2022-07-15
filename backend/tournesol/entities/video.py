@@ -36,11 +36,11 @@ class VideoEntity(EntityType):
 
         return qs.filter(
             pk__in=Entity.objects.filter(
-                Q(uid__icontains=query)
-                | Q(metadata__name__icontains=query)
-                | Q(metadata__uploader__icontains=query)
-                | Q(metadata__description__icontains=query)
-                | Q(metadata__tags__icontains=query)
+                Q(uid__icontains=query) |
+                Q(metadata__name__icontains=query) |
+                Q(metadata__uploader__icontains=query) |
+                Q(metadata__description__icontains=query) |
+                Q(metadata__tags__icontains=query)
             )
         ).annotate(relevance=Value(1.0))
 

@@ -280,6 +280,12 @@ class EntityType(ABC):
 
     @staticmethod
     def build_all_search_vectors() -> None:
+        """
+        Rebuild the search vectors for all entities.
+
+        This can take dozens of seconds and is usually not necessary
+        because search_vector is automatically updated after a save.
+        """
         from tournesol.entities import ENTITY_TYPE_NAME_TO_CLASS
 
         for entity in models.Entity.objects.iterator():
