@@ -22,7 +22,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
-from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT 
+from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
@@ -37,13 +37,13 @@ logger = logging.getLogger(__name__)
                 OpenApiTypes.OBJECT,
                 style="deepObject",
                 description="Weights for criteria in this poll."
-                f" The default weight is {CRITERIA_DEFAULT_WEIGHT } for each criteria.",
+                f" The default weight is {CRITERIA_DEFAULT_WEIGHT} for each criteria.",
                 examples=[
                     OpenApiExample(
                         name="weights example",
                         value={
-                            "reliability": CRITERIA_DEFAULT_WEIGHT ,
-                            "importance": CRITERIA_DEFAULT_WEIGHT ,
+                            "reliability": CRITERIA_DEFAULT_WEIGHT,
+                            "importance": CRITERIA_DEFAULT_WEIGHT,
                             "ignored_criteria": 0,
                         },
                     )
@@ -190,7 +190,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         criteria_cases = []
         for crit in poll.criterias_list:
             weight = self._get_raw_weight(request, crit)
-            if weight != CRITERIA_DEFAULT_WEIGHT :
+            if weight != CRITERIA_DEFAULT_WEIGHT:
                 any_weight_in_request = True
             criteria_cases.append(When(**{when: crit}, then=weight))
 
@@ -212,7 +212,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                     f"Invalid weight value for criteria '{criteria}'"
                 ) from value_error
         else:
-            weight = CRITERIA_DEFAULT_WEIGHT 
+            weight = CRITERIA_DEFAULT_WEIGHT
 
         return weight
 
