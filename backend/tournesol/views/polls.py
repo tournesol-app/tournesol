@@ -22,7 +22,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
-from tournesol.utils.constants import DEFAULT_WEIGHT
+from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT 
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
@@ -37,13 +37,13 @@ logger = logging.getLogger(__name__)
                 OpenApiTypes.OBJECT,
                 style="deepObject",
                 description="Weights for criteria in this poll."
-                f" The default weight is {DEFAULT_WEIGHT} for each criteria.",
+                f" The default weight is {CRITERIA_DEFAULT_WEIGHT } for each criteria.",
                 examples=[
                     OpenApiExample(
                         name="weights example",
                         value={
-                            "reliability": DEFAULT_WEIGHT,
-                            "importance": DEFAULT_WEIGHT,
+                            "reliability": CRITERIA_DEFAULT_WEIGHT ,
+                            "importance": CRITERIA_DEFAULT_WEIGHT ,
                             "ignored_criteria": 0,
                         },
                     )
@@ -85,11 +85,11 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
     search_score_coef = 2
 
-    def _metadata_from_filter(self, filter: str):
+    def _metadata_from_filter(self, metadata_filter: str):
         """
         _metadata_from_filter("metadata[language]") -> "language"
         """
-        return filter.split("[")[1][:-1]
+        return metadata_filter.split("[")[1][:-1]
 
     def filter_by_parameters(self, request, queryset, poll: Poll):
         """
@@ -144,7 +144,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
     def sort_results(self, queryset, filters, request, poll):
         """
-        Sorts the results
+        Sort the results
 
         For full-text searches:
         Calculate a "search score" based on the criteria scores and
@@ -190,7 +190,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         criteria_cases = []
         for crit in poll.criterias_list:
             weight = self._get_raw_weight(request, crit)
-            if weight != DEFAULT_WEIGHT:
+            if weight != CRITERIA_DEFAULT_WEIGHT :
                 any_weight_in_request = True
             criteria_cases.append(When(**{when: crit}, then=weight))
 
@@ -212,7 +212,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                     f"Invalid weight value for criteria '{criteria}'"
                 ) from value_error
         else:
-            weight = DEFAULT_WEIGHT
+            weight = CRITERIA_DEFAULT_WEIGHT 
 
         return weight
 

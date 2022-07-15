@@ -121,7 +121,7 @@ class Entity(models.Model):
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         """
-        Automatically refresh the metadata text search vector.
+        Always refresh the metadata text search vector.
 
         This would be hard to do with PostgreSQL triggers because
         there are different weights and configs, and the
