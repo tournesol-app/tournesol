@@ -153,8 +153,10 @@ export const useNotifications = () => {
               ? [body]
               : Object.values(reason['body']).flat();
           newErrorMessages.map((msg) => {
-            const flatMsg = Object.values(msg as Record<string, unknown>)[0];
-            showErrorAlert(flatMsg as string);
+            if (typeof msg !== 'string') {
+              msg = Object.values(msg as Record<string, unknown>)[0];
+            }
+            showErrorAlert(msg as string);
           });
         }
       } else {
