@@ -356,7 +356,10 @@ class TextSearchTestCase(TestCase):
         """
         word = "kook"
         language_unknown_by_postgres = "et"  # Estonian
+        other_language_not_supported = "mk"  # Macedonian
         self._create_rated_entity(field1=word, language=language_unknown_by_postgres)
+        self._create_rated_entity(field1=word, language=other_language_not_supported)
+        self._create_rated_entity(field1=word, language="fr")
 
         response = self.client.get(
             self._make_url(word, "et"),
@@ -365,6 +368,23 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
+
+    def test_no_language_filter(self):
+        """
+        The results in every language should be returned
+        """
+        word = "kook"
+        self._create_rated_entity(field1=word, language="et")
+        self._create_rated_entity(field1=word, language="mk")
+        self._create_rated_entity(field1=word, language="fr")
+
+        response = self.client.get(
+            self.url_base + "?search=" + word,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 3)
 
     def test_sorting_depends_on_total_score(self):
         """

@@ -26,6 +26,7 @@ from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.models.rate_later import RateLater
 from tournesol.serializers.metadata import VideoMetadata
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.video_language import DEFAULT_SEARCH_CONFIG, SEARCH_CONFIG_CHOICES
 
 LANGUAGES = settings.LANGUAGES
 
@@ -115,9 +116,20 @@ class Entity(models.Model):
         help_text="Total number of certified contributors who rated the video",
     )
 
-    # This contains indexed words, used for the full-text search
-    # These words are filtered (no "stop word"), stemmed and weighted in a language-specific manner
-    search_vector = SearchVectorField(editable=False, null=True)
+    search_config_name = models.CharField(
+        blank=True,
+        default=DEFAULT_SEARCH_CONFIG,
+        max_length=32, 
+        choices=SEARCH_CONFIG_CHOICES,
+        help_text="PostgreSQL text search config to use, based on the entity's language",
+    )
+
+    search_vector = SearchVectorField(
+        editable=False, 
+        null=True,
+        help_text="Indexed words used for the full-text search, that are filtered,"
+        " stemmed and weighted according to the language's search config.",
+    )
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         """
@@ -129,6 +141,7 @@ class Entity(models.Model):
         """
         super().save(force_insert, force_update, *args, **kwargs)
 
+        # If save was not already called by build_search_vector, call build_search_vector
         if not (("update_fields" in kwargs) and ("search_vector" in kwargs["update_fields"])):
             if self.type in ENTITY_TYPE_NAME_TO_CLASS:
                 self.entity_cls.build_search_vector(self)

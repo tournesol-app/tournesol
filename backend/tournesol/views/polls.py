@@ -40,7 +40,10 @@ logger = logging.getLogger(__name__)
                 f" The default weight is {CRITERIA_DEFAULT_WEIGHT} for each criteria.",
                 examples=[
                     OpenApiExample(
-                        name="weights example",
+                        name="Default weights",
+                    ),
+                    OpenApiExample(
+                        name="Weights example",
                         value={
                             "reliability": CRITERIA_DEFAULT_WEIGHT,
                             "importance": CRITERIA_DEFAULT_WEIGHT,
@@ -55,6 +58,9 @@ logger = logging.getLogger(__name__)
                 style="deepObject",
                 description="Filter by one or more metadata.",
                 examples=[
+                    OpenApiExample(
+                        name="No metadata filter",
+                    ),
                     OpenApiExample(
                         name="Videos - some examples",
                         value={"language": ["en", "pt"], "uploader": "Kurzgesagt – In a Nutshell"},

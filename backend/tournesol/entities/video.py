@@ -31,20 +31,6 @@ class VideoEntity(EntityType):
         return qs.filter(metadata__publication_date__gte=dt.date().isoformat())
 
     @classmethod
-    def search_without_vector_field(cls, qs, query):
-        from tournesol.models import Entity
-
-        return qs.filter(
-            pk__in=Entity.objects.filter(
-                Q(uid__icontains=query) |
-                Q(metadata__name__icontains=query) |
-                Q(metadata__uploader__icontains=query) |
-                Q(metadata__description__icontains=query) |
-                Q(metadata__tags__icontains=query)
-            )
-        ).annotate(relevance=Value(1.0))
-
-    @classmethod
     def get_uid_regex(cls, namespace: str) -> str:
         if namespace == YOUTUBE_UID_NAMESPACE:
             return YOUTUBE_UID_REGEX
@@ -81,14 +67,14 @@ class VideoEntity(EntityType):
     def build_search_vector(cls, entity) -> None:
         from tournesol.utils.video_language import language_to_postgres_config
 
-        language = language_to_postgres_config(entity.metadata["language"])
-        if language:
-            if entity.type == TYPE_VIDEO:
-                entity.search_vector = \
-                    SearchVector("uid", weight="A", config=language) + \
-                    SearchVector("metadata__name", weight="A", config=language) + \
-                    SearchVector("metadata__uploader", weight="A", config=language) + \
-                    SearchVector("metadata__tags", weight="A", config=language) + \
-                    SearchVector("metadata__description", weight="C", config=language)
+        language_config = language_to_postgres_config(entity.metadata["language"])
 
-                entity.save(update_fields=["search_vector"])
+        entity.search_config_name = language_config
+        entity.search_vector = \
+            SearchVector("uid", weight="A", config=language_config) + \
+            SearchVector("metadata__name", weight="A", config=language_config) + \
+            SearchVector("metadata__uploader", weight="A", config=language_config) + \
+            SearchVector("metadata__tags", weight="A", config=language_config) + \
+            SearchVector("metadata__description", weight="C", config=language_config)
+
+        entity.save(update_fields=["search_config_name", "search_vector"])
