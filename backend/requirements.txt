@@ -8,6 +8,7 @@ django-prometheus==2.2.0
 django-rest-registration==0.7.0
 django-sql-utils==0.6.1
 djangorestframework==3.13.1
+django-debug-toolbar==3.4.0
 drf-spectacular==0.21.2
 fuzzysearch==0.7.3
 Pillow==9.0.1

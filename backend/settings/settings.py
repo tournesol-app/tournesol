@@ -63,7 +63,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     "django_prometheus",
+    "debug_toolbar",
     "core",
     "tournesol",
     "twitterbot",
@@ -135,6 +137,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "settings.urls"
@@ -210,6 +213,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+import os  # only if you haven't already imported this
+import socket  # only if you haven't already imported this
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
