@@ -227,8 +227,7 @@ def save_contributor_scores(
         )
 
     with transaction.atomic():
-        if delete_all:
-            scores_to_delete.delete()
+        scores_to_delete.delete()
         ContributorRatingCriteriaScore.objects.bulk_create(
             ContributorRatingCriteriaScore(
                 contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],

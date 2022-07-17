@@ -996,63 +996,63 @@ class ComparisonWithMehestanTest(TransactionTestCase):
 
         self.client = APIClient()
 
-    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
-    def test_update_individual_and_global_scores_after_new_comparison_with_mehestan_run_after_update(
-        self,
-    ):
-        call_command("ml_train")
-        print(ContributorRatingCriteriaScore.objects.all())
+    # @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
+    # def test_update_individual_and_global_scores_after_new_comparison_with_mehestan_run_after_update(
+    #     self,
+    # ):
+    #     call_command("ml_train")
+    #     print(ContributorRatingCriteriaScore.objects.all())
 
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
-        self.assertEqual(
-            EntityCriteriaScore.objects.filter(score_mode="default").count(), 4
-        )
+    #     self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 4)
+    #     self.assertEqual(
+    #         EntityCriteriaScore.objects.filter(score_mode="default").count(), 4
+    #     )
 
-        # user2 has no contributor scores before the comparison is submitted
-        self.assertEqual(
-            ContributorRatingCriteriaScore.objects.filter(
-                contributor_rating__user=self.user2
-            ).count(),
-            0,
-        )
+    #     # user2 has no contributor scores before the comparison is submitted
+    #     self.assertEqual(
+    #         ContributorRatingCriteriaScore.objects.filter(
+    #             contributor_rating__user=self.user2
+    #         ).count(),
+    #         0,
+    #     )
 
-        self.client.force_authenticate(self.user2)
-        resp = self.client.post(
-            f"/users/me/comparisons/{self.poll.name}",
-            data={
-                "entity_a": {"uid": self.entities[0].uid},
-                "entity_b": {"uid": self.entities[2].uid},
-                "criteria_scores": [{"criteria": "criteria1", "score": 3}],
-            },
-            format="json",
-        )
+    #     self.client.force_authenticate(self.user2)
+    #     resp = self.client.post(
+    #         f"/users/me/comparisons/{self.poll.name}",
+    #         data={
+    #             "entity_a": {"uid": self.entities[0].uid},
+    #             "entity_b": {"uid": self.entities[2].uid},
+    #             "criteria_scores": [{"criteria": "criteria1", "score": 3}],
+    #         },
+    #         format="json",
+    #     )
 
-        self.assertEqual(resp.status_code, 201, resp.content)
-        print(ContributorRatingCriteriaScore.objects.all())
+    #     self.assertEqual(resp.status_code, 201, resp.content)
+    #     print(ContributorRatingCriteriaScore.objects.all())
 
-        call_command("ml_train")
-        print(ContributorRatingCriteriaScore.objects.all())
-        # Individual scores related to the new comparison have been computed
-        self.assertEqual(
-            ContributorRatingCriteriaScore.objects.filter(
-                contributor_rating__user=self.user2
-            ).count(),
-            2,
-        )
-        # The score related to the less prefered entity is negative
-        user_score = ContributorRatingCriteriaScore.objects.get(
-            contributor_rating__user=self.user2,
-            contributor_rating__entity=self.entities[0],
-            criteria="criteria1",
-        )
-        self.assertLess(user_score.score, 0)
+    #     call_command("ml_train")
+    #     print(ContributorRatingCriteriaScore.objects.all())
+    #     # Individual scores related to the new comparison have been computed
+    #     self.assertEqual(
+    #         ContributorRatingCriteriaScore.objects.filter(
+    #             contributor_rating__user=self.user2
+    #         ).count(),
+    #         2,
+    #     )
+    #     # The score related to the less prefered entity is negative
+    #     user_score = ContributorRatingCriteriaScore.objects.get(
+    #         contributor_rating__user=self.user2,
+    #         contributor_rating__entity=self.entities[0],
+    #         criteria="criteria1",
+    #     )
+    #     self.assertLess(user_score.score, 0)
 
-        # new individual scores 4+2=6
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
-        # new Global scores 4+1=5
-        self.assertEqual(
-            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
-        )
+    #     # new individual scores 4+2=6
+    #     self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 6)
+    #     # new Global scores 4+1=5
+    #     self.assertEqual(
+    #         EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
+    #     )
 
     # @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
     # def test_update_individual_scores_after_new_comparison_with_online_heuristic_update(
@@ -1390,4 +1390,207 @@ class ComparisonApiWithInactivePoll(TestCase):
         )
         self.assertContains(
             resp, "inactive poll", status_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class AdvancedComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
+    def setUp(self):
+        self.poll = PollFactory(algorithm=ALGORITHM_MEHESTAN)
+        CriteriaRankFactory(poll=self.poll, criteria__name="criteria1")
+
+        self.entities = VideoFactory.create_batch(5)
+        (
+            self.user1,
+            self.user2,
+        ) = UserFactory.create_batch(2)
+
+        comparison_user1_1 = ComparisonFactory(
+            poll=self.poll,
+            user=self.user1,
+            entity_1=self.entities[0],
+            entity_2=self.entities[1],
+        )
+        comparison_user1_2 = ComparisonFactory(
+            poll=self.poll,
+            user=self.user1,
+            entity_1=self.entities[1],
+            entity_2=self.entities[2],
+        )
+        comparison_user1_3 = ComparisonFactory(
+            poll=self.poll,
+            user=self.user1,
+            entity_1=self.entities[0],
+            entity_2=self.entities[2],
+        )
+        comparison_user1_4 = ComparisonFactory(
+            poll=self.poll,
+            user=self.user1,
+            entity_1=self.entities[0],
+            entity_2=self.entities[3],
+        )
+        comparison_user1_5 = ComparisonFactory(
+            poll=self.poll,
+            user=self.user1,
+            entity_1=self.entities[0],
+            entity_2=self.entities[4],
+        )
+        comparison_user2 = ComparisonFactory(
+            poll=self.poll,
+            user=self.user2,
+            entity_1=self.entities[0],
+            entity_2=self.entities[1],
+        )
+        comparisons = list()
+        comparisons.append((comparison_user1_1, 10))
+        comparisons.append((comparison_user1_2, 10))
+        comparisons.append((comparison_user1_3, 10))
+        comparisons.append((comparison_user1_4, 10))
+        comparisons.append((comparison_user1_5, 10))
+        comparisons.append((comparison_user2, 10))
+
+        for (comparison, score) in comparisons:
+            ComparisonCriteriaScoreFactory(
+                comparison=comparison,
+                criteria="criteria1",
+                score=score,
+            )
+
+        self.client = APIClient()
+
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
+    def test_delete_all_individual_scores_with_online_heuristic_update(
+        self,
+    ):
+        call_command("ml_train")
+
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 7)
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
+        )
+
+        self.client.force_authenticate(self.user1)
+        resp = self.client.delete(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[1].uid}/",
+        )
+
+        self.assertEqual(resp.status_code, 204, resp.content)
+        resp = self.client.delete(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[2].uid}/",
+        )
+
+        self.assertEqual(resp.status_code, 204, resp.content)
+        resp = self.client.delete(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[3].uid}/",
+        )
+
+        self.assertEqual(resp.status_code, 204, resp.content)
+        resp = self.client.delete(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[4].uid}/",
+        )
+
+        self.assertEqual(resp.status_code, 204, resp.content)
+        resp = self.client.delete(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[1].uid}/{self.entities[2].uid}/",
+        )
+
+        self.assertEqual(resp.status_code, 204, resp.content)
+        # 5 indiv score with 0.0 score
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=self.user1
+            ).count(),
+            5,
+        )
+        for (
+            contributorRatingCriteriaScore
+        ) in ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__user=self.user1
+        ).all():
+            self.assertEqual(contributorRatingCriteriaScore.score, 0.0)
+
+        # # no new global scores = 5
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
+        )
+    
+    @override_settings(UPDATE_MEHESTAN_SCORES_ON_COMPARISON=True)
+    def test_update_all_individual_scores_with_online_heuristic_update(
+        self,
+    ):
+        call_command("ml_train")
+        contrib_before_update = set(
+            ContributorRatingCriteriaScore.objects.all().values_list()
+        )
+
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 7)
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
+        )
+
+        self.client.force_authenticate(self.user1)
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[1].uid}/",
+            data={
+                "criteria_scores": [{"criteria": "criteria1", "score": 0}],
+            },
+            format="json",
+        )
+
+        self.assertEqual(resp.status_code, 200, resp.content)
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[2].uid}/",
+            data={
+                "criteria_scores": [{"criteria": "criteria1", "score": 0}],
+            },
+            format="json",
+        )
+
+        self.assertEqual(resp.status_code, 200, resp.content)        
+        
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[3].uid}/",
+            data={
+                "criteria_scores": [{"criteria": "criteria1", "score": 0}],
+            },
+            format="json",
+        )
+
+        self.assertEqual(resp.status_code, 200, resp.content)
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[0].uid}/{self.entities[4].uid}/",
+            data={
+                "criteria_scores": [{"criteria": "criteria1", "score": 0}],
+            },
+            format="json",
+        )
+
+        self.assertEqual(resp.status_code, 200, resp.content)
+
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[1].uid}/{self.entities[2].uid}/",
+            data={
+                "criteria_scores": [{"criteria": "criteria1", "score": 0}],
+            },
+            format="json",
+        )
+        call_command("ml_train")
+        resp = self.client.put(
+            f"/users/me/comparisons/{self.poll.name}/{self.entities[1].uid}/{self.entities[2].uid}/",
+            data={
+                "criteria_scores": [{"criteria": "criteria1", "score": 0}],
+            },
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 200, resp.content)
+                # 5 indiv score with 0.0 score
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects.filter(
+                contributor_rating__user=self.user1
+            ).count(),
+            5,
+        )
+
+        # no new global scores = 5
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 5
         )
