@@ -7,6 +7,7 @@ from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from sql_util.utils import SubqueryCount
 
 from .models import (
@@ -60,21 +61,21 @@ class EntityLanguageFilter(MetadataFieldFilter):
 
 @admin.register(Entity)
 class EntityAdmin(admin.ModelAdmin):
-    readonly_fields = ('tournesol_score',)
+    readonly_fields = ("tournesol_score",)
     list_display = (
-        'uid',
-        'get_name',
-        'get_uploader',
-        'get_publication_date',
-        'rating_n_ratings',
-        'tournesol_score',
-        'rating_n_contributors',
-        'get_language',
-        'link_to_youtube',
+        "uid",
+        "get_name",
+        "get_uploader",
+        "get_publication_date",
+        "rating_n_ratings",
+        "tournesol_score",
+        "rating_n_contributors",
+        "get_language",
+        "link_to_youtube",
     )
-    search_fields = ('uid', 'metadata__name', 'metadata__uploader')
+    search_fields = ("uid", "metadata__name", "metadata__uploader")
     list_filter = (
-        'type',
+        "type",
         EntityLanguageFilter,
     )
     actions = ["update_metadata"]
@@ -85,7 +86,11 @@ class EntityAdmin(admin.ModelAdmin):
         for entity in queryset.iterator():
             entity.inner.refresh_metadata(force=True)
             count += 1
-        messages.info(request, f"finished refreshing the metadata of the {count} entities")
+        messages.info(
+            request,
+            _(f"Successfully refreshed the metadata of %(count)s entities.")
+            % {"count": count},
+        )
 
     @staticmethod
     @admin.display(description="name", ordering="metadata__name")
@@ -98,7 +103,9 @@ class EntityAdmin(admin.ModelAdmin):
         return obj.metadata.get("uploader")
 
     @staticmethod
-    @admin.display(description="publication_date", ordering="metadata__publication_date")
+    @admin.display(
+        description="publication_date", ordering="metadata__publication_date"
+    )
     def get_publication_date(obj):
         return obj.metadata.get("publication_date")
 
@@ -111,42 +118,32 @@ class EntityAdmin(admin.ModelAdmin):
 
 @admin.register(EntityCriteriaScore)
 class EntityCriteriaScoreAdmin(admin.ModelAdmin):
-    list_display = (
-        'entity',
-        'poll',
-        'criteria',
-        'score_mode',
-        'score'
-    )
+    list_display = ("entity", "poll", "criteria", "score_mode", "score")
     list_filter = (
-        'poll',
-        'score_mode',
+        "poll",
+        "score_mode",
     )
-    search_fields = (
-        'entity__uid',
-    )
-    raw_id_fields = (
-        'entity',
-    )
+    search_fields = ("entity__uid",)
+    raw_id_fields = ("entity",)
 
 
 @admin.register(ContributorRating)
 class ContributorRatingAdmin(admin.ModelAdmin):
     list_display = (
-        'user',
-        'entity',
-        'get_poll_name',
-        'link_to_youtube',
-        'is_public',
+        "user",
+        "entity",
+        "get_poll_name",
+        "link_to_youtube",
+        "is_public",
     )
     list_filter = (
-        'poll__name',
-        'entity__type',
-        'is_public',
+        "poll__name",
+        "entity__type",
+        "is_public",
     )
     list_select_related = (
-        'poll',
-        'entity',
+        "poll",
+        "entity",
     )
 
     def link_to_youtube(self, obj):
@@ -159,66 +156,43 @@ class ContributorRatingAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorRatingCriteriaScore)
 class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
-    list_filter = (
-        "contributor_rating__poll__name",
-    )
-    list_display = (
-        'id',
-        'contributor_rating',
-        'criteria',
-        'score'
-    )
-    readonly_fields = (
-        'contributor_rating',
-    )
-    search_fields = (
-        'contributor_rating__entity__uid',
-    )
+    list_filter = ("contributor_rating__poll__name",)
+    list_display = ("id", "contributor_rating", "criteria", "score")
+    readonly_fields = ("contributor_rating",)
+    search_fields = ("contributor_rating__entity__uid",)
 
 
 @admin.register(ContributorScaling)
 class ContributorScalingAdmin(admin.ModelAdmin):
     search_fields = (
-        'criteria',
-        'user__username',
+        "criteria",
+        "user__username",
     )
-    list_filter = (
-        "poll__name",
-    )
-    list_display = (
-        'id',
-        'user',
-        'criteria',
-        'translation',
-        'scale'
-    )
-    readonly_fields = (
-        'user',
-    )
+    list_filter = ("poll__name",)
+    list_display = ("id", "user", "criteria", "translation", "scale")
+    readonly_fields = ("user",)
 
 
 @admin.register(Comparison)
 class ComparisonAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
-        'user',
-        'get_poll_name',
-        'entity_1',
-        'entity_2',
-        'datetime_lastedit',
+        "pk",
+        "user",
+        "get_poll_name",
+        "entity_1",
+        "entity_2",
+        "datetime_lastedit",
     )
-    list_filter = (
-        'poll__name',
-    )
+    list_filter = ("poll__name",)
     list_select_related = (
-        'entity_1',
-        'entity_2',
-        'poll',
+        "entity_1",
+        "entity_2",
+        "poll",
     )
     raw_id_fields = (
-        'user',
-        'entity_1',
-        'entity_2',
+        "user",
+        "entity_1",
+        "entity_2",
     )
 
     @admin.display(ordering="poll__name", description="Poll")
@@ -228,22 +202,13 @@ class ComparisonAdmin(admin.ModelAdmin):
 
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
-    list_filter = (
-        'comparison__poll__name',
-    )
-    list_display = (
-        'id',
-        'comparison',
-        'criteria',
-        'score'
-    )
-    readonly_fields = (
-        'comparison',
-    )
+    list_filter = ("comparison__poll__name",)
+    list_display = ("id", "comparison", "criteria", "score")
+    readonly_fields = ("comparison",)
     search_fields = (
-        'criteria',
-        'comparison__entity_1__uid',
-        'comparison__entity_2__uid',
+        "criteria",
+        "comparison__entity_1__uid",
+        "comparison__entity_2__uid",
     )
 
 
@@ -260,14 +225,14 @@ class CriteriaLocalesInline(admin.TabularInline):
 @admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
-        'active',
-        'algorithm',
-        'entity_type',
-        'get_n_criteria',
-        'get_n_comparisons',
-        'get_n_comparisons_per_criteria',
-        'get_proof_of_vote_file',
+        "name",
+        "active",
+        "algorithm",
+        "entity_type",
+        "get_n_criteria",
+        "get_n_comparisons",
+        "get_n_comparisons_per_criteria",
+        "get_proof_of_vote_file",
     )
     list_filter = ("active", "algorithm", "entity_type")
     inlines = (CriteriasInline,)
@@ -302,7 +267,9 @@ class PollAdmin(admin.ModelAdmin):
     def get_proof_of_vote_file(self, obj):
         return format_html(
             "<a href={url}>CSV</a>",
-            url=reverse("tournesol:export_poll_proof_of_vote", kwargs={"poll_name": obj.name})
+            url=reverse(
+                "tournesol:export_poll_proof_of_vote", kwargs={"poll_name": obj.name}
+            ),
         )
 
 
