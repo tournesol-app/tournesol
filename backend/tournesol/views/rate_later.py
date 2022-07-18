@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
-from tournesol.models import RateLater, Poll
+from tournesol.models import Poll, RateLater
 from tournesol.serializers.rate_later import RateLaterLegacySerializer
 
 
