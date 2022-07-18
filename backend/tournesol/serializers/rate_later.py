@@ -43,6 +43,9 @@ class RateLaterLegacySerializer(Serializer):
                 "views": instance.entity.metadata.get("views"),
                 "uploader": instance.entity.metadata.get("uploader"),
                 "language": instance.entity.metadata.get("language"),
+                # The two following fields will be moved in related tables.
+                "rating_n_ratings": instance.entity.rating_n_ratings,
+                "rating_n_contributors": instance.entity.rating_n_contributors,
                 "duration": instance.entity.metadata.get("duration"),
                 "video_id": instance.entity.metadata["video_id"],
             }
