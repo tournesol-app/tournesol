@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.models import Entity, RateLater
+from tournesol.models import Entity, Poll, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
 
@@ -36,6 +36,8 @@ class RateLaterApi(TestCase):
         At least two users are required, each of them having a distinct rate
         later list.
         """
+        self.default_poll = Poll.default_poll()
+
         user1 = UserFactory(username=self._user)
         user2 = UserFactory(username=self._other)
 
@@ -257,7 +259,7 @@ class RateLaterApi(TestCase):
         # Video should not be removed after 2 comparisons
         ComparisonFactory(user=user, entity_2=video)
         ComparisonFactory(user=user, entity_1=video)
-        video.auto_remove_from_rate_later(user)
+        video.auto_remove_from_rate_later(self.default_poll, user)
         self.assertEqual(RateLater.objects.filter(user=user, entity=video).count(), 1)
 
         # Video is not removed when compared by other user
@@ -265,23 +267,23 @@ class RateLaterApi(TestCase):
         ComparisonFactory(user=other_user, entity_2=video)
         ComparisonFactory(user=other_user, entity_1=video)
         ComparisonFactory(user=other_user, entity_1=video)
-        video.auto_remove_from_rate_later(user)
+        video.auto_remove_from_rate_later(self.default_poll, user)
         self.assertEqual(RateLater.objects.filter(user=user, entity=video).count(), 1)
 
         # Video should not be removed after 3 comparisons
         ComparisonFactory(user=user, entity_2=video)
-        video.auto_remove_from_rate_later(user)
+        video.auto_remove_from_rate_later(self.default_poll, user)
         self.assertEqual(RateLater.objects.filter(user=user, entity=video).count(), 1)
 
         # Video is not removed when comparing unrelated videos
         ComparisonFactory(user=user)
         ComparisonFactory(user=user)
-        video.auto_remove_from_rate_later(user)
+        video.auto_remove_from_rate_later(self.default_poll, user)
         self.assertEqual(RateLater.objects.filter(user=user, entity=video).count(), 1)
 
         # Video should be removed after 4 comparisons
         ComparisonFactory(user=user, entity_2=video)
-        video.auto_remove_from_rate_later(user)
+        video.auto_remove_from_rate_later(self.default_poll, user)
         self.assertEqual(RateLater.objects.filter(user=user, entity=video).count(), 0)
 
         # Video can be added again
@@ -297,5 +299,5 @@ class RateLaterApi(TestCase):
 
         # Video is removed again after one new comparison
         ComparisonFactory(user=user, entity_2=video)
-        video.auto_remove_from_rate_later(user)
+        video.auto_remove_from_rate_later(self.default_poll, user)
         self.assertEqual(RateLater.objects.filter(user=user, entity=video).count(), 0)
