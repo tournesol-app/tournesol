@@ -88,7 +88,7 @@ class EntityAdmin(admin.ModelAdmin):
             count += 1
         messages.info(
             request,
-            _(f"Successfully refreshed the metadata of %(count)s entities.")
+            _("Successfully refreshed the metadata of %(count)s entities.")
             % {"count": count},
         )
 
