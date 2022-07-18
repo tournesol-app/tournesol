@@ -1,38 +1,48 @@
 """
-Rate later element related.
+RateLater model.
 """
 
 from django.db import models
 
 from core.models import User
+from tournesol.models.poll import Poll
 
 
 class RateLater(models.Model):
-    """List of videos that a person wants to rate later."""
+    """An `Entity` a user wants to rate later in a poll."""
 
+    entity = models.ForeignKey(
+        to="Entity",
+        on_delete=models.CASCADE,
+        help_text="The entity the user wants to save.",
+        related_name="ratelaters",
+    )
     user = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
-        help_text="Person who saves the video",
+        help_text="The user who saves the entity.",
         related_name="ratelaters",
     )
-    video = models.ForeignKey(
-        to="Entity",
+    poll = models.ForeignKey(
+        to=Poll,
         on_delete=models.CASCADE,
-        help_text="Video in the rate later list",
+        help_text="The poll in which the user is saving the entity.",
         related_name="ratelaters",
+        blank=True,
+        default=Poll.default_poll_pk,
     )
-
-    datetime_add = models.DateTimeField(
+    created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text="Time the video was added to the" " rate later list",
+        help_text="Time at which the video is saved.",
         null=True,
         blank=True,
     )
 
     class Meta:
-        unique_together = ["user", "video"]
-        ordering = ["user", "-datetime_add"]
+        ordering = ["user", "-created_at"]
+        unique_together = ["poll", "user", "entity"]
 
     def __str__(self):
-        return f"{self.user}/{self.video}@{self.datetime_add}"
+        return (
+            f"poll:{self.poll}/user:{self.user}/entity:{self.entity}@{self.created_at}"
+        )
