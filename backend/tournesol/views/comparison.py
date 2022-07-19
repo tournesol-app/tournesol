@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
-from ml.mehestan.run import update_user_scores
+from ml.mehestan.online_heuristics import update_user_scores
 from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
@@ -122,8 +122,17 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_2.update_n_ratings()
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(self.request.user)
-        if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
-            update_user_scores(poll, user=self.request.user)
+        if (
+            settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON
+            and poll.algorithm == ALGORITHM_MEHESTAN
+        ):
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.request.data["entity_a"]["uid"],
+                uid_b=self.request.data["entity_b"]["uid"],
+                delete_comparison_case=False,
+            )
 
 
 class ComparisonListFilteredApi(ComparisonListBaseApi):
@@ -215,14 +224,32 @@ class ComparisonDetailApi(
     def perform_update(self, serializer):
         super().perform_update(serializer)
         poll = self.poll_from_url
-        if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
-            update_user_scores(poll, user=self.request.user)
+        if (
+            settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON
+            and poll.algorithm == ALGORITHM_MEHESTAN
+        ):
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.kwargs["uid_a"],
+                uid_b=self.kwargs["uid_b"],
+                delete_comparison_case=False,
+            )
 
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
         poll = self.poll_from_url
-        if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:
-            update_user_scores(poll, user=self.request.user)
+        if (
+            settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON
+            and poll.algorithm == ALGORITHM_MEHESTAN
+        ):
+            update_user_scores(
+                poll,
+                user=self.request.user,
+                uid_a=self.kwargs["uid_a"],
+                uid_b=self.kwargs["uid_b"],
+                delete_comparison_case=True,
+            )
 
     def get(self, request, *args, **kwargs):
         """Retrieve a comparison made by the logged user, in the given poll."""

@@ -21,23 +21,32 @@ from .inputs import MlInputFromDb
 
 
 def save_entity_scores(
-    poll, entity_scores: Union[pd.DataFrame, Iterable[tuple]], single_criteria=None,
-    score_mode=ScoreMode.DEFAULT
+    poll,
+    entity_scores: Union[pd.DataFrame, Iterable[tuple]],
+    single_criteria=None,
+    score_mode=ScoreMode.DEFAULT,
+    delete_all: Optional[bool] = True,
 ):
     if isinstance(entity_scores, pd.DataFrame):
         scores_iterator = entity_scores[
             ["entity_id", "criteria", "score", "uncertainty", "deviation"]
         ].itertuples(index=False)
+        set_entity_id = set(entity_scores.entity_id)
     else:
         scores_iterator = entity_scores
-
+        set_entity_id = {entity_id for entity_id, _, _, _ in scores_iterator}
     # Support scores iterator without deviation
     scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
 
     with transaction.atomic():
-        scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll, score_mode=score_mode)
+        scores_to_delete = EntityCriteriaScore.objects.filter(
+            poll=poll, score_mode=score_mode
+        )
         if single_criteria:
             scores_to_delete = scores_to_delete.filter(criteria=single_criteria)
+        if set_entity_id and not delete_all:
+            scores_to_delete = scores_to_delete.filter(entity_id__in=set_entity_id)
+
         scores_to_delete.delete()
 
         EntityCriteriaScore.objects.bulk_create(
@@ -67,8 +76,12 @@ def save_tournesol_scores(poll):
         if poll.algorithm == ALGORITHM_MEHESTAN:
             # The tournesol score is simply the score associated with the main criteria
             entity.tournesol_score = next(
-                (s.score for s in entity.criteria_scores if s.criteria == poll.main_criteria),
-                None
+                (
+                    s.score
+                    for s in entity.criteria_scores
+                    if s.criteria == poll.main_criteria
+                ),
+                None,
             )
         else:
             entity.tournesol_score = 10 * sum(
@@ -102,9 +115,7 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
     ml_input = MlInputFromDb(poll_name=poll.name)
     scalings = ml_input.get_user_scalings().set_index(["user_id", "criteria"])
     contributor_scores = contributor_scores.join(
-        scalings,
-        on=["user_id", "criteria"],
-        how="left"
+        scalings, on=["user_id", "criteria"], how="left"
     )
     contributor_scores["scale"].fillna(1, inplace=True)
     contributor_scores["translation"].fillna(0, inplace=True)
@@ -114,7 +125,8 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
     # Apply individual scaling
     contributor_scores["uncertainty"] = (
         contributor_scores["scale"] * contributor_scores["raw_uncertainty"]
-        + contributor_scores["scale_uncertainty"] * contributor_scores["raw_score"].abs()
+        + contributor_scores["scale_uncertainty"]
+        * contributor_scores["raw_score"].abs()
         + contributor_scores["translation_uncertainty"]
     )
     contributor_scores["score"] = (
@@ -126,7 +138,9 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
     scale_function = poll.scale_function
     contributor_scores["uncertainty"] = 0.5 * (
         scale_function(contributor_scores["score"] + contributor_scores["uncertainty"])
-        - scale_function(contributor_scores["score"] - contributor_scores["uncertainty"])
+        - scale_function(
+            contributor_scores["score"] - contributor_scores["uncertainty"]
+        )
     )
     contributor_scores["score"] = scale_function(contributor_scores["score"])
     return contributor_scores
@@ -138,11 +152,18 @@ def save_contributor_scores(
     trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
     single_user_id: Optional[int] = None,
+    delete_all: Optional[bool] = True,
 ):
     if not isinstance(contributor_scores, pd.DataFrame):
         contributor_scores = pd.DataFrame(
             contributor_scores,
-            columns=["user_id", "entity_id", "criteria", "raw_score", "raw_uncertainty"]
+            columns=[
+                "user_id",
+                "entity_id",
+                "criteria",
+                "raw_score",
+                "raw_uncertainty",
+            ],
         )
 
     if "score" not in contributor_scores:
@@ -162,8 +183,9 @@ def save_contributor_scores(
     }
     ratings_to_create = set(
         (contributor_id, entity_id)
-        for contributor_id, entity_id
-        in contributor_scores[["user_id", "entity_id"]].itertuples(index=False)
+        for contributor_id, entity_id in contributor_scores[
+            ["user_id", "entity_id"]
+        ].itertuples(index=False)
         if (contributor_id, entity_id) not in rating_ids
     )
     ContributorRating.objects.bulk_create(
@@ -213,10 +235,42 @@ def save_contributor_scores(
                 score=row.score,
                 uncertainty=row.uncertainty,
                 raw_score=row.raw_score,
-                raw_uncertainty=row.raw_uncertainty
+                raw_uncertainty=row.raw_uncertainty,
             )
-            for _, row
-            in contributor_scores.iterrows()
+            for _, row in contributor_scores.iterrows()
+        )
+
+
+def insert_or_update_contributor_score(
+    poll: Poll,
+    entity_id: str,
+    user_id: str,
+    raw_score: float,
+    criteria: str,
+    raw_uncertainty: float,
+):
+    query_score_to_update = ContributorRatingCriteriaScore.objects.filter(
+        contributor_rating__poll=poll,
+        criteria=criteria,
+        contributor_rating__user_id=user_id,
+        contributor_rating__entity_id=entity_id,
+    )
+    contributor_rating_criteria_score = query_score_to_update.first()
+    if contributor_rating_criteria_score:
+        contributor_rating_criteria_score.score = raw_score
+        contributor_rating_criteria_score.uncertainty = raw_uncertainty
+        contributor_rating_criteria_score.save()
+    else:
+        data = [(user_id, entity_id, criteria, raw_score, raw_uncertainty)]
+        scores = pd.DataFrame(
+            data, columns=["user_id", "entity_id", "criteria", "raw_score", "raw_uncertainty"]
+        )
+        save_contributor_scores(
+            poll,
+            scores,
+            single_criteria=criteria,
+            single_user_id=user_id,
+            delete_all=False,
         )
 
 

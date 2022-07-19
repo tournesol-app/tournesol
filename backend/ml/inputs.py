@@ -6,7 +6,13 @@ from django.db.models import Case, F, QuerySet, When
 from django.db.models.expressions import RawSQL
 
 from core.models import User
-from tournesol.models import ComparisonCriteriaScore, ContributorRating, ContributorScaling, Entity
+from tournesol.models import (
+    ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    ContributorScaling,
+    Entity,
+)
 
 
 class MlInput(ABC):
@@ -44,6 +50,21 @@ class MlInput(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_user_scalings(
+        self, user_id: Optional[int] = None, criteria: Optional[str] = None
+    ) -> pd.DataFrame:
+        pass
+
+    @abstractmethod
+    def get_indiv_score(
+        self,
+        criteria: Optional[str] = None,
+        entity_id: Optional[str] = None,
+        user_id: Optional[int] = None,
+    ) -> pd.DataFrame:
+        pass
+
 
 class MlInputFromPublicDataset(MlInput):
     def __init__(self, csv_file):
@@ -79,6 +100,14 @@ class MlInputFromPublicDataset(MlInput):
         top_users = df.value_counts("user_id").index[:6]
         df["is_trusted"] = df["is_supertrusted"] = df["user_id"].isin(top_users)
         return df
+
+    def get_user_scalings(self, user_id=None, criteria=None):
+        return
+
+    def get_indiv_score(
+        self, criteria=None, user_id=None, entity_id=None
+    ) -> pd.DataFrame:
+        return
 
 
 class MlInputFromDb(MlInput):
@@ -182,7 +211,9 @@ class MlInputFromDb(MlInput):
                     When(user__in=User.trusted_users(), then=True), default=False
                 ),
                 is_supertrusted=Case(
-                    When(user__in=self.get_supertrusted_users().values("id"), then=True),
+                    When(
+                        user__in=self.get_supertrusted_users().values("id"), then=True
+                    ),
                     default=False,
                 ),
             )
@@ -227,7 +258,7 @@ class MlInputFromDb(MlInput):
             "scale",
             "scale_uncertainty",
             "translation",
-            "translation_uncertainty"
+            "translation_uncertainty",
         )
         if len(values) == 0:
             return pd.DataFrame(
@@ -237,7 +268,53 @@ class MlInputFromDb(MlInput):
                     "scale",
                     "scale_uncertainty",
                     "translation",
-                    "translation_uncertainty"
+                    "translation_uncertainty",
                 ]
             )
         return pd.DataFrame(values)
+
+    def get_indiv_score(
+        self, criteria=None, user_id=None, entity_id=None
+    ) -> pd.DataFrame:
+
+        scores_queryset = ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll__name=self.poll_name
+        )
+        if criteria is not None:
+            scores_queryset = scores_queryset.filter(criteria=criteria)
+
+        if user_id is not None:
+            scores_queryset = scores_queryset.filter(
+                contributor_rating__user_id=user_id
+            )
+
+        if entity_id is not None:
+            scores_queryset = scores_queryset.filter(
+                contributor_rating__entity_id=entity_id
+            )
+
+        values = scores_queryset.values(
+            "raw_score",
+            "raw_uncertainty",
+            user_id=F("contributor_rating__user_id"),
+            entity_id=F("contributor_rating__entity_id"),
+        )
+        if len(values) > 0:
+            df = pd.DataFrame(values)
+            return df[
+                [
+                    "user_id",
+                    "entity_id",
+                    "raw_score",
+                    "raw_uncertainty",
+                ]
+            ]
+
+        return pd.DataFrame(
+            columns=[
+                "user_id",
+                "entity_id",
+                "raw_score",
+                "raw_uncertainty",
+            ]
+        )

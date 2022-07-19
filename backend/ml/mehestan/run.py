@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from django import db
 
-from core.models import User
+from core.models.user import User
 from ml.inputs import MlInput, MlInputFromDb
 from ml.outputs import (
     save_contributor_scalings,
@@ -23,6 +23,10 @@ from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
 
 from .global_scores import compute_scaled_scores, get_global_scores
 from .individual import compute_individual_score
+from .poll_scaling import (
+    apply_poll_scaling_on_global_scores,
+    apply_poll_scaling_on_individual_scaled_scores,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +65,7 @@ def update_user_scores(poll: Poll, user: User):
                 "score": "raw_score",
                 "uncertainty": "raw_uncertainty",
             },
-            inplace=True
+            inplace=True,
         )
         save_contributor_scores(
             poll, scores, single_criteria=criteria, single_user_id=user.pk
@@ -91,7 +95,6 @@ def run_mehestan_for_criterion(
     scaled_scores, scalings = compute_scaled_scores(
         ml_input, individual_scores=indiv_scores
     )
-
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
 
@@ -108,18 +111,7 @@ def run_mehestan_for_criterion(
             poll.sigmoid_scale = scale
             poll.save(update_fields=["sigmoid_scale"])
 
-        # Apply poll scaling
-        scale_function = poll.scale_function
-        global_scores["uncertainty"] = 0.5 * (
-            scale_function(global_scores["score"] + global_scores["uncertainty"])
-            - scale_function(global_scores["score"] - global_scores["uncertainty"])
-        )
-        global_scores["deviation"] = 0.5 * (
-            scale_function(global_scores["score"] + global_scores["deviation"])
-            - scale_function(global_scores["score"] - global_scores["deviation"])
-        )
-        global_scores["score"] = scale_function(global_scores["score"])
-
+        apply_poll_scaling_on_global_scores(poll, global_scores)
         logger.info(
             "Mehestan for poll '%s': scores computed for crit '%s' and mode '%s'",
             poll.name,
@@ -130,12 +122,7 @@ def run_mehestan_for_criterion(
             poll, global_scores, single_criteria=criteria, score_mode=mode
         )
 
-    scale_function = poll.scale_function
-    scaled_scores["uncertainty"] = 0.5 * (
-        scale_function(scaled_scores["score"] + scaled_scores["uncertainty"])
-        - scale_function(scaled_scores["score"] - scaled_scores["uncertainty"])
-    )
-    scaled_scores["score"] = scale_function(scaled_scores["score"])
+    apply_poll_scaling_on_individual_scaled_scores(poll, scaled_scores)
     scaled_scores["criteria"] = criteria
     save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
 
