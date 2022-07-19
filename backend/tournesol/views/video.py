@@ -83,6 +83,7 @@ class VideoViewSet(
     mixins.ListModelMixin,
     GenericViewSet,
 ):
+    """Obsolete view for video recommendations."""
     queryset = Entity.objects.filter(type=TYPE_VIDEO)
     pagination_class = LimitOffsetPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -138,15 +139,15 @@ class VideoViewSet(
             try:
                 date_lte = self.parse_datetime(date_lte)
                 queryset = VideoEntity.filter_date_lte(queryset, date_lte)
-            except ValueError:
-                raise ValidationError('"date_lte" is an invalid datetime.')
+            except ValueError as error:
+                raise ValidationError('"date_lte" is an invalid datetime.') from error
         date_gte = request.query_params.get("date_gte") or ""
         if date_gte:
             try:
                 date_gte = self.parse_datetime(date_gte)
                 queryset = VideoEntity.filter_date_gte(queryset, date_gte)
-            except ValueError:
-                raise ValidationError('"date_gte" is an invalid datetime')
+            except ValueError as error:
+                raise ValidationError('"date_gte" is an invalid datetime') from error
 
         language = request.query_params.get("language")
         if language:

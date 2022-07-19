@@ -85,8 +85,8 @@ class VideoSerializer(ModelSerializer):
     def create(self, validated_data):
         try:
             return Entity.create_from_video_id(validated_data["metadata"]["video_id"])
-        except VideoNotFound:
-            raise NotFound("The video has not been found. `video_id` may be incorrect.")
+        except VideoNotFound as err:
+            raise NotFound("The video has not been found. `video_id` may be incorrect.") from err
 
 
 class RelatedVideoSerializer(VideoSerializer):
@@ -107,10 +107,10 @@ class RelatedVideoSerializer(VideoSerializer):
         except ObjectDoesNotExist:
             try:
                 Entity.create_from_video_id(value)
-            except VideoNotFound:
+            except VideoNotFound as error:
                 raise ValidationError(
                     "The video has not been found. `video_id` may be incorrect."
-                )
+                ) from error
         return value
 
 
@@ -288,11 +288,11 @@ class RelatedEntitySerializer(EntitySerializer):
 
         return value
 
-    def validate(self, data):
-        uid = data.get("uid")
+    def validate(self, attrs):
+        uid = attrs.get("uid")
         try:
             Entity.objects.get(uid=uid)
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist as error:
             created = False
             if self.context["poll"].entity_type == VideoEntity.name:
                 # A video entity can be created dynamically from a YouTube video id
@@ -303,6 +303,8 @@ class RelatedEntitySerializer(EntitySerializer):
                 except VideoNotFound:
                     pass
             if not created:
-                raise ValidationError("The entity has not been found. `uid` may be incorrect.")
+                raise ValidationError(
+                    "The entity has not been found. `uid` may be incorrect."
+                ) from error
 
-        return data
+        return attrs

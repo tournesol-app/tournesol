@@ -88,6 +88,7 @@ class Statistics:
     get=extend_schema(description="Fetch all Tournesol's public statistics.")
 )
 class StatisticsView(generics.GenericAPIView):
+    """Return popularity statistics about Tournesol"""
     permission_classes = [AllowAny]
     serializer_class = StatisticsSerializer
 

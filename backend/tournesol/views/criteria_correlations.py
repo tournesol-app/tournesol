@@ -30,6 +30,7 @@ def get_linregress(scores_1: dict, scores_2: dict):
 
 
 class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
+    """Contains the criterias, and the matrices of correlations and slopes"""
     criterias = serializers.ListField(child=serializers.CharField())
     correlations = serializers.ListField(
         child=serializers.ListField(child=serializers.FloatField())
@@ -40,6 +41,9 @@ class ContributorCriteriaCorrelationsSerializer(serializers.Serializer):
 
 
 class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
+    """
+    Return Matrices of correlation and slope between criteria, based on scipy's linregress
+    """
 
     @staticmethod
     def clean(value):
@@ -64,8 +68,8 @@ class ContributorCriteriaCorrelationsView(PollScopedViewMixin, GenericAPIView):
 
         scores = {criteria: {} for criteria in criterias}
         for comp in comparisons:
-            for s in comp.criteria_scores.all():
-                scores[s.criteria][comp.id] = s.score
+            for crit_score in comp.criteria_scores.all():
+                scores[crit_score.criteria][comp.id] = crit_score.score
 
         linear_regressions = {
             c1: {c2: get_linregress(scores[c1], scores[c2]) for c2 in criterias}

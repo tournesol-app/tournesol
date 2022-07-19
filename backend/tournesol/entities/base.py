@@ -15,6 +15,9 @@ UID_DELIMITER = ":"
 
 
 class EntityType(ABC):
+    """
+    Abstract base class for the processing specific to each entity type (mainly about metadata).
+    """
 
     # The 'name' of this entity type corresponds
     # to the `type` field in Entity,
@@ -176,12 +179,12 @@ class EntityType(ABC):
         return qst
 
     @classmethod
-    def filter_date_lte(cls, qs, dt):
-        return qs.filter(add_time__lte=dt)
+    def filter_date_lte(cls, qs, max_date):
+        return qs.filter(add_time__lte=max_date)
 
     @classmethod
-    def filter_date_gte(cls, qs, dt):
-        return qs.filter(add_time__gte=dt)
+    def filter_date_gte(cls, qs, min_date):
+        return qs.filter(add_time__gte=min_date)
 
     @classmethod
     @abstractmethod

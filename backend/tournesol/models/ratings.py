@@ -52,8 +52,8 @@ class ContributorRatingCriteriaScore(models.Model):
     )
     criteria = models.TextField(
         max_length=32,
-        help_text="Name of the criteria",
         db_index=True,
+        help_text="Name of the criteria",
     )
     score = models.FloatField(
         default=0,

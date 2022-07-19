@@ -146,7 +146,7 @@ class Length3Cycles(PollScopedViewMixin, GenericAPIView):
         """
         cycles_count = 0
         comparison_trios_count = 0
-        for entity_1 in self.all_connections.keys():
+        for entity_1 in self.all_connections:
             # Search the cycles
             for entity_2 in self.outgoing_connections[entity_1]:
                 # Count only when entity_1 has the lowest uid,to count each cycle only once
