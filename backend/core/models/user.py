@@ -22,6 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
+    """
+    Administrative, social and profile information about users.
+    (most of these fields are actually still unused)
+
+    Contains methods for retrieving trusted and supertrusted users.
+    """
+
     # Fields used by django-rest-registation to find a user.
     # Used by reset password mechanism.
     LOGIN_FIELDS = ("username", "email")
@@ -319,11 +326,11 @@ class User(AbstractUser):
 
         try:
             User.validate_email_unique_with_plus(value, self.username)
-        except ValidationError as err:
+        except ValidationError as error:
             # Catching the exception here allows us to add the email key, and
             # makes the message display near the email field in the admin
             # interface.
-            raise ValidationError({"email": err.message})
+            raise ValidationError({"email": error.message}) from error
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")

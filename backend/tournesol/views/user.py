@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class CurrentUserView(APIView):
+    """Manage the deletion of the authenticated user."""
     permission_classes = [IsAuthenticated]
 
     @extend_schema(responses={204: None})

@@ -32,8 +32,8 @@ class RateLaterLegacySerializer(Serializer):
             return RateLater.objects.create(
                 entity=video, poll=self.context.get("poll"), **validated_data
             )
-        except IntegrityError:
-            raise ConflictError
+        except IntegrityError as error:
+            raise ConflictError from error
 
     def to_representation(self, instance):
         # From Entity to legacy Video

@@ -15,10 +15,11 @@ from .models import Degree, EmailDomain, Expertise, ExpertiseKeyword, User, Veri
 
 @admin.register(Degree)
 class DegreeAdmin(admin.ModelAdmin):
-    pass
+    """Interface to manage degrees (feature not developed yet)"""
 
 
 class IsTrustedFilter(admin.SimpleListFilter):
+    """Filter for displaying only trusted or untrusted users"""
     title = "is trusted"
     parameter_name = "is_trusted"
 
@@ -44,6 +45,7 @@ class IsTrustedFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
+    """Interface to manage general data about users."""
     ordering = ["-date_joined"]
     list_filter = DjangoUserAdmin.list_filter + (IsTrustedFilter,)
     list_display = (
@@ -77,7 +79,7 @@ class UserAdmin(DjangoUserAdmin):
         qs = super().get_queryset(request)
         return qs.annotate(n_comparisons=Count("comparisons"))
 
-    def get_fieldsets(self, request, obj) -> List[Tuple]:
+    def get_fieldsets(self, request, obj=None) -> List[Tuple]:
         fieldsets = super().get_fieldsets(request, obj=obj)
         if not obj:
             return fieldsets
@@ -106,12 +108,12 @@ class UserAdmin(DjangoUserAdmin):
 
 @admin.register(Expertise)
 class ExpertiseAdmin(admin.ModelAdmin):
-    pass
+    """Interface to manage expertise (feature not developed yet)"""
 
 
 @admin.register(ExpertiseKeyword)
 class ExpertiseKeywordAdmin(admin.ModelAdmin):
-    pass
+    """Interface to manage expertise keywords (feature not developed yet)"""
 
 
 @admin.action(description="Mark selected domains as accepted")
@@ -126,6 +128,7 @@ def make_rejected(modeladmin, request, queryset):
 
 @admin.register(EmailDomain)
 class EmailDomainAdmin(admin.ModelAdmin):
+    """Interface to manage domains and their trust status"""
     list_display = (
         "domain",
         "status",
@@ -140,7 +143,7 @@ class EmailDomainAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qst = super().get_queryset(request)
         qst = qst.annotate(
-            _user_number=Subquery(
+            user_number=Subquery(
                 User.objects.filter(email__iendswith=OuterRef("domain"))
                 .annotate(count=Func("id", function="Count"))
                 .values("count")
@@ -150,9 +153,9 @@ class EmailDomainAdmin(admin.ModelAdmin):
 
     @admin.display(ordering="-_user_number", description="# users")
     def user_number(self, obj):
-        return obj._user_number
+        return obj.user_number
 
 
 @admin.register(VerifiableEmail)
 class VerifiableEmailAdmin(admin.ModelAdmin):
-    pass
+    """Interface to manage individual emails verified or waiting to be verified"""

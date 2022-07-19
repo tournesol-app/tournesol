@@ -28,11 +28,6 @@ https://pypi.org/project/Pyllow/
 
 Required for using imagefield in django
 
-### django-language-field
-https://github.com/audiolion/django-language-field
-
-Give a field with all language in Choicies
-
 ### django-computed-property
 https://github.com/brechin/django-computed-property/
 
@@ -58,7 +53,7 @@ https://github.com/adamchainz/django-cors-headers
 
 CORS middleware
 
-### django-prometheus
+### django-prometheus
 https://github.com/korfuri/django-prometheus
 
 Used to provide django metrics for monitoring
@@ -71,4 +66,4 @@ Used to generate OpenAPI documentation exposed by Swagger UI
 ### langdetect
 https://github.com/Mimino666/langdetect
 
-Use to detect language from video titles and descptions
+Use to detect language from video titles and descriptions

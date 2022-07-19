@@ -14,6 +14,11 @@ WIKIDATA_API_BASE_URL = "https://www.wikidata.org/w/api.php"
 
 
 class CandidateEntity(EntityType):
+    """
+    Election candidate entity type
+
+    Handles the metadata specific to candidates.
+    """
     name = TYPE_CANDIDATE
     metadata_serializer_class = CandidateMetadata
 

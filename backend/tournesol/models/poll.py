@@ -97,7 +97,6 @@ class Poll(models.Model):
     @property
     def scale_function(self):
         if self.algorithm == ALGORITHM_MEHESTAN and self.sigmoid_scale is not None:
-            def scale(x):
-                return 4 * MEHESTAN_MAX_SCALED_SCORE / TAU * np.arctan(self.sigmoid_scale * x)
-            return scale
+            return lambda x: (4 * MEHESTAN_MAX_SCALED_SCORE / TAU) * \
+                             np.arctan(self.sigmoid_scale * x)
         return lambda x: x

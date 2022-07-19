@@ -18,16 +18,21 @@ YOUTUBE_UID_REGEX = (
 
 
 class VideoEntity(EntityType):
+    """
+    Video entity type
+
+    Handles the metadata specific to videos, retrieved from the YouTube API.
+    """
     name = TYPE_VIDEO
     metadata_serializer_class = VideoMetadata
 
     @classmethod
-    def filter_date_lte(cls, qs, dt):
-        return qs.filter(metadata__publication_date__lte=dt.date().isoformat())
+    def filter_date_lte(cls, qs, max_date):
+        return qs.filter(metadata__publication_date__lte=max_date.date().isoformat())
 
     @classmethod
-    def filter_date_gte(cls, qs, dt):
-        return qs.filter(metadata__publication_date__gte=dt.date().isoformat())
+    def filter_date_gte(cls, qs, min_date):
+        return qs.filter(metadata__publication_date__gte=min_date.date().isoformat())
 
     @classmethod
     def filter_search(cls, qs, query):

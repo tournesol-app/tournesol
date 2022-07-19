@@ -123,7 +123,11 @@ def select_a_video(tweetable_videos):
     tournesol_score_list = [v.tournesol_score for v in tweetable_videos]
 
     # Chose a random video weighted by tournesol score
-    selected_video = random.choices(tweetable_videos, weights=tournesol_score_list)[0]
+
+    selected_video = random.choices(  # nosec - not a cryptographic use, ignore bandit B311 here
+        tweetable_videos,
+        weights=tournesol_score_list
+    )[0]
 
     return selected_video
 

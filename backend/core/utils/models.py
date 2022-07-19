@@ -23,7 +23,7 @@ class WithDynamicFields:
     fields_created = False
 
     @staticmethod
-    def _create_fields(self):
+    def create_fields():
         """Override this method to create dynamic fields."""
 
     @staticmethod
@@ -33,7 +33,7 @@ class WithDynamicFields:
         for scl in subclasses:
             if not scl.fields_created:
                 scl.fields_created = True
-                scl._create_fields()
+                scl.create_fields()
 
 
 class WithEmbedding:

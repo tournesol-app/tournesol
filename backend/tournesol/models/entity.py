@@ -163,14 +163,14 @@ class Entity(models.Model):
         return self.metadata.get("video_id")
 
     @property
-    def best_text(self, min_len=5):
+    def best_text(self):
         """Return description, otherwise title."""
         priorities = [self.metadata.get("description"), self.metadata.get("name")]
 
         # going over all priorities
         for priority in priorities:
             # selecting one that exists
-            if priority is not None and len(priority) >= min_len:
+            if priority is not None:
                 return priority
         return None
 
@@ -231,8 +231,8 @@ class Entity(models.Model):
         # Create object
         criteria_distributions = []
         for key, values in scores_dict.items():
-            range = (min_score_base, max_score_base)
-            distribution, bins = np.histogram(np.clip(values, *range), range=range)
+            score_range = (min_score_base, max_score_base)
+            distribution, bins = np.histogram(np.clip(values, *score_range), range=score_range)
 
             criteria_distributions.append(CriteriaDistributionScore(
                 key, distribution, bins))
@@ -246,40 +246,42 @@ class Entity(models.Model):
         """
         from .poll import Poll
 
-        CRITERIAS = Poll.default_poll().criterias_list()
-        quantiles_by_feature_by_id = {f: {} for f in CRITERIAS}
+        criteria_list = Poll.default_poll().criterias_list()
+        quantiles_by_feature_by_id = {criteria: {} for criteria in criteria_list}
 
         # go over all features
-        # logging.warning("Computing quantiles...")
-        for f in tqdm(CRITERIAS):
+        for criteria in tqdm(criteria_list):
             # order by feature (descenting, because using the top quantile)
-            qs = Entity.objects.filter(**{f + "__isnull": False}).order_by("-" + f)
-            quantiles_f = np.linspace(0.0, 1.0, len(qs))
-            for i, v in tqdm(enumerate(qs)):
-                quantiles_by_feature_by_id[f][v.id] = quantiles_f[i]
+            qs = Entity.objects.filter(**{criteria + "__isnull": False}).order_by("-" + criteria)
+            quantiles_slicing = np.linspace(0.0, 1.0, len(qs))
+            for current_slice, video in tqdm(enumerate(qs)):
+                quantiles_by_feature_by_id[criteria][video.id] = quantiles_slicing[current_slice]
 
         logging.warning("Writing quantiles...")
         video_objects = []
         # TODO: use batched updates with bulk_update
-        for v in tqdm(Entity.objects.all()):
-            for f in CRITERIAS:
+        for entity in tqdm(Entity.objects.all()):
+            for criteria in criteria_list:
                 setattr(
-                    v, f + "_quantile", quantiles_by_feature_by_id[f].get(v.id, None)
+                    entity,
+                    criteria + "_quantile",
+                    quantiles_by_feature_by_id[criteria].get(entity.id, None),
                 )
-            video_objects.append(v)
+            video_objects.append(entity)
 
         Entity.objects.bulk_update(
-            video_objects, batch_size=200, fields=[f + "_quantile" for f in CRITERIAS]
+            video_objects,
+            batch_size=200,
+            fields=[criteria + "_quantile" for criteria in criteria_list],
         )
 
     @classmethod
     def create_from_video_id(cls, video_id):
-        from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
+        from tournesol.utils.api_youtube import get_video_metadata
 
-        try:
-            extra_data = get_video_metadata(video_id)
-        except VideoNotFound:
-            raise
+        # Returns nothing if no YOUTUBE_API_KEY is not configured.
+        # Can also raise VideoNotFound if the video is private or not found by YouTube.
+        extra_data = get_video_metadata(video_id)
 
         serializer = VideoMetadata(
             data={
@@ -322,7 +324,6 @@ class Entity(models.Model):
 
     @property
     def criteria_scores(self) -> List["EntityCriteriaScore"]:
-        from .entity_score import ScoreMode
         if hasattr(self, "_prefetched_criteria_scores"):
             return list(self._prefetched_criteria_scores)
         return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))

@@ -31,19 +31,23 @@ def get_annotated_ratings():
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve the logged-in user's ratings for a specific video "
-        "in a given poll (computed automatically from the user's comparisons)."
+        description="Retrieve the logged-in user's ratings for a specific entity "
+        "(computed automatically from the user's comparisons)."
     ),
     put=extend_schema(
         description="Update public / private status of the logged-in user ratings "
-        "for a specific video, in a given poll."
+        "for a specific entity."
     ),
     patch=extend_schema(
         description="Update public / private status of the logged-in user ratings "
-        "for a specific video, in a given poll."
+        "for a specific entity."
     ),
 )
 class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIView):
+    """
+    Get or update the current user's rating for the designated entity.
+    Used in particular to get or update the is_public attribute.
+    """
     serializer_class = ContributorRatingSerializer
 
     def get_object(self):
@@ -69,6 +73,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
     ),
 )
 class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
+    """List the contributor's rated entities on the given poll and their scores."""
     queryset = ContributorRating.objects.none()
 
     def get_serializer_class(self):

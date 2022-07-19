@@ -74,11 +74,12 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
 
 
 class ExportComparisonsView(APIView):
+    """Export all the comparisons made by the logged user in a CSV file."""
     permission_classes = [IsAuthenticated]
     throttle_scope = "api_users_me_export"
 
     @extend_schema(
-        description="Download current user data in .zip file",
+        description="Download the current user's comparisons in a .csv file",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -89,6 +90,7 @@ class ExportComparisonsView(APIView):
 
 
 class ExportPublicComparisonsView(APIView):
+    """Export all the public comparisons made by any user."""
     permission_classes = [AllowAny]
     throttle_scope = "api_export_comparisons"
 
@@ -107,10 +109,11 @@ class ExportPublicComparisonsView(APIView):
 
 
 class ExportAllView(APIView):
+    """Export all the logged user's data in a .zip file."""
     throttle_scope = "api_users_me_export"
 
     @extend_schema(
-        description="Download current user data in .zip file",
+        description="Download the current user's data in a .zip file",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -120,21 +123,18 @@ class ExportAllView(APIView):
         response = HttpResponse(content_type="application/x-zip-compressed")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
 
-        zf = zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED)
-
-        # Currently adds only a single file to the zip archive, but we may extend the
-        # content of the export in the future
-        with StringIO() as comparisons_file_like:
-            write_comparisons_file(request, comparisons_file_like)
-            zf.writestr(f"{zip_root}/comparisons.csv", comparisons_file_like.getvalue())
-
-        # Close zip for all contents to be written
-        zf.close()
+        with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+            # Currently, adds only a single file to the zip archive, but we may extend the
+            # content of the export in the future
+            with StringIO() as comparisons_file_like:
+                write_comparisons_file(request, comparisons_file_like)
+                zip_file.writestr(f"{zip_root}/comparisons.csv", comparisons_file_like.getvalue())
 
         return response
 
 
 class ExportProofOfVoteView(PollScopedViewMixin, APIView):
+    """Export to the admin all the proofs of vote for a given poll."""
     authentication_classes = [SessionAuthentication]  # Auth via Django Admin session
     permission_classes = [IsAdminUser]
 

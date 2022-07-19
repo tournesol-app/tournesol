@@ -155,7 +155,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    @patch('tournesol.utils.api_youtube.youtube', None)
+    @patch('tournesol.utils.api_youtube.YOUTUBE', None)
     def test_auth_201_create(self) -> None:
         """
         An authenticated user can add an entity to its rate-later list from a
@@ -180,7 +180,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
             RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
         )
 
-    @patch('tournesol.utils.api_youtube.youtube', None)
+    @patch('tournesol.utils.api_youtube.YOUTUBE', None)
     def test_auth_409_create_two_times(self) -> None:
         """
         An authenticated user cannot add two times the same entity to a
@@ -642,7 +642,7 @@ class LegacyRateLaterApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
 
-    @patch('tournesol.utils.api_youtube.youtube', None)
+    @patch('tournesol.utils.api_youtube.YOUTUBE', None)
     def test_authenticated_can_create_with_new_video_id(self):
         """
         An authenticated user can add in its own rate later list a video
