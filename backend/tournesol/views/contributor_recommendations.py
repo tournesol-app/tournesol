@@ -42,12 +42,12 @@ class ContributorRecommendationsBaseView(PollRecommendationsBaseAPIView):
 
     def filter_unsafe(self, queryset, filters):
         show_unsafe = filters["unsafe"]
-        if show_unsafe:
-            return queryset
-        else:
+        if not show_unsafe:
             # Ignore RECOMMENDATIONS_MIN_CONTRIBUTORS, only filter on the
             # total score
-            return queryset.filter(tournesol_score__gt=0)
+            queryset = queryset.filter(tournesol_score__gt=0)
+
+        return queryset
 
 
 class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):

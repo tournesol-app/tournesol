@@ -65,7 +65,7 @@ class ComparisonSerializer(ComparisonSerializerMixin, ModelSerializer):
         Display the opposite of each criteria scores if the comparison is
         requested in the reverse order.
         """
-        ret = super(ComparisonSerializer, self).to_representation(instance)
+        ret = super().to_representation(instance)
 
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
@@ -126,7 +126,7 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         Also add `entity_a` and `entity_b` fields to make the representation
         consistent across all comparison serializers.
         """
-        ret = super(ComparisonUpdateSerializer, self).to_representation(instance)
+        ret = super().to_representation(instance)
 
         if self.context.get("reverse", False):
             ret["entity_a"], ret["entity_b"] = ret["entity_b"], ret["entity_a"]
@@ -143,7 +143,7 @@ class ComparisonUpdateSerializer(ComparisonSerializerMixin, ModelSerializer):
         Save the comparison in the order expected by the model, even if the
         comparison is provided reversed.
         """
-        ret = super(ComparisonUpdateSerializer, self).to_internal_value(data)
+        ret = super().to_internal_value(data)
 
         if self.context.get("reverse", False):
             ret["criteria_scores"] = self.reverse_criteria_scores(

@@ -76,8 +76,8 @@ class Comparison(models.Model):
     @property
     def entity_first_second(self):
         """String representing two entity PKs in sorted order."""
-        a, b = sorted([self.entity_1_id, self.entity_2_id])
-        return f"{a}_{b}"
+        entity_1, entity_2 = sorted([self.entity_1_id, self.entity_2_id])
+        return f"{entity_1}_{entity_2}"
 
     @staticmethod
     def get_comparison(user, poll_id, uid_a, uid_b):
@@ -123,9 +123,9 @@ class ComparisonCriteriaScore(models.Model):
         on_delete=models.CASCADE,
     )
     criteria = models.TextField(
+        db_index=True,
         max_length=32,
         help_text="Name of the criteria",
-        db_index=True,
     )
     score = models.FloatField(
         help_text="Score for the given comparison",
