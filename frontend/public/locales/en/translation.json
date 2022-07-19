@@ -1,21 +1,7 @@
 {
-  "entityAnalysisPage": {
-    "generic": {
-      "copy": "Copy URI",
-      "copied": "Copied!",
-      "compare": "Compare"
-    },
-    "candidate": {
-      "goToGlobalRanking": "Go to global ranking"
-    },
-    "chart": {
-      "criteriaScores": {
-        "title": "Scores per criterion"
-      }
-    },
-    "video": {
-      "description": "Description (from YouTube)"
-    }
+  "copyToClipboard": {
+    "copy": "Copy URI",
+    "copied": "Copied!"
   },
   "components": {
     "filtersButton": "filters"
@@ -386,6 +372,22 @@
     "title": "My comparisons",
     "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Go to global ranking"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores per criterion"
+      }
+    },
+    "generic": {
+      "compare": "Compare"
+    },
+    "video": {
+      "description": "Description (from YouTube)"
+    }
+  },
   "entityNotFound": {
     "404": {
       "title": "Not found",
@@ -513,61 +515,6 @@
     "backfire_risk": "Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?",
     "reliability": "Is the presented information trustworthy, robustly backed and properly nuanced?"
   },
-  "language": {
-    "af": "Afrikaans",
-    "ar": "Arabic",
-    "bg": "Bulgarian",
-    "bn": "Bengali",
-    "ca": "Catalan",
-    "cs": "Czech",
-    "cy": "Welsh",
-    "da": "Danish",
-    "de": "German",
-    "el": "Greek",
-    "en": "English",
-    "es": "Spanish",
-    "et": "Estonian",
-    "fa": "Persian",
-    "fi": "Finnish",
-    "fr": "French",
-    "gu": "Gujarati",
-    "he": "Hebrew",
-    "hi": "Hindi",
-    "hr": "Croatian",
-    "hu": "Hungarian",
-    "id": "Indonesian",
-    "it": "Italian",
-    "ja": "Japanese",
-    "kn": "Kannada",
-    "ko": "Korean",
-    "lt": "Lithuanian",
-    "lv": "Latvian",
-    "mk": "Macedonian",
-    "ml": "Malayalam",
-    "mr": "Marathi",
-    "ne": "Nepali",
-    "nl": "Dutch",
-    "no": "Norwegian",
-    "pa": "Punjabi",
-    "pl": "Polish",
-    "pt": "Portuguese",
-    "ro": "Romanian",
-    "ru": "Russian",
-    "sk": "Slovak",
-    "sl": "Slovenian",
-    "so": "Somali",
-    "sq": "Albanian",
-    "sv": "Swedish",
-    "sw": "Swahili",
-    "ta": "Tamil",
-    "te": "Telugu",
-    "th": "Thai",
-    "tl": "Tagalog",
-    "tr": "Turkish",
-    "uk": "Ukrainian",
-    "ur": "Urdu",
-    "vi": "Vietnamese"
-  },
   "poll": {
     "presidential2022": "election FR 2022",
     "videos": "videos",
@@ -651,5 +598,60 @@
         }
       }
     }
+  },
+  "language": {
+    "af": "Afrikaans",
+    "ar": "Arabic",
+    "bg": "Bulgarian",
+    "bn": "Bengali",
+    "ca": "Catalan",
+    "cs": "Czech",
+    "cy": "Welsh",
+    "da": "Danish",
+    "de": "German",
+    "el": "Greek",
+    "en": "English",
+    "es": "Spanish",
+    "et": "Estonian",
+    "fa": "Persian",
+    "fi": "Finnish",
+    "fr": "French",
+    "gu": "Gujarati",
+    "he": "Hebrew",
+    "hi": "Hindi",
+    "hr": "Croatian",
+    "hu": "Hungarian",
+    "id": "Indonesian",
+    "it": "Italian",
+    "ja": "Japanese",
+    "kn": "Kannada",
+    "ko": "Korean",
+    "lt": "Lithuanian",
+    "lv": "Latvian",
+    "mk": "Macedonian",
+    "ml": "Malayalam",
+    "mr": "Marathi",
+    "ne": "Nepali",
+    "nl": "Dutch",
+    "no": "Norwegian",
+    "pa": "Punjabi",
+    "pl": "Polish",
+    "pt": "Portuguese",
+    "ro": "Romanian",
+    "ru": "Russian",
+    "sk": "Slovak",
+    "sl": "Slovenian",
+    "so": "Somali",
+    "sq": "Albanian",
+    "sv": "Swedish",
+    "sw": "Swahili",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "th": "Thai",
+    "tl": "Tagalog",
+    "tr": "Turkish",
+    "uk": "Ukrainian",
+    "ur": "Urdu",
+    "vi": "Vietnamese"
   }
 }
