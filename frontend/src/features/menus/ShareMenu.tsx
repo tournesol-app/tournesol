@@ -15,6 +15,9 @@ interface ContextualMenuProps {
   onClose: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
+/**
+ * A `Menu` displaying several sharing options.
+ */
 const ShareMenu = ({ menuAnchor, open, onClose }: ContextualMenuProps) => {
   const { t } = useTranslation();
 
