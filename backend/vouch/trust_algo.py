@@ -120,7 +120,7 @@ def trust_algo():
     for vouch in Voucher.objects.iterator():
         voucher = users.index(vouch.by)
         vouchee = users.index(vouch.to)
-        vouch_matrix[voucher][vouchee] = vouch.trust_value
+        vouch_matrix[voucher][vouchee] = vouch.value
 
     # Compute relative posttrusts
     normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
@@ -132,6 +132,6 @@ def trust_algo():
     # Turn relative_posttrust into voting rights
     voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
     for user_no, user_model in enumerate(users):
-        user_model.trust_score = float(voting_rights[user_no])
-        user_model.save(update_fields=["trust_score"])
+        user_model.voting_right = float(voting_rights[user_no])
+        user_model.save(update_fields=["voting_right"])
     return True
