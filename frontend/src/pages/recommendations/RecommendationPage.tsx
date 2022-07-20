@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
-import { Person } from '@mui/icons-material';
+import { Box, Grid, IconButton } from '@mui/material';
+import { Person, Share } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
-import { CopyToClipboardIconButton } from 'src/components/buttons/CopyToClipboardButton';
 import Pagination from 'src/components/Pagination';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
+import ShareMenu from 'src/features/menus/ShareMenu';
 import type {
   PaginatedContributorRecommendationsList,
   PaginatedRecommendationList,
@@ -38,6 +38,11 @@ function RecommendationsPage() {
   const location = useLocation();
   const { baseUrl, name: pollName, criterias, options } = useCurrentPoll();
   const [isLoading, setIsLoading] = useState(true);
+
+  // ShareMenu states.
+  const [shareMenuAnchor, setShareMenuAnchor] =
+    React.useState<null | HTMLElement>(null);
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
 
   const allowPublicPersonalRecommendations =
     options?.allowPublicPersonalRecommendations ?? false;
@@ -149,6 +154,19 @@ function RecommendationsPage() {
     username,
   ]);
 
+  const handleShareMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Dynamically define the anchor the first time the user click on the
+    // button.
+    if (shareMenuAnchor === null) {
+      setShareMenuAnchor(event.currentTarget);
+    }
+    setIsShareMenuOpen(true);
+  };
+
+  const handleMenuClose = () => {
+    setIsShareMenuOpen(false);
+  };
+
   return (
     <>
       {displayPersonalRecommendations ? (
@@ -170,7 +188,17 @@ function RecommendationsPage() {
             {/* Contextual page menu. */}
             <Grid item xs={12} sm={12} md={1}>
               <Box display="flex" flexDirection="row" justifyContent="flex-end">
-                <CopyToClipboardIconButton />
+                <IconButton
+                  aria-label="Share button"
+                  onClick={handleShareMenuClick}
+                >
+                  <Share />
+                </IconButton>
+                <ShareMenu
+                  menuAnchor={shareMenuAnchor}
+                  open={isShareMenuOpen}
+                  onClose={handleMenuClose}
+                />
               </Box>
             </Grid>
           </Grid>

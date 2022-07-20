@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, IconButton } from '@mui/material';
+import { Button } from '@mui/material';
 import { Check, ContentCopy } from '@mui/icons-material';
 
 // in milliseconds
@@ -10,10 +10,10 @@ const DISPLAY_DELAY = 1200;
 /**
  * A button that copies the current URI to the browser clipboard when clicked.
  */
-export const CopyToClipboardButton = () => {
+const CopyToClipboardButton = () => {
   const { t } = useTranslation();
 
-  const [text, setText] = useState(t('copyToClipboard.copy'));
+  const [text, setText] = useState(t('copyUriToClipboard.copy'));
   const [feedback, setFeedback] = useState(false);
 
   const copyUriToClipboard = () => {
@@ -26,11 +26,11 @@ export const CopyToClipboardButton = () => {
     }
 
     setFeedback(true);
-    setText(t('copyToClipboard.copied'));
+    setText(t('copyUriToClipboard.copied'));
 
     setTimeout(() => {
       setFeedback(false);
-      setText(t('copyToClipboard.copy'));
+      setText(t('copyUriToClipboard.copy'));
     }, DISPLAY_DELAY);
   };
 
@@ -43,36 +43,6 @@ export const CopyToClipboardButton = () => {
     >
       {text}
     </Button>
-  );
-};
-
-/**
- * An icon button that copies the current URI to the browser clipboard when
- * clicked.
- */
-export const CopyToClipboardIconButton = () => {
-  const [feedback, setFeedback] = useState(false);
-
-  const copyUriToClipboard = () => {
-    navigator.clipboard.writeText(window.location.toString());
-
-    // Do not trigger any additionnal rendering when the user clicks
-    // repeatedly on the button.
-    if (feedback) {
-      return;
-    }
-
-    setFeedback(true);
-
-    setTimeout(() => {
-      setFeedback(false);
-    }, DISPLAY_DELAY);
-  };
-
-  return (
-    <IconButton onClick={copyUriToClipboard}>
-      {feedback ? <Check /> : <ContentCopy />}
-    </IconButton>
   );
 };
 

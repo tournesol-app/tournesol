@@ -1,5 +1,5 @@
 {
-  "copyToClipboard": {
+  "copyUriToClipboard": {
     "copy": "Copier URI",
     "copied": "Copié !"
   },
@@ -170,6 +170,9 @@
   },
   "usernameOrEmail": "Nom d'utilisateur ou E-mail",
   "password": "Mot de passe",
+  "shareMenu": {
+    "copyAddress": "Copier l'adresse de la page"
+  },
   "ratelater": {
     "videoIdOrURL": "ID de vidéo ou URL",
     "addToMyRateLaterList": "Ajouter à ma liste",
