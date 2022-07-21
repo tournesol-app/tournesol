@@ -9,6 +9,34 @@ from ..models.entity import Entity
 LANGUAGE_CODE_TO_NAME_MATCHING = {code: name for code, name in settings.LANGUAGES}
 ACCEPTED_LANGUAGE_CODES = set(LANGUAGE_CODE_TO_NAME_MATCHING.keys())
 
+# Language configurations supported by Postgres full-text search
+POSTGRES_LANGUAGES = (
+    "arabic",
+    "danish",
+    "dutch",
+    "english",
+    "finnish",
+    "french",
+    "german",
+    "greek",
+    "hungarian",
+    "indonesian",
+    "irish",
+    "italian",
+    "lithuanian",
+    "nepali",
+    "norwegian",
+    "portuguese",
+    "romanian",
+    "russian",
+    "spanish",
+    "swedish",
+    "tamil",
+    "turkish"
+)
+
+# Personalized configurations, notably used for automatically removing accents
+POSTGRES_CONFIGS = ["customized_" + language for language in POSTGRES_LANGUAGES]
 
 # Enforce consistent results with a constant seed,
 # as the language detection algorithm is non-deterministic.
@@ -51,4 +79,24 @@ def compute_video_language(uploader, title, description):
     lang = languages_detection(title, description)
     if lang in ACCEPTED_LANGUAGE_CODES:
         return lang
+    return None
+
+
+def language_to_postgres_config(language_code):
+    """
+    Used to convert language codes in settings.LANGUAGES (iso 639-1)
+    to Postgres configuration names.
+    e.g. "en" => "customized_english"
+      or "nn" => "Norwegian Nynorsk" => "customized_norwegian"
+
+    Our configurations, unlike the default configurations, have the
+    prefix "customized_". They have the additional feature of removing
+    accents.
+    """
+    if language_code in LANGUAGE_CODE_TO_NAME_MATCHING:
+        full_language_name = LANGUAGE_CODE_TO_NAME_MATCHING[language_code]
+        postgres_config_name = "customized_" + full_language_name.lower().split(" ")[0]
+        if postgres_config_name in POSTGRES_CONFIGS:
+            return postgres_config_name
+
     return None
