@@ -5,11 +5,11 @@ import { useParams, Link as RouterLink } from 'react-router-dom';
 import { Box, Button, Collapse, Grid, Paper, Typography } from '@mui/material';
 import { Compare } from '@mui/icons-material';
 
-import CopyToClipboardButton from 'src/components/buttons/CopyToClipboardButton';
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
+import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { useVideoMetadata } from 'src/features/videos/VideoApi';
 import VideoCard from 'src/features/videos/VideoCard';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
@@ -50,8 +50,8 @@ export const VideoAnalysis = ({
     >
       <Box flex={2} minWidth={{ xs: '100%', md: null }}>
         {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end" gap="8px">
-          <CopyToClipboardButton />
+        <Box mb={2} display="flex" justifyContent="flex-end" gap={2}>
+          <ShareMenuButton />
           <Button
             color="secondary"
             variant="contained"
