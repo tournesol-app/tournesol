@@ -152,7 +152,12 @@ export const useNotifications = () => {
             typeof body === 'string'
               ? [body]
               : Object.values(reason['body']).flat();
-          newErrorMessages.map((msg) => showErrorAlert(msg as string));
+          newErrorMessages.map((msg) => {
+            if (typeof msg !== 'string') {
+              msg = Object.values(msg as Record<string, unknown>)[0];
+            }
+            showErrorAlert(msg as string);
+          });
         }
       } else {
         contactAdministrator('error', message);
