@@ -183,3 +183,7 @@ class TrustAlgoTestCse(TestCase):
         trust_algo()
         users = list(User.objects.all())
         self.assertTrue(users[8].voting_right > EPSILON)
+
+    def test_trust_algo_db_requests_count(self):
+        with self.assertNumQueries(3):
+            trust_algo()
