@@ -9,14 +9,14 @@ from rest_framework.permissions import IsAuthenticated
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
-from tournesol.models import RateLater
-from tournesol.serializers.rate_later import RateLaterSerializer
+from tournesol.models import Poll, RateLater
+from tournesol.serializers.rate_later import RateLaterLegacySerializer
 
 
 @extend_schema_view(
     post=extend_schema(
         responses={
-            200: RateLaterSerializer,
+            200: RateLaterLegacySerializer,
             409: OpenApiResponse(
                 description="Conflict: the video is already in the rate later list,"
                 " or there is an other error with the database query."
@@ -29,12 +29,12 @@ class RateLaterList(generics.ListCreateAPIView):
     List all videos of a user's rate later list, or add a video to the list.
     """
 
-    serializer_class = RateLaterSerializer
+    serializer_class = RateLaterLegacySerializer
     permission_classes = [IsAuthenticated]
     queryset = RateLater.objects.none()
 
     def get_queryset(self):
-        return RateLater.objects.filter(user=self.request.user)
+        return RateLater.objects.filter(user=self.request.user).prefetch_related("entity")
 
 
 @extend_schema_view(
@@ -46,7 +46,7 @@ class RateLaterDetail(generics.RetrieveDestroyAPIView):
     Retrieve, or delete a video from a user's rate later list.
     """
 
-    serializer_class = RateLaterSerializer
+    serializer_class = RateLaterLegacySerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -54,6 +54,7 @@ class RateLaterDetail(generics.RetrieveDestroyAPIView):
         rate_later = get_object_or_404(
             RateLater,
             user__pk=self.request.user.pk,
-            video__uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
+            entity__uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
+            poll=Poll.default_poll()
         )
         return rate_later
