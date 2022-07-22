@@ -10,9 +10,8 @@ from rest_framework.response import Response
 
 from core.models import User
 from core.utils.time import time_ago
+from tournesol.models import Comparison, Entity, Poll
 from tournesol.serializers.stats import StatisticsSerializer
-
-from ..models import Comparison, Entity, Poll
 
 
 class ActiveUsersStatistics:

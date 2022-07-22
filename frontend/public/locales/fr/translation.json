@@ -290,7 +290,7 @@
   "stats": {
     "ratedVideos": "Vidéos notées",
     "ratedCandidates": "Candidats notés",
-    "activeUsers": "Utilisateurs actifs",
+    "activatedAccounts": "Comptes activés",
     "comparisons": "Comparaisons"
   },
   "notifications": {

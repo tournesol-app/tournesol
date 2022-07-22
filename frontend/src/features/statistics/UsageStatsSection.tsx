@@ -97,7 +97,7 @@ const StatsSection = () => {
       <Grid container sx={{ maxWidth: 1000 }}>
         <Grid item xs={12} sm={4}>
           <Metrics
-            text={t('stats.activeUsers')}
+            text={t('stats.activatedAccounts')}
             count={data.userCount}
             lastMonthCount={data.lastMonthUserCount}
           />
