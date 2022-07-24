@@ -8,16 +8,18 @@
 ## On Windows
 
 It is recommended on Windows to install:
-* WSL2, with a Linux distribution (from a Powershell as administrator: `wsl --install`)
-* Docker Desktop (which includes `docker-compose`)
+* **WSL2**, with a Linux distribution (just execute `wsl --install` in a Powershell as administrator. More info here: https://docs.microsoft.com/en-us/windows/wsl/install)
+* **Docker Desktop** (which includes `docker-compose`. The default configuration should be fine. More info here: https://docs.docker.com/desktop/windows/wsl/)
 
-For the frontend dynamic updates to work properly, the git repository should be **cloned inside the WSL2 file system**
 
-If `git diff` displays unexpected modifications (`old mode 100755 new mode 100644`), you can execute 
-`git config core.filemode false` to indicate Git to ignore the executable bit in files permissions.
+For the frontend dynamic updates to work properly, the git repository should be **cloned inside the WSL2 file system**.
 
 Beware that `./run-docker-compose.sh` in Windows may use a shortcut to the MinGW64 bash (also called Git bash).
 If so, type `bash run-docker-compose.sh` to use the WSL2 bash instead.
+
+If `run-docker-compose.sh` returns the error `rm: cannot remove 'db-data': Permission denied`, db-data can be deleted by executing `sudo rm -R db-data` in the WSL bash.
+
+If `git diff` displays unexpected modifications (`old mode 100755 new mode 100644`), you can execute `git config core.filemode false` to indicate Git to ignore the executable bit in files permissions.
 
 
 ## Start the containers
