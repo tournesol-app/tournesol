@@ -2,7 +2,6 @@ from urllib.parse import quote
 
 import requests
 from django.contrib.postgres.search import SearchVector
-from django.db.models import Q
 
 from tournesol.serializers.metadata import CandidateMetadata
 
@@ -17,10 +16,6 @@ WIKIDATA_API_BASE_URL = "https://www.wikidata.org/w/api.php"
 class CandidateEntity(EntityType):
     name = TYPE_CANDIDATE
     metadata_serializer_class = CandidateMetadata
-
-    @classmethod
-    def filter_search(cls, qs, text_to_search: str, languages=None):
-        return super().filter_search(qs, text_to_search, "fr")
 
     @classmethod
     def get_uid_regex(cls, namespace: str) -> str:

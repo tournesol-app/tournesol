@@ -2,7 +2,6 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
-from django.db.models import Q, Value
 from django.utils import timezone
 
 from tournesol.serializers.metadata import VideoMetadata

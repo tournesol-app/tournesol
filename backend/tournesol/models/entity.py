@@ -14,6 +14,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Prefetch, Q
+from django.db.models.expressions import RawSQL
 from django.utils import timezone
 from django.utils.html import format_html
 from tqdm.auto import tqdm
@@ -43,6 +44,34 @@ class EntityQueryset(models.QuerySet):
                 to_attr="_prefetched_criteria_scores"
             )
         )
+
+    def filter_with_text_query(self, query: str):
+        """
+        This custom query enables to use the index on 'search_vector' independently of
+        the language of the user query.
+
+        The language used to build the 'search_vector' of each entity is stored in a separate
+        column 'search_config_name'. However when calling
+        `vector @@ query(search_config_name, text)` Postgres query planner is not smart enough
+        to take advantage of this index, although the number of distinct languages is small
+        compared to the number of entities. In order to loop over the possible languages and use
+        the search index to fetch matching entities without an expensive seqscan, we need to
+        explicitly join on 'pg_ts_config' which contains the list of available language
+        configurations.
+        """
+        return self.alias(
+            _matching_query=RawSQL(
+                """
+                tournesol_entity.id IN (
+                    SELECT e.id
+                    FROM tournesol_entity e
+                    INNER JOIN pg_ts_config c ON c.oid = e.search_config_name::regconfig
+                    WHERE e."search_vector" @@ (plainto_tsquery(oid, %s))
+                )
+                """,
+                (query,),
+            )
+        ).filter(_matching_query=True)
 
 
 class Entity(models.Model):
@@ -119,13 +148,13 @@ class Entity(models.Model):
     search_config_name = models.CharField(
         blank=True,
         default=DEFAULT_SEARCH_CONFIG,
-        max_length=32, 
+        max_length=32,
         choices=SEARCH_CONFIG_CHOICES,
         help_text="PostgreSQL text search config to use, based on the entity's language",
     )
 
     search_vector = SearchVectorField(
-        editable=False, 
+        editable=False,
         null=True,
         help_text="Indexed words used for the full-text search, that are filtered,"
         " stemmed and weighted according to the language's search config.",

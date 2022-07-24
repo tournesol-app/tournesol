@@ -3,14 +3,13 @@ from abc import ABC, abstractmethod
 from typing import Dict, Iterable, List, Type
 
 from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F, Value
+from django.db.models import F
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
 from tournesol import models
-from tournesol.utils.video_language import language_to_postgres_config
 
 UID_DELIMITER = ":"
 
@@ -229,7 +228,7 @@ class EntityType(ABC):
             )
 
     @classmethod
-    def filter_search(cls, qs, text_to_search: str, languages=None):
+    def filter_search(cls, qs, text_to_search: str):
         """
         Filter the queryset by verifying if the text string appears in the search vector.
         The search vector contains the searchable words already filtered, stemmed and indexed
@@ -246,24 +245,10 @@ class EntityType(ABC):
         switch to ElasticSearch. But this would require managing a
         specific server (and thus a new container).
         """
-        search_query = None
-        if languages:
-            if isinstance(languages, str):
-                languages = [languages]
-
-            for language in languages:
-                pg_language = language_to_postgres_config(language)
-                if search_query:
-                    search_query |= SearchQuery(text_to_search, config=pg_language)
-                else:
-                    search_query = SearchQuery(text_to_search, config=pg_language)
-        else:
-            # Search over every language config
-            search_query = SearchQuery(text_to_search, config=F("search_config_name"))
-
-        qs = qs.filter(search_vector=search_query)
+        # Search over every language config
+        search_query = SearchQuery(text_to_search, config=F("search_config_name"))
+        qs = qs.filter_with_text_query(text_to_search)
         qs = qs.annotate(relevance=SearchRank(F("search_vector"), search_query))
-
         return qs
 
     @classmethod
