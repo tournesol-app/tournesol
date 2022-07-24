@@ -10,7 +10,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
 from tournesol import models
-from tournesol.utils.video_language import POSTGRES_SEARCH_CONFIGS, language_to_postgres_config
+from tournesol.utils.video_language import language_to_postgres_config
 
 UID_DELIMITER = ":"
 
@@ -260,12 +260,6 @@ class EntityType(ABC):
         else:
             # Search over every language config
             search_query = SearchQuery(text_to_search, config=F("search_config_name"))
-            # Other more exhaustive solution, but that seems to exploit the search index correctly:
-            """for language in POSTGRES_SEARCH_CONFIGS:
-                if search_query:
-                    search_query |= SearchQuery(text_to_search, config=language)
-                else:
-                    search_query = SearchQuery(text_to_search, config=language)"""
 
         qs = qs.filter(search_vector=search_query)
         qs = qs.annotate(relevance=SearchRank(F("search_vector"), search_query))

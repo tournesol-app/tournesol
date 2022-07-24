@@ -11,10 +11,7 @@ def migrate_forward(apps, schema_editor):
     """
     Fill the search vector, used for fast full-text search
     """
-    from time import time
-    start = time()
     EntityType.build_all_search_vectors()
-    print("build time", time() - start)
 
 class Migration(migrations.Migration):
     dependencies = [
