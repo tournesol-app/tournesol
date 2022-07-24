@@ -67,23 +67,8 @@ function wait_for() {
   exit 1
 }
 
-system_info=$(uname -a)
-system_info=${system_info,,} # Lowercase
-if [[ "$system_info" =~ "wsl" ]] || 
-   [[ "$system_info" =~ "mingw" ]] || 
-   [[ "$system_info" =~ "msys" ]]; then
-  echo "Windows detected"
-  if [[ "$system_info" =~ "wsl" ]]; then
-    echo "Warning: using the WSL bash can cause issues"
-    echo "It is recommended to use the Git bash (MINGW64) instead: './run-docker-compose.sh')"
-  fi
-  # On Windows, don't change the postgres uid or gid
-  export DB_UID=0
-  export DB_GID=0
-else
-  export DB_UID=$(id -u)
-  export DB_GID=$(id -g)
-fi
+export DB_UID=$(id -u)
+export DB_GID=$(id -g)
 
 if [[ "${1:-""}" == 'restart' ]]; then
   echo "Recreating dev containers..."

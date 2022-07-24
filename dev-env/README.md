@@ -4,6 +4,22 @@
 * `docker-compose-plugin` (or `docker-compose`)
 * curl
 
+
+## On Windows
+
+It is recommended on Windows to install:
+* WSL2, with a Linux distribution (from a Powershell as administrator: `wsl --install`)
+* Docker Desktop (which includes `docker-compose`)
+
+For the frontend dynamic updates to work properly, the git repository should be **cloned inside the WSL2 file system**
+
+If `git diff` displays unexpected modifications (`old mode 100755 new mode 100644`), you can execute 
+`git config core.filemode false` to indicate Git to ignore the executable bit in files permissions.
+
+Beware that `./run-docker-compose.sh` in Windows may use a shortcut to the MinGW64 bash (also called Git bash).
+If so, type `bash run-docker-compose.sh` to use the WSL2 bash instead.
+
+
 ## Start the containers
 
 ```bash
@@ -30,6 +46,7 @@ Then, the application is accessible on http://localhost:3000.
 
 The created database includes metadata about ~ 5000 videos, as well as 5 sample accounts with usernames
 `user1`, `user2`, `user3`, `user4` and `user5`, and password `tournesol`.
+
 
 ## Rebuild the containers while preserving the database
 
