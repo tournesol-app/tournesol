@@ -64,10 +64,13 @@ class RateLaterSerializer(ModelSerializer):
         uid = validated_data.pop("entity").get("uid")
         entity = Entity.objects.get(uid=uid)
 
-        rate_later = RateLater.objects.create(
-            poll=self.context.get("poll"),
-            entity=entity,
-            **validated_data,
-        )
+        try:
+            rate_later = RateLater.objects.create(
+                poll=self.context.get("poll"),
+                entity=entity,
+                **validated_data,
+            )
+        except IntegrityError:
+            raise ConflictError
 
         return rate_later
