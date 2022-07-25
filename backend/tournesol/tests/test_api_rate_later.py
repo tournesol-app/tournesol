@@ -39,7 +39,7 @@ class RateLaterListTestCase(TestCase):
 
     def test_anon_401_list(self) -> None:
         """
-        An anonymous user cannot list its rate-later list, even if the poll
+        An anonymous user cannot list its rate-later items, even if the poll
         exists.
         """
         response = self.client.get(self.rate_later_base_url)
@@ -47,15 +47,16 @@ class RateLaterListTestCase(TestCase):
 
     def test_anon_401_list_invalid_poll(self) -> None:
         """
-        An anonymous user cannot list its rate-later list, even if the
-        poll doesn't exist.
+        An anonymous user cannot list its rate-later items, even if the poll
+        doesn't exist.
         """
         response = self.client.get(f"/users/me/rate_later/{self._invalid_poll_name}/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_auth_200_list(self) -> None:
         """
-        An authenticated user can list its rate-later list of a specific poll.
+        An authenticated user can list its rate-later items from a specific
+        poll.
         """
         self.client.force_authenticate(self.user)
         response = self.client.get(self.rate_later_base_url)
@@ -81,8 +82,7 @@ class RateLaterListTestCase(TestCase):
 
     def test_auth_200_list_is_poll_specific(self) -> None:
         """
-        Adding an entity to a rate-later list specific to poll, must not add
-        this entity to other rate-later lists.
+        Rate-later items are saved per poll.
         """
         other_poll = PollFactory()
         RateLater.objects.create(
@@ -110,9 +110,77 @@ class RateLaterListTestCase(TestCase):
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(results[0]["entity"]["uid"], self.entity_not_in_ratelater.uid)
 
-    def test_auth_404_invalid_poll(self) -> None:
+    def test_auth_404_list_invalid_poll(self) -> None:
+        """
+        An authenticated user cannot list its rate-later items from a
+        non-existing poll.
+        """
         self.client.force_authenticate(self.user)
         response = self.client.get(f"/users/me/rate_later/{self._invalid_poll_name}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_anon_401_post(self) -> None:
+        """
+        An anonymous user cannot add an entity to its rate-later list, even if
+        the poll exists.
+        """
+        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
+        response = self.client.post(self.rate_later_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_anon_401_post_invalid_poll(self) -> None:
+        """
+        An anonymous user cannot add an entity to its rate-later list, even if
+        the poll doesn't exist.
+        """
+        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
+        response = self.client.post(f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth_201_post(self) -> None:
+        """
+        An authenticated user can add an entity to its rate-later list from a
+        specific poll.
+        """
+        self.client.force_authenticate(self.user)
+
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+
+        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
+        response = self.client.post(self.rate_later_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqualt(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr + 1
+        )
+
+    def test_auth_201_post_is_poll_specific(self) -> None:
+        """
+        Rate-later items are saved per poll.
+        """
+        other_poll = PollFactory()
+        self.client.force_authenticate(self.user)
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+
+        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
+        response = self.client.post(self.rate_later_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqualt(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr + 1
+        )
+        self.assertEqualt(
+            RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
+        )
+
+    def test_auth_404_post_invalid_poll(self) -> None:
+        """
+        An authenticated user cannot add an entity in a rate-later list from a
+        non-existing poll.
+        """
+        self.client.force_authenticate(self.user)
+        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
+        response = self.client.post(f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
