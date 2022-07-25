@@ -29,7 +29,12 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
-from .views.rate_later import LegacyRateLaterDetail, LegacyRateLaterList, RateLaterList
+from .views.rate_later import (
+    LegacyRateLaterDetail,
+    LegacyRateLaterList,
+    RateLaterDetail,
+    RateLaterList,
+)
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -91,7 +96,12 @@ urlpatterns = [
     path(
         "users/me/rate_later/<str:poll_name>/",
         RateLaterList.as_view(),
-        name="rate_later_list",
+        name="usersme_ratelater_list",
+    ),
+    path(
+        "users/me/rate_later/<str:poll_name>/<str:uid>",
+        RateLaterDetail.as_view(),
+        name="usersme_ratelater_detail",
     ),
     # Legacy RateLater API
     path(
