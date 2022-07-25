@@ -119,7 +119,7 @@ class RateLaterListTestCase(TestCase):
         response = self.client.get(f"/users/me/rate_later/{self._invalid_poll_name}/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_anon_401_post(self) -> None:
+    def test_anon_401_create(self) -> None:
         """
         An anonymous user cannot add an entity to its rate-later list, even if
         the poll exists.
@@ -128,7 +128,7 @@ class RateLaterListTestCase(TestCase):
         response = self.client.post(self.rate_later_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_anon_401_post_invalid_poll(self) -> None:
+    def test_anon_401_create_invalid_poll(self) -> None:
         """
         An anonymous user cannot add an entity to its rate-later list, even if
         the poll doesn't exist.
@@ -139,7 +139,7 @@ class RateLaterListTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_auth_201_post(self) -> None:
+    def test_auth_201_create(self) -> None:
         """
         An authenticated user can add an entity to its rate-later list from a
         specific poll.
@@ -152,17 +152,17 @@ class RateLaterListTestCase(TestCase):
         data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
         response = self.client.post(self.rate_later_base_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqualt(
+        self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
             initial_nbr + 1,
         )
 
         # Rate-later items are saved per poll.
-        self.assertEqualt(
+        self.assertEqual(
             RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
         )
 
-    def test_auth_404_post_invalid_poll(self) -> None:
+    def test_auth_404_create_invalid_poll(self) -> None:
         """
         An authenticated user cannot add an entity in a rate-later list from a
         non-existing poll.
