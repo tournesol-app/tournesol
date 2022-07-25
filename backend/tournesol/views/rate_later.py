@@ -24,7 +24,7 @@ from tournesol.serializers.rate_later import RateLaterLegacySerializer
         }
     )
 )
-class RateLaterList(generics.ListCreateAPIView):
+class LegacyRateLaterList(generics.ListCreateAPIView):
     """
     List all videos of a user's rate later list, or add a video to the list.
     """
@@ -41,7 +41,7 @@ class RateLaterList(generics.ListCreateAPIView):
     get=extend_schema(description="Fetch a video from user's rate later list"),
     delete=extend_schema(description="Delete a video from user's rate later list"),
 )
-class RateLaterDetail(generics.RetrieveDestroyAPIView):
+class LegacyRateLaterDetail(generics.RetrieveDestroyAPIView):
     """
     Retrieve, or delete a video from a user's rate later list.
     """

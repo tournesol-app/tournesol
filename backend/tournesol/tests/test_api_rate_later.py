@@ -9,9 +9,9 @@ from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
 
 
-class RateLaterApi(TestCase):
+class LegacyRateLaterApi(TestCase):
     """
-    TestCase of the RateLater API.
+    TestCase of the legacy RateLater API.
 
     For each endpoint, the TestCase performs the following tests:
         - authorization checks

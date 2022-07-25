@@ -1,7 +1,5 @@
-# coding: utf-8
-
 """
-Defines Tournesol's backend API routes
+The tournesol app API routes.
 """
 
 from django.urls import include, path
@@ -31,7 +29,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
-from .views.rate_later import RateLaterDetail, RateLaterList
+from .views.rate_later import LegacyRateLaterDetail, LegacyRateLaterList
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -92,12 +90,12 @@ urlpatterns = [
     # RateLater API
     path(
         "users/me/video_rate_later/",
-        RateLaterList.as_view(),
+        LegacyRateLaterList.as_view(),
         name="video_rate_later_list",
     ),
     path(
         "users/me/video_rate_later/<str:video_id>/",
-        RateLaterDetail.as_view(),
+        LegacyRateLaterDetail.as_view(),
         name="video_rate_later_detail",
     ),
     # Ratings API
