@@ -187,10 +187,10 @@ class User(AbstractUser):
         validators=[validate_avatar],
         null=True,
     )
-    trust_score = models.FloatField(
+    voting_right = models.FloatField(
         null=True,
         default=None,
-        help_text="The global trust score assigned to the user based on the vouching mechanism.",
+        help_text="The voting right assigned to the user based on the vouching mechanism.",
     )
 
     # @property

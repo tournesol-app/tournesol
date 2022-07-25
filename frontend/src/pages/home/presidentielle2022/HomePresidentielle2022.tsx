@@ -46,7 +46,7 @@ const HomePresidentielle2022Page = () => {
                   fontSize: '120%',
                 }}
               >
-                {t('home.presidentielle2022.createAccount')}
+                {t('home.generic.createAccount')}
               </Button>
             )}
             <Button
@@ -60,14 +60,14 @@ const HomePresidentielle2022Page = () => {
                 fontSize: '120%',
               }}
             >
-              {t('home.presidentielle2022.start')}
+              {t('home.generic.start')}
             </Button>
           </Stack>
         ) : (
           <Box width="100%">
             <Divider sx={{ my: 1 }} />
             <Typography paragraph color="#666">
-              {t('home.presidentielle2022.pollIsClosed')}
+              {t('home.generic.pollIsClosed')}
             </Typography>
             <Stack spacing={2} direction="row">
               <Button
@@ -81,7 +81,7 @@ const HomePresidentielle2022Page = () => {
                   fontSize: '120%',
                 }}
               >
-                {t('home.presidentielle2022.seeResults')}
+                {t('home.generic.seeResults')}
               </Button>
               {isLoggedIn && (
                 <Button

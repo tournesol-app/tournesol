@@ -32,14 +32,9 @@ const convertDurationToClockDuration = (duration) => {
 const getParentComponent = () => {
   try {
     // Get parent element for the boxes in youtube page
-    const contents = document
-      .getElementById('visibility-monitor')
-      .parentElement.children['content'].getElementsByTagName(
-        'ytd-page-manager'
-      )[0]
-      .querySelector('ytd-browse:not([hidden])')
-      .getElementsByTagName('ytd-two-column-browse-results-renderer')[0]
-      .children['primary'].getElementsByTagName('ytd-rich-grid-renderer')[0];
+    const contents = document.querySelector(
+      '#primary > ytd-rich-grid-renderer'
+    );
     if (!contents || !contents.children[1]) return;
     return contents;
   } catch (error) {
