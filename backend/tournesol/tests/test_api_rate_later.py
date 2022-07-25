@@ -1,5 +1,6 @@
 from unittest.mock import ANY
 
+from django.db import transaction
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -175,6 +176,27 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         self.assertEqual(
             RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
         )
+
+    def test_auth_409_create_two_times(self) -> None:
+        """
+        An authenticated user cannot add two times the same entity to a
+        rate-later list of a specific poll.
+        """
+        other_poll = PollFactory()
+
+        self.client.force_authenticate(self.user)
+        data = {"entity": {"uid": self.entity_in_ratelater.uid}}
+
+        with transaction.atomic():
+            response = self.client.post(self.rate_later_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # A user can add the same entity in rate-later lists of different
+        # polls.
+        response = self.client.post(
+            f"/users/me/rate_later/{other_poll.name}/", data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_auth_404_create_invalid_poll(self) -> None:
         """
