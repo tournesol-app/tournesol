@@ -134,7 +134,9 @@ class RateLaterListTestCase(TestCase):
         the poll doesn't exist.
         """
         data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
-        response = self.client.post(f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json")
+        response = self.client.post(
+            f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_auth_201_post(self) -> None:
@@ -151,7 +153,7 @@ class RateLaterListTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqualt(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
-            initial_nbr + 1
+            initial_nbr + 1,
         )
 
     def test_auth_201_post_is_poll_specific(self) -> None:
@@ -167,7 +169,7 @@ class RateLaterListTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqualt(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
-            initial_nbr + 1
+            initial_nbr + 1,
         )
         self.assertEqualt(
             RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
@@ -180,7 +182,9 @@ class RateLaterListTestCase(TestCase):
         """
         self.client.force_authenticate(self.user)
         data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
-        response = self.client.post(f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json")
+        response = self.client.post(
+            f"/users/me/rate_later/{self._invalid_poll_name}/", data, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
