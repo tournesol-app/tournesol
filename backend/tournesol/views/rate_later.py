@@ -34,6 +34,22 @@ class LegacyRateLaterList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = RateLater.objects.none()
 
+    default_poll: Poll
+
+    def initial(self, request, *args, **kwargs):
+        """
+        Runs anything that needs to occur prior to calling the method handler.
+        """
+        super().initial(request, *args, **kwargs)
+
+        # make the requested poll available at any time in the view
+        self.default_poll = Poll.default_poll()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["poll"] = self.default_poll
+        return context
+
     def get_queryset(self):
         return RateLater.objects.filter(user=self.request.user).prefetch_related(
             "entity"

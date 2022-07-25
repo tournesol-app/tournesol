@@ -28,7 +28,11 @@ class RateLaterLegacySerializer(Serializer):
         video = Entity.get_from_video_id(video_id)
 
         try:
-            return RateLater.objects.create(entity=video, **validated_data)
+            return RateLater.objects.create(
+                entity=video,
+                poll=self.context.get("poll"),
+                **validated_data
+            )
         except IntegrityError:
             raise ConflictError
 
