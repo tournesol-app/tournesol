@@ -1,3 +1,5 @@
+from unittest.mock import ANY
+
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -7,6 +9,119 @@ from core.tests.factories.user import UserFactory
 from tournesol.models import Entity, Poll, RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
+from tournesol.tests.factories.poll import PollFactory
+
+
+class RateLaterListTestCase(TestCase):
+    """
+    TestCase of the `RateLaterList` API.
+    """
+
+    _user = "username"
+    _invalid_poll_name = "invalid"
+
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = UserFactory(username=self._user)
+
+        self.poll = PollFactory()
+        self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
+
+        self.entity_in_ratelater = VideoFactory()
+        self.entity_not_in_ratelater = VideoFactory()
+
+        self.to_rate_later = RateLater.objects.create(
+            entity=self.entity_in_ratelater,
+            user=self.user,
+            poll=self.poll,
+        )
+        self.maxDiff = None
+
+    def test_anon_401_list(self) -> None:
+        """
+        An anonymous user cannot list its rate-later list, even if the poll
+        exists.
+        """
+        response = self.client.get(self.rate_later_base_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_anon_401_list_invalid_poll(self) -> None:
+        """
+        An anonymous user cannot list its rate-later list, even if the
+        poll doesn't exist.
+        """
+        response = self.client.get(f"/users/me/rate_later/{self._invalid_poll_name}/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth_200_list(self) -> None:
+        """
+        An authenticated user can list its rate-later list of a specific poll.
+        """
+        self.client.force_authenticate(self.user)
+        response = self.client.get(self.rate_later_base_url)
+
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+        self.assertDictEqual(
+            results[0],
+            {
+                "entity": {
+                    "uid": self.to_rate_later.entity.uid,
+                    "type": "video",
+                    "metadata": ANY,
+                },
+                "created_at": str(
+                    self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                ),
+            },
+            results[0],
+        )
+
+    def test_auth_200_list_is_poll_specific(self) -> None:
+        """
+        Adding an entity to a rate-later list specific to poll, must not add
+        this entity to other rate-later lists.
+        """
+        other_poll = PollFactory()
+        RateLater.objects.create(
+            entity=self.entity_not_in_ratelater,
+            user=self.user,
+            poll=other_poll,
+        )
+
+        # The rate-later list of the poll `self.poll` must contain only the
+        # entity `self.entity_in_ratelater`.
+        self.client.force_authenticate(self.user)
+        response = self.client.get(self.rate_later_base_url)
+        results = response.data["results"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(results[0]["entity"]["uid"], self.entity_in_ratelater.uid)
+
+        # The rate-later list of the poll `other_poll` must contain only the
+        # entity `self.entity_not_in_ratelater`.
+        response = self.client.get(f"/users/me/rate_later/{other_poll.name}/")
+        results = response.data["results"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(results[0]["entity"]["uid"], self.entity_not_in_ratelater.uid)
+
+    def test_auth_404_invalid_poll(self) -> None:
+        self.client.force_authenticate(self.user)
+        response = self.client.get(f"/users/me/rate_later/{self._invalid_poll_name}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class RateLaterDetailTestCase(TestCase):
+    """
+    TestCase of the `RateLaterDetail` API.
+    """
+
+    pass
 
 
 class LegacyRateLaterApi(TestCase):
@@ -52,9 +167,7 @@ class LegacyRateLaterApi(TestCase):
         An anonymous user can't display someone else's rate later list.
         """
         client = APIClient()
-        response = client.get(
-            "/users/me/video_rate_later/"
-        )
+        response = client.get("/users/me/video_rate_later/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_list(self):
@@ -64,15 +177,11 @@ class LegacyRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        video_rate_later = RateLater.objects.select_related("entity").filter(
-            user=user
-        )
+        video_rate_later = RateLater.objects.select_related("entity").filter(user=user)
         client.force_authenticate(user=user)
 
         # authorization check
-        response = client.get(
-            "/users/me/video_rate_later/"
-        )
+        response = client.get("/users/me/video_rate_later/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # user must see only its own rate later list
@@ -93,9 +202,7 @@ class LegacyRateLaterApi(TestCase):
 
         client.force_authenticate(user=user)
 
-        response = client.get(
-            f"/users/{other.username}/video_rate_later/"
-        )
+        response = client.get(f"/users/{other.username}/video_rate_later/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_anonymous_cant_create(self):
@@ -120,8 +227,13 @@ class LegacyRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(
-            metadata__name=self._others_video).video_id}}
+        data = {
+            "video": {
+                "video_id": Entity.objects.get(
+                    metadata__name=self._others_video
+                ).video_id
+            }
+        }
 
         client.force_authenticate(user=user)
 
@@ -158,8 +270,13 @@ class LegacyRateLaterApi(TestCase):
         client = APIClient()
 
         user = User.objects.get(username=self._user)
-        data = {"video": {"video_id": Entity.objects.get(
-            metadata__name=self._users_video).video_id}}
+        data = {
+            "video": {
+                "video_id": Entity.objects.get(
+                    metadata__name=self._users_video
+                ).video_id
+            }
+        }
 
         client.force_authenticate(user=user)
 
@@ -179,8 +296,13 @@ class LegacyRateLaterApi(TestCase):
 
         user = User.objects.get(username=self._user)
         other = User.objects.get(username=self._other)
-        data = {"video": {"video_id": Entity.objects.get(
-            metadata__name=self._users_video).video_id}}
+        data = {
+            "video": {
+                "video_id": Entity.objects.get(
+                    metadata__name=self._users_video
+                ).video_id
+            }
+        }
 
         client.force_authenticate(user=user)
 
@@ -198,9 +320,7 @@ class LegacyRateLaterApi(TestCase):
         """
         client = APIClient()
         user = User.objects.get(username=self._user)
-        response = client.get(
-            "/users/me/video_rate_later/non-existing-video-id/"
-        )
+        response = client.get("/users/me/video_rate_later/non-existing-video-id/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_fetch(self):
@@ -225,9 +345,7 @@ class LegacyRateLaterApi(TestCase):
         list.
         """
         client = APIClient()
-        response = client.delete(
-            f"/users/me/video_rate_later/a-video-id/"
-        )
+        response = client.delete(f"/users/me/video_rate_later/a-video-id/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_can_delete(self):
@@ -242,9 +360,7 @@ class LegacyRateLaterApi(TestCase):
         client.force_authenticate(user=user)
 
         self.assertEqual(user.ratelaters.count(), 1)
-        response = client.delete(
-            f"/users/me/video_rate_later/{video.video_id}/"
-        )
+        response = client.delete(f"/users/me/video_rate_later/{video.video_id}/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(user.ratelaters.count(), 0)
 
