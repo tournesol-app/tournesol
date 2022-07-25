@@ -99,7 +99,7 @@ urlpatterns = [
         name="usersme_ratelater_list",
     ),
     path(
-        "users/me/rate_later/<str:poll_name>/<str:uid>",
+        "users/me/rate_later/<str:poll_name>/<str:uid>/",
         RateLaterDetail.as_view(),
         name="usersme_ratelater_detail",
     ),

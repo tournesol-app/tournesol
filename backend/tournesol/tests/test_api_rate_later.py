@@ -180,7 +180,105 @@ class RateLaterDetailTestCase(TestCase):
     TestCase of the `RateLaterDetail` API.
     """
 
-    pass
+    _user = "username"
+    _invalid_poll_name = "invalid"
+
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = UserFactory(username=self._user)
+
+        self.poll = PollFactory()
+        self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
+
+        self.entity_in_ratelater = VideoFactory()
+        self.entity_not_in_ratelater = VideoFactory()
+
+        self.to_rate_later = RateLater.objects.create(
+            entity=self.entity_in_ratelater,
+            user=self.user,
+            poll=self.poll,
+        )
+        self.maxDiff = None
+
+    def test_anon_401_get(self) -> None:
+        """
+        An anonymous user cannot get a rate-later item, even if the poll
+        exists.
+        """
+        response = self.client.get(
+            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.get(f"{self.rate_later_base_url}invalid/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_anon_401_get_invalid_poll(self) -> None:
+        """
+        An anonymous user cannot get a rate-later item, even if the poll
+        doesn't exist.
+        """
+        response = self.client.get(
+            f"/users/me/rate_later/{self._invalid_poll_name}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth_200_get(self) -> None:
+        """
+        An authenticated user can get a rate-later item from a specific poll.
+        """
+        self.client.force_authenticate(self.user)
+        response = self.client.get(
+            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertDictEqual(
+            response.data,
+            {
+                "entity": {
+                    "uid": self.to_rate_later.entity.uid,
+                    "type": "video",
+                    "metadata": ANY,
+                },
+                "created_at": str(
+                    self.to_rate_later.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                ),
+            },
+        )
+
+    def test_auth_200_get_is_poll_specific(self) -> None:
+        """
+        Rate-later items are saved per poll.
+        """
+        other_poll = PollFactory()
+        RateLater.objects.create(
+            entity=self.entity_not_in_ratelater,
+            user=self.user,
+            poll=other_poll,
+        )
+
+        self.client.force_authenticate(self.user)
+        response = self.client.get(
+            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(
+            f"/users/me/rate_later/{other_poll.name}/{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_auth_404_get_invalid_poll(self) -> None:
+        """
+        An authenticated user cannot list its rate-later items from a
+        non-existing poll.
+        """
+        self.client.force_authenticate(self.user)
+        response = self.client.get(
+            f"/users/me/rate_later/{self._invalid_poll_name}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class LegacyRateLaterApi(TestCase):
