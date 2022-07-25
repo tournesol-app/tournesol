@@ -144,24 +144,9 @@ class RateLaterListTestCase(TestCase):
         An authenticated user can add an entity to its rate-later list from a
         specific poll.
         """
-        self.client.force_authenticate(self.user)
-
-        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
-
-        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
-        response = self.client.post(self.rate_later_base_url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqualt(
-            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
-            initial_nbr + 1,
-        )
-
-    def test_auth_201_post_is_poll_specific(self) -> None:
-        """
-        Rate-later items are saved per poll.
-        """
         other_poll = PollFactory()
         self.client.force_authenticate(self.user)
+
         initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
 
         data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
@@ -171,6 +156,8 @@ class RateLaterListTestCase(TestCase):
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
             initial_nbr + 1,
         )
+
+        # Rate-later items are saved per poll.
         self.assertEqualt(
             RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
         )
