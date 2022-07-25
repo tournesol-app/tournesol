@@ -75,7 +75,7 @@ class RateLaterSerializer(ModelSerializer):
             )
         except IntegrityError:
             raise ConflictError(
-                _("The entity is already in your rate-later list of this poll.")
+                _("The entity is already in the rate-later list of this poll.")
             )
 
         return rate_later
