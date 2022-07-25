@@ -157,13 +157,14 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         An authenticated user can add an entity to its rate-later list from a
         specific poll.
         """
+        # A second poll ensures the create operation is poll specific.
         other_poll = PollFactory()
-        self.client.force_authenticate(self.user)
-
         initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
 
+        self.client.force_authenticate(self.user)
         data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
         response = self.client.post(self.rate_later_base_url, data, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
@@ -269,8 +270,8 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
 
     def test_auth_404_get_invalid_poll(self) -> None:
         """
-        An authenticated user cannot list its rate-later items from a
-        non-existing poll.
+        An authenticated user cannot get a rate-later item from a non-existing
+        poll.
         """
         self.client.force_authenticate(self.user)
         response = self.client.get(
@@ -279,6 +280,10 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_anon_401_delete(self) -> None:
+        """
+        An anonymous user cannot delete an item from its rate-later list, even
+        if the poll exists.
+        """
         response = self.client.delete(
             f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
         )
@@ -288,12 +293,20 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_anon_401_delete_invalid_poll(self) -> None:
+        """
+        An anonymous user cannot delete an item from its rate-later list, even
+        if the poll doesn't exist.
+        """
         response = self.client.delete(
             f"/users/me/rate_later/{self._invalid_poll_name}/{self.entity_in_ratelater.uid}/"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_auth_201_delete(self) -> None:
+        """
+        An authenticated user can delete an item from its rate-later list.
+        """
+        # A second poll ensures the delete operation is poll specific.
         other_poll = PollFactory()
         RateLater.objects.create(
             entity=self.entity_in_ratelater, user=self.user, poll=other_poll
@@ -317,6 +330,10 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
 
     def test_auth_404_delete_invalid_poll(self) -> None:
+        """
+        An authenticated user cannot delete a rate-later item from a
+        non-existing poll.
+        """
         self.client.force_authenticate(self.user)
         response = self.client.delete(
             f"/users/me/rate_later/{self._invalid_poll_name}/{self.entity_in_ratelater.uid}/"
