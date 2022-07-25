@@ -84,7 +84,14 @@ class LegacyRateLaterDetail(generics.RetrieveDestroyAPIView):
         description="List all entities of the logged user's rate-later list, for a given poll."
     ),
     post=extend_schema(
-        description="Add a new entity to the logged user's rate-later list, for a given poll."
+        description="Add a new entity to the logged user's rate-later list, for a given poll.",
+        responses={
+            200: RateLaterSerializer,
+            409: OpenApiResponse(
+                description="The entity is already in the user's rate-later list of this poll,"
+                            " or there is an other error with the database query."
+            ),
+        }
     ),
 )
 class RateLaterList(PollScopedViewMixin, generics.ListCreateAPIView):
