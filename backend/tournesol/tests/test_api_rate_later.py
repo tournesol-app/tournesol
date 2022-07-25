@@ -12,15 +12,18 @@ from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
 from tournesol.tests.factories.poll import PollFactory
 
 
-class RateLaterListTestCase(TestCase):
+class RateLaterCommonMixinTestCase:
     """
-    TestCase of the `RateLaterList` API.
+    A mixin that factorizes utility functions common to all rate-later test
+    cases.
     """
 
     _user = "username"
     _invalid_poll_name = "invalid"
 
-    def setUp(self) -> None:
+    def common_set_up(self) -> None:
+        self.maxDiff = None
+
         self.client = APIClient()
         self.user = UserFactory(username=self._user)
 
@@ -35,7 +38,17 @@ class RateLaterListTestCase(TestCase):
             user=self.user,
             poll=self.poll,
         )
-        self.maxDiff = None
+
+
+class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
+    """
+    TestCase of the `RateLaterList` API.
+
+    The `RateLaterList` API provides the endpoints list and create.
+    """
+
+    def setUp(self) -> None:
+        self.common_set_up()
 
     def test_anon_401_list(self) -> None:
         """
@@ -175,30 +188,15 @@ class RateLaterListTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class RateLaterDetailTestCase(TestCase):
+class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
     """
     TestCase of the `RateLaterDetail` API.
+
+    The `RateLaterList` API provides the endpoints get and delete.
     """
 
-    _user = "username"
-    _invalid_poll_name = "invalid"
-
     def setUp(self) -> None:
-        self.client = APIClient()
-        self.user = UserFactory(username=self._user)
-
-        self.poll = PollFactory()
-        self.rate_later_base_url = f"/users/me/rate_later/{self.poll.name}/"
-
-        self.entity_in_ratelater = VideoFactory()
-        self.entity_not_in_ratelater = VideoFactory()
-
-        self.to_rate_later = RateLater.objects.create(
-            entity=self.entity_in_ratelater,
-            user=self.user,
-            poll=self.poll,
-        )
-        self.maxDiff = None
+        self.common_set_up()
 
     def test_anon_401_get(self) -> None:
         """
@@ -280,9 +278,56 @@ class RateLaterDetailTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_anon_401_delete(self) -> None:
+        response = self.client.delete(
+            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.delete(f"{self.rate_later_base_url}invalid/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_anon_401_delete_invalid_poll(self) -> None:
+        response = self.client.delete(
+            f"/users/me/rate_later/{self._invalid_poll_name}/{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth_201_delete(self) -> None:
+        other_poll = PollFactory()
+        RateLater.objects.create(
+            entity=self.entity_in_ratelater, user=self.user, poll=other_poll
+        )
+
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+
+        self.client.force_authenticate(self.user)
+        response = self.client.delete(
+            f"{self.rate_later_base_url}{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr - 1,
+        )
+
+        # Rate-later items are saved per poll.
+        self.assertEqual(
+            RateLater.objects.filter(poll=other_poll, user=self.user).count(), 1
+        )
+
+    def test_auth_404_delete_invalid_poll(self) -> None:
+        self.client.force_authenticate(self.user)
+        response = self.client.delete(
+            f"/users/me/rate_later/{self._invalid_poll_name}/{self.entity_in_ratelater.uid}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class LegacyRateLaterApi(TestCase):
     """
+    TODO: delete this TestCase when the legacy endpoints are deleted.
+
     TestCase of the legacy RateLater API.
 
     For each endpoint, the TestCase performs the following tests:
