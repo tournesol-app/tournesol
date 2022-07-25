@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, Serializer
 
@@ -29,9 +30,7 @@ class RateLaterLegacySerializer(Serializer):
 
         try:
             return RateLater.objects.create(
-                entity=video,
-                poll=self.context.get("poll"),
-                **validated_data
+                entity=video, poll=self.context.get("poll"), **validated_data
             )
         except IntegrityError:
             raise ConflictError
@@ -75,6 +74,8 @@ class RateLaterSerializer(ModelSerializer):
                 **validated_data,
             )
         except IntegrityError:
-            raise ConflictError
+            raise ConflictError(
+                _("The entity is already in your rate-later list of this poll.")
+            )
 
         return rate_later
