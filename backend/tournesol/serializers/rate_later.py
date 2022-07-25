@@ -1,10 +1,10 @@
 from django.db import IntegrityError
 from rest_framework import serializers
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import ModelSerializer, Serializer
 
 from tournesol.errors import ConflictError
 from tournesol.models import Entity, RateLater
-from tournesol.serializers.entity import RelatedVideoSerializer
+from tournesol.serializers.entity import RelatedEntitySerializer, RelatedVideoSerializer
 
 
 class RateLaterLegacySerializer(Serializer):
@@ -50,3 +50,24 @@ class RateLaterLegacySerializer(Serializer):
                 "video_id": instance.entity.metadata["video_id"],
             }
         }
+
+
+class RateLaterSerializer(ModelSerializer):
+    entity = RelatedEntitySerializer(True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = RateLater
+        fields = ["entity", "user", "created_at"]
+
+    def create(self, validated_data):
+        uid = validated_data.pop("entity").get("uid")
+        entity = Entity.objects.get(uid=uid)
+
+        rate_later = RateLater.objects.create(
+            poll=self.context.get("poll"),
+            entity=entity,
+            **validated_data,
+        )
+
+        return rate_later

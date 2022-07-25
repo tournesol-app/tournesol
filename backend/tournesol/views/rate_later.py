@@ -10,7 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.models import Poll, RateLater
-from tournesol.serializers.rate_later import RateLaterLegacySerializer
+from tournesol.serializers.rate_later import RateLaterLegacySerializer, RateLaterSerializer
+from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 @extend_schema_view(
@@ -34,7 +35,9 @@ class LegacyRateLaterList(generics.ListCreateAPIView):
     queryset = RateLater.objects.none()
 
     def get_queryset(self):
-        return RateLater.objects.filter(user=self.request.user).prefetch_related("entity")
+        return RateLater.objects.filter(user=self.request.user).prefetch_related(
+            "entity"
+        )
 
 
 @extend_schema_view(
@@ -55,6 +58,29 @@ class LegacyRateLaterDetail(generics.RetrieveDestroyAPIView):
             RateLater,
             user__pk=self.request.user.pk,
             entity__uid=f'{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{self.kwargs["video_id"]}',
-            poll=Poll.default_poll()
+            poll=Poll.default_poll(),
         )
         return rate_later
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="List all entities of a user's rate-later list, for a given poll."
+    ),
+    post=extend_schema(
+        description="Add a new entity to the user's rate-later list, for a given poll."
+    ),
+)
+class RateLaterList(PollScopedViewMixin, generics.ListCreateAPIView):
+    """
+    List all entities of a user's rate-later list in a given poll, or add a
+    new entity to the list.
+    """
+
+    queryset = RateLater.objects.none()
+    serializer_class = RateLaterSerializer
+
+    def get_queryset(self):
+        return RateLater.objects.filter(
+            poll=self.poll_from_url, user=self.request.user
+        ).prefetch_related("entity")
