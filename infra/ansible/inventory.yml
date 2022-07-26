@@ -176,7 +176,7 @@ all:
 
           # twitterbot: the service script is responsible for running the bot in
           # different languages depending on the day of the week.
-          tournesol_twitterbot_schedule: "*-*-* 16:03:00" # daily.
+          tournesol_twitterbot_schedule: "*-*-* 18:03:00 Europe/Zurich" # daily.
 
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
 
