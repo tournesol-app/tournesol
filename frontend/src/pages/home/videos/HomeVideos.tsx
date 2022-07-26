@@ -1,8 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Typography } from '@mui/material';
+
+import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import ExtensionSection from 'src/pages/home/videos/ExtensionSection';
 import ContributeSection from 'src/pages/home/videos/ContributeSection';
 import TitleSection from 'src/pages/home/TitleSection';
@@ -11,6 +14,8 @@ import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBac
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
+  const { isLoggedIn } = useLoginState();
+  const { baseUrl, active } = useCurrentPoll();
 
   return (
     <AlternatingBackgroundColorSectionList>
@@ -26,19 +31,59 @@ const HomeVideosPage = () => {
           </Trans>
         </Typography>
 
-        {/* uncomment ONLY when the videos tutorial is ready
-        <Button
-          color="primary"
-          variant="contained"
-          component={Link}
-          to="/comparison?series=true"
-          sx={{
-            px: 4,
-            fontSize: '120%',
-          }}
-        >
-          {t('home.videos.start')}
-        </Button> */}
+        {active ? (
+          <Stack spacing={2} direction="row">
+            {!isLoggedIn && (
+              <Button
+                size="large"
+                color="inherit"
+                variant="outlined"
+                component={Link}
+                to={`/signup`}
+                sx={{
+                  px: 4,
+                  textAlign: 'center',
+                  fontSize: '120%',
+                }}
+              >
+                {t('home.generic.createAccount')}
+              </Button>
+            )}
+            <Button
+              size="large"
+              color="primary"
+              variant="contained"
+              component={Link}
+              to={`${baseUrl}/comparison?series=true`}
+              sx={{
+                px: 4,
+                fontSize: '120%',
+              }}
+            >
+              {t('home.generic.start')}
+            </Button>
+          </Stack>
+        ) : (
+          <Box width="100%">
+            <Divider sx={{ my: 1 }} />
+            <Typography paragraph>{t('home.generic.pollIsClosed')}</Typography>
+            <Stack spacing={2} direction="row">
+              <Button
+                size="large"
+                color="primary"
+                variant="contained"
+                component={Link}
+                to={`${baseUrl}/recommendations`}
+                sx={{
+                  px: 4,
+                  fontSize: '120%',
+                }}
+              >
+                {t('home.generic.seeResults')}
+              </Button>
+            </Stack>
+          </Box>
+        )}
       </TitleSection>
       <ExtensionSection />
       <ContributeSection />

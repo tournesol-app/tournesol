@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { Person } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
@@ -10,6 +10,7 @@ import Pagination from 'src/components/Pagination';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
+import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import type {
   PaginatedContributorRecommendationsList,
   PaginatedRecommendationList,
@@ -161,7 +162,18 @@ function RecommendationsPage() {
       )}
       <ContentBox noMinPaddingX maxWidth="lg">
         <Box px={{ xs: 2, sm: 0 }}>
-          <SearchFilter />
+          <Grid container>
+            {/* Filters section. */}
+            <Grid item xs={12} sm={12} md={11}>
+              <SearchFilter />
+            </Grid>
+            {/* Contextual page menu. */}
+            <Grid item xs={12} sm={12} md={1}>
+              <Box display="flex" flexDirection="row" justifyContent="flex-end">
+                <ShareMenuButton />
+              </Box>
+            </Grid>
+          </Grid>
         </Box>
         <LoaderWrapper isLoading={isLoading}>
           <EntityList

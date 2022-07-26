@@ -1,21 +1,7 @@
 {
-  "entityAnalysisPage": {
-    "generic": {
-      "copy": "Copy URI",
-      "copied": "Copied!",
-      "compare": "Compare"
-    },
-    "candidate": {
-      "goToGlobalRanking": "Go to global ranking"
-    },
-    "chart": {
-      "criteriaScores": {
-        "title": "Scores per criterion"
-      }
-    },
-    "video": {
-      "description": "Description (from YouTube)"
-    }
+  "copyUriToClipboard": {
+    "copy": "Copy URI",
+    "copied": "Copied!"
   },
   "components": {
     "filtersButton": "filters"
@@ -179,6 +165,9 @@
   },
   "usernameOrEmail": "Username or Email address",
   "password": "Password",
+  "shareMenu": {
+    "copyAddress": "Copy the page address"
+  },
   "ratelater": {
     "videoIdOrURL": "Video id or URL",
     "addToMyRateLaterList": "Add to my rate later list",
@@ -212,13 +201,13 @@
     "uploadDate": "Uploaded",
     "duration": {
       "title": "Duration (minutes)",
-      "max": {
-        "label": "max",
-        "clearAriaLabel": "Clear the max duration"
-      },
       "min": {
         "label": "min",
         "clearAriaLabel": "Clear the min duration"
+      },
+      "max": {
+        "label": "max",
+        "clearAriaLabel": "Clear the max duration"
       }
     },
     "allLanguages": "All languages",
@@ -295,7 +284,7 @@
   "stats": {
     "ratedVideos": "Rated videos",
     "ratedCandidates": "Rated candidates",
-    "activeUsers": "Active users",
+    "activatedAccounts": "Activated accounts",
     "comparisons": "Comparisons"
   },
   "notifications": {
@@ -386,6 +375,22 @@
     "title": "My comparisons",
     "listHasNbComparisons_many": "You already did <1>{{comparisonCount}}</1> comparisons."
   },
+  "entityAnalysisPage": {
+    "candidate": {
+      "goToGlobalRanking": "Go to global ranking"
+    },
+    "chart": {
+      "criteriaScores": {
+        "title": "Scores per criterion"
+      }
+    },
+    "generic": {
+      "compare": "Compare"
+    },
+    "video": {
+      "description": "Description (from YouTube)"
+    }
+  },
   "entityNotFound": {
     "404": {
       "title": "Not found",
@@ -404,11 +409,13 @@
       "tournesolDescription": "Tournesol is an open source platform which proposes a tool for collaborative decision.",
       "whyCompareCandidates": "Initially developped to identify top videos of public utility, Tournesol now enables you to compare the French presidential election candidates. And so you will receive feedback and insights from Tournesol's algorithms about your explicited preferences.",
       "dataUsage": "Submitted data will never be revealed to other users, and will only be used to help research on the ethics of algorithms and artificial intelligence.",
+      "respondToSurvey": "Respond to survey"
+    },
+    "generic": {
       "createAccount": "Create account",
       "start": "Start",
       "pollIsClosed": "The poll is now closed.",
-      "seeResults": "See the results",
-      "respondToSurvey": "Respond to survey"
+      "seeResults": "See the results"
     },
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
@@ -511,61 +518,6 @@
     "backfire_risk": "Is it adapted to viewers with opposing beliefs? Does it prevent misconceptions or undesirable reactions?",
     "reliability": "Is the presented information trustworthy, robustly backed and properly nuanced?"
   },
-  "language": {
-    "af": "Afrikaans",
-    "ar": "Arabic",
-    "bg": "Bulgarian",
-    "bn": "Bengali",
-    "ca": "Catalan",
-    "cs": "Czech",
-    "cy": "Welsh",
-    "da": "Danish",
-    "de": "German",
-    "el": "Greek",
-    "en": "English",
-    "es": "Spanish",
-    "et": "Estonian",
-    "fa": "Persian",
-    "fi": "Finnish",
-    "fr": "French",
-    "gu": "Gujarati",
-    "he": "Hebrew",
-    "hi": "Hindi",
-    "hr": "Croatian",
-    "hu": "Hungarian",
-    "id": "Indonesian",
-    "it": "Italian",
-    "ja": "Japanese",
-    "kn": "Kannada",
-    "ko": "Korean",
-    "lt": "Lithuanian",
-    "lv": "Latvian",
-    "mk": "Macedonian",
-    "ml": "Malayalam",
-    "mr": "Marathi",
-    "ne": "Nepali",
-    "nl": "Dutch",
-    "no": "Norwegian",
-    "pa": "Punjabi",
-    "pl": "Polish",
-    "pt": "Portuguese",
-    "ro": "Romanian",
-    "ru": "Russian",
-    "sk": "Slovak",
-    "sl": "Slovenian",
-    "so": "Somali",
-    "sq": "Albanian",
-    "sv": "Swedish",
-    "sw": "Swahili",
-    "ta": "Tamil",
-    "te": "Telugu",
-    "th": "Thai",
-    "tl": "Tagalog",
-    "tr": "Turkish",
-    "uk": "Ukrainian",
-    "ur": "Urdu",
-    "vi": "Vietnamese"
-  },
   "poll": {
     "presidential2022": "election FR 2022",
     "videos": "videos",
@@ -649,5 +601,60 @@
         }
       }
     }
+  },
+  "language": {
+    "af": "Afrikaans",
+    "ar": "Arabic",
+    "bg": "Bulgarian",
+    "bn": "Bengali",
+    "ca": "Catalan",
+    "cs": "Czech",
+    "cy": "Welsh",
+    "da": "Danish",
+    "de": "German",
+    "el": "Greek",
+    "en": "English",
+    "es": "Spanish",
+    "et": "Estonian",
+    "fa": "Persian",
+    "fi": "Finnish",
+    "fr": "French",
+    "gu": "Gujarati",
+    "he": "Hebrew",
+    "hi": "Hindi",
+    "hr": "Croatian",
+    "hu": "Hungarian",
+    "id": "Indonesian",
+    "it": "Italian",
+    "ja": "Japanese",
+    "kn": "Kannada",
+    "ko": "Korean",
+    "lt": "Lithuanian",
+    "lv": "Latvian",
+    "mk": "Macedonian",
+    "ml": "Malayalam",
+    "mr": "Marathi",
+    "ne": "Nepali",
+    "nl": "Dutch",
+    "no": "Norwegian",
+    "pa": "Punjabi",
+    "pl": "Polish",
+    "pt": "Portuguese",
+    "ro": "Romanian",
+    "ru": "Russian",
+    "sk": "Slovak",
+    "sl": "Slovenian",
+    "so": "Somali",
+    "sq": "Albanian",
+    "sv": "Swedish",
+    "sw": "Swahili",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "th": "Thai",
+    "tl": "Tagalog",
+    "tr": "Turkish",
+    "uk": "Ukrainian",
+    "ur": "Urdu",
+    "vi": "Vietnamese"
   }
 }

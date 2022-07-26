@@ -358,6 +358,9 @@ LOGGING = {
         },
         "faker": {
             "level": "INFO"
+        },
+        "numexpr": {
+            "level": "WARN"
         }
     },
 }

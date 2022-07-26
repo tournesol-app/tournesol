@@ -13,7 +13,7 @@ const DISPLAY_DELAY = 1200;
 const CopyToClipboardButton = () => {
   const { t } = useTranslation();
 
-  const [text, setText] = useState(t('entityAnalysisPage.generic.copy'));
+  const [text, setText] = useState(t('copyUriToClipboard.copy'));
   const [feedback, setFeedback] = useState(false);
 
   const copyUriToClipboard = () => {
@@ -26,11 +26,11 @@ const CopyToClipboardButton = () => {
     }
 
     setFeedback(true);
-    setText(t('entityAnalysisPage.generic.copied'));
+    setText(t('copyUriToClipboard.copied'));
 
     setTimeout(() => {
       setFeedback(false);
-      setText(t('entityAnalysisPage.generic.copy'));
+      setText(t('copyUriToClipboard.copy'));
     }, DISPLAY_DELAY);
   };
 

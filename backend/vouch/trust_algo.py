@@ -2,7 +2,7 @@ import numpy as np
 from django.db.models import Q
 from numpy.typing import NDArray
 
-from core.models import user
+from core.models.user import User
 from vouch.models import Voucher
 
 # In this algorithm, we leverage pretrust (e.g., based on email domains) and vouching
@@ -47,6 +47,7 @@ def normalize_vouch_matrix(vouch_matrix: NDArray, pretrusts: NDArray) -> NDArray
         np.array(pretrusts) > 0, axis=0
     )  # Number of pretrusted users
 
+    # TODO/PERF this could be done with numpy instead of nested for loops (100x speed up)
     for voucher in range(nb_users):
         n_vouches_by_voucher = np.sum(np.array(vouch_matrix[voucher]) > 0, axis=0)
         normalization_constant = (
@@ -73,9 +74,11 @@ def compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts: NDA
     delta = 10
     while delta >= APPROXIMATION_ERROR:
         new_relative_trusts = normalized_vouch_matrix.T.dot(relative_trusts)
+
         new_relative_trusts = (
             1 - PRETRUST_BIAS
-        ) * new_relative_trusts + PRETRUST_BIAS * new_relative_trusts
+        ) * new_relative_trusts + PRETRUST_BIAS * relative_pretrusts
+
         delta = np.linalg.norm(new_relative_trusts - relative_trusts)
         relative_trusts = new_relative_trusts
     return new_relative_trusts
@@ -108,19 +111,22 @@ def trust_algo():
     """
     # Import users and pretrust status
     users = list(
-        user.User.objects.all().annotate(
-            _is_trusted=Q(pk__in=user.User.trusted_users())
-        )
+        User.objects.all()
+        .annotate(_is_trusted=Q(pk__in=User.trusted_users()))
+        .only("id")
     )
+    users_index__user_id = {
+        user.id: user_index for user_index, user in enumerate(users)
+    }
     pretrusts = np.array([int(u._is_trusted) for u in users])
     nb_users = len(users)
 
     # Import vouching matrix
     vouch_matrix = np.zeros([nb_users, nb_users], dtype=float)
     for vouch in Voucher.objects.iterator():
-        voucher = users.index(vouch.by)
-        vouchee = users.index(vouch.to)
-        vouch_matrix[voucher][vouchee] = vouch.trust_value
+        voucher = users_index__user_id[vouch.by_id]
+        vouchee = users_index__user_id[vouch.to_id]
+        vouch_matrix[voucher][vouchee] = vouch.value
 
     # Compute relative posttrusts
     normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
@@ -132,6 +138,6 @@ def trust_algo():
     # Turn relative_posttrust into voting rights
     voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
     for user_no, user_model in enumerate(users):
-        user_model.trust_score = float(voting_rights[user_no])
-        user_model.save(update_fields=["trust_score"])
+        user_model.voting_right = float(voting_rights[user_no])
+    User.objects.bulk_update(users, ["voting_right"])
     return True
