@@ -252,7 +252,7 @@
     dest: /etc/systemd/system/tournesol-twitterbot.service
     src: tournesol-twitterbot.service.j2
 
-- name: Copy Tournesol API delete-inactive-users timer
+- name: Copy twitterbot timer
   template:
     dest: /etc/systemd/system/tournesol-twitterbot.timer
     src: tournesol-twitterbot.timer.j2
