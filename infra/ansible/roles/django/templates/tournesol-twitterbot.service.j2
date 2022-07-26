@@ -1,0 +1,19 @@
+[Unit]
+Description=Tournesol twitterbot
+
+[Service]
+Type=oneshot
+User=gunicorn
+Group=gunicorn
+WorkingDirectory=/srv/tournesol-backend
+Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
+ExecStart=/usr/bin/bash -c "DAY_OF_WEEK=$(date +%u) \
+    source venv/bin/activate \
+    && case $DAY_OF_WEEK in \
+        1|2|4|5) \
+            python manage.py run_twitterbot -y --bot-name '@TournesolBotFR';; \
+        3) \
+            python manage.py run_twitterbot -y --bot-name '@TournesolBot';; \
+        *) ;;
+    esac"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-twitterbot-fail-alert.sh; fi"
