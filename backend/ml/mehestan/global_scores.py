@@ -49,7 +49,7 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     that are significantly different, according to the contributor scores.
     (Used for collaborative preference scaling)
     """
-    scores = scores[["uid", "raw_score", "raw_uncertainty"]]
+    scores = scores[["uid", "score", "uncertainty"]]
     left, right = np.triu_indices(len(scores), k=1)
     pairs = (
         scores.iloc[left]
@@ -62,8 +62,8 @@ def get_significantly_different_pairs(scores: pd.DataFrame):
     )
     pairs.set_index(["uid_a", "uid_b"], inplace=True)
     return pairs.loc[
-        np.abs(pairs.raw_score_a - pairs.raw_score_b)
-        >= 2 * (pairs.raw_uncertainty_a + pairs.raw_uncertainty_b)
+        np.abs(pairs.score_a - pairs.score_b)
+        >= 2 * (pairs.uncertainty_a + pairs.uncertainty_b)
     ]
 
 
@@ -115,20 +115,20 @@ def compute_scaling(
             ABnm = ABn_all.join(ABm, how="inner", lsuffix="_n", rsuffix="_m")
             if len(ABnm) == 0:
                 continue
-            s_nqmab = np.abs(ABnm.raw_score_a_m - ABnm.raw_score_b_m) / np.abs(
-                ABnm.raw_score_a_n - ABnm.raw_score_b_n
+            s_nqmab = np.abs(ABnm.score_a_m - ABnm.score_b_m) / np.abs(
+                ABnm.score_a_n - ABnm.score_b_n
             )
 
             delta_s_nqmab = (
                 (
-                    np.abs(ABnm.raw_score_a_m - ABnm.raw_score_b_m)
-                    + ABnm.raw_uncertainty_a_m
-                    + ABnm.raw_uncertainty_b_m
+                    np.abs(ABnm.score_a_m - ABnm.score_b_m)
+                    + ABnm.uncertainty_a_m
+                    + ABnm.uncertainty_b_m
                 )
                 / (
-                    np.abs(ABnm.raw_score_a_n - ABnm.raw_score_b_n)
-                    - ABnm.raw_uncertainty_a_n
-                    - ABnm.raw_uncertainty_b_n
+                    np.abs(ABnm.score_a_n - ABnm.score_b_n)
+                    - ABnm.uncertainty_a_n
+                    - ABnm.uncertainty_b_n
                 )
             ) - s_nqmab
 
@@ -138,7 +138,7 @@ def compute_scaling(
             s_weights.append(scaling_weights[user_m])
 
         s_weights = np.array(s_weights)
-        theta_inf = np.max(user_scores.raw_score.abs())
+        theta_inf = np.max(user_scores.score.abs())
         s_nqm = np.array(s_nqm)
         delta_s_nqm = np.array(delta_s_nqm)
         if compute_uncertainties:
@@ -176,12 +176,11 @@ def compute_scaling(
             n_scores = user_scores.set_index("uid").loc[common_uids]
 
             tau_nqmab = (
-                s_dict.get(user_m, 1) * m_scores.raw_score
-                - s_dict[user_n] * n_scores.raw_score
+                s_dict.get(user_m, 1) * m_scores.score - s_dict[user_n] * n_scores.score
             )
             delta_tau_nqmab = (
-                s_dict[user_n] * n_scores.raw_uncertainty
-                + s_dict.get(user_m, 1) * m_scores.raw_uncertainty
+                s_dict[user_n] * n_scores.uncertainty
+                + s_dict.get(user_m, 1) * m_scores.uncertainty
             )
 
             tau = QrMed(1, 1, tau_nqmab, delta_tau_nqmab)
