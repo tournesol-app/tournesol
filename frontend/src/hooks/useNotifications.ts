@@ -148,16 +148,22 @@ export const useNotifications = () => {
           showInfoAlert(reason.body['detail']);
         } else {
           const body = reason.body;
-          const newErrorMessages =
-            typeof body === 'string'
-              ? [body]
-              : Object.values(reason['body']).flat();
-          newErrorMessages.map((msg) => {
-            if (typeof msg !== 'string') {
-              msg = Object.values(msg as Record<string, unknown>)[0];
+            
+          function displayMessagesFromBody(errorsSource : any){
+            if(typeof errorsSource === 'string'){
+              showErrorAlert(errorsSource)
             }
-            showErrorAlert(msg as string);
-          });
+
+            if(typeof errorsSource === 'object' && !Array.isArray(errorsSource)){
+              Object.values(errorsSource).map( value => displayMessagesFromBody(value))
+            }
+
+            if(Array.isArray(errorsSource)){
+              errorsSource.map( value => displayMessagesFromBody(value))
+            }
+          }
+  
+          displayMessagesFromBody(body)
         }
       } else {
         contactAdministrator('error', message);
