@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+{% if discord_alerting_webhook is defined and discord_alerting_webhook != "" %}
+wget -qO /dev/null \
+--post-data='{"content": "run_twitterbot job failed for {{domain_name}}"}' \
+--header='Content-Type:application/json' \
+'{{discord_alerting_webhook}}?wait=true'
+echo "alert sent"
+{% endif %}
