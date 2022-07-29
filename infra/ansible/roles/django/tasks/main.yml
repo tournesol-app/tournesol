@@ -238,3 +238,28 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+# scheduled task: Twitterbot
+
+- name: Copy twitterbot failure alert script
+  template:
+    dest: /usr/local/bin/discord-twitterbot-fail-alert.sh
+    src: discord-twitterbot-fail-alert.sh.j2
+    mode: a=rx
+
+- name: Copy twitterbot service
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot.service
+    src: tournesol-twitterbot.service.j2
+
+- name: Copy twitterbot timer
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot.timer
+    src: tournesol-twitterbot.timer.j2
+
+- name: Enable and start Tournesol twitterbot timer
+  systemd:
+    name: tournesol-twitterbot.timer
+    state: "{{ 'started' if tournesol_twitterbot_schedule is defined else 'stopped' }}"
+    enabled: "{{ 'yes' if tournesol_twitterbot_schedule is defined else 'no' }}"
+    daemon_reload: yes
