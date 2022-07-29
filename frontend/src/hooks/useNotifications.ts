@@ -89,6 +89,25 @@ export const useNotifications = () => {
     [enqueueSnackbar, t]
   );
 
+  const displayMessagesFromReasonBody = useCallback(
+    (reasonBody: any) => {
+      if (typeof reasonBody === 'string') {
+        showErrorAlert(reasonBody);
+      }
+
+      if (typeof reasonBody === 'object' && !Array.isArray(reasonBody)) {
+        Object.values(reasonBody).map((value) =>
+          displayMessagesFromReasonBody(value)
+        );
+      }
+
+      if (Array.isArray(reasonBody)) {
+        reasonBody.map((value) => displayMessagesFromReasonBody(value));
+      }
+    },
+    [showErrorAlert]
+  );
+
   /**
    * Display all errors contained in an `ApiError` object.
    *
@@ -148,28 +167,19 @@ export const useNotifications = () => {
           showInfoAlert(reason.body['detail']);
         } else {
           const body = reason.body;
-            
-          function displayMessagesFromBody(errorsSource : any){
-            if(typeof errorsSource === 'string'){
-              showErrorAlert(errorsSource)
-            }
 
-            if(typeof errorsSource === 'object' && !Array.isArray(errorsSource)){
-              Object.values(errorsSource).map( value => displayMessagesFromBody(value))
-            }
-
-            if(Array.isArray(errorsSource)){
-              errorsSource.map( value => displayMessagesFromBody(value))
-            }
-          }
-  
-          displayMessagesFromBody(body)
+          displayMessagesFromReasonBody(body);
         }
       } else {
         contactAdministrator('error', message);
       }
     },
-    [enqueueSnackbar, contactAdministrator, showErrorAlert, showInfoAlert]
+    [
+      enqueueSnackbar,
+      contactAdministrator,
+      showInfoAlert,
+      displayMessagesFromReasonBody,
+    ]
   );
 
   return {
