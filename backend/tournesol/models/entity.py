@@ -69,7 +69,8 @@ class EntityQueryset(models.QuerySet):
                 tournesol_entity.id IN (
                     SELECT e.id
                     FROM tournesol_entity e
-                    INNER JOIN pg_ts_config c ON c.oid = e.search_config_name::regconfig AND c.cfgname = ANY(%s)
+                    INNER JOIN pg_ts_config c
+                        ON c.oid = e.search_config_name::regconfig AND c.cfgname = ANY(%s)
                     WHERE e."search_vector" @@ (plainto_tsquery(oid, %s))
                 )
                 """,
