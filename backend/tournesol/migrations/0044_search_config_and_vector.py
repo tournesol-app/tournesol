@@ -15,7 +15,7 @@ def migrate_forward(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tournesol", "0042_contributorratingcriteriascore_raw_score_and_more"),
+        ("tournesol", "0043_make_ratelater_generic"),
     ]
 
     # Create new Postgres full-text search configs using the Unaccent dictionary
