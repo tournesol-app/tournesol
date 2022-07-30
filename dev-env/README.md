@@ -21,6 +21,8 @@ If `run-docker-compose.sh` returns the error `rm: cannot remove 'db-data': Permi
 
 If `git diff` displays unexpected modifications (`old mode 100755 new mode 100644`), you can execute `git config core.filemode false` to indicate Git to ignore the executable bit in files permissions.
 
+If `compose up` fails with `=> ERROR resolve image config for docker.io/docker/dockerfile:1`, a solution is usually to delete the Docker config.json in WSL2: `bash -c 'rm ~/.docker/config.json'`
+
 
 ## Start the containers
 
