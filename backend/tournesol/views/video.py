@@ -131,9 +131,7 @@ class VideoViewSet(
 
         search = request.query_params.get("search")
         if search:
-            languages = request.query_params.get("language")
-            languages = languages.split(",") if languages else None
-            queryset = VideoEntity.filter_search(queryset, search, languages)
+            queryset = VideoEntity.filter_search(queryset, search)
 
         date_lte = request.query_params.get("date_lte") or ""
         if date_lte:

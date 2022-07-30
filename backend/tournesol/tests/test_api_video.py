@@ -327,9 +327,9 @@ class VideoApi(TestCase):
         self.assertEqual(resp.data["count"], 3)
 
     def test_search_in_tags_should_not_affect_order(self):
-        self.video_1.metadata["tags"] = ["tag1", "tag2", "tag3"]
+        self.video_1.metadata["tags"] = ["tag 1", "tag 2", "tag 3"]
         self.video_1.save()
-        self.video_2.metadata["tags"] = ["tag4"]
+        self.video_2.metadata["tags"] = ["tag 4"]
         self.video_2.save()
 
         client = APIClient()

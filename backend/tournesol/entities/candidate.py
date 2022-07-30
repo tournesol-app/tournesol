@@ -2,7 +2,6 @@ from urllib.parse import quote
 
 import requests
 from django.contrib.postgres.search import SearchVector
-from django.db.models import Q
 
 from tournesol.serializers.metadata import CandidateMetadata
 
@@ -17,23 +16,6 @@ WIKIDATA_API_BASE_URL = "https://www.wikidata.org/w/api.php"
 class CandidateEntity(EntityType):
     name = TYPE_CANDIDATE
     metadata_serializer_class = CandidateMetadata
-
-    @classmethod
-    def filter_search(cls, qs, text_to_search: str, languages=None):
-        return super().filter_search(qs, text_to_search, "fr")
-
-    @classmethod
-    def search_without_vector_field(cls, qs, query):
-        from tournesol.models import Entity
-        return qs.filter(
-            pk__in=Entity.objects.filter(
-                Q(uid__icontains=query) |
-                Q(metadata__name__icontains=query) |
-                Q(metadata__frwiki_title__icontains=query) |
-                Q(metadata__youtube_channel_id__icontains=query) |
-                Q(metadata__twitter_username__icontains=query)
-            )
-        )
 
     @classmethod
     def get_uid_regex(cls, namespace: str) -> str:
@@ -98,11 +80,14 @@ class CandidateEntity(EntityType):
     def build_search_vector(cls, entity) -> None:
 
         if entity.type == TYPE_CANDIDATE:
-            entity.search_vector = \
-                SearchVector("uid", weight="A", config="french") + \
-                SearchVector("metadata__name", weight="A", config="french") + \
-                SearchVector("metadata__frwiki_title", weight="B", config="french") + \
-                SearchVector("metadata__youtube_channel_id", weight="B", config="french") + \
-                SearchVector("metadata__twitter_username", weight="B", config="french")
+            french_config = "customized_french"
 
-            entity.save(update_fields=["search_vector"])
+            entity.search_config_name = french_config
+            entity.search_vector = \
+                SearchVector("uid", weight="A", config=french_config) + \
+                SearchVector("metadata__name", weight="A", config=french_config) + \
+                SearchVector("metadata__frwiki_title", weight="B", config=french_config) + \
+                SearchVector("metadata__youtube_channel_id", weight="B", config=french_config) + \
+                SearchVector("metadata__twitter_username", weight="B", config=french_config)
+
+            entity.save(update_fields=["search_config_name", "search_vector"])

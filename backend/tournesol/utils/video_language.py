@@ -4,8 +4,6 @@ from collections import Counter
 from django.conf import settings
 from langdetect import DetectorFactory, detect, lang_detect_exception
 
-from ..models.entity import Entity
-
 LANGUAGE_CODE_TO_NAME_MATCHING = {code: name for code, name in settings.LANGUAGES}
 ACCEPTED_LANGUAGE_CODES = set(LANGUAGE_CODE_TO_NAME_MATCHING.keys())
 
@@ -32,11 +30,17 @@ POSTGRES_LANGUAGES = (
     "spanish",
     "swedish",
     "tamil",
-    "turkish"
+    "turkish",
 )
 
 # Personalized configurations, notably used for automatically removing accents
-POSTGRES_CONFIGS = ["customized_" + language for language in POSTGRES_LANGUAGES]
+POSTGRES_SEARCH_CONFIGS = ["customized_" + language for language in POSTGRES_LANGUAGES]
+SEARCH_CONFIG_CHOICES = list(zip(POSTGRES_SEARCH_CONFIGS, POSTGRES_LANGUAGES))
+
+# Add the "generic" default configuration for languages not supported by Postgres.
+DEFAULT_SEARCH_CONFIG = "generic"
+POSTGRES_SEARCH_CONFIGS.append(DEFAULT_SEARCH_CONFIG)
+SEARCH_CONFIG_CHOICES.append((DEFAULT_SEARCH_CONFIG, "other language config"))
 
 # Enforce consistent results with a constant seed,
 # as the language detection algorithm is non-deterministic.
@@ -63,6 +67,7 @@ def languages_detection(title, description):
 
 
 def compute_video_language(uploader, title, description):
+    from tournesol.models.entity import Entity
 
     # Get language(s) from other videos of the same uploader
     lang_list = (
@@ -96,7 +101,7 @@ def language_to_postgres_config(language_code):
     if language_code in LANGUAGE_CODE_TO_NAME_MATCHING:
         full_language_name = LANGUAGE_CODE_TO_NAME_MATCHING[language_code]
         postgres_config_name = "customized_" + full_language_name.lower().split(" ")[0]
-        if postgres_config_name in POSTGRES_CONFIGS:
+        if postgres_config_name in POSTGRES_SEARCH_CONFIGS:
             return postgres_config_name
 
-    return None
+    return DEFAULT_SEARCH_CONFIG

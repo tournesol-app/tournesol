@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Iterable, List, Type
 
 from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F, Value
+from django.db.models import F
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.exceptions import ValidationError
@@ -228,9 +228,11 @@ class EntityType(ABC):
             )
 
     @classmethod
-    def filter_search(cls, qs, text_to_search: str, languages=None):
+    def filter_search(cls, qs, text_to_search: str):
         """
-        Filter the queryset by verifying if the text string appears in the metadata.
+        Filter the queryset by verifying if the text string appears in the search vector.
+        The search vector contains the searchable words already filtered, stemmed and indexed
+        according to each language search config.
 
         Postgres returns a ranking between 0 and 1 of the entities, based on how many
         times it appears and on which part of the metadata (e.g. finding
@@ -243,35 +245,11 @@ class EntityType(ABC):
         switch to ElasticSearch. But this would require managing a
         specific server (and thus a new container).
         """
-        from tournesol.utils.video_language import language_to_postgres_config
-
-        search_query = None
-        if languages:
-            if isinstance(languages, str):
-                languages = [languages]
-
-            for language in languages:
-                pg_language = language_to_postgres_config(language)
-                if pg_language:
-                    if search_query:
-                        search_query |= SearchQuery(text_to_search, config=pg_language)
-                    else:
-                        search_query = SearchQuery(text_to_search, config=pg_language)
-
-        if search_query:
-            qs = qs.filter(search_vector=search_query)
-            qs = qs.annotate(relevance=SearchRank(F("search_vector"), search_query))
-        else:
-            # Languages not supported by Postgres, or no language provided
-            qs = cls.search_without_vector_field(qs, text_to_search)
-            qs = qs.annotate(relevance=Value(1.0))
-
+        # Search over every language config
+        search_query = SearchQuery(text_to_search, config=F("search_config_name"))
+        qs = qs.filter_with_text_query(text_to_search)
+        qs = qs.annotate(relevance=SearchRank(F("search_vector"), search_query))
         return qs
-
-    @classmethod
-    @abstractmethod
-    def search_without_vector_field(cls, qs, query):
-        raise NotImplementedError
 
     @classmethod
     @abstractmethod

@@ -2,7 +2,7 @@
 
 import django.contrib.postgres.indexes
 import django.contrib.postgres.search
-from django.db import migrations
+from django.db import migrations, models
 from tournesol.entities.base import EntityType
 from tournesol.utils.video_language import POSTGRES_LANGUAGES
 from django.contrib.postgres.operations import UnaccentExtension
@@ -29,11 +29,63 @@ class Migration(migrations.Migration):
         for language in POSTGRES_LANGUAGES
     ]
 
+    # In practice, "generic" is equivalent to "customized_english".
+    # This should presumably give more relevant results than using
+    # no stemmer (aka Postgres's "simple" config).
+    create_customized_configs.append(migrations.RunSQL("""
+        CREATE TEXT SEARCH CONFIGURATION generic( COPY = english );
+        ALTER TEXT SEARCH CONFIGURATION generic
+        ALTER MAPPING FOR hword, hword_part, word
+        WITH unaccent, english_stem;
+        """)
+    )
+
     operations = [
+        migrations.RunSQL("ALTER DATABASE tournesol SET random_page_cost=1.1;"),
+        migrations.AddField(
+            model_name='entity',
+            name='search_config_name',
+            field=models.CharField(
+                blank=True, 
+                choices=[
+                    ('customized_arabic', 'arabic'), 
+                    ('customized_danish', 'danish'), 
+                    ('customized_dutch', 'dutch'), 
+                    ('customized_english', 'english'), 
+                    ('customized_finnish', 'finnish'), 
+                    ('customized_french', 'french'), 
+                    ('customized_german', 'german'), 
+                    ('customized_greek', 'greek'), 
+                    ('customized_hungarian', 'hungarian'), 
+                    ('customized_indonesian', 'indonesian'), 
+                    ('customized_irish', 'irish'), 
+                    ('customized_italian', 'italian'), 
+                    ('customized_lithuanian', 'lithuanian'), 
+                    ('customized_nepali', 'nepali'), 
+                    ('customized_norwegian', 'norwegian'), 
+                    ('customized_portuguese', 'portuguese'), 
+                    ('customized_romanian', 'romanian'), 
+                    ('customized_russian', 'russian'), 
+                    ('customized_spanish', 'spanish'), 
+                    ('customized_swedish', 'swedish'), 
+                    ('customized_tamil', 'tamil'), 
+                    ('customized_turkish', 'turkish'), 
+                    ('generic', 'other language config')
+                ], 
+                default='generic', 
+                help_text="PostgreSQL text search config to use, based on the entity's language", 
+                max_length=32
+            ),
+        ),
         migrations.AddField(
             model_name='entity',
             name='search_vector',
-            field=django.contrib.postgres.search.SearchVectorField(editable=False, null=True),
+            field=django.contrib.postgres.search.SearchVectorField(
+                editable=False, 
+                null=True,
+                help_text="Indexed words used for the full-text search, that are filtered, " 
+                "stemmed and weighted according to the language's search config.",
+            ),
         ),
         migrations.AddIndex(
             model_name='entity',
