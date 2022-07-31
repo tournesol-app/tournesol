@@ -1,4 +1,4 @@
-from unittest.mock import ANY
+from unittest.mock import patch, ANY
 
 from django.db import transaction
 from django.test import TestCase
@@ -638,6 +638,7 @@ class LegacyRateLaterApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
 
+    @patch('tournesol.utils.api_youtube.youtube', None)
     def test_authenticated_can_create_with_new_video_id(self):
         """
         An authenticated user can add in its own rate later list a video
