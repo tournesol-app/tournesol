@@ -34,10 +34,19 @@ def get_new_scores_from_online_update(
     previous_individual_raw_scores: pd.DataFrame,
 ) -> Tuple[pd.DataFrame]:
     new_raw_scores = previous_individual_raw_scores
-    new_raw_uncertainties = pd.DataFrame()
+    new_raw_uncertainties = pd.DataFrame(set_of_entity_to_update, columns=["entity_id"])
+    new_raw_uncertainties["raw_uncertainty"] = 0.0
+    new_raw_uncertainties = new_raw_uncertainties.set_index("entity_id")
 
     scores = all_comparison_user_for_criteria[["entity_a", "entity_b", "score"]]
     all_entities = set(scores["entity_a"]) | set(scores["entity_b"])
+    all_scores_values = set(scores["score"])
+    # Null Matrix case
+    if len(all_scores_values) == 1 and np.isnan(all_scores_values.pop()):
+        new_raw_scores["raw_score"] = 0.0
+        new_raw_uncertainties["raw_uncertainty"] = 0.0
+        return new_raw_scores, new_raw_uncertainties
+
     scores_sym = pd.concat(
         [
             scores,
@@ -167,7 +176,7 @@ def _run_online_heuristics_for_criterion(
         "entity_id"
     )
     new_raw_scores = previous_individual_raw_scores
-    for tau in range(0, TAU_SUBITERATION_NUMBER+1):
+    for tau in range(0, TAU_SUBITERATION_NUMBER + 1):
         if tau > 0:
             set_of_entity_to_update = compute_and_give_next_set_of_entity_to_update(
                 set_of_entity_to_update, all_comparison_of_user_for_criteria
@@ -180,7 +189,7 @@ def _run_online_heuristics_for_criterion(
             set_of_entity_to_update,
             new_raw_scores,
         )
-        print(tau,new_raw_scores,sum(new_raw_scores["raw_score"]))
+        print(tau, new_raw_scores, sum(new_raw_scores["raw_score"]))
 
     # so far we have recompute new indiv score for a and b and neighbours,
     # we need to recompute global score for a and b
@@ -301,6 +310,16 @@ def apply_and_return_scaling_on_individual_scores_online_heuristics(
             all_indiv_score = all_indiv_score_b
         else:
             all_indiv_score = pd.concat([all_indiv_score_a, all_indiv_score_b])
+
+    if all_indiv_score.empty:
+        all_indiv_score = pd.DataFrame(
+            {
+                "user_id": pd.Series(dtype="int64"),
+                "entity_id": pd.Series(dtype="int64"),
+                "raw_score": pd.Series(dtype="float64"),
+                "raw_uncertainty": pd.Series(dtype="float64"),
+            }
+        )
 
     all_indiv_score = add_or_update_df_indiv_score(
         user_id, entity_id_a, theta_star_a, delta_star_a, all_indiv_score

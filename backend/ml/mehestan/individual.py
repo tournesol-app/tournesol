@@ -66,4 +66,5 @@ def compute_individual_score(scores: pd.DataFrame):
         }
     )
     result.index.name = "entity_id"
+    print(result)
     return result

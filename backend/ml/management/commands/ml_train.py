@@ -119,6 +119,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Run online heuristic for used_id, uid_a, uid_b",
         )
+        parser.add_argument(
+            "--unsave",
+            action="store_true",
+            help="run ml for indiv score but don't save",
+        )
         parser.add_argument("--user_id")
         parser.add_argument("--uid_a")
         parser.add_argument("--uid_b")
@@ -127,6 +132,7 @@ class Command(BaseCommand):
         skip_untrusted = options["skip_untrusted"]
         online_heuristic = options["online_heuristic"]
         user_id = options["user_id"]
+        unsave = options["unsave"]
         uid_a = options["uid_a"]
         uid_b = options["uid_b"]
         if TOURNESOL_DEV:
@@ -163,6 +169,6 @@ class Command(BaseCommand):
                                 uid_b=uid_b,
                             )
                     else:
-                        run_mehestan(ml_input=ml_input, poll=poll)
+                        run_mehestan(ml_input=ml_input, poll=poll, unsave=unsave)
                 else:
                     raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
