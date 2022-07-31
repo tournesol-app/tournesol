@@ -93,15 +93,13 @@ export const useNotifications = () => {
     (reasonBody: any) => {
       if (typeof reasonBody === 'string') {
         showErrorAlert(reasonBody);
-      }
-
-      if (typeof reasonBody === 'object' && !Array.isArray(reasonBody)) {
+      } else if (
+        Object.prototype.toString.call(reasonBody) === '[object Object]'
+      ) {
         Object.values(reasonBody).map((value) =>
           displayMessagesFromReasonBody(value)
         );
-      }
-
-      if (Array.isArray(reasonBody)) {
+      } else if (Array.isArray(reasonBody)) {
         reasonBody.map((value) => displayMessagesFromReasonBody(value));
       }
     },
