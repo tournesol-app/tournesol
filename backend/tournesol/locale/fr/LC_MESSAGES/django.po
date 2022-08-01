@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-18 08:50+0000\n"
+"POT-Creation-Date: 2022-07-25 15:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: tournesol/admin.py:89
+#: tournesol/admin.py:91
 #, python-format
 msgid "Successfully refreshed the metadata of %(count)s entities."
 msgstr "Les métadonnées de %(count)s entités ont été mises à jour."
+
+#: tournesol/serializers/rate_later.py:78
+msgid "The entity is already in the rate-later list of this poll."
+msgstr "L'entité est déjà dans la liste à comparer plus tard de ce scrutin."
 
 #: tournesol/views/comparison.py:21
 msgid "This action is not allowed on an inactive poll."
