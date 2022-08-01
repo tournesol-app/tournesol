@@ -1,4 +1,4 @@
-from unittest.mock import patch, ANY
+from unittest.mock import ANY, patch
 
 from django.db import transaction
 from django.test import TestCase
@@ -153,6 +153,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    @patch('tournesol.utils.api_youtube.youtube', None)
     def test_auth_201_create(self) -> None:
         """
         An authenticated user can add an entity to its rate-later list from a
@@ -177,6 +178,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
             RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0
         )
 
+    @patch('tournesol.utils.api_youtube.youtube', None)
     def test_auth_409_create_two_times(self) -> None:
         """
         An authenticated user cannot add two times the same entity to a
