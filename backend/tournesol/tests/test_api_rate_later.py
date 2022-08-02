@@ -22,6 +22,8 @@ class RateLaterCommonMixinTestCase:
     _user = "username"
     _invalid_poll_name = "invalid"
 
+    _uid_not_in_db = "yt:xSqqXN0D4fY"
+
     def common_set_up(self) -> None:
         self.maxDiff = None
 
@@ -157,14 +159,14 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
     def test_auth_201_create(self) -> None:
         """
         An authenticated user can add an entity to its rate-later list from a
-        specific poll.
+        specific poll, even if the entity doesn't exist in the database yet.
         """
         # A second poll ensures the create operation is poll specific.
         other_poll = PollFactory()
         initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
 
         self.client.force_authenticate(self.user)
-        data = {"entity": {"uid": "yt:xSqqXN0D4fY"}}
+        data = {"entity": {"uid": self._uid_not_in_db}}
         response = self.client.post(self.rate_later_base_url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
