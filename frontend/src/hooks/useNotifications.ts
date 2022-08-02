@@ -90,7 +90,7 @@ export const useNotifications = () => {
   );
 
   const displayMessagesFromReasonBody = useCallback(
-    (reasonBody: any) => {
+    (reasonBody) => {
       if (typeof reasonBody === 'string') {
         showErrorAlert(reasonBody);
       } else if (
