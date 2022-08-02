@@ -28,13 +28,10 @@ class RateLater(models.Model):
         on_delete=models.CASCADE,
         help_text="The poll in which the user is saving the entity.",
         related_name="ratelaters",
-        blank=True,
-        default=Poll.default_poll_pk,
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
         help_text="Time at which the video is saved.",
-        null=True,
         blank=True,
     )
 
