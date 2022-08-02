@@ -17,7 +17,7 @@ const RateLaterAddForm = ({ addVideo }: FormProps) => {
    */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const success = await addVideo(extractVideoId(formVideo) || '');
+    const success = await addVideo(extractVideoId(formVideo) || formVideo);
     if (success) {
       setFormVideo('');
     }
