@@ -44,10 +44,12 @@ from .views.stats import StatisticsView
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
+from .views.vouchers import VouchersViewSet
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
 router.register(r"entities", EntitiesViewSet)
+router.register(r"vouchers", VouchersViewSet)
 
 app_name = "tournesol"
 urlpatterns = [
