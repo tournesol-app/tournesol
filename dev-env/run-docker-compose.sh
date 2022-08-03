@@ -4,7 +4,7 @@ set -Eeuo pipefail
 
 DB_DIR="db-data"
 
-CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$CURRENT_DIR"
 
 function is_db_ready() {
@@ -19,27 +19,15 @@ function is_front_ready() {
   curl -s localhost:3000 --max-time 1 -o /dev/null
 }
 
-function compose_up_with_docker_compose() {
-  DB_UID=$(id -u) \
-  DB_GID=$(id -g) \
-  docker-compose up --build --force-recreate -d "$@"
-}
-
-function compose_up_with_compose_plugin() {
-  DB_UID=$(id -u) \
-  DB_GID=$(id -g) \
-  docker compose up --build --force-recreate -d "$@"
-}
-
 function compose_up(){
   if docker compose version 2>/dev/null; then
       echo "compose_up : docker-compose-plugin found"
-      compose_up_with_compose_plugin "$@"
+      docker compose up --build --force-recreate -d "$@"
   else
     echo "compose_up : docker-compose-plugin not found, trying to find docker-compose command"
     if command -v docker-compose ; then
       echo "compose_up : docker-compose found"
-      compose_up_with_docker_compose "$@"
+      docker-compose up --build --force-recreate -d "$@"
     else
       echo "please install either docker-compose or docker-compose-plugin "
       exit 1
@@ -47,27 +35,15 @@ function compose_up(){
   fi
 }
 
-function compose_stop_with_docker_compose() {
-  DB_UID=$(id -u) \
-  DB_GID=$(id -g) \
-  docker-compose stop
-}
-
-function compose_stop_with_compose_plugin() {
-  DB_UID=$(id -u) \
-  DB_GID=$(id -g) \
-  docker compose stop
-}
-
 function compose_stop(){
   if docker compose version 2>/dev/null; then
       echo "compose_stop: docker-compose-plugin found"
-      compose_stop_with_compose_plugin
+      docker compose stop
   else
     echo "compose_stop : docker-compose-plugin not found, trying to find docker-compose command"
     if command -v docker-compose ; then
       echo "compose_stop : docker-compose found"
-      compose_stop_with_docker_compose
+      docker-compose stop
     else
       echo "please install either docker-compose or docker-compose-plugin "
       exit 1
@@ -90,6 +66,9 @@ function wait_for() {
   echo "$service_name is unreachable."
   exit 1
 }
+
+export DB_UID=$(id -u)
+export DB_GID=$(id -g)
 
 if [[ "${1:-""}" == 'restart' ]]; then
   echo "Recreating dev containers..."
@@ -124,10 +103,10 @@ compose_up db
 wait_for is_db_ready "db"
 
 echo 'Importing dev-env dump'
-tar xvf "$CURRENT_DIR"/dump-for-dev-env.sql.tgz
-mv dump.sql "$CURRENT_DIR"/$DB_DIR/
+tar xvf "$CURRENT_DIR/dump-for-dev-env.sql.tgz"
+mv dump.sql "$CURRENT_DIR/$DB_DIR/"
 docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
-rm "$CURRENT_DIR"/$DB_DIR/dump.sql
+rm "$CURRENT_DIR/$DB_DIR/dump.sql"
 
 compose_up
 wait_for is_api_ready "api"
