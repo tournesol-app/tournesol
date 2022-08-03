@@ -1,4 +1,4 @@
-Django==4.0.6
+Django==4.0.7
 django-computed-property==0.3.0
 django-cors-headers==3.13.0
 django-countries==7.3.2
