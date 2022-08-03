@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && precompress -t gz -i json,js,css,xml,svg,html,ttf build",
+    "build": "react-scripts build && precompress -t gz -i json,js,css,xml,svg,ttf build",
     "test": "react-scripts test --testURL=http://localhost:3000",
     "eject": "react-scripts eject",
     "update-schema": "wget -O scripts/openapi.yaml \"${REACT_APP_API_URL:-http://localhost:8000}/schema/\"",
