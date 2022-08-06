@@ -63,3 +63,19 @@ class VoucherCreateApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
+
+    def test_cannot_create_twice_to_the_same_user(self):
+        """
+        The same voucher cannot be created twice with the same `to`.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user1)
+
+        response = client.post("/vouchers/", self.valid_create_params, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        initial_voucher_count = Voucher.objects.all().count()
+        response = client.post("/vouchers/", self.valid_create_params, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)

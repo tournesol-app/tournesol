@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueTogetherValidator
 
 from core.models import User
 from vouch.models import Voucher
@@ -12,11 +13,19 @@ class VoucherSerializer(ModelSerializer):
 
     class Meta:
         model = Voucher
+
         fields = [
             "by",
             "to",
             "is_public",
             "value",
+        ]
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Voucher.objects.all(),
+                fields=["to", "by"],
+            )
         ]
 
     def validate_to(self, value):
