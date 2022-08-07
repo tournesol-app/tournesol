@@ -217,15 +217,18 @@ class EntityType(ABC):
             return
 
         self.instance.last_metadata_request_at = timezone.now()
+        if save:
+            # Let's update 'last_metadata_request_at' as soon as possible,
+            # to avoid repeated metadata refreshes, due to concurrent requests
+            # or unexpected errors in the refresh process.
+            self.instance.save(update_fields=["last_metadata_request_at"])
 
         self.update_metadata_field()
         # Ensure that the metadata format is valid after refresh
         self.instance.metadata = self.cleaned_metadata
         self.instance.metadata_timestamp = timezone.now()
         if save:
-            self.instance.save(
-                update_fields=["last_metadata_request_at", "metadata", "metadata_timestamp"]
-            )
+            self.instance.save(update_fields=["metadata", "metadata_timestamp"])
 
     @classmethod
     def filter_search(cls, qs, text_to_search: str):
