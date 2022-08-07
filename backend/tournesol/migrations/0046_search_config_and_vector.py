@@ -2,7 +2,6 @@
 
 import django.contrib.postgres.indexes
 import django.contrib.postgres.search
-from django.conf import settings
 from django.contrib.postgres.operations import UnaccentExtension
 from django.db import migrations, models
 
@@ -26,14 +25,14 @@ class Migration(migrations.Migration):
     create_customized_configs = [
         migrations.RunSQL(
             f"""
-        CREATE TEXT SEARCH CONFIGURATION customized_{language}( COPY = {language} );
-        ALTER TEXT SEARCH CONFIGURATION customized_{language}
-        ALTER MAPPING FOR hword, hword_part, word
-        WITH unaccent, {language}_stem;
-        """,
+            CREATE TEXT SEARCH CONFIGURATION customized_{language}( COPY = {language} );
+            ALTER TEXT SEARCH CONFIGURATION customized_{language}
+            ALTER MAPPING FOR hword, hword_part, word
+            WITH unaccent, {language}_stem;
+            """,
             reverse_sql=f"""
             DROP TEXT SEARCH CONFIGURATION IF EXISTS customized_{language};
-        """,
+            """,
         )
         for language in POSTGRES_LANGUAGES
     ]
@@ -44,24 +43,20 @@ class Migration(migrations.Migration):
     create_customized_configs.append(
         migrations.RunSQL(
             """
-        CREATE TEXT SEARCH CONFIGURATION generic( COPY = english );
-        ALTER TEXT SEARCH CONFIGURATION generic
-        ALTER MAPPING FOR hword, hword_part, word
-        WITH unaccent, english_stem;
-        """,
+            CREATE TEXT SEARCH CONFIGURATION generic( COPY = english );
+            ALTER TEXT SEARCH CONFIGURATION generic
+            ALTER MAPPING FOR hword, hword_part, word
+            WITH unaccent, english_stem;
+            """,
             reverse_sql=f"""
             DROP TEXT SEARCH CONFIGURATION IF EXISTS generic;
-        """,
+            """,
         )
     )
 
     operations = (
         [
             UnaccentExtension(),
-            migrations.RunSQL(
-                f"ALTER DATABASE \"{settings.DATABASES['default']['NAME']}\" SET random_page_cost=1.1;",
-                reverse_sql=f"ALTER DATABASE \"{settings.DATABASES['default']['NAME']}\" RESET random_page_cost;",
-            ),
             migrations.AddField(
                 model_name="entity",
                 name="search_config_name",
