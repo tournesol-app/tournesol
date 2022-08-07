@@ -253,7 +253,7 @@ class EntityType(ABC):
 
     @classmethod
     @abstractmethod
-    def build_search_vector(cls, entity) -> None:
+    def update_search_vector(cls, entity) -> None:
         raise NotImplementedError
 
     @staticmethod
@@ -267,4 +267,4 @@ class EntityType(ABC):
         from tournesol.entities import ENTITY_TYPE_NAME_TO_CLASS
 
         for entity in models.Entity.objects.iterator():
-            ENTITY_TYPE_NAME_TO_CLASS[entity.type].build_search_vector(entity)
+            ENTITY_TYPE_NAME_TO_CLASS[entity.type].update_search_vector(entity)

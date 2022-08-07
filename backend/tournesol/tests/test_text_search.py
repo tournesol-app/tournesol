@@ -65,7 +65,7 @@ class TextSearchTestCase(TestCase):
 
         The metadata text fields contain the text indexed for the search.
         They depend on the entity type. Their weights are arbitrarily
-        fixed in build_search_vector.
+        fixed in update_search_vector.
 
         Also creates criteria scores, since they are used for the
         calculation of the "total score" (= weighted score), which is
@@ -474,7 +474,7 @@ class TextSearchTestCase(TestCase):
         e.g., the words in the title are more important than
         those in the descriptions.
 
-        In the function build_search_vector, each text field is
+        In the function update_search_vector, each text field is
         associated with a weight.
 
         In Postgres, there are only 4 type of weights ("A", "B", "C", "D"),

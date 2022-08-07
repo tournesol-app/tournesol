@@ -63,7 +63,7 @@ class VideoEntity(EntityType):
         )
 
     @classmethod
-    def build_search_vector(cls, entity) -> None:
+    def update_search_vector(cls, entity) -> None:
         from tournesol.utils.video_language import language_to_postgres_config
 
         language_config = language_to_postgres_config(entity.metadata["language"])

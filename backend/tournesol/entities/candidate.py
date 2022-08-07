@@ -77,7 +77,7 @@ class CandidateEntity(EntityType):
         self.instance.metadata = metadata
 
     @classmethod
-    def build_search_vector(cls, entity) -> None:
+    def update_search_vector(cls, entity) -> None:
 
         if entity.type == TYPE_CANDIDATE:
             french_config = "customized_french"
