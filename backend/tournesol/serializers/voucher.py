@@ -35,3 +35,8 @@ class VoucherSerializer(ModelSerializer):
             raise ValidationError("The target user doesn't exist.") from error
 
         return user
+
+    def validate(self, data):
+        if data["by"] == data["to"]:
+            raise serializers.ValidationError({"to": "You cannot vouch for yourself"})
+        return data

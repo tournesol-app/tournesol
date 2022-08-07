@@ -79,3 +79,20 @@ class VoucherCreateApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
+
+    def test_cannot_create_voucher_to_oneself(self):
+        """
+        A user cannot vouch for themself.
+        """
+        user = self.user1
+
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        initial_voucher_count = Voucher.objects.all().count()
+        params = self.valid_create_params | {"to": "user1"}
+        response = client.post("/vouchers/", params, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
+        self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself"]}')
