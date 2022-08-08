@@ -90,6 +90,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
     """
 
     search_score_coef = 2
+    _weights_sum = None
 
     def _metadata_from_filter(self, metadata_filter: str):
         """
@@ -145,7 +146,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                 tournesol_score__gt=0,
             )
 
-    def sort_results(self, queryset, filters, request, poll):
+    def sort_results(self, queryset, filters):
         """
         Sort the results
 
@@ -168,10 +169,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             Set it to a higher value to take more into account the total score.
         """
         if filters["search"]:
-            weights_sum = sum(
-                [self._get_raw_weight(request, crit) for crit in poll.criterias_list]
-            )
-
+            weights_sum = self._weights_sum
             queryset = queryset.annotate(
                 search_score=F("relevance") * (
                      weights_sum * F("relevance") +
@@ -191,33 +189,35 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         any_weight_in_request = False
         criteria_cases = []
+        weights_sum = 0.0
+
         for crit in poll.criterias_list:
             weight = self._get_raw_weight(request, crit)
             if weight != CRITERIA_DEFAULT_WEIGHT:
                 any_weight_in_request = True
             criteria_cases.append(When(**{when: crit}, then=weight))
+            weights_sum += weight
 
         if not any_weight_in_request and poll.algorithm == ALGORITHM_MEHESTAN:
             criteria_cases = [
                 When(**{when: poll.main_criteria}, then=1)
             ]
+            weights_sum = 1.0
 
+        self._weights_sum = weights_sum
         return Case(*criteria_cases, default=0)
 
     def _get_raw_weight(self, request, criteria):
         """Get the weight parameters from the URL"""
         raw_weight = request.query_params.get(f"weights[{criteria}]")
-        if raw_weight is not None:
-            try:
-                weight = int(raw_weight)
-            except ValueError as value_error:
-                raise serializers.ValidationError(
-                    f"Invalid weight value for criteria '{criteria}'"
-                ) from value_error
-        else:
-            weight = CRITERIA_DEFAULT_WEIGHT
-
-        return weight
+        if raw_weight is None:
+            return CRITERIA_DEFAULT_WEIGHT
+        try:
+            return int(raw_weight)
+        except ValueError as value_error:
+            raise serializers.ValidationError(
+                f"Invalid weight value for criteria '{criteria}'"
+            ) from value_error
 
 
 class PollsView(RetrieveAPIView):
@@ -290,7 +290,7 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
-        queryset = self.sort_results(queryset, filters, self.request, poll)
+        queryset = self.sort_results(queryset, filters)
         return queryset
 
 
