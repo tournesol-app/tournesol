@@ -713,4 +713,3 @@ class TextSearchTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_results_count + 1)
-
