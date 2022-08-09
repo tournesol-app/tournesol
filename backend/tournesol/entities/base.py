@@ -231,7 +231,7 @@ class EntityType(ABC):
             self.instance.save(update_fields=["metadata", "metadata_timestamp"])
 
     @classmethod
-    def filter_search(cls, qs, text_to_search: str):
+    def filter_search(cls, qs, text_to_search: str, languages=None):
         """
         Filter the queryset by verifying if the text string appears in the search vector.
         The search vector contains the searchable words already filtered, stemmed and indexed
@@ -250,8 +250,8 @@ class EntityType(ABC):
         """
         # Search over every language config
         search_query = SearchQuery(text_to_search, config=F("search_config_name"))
-        qs = qs.filter_with_text_query(text_to_search)
-        qs = qs.annotate(relevance=SearchRank(F("search_vector"), search_query))
+        qs = qs.filter_with_text_query(text_to_search, languages)
+        qs = qs.alias(relevance=SearchRank(F("search_vector"), search_query))
         return qs
 
     @classmethod

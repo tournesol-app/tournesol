@@ -31,6 +31,7 @@ from tournesol.utils.video_language import (
     DEFAULT_SEARCH_CONFIG,
     POSTGRES_SEARCH_CONFIGS,
     SEARCH_CONFIG_CHOICES,
+    language_to_postgres_config,
 )
 
 LANGUAGES = settings.LANGUAGES
@@ -49,7 +50,7 @@ class EntityQueryset(models.QuerySet):
             )
         )
 
-    def filter_with_text_query(self, query: str):
+    def filter_with_text_query(self, query: str, languages=None):
         """
         This custom query enables to use the index on 'search_vector' independently of
         the language of the user query.
@@ -63,6 +64,11 @@ class EntityQueryset(models.QuerySet):
         explicitly join on 'pg_ts_config' which contains the list of available language
         configurations.
         """
+        if languages:
+            search_configs = [language_to_postgres_config(lang) for lang in languages]
+        else:
+            search_configs = POSTGRES_SEARCH_CONFIGS
+
         return self.alias(
             _matching_query=RawSQL(
                 """
@@ -70,11 +76,11 @@ class EntityQueryset(models.QuerySet):
                     SELECT e.id
                     FROM tournesol_entity e
                     INNER JOIN pg_ts_config c
-                        ON c.oid = e.search_config_name::regconfig AND c.cfgname = ANY(%s)
+                        ON c.oid = e.search_config_name::regconfig AND c.cfgname IN %s
                     WHERE e."search_vector" @@ (plainto_tsquery(oid, %s))
                 )
                 """,
-                (POSTGRES_SEARCH_CONFIGS, query),
+                (tuple(search_configs), query),
             )
         ).filter(_matching_query=True)
 

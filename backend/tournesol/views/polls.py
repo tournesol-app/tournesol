@@ -127,7 +127,8 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
         search = filters["search"]
         if search:
-            queryset = poll.entity_cls.filter_search(queryset, search)
+            languages = request.query_params.getlist("metadata[language]")
+            queryset = poll.entity_cls.filter_search(queryset, search, languages)
 
         return queryset, filters
 
