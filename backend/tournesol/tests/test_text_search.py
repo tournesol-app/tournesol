@@ -5,6 +5,7 @@ from rest_framework.test import APIClient
 from tournesol.entities.candidate import TYPE_CANDIDATE
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Poll
+from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.tests.factories.entity import EntityFactory, UserFactory, VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
@@ -29,6 +30,9 @@ class TextSearchTestCase(TestCase):
 
     def setUp(self):
         self.poll = Poll.default_poll()
+        # Ranking based on relevance and scores is implemented for Mehestan only
+        self.poll.algorithm = ALGORITHM_MEHESTAN
+        self.poll.save()
 
         self.query = "fruit"
 

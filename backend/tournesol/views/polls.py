@@ -22,7 +22,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
-from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT
+from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT, MEHESTAN_MAX_SCALED_SCORE
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
@@ -162,20 +162,21 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
 
         This lead to the choice of a model of the type:
             search_score = relevance *
-                           (weights_sum * relevance +
-                           search_score_coef * (total_score + weights_sum))
+                (relevance + search_score_coef * normalized_total_score)
+            where both relevance and normalized_total_score belong to [0, 1].
 
         With "search_score_coef" an arbitrary, positive value.
             If set to 0, total_score is ignored.
             Set it to a higher value to take more into account the total score.
         """
-        if filters["search"]:
-            weights_sum = self._weights_sum
-            queryset = queryset.annotate(
-                search_score=F("relevance") * (
-                     weights_sum * F("relevance") +
-                     self.search_score_coef * (weights_sum + F("total_score"))
-                )
+        if filters["search"] and self.poll_from_url.algorithm == ALGORITHM_MEHESTAN:
+            max_absolute_score = MEHESTAN_MAX_SCALED_SCORE * self._weights_sum
+            normalized_total_score = (
+                (F("total_score") + max_absolute_score) / (2 * max_absolute_score)
+            )
+            queryset = queryset.alias(
+                search_score=F("relevance")
+                * (F("relevance") + self.search_score_coef * normalized_total_score)
             )
             return queryset.order_by("-search_score", "-pk")
         else:
