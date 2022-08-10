@@ -1,6 +1,7 @@
 """
 API endpoints to show public statistics
 """
+from dataclasses import dataclass
 from typing import List
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -14,22 +15,22 @@ from tournesol.models import Comparison, Entity, Poll
 from tournesol.serializers.stats import StatisticsSerializer
 
 
+@dataclass
 class ActiveUsersStatistics:
-    def __init__(self, total, joined_last_month):
-        self.total = total
-        self.joined_last_month = joined_last_month
+    total: int
+    joined_last_month: int
 
 
+@dataclass
 class ComparedEntitiesStatistics:
-    def __init__(self, total, added_last_month):
-        self.total = total
-        self.added_last_month = added_last_month
+    total: int
+    added_last_month: int
 
 
+@dataclass
 class ComparisonsStatistics:
-    def __init__(self, total, added_last_month):
-        self.total = total
-        self.added_last_month = added_last_month
+    total: int
+    added_last_month: int
 
 
 class PollStatistics:
