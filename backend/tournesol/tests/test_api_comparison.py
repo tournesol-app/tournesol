@@ -304,6 +304,7 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(comparison_criteria_scores[0].weight, 1)
 
+    @patch('tournesol.utils.api_youtube.youtube', None)
     def test_authenticated_can_create_with_non_existing_entity(self):
         """
         An authenticated user can create a comparison involving entities that

@@ -89,6 +89,23 @@ export const useNotifications = () => {
     [enqueueSnackbar, t]
   );
 
+  const displayMessagesFromReasonBody = useCallback(
+    (reasonBody) => {
+      if (typeof reasonBody === 'string') {
+        showErrorAlert(reasonBody);
+      } else if (
+        Object.prototype.toString.call(reasonBody) === '[object Object]'
+      ) {
+        Object.values(reasonBody).map((value) =>
+          displayMessagesFromReasonBody(value)
+        );
+      } else if (Array.isArray(reasonBody)) {
+        reasonBody.map((value) => displayMessagesFromReasonBody(value));
+      }
+    },
+    [showErrorAlert]
+  );
+
   /**
    * Display all errors contained in an `ApiError` object.
    *
@@ -148,17 +165,19 @@ export const useNotifications = () => {
           showInfoAlert(reason.body['detail']);
         } else {
           const body = reason.body;
-          const newErrorMessages =
-            typeof body === 'string'
-              ? [body]
-              : Object.values(reason['body']).flat();
-          newErrorMessages.map((msg) => showErrorAlert(msg as string));
+
+          displayMessagesFromReasonBody(body);
         }
       } else {
         contactAdministrator('error', message);
       }
     },
-    [enqueueSnackbar, contactAdministrator, showErrorAlert, showInfoAlert]
+    [
+      enqueueSnackbar,
+      contactAdministrator,
+      showInfoAlert,
+      displayMessagesFromReasonBody,
+    ]
   );
 
   return {
