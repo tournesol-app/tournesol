@@ -80,6 +80,9 @@ class EntityQueryset(models.QuerySet):
                     WHERE e."search_vector" @@ (plainto_tsquery(oid, %s))
                 )
                 """,
+                # `= ANY(my_list)` is preferred to `IN my_tuple` in this query, as a workaround
+                # for a bug in django-debug-toolbar:
+                # https://github.com/jazzband/django-debug-toolbar/issues/1482
                 (search_configs, query),
             )
         ).filter(_matching_query=True)
