@@ -248,7 +248,6 @@ class EntityType(ABC):
         switch to ElasticSearch. But this would require managing a
         specific server (and thus a new container).
         """
-        # Search over every language config
         search_query = SearchQuery(text_to_search, config=F("search_config_name"))
         qs = qs.filter_with_text_query(text_to_search, languages)
         qs = qs.alias(relevance=SearchRank(F("search_vector"), search_query))

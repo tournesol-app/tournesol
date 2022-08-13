@@ -182,7 +182,7 @@ class Entity(models.Model):
         super().save(force_insert, force_update, *args, **kwargs)
 
         # If "metadata" has changed, the indexed search_vector needs to be updated.
-        # This conditioon also avoids infinite loop when calling .save()
+        # This condition also avoids infinite loop when calling .save()
         if ("update_fields" not in kwargs) or ("metadata" in kwargs["update_fields"]):
             if self.type in ENTITY_TYPE_NAME_TO_CLASS:
                 self.entity_cls.update_search_vector(self)
