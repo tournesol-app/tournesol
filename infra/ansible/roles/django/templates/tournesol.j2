@@ -38,7 +38,7 @@ server {
 
     location @index {
         root /srv/tournesol-frontend;
-        sub_filter '__META_OG_IMAGE__' '$scheme://{{api_domain_name}}/thumbnail$request_uri';
+        sub_filter '__META_OG_IMAGE__' '$scheme://{{api_domain_name}}/preview$request_uri';
         sub_filter '__META_OG_URL__' '$scheme://$server_name$request_uri';
         try_files /index.html =404;
     }
