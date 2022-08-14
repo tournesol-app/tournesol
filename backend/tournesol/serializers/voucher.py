@@ -28,7 +28,7 @@ class VoucherSerializer(ModelSerializer):
 
         return user
 
-    def validate(self, data):
-        if data["by"] == data["to"]:
+    def validate(self, attrs):
+        if attrs["by"] == attrs["to"]:
             raise serializers.ValidationError({"to": "You cannot vouch for yourself"})
-        return data
+        return attrs
