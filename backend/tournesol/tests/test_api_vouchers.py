@@ -1,3 +1,4 @@
+from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -96,3 +97,52 @@ class VoucherCreateApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
         self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself"]}')
+
+
+class VoucherDeleteApi(TestCase):
+    """
+    TestCase of the voucher delete API.
+    """
+
+    def setUp(self):
+        self.user1 = User.objects.create(username="user1", email="user1@example.com")
+        self.user2 = User.objects.create(username="user2", email="user2@example.com")
+
+        self.voucher = Voucher.objects.create(by=self.user1, to=self.user2, value=1)
+
+    def test_anonymous_cant_delete(self):
+        """
+        An anonymous user can't delete a voucher.
+        """
+        client = APIClient()
+
+        initial_voucher_count = Voucher.objects.all().count()
+        response = client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
+
+    def test_user_can_delete(self):
+        """
+        A user can delete their voucher.
+        """
+        client = APIClient()
+
+        client.force_authenticate(user=self.user1)
+        response = client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        with self.assertRaises(ObjectDoesNotExist):
+            Voucher.objects.get(pk=self.voucher.pk)
+
+    def test_user_cant_delete_other_users_vouchers(self):
+        """
+        A user can't delete another user's voucher.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user2)
+
+        response = client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        Voucher.objects.get(pk=self.voucher.pk)

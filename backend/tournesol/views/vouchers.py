@@ -17,8 +17,12 @@ from vouch.models import Voucher
 )
 class VouchersViewSet(
     mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
     GenericViewSet,
 ):
-    queryset = Voucher.objects.all()
+    queryset = Voucher.objects.none()
     permission_classes = [IsAuthenticated]
     serializer_class = VoucherSerializer
+
+    def get_queryset(self):
+        return Voucher.objects.filter(by=self.request.user)
