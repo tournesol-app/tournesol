@@ -6,7 +6,7 @@ from core.models import User
 from vouch.models import Voucher
 
 
-class VoucherSerializer(ModelSerializer):
+class GivenVoucherSerializer(ModelSerializer):
     by = serializers.HiddenField(default=serializers.CurrentUserDefault())
     to = serializers.CharField()
 
@@ -33,3 +33,17 @@ class VoucherSerializer(ModelSerializer):
         if attrs["by"] == attrs["to"]:
             raise serializers.ValidationError({"to": "You cannot vouch for yourself"})
         return attrs
+
+
+class ReceivedVoucherSerializer(ModelSerializer):
+    by = serializers.CharField()
+
+    class Meta:
+        model = Voucher
+
+        fields = [
+            "id",
+            "by",
+            "is_public",
+            "value",
+        ]

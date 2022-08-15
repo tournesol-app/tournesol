@@ -4,7 +4,7 @@ API endpoint to manipulate vouchers
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 
-from tournesol.serializers.voucher import VoucherSerializer
+from tournesol.serializers.voucher import GivenVoucherSerializer, ReceivedVoucherSerializer
 from vouch.models import Voucher
 
 
@@ -14,7 +14,7 @@ from vouch.models import Voucher
     ),
 )
 class VoucherCreateView(generics.CreateAPIView):
-    serializer_class = VoucherSerializer
+    serializer_class = GivenVoucherSerializer
 
 
 @extend_schema_view(
@@ -33,9 +33,23 @@ class VoucherDestroyView(generics.DestroyAPIView):
     ),
 )
 class VoucherGivenListView(generics.ListAPIView):
-    serializer_class = VoucherSerializer
+    serializer_class = GivenVoucherSerializer
 
     def get_queryset(self):
         return Voucher.objects.filter(
             by=self.request.user,
+        )
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="List all the vouchers the logged in user has received.",
+    ),
+)
+class VoucherReceivedListView(generics.ListAPIView):
+    serializer_class = ReceivedVoucherSerializer
+
+    def get_queryset(self):
+        return Voucher.objects.filter(
+            to=self.request.user,
         )

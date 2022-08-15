@@ -230,3 +230,76 @@ class VoucherListGivenApi(TestCase):
             },
             results[1],
         )
+
+
+class VoucherListReceivedApi(TestCase):
+    """
+    TestCase of the voucher API to list received vouchers.
+    """
+
+    def setUp(self):
+        self.user1 = User.objects.create(username="user1", email="user1@example.com")
+        self.user2 = User.objects.create(username="user2", email="user2@example.com")
+        self.user3 = User.objects.create(username="user3", email="user3@example.com")
+
+        self.voucher1 = Voucher.objects.create(
+            by=self.user1,
+            to=self.user2,
+            value=1
+        )
+        self.voucher2 = Voucher.objects.create(
+            by=self.user1,
+            to=self.user3,
+            value=2,
+            is_public=True,
+        )
+        self.voucher3 = Voucher.objects.create(
+            by=self.user2,
+            to=self.user3,
+            value=3,
+        )
+
+    def test_anonymous_cannot_list(self):
+        """
+        An anonymous user can't list received vouchers.
+        """
+        client = APIClient()
+
+        response = client.get("/vouchers/received/", format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_user_can_list(self):
+        """
+        A user can list their received vouchers.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.user3)
+
+        response = client.get("/vouchers/received/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+        self.assertEqual(response.data["count"], 2)
+
+        self.assertDictEqual(
+            results[0],
+            {
+                "id": self.voucher2.id,
+                "by": "user1",
+                "is_public": True,
+                "value": 2,
+            },
+            results[0],
+        )
+
+        self.assertDictEqual(
+            results[1],
+            {
+                "id": self.voucher3.id,
+                "by": "user2",
+                "is_public": False,
+                "value": 3,
+            },
+            results[1],
+        )

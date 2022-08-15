@@ -44,7 +44,12 @@ from .views.stats import StatisticsView
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
-from .views.vouchers import VoucherCreateView, VoucherDestroyView, VoucherGivenListView
+from .views.vouchers import (
+    VoucherCreateView,
+    VoucherDestroyView,
+    VoucherGivenListView,
+    VoucherReceivedListView,
+)
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
@@ -197,6 +202,11 @@ urlpatterns = [
         "vouchers/given/",
         VoucherGivenListView.as_view(),
         name="vouchers_given",
+    ),
+    path(
+        "vouchers/received/",
+        VoucherReceivedListView.as_view(),
+        name="vouchers_received",
     ),
     path(
         "vouchers/",
