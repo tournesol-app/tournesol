@@ -51,6 +51,17 @@ class VoucherCreateApi(TestCase):
         self.assertEqual(new_voucher.is_public, self.valid_create_params["is_public"])
         self.assertEqual(new_voucher.value, float(self.valid_create_params["value"]))
 
+        self.assertDictEqual(
+            response.data,
+            {
+                "id": new_voucher.id,
+                "to": "user2",
+                "is_public": False,
+                "value": 1,
+            },
+            response.data,
+        )
+
     def test_cannot_create_to_inexistant_user(self):
         """
         A user can't create a voucher to an inexistant user.

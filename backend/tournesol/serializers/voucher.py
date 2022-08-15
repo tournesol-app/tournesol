@@ -14,6 +14,7 @@ class VoucherSerializer(ModelSerializer):
         model = Voucher
 
         fields = [
+            "id",
             "by",
             "to",
             "is_public",
