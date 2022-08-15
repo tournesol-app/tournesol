@@ -44,12 +44,11 @@ from .views.stats import StatisticsView
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
-from .views.vouchers import VouchersViewSet
+from .views.vouchers import VoucherCreateView, VoucherDestroyView
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
 router.register(r"entities", EntitiesViewSet)
-router.register(r"vouchers", VouchersViewSet)
 
 app_name = "tournesol"
 urlpatterns = [
@@ -192,5 +191,16 @@ urlpatterns = [
         "polls/<str:name>/entities/<str:uid>/criteria_scores_distributions",
         PollsCriteriaScoreDistributionView.as_view(),
         name="polls_score_distribution",
+    ),
+    # Vouchers API
+    path(
+        "vouchers/",
+        VoucherCreateView.as_view(),
+        name="vouchers",
+    ),
+    path(
+       "vouchers/<str:pk>/",
+        VoucherDestroyView.as_view(),
+        name="vouchers",
     ),
 ]
