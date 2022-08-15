@@ -25,3 +25,17 @@ class VoucherCreateView(generics.CreateAPIView):
 class VoucherDestroyView(generics.DestroyAPIView):
     def get_queryset(self):
         return Voucher.objects.filter(by=self.request.user)
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="List all the vouchers the logged in user has given.",
+    ),
+)
+class VoucherGivenListView(generics.ListAPIView):
+    serializer_class = VoucherSerializer
+
+    def get_queryset(self):
+        return Voucher.objects.filter(
+            by=self.request.user,
+        )
