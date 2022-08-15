@@ -2,6 +2,7 @@ from urllib.parse import quote
 
 import requests
 from django.contrib.postgres.search import SearchVector
+from django.db.models.fields.json import KeyTextTransform
 
 from tournesol.serializers.metadata import CandidateMetadata
 
@@ -83,11 +84,24 @@ class CandidateEntity(EntityType):
             french_config = "customized_french"
 
             entity.search_config_name = french_config
-            entity.search_vector = \
-                SearchVector("uid", weight="A", config=french_config) + \
-                SearchVector("metadata__name", weight="A", config=french_config) + \
-                SearchVector("metadata__frwiki_title", weight="B", config=french_config) + \
-                SearchVector("metadata__youtube_channel_id", weight="B", config=french_config) + \
-                SearchVector("metadata__twitter_username", weight="B", config=french_config)
+            entity.search_vector = (
+                SearchVector("uid", weight="A", config=french_config)
+                + SearchVector(
+                    KeyTextTransform("name", "metadata"), weight="A", config=french_config
+                )
+                + SearchVector(
+                    KeyTextTransform("frwiki_title", "metadata"), weight="B", config=french_config
+                )
+                + SearchVector(
+                    KeyTextTransform("youtube_channel_id", "metadata"),
+                    weight="B",
+                    config=french_config,
+                )
+                + SearchVector(
+                    KeyTextTransform("twitter_username", "metadata"),
+                    weight="B",
+                    config=french_config,
+                )
+            )
 
             entity.save(update_fields=["search_config_name", "search_vector"])

@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
+from django.db.models.fields.json import KeyTextTransform
 from django.utils import timezone
 
 from tournesol.serializers.metadata import VideoMetadata
@@ -69,11 +70,20 @@ class VideoEntity(EntityType):
         language_config = language_to_postgres_config(entity.metadata["language"])
 
         entity.search_config_name = language_config
-        entity.search_vector = \
-            SearchVector("uid", weight="A", config=language_config) + \
-            SearchVector("metadata__name", weight="A", config=language_config) + \
-            SearchVector("metadata__uploader", weight="A", config=language_config) + \
-            SearchVector("metadata__tags", weight="A", config=language_config) + \
-            SearchVector("metadata__description", weight="C", config=language_config)
+        entity.search_vector = (
+            SearchVector("uid", weight="A", config=language_config)
+            + SearchVector(
+                KeyTextTransform("name", "metadata"), weight="A", config=language_config
+            )
+            + SearchVector(
+                KeyTextTransform("uploader", "metadata"), weight="A", config=language_config
+            )
+            + SearchVector(
+                KeyTextTransform("tags", "metadata"), weight="A", config=language_config
+            )
+            + SearchVector(
+                KeyTextTransform("description", "metadata"), weight="C", config=language_config
+            )
+        )
 
         entity.save(update_fields=["search_config_name", "search_vector"])

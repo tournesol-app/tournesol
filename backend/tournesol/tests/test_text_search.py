@@ -701,6 +701,19 @@ class TextSearchTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
 
+    def test_parse_newlines_in_metadata(self):
+        description = "how to cook an onion cake\ningredients :\nonions"
+        query = "ingredient"
+        self._create_rated_entity(field1=description)
+
+        response = self.client.get(
+            self._make_url(query),
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
     def test_unsafe_filter(self):
         """
         Check that videos that have a negative score are
