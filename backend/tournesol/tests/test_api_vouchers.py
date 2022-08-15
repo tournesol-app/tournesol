@@ -206,8 +206,8 @@ class VoucherListGivenApi(TestCase):
         response = client.get("/vouchers/given/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        results = response.data["results"]
-        self.assertEqual(response.data["count"], 2)
+        results = response.data
+        self.assertEqual(len(results), 2)
 
         self.assertDictEqual(
             results[0],
@@ -279,8 +279,8 @@ class VoucherListReceivedApi(TestCase):
         response = client.get("/vouchers/received/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        results = response.data["results"]
-        self.assertEqual(response.data["count"], 2)
+        results = response.data
+        self.assertEqual(len(results), 2)
 
         self.assertDictEqual(
             results[0],

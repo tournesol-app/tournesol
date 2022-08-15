@@ -34,6 +34,7 @@ class VoucherDestroyView(generics.DestroyAPIView):
 )
 class VoucherGivenListView(generics.ListAPIView):
     serializer_class = GivenVoucherSerializer
+    pagination_class = None
 
     def get_queryset(self):
         return Voucher.objects.filter(
@@ -48,6 +49,7 @@ class VoucherGivenListView(generics.ListAPIView):
 )
 class VoucherReceivedListView(generics.ListAPIView):
     serializer_class = ReceivedVoucherSerializer
+    pagination_class = None
 
     def get_queryset(self):
         return Voucher.objects.filter(
