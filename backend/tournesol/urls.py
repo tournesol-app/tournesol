@@ -198,7 +198,7 @@ urlpatterns = [
     path(
         "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),
-        name="website_preview_antity",
+        name="website_preview_entity",
     ),
     re_path(
         r'^preview/.*$',
