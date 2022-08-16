@@ -10,8 +10,6 @@ from rest_framework.views import APIView
 
 from tournesol.models.entity import Entity
 
-POPPINS_FONT = ImageFont.truetype("tournesol/resources/Poppins-Medium.ttf", 20)
-
 
 class DynamicWebsitePreviewDefault(APIView):
     permission_classes = []
@@ -33,6 +31,8 @@ class DynamicWebsitePreviewEntity(APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid):
+        POPPINS_FONT = ImageFont.truetype("tournesol/resources/Poppins-Medium.ttf", 20)
+
         # try:
         entity = Entity.objects.get(uid=uid)
         response = HttpResponse(content_type="image/png")
