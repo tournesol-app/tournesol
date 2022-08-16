@@ -29,7 +29,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
-from .views.preview import DynamicWebsitePreview, DynamicWebsitePreviewEntity
+from .views.preview import DynamicWebsitePreviewDefault, DynamicWebsitePreviewEntity
 from .views.rate_later import (
     LegacyRateLaterDetail,
     LegacyRateLaterList,
@@ -196,13 +196,13 @@ urlpatterns = [
     ),
     # Website Previews
     path(
-        "preview/entities/yt:<str:uid>",
+        "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_antity",
     ),
     re_path(
         r'^preview/.*$',
-        DynamicWebsitePreview.as_view(),
+        DynamicWebsitePreviewDefault.as_view(),
         name="website_preview_default",
     ),
 ]

@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 def generate_analytics_preview(thumbnail_file_path: str, target_file_path: str):
     tournesol_footer = Image.new("RGBA", (320, 60), (255, 200, 0, 255))
-    fnt = ImageFont.truetype("../../frontend/public/fonts/Poppins-Bold.ttf", 40)
+    fnt = ImageFont.truetype("../resources/Poppins-Medium.ttf", 40)
     tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
     tournesol_footer_draw.text((10, 0), "by", font=fnt, fill=(29, 26, 20, 255))
     tournesol_footer_draw.text((80, 0), "Tournesol", font=fnt, fill=(29, 26, 20, 255))
@@ -22,7 +22,7 @@ def generate_analytics_preview(thumbnail_file_path: str, target_file_path: str):
 
 def generate_comparison_preview(thumbnail_file_path_left: str, thumbnail_file_path_right: str, target_file_path: str):
     tournesol_footer = Image.new("RGBA", (320, 60), (255, 200, 0, 255))
-    fnt = ImageFont.truetype("../../frontend/public/fonts/Poppins-Bold.ttf", 40)
+    fnt = ImageFont.truetype("../resources/Poppins-Medium.ttf", 40)
     tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
     tournesol_footer_draw.text((10, 0), "by", font=fnt, fill=(29, 26, 20, 255))
     tournesol_footer_draw.text((80, 0), "Tournesol", font=fnt, fill=(29, 26, 20, 255))
