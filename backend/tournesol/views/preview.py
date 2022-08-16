@@ -13,6 +13,7 @@ from tournesol.utils.cache import cache_page_no_i18n
 
 logger = logging.getLogger(__name__)
 
+
 class DynamicWebsitePreviewDefault(APIView):
     permission_classes = []
 
@@ -29,6 +30,7 @@ class DynamicWebsitePreviewDefault(APIView):
         default_preview = open("tournesol/resources/tournesol_screenshot_og.png", "rb")
         response = FileResponse(default_preview, content_type="image/png")
         return response
+
 
 class DynamicWebsitePreviewEntity(APIView):
     permission_classes = []
@@ -47,18 +49,22 @@ class DynamicWebsitePreviewEntity(APIView):
             response = HttpResponse(content_type="image/png")
             tournesol_footer = Image.new("RGBA", (320, 60), (255, 200, 0, 255))
             tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
-            
+
             truncated_title = entity.metadata.get("name", "")[:200]
             # TODO: optimize this with a dichotomic search
-            while tournesol_footer_draw.textlength(truncated_title, font=fnt_title) > 300: # image width
+            while tournesol_footer_draw.textlength(truncated_title, font=fnt_title) > 300:
                 truncated_title = truncated_title[:-4] + "..."
-            tournesol_footer_draw.text((10, 6), truncated_title, font=fnt_title, fill=(29, 26, 20, 255))
+            tournesol_footer_draw.text(
+                (10, 6), truncated_title, font=fnt_title, fill=(29, 26, 20, 255)
+            )
 
             score = entity.tournesol_score
             if score is not None:
-                tournesol_footer_draw.text((10, 25), "Tournesol Score: %.0f" % score, font=fnt, fill=(29, 26, 20, 255))
+                tournesol_footer_draw.text(
+                    (10, 25), "Tournesol Score: %.0f" % score, font=fnt, fill=(29, 26, 20, 255)
+                )
 
-            url=f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
+            url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
             thumbnail_response = requests.get(url)
             if thumbnail_response.status != 200:
                 logger.warning(
@@ -67,7 +73,7 @@ class DynamicWebsitePreviewEntity(APIView):
                 # Choosing not to raise an error here because the reponse often has a non-200
                 # status while containing the right content (e.g. 304, 443)
                 # raise ConnectionError
-            youtube_thumbnail = Image.open(BytesIO(thumbnail_response.content)).convert("RGBA") 
+            youtube_thumbnail = Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
 
             # Merges the two images into one
             preview_image = Image.new("RGBA", (320, 240), (255, 255, 255, 0))
@@ -87,4 +93,3 @@ class DynamicWebsitePreviewEntity(APIView):
             # Probably: The thumbnail could not be fetched from youtube
             logger.error(f"Error Caught: {e}")
             return DynamicWebsitePreviewDefault.default_preview()
-
