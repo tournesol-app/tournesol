@@ -66,9 +66,9 @@ class DynamicWebsitePreviewEntity(APIView):
 
             url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
             thumbnail_response = requests.get(url)
-            if thumbnail_response.status != 200:
+            if thumbnail_response.status_code != 200:
                 logger.warning(
-                    f"Fetching youtube thumbnail has non-200 status: {thumbnail_response.status}"
+                    f"Fetching youtube thumbnail has non-200 status: {thumbnail_response.status_code}"
                 )
                 # Choosing not to raise an error here because the reponse often has a non-200
                 # status while containing the right content (e.g. 304, 443)
