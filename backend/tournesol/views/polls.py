@@ -22,6 +22,7 @@ from tournesol.serializers.poll import (
     RecommendationSerializer,
     RecommendationsFilterSerializer,
 )
+from tournesol.utils.constants import CRITERIA_DEFAULT_WEIGHT, MEHESTAN_MAX_SCALED_SCORE
 from tournesol.views import PollScopedViewMixin
 
 logger = logging.getLogger(__name__)
@@ -36,13 +37,16 @@ logger = logging.getLogger(__name__)
                 OpenApiTypes.OBJECT,
                 style="deepObject",
                 description="Weights for criteria in this poll."
-                " The default weight is 10 for each criteria.",
+                f" The default weight is {CRITERIA_DEFAULT_WEIGHT} for each criteria.",
                 examples=[
                     OpenApiExample(
-                        name="weights example",
+                        name="Default weights",
+                    ),
+                    OpenApiExample(
+                        name="Weights example",
                         value={
-                            "reliability": 10,
-                            "importance": 10,
+                            "reliability": CRITERIA_DEFAULT_WEIGHT,
+                            "importance": CRITERIA_DEFAULT_WEIGHT,
                             "ignored_criteria": 0,
                         },
                     )
@@ -55,8 +59,11 @@ logger = logging.getLogger(__name__)
                 description="Filter by one or more metadata.",
                 examples=[
                     OpenApiExample(
+                        name="No metadata filter",
+                    ),
+                    OpenApiExample(
                         name="Videos - some examples",
-                        value={"language": "fr,pt", "uploader": "kurzgesagtES"},
+                        value={"language": ["en", "pt"], "uploader": "Kurzgesagt – In a Nutshell"},
                     ),
                     OpenApiExample(
                         name="Videos - videos of 8 minutes or less (480 sec)",
@@ -82,11 +89,14 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
     It doesn't define any serializer, queryset nor permission.
     """
 
-    def _metadata_from_filter(self, filtr: str):
+    search_score_coef = 2
+    _weights_sum = None
+
+    def _metadata_from_filter(self, metadata_filter: str):
         """
         _metadata_from_filter("metadata[language]") -> "language"
         """
-        return filtr.split("[")[1][:-1]
+        return metadata_filter.split("[")[1][:-1]
 
     def filter_by_parameters(self, request, queryset, poll: Poll):
         """
@@ -97,10 +107,6 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         filter_serializer = RecommendationsFilterSerializer(data=request.query_params)
         filter_serializer.is_valid(raise_exception=True)
         filters = filter_serializer.validated_data
-
-        search = filters["search"]
-        if search:
-            queryset = poll.entity_cls.filter_search(queryset, search)
 
         date_lte = filters["date_lte"]
         if date_lte:
@@ -119,6 +125,11 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         if metadata_filters:
             queryset = poll.entity_cls.filter_metadata(queryset, metadata_filters)
 
+        search = filters["search"]
+        if search:
+            languages = request.query_params.getlist("metadata[language]")
+            queryset = poll.entity_cls.filter_search(queryset, search, languages)
+
         return queryset, filters
 
     def filter_unsafe(self, queryset, filters):
@@ -136,6 +147,41 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                 tournesol_score__gt=0,
             )
 
+    def sort_results(self, queryset, filters):
+        """
+        Sort the results
+
+        For full-text searches:
+        Calculate a "search score" based on the criteria scores and
+        the search relevance calculated previously by Postgres.
+        There are many possible ways to calculate it, some concerns are:
+        - Prefer showing high-rated content
+        - A bad but relevant content should have a higher search score
+            than a great but totally irrelevant content
+        - The search score should always be increasing with the relevance and total score
+
+        This lead to the choice of a model of the type:
+            search_score = relevance *
+                (relevance + search_score_coef * normalized_total_score)
+            where both relevance and normalized_total_score belong to [0, 1].
+
+        With "search_score_coef" an arbitrary, positive value.
+            If set to 0, total_score is ignored.
+            Set it to a higher value to take more into account the total score.
+        """
+        if filters["search"] and self.poll_from_url.algorithm == ALGORITHM_MEHESTAN:
+            max_absolute_score = MEHESTAN_MAX_SCALED_SCORE * self._weights_sum
+            normalized_total_score = (
+                (F("total_score") + max_absolute_score) / (2 * max_absolute_score)
+            )
+            queryset = queryset.alias(
+                search_score=F("relevance")
+                * (F("relevance") + self.search_score_coef * normalized_total_score)
+            )
+            return queryset.order_by("-search_score", "-pk")
+        else:
+            return queryset.order_by("-total_score", "-pk")
+
     def _build_criteria_weight_condition(
         self, request, poll: Poll, when="criteria_scores__criteria"
     ):
@@ -145,26 +191,35 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         any_weight_in_request = False
         criteria_cases = []
+        weights_sum = 0.0
+
         for crit in poll.criterias_list:
-            raw_weight = request.query_params.get(f"weights[{crit}]")
-            if raw_weight is not None:
+            weight = self._get_raw_weight(request, crit)
+            if weight != CRITERIA_DEFAULT_WEIGHT:
                 any_weight_in_request = True
-                try:
-                    weight = int(raw_weight)
-                except ValueError as value_error:
-                    raise serializers.ValidationError(
-                        f"Invalid weight value for criteria '{crit}'"
-                    ) from value_error
-            else:
-                weight = 10
             criteria_cases.append(When(**{when: crit}, then=weight))
+            weights_sum += weight
 
         if not any_weight_in_request and poll.algorithm == ALGORITHM_MEHESTAN:
             criteria_cases = [
                 When(**{when: poll.main_criteria}, then=1)
             ]
+            weights_sum = 1.0
 
+        self._weights_sum = weights_sum
         return Case(*criteria_cases, default=0)
+
+    def _get_raw_weight(self, request, criteria):
+        """Get the weight parameters from the URL"""
+        raw_weight = request.query_params.get(f"weights[{criteria}]")
+        if raw_weight is None:
+            return CRITERIA_DEFAULT_WEIGHT
+        try:
+            return int(raw_weight)
+        except ValueError as value_error:
+            raise serializers.ValidationError(
+                f"Invalid weight value for criteria '{criteria}'"
+            ) from value_error
 
 
 class PollsView(RetrieveAPIView):
@@ -237,7 +292,8 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_and_prefetch_scores(queryset, self.request, poll)
         queryset = self.filter_unsafe(queryset, filters)
-        return queryset.order_by("-total_score", "-pk")
+        queryset = self.sort_results(queryset, filters)
+        return queryset
 
 
 class PollsEntityView(PollScopedViewMixin, RetrieveAPIView):

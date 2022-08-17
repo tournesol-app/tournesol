@@ -70,7 +70,8 @@ class PrivateContributorRecommendationsView(ContributorRecommendationsBaseView):
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
         queryset = self.filter_unsafe(queryset, filters)
-        return queryset.order_by("-total_score", "-pk")
+        queryset = self.sort_results(queryset, filters)
+        return queryset
 
 
 class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
@@ -94,4 +95,5 @@ class PublicContributorRecommendationsView(ContributorRecommendationsBaseView):
         queryset, filters = self.filter_by_parameters(self.request, queryset, poll)
         queryset = self.annotate_with_total_score(queryset, self.request, poll, user)
         queryset = self.filter_unsafe(queryset, filters)
-        return queryset.order_by("-total_score", "-pk")
+        queryset = self.sort_results(queryset, filters)
+        return queryset

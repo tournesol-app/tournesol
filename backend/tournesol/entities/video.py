@@ -1,7 +1,8 @@
 from datetime import timedelta
 
 from django.conf import settings
-from django.db.models import Q
+from django.contrib.postgres.search import SearchVector
+from django.db.models.fields.json import KeyTextTransform
 from django.utils import timezone
 
 from tournesol.serializers.metadata import VideoMetadata
@@ -28,18 +29,6 @@ class VideoEntity(EntityType):
     @classmethod
     def filter_date_gte(cls, qs, dt):
         return qs.filter(metadata__publication_date__gte=dt.date().isoformat())
-
-    @classmethod
-    def filter_search(cls, qs, query):
-        from tournesol.models import Entity
-
-        return qs.filter(
-            pk__in=Entity.objects.filter(
-                Q(metadata__name__icontains=query)
-                | Q(metadata__description__icontains=query)
-                | Q(metadata__tags__icontains=query)
-            )
-        )
 
     @classmethod
     def get_uid_regex(cls, namespace: str) -> str:
@@ -73,3 +62,28 @@ class VideoEntity(EntityType):
             timezone.now() - self.instance.last_metadata_request_at
             >= timedelta(seconds=settings.VIDEO_METADATA_EXPIRE_SECONDS)
         )
+
+    @classmethod
+    def update_search_vector(cls, entity) -> None:
+        from tournesol.utils.video_language import language_to_postgres_config
+
+        language_config = language_to_postgres_config(entity.metadata["language"])
+
+        entity.search_config_name = language_config
+        entity.search_vector = (
+            SearchVector("uid", weight="A", config=language_config)
+            + SearchVector(
+                KeyTextTransform("name", "metadata"), weight="A", config=language_config
+            )
+            + SearchVector(
+                KeyTextTransform("uploader", "metadata"), weight="A", config=language_config
+            )
+            + SearchVector(
+                KeyTextTransform("tags", "metadata"), weight="A", config=language_config
+            )
+            + SearchVector(
+                KeyTextTransform("description", "metadata"), weight="C", config=language_config
+            )
+        )
+
+        entity.save(update_fields=["search_config_name", "search_vector"])

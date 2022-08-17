@@ -1,7 +1,8 @@
 from urllib.parse import quote
 
 import requests
-from django.db.models import Q
+from django.contrib.postgres.search import SearchVector
+from django.db.models.fields.json import KeyTextTransform
 
 from tournesol.serializers.metadata import CandidateMetadata
 
@@ -16,14 +17,6 @@ WIKIDATA_API_BASE_URL = "https://www.wikidata.org/w/api.php"
 class CandidateEntity(EntityType):
     name = TYPE_CANDIDATE
     metadata_serializer_class = CandidateMetadata
-
-    @classmethod
-    def filter_search(cls, qs, query):
-        from tournesol.models import Entity
-
-        return qs.filter(
-            pk__in=Entity.objects.filter(Q(metadata__name__icontains=query))
-        )
 
     @classmethod
     def get_uid_regex(cls, namespace: str) -> str:
@@ -83,3 +76,32 @@ class CandidateEntity(EntityType):
             metadata["twitter_username"] = get_property_value("P2002")
 
         self.instance.metadata = metadata
+
+    @classmethod
+    def update_search_vector(cls, entity) -> None:
+
+        if entity.type == TYPE_CANDIDATE:
+            french_config = "customized_french"
+
+            entity.search_config_name = french_config
+            entity.search_vector = (
+                SearchVector("uid", weight="A", config=french_config)
+                + SearchVector(
+                    KeyTextTransform("name", "metadata"), weight="A", config=french_config
+                )
+                + SearchVector(
+                    KeyTextTransform("frwiki_title", "metadata"), weight="B", config=french_config
+                )
+                + SearchVector(
+                    KeyTextTransform("youtube_channel_id", "metadata"),
+                    weight="B",
+                    config=french_config,
+                )
+                + SearchVector(
+                    KeyTextTransform("twitter_username", "metadata"),
+                    weight="B",
+                    config=french_config,
+                )
+            )
+
+            entity.save(update_fields=["search_config_name", "search_vector"])

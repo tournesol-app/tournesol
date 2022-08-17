@@ -9,9 +9,12 @@ from typing import List
 
 import numpy as np
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Prefetch, Q
+from django.db.models.expressions import RawSQL
 from django.utils import timezone
 from django.utils.html import format_html
 from tqdm.auto import tqdm
@@ -24,6 +27,12 @@ from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.models.rate_later import RateLater
 from tournesol.serializers.metadata import VideoMetadata
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.video_language import (
+    DEFAULT_SEARCH_CONFIG,
+    POSTGRES_SEARCH_CONFIGS,
+    SEARCH_CONFIG_CHOICES,
+    language_to_postgres_config,
+)
 
 LANGUAGES = settings.LANGUAGES
 
@@ -41,6 +50,43 @@ class EntityQueryset(models.QuerySet):
             )
         )
 
+    def filter_with_text_query(self, query: str, languages=None):
+        """
+        This custom query enables to use the index on 'search_vector' independently of
+        the language of the user query.
+
+        The language used to build the 'search_vector' of each entity is stored in a separate
+        column 'search_config_name'. However, when calling
+        `vector @@ query(search_config_name, text)` Postgres query planner is not smart enough
+        to take advantage of this index, although the number of distinct languages is small
+        compared to the number of entities. In order to loop over the possible languages and use
+        the search index to fetch matching entities without an expensive seqscan, we need to
+        explicitly join on 'pg_ts_config' which contains the list of available language
+        configurations.
+        """
+        if languages:
+            search_configs = [language_to_postgres_config(lang) for lang in languages]
+        else:
+            search_configs = POSTGRES_SEARCH_CONFIGS
+
+        return self.alias(
+            _matching_query=RawSQL(
+                """
+                tournesol_entity.id IN (
+                    SELECT e.id
+                    FROM tournesol_entity e
+                    INNER JOIN pg_ts_config c
+                        ON c.oid = e.search_config_name::regconfig AND c.cfgname = ANY(%s)
+                    WHERE e."search_vector" @@ (plainto_tsquery(oid, %s))
+                )
+                """,
+                # `= ANY(my_list)` is preferred to `IN my_tuple` in this query, as a workaround
+                # for a bug in django-debug-toolbar:
+                # https://github.com/jazzband/django-debug-toolbar/issues/1482
+                (search_configs, query),
+            )
+        ).filter(_matching_query=True)
+
 
 class Entity(models.Model):
     """
@@ -54,6 +100,9 @@ class Entity(models.Model):
 
     class Meta:
         verbose_name_plural = "entities"
+        indexes = (
+            GinIndex(name="search_index", fields=['search_vector']),
+        )
 
     objects = EntityQueryset.as_manager()
 
@@ -109,6 +158,37 @@ class Entity(models.Model):
         default=0,
         help_text="Total number of certified contributors who rated the video",
     )
+
+    search_config_name = models.CharField(
+        blank=True,
+        default=DEFAULT_SEARCH_CONFIG,
+        max_length=32,
+        choices=SEARCH_CONFIG_CHOICES,
+        help_text="PostgreSQL text search config to use, based on the entity's language",
+    )
+
+    search_vector = SearchVectorField(
+        editable=False,
+        null=True,
+        help_text="Indexed words used for the full-text search, that are filtered,"
+        " stemmed and weighted according to the language's search config.",
+    )
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        """
+        Always refresh the metadata text search vector.
+
+        This would be hard to do with PostgreSQL triggers because
+        there are different weights and configs, and the
+        format of the metadata can vary with the entity type.
+        """
+        super().save(force_insert, force_update, *args, **kwargs)
+
+        # If "metadata" has changed, the indexed search_vector needs to be updated.
+        # This condition also avoids infinite loop when calling .save()
+        if ("update_fields" not in kwargs) or ("metadata" in kwargs["update_fields"]):
+            if self.type in ENTITY_TYPE_NAME_TO_CLASS:
+                self.entity_cls.update_search_vector(self)
 
     def update_n_ratings(self):
         from .comparisons import Comparison
@@ -294,12 +374,14 @@ class Entity(models.Model):
                 f"Unexpected errors in video metadata format: {serializer.errors}"
             )
 
-        return cls.objects.create(
+        entity = cls.objects.create(
             type=TYPE_VIDEO,
             uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
             metadata=metadata,
             metadata_timestamp=timezone.now(),
         )
+
+        return entity
 
     @classmethod
     def get_from_video_id(cls, video_id):
