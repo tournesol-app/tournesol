@@ -24,6 +24,7 @@
     name: "{{django_database_user}}"
     password: "{{django_database_password}}"
     db: "{{django_database_name}}"
+    priv: "CREATE" # Used to create pg extensions in Django migrations
   become: yes
   become_user: postgres
 
