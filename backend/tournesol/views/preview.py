@@ -86,7 +86,7 @@ class DynamicWebsitePreviewEntity(APIView):
             logger.error(f"Error Caught: {e}")
             return DynamicWebsitePreviewDefault.default_preview()
         except AttributeError as e:
-            # Probably: The entity is not a viedo and does not have a field `video_id`
+            # Probably: The entity is not a video and does not have a field `video_id`
             logger.error(f"Error Caught: {e}")
             return DynamicWebsitePreviewDefault.default_preview()
         except ConnectionError as e:
