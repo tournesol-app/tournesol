@@ -12,6 +12,7 @@ from rest_framework import exceptions, generics, mixins
 
 from ml.mehestan.run import update_user_scores
 from tournesol.models import Comparison
+from tournesol.models.entity_poll_rating import EntityPollRating
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -116,13 +117,24 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
                 )
             )
         comparison: Comparison = serializer.save()
+
+        # TODO To be removed, replaced by update_n_poll_ratings
         comparison.entity_1.update_n_ratings()
+
+        for rating in EntityPollRating.objects.filter(
+                Q(entity=comparison.entity_1) | Q(entity=comparison.entity_2)).filter(
+                    Q(poll=poll)):
+            rating.update_n_poll_ratings(poll)
+            rating.update_n_poll_ratings(poll)
+
         comparison.entity_1.inner.refresh_metadata()
         comparison.entity_1.auto_remove_from_rate_later(
             poll=poll, user=self.request.user
         )
 
+        # TODO To be removed, replaced by update_n_poll_ratings
         comparison.entity_2.update_n_ratings()
+
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(
             poll=poll, user=self.request.user
