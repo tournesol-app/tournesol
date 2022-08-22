@@ -61,7 +61,7 @@ export const addRateLater = async (video_id) => {
   const ratingStatusReponse = await fetchTournesolApi(
     'users/me/rate_later/videos/',
     'POST',
-    { entity: { uid: "yt:" + video_id } }
+    { entity: { uid: 'yt:' + video_id } }
   );
   if (ratingStatusReponse && ratingStatusReponse.ok) {
     return {
