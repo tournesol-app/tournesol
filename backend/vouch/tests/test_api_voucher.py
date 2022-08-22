@@ -110,7 +110,7 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
-        self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself"]}')
+        self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself."]}')
 
 
 class VoucherDestroyAPIViewTestCase(TestCase):
@@ -127,9 +127,9 @@ class VoucherDestroyAPIViewTestCase(TestCase):
 
         self.voucher = Voucher.objects.create(by=self.user1, to=self.user2, value=1)
 
-    def test_anonymous_cant_delete(self):
+    def test_anon_401_delete(self):
         """
-        An anonymous user can't delete a voucher.
+        An anonymous user cannot delete a voucher.
         """
         initial_voucher_count = Voucher.objects.all().count()
         response = self.client.delete(
@@ -139,14 +139,12 @@ class VoucherDestroyAPIViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
 
-    def test_user_can_delete(self):
+    def test_auth_204_delete(self):
         """
-        A user can delete their voucher.
+        An authenticated user can delete any of its given vouchers.
         """
-        client = APIClient()
-
-        client.force_authenticate(user=self.user1)
-        response = client.delete(
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.delete(
             f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
         )
 
@@ -154,14 +152,13 @@ class VoucherDestroyAPIViewTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             Voucher.objects.get(pk=self.voucher.pk)
 
-    def test_user_cant_delete_other_users_vouchers(self):
+    def test_auth_404_delete_someone_else_voucher(self):
         """
-        A user can't delete another user's voucher.
+        An authenticated user cannot delete a voucher given by another user,
+        even if he is the receiver.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user2)
-
-        response = client.delete(
+        self.client.force_authenticate(user=self.user2)
+        response = self.client.delete(
             f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
         )
 
