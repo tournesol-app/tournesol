@@ -22,7 +22,7 @@ class VoucherCreateAPIView(generics.CreateAPIView):
         description="Delete a voucher given by the logged in user.",
     ),
 )
-class VoucherDestroyView(generics.DestroyAPIView):
+class VoucherDestroyAPIView(generics.DestroyAPIView):
     def get_queryset(self):
         return Voucher.objects.filter(by=self.request.user)
 
@@ -32,7 +32,7 @@ class VoucherDestroyView(generics.DestroyAPIView):
         description="List all the vouchers the logged in user has given.",
     ),
 )
-class VoucherGivenListView(generics.ListAPIView):
+class VoucherGivenListAPIView(generics.ListAPIView):
     serializer_class = GivenVoucherSerializer
     pagination_class = None
 
@@ -47,7 +47,7 @@ class VoucherGivenListView(generics.ListAPIView):
         description="List all the vouchers the logged in user has received.",
     ),
 )
-class VoucherReceivedListView(generics.ListAPIView):
+class VoucherReceivedListAPIView(generics.ListAPIView):
     serializer_class = ReceivedVoucherSerializer
     pagination_class = None
 

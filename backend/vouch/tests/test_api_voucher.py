@@ -104,12 +104,14 @@ class VoucherCreateAPIViewTestCase(TestCase):
         self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself"]}')
 
 
-class VoucherDeleteApi(TestCase):
+class VoucherDestroyAPIViewTestCase(TestCase):
     """
-    TestCase of the voucher delete API.
+    TestCase of the `VoucherDestroyAPIView` API.
     """
 
     def setUp(self):
+        self.client = APIClient()
+
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
 
@@ -119,10 +121,8 @@ class VoucherDeleteApi(TestCase):
         """
         An anonymous user can't delete a voucher.
         """
-        client = APIClient()
-
         initial_voucher_count = Voucher.objects.all().count()
-        response = client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+        response = self.client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)

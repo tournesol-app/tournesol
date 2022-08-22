@@ -46,9 +46,9 @@ from .views.user import CurrentUserView
 from .views.video import VideoViewSet
 from .views.vouchers import (
     VoucherCreateAPIView,
-    VoucherDestroyView,
-    VoucherGivenListView,
-    VoucherReceivedListView,
+    VoucherDestroyAPIView,
+    VoucherGivenListAPIView,
+    VoucherReceivedListAPIView,
 )
 
 router = routers.DefaultRouter()
@@ -200,12 +200,12 @@ urlpatterns = [
     # Vouchers API
     path(
         "vouchers/given/",
-        VoucherGivenListView.as_view(),
+        VoucherGivenListAPIView.as_view(),
         name="vouchers_given",
     ),
     path(
         "vouchers/received/",
-        VoucherReceivedListView.as_view(),
+        VoucherReceivedListAPIView.as_view(),
         name="vouchers_received",
     ),
     path(
@@ -215,7 +215,7 @@ urlpatterns = [
     ),
     path(
         "vouchers/<str:pk>/",
-        VoucherDestroyView.as_view(),
+        VoucherDestroyAPIView.as_view(),
         name="vouchers",
     ),
 ]
