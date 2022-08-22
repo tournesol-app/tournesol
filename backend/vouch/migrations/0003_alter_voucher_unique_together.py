@@ -8,12 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('vouch', '0002_trust_value_isnow_value'),
+        ("vouch", "0002_trust_value_isnow_value"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='voucher',
-            unique_together={('by', 'to')},
+            name="voucher",
+            unique_together={("by", "to")},
         ),
     ]

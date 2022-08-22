@@ -4,8 +4,8 @@ API endpoint to manipulate vouchers
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 
-from vouch.serializers import GivenVoucherSerializer, ReceivedVoucherSerializer
 from vouch.models import Voucher
+from vouch.serializers import GivenVoucherSerializer, ReceivedVoucherSerializer
 
 
 @extend_schema_view(

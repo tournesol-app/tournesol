@@ -31,7 +31,7 @@ class GivenVoucherSerializer(ModelSerializer):
 
     def validate(self, attrs):
         if attrs["by"] == attrs["to"]:
-            raise serializers.ValidationError({"to": "You cannot vouch for yourself"})
+            raise serializers.ValidationError({"to": "You cannot vouch for yourself."})
         return attrs
 
 
