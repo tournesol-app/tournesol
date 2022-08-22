@@ -1,3 +1,6 @@
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
@@ -24,13 +27,15 @@ class GivenVoucherSerializer(ModelSerializer):
         try:
             user = User.objects.get(username=value)
         except User.DoesNotExist as error:
-            raise ValidationError("The target user doesn't exist.") from error
+            raise ValidationError(_("The target user doesn't exist.")) from error
 
         return user
 
     def validate(self, attrs):
         if attrs["by"] == attrs["to"]:
-            raise serializers.ValidationError({"to": "You cannot vouch for yourself."})
+            raise serializers.ValidationError(
+                {"to": _("You cannot vouch for yourself.")}
+            )
         return attrs
 
 
