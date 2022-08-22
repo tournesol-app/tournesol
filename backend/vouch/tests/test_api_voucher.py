@@ -234,12 +234,14 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         )
 
 
-class VoucherListReceivedApi(TestCase):
+class VoucherReceivedListAPIViewTestCase(TestCase):
     """
-    TestCase of the voucher API to list received vouchers.
+    TestCase of the `VoucherReceivedListAPIView` API.
     """
 
     def setUp(self):
+        self.client = APIClient()
+
         self.voucher_base_url = "/users/me/vouchers/received/"
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
@@ -258,24 +260,20 @@ class VoucherListReceivedApi(TestCase):
             value=3,
         )
 
-    def test_anonymous_cannot_list(self):
+    def test_anon_401_list(self):
         """
-        An anonymous user can't list received vouchers.
+        An anonymous user cannot list its received vouchers.
         """
-        client = APIClient()
-
-        response = client.get(self.voucher_base_url, format="json")
-
+        response = self.client.get(self.voucher_base_url, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_user_can_list(self):
+    def test_auth_200_list(self):
         """
-        A user can list their received vouchers.
+        An authenticated user can list its received vouchers.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user3)
+        self.client.force_authenticate(user=self.user3)
+        response = self.client.get(self.voucher_base_url, format="json")
 
-        response = client.get(self.voucher_base_url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.data
