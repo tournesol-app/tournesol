@@ -14,6 +14,7 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.voucher_base_url = "/users/me/vouchers/"
 
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
@@ -29,7 +30,9 @@ class VoucherCreateAPIViewTestCase(TestCase):
         An anonymous user cannot create a voucher.
         """
         initial_voucher_count = Voucher.objects.all().count()
-        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post(
+            self.voucher_base_url, self.valid_create_params, format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
@@ -41,7 +44,9 @@ class VoucherCreateAPIViewTestCase(TestCase):
         self.client.force_authenticate(user=self.user1)
 
         initial_voucher_count = Voucher.objects.all().count()
-        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post(
+            self.voucher_base_url, self.valid_create_params, format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count + 1)
@@ -69,7 +74,7 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
         initial_voucher_count = Voucher.objects.all().count()
         params = self.valid_create_params | {"to": "inexistant"}
-        response = self.client.post("/vouchers/", params, format="json")
+        response = self.client.post(self.voucher_base_url, params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
@@ -80,11 +85,15 @@ class VoucherCreateAPIViewTestCase(TestCase):
         """
         self.client.force_authenticate(user=self.user1)
 
-        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post(
+            self.voucher_base_url, self.valid_create_params, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         initial_voucher_count = Voucher.objects.all().count()
-        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post(
+            self.voucher_base_url, self.valid_create_params, format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
@@ -97,7 +106,7 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
         initial_voucher_count = Voucher.objects.all().count()
         params = self.valid_create_params | {"to": "user1"}
-        response = self.client.post("/vouchers/", params, format="json")
+        response = self.client.post(self.voucher_base_url, params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
@@ -111,6 +120,7 @@ class VoucherDestroyAPIViewTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.voucher_base_url = "/users/me/vouchers/"
 
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
@@ -122,7 +132,9 @@ class VoucherDestroyAPIViewTestCase(TestCase):
         An anonymous user can't delete a voucher.
         """
         initial_voucher_count = Voucher.objects.all().count()
-        response = self.client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+        response = self.client.delete(
+            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
@@ -134,7 +146,9 @@ class VoucherDestroyAPIViewTestCase(TestCase):
         client = APIClient()
 
         client.force_authenticate(user=self.user1)
-        response = client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+        response = client.delete(
+            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(ObjectDoesNotExist):
@@ -147,7 +161,9 @@ class VoucherDestroyAPIViewTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=self.user2)
 
-        response = client.delete("/vouchers/{}/".format(self.voucher.pk), format="json")
+        response = client.delete(
+            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         Voucher.objects.get(pk=self.voucher.pk)
@@ -159,15 +175,12 @@ class VoucherListGivenApi(TestCase):
     """
 
     def setUp(self):
+        self.voucher_base_url = "/users/me/vouchers/given/"
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
         self.user3 = User.objects.create(username="user3", email="user3@example.com")
 
-        self.voucher1 = Voucher.objects.create(
-            by=self.user1,
-            to=self.user2,
-            value=1
-        )
+        self.voucher1 = Voucher.objects.create(by=self.user1, to=self.user2, value=1)
         self.voucher2 = Voucher.objects.create(
             by=self.user1,
             to=self.user3,
@@ -186,7 +199,7 @@ class VoucherListGivenApi(TestCase):
         """
         client = APIClient()
 
-        response = client.get("/vouchers/given/", format="json")
+        response = client.get(self.voucher_base_url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -197,7 +210,7 @@ class VoucherListGivenApi(TestCase):
         client = APIClient()
         client.force_authenticate(user=self.user1)
 
-        response = client.get("/vouchers/given/", format="json")
+        response = client.get(self.voucher_base_url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.data
@@ -232,15 +245,12 @@ class VoucherListReceivedApi(TestCase):
     """
 
     def setUp(self):
+        self.voucher_base_url = "/users/me/vouchers/received/"
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
         self.user3 = User.objects.create(username="user3", email="user3@example.com")
 
-        self.voucher1 = Voucher.objects.create(
-            by=self.user1,
-            to=self.user2,
-            value=1
-        )
+        self.voucher1 = Voucher.objects.create(by=self.user1, to=self.user2, value=1)
         self.voucher2 = Voucher.objects.create(
             by=self.user1,
             to=self.user3,
@@ -259,7 +269,7 @@ class VoucherListReceivedApi(TestCase):
         """
         client = APIClient()
 
-        response = client.get("/vouchers/received/", format="json")
+        response = client.get(self.voucher_base_url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -270,7 +280,7 @@ class VoucherListReceivedApi(TestCase):
         client = APIClient()
         client.force_authenticate(user=self.user3)
 
-        response = client.get("/vouchers/received/", format="json")
+        response = client.get(self.voucher_base_url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.data

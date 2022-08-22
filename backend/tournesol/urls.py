@@ -44,12 +44,6 @@ from .views.stats import StatisticsView
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
-from .views.vouchers import (
-    VoucherCreateAPIView,
-    VoucherDestroyAPIView,
-    VoucherGivenListAPIView,
-    VoucherReceivedListAPIView,
-)
 
 router = routers.DefaultRouter()
 router.register(r"video", VideoViewSet, basename="video")
@@ -60,6 +54,8 @@ urlpatterns = [
     path("", include(router.urls)),
     # User API
     path("users/me/", CurrentUserView.as_view(), name="users_me"),
+    # Voucher API
+    path("users/me/", include('vouch.urls')),
     # Data exports
     path(
         "users/me/exports/comparisons/",
@@ -196,26 +192,5 @@ urlpatterns = [
         "polls/<str:name>/entities/<str:uid>/criteria_scores_distributions",
         PollsCriteriaScoreDistributionView.as_view(),
         name="polls_score_distribution",
-    ),
-    # Vouchers API
-    path(
-        "vouchers/given/",
-        VoucherGivenListAPIView.as_view(),
-        name="vouchers_given",
-    ),
-    path(
-        "vouchers/received/",
-        VoucherReceivedListAPIView.as_view(),
-        name="vouchers_received",
-    ),
-    path(
-        "vouchers/",
-        VoucherCreateAPIView.as_view(),
-        name="vouchers",
-    ),
-    path(
-        "vouchers/<str:pk>/",
-        VoucherDestroyAPIView.as_view(),
-        name="vouchers",
     ),
 ]
