@@ -14,7 +14,6 @@ class GivenVoucherSerializer(ModelSerializer):
         model = Voucher
 
         fields = [
-            "id",
             "by",
             "to",
             "is_public",
@@ -42,7 +41,6 @@ class ReceivedVoucherSerializer(ModelSerializer):
         model = Voucher
 
         fields = [
-            "id",
             "by",
             "is_public",
             "value",

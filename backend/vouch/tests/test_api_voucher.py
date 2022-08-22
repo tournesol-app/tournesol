@@ -58,7 +58,6 @@ class VoucherCreateAPIViewTestCase(TestCase):
         self.assertDictEqual(
             response.data,
             {
-                "id": new_voucher.id,
                 "to": "user2",
                 "is_public": False,
                 "value": 1,
@@ -214,7 +213,6 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         self.assertDictEqual(
             results[0],
             {
-                "id": self.voucher1.id,
                 "to": "user2",
                 "is_public": False,
                 "value": 1,
@@ -225,7 +223,6 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         self.assertDictEqual(
             results[1],
             {
-                "id": self.voucher2.id,
                 "to": "user3",
                 "is_public": True,
                 "value": 2,
@@ -282,7 +279,6 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
         self.assertDictEqual(
             results[0],
             {
-                "id": self.voucher2.id,
                 "by": "user1",
                 "is_public": True,
                 "value": 2,
@@ -293,7 +289,6 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
         self.assertDictEqual(
             results[1],
             {
-                "id": self.voucher3.id,
                 "by": "user2",
                 "is_public": False,
                 "value": 3,
