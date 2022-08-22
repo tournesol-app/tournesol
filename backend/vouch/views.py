@@ -1,6 +1,7 @@
 """
-API endpoint to manipulate vouchers
+API of the `vouch` app.
 """
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 
@@ -10,7 +11,7 @@ from vouch.serializers import GivenVoucherSerializer, ReceivedVoucherSerializer
 
 @extend_schema_view(
     post=extend_schema(
-        description="Add a new voucher to a given username by the logged in user.",
+        description="The logged-in user give a voucher to the target user.",
     ),
 )
 class VoucherCreateAPIView(generics.CreateAPIView):
@@ -19,17 +20,21 @@ class VoucherCreateAPIView(generics.CreateAPIView):
 
 @extend_schema_view(
     delete=extend_schema(
-        description="Delete a voucher given by the logged in user.",
+        description="Delete a voucher given to a target user by the logged-in user.",
     ),
 )
 class VoucherDestroyAPIView(generics.DestroyAPIView):
-    def get_queryset(self):
-        return Voucher.objects.filter(by=self.request.user)
+    def get_object(self):
+        return get_object_or_404(
+            Voucher,
+            by=self.request.user,
+            pk=self.kwargs["pk"]
+        )
 
 
 @extend_schema_view(
     get=extend_schema(
-        description="List all the vouchers the logged in user has given.",
+        description="List all the vouchers given by the the logged-in user.",
     ),
 )
 class VoucherGivenListAPIView(generics.ListAPIView):
@@ -44,7 +49,7 @@ class VoucherGivenListAPIView(generics.ListAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description="List all the vouchers the logged in user has received.",
+        description="List all the vouchers received by the logged-in user",
     ),
 )
 class VoucherReceivedListAPIView(generics.ListAPIView):
