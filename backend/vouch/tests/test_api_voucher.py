@@ -144,12 +144,23 @@ class VoucherDestroyAPIViewTestCase(TestCase):
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.delete(
-            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+            f"{self.voucher_base_url}{self.user2.username}/", format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(ObjectDoesNotExist):
             Voucher.objects.get(pk=self.voucher.pk)
+
+    def test_auth_404_delete_invalid_user(self):
+        """
+        An authenticated user cannot delete a voucher given by a non-existing
+        user.
+        """
+        self.client.force_authenticate(user=self.user2)
+        response = self.client.delete(f"{self.voucher_base_url}unknown/", format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        Voucher.objects.get(pk=self.voucher.pk)
 
     def test_auth_404_delete_someone_else_voucher(self):
         """

@@ -29,7 +29,7 @@ urlpatterns = [
         name="usersme_vouchers_create",
     ),
     path(
-        "vouchers/<str:pk>/",
+        "vouchers/<str:username>/",
         VoucherDestroyAPIView.as_view(),
         name="usersme_vouchers_destroy",
     ),

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics
 
+from core.models import User
 from vouch.models import Voucher
 from vouch.serializers import GivenVoucherSerializer, ReceivedVoucherSerializer
 
@@ -25,11 +26,8 @@ class VoucherCreateAPIView(generics.CreateAPIView):
 )
 class VoucherDestroyAPIView(generics.DestroyAPIView):
     def get_object(self):
-        return get_object_or_404(
-            Voucher,
-            by=self.request.user,
-            pk=self.kwargs["pk"]
-        )
+        target = get_object_or_404(User, username=self.kwargs["username"])
+        return get_object_or_404(Voucher, by=self.request.user, to=target)
 
 
 @extend_schema_view(
