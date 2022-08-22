@@ -7,12 +7,14 @@ from core.models import User
 from vouch.models import Voucher
 
 
-class VoucherCreateApi(TestCase):
+class VoucherCreateAPIViewTestCase(TestCase):
     """
-    TestCase of the voucher creation API.
+    TestCase of the `VoucherCreateAPIView` API.
     """
 
     def setUp(self):
+        self.client = APIClient()
+
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
 
@@ -22,27 +24,24 @@ class VoucherCreateApi(TestCase):
             "value": "1",
         }
 
-    def test_anonymous_cant_create(self):
+    def test_anon_401_create(self):
         """
-        An anonymous user can't create a voucher.
+        An anonymous user cannot create a voucher.
         """
-        client = APIClient()
-
         initial_voucher_count = Voucher.objects.all().count()
-        response = client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
 
-    def test_create_voucher(self):
+    def test_auth_201_create(self):
         """
-        A user can create a voucher.
+        An authenticated user can create a voucher.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user1)
 
         initial_voucher_count = Voucher.objects.all().count()
-        response = client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count + 1)
@@ -62,48 +61,43 @@ class VoucherCreateApi(TestCase):
             response.data,
         )
 
-    def test_cannot_create_to_inexistant_user(self):
+    def test_auth_400_create_invalid_target(self):
         """
-        A user can't create a voucher to an inexistant user.
+        An authenticated user cannot give a voucher to a non-existing user.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user1)
 
         initial_voucher_count = Voucher.objects.all().count()
         params = self.valid_create_params | {"to": "inexistant"}
-        response = client.post("/vouchers/", params, format="json")
+        response = self.client.post("/vouchers/", params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
 
-    def test_cannot_create_twice_to_the_same_user(self):
+    def test_auth_400_create_twice_same_target(self):
         """
-        The same voucher cannot be created twice with the same `to`.
+        An authenticated user cannot give two vouchers to the same user.
         """
-        client = APIClient()
-        client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user1)
 
-        response = client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         initial_voucher_count = Voucher.objects.all().count()
-        response = client.post("/vouchers/", self.valid_create_params, format="json")
+        response = self.client.post("/vouchers/", self.valid_create_params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
 
-    def test_cannot_create_voucher_to_oneself(self):
+    def test_auth_400_create_by_and_to_are_similar(self):
         """
-        A user cannot vouch for themself.
+        An authenticated user cannot give a voucher to him/herself.
         """
-        user = self.user1
-
-        client = APIClient()
-        client.force_authenticate(user=user)
+        self.client.force_authenticate(user=self.user1)
 
         initial_voucher_count = Voucher.objects.all().count()
         params = self.valid_create_params | {"to": "user1"}
-        response = client.post("/vouchers/", params, format="json")
+        response = self.client.post("/vouchers/", params, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)

@@ -45,7 +45,7 @@ from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
 from .views.video import VideoViewSet
 from .views.vouchers import (
-    VoucherCreateView,
+    VoucherCreateAPIView,
     VoucherDestroyView,
     VoucherGivenListView,
     VoucherReceivedListView,
@@ -210,7 +210,7 @@ urlpatterns = [
     ),
     path(
         "vouchers/",
-        VoucherCreateView.as_view(),
+        VoucherCreateAPIView.as_view(),
         name="vouchers",
     ),
     path(

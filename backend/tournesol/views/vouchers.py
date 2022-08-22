@@ -13,7 +13,7 @@ from vouch.models import Voucher
         description="Add a new voucher to a given username by the logged in user.",
     ),
 )
-class VoucherCreateView(generics.CreateAPIView):
+class VoucherCreateAPIView(generics.CreateAPIView):
     serializer_class = GivenVoucherSerializer
 
 

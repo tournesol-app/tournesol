@@ -118,9 +118,9 @@ class VoucherTestCase(TestCase):
         self.assertEqual(vouchers.count(), 0)
         self.assertEqual(exists, False)
 
-    def test_cannot_create_voucher_twice_with_the_same_people(self) -> None:
+    def test_user_cant_vouch_twice_for_the_same_target(self) -> None:
         """
-        Test that only one voucher can be created with the same `by` and `to`.
+        Only one voucher can be created for the couple `by` and `to`.
         """
         duplicate = Voucher(by=self.user_1, to=self.user_2, value=13)
         with self.assertRaises(ValidationError):
