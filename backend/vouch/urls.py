@@ -1,36 +1,35 @@
 """
-The vouch app routes.
+The `vouch` app routes.
 """
 
 from django.urls import path
 
 from vouch.views import (
     VoucherCreateAPIView,
-    VoucherDestroyAPIView,
+    VoucherGivenDestroyAPIView,
     VoucherGivenListAPIView,
     VoucherReceivedListAPIView,
 )
 
 urlpatterns = [
-    # Vouchers API
-    path(
-        "vouchers/given/",
-        VoucherGivenListAPIView.as_view(),
-        name="usersme_vouchers_given",
-    ),
-    path(
-        "vouchers/received/",
-        VoucherReceivedListAPIView.as_view(),
-        name="usersme_vouchers_received",
-    ),
     path(
         "vouchers/",
         VoucherCreateAPIView.as_view(),
         name="usersme_vouchers_create",
     ),
     path(
-        "vouchers/<str:username>/",
-        VoucherDestroyAPIView.as_view(),
-        name="usersme_vouchers_destroy",
+        "vouchers/given/",
+        VoucherGivenListAPIView.as_view(),
+        name="usersme_vouchers_given",
+    ),
+    path(
+        "vouchers/given/<str:username>/",
+        VoucherGivenDestroyAPIView.as_view(),
+        name="usersme_vouchers_destroy_given",
+    ),
+    path(
+        "vouchers/received/",
+        VoucherReceivedListAPIView.as_view(),
+        name="usersme_vouchers_received",
     ),
 ]

@@ -24,7 +24,7 @@ class VoucherCreateAPIView(generics.CreateAPIView):
         description="Delete a voucher given to a target user by the logged-in user.",
     ),
 )
-class VoucherDestroyAPIView(generics.DestroyAPIView):
+class VoucherGivenDestroyAPIView(generics.DestroyAPIView):
     def get_object(self):
         target = get_object_or_404(User, username=self.kwargs["username"])
         return get_object_or_404(Voucher, by=self.request.user, to=target)

@@ -112,14 +112,14 @@ class VoucherCreateAPIViewTestCase(TestCase):
         self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself."]}')
 
 
-class VoucherDestroyAPIViewTestCase(TestCase):
+class VoucherGivenDestroyAPIViewTestCase(TestCase):
     """
-    TestCase of the `VoucherDestroyAPIView` API.
+    TestCase of the `VoucherGivenDestroyAPIView` API.
     """
 
     def setUp(self):
         self.client = APIClient()
-        self.voucher_base_url = "/users/me/vouchers/"
+        self.voucher_base_url = "/users/me/vouchers/given/"
 
         self.user1 = User.objects.create(username="user1", email="user1@example.com")
         self.user2 = User.objects.create(username="user2", email="user2@example.com")
