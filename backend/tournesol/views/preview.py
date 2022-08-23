@@ -2,21 +2,20 @@ import logging
 from io import BytesIO
 
 import requests
+from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from rest_framework.views import APIView
 
-from django.conf import settings
-
-BASE_DIR = settings.BASE_DIR
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models.entity import Entity
 from tournesol.utils.cache import cache_page_no_i18n
 
 logger = logging.getLogger(__name__)
 
+BASE_DIR = settings.BASE_DIR
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 ENTITY_N_COMPARISONS_XY = (226, 26)
