@@ -8,6 +8,7 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from rest_framework.views import APIView
 
+from settings.settings import BASE_DIR
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models.entity import Entity
 from tournesol.utils.cache import cache_page_no_i18n
@@ -28,7 +29,9 @@ class DynamicWebsitePreviewDefault(APIView):
 
     @staticmethod
     def default_preview():
-        default_preview = open("tournesol/resources/tournesol_screenshot_og.png", "rb")
+        default_preview = open(
+            BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png", "rb"
+        )
         response = FileResponse(default_preview, content_type="image/png")
         return response
 
@@ -42,8 +45,12 @@ class DynamicWebsitePreviewEntity(APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid):
-        fnt = ImageFont.truetype("tournesol/resources/Poppins-Medium.ttf", 20)
-        fnt_title = ImageFont.truetype("tournesol/resources/Poppins-Medium.ttf", 14)
+        fnt = ImageFont.truetype(
+            BASE_DIR / "tournesol/resources/Poppins-Medium.ttf", 20
+        )
+        fnt_title = ImageFont.truetype(
+            BASE_DIR / "tournesol/resources/Poppins-Medium.ttf", 14
+        )
 
         try:
             entity = Entity.objects.get(uid=uid)
