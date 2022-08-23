@@ -38,6 +38,9 @@ class Voucher(models.Model):
         help_text="The vouch value given by the vouching user to receiving user.",
     )
 
+    class Meta:
+        unique_together = ["by", "to"]
+
     @staticmethod
     def get_given_by(user):
         vouchers = Voucher.objects.filter(by=user)
