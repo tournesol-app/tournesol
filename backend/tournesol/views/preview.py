@@ -18,12 +18,13 @@ logger = logging.getLogger(__name__)
 BASE_DIR = settings.BASE_DIR
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
-ENTITY_N_CONTRIBUTORS_YX = (60,100)
+ENTITY_N_CONTRIBUTORS_YX = (60, 100)
 ENTITY_TITLE_XY = (120, 190)
 TOURNESOL_SCORE_XY = (80, 30)
 
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
+
 
 def get_preview_font_config():
     fnt_score = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32)
@@ -69,31 +70,31 @@ def get_preview_image(entity, fnt_score, fnt_title, fnt_ratings) -> Image:
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        x,y = ENTITY_N_CONTRIBUTORS_YX
+        x, y = ENTITY_N_CONTRIBUTORS_YX
         tournesol_footer_draw.text(
-            (x,y),
+            (x, y),
             f"{entity.rating_n_ratings}",
             font=fnt_score,
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
-            (x,y+32),
+            (x, y + 32),
             "comparisons",
             font=fnt_ratings,
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
-            (x,y+60),
+            (x, y + 60),
             f"{entity.rating_n_contributors}",
             font=fnt_score,
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
-            (x,y+92),
-            f"contributors",
+            (x, y + 92),
+            "contributors",
             font=fnt_ratings,
             fill=COLOR_BROWN_FONT,
             anchor="mt",
@@ -132,7 +133,7 @@ class DynamicWebsitePreviewEntity(APIView):
         fnt_ratings = ImageFont.truetype(str(BASE_DIR / font_location), 11)
         return fnt, fnt_title, fnt_ratings
 
-    # @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
+    @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
         description="Website preview for entities page",
         responses={200: OpenApiTypes.BINARY},
@@ -152,9 +153,8 @@ class DynamicWebsitePreviewEntity(APIView):
             return DynamicWebsitePreviewDefault.default_preview()
 
         response = HttpResponse(content_type="image/png")
-        
-        preview_image = get_preview_image(entity, fnt_score, fnt_title, fnt_ratings)
 
+        preview_image = get_preview_image(entity, fnt_score, fnt_title, fnt_ratings)
 
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
@@ -177,7 +177,11 @@ class DynamicWebsitePreviewEntity(APIView):
             "RGBA"
         )
 
-        logo_image = Image.open(BASE_DIR / "tournesol/resources/Logo64.png").convert("RGBA").resize((48,48))
+        logo_image = (
+            Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
+            .convert("RGBA")
+            .resize((48, 48))
+        )
 
         # Merge the two images into one.
         preview_image.paste(youtube_thumbnail, box=(120, 0))
