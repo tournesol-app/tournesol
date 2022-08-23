@@ -64,7 +64,7 @@ def get_preview_footer(entity, fnt, fnt_title, fnt_ratings) -> Image:
             font=fnt_ratings,
             fill=(29, 26, 20, 255),
         )
-        return tournesol_footer
+    return tournesol_footer
 
 
 class DynamicWebsitePreviewDefault(APIView):
@@ -98,7 +98,7 @@ class DynamicWebsitePreviewEntity(APIView):
         fnt_ratings = ImageFont.truetype(str(BASE_DIR / font_location), 11)
         return fnt, fnt_title, fnt_ratings
 
-    @method_decorator(cache_page_no_i18n(3600 * 2))  # 2h cache
+    @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
         description="Website preview for entities page",
         responses={200: OpenApiTypes.BINARY},
@@ -119,6 +119,7 @@ class DynamicWebsitePreviewEntity(APIView):
 
         response = HttpResponse(content_type="image/png")
         tournesol_footer = get_preview_footer(entity, fnt, fnt_title, fnt_ratings)
+        print(tournesol_footer)
 
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
