@@ -18,51 +18,85 @@ logger = logging.getLogger(__name__)
 BASE_DIR = settings.BASE_DIR
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
-ENTITY_N_COMPARISONS_XY = (226, 26)
-ENTITY_N_CONTRIBUTORS_YX = (226, 40)
-ENTITY_TITLE_XY = (10, 6)
-TOURNESOL_SCORE_XY = (10, 26)
+ENTITY_N_CONTRIBUTORS_YX = (60,100)
+ENTITY_TITLE_XY = (120, 190)
+TOURNESOL_SCORE_XY = (80, 30)
 
+COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
+COLOR_BROWN_FONT = (29, 26, 20, 255)
 
 def get_preview_font_config():
-    fnt = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 20)
+    fnt_score = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32)
     fnt_title = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14)
-    fnt_ratings = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 12)
-    return fnt, fnt_title, fnt_ratings
+    fnt_ratings = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14)
+    return fnt_score, fnt_title, fnt_ratings
 
 
-def get_preview_footer(entity, fnt, fnt_title, fnt_ratings) -> Image:
-    tournesol_footer = Image.new("RGBA", (320, 60), (255, 200, 0, 255))
+def get_preview_image(entity, fnt_score, fnt_title, fnt_ratings) -> Image:
+    tournesol_footer = Image.new("RGBA", (440, 240), COLOR_YELLOW_BACKGROUND)
     tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
 
-    truncated_title = entity.metadata.get("name", "")[:200]
+    full_title = entity.metadata.get("name", "")
+    truncated_title = full_title[:200]
     # TODO: optimize this with a dichotomic search
     while tournesol_footer_draw.textlength(truncated_title, font=fnt_title) > 300:
         truncated_title = truncated_title[:-4] + "..."
+    full_uploader = entity.metadata.get("uploader", "")
+    truncated_uploader = full_uploader[:200]
+    # TODO: optimize this with a dichotomic search
+    while tournesol_footer_draw.textlength(truncated_uploader, font=fnt_title) > 300:
+        truncated_uploader = truncated_uploader[:-4] + "..."
+
     tournesol_footer_draw.text(
-        ENTITY_TITLE_XY, truncated_title, font=fnt_title, fill=(29, 26, 20, 255)
+        ENTITY_TITLE_XY,
+        truncated_uploader,
+        font=fnt_title,
+        fill=COLOR_BROWN_FONT,
+    )
+    tournesol_footer_draw.text(
+        (ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 24),
+        truncated_title,
+        font=fnt_title,
+        fill=COLOR_BROWN_FONT,
     )
 
     score = entity.tournesol_score
     if score is not None:
         tournesol_footer_draw.text(
             TOURNESOL_SCORE_XY,
-            "TS %.0f" % score,
-            font=fnt,
-            fill=(29, 26, 20, 255),
+            "%.0f" % score,
+            font=fnt_score,
+            fill=COLOR_BROWN_FONT,
+            anchor="mt",
         )
-
+        x,y = ENTITY_N_CONTRIBUTORS_YX
         tournesol_footer_draw.text(
-            ENTITY_N_COMPARISONS_XY,
-            f"{entity.rating_n_ratings} comparisons",
-            font=fnt_ratings,
-            fill=(29, 26, 20, 255),
+            (x,y),
+            f"{entity.rating_n_ratings}",
+            font=fnt_score,
+            fill=COLOR_BROWN_FONT,
+            anchor="mt",
         )
         tournesol_footer_draw.text(
-            ENTITY_N_CONTRIBUTORS_YX,
-            f"{entity.rating_n_contributors} contributors",
+            (x,y+32),
+            "comparisons",
             font=fnt_ratings,
-            fill=(29, 26, 20, 255),
+            fill=COLOR_BROWN_FONT,
+            anchor="mt",
+        )
+        tournesol_footer_draw.text(
+            (x,y+60),
+            f"{entity.rating_n_contributors}",
+            font=fnt_score,
+            fill=COLOR_BROWN_FONT,
+            anchor="mt",
+        )
+        tournesol_footer_draw.text(
+            (x,y+92),
+            f"contributors",
+            font=fnt_ratings,
+            fill=COLOR_BROWN_FONT,
+            anchor="mt",
         )
     return tournesol_footer
 
@@ -98,13 +132,13 @@ class DynamicWebsitePreviewEntity(APIView):
         fnt_ratings = ImageFont.truetype(str(BASE_DIR / font_location), 11)
         return fnt, fnt_title, fnt_ratings
 
-    @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
+    # @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
         description="Website preview for entities page",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid):
-        fnt, fnt_title, fnt_ratings = get_preview_font_config()
+        fnt_score, fnt_title, fnt_ratings = get_preview_font_config()
 
         try:
             entity = Entity.objects.get(uid=uid)
@@ -118,8 +152,9 @@ class DynamicWebsitePreviewEntity(APIView):
             return DynamicWebsitePreviewDefault.default_preview()
 
         response = HttpResponse(content_type="image/png")
-        tournesol_footer = get_preview_footer(entity, fnt, fnt_title, fnt_ratings)
-        print(tournesol_footer)
+        
+        preview_image = get_preview_image(entity, fnt_score, fnt_title, fnt_ratings)
+
 
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
@@ -142,9 +177,10 @@ class DynamicWebsitePreviewEntity(APIView):
             "RGBA"
         )
 
+        logo_image = Image.open(BASE_DIR / "tournesol/resources/Logo64.png").convert("RGBA").resize((48,48))
+
         # Merge the two images into one.
-        preview_image = Image.new("RGBA", (320, 240), (255, 255, 255, 0))
-        preview_image.paste(youtube_thumbnail)
-        preview_image.paste(tournesol_footer, box=(0, 180))
+        preview_image.paste(youtube_thumbnail, box=(120, 0))
+        preview_image.alpha_composite(logo_image, dest=(10, 16))
         preview_image.save(response, "png")
         return response
