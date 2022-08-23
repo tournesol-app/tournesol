@@ -8,7 +8,9 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from rest_framework.views import APIView
 
-from settings.settings import BASE_DIR
+from django.conf import settings
+
+BASE_DIR = settings.BASE_DIR
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models.entity import Entity
 from tournesol.utils.cache import cache_page_no_i18n
