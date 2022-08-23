@@ -30,7 +30,7 @@ class DynamicWebsitePreviewDefault(APIView):
     @staticmethod
     def default_preview():
         default_preview = open(
-            BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png", "rb"
+            str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
         )
         response = FileResponse(default_preview, content_type="image/png")
         return response
@@ -46,12 +46,11 @@ class DynamicWebsitePreviewEntity(APIView):
     )
     def get(self, request, uid):
         fnt = ImageFont.truetype(
-            BASE_DIR / "tournesol/resources/Poppins-Medium.ttf", 20
+            str(BASE_DIR / "tournesol/resources/Poppins-Medium.ttf"), 20
         )
         fnt_title = ImageFont.truetype(
-            BASE_DIR / "tournesol/resources/Poppins-Medium.ttf", 14
+            str(BASE_DIR / "tournesol/resources/Poppins-Medium.ttf"), 14
         )
-
         try:
             entity = Entity.objects.get(uid=uid)
         except Entity.DoesNotExist as e:
