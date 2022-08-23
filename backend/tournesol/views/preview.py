@@ -69,7 +69,7 @@ def get_preview_footer(entity, fnt, fnt_title, fnt_ratings) -> Image:
 class DynamicWebsitePreviewDefault(APIView):
     permission_classes = []
 
-    @method_decorator(cache_page_no_i18n(1))  # 24h cache
+    @method_decorator(cache_page_no_i18n(3600 * 24))  # 24h cache
     @extend_schema(
         description="Default website preview",
         responses={200: OpenApiTypes.BINARY},
@@ -97,7 +97,7 @@ class DynamicWebsitePreviewEntity(APIView):
         fnt_ratings = ImageFont.truetype(str(BASE_DIR / font_location), 11)
         return fnt, fnt_title, fnt_ratings
 
-    @method_decorator(cache_page_no_i18n(1))  # 2h cache
+    @method_decorator(cache_page_no_i18n(3600 * 2))  # 2h cache
     @extend_schema(
         description="Website preview for entities page",
         responses={200: OpenApiTypes.BINARY},
