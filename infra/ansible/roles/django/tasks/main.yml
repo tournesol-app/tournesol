@@ -157,6 +157,14 @@
 
 - meta: flush_handlers
 
+- name: Copy Post on Discord
+  template:
+    dest: /usr/local/bin/post-on-discord.sh
+    src: post-on-discord.sh.sh.j2
+    owner: gunicorn
+    group: gunicorn
+    mode: o=rx
+
 - name: Copy Discord ML training failure alert
   template:
     dest: /usr/local/bin/discord-ml-fail-alert.sh
