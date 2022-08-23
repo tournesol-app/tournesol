@@ -16,10 +16,60 @@ from tournesol.utils.cache import cache_page_no_i18n
 logger = logging.getLogger(__name__)
 
 
+FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
+ENTITY_N_COMPARISONS_XY = (226, 26)
+ENTITY_N_CONTRIBUTORS_YX = (226, 40)
+ENTITY_TITLE_XY = (10, 6)
+TOURNESOL_SCORE_XY = (10, 26)
+
+
+def get_preview_font_config():
+    fnt = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 20)
+    fnt_title = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14)
+    fnt_ratings = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 12)
+    return fnt, fnt_title, fnt_ratings
+
+
+def get_preview_footer(entity, fnt, fnt_title, fnt_ratings) -> Image:
+    tournesol_footer = Image.new("RGBA", (320, 60), (255, 200, 0, 255))
+    tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
+
+    truncated_title = entity.metadata.get("name", "")[:200]
+    # TODO: optimize this with a dichotomic search
+    while tournesol_footer_draw.textlength(truncated_title, font=fnt_title) > 300:
+        truncated_title = truncated_title[:-4] + "..."
+    tournesol_footer_draw.text(
+        ENTITY_TITLE_XY, truncated_title, font=fnt_title, fill=(29, 26, 20, 255)
+    )
+
+    score = entity.tournesol_score
+    if score is not None:
+        tournesol_footer_draw.text(
+            TOURNESOL_SCORE_XY,
+            "TS %.0f" % score,
+            font=fnt,
+            fill=(29, 26, 20, 255),
+        )
+
+        tournesol_footer_draw.text(
+            ENTITY_N_COMPARISONS_XY,
+            f"{entity.rating_n_ratings} comparisons",
+            font=fnt_ratings,
+            fill=(29, 26, 20, 255),
+        )
+        tournesol_footer_draw.text(
+            ENTITY_N_CONTRIBUTORS_YX,
+            f"{entity.rating_n_contributors} contributors",
+            font=fnt_ratings,
+            fill=(29, 26, 20, 255),
+        )
+        return tournesol_footer
+
+
 class DynamicWebsitePreviewDefault(APIView):
     permission_classes = []
 
-    @method_decorator(cache_page_no_i18n(3600 * 24))  # 24h cache
+    @method_decorator(cache_page_no_i18n(1))  # 24h cache
     @extend_schema(
         description="Default website preview",
         responses={200: OpenApiTypes.BINARY},
@@ -39,18 +89,22 @@ class DynamicWebsitePreviewDefault(APIView):
 class DynamicWebsitePreviewEntity(APIView):
     permission_classes = []
 
-    @method_decorator(cache_page_no_i18n(3600 * 2))  # 2h cache
+    @staticmethod
+    def get_font_config():
+        font_location = "tournesol/resources/Poppins-Medium.ttf"
+        fnt = ImageFont.truetype(str(BASE_DIR / font_location), 20)
+        fnt_title = ImageFont.truetype(str(BASE_DIR / font_location), 14)
+        fnt_ratings = ImageFont.truetype(str(BASE_DIR / font_location), 11)
+        return fnt, fnt_title, fnt_ratings
+
+    @method_decorator(cache_page_no_i18n(1))  # 2h cache
     @extend_schema(
         description="Website preview for entities page",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid):
-        fnt = ImageFont.truetype(
-            str(BASE_DIR / "tournesol/resources/Poppins-Medium.ttf"), 20
-        )
-        fnt_title = ImageFont.truetype(
-            str(BASE_DIR / "tournesol/resources/Poppins-Medium.ttf"), 14
-        )
+        fnt, fnt_title, fnt_ratings = get_preview_font_config()
+
         try:
             entity = Entity.objects.get(uid=uid)
         except Entity.DoesNotExist as e:
@@ -63,25 +117,7 @@ class DynamicWebsitePreviewEntity(APIView):
             return DynamicWebsitePreviewDefault.default_preview()
 
         response = HttpResponse(content_type="image/png")
-        tournesol_footer = Image.new("RGBA", (320, 60), (255, 200, 0, 255))
-        tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
-
-        truncated_title = entity.metadata.get("name", "")[:200]
-        # TODO: optimize this with a dichotomic search
-        while tournesol_footer_draw.textlength(truncated_title, font=fnt_title) > 300:
-            truncated_title = truncated_title[:-4] + "..."
-        tournesol_footer_draw.text(
-            (10, 6), truncated_title, font=fnt_title, fill=(29, 26, 20, 255)
-        )
-
-        score = entity.tournesol_score
-        if score is not None:
-            tournesol_footer_draw.text(
-                (10, 25),
-                "Tournesol Score: %.0f" % score,
-                font=fnt,
-                fill=(29, 26, 20, 255),
-            )
+        tournesol_footer = get_preview_footer(entity, fnt, fnt_title, fnt_ratings)
 
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
