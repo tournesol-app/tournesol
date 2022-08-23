@@ -1,11 +1,28 @@
 """
 Post a message in a channel of the Tournesol's Discord server
 """
+
+import logging
+import sys
+
+import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
-from lib.discord.api import publish_on_discord
+
+def publish_on_discord(discord_channel, message):
+    """Publish a message on a channel of Tournesol Discord server."""
+
+    try:
+        webhook_url = settings.DISCORD_CHANNEL_WEBHOOKS[discord_channel]
+    except KeyError:
+        logging.warning(f"The webhook for {discord_channel} does not exist!")
+        return
+  
+    resp = requests.post(webhook_url, json={"content": message})
+
+    resp.raise_for_status()
 
 
 class Command(BaseCommand):
@@ -37,20 +54,11 @@ class Command(BaseCommand):
                 f"The Discord channel '{discord_channel}' does not exist"
             )
 
-        webhook_url = settings.DISCORD_CHANNEL_WEBHOOKS[discord_channel]
-
         # display the configuration if more verbosity is asked
         if options.get("verbosity", 1) > 1:
-            self.stdout.write(
-                f"Discord channel: {discord_channel}\nWebhook: {webhook_url}"
-            )
+            self.stdout.write(f"Discord channel: {discord_channel}")
 
-        if publish_on_discord(webhook_url, options["message"]):
-            self.stdout.write(
-                self.style.SUCCESS(f"Message posted on {discord_channel}")
-            )
-            self.stdout.write("end")
-        else:
-            raise CommandError(
-                f"Error while posting the message on '{discord_channel}'"
-            )
+        publish_on_discord(discord_channel, options["message"])
+        
+        self.stdout.write(self.style.SUCCESS(f"Message posted on {discord_channel}"))
+        self.stdout.write("end")

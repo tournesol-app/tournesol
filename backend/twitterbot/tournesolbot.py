@@ -1,7 +1,7 @@
 import random
 import re
-from scripts.discord.discord_api import publish_on_discord
 
+from core.management.commands.send_on_discord import publish_on_discord
 from core.utils.time import time_ago
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
@@ -47,7 +47,9 @@ def prepare_tweet(video):
     # Get two best criteria and criteria dict name
     crit1, crit2 = get_best_criteria(video, 2)
     crit_dict = dict(
-        CriteriaLocale.objects.filter(language=language).values_list("criteria__name", "label")
+        CriteriaLocale.objects.filter(language=language).values_list(
+            "criteria__name", "label"
+        )
     )
 
     # Replace "@" by a smaller "@" to avoid false mentions in the tweet
@@ -100,7 +102,9 @@ def get_video_recommendations(language):
     # Filter videos with some quality criteria
     tweetable_videos = Entity.objects.filter(
         add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
-        metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
+        metadata__publication_date__gte=time_ago(
+            days=settings.DAYS_TOO_OLD
+        ).isoformat(),
         rating_n_contributors__gt=settings.MIN_NB_CONTRIBUTORS,
         rating_n_ratings__gte=settings.MIN_NB_RATINGS,
         metadata__language=language,
@@ -163,7 +167,7 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
 
     # Post the tweet on Discord
     publish_on_discord(
-        discord_channel="#test_discord_api",
+        discord_channel="twitter_bots",
         message=f"https://twitter.com/{bot_name}/status/{resp.id}",
     )
 
