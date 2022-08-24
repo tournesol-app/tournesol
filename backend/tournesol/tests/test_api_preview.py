@@ -30,7 +30,11 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
         self.user = UserFactory(username=self._user)
         self.preview_url = "/preview/"
 
-    def test_auth_200_get(self) -> None:
+    def test_auth_200_get(self):
+        """
+        An authenticated user get the default preview image when calling the
+        default preview endpoint.
+        """
         self.client.force_authenticate(self.user)
         response = self.client.get(f"{self.preview_url}")
 
@@ -41,7 +45,11 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    def test_anon_200_get(self) -> None:
+    def test_anon_200_get(self):
+        """
+        An anonymous user get the default preview image when calling the
+        default preview endpoint.
+        """
         response = self.client.get(f"{self.preview_url}")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -51,7 +59,11 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    def test_anon_200_get_random_url(self) -> None:
+    def test_anon_200_get_random_url(self):
+        """
+        An anonymous user get the default preview image when calling a
+        random URL of the preview API.
+        """
         response = self.client.get(f"{self.preview_url}random_url")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -69,7 +81,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
 
     _user = "username"
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.client = APIClient()
         self.user = UserFactory(username=self._user)
 
@@ -78,7 +90,11 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
 
     @patch("requests.get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
-    def test_auth_200_get(self) -> None:
+    def test_auth_200_get(self):
+        """
+        An authenticated user can get the preview image of a video entity existing
+        in the database.
+        """
         Entity.objects.create(
             uid=self.valid_uid,
             type=TYPE_VIDEO,
@@ -101,7 +117,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
 
     @patch("requests.get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
-    def test_anon_200_get_existing_entity(self) -> None:
+    def test_anon_200_get_existing_entity(self):
         """
         An anonymous user can get the preview image of a video entity existing
         in the database.
@@ -124,7 +140,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         # check is not very robust.
         self.assertNotIn("Content-Disposition", response.headers)
 
-    def test_anon_200_get_non_existing_entity(self) -> None:
+    def test_anon_200_get_non_existing_entity(self):
         """
         An anonymous user must get the default preview image, when requesting
         the preview of a video entity that doesn't exist in the database.
@@ -137,7 +153,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    def test_anon_200_get_invalid_entity_type(self) -> None:
+    def test_anon_200_get_invalid_entity_type(self):
         """
         An anonymous user must get the default preview image, when requesting
         the preview of a non-video entity.
