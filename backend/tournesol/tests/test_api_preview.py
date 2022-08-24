@@ -1,7 +1,7 @@
-from PIL import Image
 from unittest.mock import patch
 
 from django.test import TestCase
+from PIL import Image
 from requests import Response
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -18,6 +18,50 @@ def mock_yt_thumbnail_response(url) -> Response:
     return resp
 
 
+class DynamicWebsitePreviewDefaultTestCase(TestCase):
+    """
+    TestCase of the `DynamicWebsitePreviewDefault` API.
+    """
+
+    _user = "username"
+
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = UserFactory(username=self._user)
+        self.preview_url = "/preview/"
+
+    def test_auth_200_get(self) -> None:
+        self.client.force_authenticate(self.user)
+        response = self.client.get(f"{self.preview_url}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_anon_200_get(self) -> None:
+        response = self.client.get(f"{self.preview_url}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_anon_200_get_random_url(self) -> None:
+        response = self.client.get(f"{self.preview_url}random_url")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+
 class DynamicWebsitePreviewEntityTestCase(TestCase):
     """
     TestCase of the `DynamicWebsitePreviewEntity` API.
@@ -32,19 +76,31 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         self.preview_url = "/preview/entities/"
         self.valid_uid = "yt:sDPk-r18sb0"
 
+    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_auth_200_get(self) -> None:
+        Entity.objects.create(
+            uid=self.valid_uid,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid.split(":")[-1],
+                "name": "name",
+                "uploader": "uploader",
+            },
+        )
+
         self.client.force_authenticate(self.user)
         response = self.client.get(f"{self.preview_url}{self.valid_uid}")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
-        self.assertEqual(
-            response.headers["Content-Disposition"],
-            'inline; filename="tournesol_screenshot_og.png"'
-        )
+        # The absence of the Content-Disposition header indicates that the
+        # default preview image is not returned, as expected in our case. This
+        # check is not very robust.
+        self.assertNotIn("Content-Disposition", response.headers)
 
-    @patch('requests.get', mock_yt_thumbnail_response)
-    @patch('tournesol.entities.video.VideoEntity.update_search_vector', lambda x: None)
+    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_existing_entity(self) -> None:
         """
         An anonymous user can get the preview image of a video entity existing
@@ -55,16 +111,14 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
             uid=self.valid_uid,
             type=TYPE_VIDEO,
             metadata={
-                "video_id":  self.valid_uid.split(":")[-1],
+                "video_id": self.valid_uid.split(":")[-1],
                 "name": "name",
-                "uploader": "uploader"
-
-            }
+                "uploader": "uploader",
+            },
         )
         response = self.client.get(f"{self.preview_url}{self.valid_uid}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
-
         # The absence of the Content-Disposition header indicates that the
         # default preview image is not returned, as expected in our case. This
         # check is not very robust.
@@ -80,7 +134,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(
             response.headers["Content-Disposition"],
-            'inline; filename="tournesol_screenshot_og.png"'
+            'inline; filename="tournesol_screenshot_og.png"',
         )
 
     def test_anon_200_get_invalid_entity_type(self) -> None:
@@ -93,5 +147,5 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(
             response.headers["Content-Disposition"],
-            'inline; filename="tournesol_screenshot_og.png"'
+            'inline; filename="tournesol_screenshot_og.png"',
         )
