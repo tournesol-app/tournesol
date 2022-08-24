@@ -11,6 +11,10 @@ from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity
 
 
+def raise_(exception):
+    raise exception
+
+
 def mock_yt_thumbnail_response(url) -> Response:
     resp = Response()
     resp.status_code = 200
@@ -32,8 +36,8 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
 
     def test_auth_200_get(self):
         """
-        An authenticated user get the default preview image when calling the
-        default preview endpoint.
+        An authenticated user must get the default preview image when calling
+        the default preview endpoint.
         """
         self.client.force_authenticate(self.user)
         response = self.client.get(f"{self.preview_url}")
@@ -47,7 +51,7 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
 
     def test_anon_200_get(self):
         """
-        An anonymous user get the default preview image when calling the
+        An anonymous user must get the default preview image when calling the
         default preview endpoint.
         """
         response = self.client.get(f"{self.preview_url}")
@@ -61,7 +65,7 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
 
     def test_anon_200_get_random_url(self):
         """
-        An anonymous user get the default preview image when calling a
+        An anonymous user must get the default preview image when calling a
         random URL of the preview API.
         """
         response = self.client.get(f"{self.preview_url}random_url")
@@ -159,6 +163,32 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
         the preview of a non-video entity.
         """
         response = self.client.get(f"{self.preview_url}zz:an_invalid_id")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    @patch("requests.get", lambda x: raise_(ConnectionError))
+    @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
+    def test_anon_200_get_with_yt_connection_error(self):
+        """
+        An anonymous user must get the default preview image, if a
+        connection error occurs when retrieving the video thumbnail from
+        YouTube.
+        """
+        Entity.objects.create(
+            uid=self.valid_uid,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid.split(":")[-1],
+                "name": "name",
+                "uploader": "uploader",
+            },
+        )
+        response = self.client.get(f"{self.preview_url}{self.valid_uid}")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(
