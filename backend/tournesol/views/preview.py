@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 BASE_DIR = settings.BASE_DIR
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
-ENTITY_N_CONTRIBUTORS_YX = (60, 100)
-ENTITY_TITLE_XY = (120, 190)
+ENTITY_N_CONTRIBUTORS_YX = (60, 96)
+ENTITY_TITLE_XY = (128, 190)
 TOURNESOL_SCORE_XY = (80, 30)
 
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
@@ -79,21 +79,21 @@ def get_preview_image(entity, fnt_score, fnt_title, fnt_ratings) -> Image:
             anchor="mt",
         )
         tournesol_footer_draw.text(
-            (x, y + 32),
+            (x, y + 28),
             "comparisons",
             font=fnt_ratings,
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
-            (x, y + 60),
+            (x, y + 76),
             f"{entity.rating_n_contributors}",
             font=fnt_score,
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
-            (x, y + 92),
+            (x, y + 108),
             "contributors",
             font=fnt_ratings,
             fill=COLOR_BROWN_FONT,
