@@ -125,14 +125,6 @@ class DynamicWebsitePreviewDefault(APIView):
 class DynamicWebsitePreviewEntity(APIView):
     permission_classes = []
 
-    @staticmethod
-    def get_font_config():
-        font_location = "tournesol/resources/Poppins-Medium.ttf"
-        fnt = ImageFont.truetype(str(BASE_DIR / font_location), 20)
-        fnt_title = ImageFont.truetype(str(BASE_DIR / font_location), 14)
-        fnt_ratings = ImageFont.truetype(str(BASE_DIR / font_location), 11)
-        return fnt, fnt_title, fnt_ratings
-
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
         description="Website preview for entities page",
