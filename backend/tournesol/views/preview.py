@@ -20,10 +20,11 @@ BASE_DIR = settings.BASE_DIR
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 ENTITY_N_CONTRIBUTORS_YX = (60, 98)
 ENTITY_TITLE_XY = (128, 190)
-TOURNESOL_SCORE_XY = (88, 30)
+TOURNESOL_SCORE_XY = (84, 30)
 
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
+COLOR_NEGATIVE_SCORE = (153, 153, 153, 255)
 
 
 def get_preview_font_config():
@@ -67,11 +68,16 @@ def get_preview_image(
 
     score = entity.tournesol_score
     if score is not None:
+        score_color = COLOR_BROWN_FONT
+
+        if score <= 0:
+            score_color = COLOR_NEGATIVE_SCORE
+
         tournesol_footer_draw.text(
             TOURNESOL_SCORE_XY,
             "%.0f" % score,
             font=fnt_score,
-            fill=COLOR_BROWN_FONT,
+            fill=score_color,
             anchor="mt",
         )
         x, y = ENTITY_N_CONTRIBUTORS_YX
@@ -178,11 +184,11 @@ class DynamicWebsitePreviewEntity(APIView):
         logo_image = (
             Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
             .convert("RGBA")
-            .resize((48, 48))
+            .resize((34, 34))
         )
 
         # Merge the two images into one.
         preview_image.paste(youtube_thumbnail, box=(120, 0))
-        preview_image.alpha_composite(logo_image, dest=(16, 16))
+        preview_image.alpha_composite(logo_image, dest=(16, 24))
         preview_image.save(response, "png")
         return response
