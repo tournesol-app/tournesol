@@ -133,7 +133,7 @@ class VoucherGivenDestroyAPIViewTestCase(TestCase):
         """
         initial_voucher_count = Voucher.objects.all().count()
         response = self.client.delete(
-            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+            f"{self.voucher_base_url}{self.user2.username}/", format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -170,7 +170,7 @@ class VoucherGivenDestroyAPIViewTestCase(TestCase):
         """
         self.client.force_authenticate(user=self.user2)
         response = self.client.delete(
-            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+            f"{self.voucher_base_url}{self.user2.username}/", format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
