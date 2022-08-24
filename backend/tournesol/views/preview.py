@@ -20,7 +20,7 @@ BASE_DIR = settings.BASE_DIR
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 ENTITY_N_CONTRIBUTORS_YX = (60, 96)
 ENTITY_TITLE_XY = (128, 190)
-TOURNESOL_SCORE_XY = (80, 30)
+TOURNESOL_SCORE_XY = (88, 30)
 
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
@@ -177,6 +177,6 @@ class DynamicWebsitePreviewEntity(APIView):
 
         # Merge the two images into one.
         preview_image.paste(youtube_thumbnail, box=(120, 0))
-        preview_image.alpha_composite(logo_image, dest=(10, 16))
+        preview_image.alpha_composite(logo_image, dest=(16, 16))
         preview_image.save(response, "png")
         return response
