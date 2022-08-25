@@ -33,6 +33,7 @@ def get_preview_font_config() -> dict:
     config = {
         "ts_score": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32),
         "entity_title": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14),
+        "entity_uploader": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 13),
         "entity_ratings": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 22),
         "entity_ratings_label": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14
@@ -69,7 +70,7 @@ def get_preview_frame(entity, fnt_config) -> Image:
     tournesol_footer_draw.text(
         ENTITY_TITLE_XY,
         truncated_uploader,
-        font=fnt_config["entity_title"],
+        font=fnt_config["entity_uploader"],
         fill=COLOR_BROWN_FONT,
     )
     tournesol_footer_draw.text(
