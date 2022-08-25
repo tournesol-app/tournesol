@@ -27,42 +27,53 @@ COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_NEGATIVE_SCORE = (153, 153, 153, 255)
 
 
-def get_preview_font_config():
-    fnt_score = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32)
-    fnt_title = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14)
+def get_preview_font_config() -> dict:
+    config = {
+        "ts_score": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32),
+        "entity_title": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14),
+        "entity_ratings": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 22),
+        "entity_ratings_label": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 14
+        ),
+    }
+    return config
 
-    fnt_ratings = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 22)
-    fnt_ratings_label = ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14)
-    return fnt_score, fnt_title, fnt_ratings, fnt_ratings_label
 
-
-def get_preview_image(
-    entity, fnt_score, fnt_title, fnt_ratings, fnt_ratings_label
-) -> Image:
+def get_preview_frame(entity, fnt_config) -> Image:
     tournesol_footer = Image.new("RGBA", (440, 240), COLOR_YELLOW_BACKGROUND)
     tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
 
     full_title = entity.metadata.get("name", "")
     truncated_title = full_title[:200]
     # TODO: optimize this with a dichotomic search
-    while tournesol_footer_draw.textlength(truncated_title, font=fnt_title) > 300:
+    while (
+        tournesol_footer_draw.textlength(
+            truncated_title, font=fnt_config["entity_title"]
+        )
+        > 300
+    ):
         truncated_title = truncated_title[:-4] + "..."
     full_uploader = entity.metadata.get("uploader", "")
     truncated_uploader = full_uploader[:200]
     # TODO: optimize this with a dichotomic search
-    while tournesol_footer_draw.textlength(truncated_uploader, font=fnt_title) > 300:
+    while (
+        tournesol_footer_draw.textlength(
+            truncated_uploader, font=fnt_config["entity_title"]
+        )
+        > 300
+    ):
         truncated_uploader = truncated_uploader[:-4] + "..."
 
     tournesol_footer_draw.text(
         ENTITY_TITLE_XY,
         truncated_uploader,
-        font=fnt_title,
+        font=fnt_config["entity_title"],
         fill=COLOR_BROWN_FONT,
     )
     tournesol_footer_draw.text(
         (ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 24),
         truncated_title,
-        font=fnt_title,
+        font=fnt_config["entity_title"],
         fill=COLOR_BROWN_FONT,
     )
 
@@ -76,7 +87,7 @@ def get_preview_image(
         tournesol_footer_draw.text(
             TOURNESOL_SCORE_XY,
             "%.0f" % score,
-            font=fnt_score,
+            font=fnt_config["ts_score"],
             fill=score_color,
             anchor="mt",
         )
@@ -84,28 +95,28 @@ def get_preview_image(
         tournesol_footer_draw.text(
             (x, y),
             f"{entity.rating_n_ratings}",
-            font=fnt_ratings,
+            font=fnt_config["entity_ratings"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
             (x, y + 26),
             "comparisons",
-            font=fnt_ratings_label,
+            font=fnt_config["entity_ratings_label"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
             (x, y + 82),
             f"{entity.rating_n_contributors}",
-            font=fnt_ratings,
+            font=fnt_config["entity_ratings"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
         tournesol_footer_draw.text(
             (x, y + 108),
             "contributors",
-            font=fnt_ratings_label,
+            font=fnt_config["entity_ratings_label"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
@@ -141,8 +152,6 @@ class DynamicWebsitePreviewEntity(APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid):
-        fnt_score, fnt_title, fnt_ratings, fnt_ratings_label = get_preview_font_config()
-
         try:
             entity = Entity.objects.get(uid=uid)
         except Entity.DoesNotExist as e:
@@ -156,9 +165,7 @@ class DynamicWebsitePreviewEntity(APIView):
 
         response = HttpResponse(content_type="image/png")
 
-        preview_image = get_preview_image(
-            entity, fnt_score, fnt_title, fnt_ratings, fnt_ratings_label
-        )
+        preview_image = get_preview_frame(entity, get_preview_font_config())
 
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
