@@ -98,6 +98,45 @@ You can do the same with another VM or a different username:
 source ./ansible/scripts/get-vm-secrets.sh "tournesol-vm" "jst"
 ```
 
+## Accessing the back end admin interface
+
+To protect the back end's admin interface, its access is restricted to
+HTTP requests coming from its own host.
+
+Users having an account on the server can access this interface by using an
+SSH tunnel.
+
+### Example: accessing the staging admin
+
+First, edit your own `/etc/hosts` or equivalent. This is required to make our
+requests reach the correct NGINX virtual host, and not the default one.
+
+```
+127.0.0.1    api.staging.tournesol.app
+```
+
+Then create an SSH tunnel to the server.
+
+```shell
+sudo ssh -L 443:staging.tournesol.app:443 {duser}@staging.tournesol.app -i /home/{luser}/.ssh/private_key
+```
+
+Where:
+- `{duser}` is your username on the distant server ;
+- `{luser}` is the username on your local host able to connect to the distant server.
+
+The bound local port must be 443 to avoid CSRF error when connecting to the
+administration interface through the tunnel. To bind the port 443, superuser
+privileges are required, hence the usage of `sudo`.
+
+You can now connect to the back end with by using this URL in your web browser:
+
+```
+https://api.staging.tournesol.app/admin/
+```
+
+Exit the tunnel you are done.
+
 ## Dump Tournesol DB
 
 ```bash
