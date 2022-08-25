@@ -20,11 +20,13 @@ BASE_DIR = settings.BASE_DIR
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 ENTITY_N_CONTRIBUTORS_YX = (60, 98)
 ENTITY_TITLE_XY = (128, 190)
+
 TOURNESOL_SCORE_XY = (84, 30)
+TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
 
 COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
-COLOR_NEGATIVE_SCORE = (153, 153, 153, 255)
+COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 
 
 def get_preview_font_config() -> dict:
@@ -80,12 +82,14 @@ def get_preview_frame(entity, fnt_config) -> Image:
     score = entity.tournesol_score
     if score is not None:
         score_color = COLOR_BROWN_FONT
+        score_xy = TOURNESOL_SCORE_XY
 
         if score <= 0:
             score_color = COLOR_NEGATIVE_SCORE
+            score_xy = TOURNESOL_SCORE_NEGATIVE_XY
 
         tournesol_footer_draw.text(
-            TOURNESOL_SCORE_XY,
+            score_xy,
             "%.0f" % score,
             font=fnt_config["ts_score"],
             fill=score_color,
@@ -164,10 +168,9 @@ class DynamicWebsitePreviewEntity(APIView):
             return DynamicWebsitePreviewDefault.default_preview()
 
         response = HttpResponse(content_type="image/png")
-
         preview_image = get_preview_frame(entity, get_preview_font_config())
-
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
+
         try:
             thumbnail_response = requests.get(url)
         except ConnectionError as e:
@@ -188,14 +191,20 @@ class DynamicWebsitePreviewEntity(APIView):
             "RGBA"
         )
 
-        logo_image = (
-            Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
-            .convert("RGBA")
-            .resize((34, 34))
-        )
-
         # Merge the two images into one.
         preview_image.paste(youtube_thumbnail, box=(120, 0))
-        preview_image.alpha_composite(logo_image, dest=(16, 24))
+
+        # Negative scores are displayed without the Tournesol logo, to have
+        # more space to display the minus symbol, and to make it clear that
+        # the entity is not currently trusted by Tournesol.
+        score = entity.tournesol_score
+        if score and score > 0:
+            logo_image = (
+                Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
+                .convert("RGBA")
+                .resize((34, 34))
+            )
+            preview_image.alpha_composite(logo_image, dest=(16, 24))
+
         preview_image.save(response, "png")
         return response
