@@ -135,7 +135,7 @@ You can now connect to the back end with by using this URL in your web browser:
 https://api.staging.tournesol.app/admin/
 ```
 
-Exit the tunnel you are done.
+Exit the tunnel when you are done.
 
 ## Dump Tournesol DB
 
