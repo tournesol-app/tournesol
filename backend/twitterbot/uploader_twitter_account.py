@@ -12,7 +12,7 @@ from tournesol.utils.api_youtube import get_video_metadata
 
 
 def get_twitter_handles_from_html(html_text):
-    urls = re.findall(r"(https%3A%2F%2Ftwitter.com%2F.*?)\"", html_text, re.IGNORECASE)
+    urls = re.findall(r"(https%3A%2F%2F(?:www\.)?twitter\.com%2F.*?)\"", html_text, re.IGNORECASE)
     handles = []
     for raw_url in urls:
         url = unquote(raw_url)
@@ -25,7 +25,7 @@ def get_twitter_handles_from_html(html_text):
 def get_twitter_account_from_channel_id(channel_id):
     """Get Twitter account from uploader id"""
 
-    uploader_url = f"https://www.youtube.com/channel/{channel_id}"
+    uploader_url = f"https://www.youtube.com/channel/{channel_id}/about"
 
     resp = requests.get(uploader_url, headers={"user-agent": "curl/7.68.0"})
     twitter_names = get_twitter_handles_from_html(resp.text)
