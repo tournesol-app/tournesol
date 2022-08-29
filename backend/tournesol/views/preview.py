@@ -223,6 +223,7 @@ class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
 
     permission_classes = []
 
+    # TODO: should this cache be enabled?
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
         description="Generic preview of an entity.",
@@ -265,7 +266,8 @@ class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
 
     permission_classes = []
 
-    @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
+    # TODO: set the same cache value as DynamicWebsitePreviewEntity
+    @method_decorator(cache_page_no_i18n(0 * 2))
     @extend_schema(
         description="Preview of the website comparison page.",
         responses={200: OpenApiTypes.BINARY},
