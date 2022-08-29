@@ -35,10 +35,10 @@ class PreviewMixin:
     def get_entity(self, uid: str) -> Entity:
         try:
             entity = Entity.objects.get(uid=uid)
-        except Entity.DoesNotExist as e:
+        except Entity.DoesNotExist as exc:
             logger.error(f"Preview impossible entity with UID {uid}.")
-            logger.error(f"Exception caught: {e}")
-            raise Entity.DoesNotExist
+            logger.error(f"Exception caught: {exc}")
+            raise exc
         return entity
 
     def is_video(self, entity: Entity) -> None:
@@ -58,10 +58,10 @@ class PreviewMixin:
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
             thumbnail_response = requests.get(url)
-        except ConnectionError as e:
+        except ConnectionError as exc:
             logger.error(f"Preview impossible entity with UID {entity.uid}.")
-            logger.error(f"Exception caught: {e}")
-            raise ConnectionError
+            logger.error(f"Exception caught: {exc}")
+            raise exc
 
         if thumbnail_response.status_code != 200:
             # We chose to not raise an error here because the responses often
