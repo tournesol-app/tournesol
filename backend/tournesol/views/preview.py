@@ -1,3 +1,10 @@
+# pylint: disable=R0201
+"""
+API returning preview images of some Tournesol front end's page.
+
+Mainly used to provide URLs that can be used by the Open Graph protocol.
+"""
+
 import logging
 from io import BytesIO
 
@@ -32,18 +39,30 @@ COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 
 
 class PreviewMixin:
+    """
+    A generic mixin that provides common behaviours that can be used by all
+    dynamic preview `APIView`.
+    """
+
+    def default_preview(self):
+        default_preview = open(
+            str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
+        )
+        response = FileResponse(default_preview, content_type="image/png")
+        return response
+
     def get_entity(self, uid: str) -> Entity:
         try:
             entity = Entity.objects.get(uid=uid)
         except Entity.DoesNotExist as exc:
-            logger.error(f"Preview impossible entity with UID {uid}.")
-            logger.error(f"Exception caught: {exc}")
+            logger.error("Preview impossible entity with UID %s.", uid)
+            logger.error("Exception caught: %s", exc)
             raise exc
         return entity
 
     def is_video(self, entity: Entity) -> None:
         if entity.type != TYPE_VIDEO:
-            logger.info(f"Preview not implemented for entity with UID {entity.uid}.")
+            logger.info("Preview not implemented for entity with UID %s.", entity.uid)
             return False
         return True
 
@@ -59,8 +78,8 @@ class PreviewMixin:
         try:
             thumbnail_response = requests.get(url)
         except ConnectionError as exc:
-            logger.error(f"Preview impossible entity with UID {entity.uid}.")
-            logger.error(f"Exception caught: {exc}")
+            logger.error("Preview impossible entity with UID %s.", entity.uid)
+            logger.error("Exception caught: %s", exc)
             raise exc
 
         if thumbnail_response.status_code != 200:
@@ -69,7 +88,8 @@ class PreviewMixin:
             # 304, 443).
             # raise ConnectionError
             logger.warning(
-                f"Fetching YouTube thumbnail has non-200 status: {thumbnail_response.status_code}"
+                "Fetching YouTube thumbnail has non-200 status: %s",
+                thumbnail_response.status_code,
             )
 
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
@@ -179,42 +199,43 @@ def get_preview_frame(entity, fnt_config) -> Image:
     return tournesol_footer
 
 
-class DynamicWebsitePreviewDefault(APIView):
+class DynamicWebsitePreviewDefault(PreviewMixin, APIView):
+    """
+    Return the default preview of the Tournesol front end.
+    """
+
     permission_classes = []
 
     @method_decorator(cache_page_no_i18n(3600 * 24))  # 24h cache
     @extend_schema(
-        description="Default website preview",
+        description="Default website preview.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
-        return DynamicWebsitePreviewDefault.default_preview()
-
-    @staticmethod
-    def default_preview():
-        default_preview = open(
-            str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
-        )
-        response = FileResponse(default_preview, content_type="image/png")
-        return response
+        return self.default_preview()
 
 
 class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
+    """
+    Return a preview of an entity, with its Tournesol score, comparisons and
+    contributors.
+    """
+
     permission_classes = []
 
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
-        description="Website preview for entities page",
+        description="Generic preview of an entity.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid):
         try:
             entity = self.get_entity(uid)
         except Entity.DoesNotExist:
-            return DynamicWebsitePreviewDefault.default_preview()
+            return self.default_preview()
 
         if not self.is_video(entity):
-            return DynamicWebsitePreviewDefault.default_preview()
+            return self.default_preview()
 
         response = HttpResponse(content_type="image/png")
         preview_image = get_preview_frame(entity, get_preview_font_config())
@@ -222,7 +243,7 @@ class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
         try:
             youtube_thumbnail = self.get_yt_thumbnail(entity)
         except ConnectionError:
-            return DynamicWebsitePreviewDefault.default_preview()
+            return self.default_preview()
 
         preview_image.paste(youtube_thumbnail, box=(120, 0))
 
@@ -238,11 +259,15 @@ class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
 
 
 class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
+    """
+    Return the preview of a Tournesol front end's comparison page.
+    """
+
     permission_classes = []
 
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
-        description="Website preview of a comparison",
+        description="Preview of the website comparison page.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid_a, uid_b):
@@ -250,16 +275,16 @@ class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
             entity_a = self.get_entity(uid_a)
             entity_b = self.get_entity(uid_b)
         except Entity.DoesNotExist:
-            return DynamicWebsitePreviewDefault.default_preview()
+            return self.default_preview()
 
         if not self.is_video(entity_a) or not self.is_video(entity_b):
-            return DynamicWebsitePreviewDefault.default_preview()
+            return self.default_preview()
 
         try:
             thumbnail_a = self.get_yt_thumbnail(entity_a)
             thumbnail_b = self.get_yt_thumbnail(entity_b)
         except ConnectionError:
-            return DynamicWebsitePreviewDefault.default_preview()
+            return self.default_preview()
 
         final = Image.new("RGBA", (320, 180), COLOR_WHITE_BACKGROUND)
 
