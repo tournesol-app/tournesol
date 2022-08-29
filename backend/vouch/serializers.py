@@ -6,7 +6,6 @@ from rest_framework.serializers import ModelSerializer
 from core.models import User
 from vouch.models import Voucher
 
-
 # Allow to keep the JSON representation of `GivenVoucherSerializer` and
 # `ReadOnlyVoucherSerializer` similar.
 VOUCHER_FIELDS = ["by", "to", "is_public", "value"]
@@ -21,13 +20,15 @@ class GivenVoucherSerializer(ModelSerializer):
     Prefer `PublicGivenVoucherSerializer` instead.
     """
 
-    by = serializers.CharField(default=serializers.CurrentUserDefault())
+    _by = serializers.HiddenField(
+        source="by", default=serializers.CurrentUserDefault(), write_only=True
+    )
+    by = serializers.CharField(read_only=True)
     to = serializers.CharField()
 
     class Meta:
         model = Voucher
-        fields = VOUCHER_FIELDS
-        read_only_fields = ["by"]
+        fields = ["_by"] + VOUCHER_FIELDS
 
     def validate_to(self, value):
         try:
