@@ -260,7 +260,7 @@ class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
 
 class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
     """
-    Return the preview of a Tournesol front end's comparison page.
+    Return the preview of the Tournesol front end's comparison page.
     """
 
     permission_classes = []
