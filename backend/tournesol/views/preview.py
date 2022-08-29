@@ -8,6 +8,7 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 import logging
 from io import BytesIO
 
+import numpy
 import requests
 from django.conf import settings
 from django.http import FileResponse, HttpResponse
@@ -36,6 +37,8 @@ COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
 COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
+
+YT_THUMBNAIL_MQ_SIZE = (320, 180)
 
 
 class PreviewMixin:
@@ -273,6 +276,9 @@ class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid_a, uid_b):
+        final_size = (440, 240)
+        padding_space = numpy.subtract(final_size, YT_THUMBNAIL_MQ_SIZE)
+
         try:
             entity_a = self.get_entity(uid_a)
             entity_b = self.get_entity(uid_b)
@@ -288,17 +294,35 @@ class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
         except ConnectionError:
             return self.default_preview()
 
-        final = Image.new("RGBA", (320, 180), COLOR_WHITE_BACKGROUND)
+        final = Image.new("RGBA", final_size, COLOR_WHITE_BACKGROUND)
 
-        crop_box_a = (0, 0, 160, 180)
-        crop_box_b = (160, 0, 320, 180)
-        final.paste(thumbnail_a.crop(crop_box_a), (0, 0))
-        final.paste(thumbnail_b.crop(crop_box_b), (160, 0))
+        # Crop the two YT thumbnails.
+        # Thumbnail A is cropped from 0 to YT_THUMBNAIL_MQ_SIZE / 2.
+        # Thumbnail B is cropped from YT_THUMBNAIL_MQ_SIZE / 2 to YT_THUMBNAIL_MQ_SIZE.
+        halved_yt_thumb_size = numpy.divide(YT_THUMBNAIL_MQ_SIZE, 2)
+        crop_box_a = (0, 0, int(halved_yt_thumb_size[0]), YT_THUMBNAIL_MQ_SIZE[1])
+        crop_box_b = (
+            int(halved_yt_thumb_size[0]),
+            0,
+            YT_THUMBNAIL_MQ_SIZE[0],
+            YT_THUMBNAIL_MQ_SIZE[1],
+        )
 
-        logo_size = (48, 48)
+        # Add the padding before pasting the thumbnails in the final image.
+        paste_x_a = padding_space[0]
+        paste_x_b = padding_space[0] + int(halved_yt_thumb_size[0])
+
+        final.paste(thumbnail_a.crop(crop_box_a), (paste_x_a, 0))
+        final.paste(thumbnail_b.crop(crop_box_b), (paste_x_b, 0))
+
+        logo_size = (34, 34)
+        logo_x = (
+            padding_space[0] + int(halved_yt_thumb_size[0]) - int(logo_size[0] / 2)
+        )
+        logo_y = int(YT_THUMBNAIL_MQ_SIZE[1] / 2) - int(logo_size[1] / 2)
         final.alpha_composite(
             self.get_ts_logo(logo_size),
-            dest=(160 - int(logo_size[0] / 2), 90 - int(logo_size[1] / 2)),
+            dest=(logo_x, logo_y),
         )
 
         response = HttpResponse(content_type="image/png")
