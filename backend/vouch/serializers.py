@@ -56,8 +56,8 @@ class ReadOnlyVoucherSerializer(ModelSerializer):
     Prefer `PublicReadOnlyVoucherSerializer` instead.
     """
 
-    by = serializers.CharField()
-    to = serializers.CharField()
+    by = serializers.CharField(read_only=True)
+    to = serializers.CharField(read_only=True)
 
     class Meta:
         model = Voucher
