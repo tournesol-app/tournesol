@@ -29,7 +29,11 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
-from .views.preview import DynamicWebsitePreviewDefault, DynamicWebsitePreviewEntity
+from .views.preview import (
+    DynamicWebsitePreviewComparison,
+    DynamicWebsitePreviewDefault,
+    DynamicWebsitePreviewEntity,
+)
 from .views.rate_later import (
     LegacyRateLaterDetail,
     LegacyRateLaterList,
@@ -195,6 +199,11 @@ urlpatterns = [
         name="polls_score_distribution",
     ),
     # Website Previews
+    path(
+        "preview/comparisons/<str:uid_a>/<str:uid_b>",
+        DynamicWebsitePreviewComparison.as_view(),
+        name="website_preview_comparison",
+    ),
     path(
         "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),

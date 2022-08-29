@@ -31,6 +31,49 @@ COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 
 
+class PreviewMixin:
+    def get_entity_or_default_preview(self, uid: str) -> Entity:
+        try:
+            entity = Entity.objects.get(uid=uid)
+        except Entity.DoesNotExist as e:
+            logger.error(f"Preview impossible entity with UID {uid}.")
+            logger.error(f"Exception caught: {e}")
+            return DynamicWebsitePreviewDefault.default_preview()
+        return entity
+
+    def default_preview_if_not_video(self, entity: Entity) -> None:
+        if entity.type != TYPE_VIDEO:
+            logger.info(f"Preview not implemented for entity with UID {entity.uid}.")
+            return DynamicWebsitePreviewDefault.default_preview()
+
+    def get_ts_logo(self, size: tuple):
+        return (
+            Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
+            .convert("RGBA")
+            .resize(size)
+        )
+
+    def get_yt_thumbnail(self, entity: Entity) -> Image:
+        url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
+        try:
+            thumbnail_response = requests.get(url)
+        except ConnectionError as e:
+            logger.error(f"Preview impossible entity with UID {entity.uid}.")
+            logger.error(f"Exception caught: {e}")
+            return DynamicWebsitePreviewDefault.default_preview()
+
+        if thumbnail_response.status_code != 200:
+            # We chose to not raise an error here because the responses often
+            # have a non-200 status while containing the right content (e.g.
+            # 304, 443).
+            # raise ConnectionError
+            logger.warning(
+                f"Fetching YouTube thumbnail has non-200 status: {thumbnail_response.status_code}"
+            )
+
+        return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
+
+
 def get_preview_font_config() -> dict:
     config = {
         "ts_score": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32),
@@ -126,8 +169,12 @@ def get_preview_frame(entity, fnt_config) -> Image:
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        tournesol_footer_draw.rectangle(((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER)
-        tournesol_footer_draw.rectangle(((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER)
+        tournesol_footer_draw.rectangle(
+            ((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER
+        )
+        tournesol_footer_draw.rectangle(
+            ((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER
+        )
     return tournesol_footer
 
 
@@ -211,4 +258,38 @@ class DynamicWebsitePreviewEntity(APIView):
             preview_image.alpha_composite(logo_image, dest=(16, 24))
 
         preview_image.save(response, "png")
+        return response
+
+
+class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
+    permission_classes = []
+
+    @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
+    @extend_schema(
+        description="Website preview of a comparison",
+        responses={200: OpenApiTypes.BINARY},
+    )
+    def get(self, request, uid_a, uid_b):
+        entity_a = self.get_entity_or_default_preview(uid_a)
+        entity_b = self.get_entity_or_default_preview(uid_b)
+        self.default_preview_if_not_video(entity_a)
+        self.default_preview_if_not_video(entity_b)
+        thumbnail_a = self.get_yt_thumbnail(entity_a)
+        thumbnail_b = self.get_yt_thumbnail(entity_b)
+
+        final = Image.new("RGBA", (320, 180), COLOR_WHITE_BACKGROUND)
+
+        crop_box_a = (0, 0, 160, 180)
+        crop_box_b = (160, 0, 320, 180)
+        final.paste(thumbnail_a.crop(crop_box_a), (0, 0))
+        final.paste(thumbnail_b.crop(crop_box_b), (160, 0))
+
+        logo_size = (48, 48)
+        final.alpha_composite(
+            self.get_ts_logo(logo_size),
+            dest=(160 - int(logo_size[0] / 2), 90 - int(logo_size[1] / 2)),
+        )
+
+        response = HttpResponse(content_type="image/png")
+        final.save(response, "png")
         return response
