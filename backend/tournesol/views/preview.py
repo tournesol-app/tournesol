@@ -32,19 +32,20 @@ COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 
 
 class PreviewMixin:
-    def get_entity_or_default_preview(self, uid: str) -> Entity:
+    def get_entity(self, uid: str) -> Entity:
         try:
             entity = Entity.objects.get(uid=uid)
         except Entity.DoesNotExist as e:
             logger.error(f"Preview impossible entity with UID {uid}.")
             logger.error(f"Exception caught: {e}")
-            return DynamicWebsitePreviewDefault.default_preview()
+            raise Entity.DoesNotExist
         return entity
 
-    def default_preview_if_not_video(self, entity: Entity) -> None:
+    def is_video(self, entity: Entity) -> None:
         if entity.type != TYPE_VIDEO:
             logger.info(f"Preview not implemented for entity with UID {entity.uid}.")
-            return DynamicWebsitePreviewDefault.default_preview()
+            return False
+        return True
 
     def get_ts_logo(self, size: tuple):
         return (
@@ -60,7 +61,7 @@ class PreviewMixin:
         except ConnectionError as e:
             logger.error(f"Preview impossible entity with UID {entity.uid}.")
             logger.error(f"Exception caught: {e}")
-            return DynamicWebsitePreviewDefault.default_preview()
+            raise ConnectionError
 
         if thumbnail_response.status_code != 200:
             # We chose to not raise an error here because the responses often
@@ -198,7 +199,7 @@ class DynamicWebsitePreviewDefault(APIView):
         return response
 
 
-class DynamicWebsitePreviewEntity(APIView):
+class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
     permission_classes = []
 
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
@@ -208,41 +209,21 @@ class DynamicWebsitePreviewEntity(APIView):
     )
     def get(self, request, uid):
         try:
-            entity = Entity.objects.get(uid=uid)
-        except Entity.DoesNotExist as e:
-            logger.error(f"Preview impossible entity with UID {uid}.")
-            logger.error(f"Exception caught: {e}")
+            entity = self.get_entity(uid)
+        except Entity.DoesNotExist:
             return DynamicWebsitePreviewDefault.default_preview()
 
-        if entity.type != TYPE_VIDEO:
-            logger.info(f"Preview not implemented for entity with UID {entity.uid}.")
+        if not self.is_video(entity):
             return DynamicWebsitePreviewDefault.default_preview()
 
         response = HttpResponse(content_type="image/png")
         preview_image = get_preview_frame(entity, get_preview_font_config())
-        url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
 
         try:
-            thumbnail_response = requests.get(url)
-        except ConnectionError as e:
-            logger.error(f"Preview impossible entity with UID {uid}.")
-            logger.error(f"Exception caught: {e}")
+            youtube_thumbnail = self.get_yt_thumbnail(entity)
+        except ConnectionError:
             return DynamicWebsitePreviewDefault.default_preview()
 
-        if thumbnail_response.status_code != 200:
-            # We chose to not raise an error here because the responses often
-            # have a non-200 status while containing the right content (e.g.
-            # 304, 443).
-            # raise ConnectionError
-            logger.warning(
-                f"Fetching YouTube thumbnail has non-200 status: {thumbnail_response.status_code}"
-            )
-
-        youtube_thumbnail = Image.open(BytesIO(thumbnail_response.content)).convert(
-            "RGBA"
-        )
-
-        # Merge the two images into one.
         preview_image.paste(youtube_thumbnail, box=(120, 0))
 
         # Negative scores are displayed without the Tournesol logo, to have
@@ -250,12 +231,7 @@ class DynamicWebsitePreviewEntity(APIView):
         # the entity is not currently trusted by Tournesol.
         score = entity.tournesol_score
         if score and score > 0:
-            logo_image = (
-                Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
-                .convert("RGBA")
-                .resize((34, 34))
-            )
-            preview_image.alpha_composite(logo_image, dest=(16, 24))
+            preview_image.alpha_composite(self.get_ts_logo((34, 34)), dest=(16, 24))
 
         preview_image.save(response, "png")
         return response
@@ -270,12 +246,20 @@ class DynamicWebsitePreviewComparison(PreviewMixin, APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid_a, uid_b):
-        entity_a = self.get_entity_or_default_preview(uid_a)
-        entity_b = self.get_entity_or_default_preview(uid_b)
-        self.default_preview_if_not_video(entity_a)
-        self.default_preview_if_not_video(entity_b)
-        thumbnail_a = self.get_yt_thumbnail(entity_a)
-        thumbnail_b = self.get_yt_thumbnail(entity_b)
+        try:
+            entity_a = self.get_entity(uid_a)
+            entity_b = self.get_entity(uid_b)
+        except Entity.DoesNotExist:
+            return DynamicWebsitePreviewDefault.default_preview()
+
+        if not self.is_video(entity_a) or not self.is_video(entity_b):
+            return DynamicWebsitePreviewDefault.default_preview()
+
+        try:
+            thumbnail_a = self.get_yt_thumbnail(entity_a)
+            thumbnail_b = self.get_yt_thumbnail(entity_b)
+        except ConnectionError:
+            return DynamicWebsitePreviewDefault.default_preview()
 
         final = Image.new("RGBA", (320, 180), COLOR_WHITE_BACKGROUND)
 
