@@ -7,7 +7,7 @@ from rest_framework import generics
 
 from core.models import User
 from vouch.models import Voucher
-from vouch.serializers import GivenVoucherSerializer, ReceivedVoucherSerializer
+from vouch.serializers import GivenVoucherSerializer, ReadOnlyVoucherSerializer
 
 
 @extend_schema_view(
@@ -51,7 +51,7 @@ class VoucherGivenListAPIView(generics.ListAPIView):
     ),
 )
 class VoucherReceivedListAPIView(generics.ListAPIView):
-    serializer_class = ReceivedVoucherSerializer
+    serializer_class = ReadOnlyVoucherSerializer
     pagination_class = None
 
     def get_queryset(self):

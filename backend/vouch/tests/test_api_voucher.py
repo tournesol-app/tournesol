@@ -58,6 +58,7 @@ class VoucherCreateAPIViewTestCase(TestCase):
         self.assertDictEqual(
             response.data,
             {
+                "by": "user1",
                 "to": "user2",
                 "is_public": False,
                 "value": 1,
@@ -132,7 +133,7 @@ class VoucherGivenDestroyAPIViewTestCase(TestCase):
         """
         initial_voucher_count = Voucher.objects.all().count()
         response = self.client.delete(
-            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+            f"{self.voucher_base_url}{self.user2.username}/", format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -169,7 +170,7 @@ class VoucherGivenDestroyAPIViewTestCase(TestCase):
         """
         self.client.force_authenticate(user=self.user2)
         response = self.client.delete(
-            f"{self.voucher_base_url}{self.voucher.pk}/", format="json"
+            f"{self.voucher_base_url}{self.user2.username}/", format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -224,6 +225,7 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         self.assertDictEqual(
             results[0],
             {
+                "by": "user1",
                 "to": "user2",
                 "is_public": False,
                 "value": 1,
@@ -234,6 +236,7 @@ class VoucherGivenListAPIViewTestCase(TestCase):
         self.assertDictEqual(
             results[1],
             {
+                "by": "user1",
                 "to": "user3",
                 "is_public": True,
                 "value": 2,
@@ -291,6 +294,7 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
             results[0],
             {
                 "by": "user1",
+                "to": "user3",
                 "is_public": True,
                 "value": 2,
             },
@@ -301,6 +305,7 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
             results[1],
             {
                 "by": "user2",
+                "to": "user3",
                 "is_public": False,
                 "value": 3,
             },
