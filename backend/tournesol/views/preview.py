@@ -24,7 +24,9 @@ ENTITY_TITLE_XY = (128, 190)
 TOURNESOL_SCORE_XY = (84, 30)
 TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
 
-COLOR_YELLOW_BACKGROUND = (255, 200, 0, 255)
+COLOR_YELLOW_BORDER = (255, 200, 0, 255)
+COLOR_YELLOW_BACKGROUND = (255, 200, 0, 16)
+COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 
@@ -43,9 +45,8 @@ def get_preview_font_config() -> dict:
 
 
 def get_preview_frame(entity, fnt_config) -> Image:
-    tournesol_footer = Image.new("RGBA", (440, 240), COLOR_YELLOW_BACKGROUND)
+    tournesol_footer = Image.new("RGBA", (440, 240), COLOR_WHITE_BACKGROUND)
     tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
-
     full_title = entity.metadata.get("name", "")
     truncated_title = full_title[:200]
     # TODO: optimize this with a dichotomic search
@@ -125,6 +126,8 @@ def get_preview_frame(entity, fnt_config) -> Image:
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
+        tournesol_footer_draw.rectangle(((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER)
+        tournesol_footer_draw.rectangle(((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER)
     return tournesol_footer
 
 
