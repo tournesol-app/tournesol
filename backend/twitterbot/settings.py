@@ -26,5 +26,3 @@ tweet_text_template = {
         "tournesol.app/entities/yt:{video_id}"
     ),
 }
-
-tournesol.app/entities/yt:sDPk-r18sb0
