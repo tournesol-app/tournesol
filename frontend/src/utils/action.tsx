@@ -75,14 +75,14 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ uid }: { uid: string }) => {
     const { t } = useTranslation();
     const { showSuccessAlert } = useNotifications();
-    const videoId = idFromUid(uid);
+    const { name: pollName } = useCurrentPoll();
 
     return (
       <Tooltip title={`${t('actions.remove')}`} placement="left">
         <IconButton
           size="medium"
           onClick={async () => {
-            await UsersService.usersMeVideoRateLaterDestroy({ videoId });
+            await UsersService.usersMeRateLaterDestroy({ pollName, uid });
             if (asyncCallback) await asyncCallback();
             showSuccessAlert(t('actions.videoDeletedFromRateLaterList'));
           }}
