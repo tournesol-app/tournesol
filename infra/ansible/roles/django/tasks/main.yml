@@ -163,7 +163,7 @@
     src: post-on-discord.sh.j2
     owner: gunicorn
     group: gunicorn
-    mode: o=rx
+    mode: u=rx
 
 - name: Copy Discord ML training failure alert
   template:
