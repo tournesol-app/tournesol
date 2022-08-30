@@ -10,6 +10,7 @@ import SettingsProfilePage from './pages/settings/profile/Profile';
 import SignupPage from './pages/signup/Signup';
 import VerifySignature from './pages/signup/Verify';
 import DonatePage from './pages/about/Donate';
+import PersonalVouchersPage from './pages/personal/vouchers/VouchersPage';
 import Frame from './features/frame/Frame';
 
 import PublicRoute from './features/login/PublicRoute';
@@ -87,6 +88,9 @@ function App() {
           </PrivateRoute>
           <PrivateRoute path="/settings/account">
             <SettingsAccountPage />
+          </PrivateRoute>
+          <PrivateRoute path="/personal-vouchers">
+            <PersonalVouchersPage />
           </PrivateRoute>
           <PublicRoute path="/signup">
             {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}

@@ -155,7 +155,8 @@
   "loginButton": "Se connecter",
   "joinUsButton": "S'inscrire",
   "personalMenu": {
-    "yourRecommendations": "Mes recommandations"
+    "yourRecommendations": "Mes recommandations",
+    "vouchers": "Me porter garant"
   },
   "logoutButton": "Se déconnecter",
   "topbar": {

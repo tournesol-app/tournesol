@@ -150,7 +150,8 @@
   "loginButton": "Log in",
   "joinUsButton": "Join us",
   "personalMenu": {
-    "yourRecommendations": "My recommendations"
+    "yourRecommendations": "My recommendations",
+    "vouchers": "Vouch for other users"
   },
   "logoutButton": "Logout",
   "topbar": {

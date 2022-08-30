@@ -10,7 +10,7 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { Logout, VideoLibrary } from '@mui/icons-material';
+import { Logout, VideoLibrary, HowToReg } from '@mui/icons-material';
 import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 
@@ -61,8 +61,19 @@ const PersonalMenu = ({
             </ListItemIcon>
             <ListItemText>{t('personalMenu.yourRecommendations')}</ListItemText>
           </MenuItem>,
-          <Divider key="my-things-divider" />,
         ]}
+        <MenuItem
+          key="personal-vouchers"
+          component={RouterLink}
+          to={`${baseUrl}/personal-vouchers`}
+          onClick={onItemClick}
+        >
+          <ListItemIcon>
+            <HowToReg fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t('personalMenu.vouchers')}</ListItemText>
+        </MenuItem>
+        <Divider key="my-things-divider" />
         {/* -- settings section -- */}
         {settingsMenu(t).map((item: TournesolMenuItemType) => (
           <MenuItem
