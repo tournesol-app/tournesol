@@ -11,12 +11,13 @@ import {
   Pagination,
 } from 'src/components';
 import EntityList from 'src/features/entities/EntityList';
-import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
+import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
 import { ApiError, RateLater, UsersService } from 'src/services/openapi';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
 import { getWebExtensionUrl } from 'src/utils/extension';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -74,18 +75,26 @@ const RateLaterPage = () => {
     setIsLoading(false);
   }, [offset, pollName, setEntityCount, setRateLaterList]);
 
-  const addToRateLater = async (video_id: string): Promise<boolean> => {
-    const response = await addToRateLaterList({ video_id }).catch(
-      (reason: ApiError) => {
-        displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
-          {
-            status: 409,
-            variant: 'warning',
-            msg: t('ratelater.videoAlreadyInList'),
-          },
-        ]);
-      }
-    );
+  const addToRateLater = async (id: string): Promise<boolean> => {
+    let uidNamespace = '';
+    // TODO: we should be able to get the UID namespace from the polls'
+    // configuration to avoid writing these kind of if statement everywhere.
+    if (pollName === YOUTUBE_POLL_NAME) {
+      uidNamespace = UID_YT_NAMESPACE;
+    }
+
+    const response = await addToRateLaterList({
+      pollName: pollName,
+      uid: uidNamespace + id,
+    }).catch((reason: ApiError) => {
+      displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
+        {
+          status: 409,
+          variant: 'warning',
+          msg: t('ratelater.videoAlreadyInList'),
+        },
+      ]);
+    });
     if (response) {
       showSuccessAlert(t('ratelater.videoAdded'));
       await loadList();
