@@ -181,8 +181,8 @@ class TestTournesolBot(TestCase):
         ] = "Tournesol is great! But this title is way to long to fit in one tweet🌻 #tournesol"
 
         tweet_text_too_long = (
-            "Aujourd'hui, je recommande 'Tournesol is great! But this title is way to long to...' "
-            "de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
+            "Aujourd'hui, je recommande 'Tournesol is great! But this title is way to long to fit"
+            " in one tw...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
             "contributeurs, critères favoris:"
             "\n- Important & actionnable"
             "\n- Stimulant & suscite la réflexion"
