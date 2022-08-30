@@ -11,13 +11,13 @@ import {
   Pagination,
 } from 'src/components';
 import EntityList from 'src/features/entities/EntityList';
-import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
 import { ApiError, RateLater, UsersService } from 'src/services/openapi';
 import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
-import { getWebExtensionUrl } from 'src/utils/extension';
+import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import { getWebExtensionUrl } from 'src/utils/extension';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -112,7 +112,7 @@ const RateLaterPage = () => {
     loadList();
   }, [loadList]);
 
-  const videos = rateLaterList.map((r) => r.entity);
+  const entities = rateLaterList.map((r) => r.entity);
   const rateLaterPageActions = [
     CompareNowAction,
     RemoveFromRateLater(loadList),
@@ -178,7 +178,7 @@ const RateLaterPage = () => {
 
           <Box width="100%" textAlign="center">
             <LoaderWrapper isLoading={isLoading}>
-              <EntityList entities={videos} actions={rateLaterPageActions} />
+              <EntityList entities={entities} actions={rateLaterPageActions} />
             </LoaderWrapper>
           </Box>
           {!!entityCount && (
