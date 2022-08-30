@@ -583,12 +583,14 @@ paths:
           each criteria.
         style: deepObject
         examples:
+          DefaultWeights:
+            summary: Default weights
           WeightsExample:
             value:
               reliability: 10
               importance: 10
               ignored_criteria: 0
-            summary: weights example
+            summary: Weights example
       - in: query
         name: metadata
         schema:
@@ -597,10 +599,14 @@ paths:
         description: Filter by one or more metadata.
         style: deepObject
         examples:
+          NoMetadataFilter:
+            summary: No metadata filter
           Videos-SomeExamples:
             value:
-              language: fr,pt
-              uploader: kurzgesagtES
+              language:
+              - en
+              - pt
+              uploader: Kurzgesagt – In a Nutshell
             summary: Videos - some examples
           Videos-VideosOf8MinutesOrLess(480Sec):
             value:
@@ -631,6 +637,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedRecommendationList'
+          description: ''
+  /preview/.*:
+    get:
+      operationId: preview_.*_retrieve
+      description: Default website preview
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /preview/entities/{uid}:
+    get:
+      operationId: preview_entities_retrieve
+      description: Website preview for entities page
+      parameters:
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
           description: ''
   /schema/:
     get:
@@ -854,12 +900,14 @@ paths:
           each criteria.
         style: deepObject
         examples:
+          DefaultWeights:
+            summary: Default weights
           WeightsExample:
             value:
               reliability: 10
               importance: 10
               ignored_criteria: 0
-            summary: weights example
+            summary: Weights example
       - in: query
         name: metadata
         schema:
@@ -868,10 +916,14 @@ paths:
         description: Filter by one or more metadata.
         style: deepObject
         examples:
+          NoMetadataFilter:
+            summary: No metadata filter
           Videos-SomeExamples:
             value:
-              language: fr,pt
-              uploader: kurzgesagtES
+              language:
+              - en
+              - pt
+              uploader: Kurzgesagt – In a Nutshell
             summary: Videos - some examples
           Videos-VideosOf8MinutesOrLess(480Sec):
             value:
@@ -1531,6 +1583,127 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProofOfVote'
           description: ''
+  /users/me/rate_later/{poll_name}/:
+    get:
+      operationId: users_me_rate_later_list
+      description: List all entities of the logged user's rate-later list, for a given
+        poll.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRateLaterList'
+          description: ''
+    post:
+      operationId: users_me_rate_later_create
+      description: Add a new entity to the logged user's rate-later list, for a given
+        poll.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateLaterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RateLaterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RateLaterRequest'
+        required: true
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLater'
+          description: ''
+        '409':
+          description: The entity is already in the user's rate-later list of this
+            poll, or there is an other error with the database query.
+  /users/me/rate_later/{poll_name}/{uid}/:
+    get:
+      operationId: users_me_rate_later_retrieve
+      description: Get an entity from the logged user's rate-later list.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLater'
+          description: ''
+    delete:
+      operationId: users_me_rate_later_destroy
+      description: Delete an entity from the logged user's rate-later list.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uid
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '204':
+          description: No response body
   /users/me/recommendations/{poll_name}:
     get:
       operationId: users_me_recommendations_list
@@ -1587,12 +1760,14 @@ paths:
           each criteria.
         style: deepObject
         examples:
+          DefaultWeights:
+            summary: Default weights
           WeightsExample:
             value:
               reliability: 10
               importance: 10
               ignored_criteria: 0
-            summary: weights example
+            summary: Weights example
       - in: query
         name: metadata
         schema:
@@ -1601,10 +1776,14 @@ paths:
         description: Filter by one or more metadata.
         style: deepObject
         examples:
+          NoMetadataFilter:
+            summary: No metadata filter
           Videos-SomeExamples:
             value:
-              language: fr,pt
-              uploader: kurzgesagtES
+              language:
+              - en
+              - pt
+              uploader: Kurzgesagt – In a Nutshell
             summary: Videos - some examples
           Videos-VideosOf8MinutesOrLess(480Sec):
             value:
@@ -1630,7 +1809,9 @@ paths:
   /users/me/unconnected_entities/{poll_name}/{uid}/:
     get:
       operationId: users_me_unconnected_entities_list
-      description: Show unconnected entities for the current user
+      description: List unconnected entities of the current user from a target entity
+        and the user's graph of comparisons (entities are vertices and comparisons
+        are edges).
       parameters:
       - in: path
         name: poll_name
@@ -1694,7 +1875,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedRateLaterList'
+                $ref: '#/components/schemas/PaginatedRateLaterLegacyList'
           description: ''
     post:
       operationId: users_me_video_rate_later_create
@@ -1706,13 +1887,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RateLaterRequest'
+              $ref: '#/components/schemas/RateLaterLegacyRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/RateLaterRequest'
+              $ref: '#/components/schemas/RateLaterLegacyRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RateLaterRequest'
+              $ref: '#/components/schemas/RateLaterLegacyRequest'
         required: true
       security:
       - oauth2:
@@ -1722,7 +1903,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateLater'
+                $ref: '#/components/schemas/RateLaterLegacy'
           description: ''
         '409':
           description: 'Conflict: the video is already in the rate later list, or
@@ -1747,7 +1928,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateLater'
+                $ref: '#/components/schemas/RateLaterLegacy'
           description: ''
     delete:
       operationId: users_me_video_rate_later_destroy
@@ -1766,6 +1947,88 @@ paths:
       responses:
         '204':
           description: No response body
+  /users/me/vouchers/:
+    post:
+      operationId: users_me_vouchers_create
+      description: The logged-in user give a voucher to the target user.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GivenVoucherRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GivenVoucherRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GivenVoucherRequest'
+        required: true
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GivenVoucher'
+          description: ''
+  /users/me/vouchers/given/:
+    get:
+      operationId: users_me_vouchers_given_list
+      description: List all the vouchers given by the the logged-in user.
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GivenVoucher'
+          description: ''
+  /users/me/vouchers/given/{username}/:
+    delete:
+      operationId: users_me_vouchers_given_destroy
+      description: Delete a voucher given to a target user by the logged-in user.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '204':
+          description: No response body
+  /users/me/vouchers/received/:
+    get:
+      operationId: users_me_vouchers_received_list
+      description: List all the vouchers received by the logged-in user
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReadOnlyVoucher'
+          description: ''
   /video/:
     get:
       operationId: video_list
@@ -2172,11 +2435,12 @@ components:
         score:
           type: number
           format: float
-          description: Score for the given criteria
+          description: Score for the given criteria, after individual and poll scalings
+            applied
         uncertainty:
           type: number
           format: float
-          description: Uncertainty about the video's score for the given criteria
+          description: Uncertainty about the criteria score
       required:
       - criteria
     ContributorCriteriaScoreRequest:
@@ -2190,11 +2454,12 @@ components:
         score:
           type: number
           format: float
-          description: Score for the given criteria
+          description: Score for the given criteria, after individual and poll scalings
+            applied
         uncertainty:
           type: number
           format: float
-          description: Uncertainty about the video's score for the given criteria
+          description: Uncertainty about the criteria score
       required:
       - criteria
     ContributorRating:
@@ -2273,39 +2538,54 @@ components:
       - is_public
     ContributorRecommendations:
       type: object
+      description: |-
+        An entity recommended by a user.
+
+        In addition to the fields inherited from `RecommendationSerializer`, this
+        serializer also display the public status of the `ContributorRating`
+        related to the trio poll / entity / user.
+
+        Note that the fields `n_comparisons` and `n_contributors` contain
+        the collective values, and are not specific to the user.
       properties:
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        total_score:
-          type: number
-          format: float
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
-          readOnly: true
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        total_score:
+          type: number
+          format: float
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        n_comparisons:
+          type: integer
+        is_public:
+          type: boolean
+          readOnly: true
+        n_contributors:
+          type: integer
       required:
       - criteria_scores
       - is_public
       - metadata
+      - n_comparisons
+      - n_contributors
       - total_score
       - type
       - uid
@@ -2545,6 +2825,51 @@ components:
       - Female
       - Male
       type: string
+    GivenVoucher:
+      type: object
+      description: |-
+        A voucher given by the logged-in user to a target user.
+
+        As the public status of the voucher is displayed, this serializer
+        shouldn't be used to list the vouchers not related to the logged-in user.
+        Prefer `PublicGivenVoucherSerializer` instead.
+      properties:
+        by:
+          type: string
+          readOnly: true
+        to:
+          type: string
+        is_public:
+          type: boolean
+          description: Should the voucher be public?
+        value:
+          type: number
+          format: float
+          description: The vouch value given by the vouching user to receiving user.
+      required:
+      - by
+      - to
+    GivenVoucherRequest:
+      type: object
+      description: |-
+        A voucher given by the logged-in user to a target user.
+
+        As the public status of the voucher is displayed, this serializer
+        shouldn't be used to list the vouchers not related to the logged-in user.
+        Prefer `PublicGivenVoucherSerializer` instead.
+      properties:
+        to:
+          type: string
+          minLength: 1
+        is_public:
+          type: boolean
+          description: Should the voucher be public?
+        value:
+          type: number
+          format: float
+          description: The vouch value given by the vouching user to receiving user.
+      required:
+      - to
     Length3Cycles:
       type: object
       description: |-
@@ -2949,6 +3274,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
+    PaginatedRateLaterLegacyList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RateLaterLegacy'
     PaginatedRateLaterList:
       type: object
       properties:
@@ -3154,11 +3499,11 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        trust_score:
+        voting_right:
           type: number
           format: float
           nullable: true
-          description: The global trust score assigned to the user based on the vouching
+          description: The voting right assigned to the user based on the vouching
             mechanism.
         is_trusted:
           type: boolean
@@ -3247,17 +3592,80 @@ components:
     RateLater:
       type: object
       properties:
+        entity:
+          $ref: '#/components/schemas/RelatedEntity'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time at which the video is saved.
+      required:
+      - created_at
+      - entity
+    RateLaterLegacy:
+      type: object
+      description: |-
+        A serializer transporting `RateLater` data using the legacy couple user
+        and video.
+
+        The poll is automatically set to the default poll by the `RateLater`
+        model.
+      properties:
         video:
           $ref: '#/components/schemas/RelatedVideo'
       required:
       - video
-    RateLaterRequest:
+    RateLaterLegacyRequest:
       type: object
+      description: |-
+        A serializer transporting `RateLater` data using the legacy couple user
+        and video.
+
+        The poll is automatically set to the default poll by the `RateLater`
+        model.
       properties:
         video:
           $ref: '#/components/schemas/RelatedVideoRequest'
       required:
       - video
+    RateLaterRequest:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/RelatedEntityRequest'
+      required:
+      - entity
+    ReadOnlyVoucher:
+      type: object
+      description: |-
+        A read-only `Voucher` serializer.
+
+        Can be used to safely display a given or a received voucher.
+
+        As the public status of the voucher is displayed, this serializer
+        shouldn't be used to list the vouchers not related to the logged-in user.
+        Prefer `PublicReadOnlyVoucherSerializer` instead.
+      properties:
+        by:
+          type: string
+          readOnly: true
+        to:
+          type: string
+          readOnly: true
+        is_public:
+          type: boolean
+          readOnly: true
+          description: Should the voucher be public?
+        value:
+          type: number
+          format: float
+          readOnly: true
+          description: The vouch value given by the vouching user to receiving user.
+      required:
+      - by
+      - is_public
+      - to
+      - value
     Recommendation:
       type: object
       properties:
@@ -3457,11 +3865,11 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        trust_score:
+        voting_right:
           type: number
           format: float
           nullable: true
-          description: The global trust score assigned to the user based on the vouching
+          description: The voting right assigned to the user based on the vouching
             mechanism.
       required:
       - email
@@ -3609,11 +4017,11 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        trust_score:
+        voting_right:
           type: number
           format: float
           nullable: true
-          description: The global trust score assigned to the user based on the vouching
+          description: The voting right assigned to the user based on the vouching
             mechanism.
         password_confirm:
           type: string
@@ -4292,11 +4700,11 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        trust_score:
+        voting_right:
           type: number
           format: float
           nullable: true
-          description: The global trust score assigned to the user based on the vouching
+          description: The voting right assigned to the user based on the vouching
             mechanism.
         is_trusted:
           type: boolean
@@ -4439,11 +4847,11 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        trust_score:
+        voting_right:
           type: number
           format: float
           nullable: true
-          description: The global trust score assigned to the user based on the vouching
+          description: The voting right assigned to the user based on the vouching
             mechanism.
         is_trusted:
           type: boolean
