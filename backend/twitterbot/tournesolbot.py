@@ -167,7 +167,7 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
 
     # Post the tweet on Discord
     publish_on_discord(
-        discord_channel="twitter_bots",
+        discord_channel="twitter",
         message=f"https://twitter.com/{bot_name}/status/{resp.id}",
     )
 
