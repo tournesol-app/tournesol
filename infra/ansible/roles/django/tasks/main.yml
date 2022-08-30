@@ -160,7 +160,7 @@
 - name: Copy Post on Discord
   template:
     dest: /usr/local/bin/post-on-discord.sh
-    src: post-on-discord.sh.sh.j2
+    src: post-on-discord.sh.j2
     owner: gunicorn
     group: gunicorn
     mode: o=rx
