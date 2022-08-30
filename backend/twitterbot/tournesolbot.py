@@ -67,8 +67,9 @@ def prepare_tweet(video):
     )
 
     # Check the total length of the tweet and shorten title if the tweet is too long
-    # 274 is used to get a margin of error (emoji may be counted as 2 chars)
-    diff = len(tweet_text) - 274
+    # 288 is used because the link will be count as 23 characters and not 37 so 274 which leaves
+    # a margin of error for emoji which are counted as 2 characters
+    diff = len(tweet_text) - 288
     if diff > 0:
         video_title = video_title[: -diff - 3] + "..."
 
