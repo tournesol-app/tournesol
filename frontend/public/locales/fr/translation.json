@@ -466,6 +466,12 @@
     "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
     "proofOfVote": "Preuve de participation"
   },
+  "personalVouchers": {
+    "voucherCreated": "Vous vous êtes porté garant pour «\u00a0{{username}}\u00a0»",
+    "introduction": "Je certifie que cet utilisateur est un humain, avec un comportement authentique, et qu'il n'utilise pas activement un autre compte Tournesol\u00a0:",
+    "usernameLabel": "Nom d'utilisateur",
+    "submitButton": "Je me porte garant de cet utilisateur"
+  },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
   },

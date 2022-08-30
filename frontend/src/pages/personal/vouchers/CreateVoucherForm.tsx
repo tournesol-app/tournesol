@@ -1,0 +1,60 @@
+import React, { useState, useCallback } from 'react';
+import { TextField, Button, FormGroup, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+
+import { useNotifications } from 'src/hooks';
+import { usePersonalVouchers } from './context';
+
+const inputProps = {
+  // If not set some browsers may auto fill the input with a saved username because the input label in English is "Username"
+  autoComplete: 'new-password',
+};
+
+const CreateVoucherForm = () => {
+  const { t } = useTranslation();
+  const [username, setUsername] = useState<string>('');
+  const { displayErrorsFrom, showSuccessAlert } = useNotifications();
+  const { createVoucher } = usePersonalVouchers();
+
+  const handleUsernameChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setUsername(event.target.value);
+    },
+    []
+  );
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      try {
+        await createVoucher({ username });
+        showSuccessAlert(t('personalVouchers.voucherCreated', { username }));
+        setUsername('');
+      } catch (error) {
+        console.error(error);
+        displayErrorsFrom(error);
+      }
+    },
+    [username, createVoucher, t, showSuccessAlert, displayErrorsFrom]
+  );
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Typography paragraph>{t('personalVouchers.introduction')}</Typography>
+      <FormGroup row>
+        <TextField
+          label={t('personalVouchers.usernameLabel')}
+          value={username}
+          onChange={handleUsernameChange}
+          inputProps={inputProps}
+          variant="outlined"
+        />
+        <Button type="submit" variant="contained" disableElevation>
+          {t('personalVouchers.submitButton')}
+        </Button>
+      </FormGroup>
+    </form>
+  );
+};
+
+export default CreateVoucherForm;
