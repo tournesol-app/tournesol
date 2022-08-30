@@ -17,4 +17,4 @@ ExecStart=/usr/bin/bash -c "source venv/bin/activate && \
             python manage.py run_twitterbot -y --bot-name '@TournesolBot';; \
         *) ;; \
     esac"
-ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-twitterbot-fail-alert.sh; fi"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'run_twitterbot job failed for {{domain_name}}'; fi"

@@ -10,4 +10,4 @@ ExecStart=aws s3 sync /backups s3://{{export_backups_bucket_name}}/{{export_back
 {% else %}
 ExecStart=echo "would export backups but no bucket provided"
 {% endif %}
-ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-export-backups-fail-alert.sh; fi"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'Backups export failed for {{domain_name}}'; fi"

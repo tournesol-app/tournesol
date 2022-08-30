@@ -10,13 +10,6 @@
     src: aws_secret_access_key.j2
   when: export_backups_bucket_name is defined and export_backups_bucket_name != ""
 
-- name: Copy Discord backups export failure alert
-  template:
-    dest: /usr/local/bin/discord-export-backups-fail-alert.sh
-    src: discord-export-backups-fail-alert.sh.j2
-    mode: a=rx
-  when: export_backups_bucket_name is defined and export_backups_bucket_name != ""
-
 - name: Copy backups export service
   template:
     dest: /etc/systemd/system/export-backups.service
