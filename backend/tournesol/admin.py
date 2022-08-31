@@ -1,5 +1,5 @@
 """
-Administration interface of the `tournesol` app
+Administration interface of the `tournesol` app.
 """
 
 from django.contrib import admin, messages
