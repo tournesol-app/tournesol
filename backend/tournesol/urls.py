@@ -29,11 +29,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
-from .views.preview import (
-    DynamicWebsitePreviewComparison,
-    DynamicWebsitePreviewDefault,
-    DynamicWebsitePreviewEntity,
-)
+from .views.preview import DynamicWebsitePreviewDefault, DynamicWebsitePreviewEntity
 from .views.rate_later import (
     LegacyRateLaterDetail,
     LegacyRateLaterList,
@@ -60,7 +56,7 @@ urlpatterns = [
     # User API
     path("users/me/", CurrentUserView.as_view(), name="users_me"),
     # Voucher API
-    path("users/me/", include('vouch.urls')),
+    path("users/me/", include("vouch.urls")),
     # Data exports
     path(
         "users/me/exports/comparisons/",
@@ -200,17 +196,12 @@ urlpatterns = [
     ),
     # Website Previews
     path(
-        "preview/comparisons/<str:uid_a>/<str:uid_b>",
-        DynamicWebsitePreviewComparison.as_view(),
-        name="website_preview_comparison",
-    ),
-    path(
         "preview/entities/<str:uid>",
         DynamicWebsitePreviewEntity.as_view(),
         name="website_preview_entity",
     ),
     re_path(
-        r'^preview/.*$',
+        r"^preview/.*$",
         DynamicWebsitePreviewDefault.as_view(),
         name="website_preview_default",
     ),
