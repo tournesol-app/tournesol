@@ -83,10 +83,10 @@ const RateLaterPage = () => {
       uidNamespace = UID_YT_NAMESPACE;
     }
 
-    const response = await addToRateLaterList({
-      pollName: pollName,
-      uid: uidNamespace + id,
-    }).catch((reason: ApiError) => {
+    const response = await addToRateLaterList(
+      pollName,
+      uidNamespace + id
+    ).catch((reason: ApiError) => {
       displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
         {
           status: 409,
