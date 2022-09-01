@@ -1,5 +1,7 @@
 """
-Post a message in a channel of the Tournesol's Discord server.
+Send a message to a configured Discord channel.
+
+The web hook of the target channel must be configured in the settings.
 """
 
 from django.conf import settings
@@ -9,7 +11,7 @@ from lib.discord.api import write_in_channel
 
 
 class Command(BaseCommand):
-    help = "Post a message in a Discord channel."
+    help = "Send a message to a configured Discord channel."
 
     def add_arguments(self, parser):
 
@@ -17,14 +19,14 @@ class Command(BaseCommand):
             "-c",
             "--channel",
             type=str,
-            help="Name of the channel where the message should be posted",
+            help="Name of the target channel.",
         )
 
         parser.add_argument(
             "-m",
             "--message",
             type=str,
-            help="Message to post",
+            help="Message to send.",
         )
 
     def handle(self, *args, **options):

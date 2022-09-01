@@ -27,6 +27,6 @@ tweet_text_template = {
     ),
 }
 
-# Name of the Discord channel where the twitterbots will post their tweets.
+# Name of the Discord channel where the twitterbot will post its tweets.
 # An empty value won't trigger any post.
-DISCORD_CHANNEL = "twitter"
+TWITTERBOT_DISCORD_CHANNEL = "twitter"

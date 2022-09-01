@@ -166,7 +166,7 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
     resp = twitterbot.api.update_status(tweet_text)
 
     # Post the tweet on Discord
-    discord_channel = settings.DISCORD_CHANNEL
+    discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
     if discord_channel:
         write_in_channel(
             settings.DISCORD_CHANNEL_WEBHOOKS.get(discord_channel, None),
