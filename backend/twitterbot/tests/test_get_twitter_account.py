@@ -27,3 +27,7 @@ def test_get_twitter_account_from_channel_id(mock_requests):
 def test_twitter_account_from_html_with_extra_params():
     html = 'q=https%3A%2F%2Ftwitter.com%2FKurz_Gesagt%3Fref_src%3Dtwsrc%255Egoogle%257Ctwcamp%255Eserp%257Ctwgr%255Eauthor"'
     assert get_twitter_handles_from_html(html) == ["Kurz_Gesagt"]
+
+def test_twitter_account_from_html_with_http():
+    html = 'q=http%3A%2F%2Ftwitter.com%2Fveritasium"'
+    assert get_twitter_handles_from_html(html) == ["veritasium"]

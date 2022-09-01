@@ -12,7 +12,7 @@ from tournesol.utils.api_youtube import get_video_metadata
 
 
 def get_twitter_handles_from_html(html_text):
-    urls = re.findall(r"(https%3A%2F%2F(?:www\.)?twitter\.com%2F.*?)\"", html_text, re.IGNORECASE)
+    urls = re.findall(r"(https?%3A%2F%2F(?:www\.)?twitter\.com%2F.*?)\"", html_text, re.IGNORECASE)
     handles = []
     for raw_url in urls:
         url = unquote(raw_url)
