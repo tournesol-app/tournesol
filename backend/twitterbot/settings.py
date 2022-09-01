@@ -26,3 +26,7 @@ tweet_text_template = {
         "tournesol.app/entities/yt:{video_id}"
     ),
 }
+
+# Name of the Discord channel where the twitterbots will post their tweets.
+# An empty value won't trigger any post.
+DISCORD_CHANNEL = "twitter"

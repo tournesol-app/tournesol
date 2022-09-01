@@ -1,8 +1,8 @@
 import random
 import re
 
-from core.management.commands.send_on_discord import publish_on_discord
 from core.utils.time import time_ago
+from lib.discord.api import write_in_channel
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
 from tournesol.models.entity_score import ScoreMode
@@ -166,9 +166,11 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
     resp = twitterbot.api.update_status(tweet_text)
 
     # Post the tweet on Discord
-    publish_on_discord(
-        discord_channel="twitter",
-        message=f"https://twitter.com/{bot_name}/status/{resp.id}",
+    discord_channel = settings.DISCORD_CHANNEL
+    write_in_channel(
+        settings.DISCORD_CHANNEL_WEBHOOKS.get(discord_channel, None),
+        discord_channel,
+        f"https://twitter.com/{bot_name}/status/{resp.id}",
     )
 
     # Add the video to the TweetInfo table
