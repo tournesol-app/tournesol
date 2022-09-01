@@ -167,11 +167,12 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
 
     # Post the tweet on Discord
     discord_channel = settings.DISCORD_CHANNEL
-    write_in_channel(
-        settings.DISCORD_CHANNEL_WEBHOOKS.get(discord_channel, None),
-        discord_channel,
-        f"https://twitter.com/{bot_name}/status/{resp.id}",
-    )
+    if discord_channel:
+        write_in_channel(
+            settings.DISCORD_CHANNEL_WEBHOOKS.get(discord_channel, None),
+            discord_channel,
+            f"https://twitter.com/{bot_name}/status/{resp.id}",
+        )
 
     # Add the video to the TweetInfo table
     TweetInfo.objects.create(

@@ -1,5 +1,5 @@
 """
-Post a message in a channel of the Tournesol's Discord server
+Post a message in a channel of the Tournesol's Discord server.
 """
 
 from django.conf import settings
