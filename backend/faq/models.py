@@ -1,5 +1,5 @@
 """
-Models of the FAQ app.
+Models of the `faq` app.
 """
 
 from django.conf import settings
