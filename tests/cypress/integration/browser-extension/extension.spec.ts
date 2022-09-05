@@ -4,7 +4,7 @@ onlyOn('headed', () => {
   describe('Tournesol extension', 
     {
       browser: ['chromium', 'chrome'],
-      defaultCommandTimeout: 8000,
+      defaultCommandTimeout: 16000,
     },
     () => {
       const consent = () => {
@@ -23,13 +23,13 @@ onlyOn('headed', () => {
           // failing the test, because of unrelated Youtube errors
           return false
         })
-      })
+      });
 
       it('shows Tournesol recommendations on youtube.com', () => {
         cy.visit('https://www.youtube.com');
         consent();
         cy.contains('Recommended by Tournesol').should('be.visible');
-      })
+      });
 
       it('shows "Rate later" button on video page', () => {
         cy.visit('https://www.youtube.com/watch?v=6jK9bFWE--g');
@@ -40,7 +40,7 @@ onlyOn('headed', () => {
             cy.contains('button', 'Dismiss', {matchCase: false}).click();
           }
           cy.contains('button', 'Rate later', {matchCase: false}).should('be.visible');
-        })
-      })
-    })
-})
+        });
+      });
+    });
+});
