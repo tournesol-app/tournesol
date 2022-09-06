@@ -27,6 +27,7 @@ class HasAnswerListFilter(admin.SimpleListFilter):
             return queryset.filter(
                 answer__isnull=True,
             )
+        return queryset
 
 
 class FAQuestionLocaleInline(admin.TabularInline):
@@ -42,8 +43,9 @@ class FAQAnswerLocaleInline(admin.TabularInline):
 @admin.register(FAQuestion)
 class FAQuestionAdmin(admin.ModelAdmin):
     search_fields = ("name",)
-    list_display = ("name", "rank", "has_answer")
-    list_filter = (HasAnswerListFilter,)
+    list_display = ("name", "rank", "enabled", "has_answer")
+    list_filter = (HasAnswerListFilter, "enabled")
+    ordering = ("rank",)
     inlines = (FAQuestionLocaleInline,)
 
     def get_queryset(self, request):
@@ -63,15 +65,14 @@ class FAQuestionAdmin(admin.ModelAdmin):
 
 @admin.register(FAQAnswer)
 class FAQAnswerAdmin(admin.ModelAdmin):
-    search_fields = (
-        "name",
-        "question__name",
-    )
+    search_fields = ("name", "question__name")
     list_display = (
         "name",
         "question",
         "get_q_rank",
+        "get_q_enabled",
     )
+    list_filter = ("question__enabled",)
     inlines = (FAQAnswerLocaleInline,)
 
     def get_queryset(self, request):
@@ -82,3 +83,9 @@ class FAQAnswerAdmin(admin.ModelAdmin):
     @admin.display(description="question rank", ordering="question__rank")
     def get_q_rank(self, obj):
         return obj.question.rank
+
+    @admin.display(
+        description="question enabled?", ordering="question__enabled", boolean=True
+    )
+    def get_q_enabled(self, obj):
+        return obj.question.enabled

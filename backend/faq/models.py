@@ -7,10 +7,19 @@ from django.db import models
 
 
 class FAQuestion(models.Model):
+    """
+    A Frequently Asked Question.
+
+    Questions cannot be grouped by tag for now, but could be in the future.
+    """
+
     name = models.SlugField(
         unique=True, help_text="The unique identifier of the question."
     )
     rank = models.IntegerField(help_text="Allows to order the questions.")
+    enabled = models.BooleanField(
+        default=True, help_text="Disabled questions shouldn't be displayed by the API."
+    )
 
     class Meta:
         ordering = ["rank"]
@@ -36,6 +45,10 @@ class FAQuestionLocale(models.Model):
 
 
 class FAQAnswer(models.Model):
+    """
+    An answer to a `FAQuestion`.
+    """
+
     name = models.SlugField(
         unique=True, help_text="The unique identifier of the answer."
     )
