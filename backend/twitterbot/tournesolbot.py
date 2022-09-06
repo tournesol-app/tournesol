@@ -1,8 +1,8 @@
 import random
 import re
 
+from core.lib.discord.api import write_in_channel
 from core.utils.time import time_ago
-from lib.discord.api import write_in_channel
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
 from tournesol.models.entity_score import ScoreMode
