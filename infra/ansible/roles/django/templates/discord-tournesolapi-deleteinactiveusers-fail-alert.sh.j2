@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-{% if discord_alerting_webhook is defined and discord_alerting_webhook != "" %}
-wget -qO /dev/null \
---post-data='{"content": "Tournesol API delete_inactive_users job failed for {{ansible_host}}"}' \
---header='Content-Type:application/json' \
-'{{discord_alerting_webhook}}?wait=true'
-echo "alert sent"
-{% endif %}

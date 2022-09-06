@@ -8,4 +8,4 @@ Group=gunicorn
 WorkingDirectory=/srv/tournesol-backend
 Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
 ExecStart=/usr/bin/bash -c "source venv/bin/activate && python manage.py cleartokens"
-ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-tournesolapi-cleartokens-fail-alert.sh; fi"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'Tournesol API cleartokens job failed for {{domain_name}}'; fi"

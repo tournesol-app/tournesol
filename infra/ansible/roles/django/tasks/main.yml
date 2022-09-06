@@ -157,11 +157,13 @@
 
 - meta: flush_handlers
 
-- name: Copy Discord ML training failure alert
+- name: Copy Post on Discord
   template:
-    dest: /usr/local/bin/discord-ml-fail-alert.sh
-    src: discord-ml-fail-alert.sh.j2
-    mode: a=rx
+    dest: /usr/local/bin/post-on-discord.sh
+    src: post-on-discord.sh.j2
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rx
 
 - name: Copy ML training service
   template:
@@ -192,12 +194,6 @@
 
 # scheduled task: refresh token clean-up
 
-- name: Copy Discord Tournesol API cleartokens failure alert
-  template:
-    dest: /usr/local/bin/discord-tournesolapi-cleartokens-fail-alert.sh
-    src: discord-tournesolapi-cleartokens-fail-alert.sh.j2
-    mode: a=rx
-
 - name: Copy Tournesol API cleartokens service
   template:
     dest: /etc/systemd/system/tournesol-api-cleartokens.service
@@ -217,12 +213,6 @@
 
 # scheduled task: inactive users clean-up
 
-- name: Copy Discord Tournesol API delete-inactive-users failure alert
-  template:
-    dest: /usr/local/bin/discord-tournesolapi-deleteinactiveusers-fail-alert.sh
-    src: discord-tournesolapi-deleteinactiveusers-fail-alert.sh.j2
-    mode: a=rx
-
 - name: Copy Tournesol API delete-inactive-users service
   template:
     dest: /etc/systemd/system/tournesol-api-delete-inactive-users.service
@@ -241,12 +231,6 @@
     daemon_reload: yes
 
 # scheduled task: Twitterbot
-
-- name: Copy twitterbot failure alert script
-  template:
-    dest: /usr/local/bin/discord-twitterbot-fail-alert.sh
-    src: discord-twitterbot-fail-alert.sh.j2
-    mode: a=rx
 
 - name: Copy twitterbot service
   template:

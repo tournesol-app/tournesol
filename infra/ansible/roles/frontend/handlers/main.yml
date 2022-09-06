@@ -39,9 +39,9 @@
 
 - name: Notify frontend upgrade
   shell:
-    cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - new front end deployed: {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_alerting_webhook}}?wait=true'"
+    cmd: "wget -qO /dev/null --post-data='{\"content\": \"**{{domain_name}}** - new front end deployed: {{git_reference}}\"}' --header='Content-Type:application/json' '{{discord_infra_alert_webhook}}?wait=true'"
     executable: /usr/bin/bash
-  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
 
 - name: Create Frontend OAuth application in Django database
   shell:

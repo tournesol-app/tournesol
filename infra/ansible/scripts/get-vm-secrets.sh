@@ -70,10 +70,6 @@ export GRAFANA_OIDC_CLIENT_ID
 GRAFANA_OIDC_CLIENT_SECRET="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/grafana_oidc_client_secret)"
 export GRAFANA_OIDC_CLIENT_SECRET
 
-DISCORD_ALERTING_WEBHOOK="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /root/discord_alerting_webhook)" && \
-export DISCORD_ALERTING_WEBHOOK || \
-echo "no Discord alerting webhook set"
-
 AWS_ACCESS_KEY_ID="$(ssh "$VM_USER@$VM_ADDR" -- sudo cat /etc/systemd/system/export-backups.service | sed -n 's/^Environment="AWS_ACCESS_KEY_ID=\(.*\)"/\1/p')"
 export AWS_ACCESS_KEY_ID
 
@@ -103,3 +99,9 @@ export TWBOT_ACCESS_TOKEN_EN
 
 TWBOT_ACCESS_TOKEN_SECRET_EN=$(get_settings_value .TWITTERBOT_CREDENTIALS.\"@TournesolBot\".ACCESS_TOKEN_SECRET)
 export TWBOT_ACCESS_TOKEN_SECRET_EN
+
+DISCORD_INFRA_ALERT_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.infra_alert)
+export DISCORD_INFRA_ALERT_WEBHOOK
+
+DISCORD_TWITTER_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.twitter)
+export DISCORD_TWITTER_WEBHOOK
