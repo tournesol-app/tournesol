@@ -33,18 +33,11 @@ class Command(BaseCommand):
         self.stdout.write(f"start command: {__name__}")
         discord_channel = options["channel"]
 
-        try:
-            webhook_url = settings.DISCORD_CHANNEL_WEBHOOKS[discord_channel]
-        except KeyError:
-            raise CommandError(
-                f"No webhook URL configured for channel: {discord_channel}"
-            )
-
         # display the configuration if more verbosity is asked
         if options.get("verbosity", 1) > 1:
             self.stdout.write(f"Discord channel: {discord_channel}")
 
-        write_in_channel(webhook_url, discord_channel, options["message"])
+        write_in_channel(discord_channel, options["message"])
 
         self.stdout.write(self.style.SUCCESS(f"Message posted on {discord_channel}"))
         self.stdout.write("end")

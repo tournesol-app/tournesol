@@ -169,7 +169,6 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
     discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
     if discord_channel:
         write_in_channel(
-            settings.DISCORD_CHANNEL_WEBHOOKS.get(discord_channel, None),
             discord_channel,
             f"https://twitter.com/{bot_name}/status/{resp.id}",
         )
