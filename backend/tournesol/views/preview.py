@@ -192,9 +192,7 @@ def get_preview_frame(entity, fnt_config) -> Image:
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        tournesol_frame_draw.rectangle(
-            ((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER
-        )
+        tournesol_frame_draw.rectangle(((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER)
         tournesol_frame_draw.rectangle(
             ((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER
         )
