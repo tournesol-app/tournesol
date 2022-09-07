@@ -40,7 +40,7 @@ COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
 YT_THUMBNAIL_MQ_SIZE = (320, 180)
 
 
-class PreviewMixin:
+class BasePreviewAPIView(APIView):
     """
     A generic mixin that provides common behaviours that can be used by all
     dynamic preview `APIView`.
@@ -201,7 +201,7 @@ def get_preview_frame(entity, fnt_config) -> Image:
     return tournesol_footer
 
 
-class DynamicWebsitePreviewDefault(PreviewMixin, APIView):
+class DynamicWebsitePreviewDefault(BasePreviewAPIView):
     """
     Return the default preview of the Tournesol front end.
     """
@@ -217,7 +217,7 @@ class DynamicWebsitePreviewDefault(PreviewMixin, APIView):
         return self.default_preview()
 
 
-class DynamicWebsitePreviewEntity(PreviewMixin, APIView):
+class DynamicWebsitePreviewEntity(BasePreviewAPIView):
     """
     Return a preview of an entity, with its Tournesol score, comparisons and
     contributors.
