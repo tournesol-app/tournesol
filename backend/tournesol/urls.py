@@ -56,7 +56,7 @@ urlpatterns = [
     # User API
     path("users/me/", CurrentUserView.as_view(), name="users_me"),
     # Voucher API
-    path("users/me/", include('vouch.urls')),
+    path("users/me/", include("vouch.urls")),
     # Data exports
     path(
         "users/me/exports/comparisons/",
@@ -201,7 +201,7 @@ urlpatterns = [
         name="website_preview_entity",
     ),
     re_path(
-        r'^preview/.*$',
+        r"^preview/.*$",
         DynamicWebsitePreviewDefault.as_view(),
         name="website_preview_default",
     ),
