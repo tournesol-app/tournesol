@@ -68,11 +68,11 @@ class BasePreviewAPIView(APIView):
             return False
         return True
 
-    def get_ts_logo(self, size: tuple):
+    def get_ts_logo(self, length: int):
         return (
             Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
             .convert("RGBA")
-            .resize(size)
+            .resize((length, length))
         )
 
     def get_yt_thumbnail(self, entity: Entity) -> Image:
@@ -255,7 +255,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         # the entity is not currently trusted by Tournesol.
         score = entity.tournesol_score
         if score and score > 0:
-            preview_image.alpha_composite(self.get_ts_logo((34, 34)), dest=(16, 24))
+            preview_image.alpha_composite(self.get_ts_logo(34), dest=(16, 24))
 
         preview_image.save(response, "png")
         return response
