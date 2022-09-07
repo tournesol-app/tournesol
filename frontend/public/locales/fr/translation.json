@@ -181,9 +181,9 @@
     "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
     "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent être comparées, puis sont enlevées de la liste après un nombre suffisant de comparaisons.",
-    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
-    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos.",
-    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos."
+    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéo.",
+    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos.",
+    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos."
   },
   "public": "publique",
   "private": "privée",
