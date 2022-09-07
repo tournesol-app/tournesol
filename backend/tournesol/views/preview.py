@@ -57,7 +57,7 @@ class BasePreviewAPIView(APIView):
         try:
             entity = Entity.objects.get(uid=uid)
         except Entity.DoesNotExist as exc:
-            logger.error("Preview impossible entity with UID %s.", uid)
+            logger.error("Preview impossible for entity with UID %s.", uid)
             logger.error("Exception caught: %s", exc)
             raise exc
         return entity
@@ -80,7 +80,7 @@ class BasePreviewAPIView(APIView):
         try:
             thumbnail_response = requests.get(url)
         except ConnectionError as exc:
-            logger.error("Preview impossible entity with UID %s.", entity.uid)
+            logger.error("Preview failed for entity with UID %s.", entity.uid)
             logger.error("Exception caught: %s", exc)
             raise exc
 
