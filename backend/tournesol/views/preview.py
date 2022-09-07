@@ -163,39 +163,37 @@ def get_preview_frame(entity, fnt_config) -> Image:
             fill=score_color,
             anchor="mt",
         )
-        x, y = ENTITY_N_CONTRIBUTORS_YX
-        tournesol_frame_draw.text(
-            (x, y),
-            f"{entity.rating_n_ratings}",
-            font=fnt_config["entity_ratings"],
-            fill=COLOR_BROWN_FONT,
-            anchor="mt",
-        )
-        tournesol_frame_draw.text(
-            (x, y + 26),
-            "comparisons",
-            font=fnt_config["entity_ratings_label"],
-            fill=COLOR_BROWN_FONT,
-            anchor="mt",
-        )
-        tournesol_frame_draw.text(
-            (x, y + 82),
-            f"{entity.rating_n_contributors}",
-            font=fnt_config["entity_ratings"],
-            fill=COLOR_BROWN_FONT,
-            anchor="mt",
-        )
-        tournesol_frame_draw.text(
-            (x, y + 108),
-            "contributors",
-            font=fnt_config["entity_ratings_label"],
-            fill=COLOR_BROWN_FONT,
-            anchor="mt",
-        )
-        tournesol_frame_draw.rectangle(((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER)
-        tournesol_frame_draw.rectangle(
-            ((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER
-        )
+    x, y = ENTITY_N_CONTRIBUTORS_YX
+    tournesol_frame_draw.text(
+        (x, y),
+        f"{entity.rating_n_ratings}",
+        font=fnt_config["entity_ratings"],
+        fill=COLOR_BROWN_FONT,
+        anchor="mt",
+    )
+    tournesol_frame_draw.text(
+        (x, y + 26),
+        "comparisons",
+        font=fnt_config["entity_ratings_label"],
+        fill=COLOR_BROWN_FONT,
+        anchor="mt",
+    )
+    tournesol_frame_draw.text(
+        (x, y + 82),
+        f"{entity.rating_n_contributors}",
+        font=fnt_config["entity_ratings"],
+        fill=COLOR_BROWN_FONT,
+        anchor="mt",
+    )
+    tournesol_frame_draw.text(
+        (x, y + 108),
+        "contributors",
+        font=fnt_config["entity_ratings_label"],
+        fill=COLOR_BROWN_FONT,
+        anchor="mt",
+    )
+    tournesol_frame_draw.rectangle(((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER)
+    tournesol_frame_draw.rectangle(((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER)
     return tournesol_frame
 
 
@@ -223,6 +221,26 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
     permission_classes = []
 
+    def _draw_logo(self, image: Image, entity: Entity):
+        """
+        Draw the Tournesol logo on the provided image.
+
+        If the Tournesol score of the entity is negative, nothing is drawn.
+        """
+        # Negative scores are displayed without the Tournesol logo, to have
+        # more space to display the minus symbol, and to make it clear that
+        # the entity is not currently trusted by Tournesol.
+        score = entity.tournesol_score
+
+        # If the score has not been computed yet, display a centered flower.
+        if score is None:
+            image.alpha_composite(self.get_ts_logo(34), dest=(43, 24))
+
+        # If the score has been computed, and is positive, display the flower
+        # just before the score.
+        if score and score > 0:
+            image.alpha_composite(self.get_ts_logo(34), dest=(16, 24))
+
     # TODO: should this cache be enabled?
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
     @extend_schema(
@@ -247,13 +265,6 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             return self.default_preview()
 
         preview_image.paste(youtube_thumbnail, box=(120, 0))
-
-        # Negative scores are displayed without the Tournesol logo, to have
-        # more space to display the minus symbol, and to make it clear that
-        # the entity is not currently trusted by Tournesol.
-        score = entity.tournesol_score
-        if score and score > 0:
-            preview_image.alpha_composite(self.get_ts_logo(34), dest=(16, 24))
-
+        self._draw_logo(preview_image, entity)
         preview_image.save(response, "png")
         return response
