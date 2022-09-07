@@ -581,14 +581,14 @@
       "tutorial": {
         "title1": "Bienvenue sur Tournesol 🌻",
         "message1": {
-          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, qui vont enrichir le projet.",
+          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, afin de vous aider à contribuer au projet Tournesol.",
           "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
           "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
           "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
         },
         "title2": "Bravo ! 🥳",
         "message2": {
-          "p10": "Vous avez effectué votre première comparaison. Chacune d'entre elles permet à Tournesol d'affiner ses recommandations.",
+          "p10": "Vous avez effectué votre première comparaison. Chaque comparaison aide Tournesol à améliorer ses recommandations de vidéo.",
           "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
           "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
           "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
