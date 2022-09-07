@@ -111,13 +111,13 @@ def get_preview_font_config() -> dict:
 
 
 def get_preview_frame(entity, fnt_config) -> Image:
-    tournesol_footer = Image.new("RGBA", (440, 240), COLOR_WHITE_BACKGROUND)
-    tournesol_footer_draw = ImageDraw.Draw(tournesol_footer)
+    tournesol_frame = Image.new("RGBA", (440, 240), COLOR_WHITE_BACKGROUND)
+    tournesol_frame_draw = ImageDraw.Draw(tournesol_frame)
     full_title = entity.metadata.get("name", "")
     truncated_title = full_title[:200]
     # TODO: optimize this with a dichotomic search
     while (
-        tournesol_footer_draw.textlength(
+        tournesol_frame_draw.textlength(
             truncated_title, font=fnt_config["entity_title"]
         )
         > 300
@@ -127,20 +127,20 @@ def get_preview_frame(entity, fnt_config) -> Image:
     truncated_uploader = full_uploader[:200]
     # TODO: optimize this with a dichotomic search
     while (
-        tournesol_footer_draw.textlength(
+        tournesol_frame_draw.textlength(
             truncated_uploader, font=fnt_config["entity_title"]
         )
         > 300
     ):
         truncated_uploader = truncated_uploader[:-4] + "..."
 
-    tournesol_footer_draw.text(
+    tournesol_frame_draw.text(
         ENTITY_TITLE_XY,
         truncated_uploader,
         font=fnt_config["entity_uploader"],
         fill=COLOR_BROWN_FONT,
     )
-    tournesol_footer_draw.text(
+    tournesol_frame_draw.text(
         (ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 24),
         truncated_title,
         font=fnt_config["entity_title"],
@@ -156,7 +156,7 @@ def get_preview_frame(entity, fnt_config) -> Image:
             score_color = COLOR_NEGATIVE_SCORE
             score_xy = TOURNESOL_SCORE_NEGATIVE_XY
 
-        tournesol_footer_draw.text(
+        tournesol_frame_draw.text(
             score_xy,
             "%.0f" % score,
             font=fnt_config["ts_score"],
@@ -164,41 +164,41 @@ def get_preview_frame(entity, fnt_config) -> Image:
             anchor="mt",
         )
         x, y = ENTITY_N_CONTRIBUTORS_YX
-        tournesol_footer_draw.text(
+        tournesol_frame_draw.text(
             (x, y),
             f"{entity.rating_n_ratings}",
             font=fnt_config["entity_ratings"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        tournesol_footer_draw.text(
+        tournesol_frame_draw.text(
             (x, y + 26),
             "comparisons",
             font=fnt_config["entity_ratings_label"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        tournesol_footer_draw.text(
+        tournesol_frame_draw.text(
             (x, y + 82),
             f"{entity.rating_n_contributors}",
             font=fnt_config["entity_ratings"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        tournesol_footer_draw.text(
+        tournesol_frame_draw.text(
             (x, y + 108),
             "contributors",
             font=fnt_config["entity_ratings_label"],
             fill=COLOR_BROWN_FONT,
             anchor="mt",
         )
-        tournesol_footer_draw.rectangle(
+        tournesol_frame_draw.rectangle(
             ((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER
         )
-        tournesol_footer_draw.rectangle(
+        tournesol_frame_draw.rectangle(
             ((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER
         )
-    return tournesol_footer
+    return tournesol_frame
 
 
 class DynamicWebsitePreviewDefault(BasePreviewAPIView):
