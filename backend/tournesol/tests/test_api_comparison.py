@@ -960,9 +960,10 @@ class ComparisonApiTestCase(TestCase):
                 format="json",
             )
 
+        data = {"entity": {"uid": video_main.uid}}
         self.client.post(
-            "/users/me/video_rate_later/",
-            {"video": {"video_id": video_main.video_id}},
+            f"/users/me/rate_later/{self.poll_videos.name}/",
+            data,
             format="json",
         )
         compare(video_main.uid, videos[0].uid)

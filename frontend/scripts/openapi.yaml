@@ -641,7 +641,7 @@ paths:
   /preview/.*:
     get:
       operationId: preview_.*_retrieve
-      description: Default website preview
+      description: Default website preview.
       tags:
       - preview
       security:
@@ -658,7 +658,7 @@ paths:
   /preview/entities/{uid}:
     get:
       operationId: preview_entities_retrieve
-      description: Website preview for entities page
+      description: Generic preview of an entity.
       parameters:
       - in: path
         name: uid
@@ -1847,106 +1847,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedEntityNoExtraFieldList'
           description: ''
-  /users/me/video_rate_later/:
-    get:
-      operationId: users_me_video_rate_later_list
-      description: List all videos of a user's rate later list, or add a video to
-        the list.
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedRateLaterLegacyList'
-          description: ''
-    post:
-      operationId: users_me_video_rate_later_create
-      description: List all videos of a user's rate later list, or add a video to
-        the list.
-      tags:
-      - users
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RateLaterLegacyRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/RateLaterLegacyRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/RateLaterLegacyRequest'
-        required: true
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RateLaterLegacy'
-          description: ''
-        '409':
-          description: 'Conflict: the video is already in the rate later list, or
-            there is an other error with the database query.'
-  /users/me/video_rate_later/{video_id}/:
-    get:
-      operationId: users_me_video_rate_later_retrieve
-      description: Fetch a video from user's rate later list
-      parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RateLaterLegacy'
-          description: ''
-    delete:
-      operationId: users_me_video_rate_later_destroy
-      description: Delete a video from user's rate later list
-      parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '204':
-          description: No response body
   /users/me/vouchers/:
     post:
       operationId: users_me_vouchers_create
@@ -2548,38 +2448,38 @@ components:
         Note that the fields `n_comparisons` and `n_contributors` contain
         the collective values, and are not specific to the user.
       properties:
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributorCriteriaScore'
+          readOnly: true
+        n_comparisons:
+          type: integer
+        total_score:
+          type: number
+          format: float
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        criteria_scores:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContributorCriteriaScore'
-          readOnly: true
-        total_score:
-          type: number
-          format: float
         type:
           $ref: '#/components/schemas/TypeEnum'
         metadata:
           type: object
           additionalProperties: {}
           readOnly: true
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        n_comparisons:
-          type: integer
         is_public:
           type: boolean
           readOnly: true
         n_contributors:
           type: integer
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
       required:
       - criteria_scores
       - is_public
@@ -3274,26 +3174,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
-    PaginatedRateLaterLegacyList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/RateLaterLegacy'
     PaginatedRateLaterList:
       type: object
       properties:
@@ -3602,32 +3482,6 @@ components:
       required:
       - created_at
       - entity
-    RateLaterLegacy:
-      type: object
-      description: |-
-        A serializer transporting `RateLater` data using the legacy couple user
-        and video.
-
-        The poll is automatically set to the default poll by the `RateLater`
-        model.
-      properties:
-        video:
-          $ref: '#/components/schemas/RelatedVideo'
-      required:
-      - video
-    RateLaterLegacyRequest:
-      type: object
-      description: |-
-        A serializer transporting `RateLater` data using the legacy couple user
-        and video.
-
-        The poll is automatically set to the default poll by the `RateLater`
-        model.
-      properties:
-        video:
-          $ref: '#/components/schemas/RelatedVideoRequest'
-      required:
-      - video
     RateLaterRequest:
       type: object
       properties:
@@ -4077,92 +3931,6 @@ components:
           maxLength: 144
       required:
       - uid
-    RelatedVideo:
-      type: object
-      description: |-
-        A video serializer that will create the Entity object on validation
-        if it does not exist in the database yet.
-
-        Used by ModelSerializer(s) having one or more nested relations with Entity,
-        and having the constraint to ensure that video instances exist before
-        they can be saved properly.
-      properties:
-        uid:
-          type: string
-          readOnly: true
-          description: A unique identifier, build with a namespace and an external
-            id.
-        name:
-          type: string
-          readOnly: true
-          description: Video title
-        description:
-          type: string
-          readOnly: true
-          nullable: true
-          description: Video description, from YouTube
-        publication_date:
-          type: string
-          format: date
-          readOnly: true
-          nullable: true
-        views:
-          type: integer
-          readOnly: true
-          nullable: true
-        uploader:
-          type: string
-          readOnly: true
-          nullable: true
-          description: Name of the channel on YouTube
-        language:
-          type: string
-          readOnly: true
-          nullable: true
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          description: Total number of pairwise comparisons for this videofrom certified
-            contributors
-        rating_n_contributors:
-          type: integer
-          readOnly: true
-          description: Total number of certified contributors who rated the video
-        duration:
-          type: integer
-          readOnly: true
-          nullable: true
-        video_id:
-          type: string
-          pattern: ^([A-Za-z0-9-_]{11})$
-      required:
-      - description
-      - duration
-      - language
-      - name
-      - publication_date
-      - rating_n_contributors
-      - rating_n_ratings
-      - uid
-      - uploader
-      - video_id
-      - views
-    RelatedVideoRequest:
-      type: object
-      description: |-
-        A video serializer that will create the Entity object on validation
-        if it does not exist in the database yet.
-
-        Used by ModelSerializer(s) having one or more nested relations with Entity,
-        and having the constraint to ensure that video instances exist before
-        they can be saved properly.
-      properties:
-        video_id:
-          type: string
-          minLength: 1
-          pattern: ^([A-Za-z0-9-_]{11})$
-      required:
-      - video_id
     ReligionEnum:
       enum:
       - Not Specified
