@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Grid } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 
@@ -16,8 +17,14 @@ const PersonalVouchersPage = () => {
       <ContentHeader title={t('personalMenu.vouchers')} />
       <ContentBox noMinPaddingX maxWidth="lg">
         <CreateVoucherForm />
-        <GivenVouchers />
-        <ReceivedVouchers />
+        <Grid container>
+          <Grid item md={6}>
+            <GivenVouchers />
+          </Grid>
+          <Grid item md={6}>
+            <ReceivedVouchers />
+          </Grid>
+        </Grid>
       </ContentBox>
     </PersonalVouchersProvider>
   );
