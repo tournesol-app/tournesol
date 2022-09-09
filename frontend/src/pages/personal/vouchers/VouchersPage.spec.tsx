@@ -39,6 +39,12 @@ describe('VouchersPage', () => {
     await within(container).findByRole('listitem', { name: username });
   };
 
+  const findReceivedVoucher = async (username) => {
+    const container = await screen.findByTestId('received-vouchers-list');
+    expect(container.getAttribute('role')).toEqual('list');
+    await within(container).findByRole('listitem', { name: username });
+  };
+
   beforeEach(() => {
     jest
       .spyOn(UsersService, 'usersMeVouchersGivenList')
@@ -52,6 +58,25 @@ describe('VouchersPage', () => {
         {
           to: 'to_username2',
           by: 'by_username',
+          value: 1.0,
+          is_public: true,
+        },
+      ]);
+  });
+
+  beforeEach(() => {
+    jest
+      .spyOn(UsersService, 'usersMeVouchersReceivedList')
+      .mockImplementation(async () => [
+        {
+          to: 'current user',
+          by: 'received username 1',
+          value: 1.0,
+          is_public: true,
+        },
+        {
+          to: 'current user',
+          by: 'received username 2',
           value: 1.0,
           is_public: true,
         },
@@ -109,5 +134,11 @@ describe('VouchersPage', () => {
     render(<Component />);
     await findGivenVoucher('to_username1');
     await findGivenVoucher('to_username2');
+  });
+
+  it('lists received vouchers', async () => {
+    render(<Component />);
+    await findReceivedVoucher('received username 1');
+    await findReceivedVoucher('received username 2');
   });
 });

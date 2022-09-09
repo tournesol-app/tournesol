@@ -1,10 +1,15 @@
 import React, { createContext, useContext, useCallback, useState } from 'react';
 
-import { UsersService, GivenVoucher } from 'src/services/openapi';
+import {
+  UsersService,
+  GivenVoucher,
+  ReadOnlyVoucher,
+} from 'src/services/openapi';
 
 interface PersonalVouchersValue {
   createVoucher: ({ username }: { username: string }) => void;
   givenVouchers?: GivenVoucher[];
+  receivedVouchers?: ReadOnlyVoucher[];
 }
 const Context = createContext<PersonalVouchersValue>({
   createVoucher: () => {
@@ -40,7 +45,12 @@ export const PersonalVouchersProvider = ({
       const vouchers = await UsersService.usersMeVouchersGivenList();
       setValue((value) => ({ ...value, givenVouchers: vouchers }));
     };
+    const loadReceivedVouchers = async () => {
+      const vouchers = await UsersService.usersMeVouchersReceivedList();
+      setValue((value) => ({ ...value, receivedVouchers: vouchers }));
+    };
     loadGivenVouchers();
+    loadReceivedVouchers();
   }, []);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

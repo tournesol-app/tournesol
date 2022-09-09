@@ -6,6 +6,7 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { PersonalVouchersProvider } from './context';
 import CreateVoucherForm from './CreateVoucherForm';
 import GivenVouchers from './GivenVouchers';
+import ReceivedVouchers from './ReceivedVouchers';
 
 const PersonalVouchersPage = () => {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ const PersonalVouchersPage = () => {
       <ContentBox noMinPaddingX maxWidth="lg">
         <CreateVoucherForm />
         <GivenVouchers />
+        <ReceivedVouchers />
       </ContentBox>
     </PersonalVouchersProvider>
   );

@@ -472,7 +472,9 @@
     "usernameLabel": "Nom d'utilisateur",
     "submitButton": "Je me porte garant de cet utilisateur",
     "noVoucherGiven": "Aucun.",
-    "givenVouchersTitle": "Utilisateurs pour lesquels vous vous êtes porté garant"
+    "givenVouchersTitle": "Utilisateurs pour lesquels vous vous êtes porté garant",
+    "noVoucherReceived": "Aucun.",
+    "receivedVouchersTitle": "Utilisateurs qui se sont portés garant pour vous"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"

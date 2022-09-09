@@ -465,7 +465,9 @@
     "usernameLabel": "Username",
     "submitButton": "I vouch for this user",
     "noVoucherGiven": "None.",
-    "givenVouchersTitle": "Users you have vouched for"
+    "givenVouchersTitle": "Users you have vouched for",
+    "noVoucherReceived": "None.",
+    "receivedVouchersTitle": "Users who vouched for you"
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
