@@ -463,7 +463,9 @@
     "voucherCreated": "You successfuly vouched for \"{{username}}\"",
     "introduction": "I vouch that this user is a human, with an authentic behavior, and that this user does not actively use another account on Tournesol:",
     "usernameLabel": "Username",
-    "submitButton": "I vouch for this user"
+    "submitButton": "I vouch for this user",
+    "noVoucherGiven": "None.",
+    "givenVouchersTitle": "Users you have vouched for"
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"

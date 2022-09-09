@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 
 import { ContentBox, ContentHeader } from 'src/components';
 
-import CreateVoucherForm from './CreateVoucherForm';
 import { PersonalVouchersProvider } from './context';
+import CreateVoucherForm from './CreateVoucherForm';
+import GivenVouchers from './GivenVouchers';
 
 const PersonalVouchersPage = () => {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ const PersonalVouchersPage = () => {
       <ContentHeader title={t('personalMenu.vouchers')} />
       <ContentBox noMinPaddingX maxWidth="lg">
         <CreateVoucherForm />
+        <GivenVouchers />
       </ContentBox>
     </PersonalVouchersProvider>
   );

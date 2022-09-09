@@ -6,6 +6,7 @@
 // @ts-nocheck
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
@@ -32,6 +33,31 @@ describe('VouchersPage', () => {
     await userEvent.keyboard('{Enter}');
   };
 
+  const findGivenVoucher = async (username) => {
+    const container = await screen.findByTestId('given-vouchers-list');
+    expect(container.getAttribute('role')).toEqual('list');
+    await within(container).findByRole('listitem', { name: username });
+  };
+
+  beforeEach(() => {
+    jest
+      .spyOn(UsersService, 'usersMeVouchersGivenList')
+      .mockImplementation(async () => [
+        {
+          to: 'to_username1',
+          by: 'by_username',
+          value: 1.0,
+          is_public: true,
+        },
+        {
+          to: 'to_username2',
+          by: 'by_username',
+          value: 1.0,
+          is_public: true,
+        },
+      ]);
+  });
+
   it('creates a voucher when the form is submitted', async () => {
     const createdVoucher = {
       to: 'someone',
@@ -51,6 +77,7 @@ describe('VouchersPage', () => {
     });
     screen.getByText('personalVouchers.voucherCreated');
     expect(getUsernameInput().value).toEqual('');
+    await findGivenVoucher('someone');
   });
 
   it('handles error on form submit', async () => {
@@ -76,5 +103,11 @@ describe('VouchersPage', () => {
     screen.getByText('some error');
     expect(getUsernameInput().value).toEqual('someone');
     expect(consoleErrorSpy).toHaveBeenCalledWith(error);
+  });
+
+  it('lists given vouchers', async () => {
+    render(<Component />);
+    await findGivenVoucher('to_username1');
+    await findGivenVoucher('to_username2');
   });
 });
