@@ -450,6 +450,36 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /faq/:
+    get:
+      operationId: faq_list
+      description: List all questions and their answers, translated in a specific
+        language.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - faq
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFAQuestionList'
+          description: ''
   /polls/{name}/:
     get:
       operationId: polls_retrieve
@@ -2548,38 +2578,38 @@ components:
         Note that the fields `n_comparisons` and `n_contributors` contain
         the collective values, and are not specific to the user.
       properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        n_contributors:
+          type: integer
+        total_score:
+          type: number
+          format: float
+        n_comparisons:
+          type: integer
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        type:
+          $ref: '#/components/schemas/TypeEnum'
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        total_score:
-          type: number
-          format: float
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        n_comparisons:
-          type: integer
         is_public:
           type: boolean
           readOnly: true
-        n_contributors:
-          type: integer
       required:
       - criteria_scores
       - is_public
@@ -2817,6 +2847,23 @@ components:
       - video
       - candidate_fr_2022
       type: string
+    FAQuestion:
+      type: object
+      description: A translated question with its translated answer.
+      properties:
+        name:
+          type: string
+          description: The unique identifier of the question.
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        question:
+          type: string
+        answer:
+          type: string
+      required:
+      - answer
+      - name
+      - question
     GenderEnum:
       enum:
       - Not Specified
@@ -3274,6 +3321,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
+    PaginatedFAQuestionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FAQuestion'
     PaginatedRateLaterLegacyList:
       type: object
       properties:
