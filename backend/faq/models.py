@@ -8,7 +8,29 @@ from django.db import models
 from django.utils import translation
 
 
-class FAQuestion(models.Model):
+class AbstractLocalizable(models.Model):
+    """
+    This class factorizes common behaviours between questions and answers.
+    """
+
+    class Meta:
+        abstract = True
+
+    def get_text(self, lang):
+        """Return the translated text of the instance."""
+        if lang is None:
+            lang = translation.get_language()
+        try:
+            locale = self.locales.get(language=lang)
+        except ObjectDoesNotExist:
+            try:
+                locale = self.locales.get(language="en")
+            except ObjectDoesNotExist:
+                return self.name  # pylint: disable=no-member
+        return locale.text
+
+
+class FAQuestion(AbstractLocalizable):
     """
     A Frequently Asked Question.
 
@@ -30,18 +52,6 @@ class FAQuestion(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def get_text(self, lang=None):
-        if lang is None:
-            lang = translation.get_language()
-        try:
-            locale = self.locales.get(language=lang)
-        except ObjectDoesNotExist:
-            try:
-                locale = self.locales.get(language="en")
-            except ObjectDoesNotExist:
-                return self.name
-        return locale.text
-
 
 class FAQuestionLocale(models.Model):
     question = models.ForeignKey(
@@ -58,7 +68,7 @@ class FAQuestionLocale(models.Model):
         return self.text
 
 
-class FAQAnswer(models.Model):
+class FAQAnswer(AbstractLocalizable):
     """
     An answer to a `FAQuestion`.
     """
@@ -75,18 +85,6 @@ class FAQAnswer(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-    def get_text(self, lang=None):
-        if lang is None:
-            lang = translation.get_language()
-        try:
-            locale = self.locales.get(language=lang)
-        except ObjectDoesNotExist:
-            try:
-                locale = self.locales.get(language="en")
-            except ObjectDoesNotExist:
-                return self.name
-        return locale.text
 
 
 class FAQAnswerLocale(models.Model):
