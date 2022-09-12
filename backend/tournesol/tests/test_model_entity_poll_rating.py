@@ -65,7 +65,7 @@ class EntityPollRatingTestCase(TestCase):
     def test_update_n_ratings_n_contributors(self):
         """
         Given a new user,
-        Given a new comparison including video_1 and a nes video
+        Given a new comparison including video_1 and a new video
         When we run update_n_ratings() on video_1 and video_2
         Then the video_1.n_comparisons number increases by 1,
         Then the video_1.n_contributors number increases by 1,
