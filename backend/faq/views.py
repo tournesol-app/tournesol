@@ -2,12 +2,18 @@
 API of the `faq` app.
 """
 
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListAPIView
 
 from faq.models import FAQuestion
 from faq.serializers import FAQuestionSerializer
 
 
+@extend_schema_view(
+    get=extend_schema(
+        description="List all questions and their answers, translated in a specific language.",
+    ),
+)
 class FAQuestionLocalizedListView(ListAPIView):
     """
     List all questions and their answers, translated in a specific language.
