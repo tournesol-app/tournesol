@@ -57,7 +57,7 @@ class EntityPollRating(models.Model):
         )
 
         self.n_contributors = (
-            Comparison.objects.filter(Q(entity_1=self) | Q(entity_2=self))
+            Comparison.objects.filter(Q(entity_1=self.entity) | Q(entity_2=self.entity))
             .filter(Q(poll=self.poll))
             .distinct("user")
             .count()
