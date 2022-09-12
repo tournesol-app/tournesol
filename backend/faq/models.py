@@ -3,7 +3,9 @@ Models of the `faq` app.
 """
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils import translation
 
 
 class FAQuestion(models.Model):
@@ -27,6 +29,18 @@ class FAQuestion(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_text(self, lang=None):
+        if lang is None:
+            lang = translation.get_language()
+        try:
+            locale = self.locales.get(language=lang)
+        except ObjectDoesNotExist:
+            try:
+                locale = self.locales.get(language="en")
+            except ObjectDoesNotExist:
+                return self.name
+        return locale.text
 
 
 class FAQuestionLocale(models.Model):
@@ -61,6 +75,18 @@ class FAQAnswer(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_text(self, lang=None):
+        if lang is None:
+            lang = translation.get_language()
+        try:
+            locale = self.locales.get(language=lang)
+        except ObjectDoesNotExist:
+            try:
+                locale = self.locales.get(language="en")
+            except ObjectDoesNotExist:
+                return self.name
+        return locale.text
 
 
 class FAQAnswerLocale(models.Model):
