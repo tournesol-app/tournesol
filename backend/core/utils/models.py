@@ -56,7 +56,7 @@ class WithEmbedding:
         try:
             decoded = base64.b64decode(getattr(self, self._EMBEDDING_FIELD))
             array = pickle.loads(decoded)
-        except BaseException:
+        except Exception:  # pylint: disable=broad-except
             return None
         if not isinstance(array, np.ndarray):
             return None
@@ -83,7 +83,7 @@ def filter_reduce(lst, fcn, name="_"):
     lst = [x for x in lst if x is not None]
     if not lst:
         logging.warning(
-            f"{name} query with en empty list of operands, returning None: {lst_orig}"
+            "%s query returned None due to an empty list of operands: %s", name, lst_orig
         )
         return None
     return reduce(fcn, lst)

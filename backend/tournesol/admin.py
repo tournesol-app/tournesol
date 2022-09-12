@@ -45,19 +45,18 @@ class MetadataFieldFilter(SimpleListFilter):
         """Filter the queryset according to the selected metadata filter"""
         if self.value():
             json_field_query = {f"metadata__{self.metadata_key}": self.value()}
-            queryset = queryset.filter(**json_field_query)
-        elif self.value() == "":
+            return queryset.filter(**json_field_query)
+        if self.value() == "":
             json_field_query = (
                 Q(**{f"metadata__{self.metadata_key}": ""})
                 | Q(**{f"metadata__{self.metadata_key}": None})
             )
-            queryset = queryset.filter(json_field_query)
-
+            return queryset.filter(json_field_query)
         return queryset
 
 
 class EntityLanguageFilter(MetadataFieldFilter):
-    """Enables the language filter in the entities' interface"""
+    """Enables the language filter in the entities' admin interface"""
     title = "language"
     parameter_name = "metadataLanguage"
     metadata_key = "language"
@@ -65,7 +64,6 @@ class EntityLanguageFilter(MetadataFieldFilter):
 
 @admin.register(Entity)
 class EntityAdmin(admin.ModelAdmin):
-    """Admin management interface for entities"""
     readonly_fields = ("tournesol_score",)
     list_display = (
         "uid",
@@ -123,7 +121,6 @@ class EntityAdmin(admin.ModelAdmin):
 
 @admin.register(EntityCriteriaScore)
 class EntityCriteriaScoreAdmin(admin.ModelAdmin):
-    """Admin management interface for entities' criteria scores"""
     list_display = ("entity", "poll", "criteria", "score_mode", "score")
     list_filter = (
         "poll",
@@ -135,7 +132,6 @@ class EntityCriteriaScoreAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorRating)
 class ContributorRatingAdmin(admin.ModelAdmin):
-    """Admin management interface for contributor ratings"""
     list_display = (
         "user",
         "entity",
@@ -163,7 +159,6 @@ class ContributorRatingAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorRatingCriteriaScore)
 class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
-    """Admin management interface for contributor rating criteria scores"""
     list_filter = ("contributor_rating__poll__name",)
     list_display = ("id", "contributor_rating", "criteria", "score")
     readonly_fields = ("contributor_rating",)
@@ -172,7 +167,6 @@ class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
 
 @admin.register(ContributorScaling)
 class ContributorScalingAdmin(admin.ModelAdmin):
-    """Admin management interface for contributor scaling"""
     search_fields = (
         "criteria",
         "user__username",
@@ -184,7 +178,6 @@ class ContributorScalingAdmin(admin.ModelAdmin):
 
 @admin.register(Comparison)
 class ComparisonAdmin(admin.ModelAdmin):
-    """Admin management interface for comparisons"""
     list_display = (
         "pk",
         "user",
@@ -212,7 +205,6 @@ class ComparisonAdmin(admin.ModelAdmin):
 
 @admin.register(ComparisonCriteriaScore)
 class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
-    """Admin management interface for comparison criteria scores"""
     list_filter = ("comparison__poll__name",)
     list_display = ("id", "comparison", "criteria", "score")
     readonly_fields = ("comparison",)
@@ -224,7 +216,7 @@ class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
 
 
 class CriteriasInline(admin.TabularInline):
-    """Used to display the criteria in the poll's admin interface"""
+    """Used to display the criteria in the polls' admin interface"""
     model = CriteriaRank
     extra = 0
 
@@ -237,7 +229,6 @@ class CriteriaLocalesInline(admin.TabularInline):
 
 @admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):
-    """Admin management interface for polls"""
     list_display = (
         "name",
         "active",
@@ -289,5 +280,4 @@ class PollAdmin(admin.ModelAdmin):
 
 @admin.register(Criteria)
 class CriteriaAdmin(admin.ModelAdmin):
-    """Admin management interface for criteria"""
     inlines = (CriteriaLocalesInline,)

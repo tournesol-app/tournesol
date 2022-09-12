@@ -139,14 +139,13 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         This method requires a queryset annotated with the entities weighted
         total score.
         """
-        show_unsafe = filters["unsafe"]
-        if not show_unsafe:
-            queryset = queryset.filter(
-                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
-                tournesol_score__gt=0,
-            )
+        if filters["unsafe"]:
+            return queryset
 
-        return queryset
+        return queryset.filter(
+            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
+            tournesol_score__gt=0,
+        )
 
     def sort_results(self, queryset, filters):
         """
@@ -180,8 +179,8 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                 * (F("relevance") + self.search_score_coef * normalized_total_score)
             )
             return queryset.order_by("-search_score", "-pk")
-        else:
-            return queryset.order_by("-total_score", "-pk")
+
+        return queryset.order_by("-total_score", "-pk")
 
     def _build_criteria_weight_condition(
         self, request, poll: Poll, when="criteria_scores__criteria"

@@ -67,7 +67,7 @@ def languages_detection(title, description):
 
 
 def compute_video_language(uploader, title, description):
-    from tournesol.models.entity import Entity
+    from tournesol.models.entity import Entity  # pylint: disable=import-outside-toplevel
 
     # Get language(s) from other videos of the same uploader
     lang_list = (

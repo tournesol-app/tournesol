@@ -237,17 +237,17 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
         return Response(ScoreInconsistenciesSerializer(response).data)
 
     @staticmethod
-    def _list_inconsistent_comparisons(criteria_comparisons: list,
-                                       criteria_ratings: list,
-                                       threshold: float,
-                                       criteria_list: list) -> dict:
+    def _list_inconsistent_comparisons(  # pylint: disable=too-many-locals
+        criteria_comparisons: list,
+        criteria_ratings: list,
+        threshold: float,
+        criteria_list: list
+    ) -> dict:
         """
         For each comparison criteria, search the corresponding rating,
         calculate the inconsistency, and check if it crosses the threshold.
         Then prepare the HTTP response.
         """
-        response = {}
-
         comparisons_analysed_count = dict.fromkeys(criteria_list, 0)
         inconsistent_comparisons_count = dict.fromkeys(criteria_list, 0)
         inconsistency_sum = dict.fromkeys(criteria_list, 0.0)
@@ -302,9 +302,11 @@ class ScoreInconsistencies(PollScopedViewMixin, GenericAPIView):
 
         inconsistent_criteria_comparisons.sort(key=lambda d: d['inconsistency'], reverse=True)
 
-        response["count"] = len(inconsistent_criteria_comparisons)
-        response["results"] = inconsistent_criteria_comparisons
-        response["stats"] = {}
+        response = {
+            "count": len(inconsistent_criteria_comparisons),
+            "results": inconsistent_criteria_comparisons,
+            "stats": {},
+        }
         for criteria in criteria_list:
             mean_inconsistency = 0.0
             if comparisons_analysed_count[criteria] > 0:

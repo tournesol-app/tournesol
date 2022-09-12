@@ -42,6 +42,8 @@ class IsTrustedFilter(admin.SimpleListFilter):
         if self.value() == "0":
             return queryset.exclude(pk__in=User.trusted_users())
 
+        return queryset
+
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
@@ -117,12 +119,12 @@ class ExpertiseKeywordAdmin(admin.ModelAdmin):
 
 
 @admin.action(description="Mark selected domains as accepted")
-def make_accepted(modeladmin, request, queryset):
+def make_accepted(modeladmin, request, queryset):  # pylint: disable=unused-argument
     queryset.update(status=EmailDomain.STATUS_ACCEPTED)
 
 
 @admin.action(description="Mark selected domains as rejected")
-def make_rejected(modeladmin, request, queryset):
+def make_rejected(modeladmin, request, queryset):  # pylint: disable=unused-argument
     queryset.update(status=EmailDomain.STATUS_REJECTED)
 
 
@@ -151,7 +153,7 @@ class EmailDomainAdmin(admin.ModelAdmin):
         )
         return qst
 
-    @admin.display(ordering="-_user_number", description="# users")
+    @admin.display(ordering="-user_number", description="# users")
     def user_number(self, obj):
         return obj.user_number
 

@@ -110,7 +110,7 @@ class Comparison(models.Model):
         return comparison, True
 
     def __str__(self):
-        return "%s [%s/%s]" % (self.user, self.entity_1, self.entity_2)
+        return f"{self.user} [{self.entity_1}/{self.entity_2}]"
 
 
 class ComparisonCriteriaScore(models.Model):

@@ -20,10 +20,7 @@ class ContributorRecommendationsSerializer(RecommendationSerializer):
     criteria_scores = SerializerMethodField()
 
     class Meta(RecommendationSerializer.Meta):
-        fields = list(
-            set(RecommendationSerializer.Meta.fields)
-            | {"is_public"}
-        )
+        fields = RecommendationSerializer.Meta.fields + ["is_public"]
 
     @extend_schema_field(ContributorCriteriaScore(many=True))
     def get_criteria_scores(self, obj):

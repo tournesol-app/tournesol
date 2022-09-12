@@ -173,7 +173,7 @@ class Entity(models.Model):
         " stemmed and weighted according to the language's search config.",
     )
 
-    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Always refresh the metadata text search vector.
 
@@ -181,16 +181,16 @@ class Entity(models.Model):
         there are different weights and configs, and the
         format of the metadata can vary with the entity type.
         """
-        super().save(force_insert, force_update, *args, **kwargs)
+        super().save(force_insert, force_update, using, update_fields)
 
         # If "metadata" has changed, the indexed search_vector needs to be updated.
         # This condition also avoids infinite loop when calling .save()
-        if ("update_fields" not in kwargs) or ("metadata" in kwargs["update_fields"]):
+        if (update_fields is None) or ("metadata" in update_fields):
             if self.type in ENTITY_TYPE_NAME_TO_CLASS:
                 self.entity_cls.update_search_vector(self)
 
     def update_n_ratings(self):
-        from .comparisons import Comparison
+        from .comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
         self.rating_n_ratings = Comparison.objects.filter(
             Q(entity_1=self) | Q(entity_2=self)
@@ -207,7 +207,7 @@ class Entity(models.Model):
         When called, the entity is removed from the user's rate-later list if
         it has been compared at least 4 times.
         """
-        from .comparisons import Comparison
+        from .comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
         n_comparisons = Comparison.objects.filter(
             poll=poll, user=user
@@ -240,18 +240,6 @@ class Entity(models.Model):
         if self.type != TYPE_VIDEO:
             raise AttributeError("Cannot access 'video_id': this entity is not a video")
         return self.metadata.get("video_id")
-
-    @property
-    def best_text(self):
-        """Return description, otherwise title."""
-        priorities = [self.metadata.get("description"), self.metadata.get("name")]
-
-        # going over all priorities
-        for priority in priorities:
-            # selecting one that exists
-            if priority is not None:
-                return priority
-        return None
 
     @property
     def all_text(self):
@@ -319,7 +307,7 @@ class Entity(models.Model):
         WARNING: This implementation is obsolete, and relies on non-existing
         fields "{criteria}_quantile" for videos.
         """
-        from .poll import Poll
+        from .poll import Poll  # pylint: disable=import-outside-toplevel
 
         criteria_list = Poll.default_poll().criterias_list()
         quantiles_by_feature_by_id = {criteria: {} for criteria in criteria_list}
@@ -352,6 +340,7 @@ class Entity(models.Model):
 
     @classmethod
     def create_from_video_id(cls, video_id):
+        # pylint: disable=import-outside-toplevel
         from tournesol.utils.api_youtube import get_video_metadata
 
         # Returns nothing if no YOUTUBE_API_KEY is not configured.

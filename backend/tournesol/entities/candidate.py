@@ -5,6 +5,7 @@ from django.contrib.postgres.search import SearchVector
 from django.db.models.fields.json import KeyTextTransform
 
 from tournesol.serializers.metadata import CandidateMetadata
+from tournesol.utils.constants import REQUEST_TIMEOUT
 
 from .base import EntityType
 
@@ -43,6 +44,7 @@ class CandidateEntity(EntityType):
                 "ids": self.wikidata_id,
                 "format": "json",
             },
+            timeout=REQUEST_TIMEOUT,
         )
         resp.raise_for_status()
         wd_item = resp.json()["entities"][self.wikidata_id]

@@ -286,6 +286,8 @@ class User(AbstractUser):
             users = users.exclude(username=username)
 
         if users.exists():
+            # f-strings are incompatible with Django translations ("_")
+            # pylint: disable=consider-using-f-string
             raise ValidationError(
                 _(
                     "A user with an email starting with '%(email)s' already exists"

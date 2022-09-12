@@ -15,7 +15,7 @@ API_VERSION = "v3"
 YOUTUBE = None
 YOUTUBE_API_KEY = settings.YOUTUBE_API_KEY
 if YOUTUBE_API_KEY:
-    youtube = googleapiclient.discovery.build(
+    YOUTUBE = googleapiclient.discovery.build(
         API_SERVICE_NAME, API_VERSION, developerKey=YOUTUBE_API_KEY
     )
 
@@ -34,6 +34,7 @@ def get_youtube_video_details(video_id):
             "YouTube client not initialized, did you provide an API key?"
         )
 
+    # pylint: disable=no-member
     request = YOUTUBE.videos().list(
         part="snippet,contentDetails,statistics,status", id=video_id
     )
@@ -45,7 +46,7 @@ def get_video_metadata(video_id, compute_language=True):
         yt_response = get_youtube_video_details(video_id)
     except YoutubeNotConfiguredError:
         return {}
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         logger.error("Failed to retrieve video metadata from Youtube", exc_info=True)
         return {}
 

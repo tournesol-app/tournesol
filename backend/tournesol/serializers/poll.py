@@ -30,6 +30,7 @@ class RecommendationSerializer(ModelSerializer):
     # on the parameters of an api request. Should it be treated differently?
     total_score = serializers.FloatField()
 
+    # pylint: disable=duplicate-code
     class Meta:
         model = Entity
         fields = [

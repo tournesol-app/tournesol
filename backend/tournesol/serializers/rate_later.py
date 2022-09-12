@@ -26,9 +26,9 @@ class RateLaterSerializer(ModelSerializer):
                 entity=entity,
                 **validated_data,
             )
-        except IntegrityError:
+        except IntegrityError as error:
             raise ConflictError(
                 _("The entity is already in the rate-later list of this poll.")
-            )
+            ) from error
 
         return rate_later

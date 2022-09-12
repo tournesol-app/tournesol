@@ -33,22 +33,11 @@ class ComparisonsStatistics:
     added_last_month: int
 
 
+@dataclass
 class PollStatistics:
-    def __init__(
-        self,
-        name,
-        compared_entity_count,
-        last_month_compared_entity_count,
-        comparison_count,
-        last_month_comparison_count,
-    ):
-        self.name = name
-        self.compared_entities = ComparedEntitiesStatistics(
-            compared_entity_count, last_month_compared_entity_count
-        )
-        self.comparisons = ComparisonsStatistics(
-            comparison_count, last_month_comparison_count
-        )
+    name: str
+    compared_entities: ComparedEntitiesStatistics
+    comparisons: ComparisonsStatistics
 
 
 class Statistics:
@@ -60,7 +49,7 @@ class Statistics:
     polls: List[PollStatistics]
 
     def __init__(self):
-        self.active_users = 0
+        self.active_users = ActiveUsersStatistics(0, 0)
         self.polls = []
 
     def set_active_users(self, user_count, last_month_user_count):
@@ -68,19 +57,15 @@ class Statistics:
 
     def append_poll(
         self,
-        poll_name,
-        compared_entity_count,
-        last_month_compared_entity_count,
-        comparison_count,
-        last_month_comparison_count,
+        poll_name: str,
+        compared_entities_statistics: ComparedEntitiesStatistics,
+        comparisons_statistics: ComparisonsStatistics,
     ):
         self.polls.append(
             PollStatistics(
                 poll_name,
-                compared_entity_count,
-                last_month_compared_entity_count,
-                comparison_count,
-                last_month_comparison_count,
+                compared_entities_statistics,
+                comparisons_statistics,
             )
         )
 
@@ -112,18 +97,26 @@ class StatisticsView(generics.GenericAPIView):
                 add_time__gte=time_ago(days=self._days_delta),
             ).count()
 
+            compared_entities_statistics = ComparedEntitiesStatistics(
+                compared_entity_count,
+                last_month_compared_entity_count,
+            )
+
             comparisons = Comparison.objects.filter(poll=poll)
             comparison_count = comparisons.count()
             last_month_comparison_count = comparisons.filter(
                 datetime_lastedit__gte=time_ago(days=self._days_delta)
             ).count()
 
-            statistics.append_poll(
-                poll.name,
-                compared_entity_count,
-                last_month_compared_entity_count,
+            comparisons_statistics = ComparisonsStatistics(
                 comparison_count,
                 last_month_comparison_count,
+            )
+
+            statistics.append_poll(
+                poll.name,
+                compared_entities_statistics,
+                comparisons_statistics,
             )
 
         return Response(StatisticsSerializer(statistics).data)

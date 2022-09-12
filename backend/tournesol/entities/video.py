@@ -42,6 +42,7 @@ class VideoEntity(EntityType):
         return ''
 
     def update_metadata_field(self) -> None:
+        # pylint: disable=import-outside-toplevel
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
         try:
             metadata = get_video_metadata(
@@ -70,6 +71,7 @@ class VideoEntity(EntityType):
 
     @classmethod
     def update_search_vector(cls, entity) -> None:
+        # pylint: disable=import-outside-toplevel
         from tournesol.utils.video_language import language_to_postgres_config
 
         language_config = language_to_postgres_config(entity.metadata["language"])

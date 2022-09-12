@@ -38,7 +38,7 @@ class ContributorRating(models.Model):
         unique_together = ["user", "entity", "poll"]
 
     def __str__(self):
-        return "%s on %s" % (self.user, self.entity)
+        return f"{self.user} on {self.entity}"
 
 
 class ContributorRatingCriteriaScore(models.Model):

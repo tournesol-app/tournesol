@@ -107,10 +107,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
 
         if self.comparison_already_exists(poll.pk, self.request):
             raise exceptions.ValidationError(
-                "You've already compared {0} with {1}.".format(
-                    self.request.data["entity_a"]["uid"],
-                    self.request.data["entity_b"]["uid"],
-                )
+                f"You've already compared {self.request.data['entity_a']['uid']} "
+                f"with {self.request.data['entity_b']['uid']}."
             )
         comparison: Comparison = serializer.save()
 
