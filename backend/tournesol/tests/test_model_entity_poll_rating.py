@@ -2,28 +2,27 @@
 All test cases of the `EntityPollRating` model.
 """
 
-from django.db import IntegrityError, transaction
 from django.test import TestCase
 
 from core.tests.factories.user import UserFactory
 from tournesol.models import Comparison, EntityPollRating
-from tournesol.models.rate_later import RateLater
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
 
 
-class RateLaterTestCase(TestCase):
+class EntityPollRatingTestCase(TestCase):
     """
-    TestCase of the `RateLater` model.
+    TestCase of the `EntityPollRatingTestCase` model.
     """
 
     _user = "username"
 
     def setUp(self):
+        self.poll = PollFactory()
         self.video_1 = VideoFactory()
         self.video_2 = VideoFactory()
         self.user = UserFactory(username=self._user)
-        self.poll = PollFactory()
+
         self.comparaison = Comparison.objects.create(entity_1=self.video_1, entity_2=self.video_2,
                                                      poll=self.poll, user=self.user)
         self.entity_poll_rating_1 = EntityPollRating.objects.create(entity=self.video_1,
