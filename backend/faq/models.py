@@ -16,7 +16,7 @@ class AbstractLocalizable(models.Model):
     class Meta:
         abstract = True
 
-    def get_text(self, lang):
+    def get_text(self, lang=None):
         """Return the translated text of the instance."""
         if lang is None:
             lang = translation.get_language()
