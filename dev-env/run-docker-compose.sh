@@ -102,11 +102,11 @@ mkdir -p $DB_DIR
 compose_up db
 wait_for is_db_ready "db"
 
-echo 'Importing dev-env dump'
-tar xvf "$CURRENT_DIR/dump-for-dev-env.sql.tgz"
-mv dump.sql "$CURRENT_DIR/$DB_DIR/"
-docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
-rm "$CURRENT_DIR/$DB_DIR/dump.sql"
+# echo 'Importing dev-env dump'
+# tar xvf "$CURRENT_DIR/dump-for-dev-env.sql.tgz"
+# mv dump.sql "$CURRENT_DIR/$DB_DIR/"
+# docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
+# rm "$CURRENT_DIR/$DB_DIR/dump.sql"
 
 compose_up
 wait_for is_api_ready "api"

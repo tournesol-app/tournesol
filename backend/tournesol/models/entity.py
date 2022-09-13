@@ -353,13 +353,16 @@ class Entity(models.Model):
         )
 
     @classmethod
-    def create_from_video_id(cls, video_id):
+    def create_from_video_id(cls, video_id, fetch_metadata=True):
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
-        try:
-            extra_data = get_video_metadata(video_id)
-        except VideoNotFound:
-            raise
+        if fetch_metadata:
+            try:
+                extra_data = get_video_metadata(video_id)
+            except VideoNotFound:
+                raise
+        else:
+            extra_data = {}
 
         serializer = VideoMetadata(
             data={
@@ -367,6 +370,7 @@ class Entity(models.Model):
                 "video_id": video_id,
             }
         )
+
         if serializer.is_valid():
             metadata = serializer.data
         else:
