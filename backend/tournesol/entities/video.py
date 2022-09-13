@@ -51,13 +51,13 @@ class VideoEntity(EntityType):
             return YOUTUBE_UID_REGEX
         return ""
 
-    def update_metadata_field(self) -> None:
+    def update_metadata_field(self, compute_language=False, **kwargs) -> None:
         # pylint: disable=import-outside-toplevel
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
         try:
             metadata = get_video_metadata(
-                self.instance.metadata["video_id"], compute_language=False
+                self.instance.metadata["video_id"], compute_language=compute_language
             )
         except VideoNotFound:
             metadata = {}

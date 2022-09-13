@@ -69,6 +69,7 @@ function wait_for() {
 
 export DB_UID=$(id -u)
 export DB_GID=$(id -g)
+DOWNLOAD_PUBLIC_DATASET=false
 
 if [[ "${1:-""}" == 'restart' ]]; then
   echo "Recreating dev containers..."
@@ -85,9 +86,14 @@ if [[ "${1:-""}" == 'stop' ]]; then
   exit
 fi
 
+if [[ "${1:-""}" == 'download' ]]; then
+  DOWNLOAD_PUBLIC_DATASET=true
+  shift
+fi
+
 if [ -d $DB_DIR ]; then
   echo "The existing database at $(realpath $DB_DIR) will be deleted."
-  read -p "Are you sure? (y/n) " -n 1 -r
+  read -p "Are you sure? (y/n) " -r
   echo ""
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
@@ -102,20 +108,26 @@ mkdir -p $DB_DIR
 compose_up db
 wait_for is_db_ready "db"
 
-echo 'Importing dev-env dump'
-tar xvf "$CURRENT_DIR/dump-for-dev-env.sql.tgz"
-mv dump.sql "$CURRENT_DIR/$DB_DIR/"
-docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
-rm "$CURRENT_DIR/$DB_DIR/dump.sql"
+if ! [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
+  echo 'Importing dev-env dump'
+  tar xvf "$CURRENT_DIR/dump-for-dev-env.sql.tgz"
+  mv dump.sql "$CURRENT_DIR/$DB_DIR/"
+  docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
+  rm "$CURRENT_DIR/$DB_DIR/dump.sql"
+fi
 
 compose_up
 wait_for is_api_ready "api"
+
+if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
+  docker exec tournesol-dev-api python manage.py load_public_dataset_as_db "$@"
+fi
 
 echo 'Creating Superuser:'
 USERNAME="${1:-"user"}"
 PASSWORD="${2:-"tournesol"}"
 EMAIL="${3:-"superuser@example.com"}"
-docker exec -e DJANGO_SUPERUSER_USERNAME=$USERNAME -e DJANGO_SUPERUSER_EMAIL=$EMAIL -e DJANGO_SUPERUSER_PASSWORD=$PASSWORD tournesol-dev-api python manage.py createsuperuser --no-input
+docker exec -e DJANGO_SUPERUSER_USERNAME="$USERNAME" -e DJANGO_SUPERUSER_EMAIL="$EMAIL" -e DJANGO_SUPERUSER_PASSWORD="$PASSWORD" tournesol-dev-api python manage.py createsuperuser --no-input
 
 echo 'Creating OAuth Application:'
 # OAUTH_CLIENT_ID="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)" || true
