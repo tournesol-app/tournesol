@@ -36,13 +36,13 @@ describe('VouchersPage', () => {
   const findGivenVoucher = async (username) => {
     const container = await screen.findByTestId('given-vouchers-list');
     expect(container.getAttribute('role')).toEqual('list');
-    await within(container).findByRole('listitem', { name: username });
+    return await within(container).findByRole('listitem', { name: username });
   };
 
   const findReceivedVoucher = async (username) => {
     const container = await screen.findByTestId('received-vouchers-list');
     expect(container.getAttribute('role')).toEqual('list');
-    await within(container).findByRole('listitem', { name: username });
+    return await within(container).findByRole('listitem', { name: username });
   };
 
   beforeEach(() => {
@@ -140,5 +140,55 @@ describe('VouchersPage', () => {
     render(<Component />);
     await findReceivedVoucher('received username 1');
     await findReceivedVoucher('received username 2');
+  });
+
+  it('deletes a given voucher', async () => {
+    const destroyVoucherServiceSpy = jest
+      .spyOn(UsersService, 'usersMeVouchersGivenDestroy')
+      .mockImplementation(async () => undefined);
+
+    render(<Component />);
+    const voucherElement = await findGivenVoucher('to_username1');
+    const deleteButton = await within(voucherElement).findByTestId(
+      'CancelIcon'
+    );
+    await act(() => userEvent.click(deleteButton));
+
+    expect(destroyVoucherServiceSpy).toHaveBeenCalledWith({
+      username: 'to_username1',
+    });
+    expect(voucherElement).not.toBeInTheDocument();
+    screen.getByText('personalVouchers.givenVoucherDeleted');
+  });
+
+  it('handles error on given voucher deletion', async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    const error = new ApiError({
+      url: 'some url',
+      status: 404,
+      statusText: 'Not Found',
+      body: { detail: 'Not found.' },
+    });
+    const destroyVoucherServiceSpy = jest
+      .spyOn(UsersService, 'usersMeVouchersGivenDestroy')
+      .mockImplementation(async () => {
+        throw error;
+      });
+
+    render(<Component />);
+    const voucherElement = await findGivenVoucher('to_username1');
+    const deleteButton = await within(voucherElement).findByTestId(
+      'CancelIcon'
+    );
+    await act(() => userEvent.click(deleteButton));
+
+    expect(destroyVoucherServiceSpy).toHaveBeenCalledWith({
+      username: 'to_username1',
+    });
+    screen.findByText('Not found');
+    expect(voucherElement).toBeInTheDocument();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(error);
   });
 });

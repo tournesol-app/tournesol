@@ -474,7 +474,8 @@
     "noVoucherGiven": "Aucun.",
     "givenVouchersTitle": "Utilisateurs pour lesquels vous vous êtes porté garant",
     "noVoucherReceived": "Aucun.",
-    "receivedVouchersTitle": "Utilisateurs qui se sont portés garant pour vous"
+    "receivedVouchersTitle": "Utilisateurs qui se sont portés garant pour vous",
+    "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0»"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"

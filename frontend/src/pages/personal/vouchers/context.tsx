@@ -8,11 +8,15 @@ import {
 
 interface PersonalVouchersValue {
   createVoucher: ({ username }: { username: string }) => void;
+  deleteGivenVoucher: ({ username }: { username: string }) => void;
   givenVouchers?: GivenVoucher[];
   receivedVouchers?: ReadOnlyVoucher[];
 }
 const Context = createContext<PersonalVouchersValue>({
   createVoucher: () => {
+    throw new Error('PersonalVouchersProvider not in tree');
+  },
+  deleteGivenVoucher: () => {
     throw new Error('PersonalVouchersProvider not in tree');
   },
 });
@@ -38,7 +42,23 @@ export const PersonalVouchersProvider = ({
     []
   );
 
-  const [value, setValue] = useState<PersonalVouchersValue>({ createVoucher });
+  const deleteGivenVoucher = useCallback(
+    async ({ username }: { username: string }) => {
+      await UsersService.usersMeVouchersGivenDestroy({ username });
+      setValue((value) => ({
+        ...value,
+        givenVouchers: (value.givenVouchers || []).filter(
+          ({ to }) => to !== username
+        ),
+      }));
+    },
+    []
+  );
+
+  const [value, setValue] = useState<PersonalVouchersValue>({
+    createVoucher,
+    deleteGivenVoucher,
+  });
 
   React.useEffect(() => {
     const loadGivenVouchers = async () => {

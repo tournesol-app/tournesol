@@ -467,7 +467,8 @@
     "noVoucherGiven": "None.",
     "givenVouchersTitle": "Users you have vouched for",
     "noVoucherReceived": "None.",
-    "receivedVouchersTitle": "Users who vouched for you"
+    "receivedVouchersTitle": "Users who vouched for you",
+    "givenVoucherDeleted": "You no longer vouch for \"{{username}}\""
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
