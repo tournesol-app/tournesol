@@ -32,6 +32,8 @@ class FAQuestionLocalizedListView(ListAPIView):
         queryset = (
             FAQuestion.objects.filter(enabled=True)
             .prefetch_related("locales")
+            .select_related("answer")
+            .prefetch_related("answer__locales")
             .order_by("rank")
         )
         return queryset

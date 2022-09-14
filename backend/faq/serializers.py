@@ -13,8 +13,8 @@ class FAQuestionSerializer(ModelSerializer):
     A translated question with its translated answer.
     """
 
-    question = serializers.CharField(source="get_text")
-    answer = serializers.CharField(source="answer.get_text")
+    question = serializers.CharField(source="get_text_prefetch")
+    answer = serializers.CharField(source="answer.get_text_prefetch")
 
     class Meta:
         model = FAQuestion
