@@ -29,10 +29,12 @@ class FAQuestionLocalizedListView(ListAPIView):
     serializer_class = FAQuestionSerializer
 
     def get_queryset(self):
+        # Questions without answer are excluded.
         queryset = (
             FAQuestion.objects.filter(enabled=True)
             .prefetch_related("locales")
             .select_related("answer")
+            .filter(answer__isnull=False)
             .prefetch_related("answer__locales")
             .order_by("rank")
         )

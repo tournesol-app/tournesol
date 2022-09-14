@@ -13,6 +13,10 @@ def create_question(name, rank, enabled):
     return FAQuestion.objects.create(name=name, rank=rank, enabled=enabled)
 
 
+def create_answer(name, question):
+    return FAQAnswer.objects.create(name=name, question=question)
+
+
 class FAQuestionLocalizedListViewTestCase(TestCase):
     """
     TestCase of the `FAQuestionLocalizedListView` view.
@@ -24,7 +28,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.faq_base_url = f"/faq/"
+        self.faq_base_url = "/faq/"
 
         self.question1 = create_question("i_dont_understand_why", 20, True)
 
@@ -40,9 +44,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
             text="Je ne comprends pas pourquoi.",
         )
 
-        self.answer1 = FAQAnswer.objects.create(
-            name="i_dont_understand_why_ans", question=self.question1
-        )
+        self.answer1 = create_answer("i_dont_understand_why_ans", self.question1)
 
         self.answer1_loc_en = FAQAnswerLocale.objects.create(
             answer=self.answer1, language=self.default_lang, text="Tournesol aims to..."
@@ -118,27 +120,20 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
 
     def test_list_faq_question_without_answer(self):
         """
-        A question without answer is still returned by the API.
+        A question without answer must not be returned by the API.
         """
         self.answer1.delete()
 
         response = self.client.get(self.faq_base_url)
         results = response.data["results"]
-
-        self.assertDictEqual(
-            results[0],
-            {
-                "name": self.question1.name,
-                "question": self.question1_loc_en.text,
-                "answer": None,
-            },
-        )
+        self.assertListEqual(results, [])
 
     def test_list_faq_disabled_questions_dont_appear(self):
         """
         Disabled questions must not be returned by the API.
         """
         question = create_question("new_question", 1, True)
+        create_answer("new_question", question)
 
         response = self.client.get(self.faq_base_url)
         self.assertEqual(len(response.data["results"]), 2)
@@ -154,6 +149,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         The questions must be ordered by rank.
         """
         question = create_question("first_question", self.question1.rank - 1, True)
+        create_answer("first_answer", question)
 
         response = self.client.get(self.faq_base_url)
         results = response.data["results"]
@@ -163,7 +159,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
             {
                 "name": "first_question",
                 "question": "first_question",
-                "answer": None,
+                "answer": "first_answer",
             },
         )
 
@@ -196,6 +192,6 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
             {
                 "name": "first_question",
                 "question": "first_question",
-                "answer": None,
+                "answer": "first_answer",
             },
         )
