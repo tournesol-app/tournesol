@@ -120,7 +120,7 @@ describe('VouchersPage', () => {
       });
 
     render(<Component />);
-    await submitForm({ username: 'someone' });
+    await act(() => submitForm({ username: 'someone' }));
 
     /**
      * An error in the hook useNotification.displayErrorsFrom can make the
@@ -162,7 +162,8 @@ describe('VouchersPage', () => {
     const deleteButton = await within(voucherElement).findByTestId(
       'CancelIcon'
     );
-    await act(() => userEvent.click(deleteButton));
+
+    await act(async () => userEvent.click(deleteButton));
 
     expect(destroyVoucherServiceSpy).toHaveBeenCalledWith({
       username: 'to_username1',
@@ -189,7 +190,7 @@ describe('VouchersPage', () => {
     const deleteButton = await within(voucherElement).findByTestId(
       'CancelIcon'
     );
-    await act(() => userEvent.click(deleteButton));
+    await act(async () => userEvent.click(deleteButton));
 
     expect(destroyVoucherServiceSpy).toHaveBeenCalledWith({
       username: 'to_username1',
