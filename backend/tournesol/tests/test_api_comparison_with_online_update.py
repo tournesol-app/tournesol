@@ -61,7 +61,6 @@ class FirstComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
             criteria="criteria1",
         )
         self.assertLess(user_score.score, 0)
-        call_command("ml_train", "--unsave")
 
 
 class SimpleComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
@@ -113,7 +112,6 @@ class SimpleComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
 
         self.assertEqual(resp.status_code, 201, resp.content)
 
-        call_command("ml_train", "--unsave")
         # Individual scores related to the new comparison have been computed
         self.assertEqual(
             ContributorRatingCriteriaScore.objects.filter(
@@ -149,7 +147,6 @@ class SimpleComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
 
         self.assertEqual(resp.status_code, 200, resp.content)
 
-        call_command("ml_train", "--unsave")
         # Individual scores related to the update have been recomputed
         self.assertEqual(
             ContributorRatingCriteriaScore.objects.filter(
@@ -180,8 +177,6 @@ class SimpleComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
         )
 
         self.assertEqual(resp.status_code, 204, resp.content)
-
-        call_command("ml_train", "--unsave")
 
         self.assertEqual(
             ContributorRatingCriteriaScore.objects.filter(
@@ -236,7 +231,6 @@ class InsertHundredOfComparisonWithOnlineHeuristicMehestanTest(TransactionTestCa
                 )
 
                 self.assertEqual(resp.status_code, 201, resp.content)
-                call_command("ml_train", "--unsave")
 
         # self.number_entities indiv score
         self.assertEqual(
@@ -315,7 +309,6 @@ class HundredOfComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
                     format="json",
                 )
                 self.assertEqual(resp.status_code, 200, resp.content)
-                call_command("ml_train", "--unsave")
 
         # self.number_entities indiv score
         self.assertEqual(

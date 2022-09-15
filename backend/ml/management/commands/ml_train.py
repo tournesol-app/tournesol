@@ -132,7 +132,6 @@ class Command(BaseCommand):
         skip_untrusted = options["skip_untrusted"]
         online_heuristic = options["online_heuristic"]
         user_id = options["user_id"]
-        unsave = options["unsave"]
         uid_a = options["uid_a"]
         uid_b = options["uid_b"]
         if TOURNESOL_DEV:
@@ -169,6 +168,6 @@ class Command(BaseCommand):
                                 uid_b=uid_b,
                             )
                     else:
-                        run_mehestan(ml_input=ml_input, poll=poll, unsave=unsave)
+                        run_mehestan(ml_input=ml_input, poll=poll)
                 else:
                     raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")

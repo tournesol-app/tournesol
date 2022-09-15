@@ -78,10 +78,14 @@ def get_new_scores_from_online_update(
         if not new_raw_scores.index.isin([entity]).any():
             new_raw_scores.loc[entity] = 0.0
     new_raw_scores = new_raw_scores[new_raw_scores.index.isin(all_entities)].copy()
-
     new_raw_scores = (
-        (L - (k.fillna(0).dot(new_raw_scores))["raw_score"]) / Kaa_np
+        (L + (k.fillna(0).dot(new_raw_scores))["raw_score"]) / Kaa_np
     ).to_frame(name="raw_score")
+
+    new_raw_scores_to_return = previous_individual_raw_scores
+    new_raw_scores_to_return.loc[list(set_of_entity_to_update)] = new_raw_scores.loc[
+        list(set_of_entity_to_update)
+    ]
 
     # Compute uncertainties
     scores_series = previous_individual_raw_scores.squeeze()
@@ -105,7 +109,7 @@ def get_new_scores_from_online_update(
     )
     new_raw_uncertainties = delta_star.to_frame(name="raw_uncertainty")
 
-    return new_raw_scores, new_raw_uncertainties
+    return new_raw_scores_to_return, new_raw_uncertainties
 
 
 def _run_online_heuristics_for_criterion(
@@ -134,11 +138,6 @@ def _run_online_heuristics_for_criterion(
         and we apply poll level scaling at global scores
 
     """
-    print(
-        "START",
-        ml_input.get_indiv_score(user_id=user_id),
-        sum(ml_input.get_indiv_score(user_id=user_id)["raw_score"]),
-    )
     poll = Poll.objects.get(pk=poll_pk)
     all_comparison_of_user_for_criteria = ml_input.get_comparisons(
         criteria=criteria, user_id=user_id
@@ -176,7 +175,7 @@ def _run_online_heuristics_for_criterion(
         "entity_id"
     )
     new_raw_scores = previous_individual_raw_scores
-    for tau in range(0, TAU_SUBITERATION_NUMBER + 1):
+    for tau in range(0, TAU_SUBITERATION_NUMBER):
         if tau > 0:
             set_of_entity_to_update = compute_and_give_next_set_of_entity_to_update(
                 set_of_entity_to_update, all_comparison_of_user_for_criteria
@@ -189,7 +188,6 @@ def _run_online_heuristics_for_criterion(
             set_of_entity_to_update,
             new_raw_scores,
         )
-        print(tau, new_raw_scores, sum(new_raw_scores["raw_score"]))
 
     # so far we have recompute new indiv score for a and b and neighbours,
     # we need to recompute global score for a and b
@@ -210,6 +208,7 @@ def _run_online_heuristics_for_criterion(
     new_data_a = (entity_id_a, theta_star_a, delta_star_a)
     new_data_b = (entity_id_b, theta_star_b, delta_star_b)
 
+    new_df = new_raw_scores.join(new_raw_uncertainties)
     partial_scaled_scores_for_ab = (
         apply_and_return_scaling_on_individual_scores_online_heuristics(
             criteria, ml_input, new_data_a, new_data_b, user_id
@@ -226,15 +225,14 @@ def _run_online_heuristics_for_criterion(
 
         # we want to save only individual scores of user
         score_to_save = ml_input.get_indiv_score(user_id=user_id)
-        score_to_save = add_or_update_df_indiv_score(
-            user_id, entity_id_a, theta_star_a, delta_star_a, score_to_save
-        )
-        score_to_save = add_or_update_df_indiv_score(
-            user_id, entity_id_b, theta_star_b, delta_star_b, score_to_save
-        )
+
+        for entity_id_a, (theta_star_a, delta_star_a) in new_df.iterrows():
+            score_to_save = add_or_update_df_indiv_score(
+                user_id, entity_id_a, theta_star_a, delta_star_a, score_to_save
+            )
+
         score_to_save["criteria"] = criteria
-        print("TO_SAVE", score_to_save)
-        print(sum(score_to_save["raw_score"]))
+
         save_contributor_scores(
             poll,
             score_to_save,
@@ -256,7 +254,7 @@ def compute_and_give_next_set_of_entity_to_update(
             all_comparison_of_user_for_criteria.entity_b.isin(set_of_entity_to_update)
         ]["entity_a"]
     )
-    return set_of_entity_to_update | set_of_neighbours_1 | set_of_neighbours_2
+    return set_of_neighbours_1 | set_of_neighbours_2 | set_of_entity_to_update
 
 
 def calculate_and_save_global_scores_in_all_score_mode(
