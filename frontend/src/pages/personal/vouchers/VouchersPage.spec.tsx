@@ -106,9 +106,6 @@ describe('VouchersPage', () => {
   });
 
   it('handles error on form submit', async () => {
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
     const error = new ApiError({
       url: 'some url',
       status: 400,
@@ -125,9 +122,22 @@ describe('VouchersPage', () => {
     render(<Component />);
     await submitForm({ username: 'someone' });
 
+    /**
+     * An error in the hook useNotification.displayErrorsFrom can make the
+     * next statement fail.
+     *
+     * If we want this test to be less end-to-end and more input/output, we
+     * could instead simply check if displayErrorsFrom has been called only
+     * once, with the good argument.
+     *
+     * This way, we reduce the scope of this test to only the voucher related
+     * components. It will then fail only when one of those components fails.
+     *
+     * NOTE: as long as we don't have any proper end-to-end tests, we should
+     * keep the following line.
+     */
     screen.getByText('some error');
     expect(getUsernameInput().value).toEqual('someone');
-    expect(consoleErrorSpy).toHaveBeenCalledWith(error);
   });
 
   it('lists given vouchers', async () => {
@@ -162,9 +172,6 @@ describe('VouchersPage', () => {
   });
 
   it('handles error on given voucher deletion', async () => {
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
     const error = new ApiError({
       url: 'some url',
       status: 404,
@@ -187,8 +194,22 @@ describe('VouchersPage', () => {
     expect(destroyVoucherServiceSpy).toHaveBeenCalledWith({
       username: 'to_username1',
     });
+
+    /**
+     * An error in the hook useNotification.displayErrorsFrom can make the
+     * next statement fail.
+     *
+     * If we want this test to be less end-to-end and more input/output, we
+     * could instead simply check if displayErrorsFrom has been called only
+     * once, with the good argument.
+     *
+     * This way, we reduce the scope of this test to only the voucher related
+     * components. It will then fail only when one of those components fails.
+     *
+     * NOTE: as long as we don't have any proper end-to-end tests, we should
+     * keep the following line.
+     */
     screen.findByText('Not found');
     expect(voucherElement).toBeInTheDocument();
-    expect(consoleErrorSpy).toHaveBeenCalledWith(error);
   });
 });
