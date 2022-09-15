@@ -17,11 +17,11 @@ const PersonalVouchersPage = () => {
       <ContentHeader title={t('personalMenu.vouchers')} />
       <ContentBox maxWidth="lg">
         <CreateVoucherForm />
-        <Grid container>
-          <Grid item md={6}>
+        <Grid container gap={2}>
+          <Grid item md>
             <GivenVouchers />
           </Grid>
-          <Grid item md={6}>
+          <Grid item md>
             <ReceivedVouchers />
           </Grid>
         </Grid>
