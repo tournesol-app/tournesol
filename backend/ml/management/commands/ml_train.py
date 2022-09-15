@@ -119,11 +119,6 @@ class Command(BaseCommand):
             action="store_true",
             help="Run online heuristic for used_id, uid_a, uid_b",
         )
-        parser.add_argument(
-            "--unsave",
-            action="store_true",
-            help="run ml for indiv score but don't save",
-        )
         parser.add_argument("--user_id")
         parser.add_argument("--uid_a")
         parser.add_argument("--uid_b")
