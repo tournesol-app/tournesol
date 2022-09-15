@@ -34,7 +34,6 @@ const CreateVoucherForm = () => {
         showSuccessAlert(t('personalVouchers.voucherCreated', { username }));
         setUsername('');
       } catch (error) {
-        console.error(error);
         displayErrorsFrom(error);
       }
     },

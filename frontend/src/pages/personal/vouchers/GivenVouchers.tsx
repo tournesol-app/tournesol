@@ -16,7 +16,6 @@ const GivenVoucherChip = ({ username }: { username: string }) => {
       await deleteGivenVoucher({ username });
       showSuccessAlert(t('personalVouchers.givenVoucherDeleted', { username }));
     } catch (error) {
-      console.error(error);
       displayErrorsFrom(error);
     }
   }, [deleteGivenVoucher, username, showSuccessAlert, displayErrorsFrom, t]);
