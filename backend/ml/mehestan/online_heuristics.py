@@ -358,6 +358,15 @@ def apply_and_return_scaling_on_individual_scores_online_heuristics(
 def add_or_update_df_indiv_score(
     user_id, entity_id_a, theta_star_a, delta_star_a, all_indiv_score
 ):
+    if all_indiv_score.empty:
+        all_indiv_score = pd.DataFrame(
+            {
+                "user_id": pd.Series(dtype="int64"),
+                "entity_id": pd.Series(dtype="int64"),
+                "raw_score": pd.Series(dtype="float64"),
+                "raw_uncertainty": pd.Series(dtype="float64"),
+            }
+        )
     if all_indiv_score[
         (all_indiv_score["entity_id"] == entity_id_a)
         & (all_indiv_score["user_id"] == user_id)
