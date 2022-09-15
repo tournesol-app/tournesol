@@ -71,7 +71,7 @@ const PersonalMenu = ({
           <ListItemIcon>
             <HowToReg fontSize="small" />
           </ListItemIcon>
-          <ListItemText>{t('personalMenu.vouchers')}</ListItemText>
+          <ListItemText>{t('personalMenu.vouching')}</ListItemText>
         </MenuItem>
         <Divider key="my-things-divider" />
         {/* -- settings section -- */}

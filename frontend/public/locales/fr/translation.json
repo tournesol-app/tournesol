@@ -156,7 +156,7 @@
   "joinUsButton": "S'inscrire",
   "personalMenu": {
     "yourRecommendations": "Mes recommandations",
-    "vouchers": "Me porter garant"
+    "vouching": "Me porter garant"
   },
   "logoutButton": "Se déconnecter",
   "topbar": {
@@ -471,11 +471,11 @@
     "introduction": "Je certifie que cet utilisateur est un humain, avec un comportement authentique, et qu'il n'utilise pas activement un autre compte Tournesol\u00a0:",
     "usernameLabel": "Nom d'utilisateur",
     "submitButton": "Je me porte garant de cet utilisateur",
+    "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0»",
     "noVoucherGiven": "Aucun.",
     "givenVouchersTitle": "Utilisateurs pour lesquels vous vous êtes porté garant",
     "noVoucherReceived": "Aucun.",
-    "receivedVouchersTitle": "Utilisateurs qui se sont portés garant pour vous",
-    "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0»"
+    "receivedVouchersTitle": "Utilisateurs qui se sont portés garant pour vous"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
