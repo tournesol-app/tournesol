@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { TextField, Button, FormGroup, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
+import { TextField, Button, Typography, Grid } from '@mui/material';
+import { HowToReg } from '@mui/icons-material';
 
 import { useNotifications } from 'src/hooks';
 import { usePersonalVouchers } from './context';
@@ -41,18 +43,24 @@ const CreateVoucherForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Typography paragraph>{t('personalVouchers.introduction')}</Typography>
-      <FormGroup row>
+      <Grid container gap={2} justifyContent="flex-start">
         <TextField
           label={t('personalVouchers.usernameLabel')}
           value={username}
           onChange={handleUsernameChange}
           inputProps={inputProps}
+          size="small"
           variant="outlined"
         />
-        <Button type="submit" variant="contained" disableElevation>
+        <Button
+          type="submit"
+          variant="contained"
+          endIcon={<HowToReg />}
+          disableElevation
+        >
           {t('personalVouchers.submitButton')}
         </Button>
-      </FormGroup>
+      </Grid>
     </form>
   );
 };
