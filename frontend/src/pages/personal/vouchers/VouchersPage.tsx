@@ -15,7 +15,7 @@ const PersonalVouchersPage = () => {
   return (
     <PersonalVouchersProvider>
       <ContentHeader title={t('personalMenu.vouchers')} />
-      <ContentBox noMinPaddingX maxWidth="lg">
+      <ContentBox maxWidth="lg">
         <CreateVoucherForm />
         <Grid container>
           <Grid item md={6}>
