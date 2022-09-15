@@ -8,7 +8,8 @@ import { useNotifications } from 'src/hooks';
 import { usePersonalVouchers } from './context';
 
 const inputProps = {
-  // If not set some browsers may auto fill the input with a saved username because the input label in English is "Username"
+  // If not set some browsers may auto fill the input with a saved username
+  // because the input label in English is "Username".
   autoComplete: 'new-password',
 };
 
