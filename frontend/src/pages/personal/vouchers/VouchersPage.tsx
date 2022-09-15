@@ -18,7 +18,7 @@ const PersonalVouchersPage = () => {
       <ContentBox maxWidth="lg">
         <CreateVoucherForm />
         <Grid container gap={2} justifyContent="space-between">
-          <Grid item md={5}>
+          <Grid item md={6}>
             <GivenVouchers />
           </Grid>
           <Grid item md={5}>

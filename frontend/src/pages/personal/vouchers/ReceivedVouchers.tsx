@@ -23,8 +23,9 @@ const ReceivedVoucherList = () => {
 
   return (
     <Stack
-      spacing={1}
       direction="row"
+      flexWrap="wrap"
+      gap={1}
       sx={{ py: 2 }}
       role="list"
       data-testid="received-vouchers-list"
