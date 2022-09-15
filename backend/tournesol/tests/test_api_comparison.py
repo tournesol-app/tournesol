@@ -1029,10 +1029,7 @@ class ComparisonWithMehestanTest(TransactionTestCase):
         )
 
         self.assertEqual(resp.status_code, 201, resp.content)
-        print(ContributorRatingCriteriaScore.objects.all())
-
         call_command("ml_train")
-        print(ContributorRatingCriteriaScore.objects.all())
         # Individual scores related to the new comparison have been computed
         self.assertEqual(
             ContributorRatingCriteriaScore.objects.filter(
