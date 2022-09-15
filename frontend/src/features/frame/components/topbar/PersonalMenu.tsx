@@ -63,9 +63,9 @@ const PersonalMenu = ({
           </MenuItem>,
         ]}
         <MenuItem
-          key="personal-vouchers"
+          key="vouching"
           component={RouterLink}
-          to={`${baseUrl}/personal-vouchers`}
+          to="/vouching"
           onClick={onItemClick}
         >
           <ListItemIcon>

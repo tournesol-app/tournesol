@@ -89,7 +89,7 @@ function App() {
           <PrivateRoute path="/settings/account">
             <SettingsAccountPage />
           </PrivateRoute>
-          <PrivateRoute path="/personal-vouchers">
+          <PrivateRoute path="/vouching">
             <PersonalVouchersPage />
           </PrivateRoute>
           <PublicRoute path="/signup">
