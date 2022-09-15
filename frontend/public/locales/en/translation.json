@@ -150,7 +150,8 @@
   "loginButton": "Log in",
   "joinUsButton": "Join us",
   "personalMenu": {
-    "yourRecommendations": "My recommendations"
+    "yourRecommendations": "My recommendations",
+    "vouching": "Vouch for other users"
   },
   "logoutButton": "Logout",
   "topbar": {
@@ -457,6 +458,17 @@
     },
     "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
     "proofOfVote": "Proof of vote"
+  },
+  "personalVouchers": {
+    "voucherCreated": "You successfuly vouched for \"{{username}}\".",
+    "introduction": "I vouch that this user is a human, with an authentic behavior, and that this user does not actively use another account on Tournesol:",
+    "usernameLabel": "Username",
+    "submitButton": "I vouch for this user",
+    "givenVoucherDeleted": "You no longer vouch for \"{{username}}\".",
+    "noVoucherGiven": "None.",
+    "givenVouchersTitle": "Users you have vouched for",
+    "noVoucherReceived": "None.",
+    "receivedVouchersTitle": "Users who vouched for you"
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
