@@ -150,7 +150,8 @@
   "loginButton": "Log in",
   "joinUsButton": "Join us",
   "personalMenu": {
-    "yourRecommendations": "My recommendations"
+    "yourRecommendations": "My recommendations",
+    "vouching": "Vouch for other users"
   },
   "logoutButton": "Logout",
   "topbar": {
@@ -176,8 +177,8 @@
     "videoAdded": "Video added to your Rate Later list!",
     "addVideosToRateLaterList": "Add videos to your rate-later list",
     "rateLaterFormIntroduction": "Copy-paste the id or the URL of a favorite video of yours.<1></1>You can search them in your <4>YouTube history page</4>, or your <7>liked video playlist</7>.<9></9>Our <12>browser extension</12> can also help you import videos effortlessly.<15></15>You will then be able to compare the videos you imported. They will be automatically removed from your list once you have enough comparisons.",
-    "listHasNbVideos_one": "Your rate-later list now has <1>{{videoCount}}</1> video.",
-    "listHasNbVideos_other": "Your rate-later list now has <1>{{videoCount}}</1> videos."
+    "listHasNbVideos_one": "Your rate-later list now has <1>{{entityCount}}</1> video.",
+    "listHasNbVideos_other": "Your rate-later list now has <1>{{entityCount}}</1> videos."
   },
   "public": "public",
   "private": "private",
@@ -425,7 +426,7 @@
     "getTheExtensionButton": "Get the extension",
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolPlatformDescription": "Tournesol is an <1>open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <3>collaboratively</3> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <6>robustly beneficial</6> for all of humanity."
+    "tournesolPlatformDescription": "Tournesol is an <1>free and open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <4>collaboratively</4> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <7>robustly beneficial</7> for all of humanity."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
@@ -457,6 +458,17 @@
     },
     "proofOfVoteHelperText": "This code will be helpful to complete <2>our survey.</2>",
     "proofOfVote": "Proof of vote"
+  },
+  "personalVouchers": {
+    "voucherCreated": "You successfuly vouched for \"{{username}}\".",
+    "introduction": "I vouch that this user is a human, with an authentic behavior, and that this user does not actively use another account on Tournesol:",
+    "usernameLabel": "Username",
+    "submitButton": "I vouch for this user",
+    "givenVoucherDeleted": "You no longer vouch for \"{{username}}\".",
+    "noVoucherGiven": "None.",
+    "givenVouchersTitle": "Users you have vouched for",
+    "noVoucherReceived": "None.",
+    "receivedVouchersTitle": "Users who vouched for you"
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
@@ -574,14 +586,14 @@
       "tutorial": {
         "title1": "Welcome to Tournesol 🌻",
         "message1": {
-          "p10": "This tutorial will guide you step by step through a series of four comparisons.",
+          "p10": "This tutorial will guide you, step by step, through a series of four comparisons to help you contribute to the Tournesol project.",
           "p20": "To compare two videos you watched, move the main handle and save when your choice is made.",
           "p30": "The more your opinion is clear-cut on a criterion, the more the handle should be close to the slider extremity.",
           "p40": "If you find the videos similar, the handle should remain close to the center."
         },
         "title2": "Bravo ! 🥳",
         "message2": {
-          "p10": "You have made your first comparison",
+          "p10": "You have made your first comparison. Each comparison helps Tournesol to improve its video recommendations.",
           "p20": "Note that you can choose yourself the videos to compare by pasting their YouTube URL in the fields above the thumbnails.",
           "p30": "Try to unfold and use the optional criteria to give a more complete opinion about the videos.",
           "p40": "You can also choose to not vote on the optional criteria by unchecking it.",

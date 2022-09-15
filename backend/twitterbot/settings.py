@@ -16,11 +16,17 @@ tweet_text_template = {
     "en": (
         "Today, I recommend '{title}' by {twitter_account}"
         ", compared {n_comparison} times on #Tournesol\U0001F33B by {n_contributor}"
-        " contributors, favorite criteria:\n- {crit1}\n- {crit2}\nyoutu.be/{video_id}"
+        " contributors, favorite criteria:\n- {crit1}\n- {crit2}\n"
+        "tournesol.app/entities/yt:{video_id}"
     ),
     "fr": (
         "Aujourd'hui, je recommande '{title}' de {twitter_account}"
         ", comparée {n_comparison} fois sur #Tournesol\U0001F33B par {n_contributor}"
-        " contributeurs, critères favoris:\n- {crit1}\n- {crit2}\nyoutu.be/{video_id}"
+        " contributeurs, critères favoris:\n- {crit1}\n- {crit2}\n"
+        "tournesol.app/entities/yt:{video_id}"
     ),
 }
+
+# Name of the Discord channel where the twitterbot will post its tweets.
+# An empty value won't trigger any post.
+TWITTERBOT_DISCORD_CHANNEL = "twitter"

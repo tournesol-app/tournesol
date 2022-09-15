@@ -5,6 +5,7 @@ import string
 import factory
 
 from core.tests.factories.user import UserFactory
+from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models import Entity, EntityCriteriaScore, Poll, RateLater
 
 
@@ -31,7 +32,7 @@ class VideoMetadataFactory(factory.DictFactory):
 
 
 class VideoFactory(EntityFactory):
-    type = "video"
+    type = TYPE_VIDEO
     metadata = factory.SubFactory(VideoMetadataFactory)
     uid = factory.LazyAttribute(lambda e: f"yt:{e.metadata['video_id']}")
 

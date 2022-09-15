@@ -28,8 +28,11 @@
     <meta property="og:site_name" content="Tournesol">
     <meta property="og:title" content="Tournesol">
     <meta property="og:description" content="Compare online contents and contribute to the development of responsible content recommendation">
-    <meta property="og:image" content="%PUBLIC_URL%/tournesol_screenshot_og.png">
-    <meta property="og:url" content="%PUBLIC_URL%">
+    <!--
+      og:image and og:url will be built dynamically by Nginx, based on the request URL
+    -->
+    <meta property="og:image" content="__META_OG_IMAGE__">
+    <meta property="og:url" content="__META_OG_URL__">
     <meta property="twitter:card" content="summary_large_image">
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
     <!--

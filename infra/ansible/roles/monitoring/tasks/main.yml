@@ -300,7 +300,7 @@
       - libxshmfence1 # will be needed soon
     install_recommends: no
     update_cache: yes
-  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
 
 - name: Set permissions on Grafana plugins directory
   file:
@@ -316,7 +316,7 @@
   with_items:
     - name: grafana-image-renderer
       version: "3.2.1"
-  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
   notify: Enable and restart Grafana
 
 - name: Create Discord notification channel
@@ -329,11 +329,11 @@
     uid: discord
     name: Tournesol Discord
     type: discord
-    discord_url: "{{discord_alerting_webhook}}"
+    discord_url: "{{discord_infra_alert_webhook}}"
     is_default: yes
     include_image: yes
     reminder_frequency: 5m
-  when: discord_alerting_webhook is defined and discord_alerting_webhook != ""
+  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
 
 - name: Create Grafana dashboards
   community.grafana.grafana_dashboard:
@@ -365,12 +365,6 @@
     - grafana_admin_password
     - grafana_oidc_client_id
     - grafana_oidc_client_secret
-
-- name: Write Discord alerting webhook into root's home
-  template:
-    dest: /root/discord_alerting_webhook
-    src: discord_alerting_webhook.j2
-    mode: u=rw,go=
 
 - name: Copy external URLs monitoring script
   template:

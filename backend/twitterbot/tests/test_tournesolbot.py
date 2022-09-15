@@ -117,17 +117,29 @@ class TestTournesolBot(TestCase):
         VideoCriteriaScoreFactory(
             entity=self.videos[8], criteria="largely_recommended", score=0.35
         )
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="reliability", score=32)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="importance", score=52)
+        VideoCriteriaScoreFactory(
+            entity=self.videos[8], criteria="reliability", score=32
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.videos[8], criteria="importance", score=52
+        )
         VideoCriteriaScoreFactory(entity=self.videos[8], criteria="engaging", score=38)
         VideoCriteriaScoreFactory(entity=self.videos[8], criteria="pedagogy", score=31)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="layman_friendly", score=26)
+        VideoCriteriaScoreFactory(
+            entity=self.videos[8], criteria="layman_friendly", score=26
+        )
         VideoCriteriaScoreFactory(
             entity=self.videos[8], criteria="entertaining_relaxing", score=14
         )
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="better_habits", score=12)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="diversity_inclusion", score=0.0)
-        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="backfire_risk", score=-2)
+        VideoCriteriaScoreFactory(
+            entity=self.videos[8], criteria="better_habits", score=12
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.videos[8], criteria="diversity_inclusion", score=0.0
+        )
+        VideoCriteriaScoreFactory(
+            entity=self.videos[8], criteria="backfire_risk", score=-2
+        )
 
     def test_get_best_criteria(self):
 
@@ -156,7 +168,7 @@ class TestTournesolBot(TestCase):
             "Aujourd'hui, je recommande 'Tournesol is great! 🌻 #tournesol' de @TournesolApp, "
             "comparée 77 fois sur #Tournesol🌻 par 28 contributeurs, critères favoris:"
             "\n- Important & actionnable\n- Stimulant & suscite la réflexion"
-            "\nyoutu.be/AAAAAAAAAAA"
+            "\ntournesol.app/entities/yt:AAAAAAAAAAA"
         )
 
         mock_get_twitter_account_from_video_id.return_value = "@TournesolApp"
@@ -164,33 +176,33 @@ class TestTournesolBot(TestCase):
         assert prepare_tweet(self.videos[8]) == tweet_text
 
         # Test automatic shortening of the video title to fit in the tweet
-        self.videos[8].metadata["name"] = (
-            "Tournesol is great! But this title is way to long to fit in one tweet🌻 #tournesol"
-        )
+        self.videos[8].metadata[
+            "name"
+        ] = "Tournesol is great! But this title is way to long to fit in one tweet🌻 #tournesol"
 
         tweet_text_too_long = (
-            "Aujourd'hui, je recommande 'Tournesol is great! But this title is way to long to fit "
-            "in one tweet...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
+            "Aujourd'hui, je recommande 'Tournesol is great! But this title is way to long to fit"
+            " in one tw...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
             "contributeurs, critères favoris:"
             "\n- Important & actionnable"
             "\n- Stimulant & suscite la réflexion"
-            "\nyoutu.be/AAAAAAAAAAA"
+            "\ntournesol.app/entities/yt:AAAAAAAAAAA"
         )
 
         assert prepare_tweet(self.videos[8]) == tweet_text_too_long
-        
+
         # Test replacement of special characters in the video title
-        self.videos[8].metadata["name"] = (
-            "Tournesol.app is great! But automatic mention @twitter are not... 🌻"
-        )
+        self.videos[8].metadata[
+            "name"
+        ] = "Tournesol.app is great but mention @twitter are not..."
 
         tweet_special_characters = (
-            "Aujourd'hui, je recommande 'Tournesol․app is great! But automatic mention ﹫twitter "
-            "are not... 🌻' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
+            "Aujourd'hui, je recommande 'Tournesol․app is great but mention ﹫twitter "
+            "are not...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
             "contributeurs, critères favoris:"
             "\n- Important & actionnable"
             "\n- Stimulant & suscite la réflexion"
-            "\nyoutu.be/AAAAAAAAAAA"
+            "\ntournesol.app/entities/yt:AAAAAAAAAAA"
         )
 
         assert prepare_tweet(self.videos[8]) == tweet_special_characters

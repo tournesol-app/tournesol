@@ -4,19 +4,19 @@ import { Card, Box, CardContent, CardActions } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
-import { addToRateLaterList } from 'src/features/rateLater/rateLaterAPI';
-import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
-import { ApiError, RateLater } from 'src/services/openapi';
-import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
-import { UsersService } from 'src/services/openapi';
 import {
   ContentBox,
   ContentHeader,
   LoaderWrapper,
   Pagination,
 } from 'src/components';
-import VideoList from 'src/features/videos/VideoList';
-import { useNotifications } from 'src/hooks';
+import EntityList from 'src/features/entities/EntityList';
+import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
+import { useCurrentPoll, useNotifications } from 'src/hooks';
+import { ApiError, RateLater, UsersService } from 'src/services/openapi';
+import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
+import { addToRateLaterList } from 'src/utils/api/rateLaters';
+import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
 
 const useStyles = makeStyles({
@@ -37,22 +37,27 @@ const useStyles = makeStyles({
 });
 
 const RateLaterPage = () => {
+  const classes = useStyles();
+
   const { t } = useTranslation();
   const { displayErrorsFrom, showSuccessAlert } = useNotifications();
+  const { name: pollName } = useCurrentPoll();
 
-  const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(true);
-  const [offset, setOffset] = React.useState(0);
-  const [videoCount, setVideoCount] = React.useState<number | null>(null);
-  const videoListTopRef = React.useRef<HTMLDivElement>(null);
+
   const [rateLaterList, setRateLaterList] = React.useState<RateLater[]>([]);
+  const [entityCount, setEntityCount] = React.useState<number | null>(null);
+
+  const videoListTopRef = React.useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = React.useState(0);
   const limit = 20;
 
   const loadList = useCallback(async () => {
     setIsLoading(true);
     let rateLaterResponse;
     try {
-      rateLaterResponse = await UsersService.usersMeVideoRateLaterList({
+      rateLaterResponse = await UsersService.usersMeRateLaterList({
+        pollName,
         limit,
         offset,
       });
@@ -62,26 +67,34 @@ const RateLaterPage = () => {
       return;
     }
     if (rateLaterResponse.count != null) {
-      setVideoCount(rateLaterResponse.count);
+      setEntityCount(rateLaterResponse.count);
     }
     if (rateLaterResponse.results != null) {
       setRateLaterList(rateLaterResponse.results);
     }
     setIsLoading(false);
-  }, [offset, setVideoCount, setRateLaterList]);
+  }, [offset, pollName, setEntityCount, setRateLaterList]);
 
-  const addToRateLater = async (video_id: string): Promise<boolean> => {
-    const response = await addToRateLaterList({ video_id }).catch(
-      (reason: ApiError) => {
-        displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
-          {
-            status: 409,
-            variant: 'warning',
-            msg: t('ratelater.videoAlreadyInList'),
-          },
-        ]);
-      }
-    );
+  const addToRateLater = async (id: string): Promise<boolean> => {
+    let uidNamespace = '';
+    // TODO: we should be able to get the UID namespace from the polls'
+    // configuration to avoid writing these kind of if statement everywhere.
+    if (pollName === YOUTUBE_POLL_NAME) {
+      uidNamespace = UID_YT_NAMESPACE;
+    }
+
+    const response = await addToRateLaterList(
+      pollName,
+      uidNamespace + id
+    ).catch((reason: ApiError) => {
+      displayErrorsFrom(reason, t('ratelater.errorOccurredCannotAddVideo'), [
+        {
+          status: 409,
+          variant: 'warning',
+          msg: t('ratelater.videoAlreadyInList'),
+        },
+      ]);
+    });
     if (response) {
       showSuccessAlert(t('ratelater.videoAdded'));
       await loadList();
@@ -99,7 +112,7 @@ const RateLaterPage = () => {
     loadList();
   }, [loadList]);
 
-  const videos = rateLaterList.map((r) => r.video);
+  const entities = rateLaterList.map((r) => r.entity);
   const rateLaterPageActions = [
     CompareNowAction,
     RemoveFromRateLater(loadList),
@@ -150,14 +163,14 @@ const RateLaterPage = () => {
         </Card>
 
         <div className={classes.rateLaterContent} ref={videoListTopRef}>
-          {videoCount !== null && (
+          {entityCount !== null && (
             <Typography variant="subtitle1">
               <Trans
                 t={t}
                 i18nKey="ratelater.listHasNbVideos"
-                count={videoCount}
+                count={entityCount}
               >
-                Your rate-later list now has <strong>{{ videoCount }}</strong>{' '}
+                Your rate-later list now has <strong>{{ entityCount }}</strong>{' '}
                 video(s).
               </Trans>
             </Typography>
@@ -165,14 +178,14 @@ const RateLaterPage = () => {
 
           <Box width="100%" textAlign="center">
             <LoaderWrapper isLoading={isLoading}>
-              <VideoList videos={videos} actions={rateLaterPageActions} />
+              <EntityList entities={entities} actions={rateLaterPageActions} />
             </LoaderWrapper>
           </Box>
-          {!!videoCount && (
+          {!!entityCount && (
             <div className={classes.stickyPagination}>
               <Pagination
                 offset={offset}
-                count={videoCount}
+                count={entityCount}
                 onOffsetChange={onOffsetChange}
                 limit={limit}
               />

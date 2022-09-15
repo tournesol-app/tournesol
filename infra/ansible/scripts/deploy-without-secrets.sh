@@ -46,7 +46,6 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "swagger_ui_oauth2_client_secret=$SWAGGER_UI_OAUTH2_CLIENT_SECRET" \
   -e "grafana_oidc_client_id=$GRAFANA_OIDC_CLIENT_ID" \
   -e "grafana_oidc_client_secret=$GRAFANA_OIDC_CLIENT_SECRET" \
-  -e "discord_alerting_webhook=${DISCORD_ALERTING_WEBHOOK:-""}" \
   -e "aws_access_key_id=${AWS_ACCESS_KEY_ID:-""}" \
   -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY:-""}" \
   -e "git_reference=${GIT_REFERENCE}" \
@@ -58,4 +57,5 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "consumer_secret_twitterbot_en=${TWBOT_CONSUMER_SECRET_EN}" \
   -e "access_token_twitterbot_en=${TWBOT_ACCESS_TOKEN_EN}" \
   -e "access_token_secret_twitterbot_en=${TWBOT_ACCESS_TOKEN_SECRET_EN}" \
-  
+  -e "discord_infra_alert_webhook=${DISCORD_INFRA_ALERT_WEBHOOK:-""}" \
+  -e "discord_twitter_webhook=${DISCORD_TWITTER_WEBHOOK:-""}" \

@@ -7,9 +7,9 @@ import AddIcon from '@mui/icons-material/Add';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { Video, UsersService } from 'src/services/openapi';
+import { UsersService } from 'src/services/openapi';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
-import { idFromUid } from './video';
+import { addToRateLaterList } from './api/rateLaters';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
@@ -39,6 +39,7 @@ export const AddToRateLaterList = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
   const { showSuccessAlert, showInfoAlert } = useNotifications();
+  const { name: pollName } = useCurrentPoll();
 
   // Do not display anything if the user is not logged.
   if (!isLoggedIn) {
@@ -47,11 +48,7 @@ export const AddToRateLaterList = ({ uid }: { uid: string }) => {
 
   const handleCreation = async () => {
     try {
-      await UsersService.usersMeVideoRateLaterCreate({
-        requestBody: {
-          video: { video_id: idFromUid(uid) } as Video,
-        },
-      });
+      await addToRateLaterList(pollName, uid);
       showSuccessAlert(t('actions.videoAddedToRateLaterList'));
     } catch (error) {
       showInfoAlert(t('actions.videoAlreadyInRateLaterList'));
@@ -75,14 +72,14 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
   const RemoveFromRateLaterComponnent = ({ uid }: { uid: string }) => {
     const { t } = useTranslation();
     const { showSuccessAlert } = useNotifications();
-    const videoId = idFromUid(uid);
+    const { name: pollName } = useCurrentPoll();
 
     return (
       <Tooltip title={`${t('actions.remove')}`} placement="left">
         <IconButton
           size="medium"
           onClick={async () => {
-            await UsersService.usersMeVideoRateLaterDestroy({ videoId });
+            await UsersService.usersMeRateLaterDestroy({ pollName, uid });
             if (asyncCallback) await asyncCallback();
             showSuccessAlert(t('actions.videoDeletedFromRateLaterList'));
           }}

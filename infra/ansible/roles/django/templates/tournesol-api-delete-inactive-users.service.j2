@@ -8,4 +8,4 @@ Group=gunicorn
 WorkingDirectory=/srv/tournesol-backend
 Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
 ExecStart=/usr/bin/bash -c "source venv/bin/activate && python manage.py delete_inactive_users"
-ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/discord-tournesolapi-deleteinactiveusers-fail-alert.sh; fi"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'Tournesol API delete_inactive_users job failed for {{ansible_host}}'; fi"

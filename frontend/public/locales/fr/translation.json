@@ -155,7 +155,8 @@
   "loginButton": "Se connecter",
   "joinUsButton": "S'inscrire",
   "personalMenu": {
-    "yourRecommendations": "Mes recommandations"
+    "yourRecommendations": "Mes recommandations",
+    "vouching": "Me porter garant"
   },
   "logoutButton": "Se déconnecter",
   "topbar": {
@@ -181,9 +182,9 @@
     "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
     "rateLaterFormIntroduction": "Copiez-collez l'ID ou l'URL de l'une de vos vidéos favorites.<1></1>Vous pouvez les trouver dans votre <4>historique YouTube</4> ou votre <7>playlist</7> de vidéos aimées.<9></9>Notre <12>extension de navigateur</12> peut également vous aider à ajouter des vidéos facilement.<15></15>Les vidéos ainsi ajoutées peuvent être comparées, puis sont enlevées de la liste après un nombre suffisant de comparaisons.",
-    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéo.",
-    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos.",
-    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{videoCount}}</1> vidéos."
+    "listHasNbVideos_one": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéo.",
+    "listHasNbVideos_many": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos.",
+    "listHasNbVideos_other": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos."
   },
   "public": "publique",
   "private": "privée",
@@ -431,7 +432,7 @@
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <6>robustement bénéfique</6> à grande échelle, pour toute l'humanité."
+    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <7>robustement bénéfique</7> à grande échelle, pour toute l'humanité."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -464,6 +465,17 @@
     },
     "proofOfVoteHelperText": "Ce code sera utile afin de répondre à <2>notre sondage.</2>",
     "proofOfVote": "Preuve de participation"
+  },
+  "personalVouchers": {
+    "voucherCreated": "Vous vous portez garant pour «\u00a0{{username}}\u00a0».",
+    "introduction": "Je certifie que cet utilisateur est un humain, avec un comportement authentique, et qu'il n'utilise pas activement un autre compte Tournesol\u00a0:",
+    "usernameLabel": "Nom d'utilisateur",
+    "submitButton": "Je me porte garant de cet utilisateur",
+    "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0».",
+    "noVoucherGiven": "Aucun.",
+    "givenVouchersTitle": "Utilisateurs pour lesquels vous vous portez garant",
+    "noVoucherReceived": "Aucun.",
+    "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
@@ -581,22 +593,22 @@
       "tutorial": {
         "title1": "Bienvenue sur Tournesol 🌻",
         "message1": {
-          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons.",
+          "p10": "Ce tutoriel va vous guider pas à pas à travers une série de quatre comparaisons, afin de vous aider à contribuer au projet Tournesol.",
           "p20": "Pour comparer deux vidéos que vous avez regardées, déplacez le curseur principal, puis enregistrez quand votre choix est fait.",
           "p30": "Plus votre avis est tranché plus le curseur devrait être proche de l'extrémité.",
           "p40": "Si vous trouvez les vidéos similaires, le curseur devrait rester proche du centre."
         },
         "title2": "Bravo ! 🥳",
         "message2": {
-          "p10": "Vous avez effectué votre première comparaison.",
-          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URL YouTube dans les champs qui se trouvent au dessus des miniatures.",
+          "p10": "Vous avez effectué votre première comparaison. Chaque comparaison aide Tournesol à améliorer ses recommandations de vidéo.",
+          "p20": "Notez que vous pouvez choisir vous-même les vidéos à comparer en collant leurs URLs YouTube dans les champs qui se trouvent au dessus des miniatures.",
           "p30": "Essayez maintenant de dérouler les critères optionnels pour donner un avis plus complet sur les vidéos.",
           "p40": "Vous pouvez choisir de ne pas vous exprimer sur un critère optionnel en le décochant.",
           "p50": "Bon à savoir, il est toujours possible de modifier ultérieurement vos comparaisons si vous n'êtes pas sûr·e de vous."
         },
         "title3": "Comment fonctionne Tournesol ? 🤖",
         "message3": {
-          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeurs et contributrices sur les différents critères.",
+          "p10": "Tournesol calcule un score pour chaque vidéo, en agrégeant les jugements des contributeur·trices sur les différents critères.",
           "p20": "Le score final représente alors un équilibre, qui est au milieu des préférences des différentes personnes votantes.",
           "p30": "Vous pouvez à tout moment consulter la description d'un critère en passant votre souris dessus. Pour obtenir encore plus information, cliquer sur un critère permet de consulter sa page wiki dédiée."
         },

@@ -2,6 +2,8 @@
 All test cases of the `Voucher` model.
 """
 
+from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
 
 from core.tests.factories.user import UserFactory
@@ -115,3 +117,13 @@ class VoucherTestCase(TestCase):
         vouchers, exists = Voucher.get_given_by(self.user_0)
         self.assertEqual(vouchers.count(), 0)
         self.assertEqual(exists, False)
+
+    def test_user_cant_vouch_twice_for_the_same_target(self) -> None:
+        """
+        Only one voucher can be created for the couple `by` and `to`.
+        """
+        duplicate = Voucher(by=self.user_1, to=self.user_2, value=13)
+        with self.assertRaises(ValidationError):
+            duplicate.full_clean()
+        with self.assertRaises(IntegrityError):
+            duplicate.save()

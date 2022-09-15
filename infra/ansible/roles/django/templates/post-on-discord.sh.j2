@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd /srv/tournesol-backend && SETTINGS_FILE=/etc/tournesol/settings.yaml ./venv/bin/python manage.py send_on_discord "$@"
+echo "alert sent"

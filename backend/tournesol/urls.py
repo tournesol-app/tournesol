@@ -2,7 +2,7 @@
 The tournesol app API routes.
 """
 
-from django.urls import include, path
+from django.urls import include, path, re_path
 from rest_framework import routers
 
 from tournesol.views.proof_of_vote import ProofOfVoteView
@@ -29,6 +29,7 @@ from .views.polls import (
     PollsRecommendationsView,
     PollsView,
 )
+from .views.preview import DynamicWebsitePreviewDefault, DynamicWebsitePreviewEntity
 from .views.rate_later import (
     LegacyRateLaterDetail,
     LegacyRateLaterList,
@@ -54,6 +55,8 @@ urlpatterns = [
     path("", include(router.urls)),
     # User API
     path("users/me/", CurrentUserView.as_view(), name="users_me"),
+    # Voucher API
+    path("users/me/", include("vouch.urls")),
     # Data exports
     path(
         "users/me/exports/comparisons/",
@@ -190,5 +193,16 @@ urlpatterns = [
         "polls/<str:name>/entities/<str:uid>/criteria_scores_distributions",
         PollsCriteriaScoreDistributionView.as_view(),
         name="polls_score_distribution",
+    ),
+    # Website Previews
+    path(
+        "preview/entities/<str:uid>",
+        DynamicWebsitePreviewEntity.as_view(),
+        name="website_preview_entity",
+    ),
+    re_path(
+        r"^preview/.*$",
+        DynamicWebsitePreviewDefault.as_view(),
+        name="website_preview_default",
     ),
 ]
