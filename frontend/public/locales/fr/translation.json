@@ -467,15 +467,15 @@
     "proofOfVote": "Preuve de participation"
   },
   "personalVouchers": {
-    "voucherCreated": "Vous vous êtes porté garant pour «\u00a0{{username}}\u00a0»",
+    "voucherCreated": "Vous vous portez garant pour «\u00a0{{username}}\u00a0».",
     "introduction": "Je certifie que cet utilisateur est un humain, avec un comportement authentique, et qu'il n'utilise pas activement un autre compte Tournesol\u00a0:",
     "usernameLabel": "Nom d'utilisateur",
     "submitButton": "Je me porte garant de cet utilisateur",
-    "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0»",
+    "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0».",
     "noVoucherGiven": "Aucun.",
-    "givenVouchersTitle": "Utilisateurs pour lesquels vous vous êtes porté garant",
+    "givenVouchersTitle": "Utilisateurs pour lesquels vous vous portez garant",
     "noVoucherReceived": "Aucun.",
-    "receivedVouchersTitle": "Utilisateurs qui se sont portés garant pour vous"
+    "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous"
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
