@@ -114,7 +114,7 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
-        self.assertEqual(response.content, b'{"to":["You cannot vouch for yourself."]}')
+        self.assertEqual(response.data, {"to": ["You cannot vouch for yourself."]})
 
 
 class VoucherGivenDestroyAPIViewTestCase(TestCase):
