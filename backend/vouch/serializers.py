@@ -2,6 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueTogetherValidator
 
 from core.models import User
 from vouch.models import Voucher
@@ -29,6 +30,13 @@ class GivenVoucherSerializer(ModelSerializer):
     class Meta:
         model = Voucher
         fields = ["_by"] + VOUCHER_FIELDS
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=['by', 'to'],
+                message=_("You have already vouched for this user.")
+            )
+        ]
 
     def validate_to(self, value):
         try:

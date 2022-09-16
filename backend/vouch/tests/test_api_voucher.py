@@ -97,6 +97,10 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count)
+        self.assertEqual(
+            response.data,
+            {"non_field_errors": ["You have already vouched for this user."]},
+        )
 
     def test_auth_400_create_by_and_to_are_similar(self):
         """
