@@ -21,8 +21,6 @@ class VoucherCreateAPIViewTestCase(TestCase):
 
         self.valid_create_params = {
             "to": "user2",
-            "is_public": False,
-            "value": "1",
         }
 
     def test_anon_401_create(self):
@@ -52,16 +50,14 @@ class VoucherCreateAPIViewTestCase(TestCase):
         self.assertEqual(Voucher.objects.all().count(), initial_voucher_count + 1)
 
         new_voucher = Voucher.objects.get(by=self.user1.id, to=self.user2.id)
-        self.assertEqual(new_voucher.is_public, self.valid_create_params["is_public"])
-        self.assertEqual(new_voucher.value, float(self.valid_create_params["value"]))
+        self.assertEqual(new_voucher.is_public, True)
+        self.assertEqual(new_voucher.value, 1.0)
 
         self.assertDictEqual(
             response.data,
             {
                 "by": "user1",
                 "to": "user2",
-                "is_public": False,
-                "value": 1,
             },
             response.data,
         )
@@ -231,8 +227,6 @@ class VoucherGivenListAPIViewTestCase(TestCase):
             {
                 "by": "user1",
                 "to": "user2",
-                "is_public": False,
-                "value": 1,
             },
             results[0],
         )
@@ -242,8 +236,6 @@ class VoucherGivenListAPIViewTestCase(TestCase):
             {
                 "by": "user1",
                 "to": "user3",
-                "is_public": True,
-                "value": 2,
             },
             results[1],
         )
@@ -299,8 +291,6 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
             {
                 "by": "user1",
                 "to": "user3",
-                "is_public": True,
-                "value": 2,
             },
             results[0],
         )
@@ -310,8 +300,6 @@ class VoucherReceivedListAPIViewTestCase(TestCase):
             {
                 "by": "user2",
                 "to": "user3",
-                "is_public": False,
-                "value": 3,
             },
             results[1],
         )

@@ -9,7 +9,7 @@ from vouch.models import Voucher
 
 # Allow to keep the JSON representation of `GivenVoucherSerializer` and
 # `ReadOnlyVoucherSerializer` similar.
-VOUCHER_FIELDS = ["by", "to", "is_public", "value"]
+VOUCHER_FIELDS = ["by", "to"]
 
 
 class GivenVoucherSerializer(ModelSerializer):
@@ -71,4 +71,4 @@ class ReadOnlyVoucherSerializer(ModelSerializer):
     class Meta:
         model = Voucher
         fields = VOUCHER_FIELDS
-        read_only_fields = ["to", "by", "is_public", "value"]
+        read_only_fields = ["to", "by"]
