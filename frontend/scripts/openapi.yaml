@@ -2448,38 +2448,38 @@ components:
         Note that the fields `n_comparisons` and `n_contributors` contain
         the collective values, and are not specific to the user.
       properties:
+        is_public:
+          type: boolean
+          readOnly: true
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        n_comparisons:
-          type: integer
-        total_score:
-          type: number
-          format: float
         tournesol_score:
           type: number
           format: float
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
+        total_score:
+          type: number
+          format: float
         type:
           $ref: '#/components/schemas/TypeEnum'
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
-        n_contributors:
-          type: integer
         uid:
           type: string
           description: A unique identifier, build with a namespace and an external
             id.
           maxLength: 144
+        n_contributors:
+          type: integer
+        n_comparisons:
+          type: integer
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
       required:
       - criteria_scores
       - is_public
@@ -2739,13 +2739,6 @@ components:
           readOnly: true
         to:
           type: string
-        is_public:
-          type: boolean
-          description: Should the voucher be public?
-        value:
-          type: number
-          format: float
-          description: The vouch value given by the vouching user to receiving user.
       required:
       - by
       - to
@@ -2761,13 +2754,6 @@ components:
         to:
           type: string
           minLength: 1
-        is_public:
-          type: boolean
-          description: Should the voucher be public?
-        value:
-          type: number
-          format: float
-          description: The vouch value given by the vouching user to receiving user.
       required:
       - to
     Length3Cycles:
@@ -3506,20 +3492,9 @@ components:
         to:
           type: string
           readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
-          description: Should the voucher be public?
-        value:
-          type: number
-          format: float
-          readOnly: true
-          description: The vouch value given by the vouching user to receiving user.
       required:
       - by
-      - is_public
       - to
-      - value
     Recommendation:
       type: object
       properties:

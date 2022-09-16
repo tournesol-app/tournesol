@@ -23,7 +23,7 @@ describe('VouchersPage', () => {
   );
 
   const getUsernameInput = () =>
-    screen.queryByLabelText('personalVouchers.usernameLabel');
+    screen.queryByLabelText('personalVouchers.usernameLabel *');
 
   const submitForm = async ({ username }) => {
     const input = getUsernameInput();
