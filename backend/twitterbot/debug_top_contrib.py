@@ -1,3 +1,5 @@
+# TO BE DELETED, just use to do some test
+
 from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
@@ -5,7 +7,6 @@ import matplotlib.image as mpimg
 import datetime
 
 # TODO:
-# - Put the function at its correct place
 # - Traduction
 # - get month name from Django
 

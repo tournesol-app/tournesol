@@ -227,7 +227,7 @@ class TestTournesolBot(TestCase):
         assert get_video_recommendations("en")[0] == self.videos[4]
 
         assert not get_video_recommendations("de")
-        
+
     def test_generate_top_contributor_figure(self):
         """
         Test function generate_top_contributor_figure.
