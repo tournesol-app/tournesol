@@ -11,6 +11,7 @@ import ContributeSection from 'src/pages/home/videos/ContributeSection';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
+import ComparisonSection from 'src/pages/home/ComparisonSection';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -85,10 +86,11 @@ const HomeVideosPage = () => {
           </Box>
         )}
       </TitleSection>
+      <ComparisonSection />
       <ExtensionSection />
       <ContributeSection />
-      <PollListSection />
       <UsageStatsSection />
+      <PollListSection />
     </AlternatingBackgroundColorSectionList>
   );
 };

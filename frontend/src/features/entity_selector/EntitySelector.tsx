@@ -37,6 +37,7 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
+  light?: boolean;
 }
 
 export interface SelectorValue {
@@ -47,7 +48,7 @@ export interface SelectorValue {
 
 const isUidValid = (uid: string) => uid.match(/\w+:.+/);
 
-const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
+const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
   const classes = useStyles();
 
   const { name: pollName, options } = useCurrentPoll();
@@ -195,15 +196,21 @@ const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
         />
       </Box>
       <Box mx={1} marginBottom={1}>
-        <EntityInput
-          value={inputValue || uid}
-          onChange={handleChange}
-          otherUid={otherUid}
-        />
+        {!light && (
+          <EntityInput
+            value={inputValue || uid}
+            onChange={handleChange}
+            otherUid={otherUid}
+          />
+        )}
       </Box>
 
       {rating ? (
-        <EntityCard compact entity={rating.entity} settings={toggleAction} />
+        <EntityCard
+          compact
+          entity={rating.entity}
+          settings={light ? undefined : toggleAction}
+        />
       ) : (
         <EmptyEntityCard compact loading={loading} />
       )}
