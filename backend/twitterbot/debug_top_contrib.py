@@ -26,7 +26,7 @@ def generate_top_contributor_figure() -> Path:
         "user6": 453,
         "user7": 356,
         "user8": 256,
-        "user9": 156,
+        "u": 156,
     }
 
     now = datetime.datetime.now()
@@ -59,7 +59,7 @@ def generate_top_contributor_figure() -> Path:
     fig, ax = plt.subplots(dpi=150)
 
     short_usernames = [
-        name if len(name) < 14 else name[:11] + "..."
+        name[:11] + "..." if len(name) > 13 else name
         for name in list(top_contributors.keys())
     ]
 
@@ -75,8 +75,8 @@ def generate_top_contributor_figure() -> Path:
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
 
     # Add sunflower images
-    arr_lena = mpimg.imread("./Logo128.png")
-    imagebox = OffsetImage(arr_lena, zoom=0.18)
+    tournesol_logo = mpimg.imread("./Logo128.png")
+    imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
     for top_pos, nb_rating in enumerate(top_contributors.values()):
         ab = AnnotationBbox(imagebox, (top_pos, nb_rating), frameon=False)
@@ -86,6 +86,5 @@ def generate_top_contributor_figure() -> Path:
     plt.show()
 
     return fig_path
-
 
 generate_top_contributor_figure()
