@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-22 13:31+0000\n"
+"POT-Creation-Date: 2022-09-16 14:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,10 +92,14 @@ msgstr ""
 msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
-#: vouch/serializers.py:30
+#: vouch/serializers.py:37
+msgid "You have already vouched for this user."
+msgstr "Vous vous êtes déjà porté garant pour cet utilisateur."
+
+#: vouch/serializers.py:45
 msgid "The target user doesn't exist."
 msgstr "L'utilisateur ciblé n'existe pas."
 
-#: vouch/serializers.py:36
+#: vouch/serializers.py:52
 msgid "You cannot vouch for yourself."
 msgstr "Vous ne pouvez pas vous porter garant pour vous-même."
