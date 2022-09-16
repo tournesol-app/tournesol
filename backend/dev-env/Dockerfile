@@ -5,9 +5,8 @@ WORKDIR /backend
 
 RUN apt-get update && apt-get install -y gettext && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ml/ml_requirements.txt /backend/
+COPY requirements.txt /backend/
 COPY tests/requirements.txt /backend/requirements.dev.txt
 
-RUN pip install -r ml_requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install -r requirements.dev.txt

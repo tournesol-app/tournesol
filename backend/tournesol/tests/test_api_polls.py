@@ -352,7 +352,7 @@ class PollsRecommendationsTestCase(TestCase):
 
     def test_can_list_recommendations_with_score_mode(self):
         response = self.client.get(
-            "/polls/videos/recommendations/?score_mode=all_equal"
+            "/polls/videos/recommendations/?score_mode=all_equal&weights[reliability]=10&weights[importance]=10&weights[largely_recommended]=0"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -367,9 +367,6 @@ class PollsRecommendationsTestCase(TestCase):
         self.assertEqual(results[2]["total_score"], -2.0)
 
     def test_can_list_recommendations_with_mehestan_default_weights(self):
-        Poll.objects.filter(name=DEFAULT_POLL_NAME).update(
-            algorithm=ALGORITHM_MEHESTAN
-        )
         response = self.client.get(
             "/polls/videos/recommendations/"
         )
@@ -518,12 +515,12 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_1,
             criteria="reliability",
-            score=0.2,
+            score=2,
         )
         ContributorRatingCriteriaScoreFactory(
             contributor_rating=self.contributor_ratings_2,
             criteria="reliability",
-            score=6,
+            score=85,
         )
 
         response = self.client.get(
@@ -535,22 +532,21 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.assertEqual(
             response.data["criteria_scores_distributions"][0]["criteria"], "reliability"
         )
-        # The sixth position are values between (0, 0.2) because
-        # we use a 10 bins between (-1, 1)
+        # The sixth position are values between (0, 20) because
+        # we use a 10 bins between (-100, 100)
         self.assertEqual(
             response.data["criteria_scores_distributions"][0]["distribution"][5], 1
         )
-        # The sixth position are all values above 0.8 because we use a 10 bins
-        # between (-1, 1) and we clip all values between (-1, 1)
+        # The 10th position are all values above 80 because we use a 10 bins between (-100, 100)
         self.assertEqual(
             response.data["criteria_scores_distributions"][0]["distribution"][9], 1
         )
-        # Distribution is always in a range [-1,1]
+        # Distribution is always in a range [-100,100]
         self.assertEqual(
-            min(response.data["criteria_scores_distributions"][0]["bins"]), -1
+            min(response.data["criteria_scores_distributions"][0]["bins"]), -100
         )
         self.assertEqual(
-            max(response.data["criteria_scores_distributions"][0]["bins"]), 1
+            max(response.data["criteria_scores_distributions"][0]["bins"]), 100
         )
 
     def test_no_private_criteria_ratings_should_be_in_distribution(self):
@@ -610,8 +606,8 @@ class PollsCriteriaScoreDistributionTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["criteria_scores_distributions"]), 1)
         self.assertEqual(
-            min(response.data["criteria_scores_distributions"][0]["bins"]), -1
+            min(response.data["criteria_scores_distributions"][0]["bins"]), -100
         )
         self.assertEqual(
-            max(response.data["criteria_scores_distributions"][0]["bins"]), 1
+            max(response.data["criteria_scores_distributions"][0]["bins"]), 100
         )

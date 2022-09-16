@@ -31,9 +31,6 @@ def save_entity_scores(
     else:
         scores_iterator = entity_scores
 
-    # Support scores iterator without deviation
-    scores_iterator = (t if len(t) == 5 else t + (None,) for t in scores_iterator)
-
     with transaction.atomic():
         scores_to_delete = EntityCriteriaScore.objects.filter(poll=poll, score_mode=score_mode)
         if single_criteria:
