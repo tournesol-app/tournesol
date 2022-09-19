@@ -47,8 +47,12 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
             text="Je ne comprends pas pourquoi.",
         )
 
-        self.answer1_loc_en = create_answer(self.question1, self.default_lang, "Tournesol aims to...")
-        self.answer1_loc_fr = create_answer(self.question1, self.available_lang, "Tournesol cherche à...")
+        self.answer1_loc_en = create_answer(
+            self.question1, self.default_lang, "Tournesol aims to..."
+        )
+        self.answer1_loc_fr = create_answer(
+            self.question1, self.available_lang, "Tournesol cherche à..."
+        )
 
     def test_anon_200_list_language_unknown(self):
         """
@@ -143,7 +147,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         The questions must be ordered by rank.
         """
         question = create_question("first_question", self.question1.rank - 1, True)
-        create_answer(question, self.default_lang)
+        create_answer(question, self.default_lang, "first_answer")
 
         response = self.client.get(self.faq_base_url)
         results = response.data["results"]
