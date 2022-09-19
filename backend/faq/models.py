@@ -10,7 +10,8 @@ from django.utils import translation
 
 class AbstractLocalizable(models.Model):
     """
-    This class factorizes common behaviours between questions and answers.
+    This class factorizes the generic behaviours of localizable models like
+    `FAQuestion`.
     """
 
     class Meta:
@@ -29,7 +30,7 @@ class AbstractLocalizable(models.Model):
                 return self.name  # pylint: disable=no-member
         return locale.text
 
-    def get_text_prefetch(self, lang=None):
+    def get_text_prefetch(self, lang=None, attr="locales"):
         """
         Return the translated text of the instance.
 
@@ -41,13 +42,23 @@ class AbstractLocalizable(models.Model):
             lang = translation.get_language()
 
         try:
-            locale = [loc for loc in self.locales.all() if loc.language == lang][0]
+            locale = [loc for loc in getattr(self, attr).all() if loc.language == lang][
+                0
+            ]
         except IndexError:
             try:
-                locale = [loc for loc in self.locales.all() if loc.language == "en"][0]
+                locale = [
+                    loc for loc in getattr(self, attr).all() if loc.language == "en"
+                ][0]
             except IndexError:
                 return self.name  # pylint: disable=no-member
         return locale.text
+
+    def get_question_text_prefetch(self, lang=None):
+        return self.get_text_prefetch(lang, attr="locales")
+
+    def get_answer_text_prefetch(self, lang=None):
+        return self.get_text_prefetch(lang, attr="answers")
 
 
 class FAQuestion(AbstractLocalizable):
@@ -97,7 +108,7 @@ class FAQAnswerLocale(models.Model):
     A translated answer to a `FAQuestion`.
     """
 
-    question = models.OneToOneField(
+    question = models.ForeignKey(
         FAQuestion, on_delete=models.CASCADE, related_name="answers"
     )
     language = models.CharField(max_length=10, choices=settings.LANGUAGES)

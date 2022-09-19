@@ -6,15 +6,18 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from faq.models import FAQAnswer, FAQAnswerLocale, FAQuestion, FAQuestionLocale
+from faq.models import FAQAnswerLocale, FAQuestion, FAQuestionLocale
 
 
 def create_question(name, rank, enabled):
     return FAQuestion.objects.create(name=name, rank=rank, enabled=enabled)
 
 
-def create_answer(name, question):
-    return FAQAnswer.objects.create(name=name, question=question)
+def create_answer(question, lang, text=None):
+    if not text:
+        text = question.name
+
+    return FAQAnswerLocale.objects.create(question=question, language=lang, text=text)
 
 
 class FAQuestionLocalizedListViewTestCase(TestCase):
@@ -44,17 +47,8 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
             text="Je ne comprends pas pourquoi.",
         )
 
-        self.answer1 = create_answer("i_dont_understand_why_ans", self.question1)
-
-        self.answer1_loc_en = FAQAnswerLocale.objects.create(
-            answer=self.answer1, language=self.default_lang, text="Tournesol aims to..."
-        )
-
-        self.answer1_loc_fr = FAQAnswerLocale.objects.create(
-            answer=self.answer1,
-            language=self.available_lang,
-            text="Tournesol cherche à...",
-        )
+        self.answer1_loc_en = create_answer(self.question1, self.default_lang, "Tournesol aims to...")
+        self.answer1_loc_fr = create_answer(self.question1, self.available_lang, "Tournesol cherche à...")
 
     def test_anon_200_list_language_unknown(self):
         """
@@ -122,7 +116,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         """
         A question without answer must not be returned by the API.
         """
-        self.answer1.delete()
+        self.question1.answers.all().delete()
 
         response = self.client.get(self.faq_base_url)
         results = response.data["results"]
@@ -133,7 +127,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         Disabled questions must not be returned by the API.
         """
         question = create_question("new_question", 1, True)
-        create_answer("new_question", question)
+        create_answer(question, self.default_lang)
 
         response = self.client.get(self.faq_base_url)
         self.assertEqual(len(response.data["results"]), 2)
@@ -149,7 +143,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         The questions must be ordered by rank.
         """
         question = create_question("first_question", self.question1.rank - 1, True)
-        create_answer("first_answer", question)
+        create_answer(question, self.default_lang)
 
         response = self.client.get(self.faq_base_url)
         results = response.data["results"]
