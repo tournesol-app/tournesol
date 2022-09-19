@@ -30,6 +30,10 @@ class FAQuestion(models.Model):
 
 
 class FAQuestionLocale(models.Model):
+    """
+    A translated `FAQuestion`.
+    """
+
     question = models.ForeignKey(
         FAQuestion, on_delete=models.CASCADE, related_name="locales"
     )
@@ -44,32 +48,20 @@ class FAQuestionLocale(models.Model):
         return self.text
 
 
-class FAQAnswer(models.Model):
-    """
-    An answer to a `FAQuestion`.
-    """
-
-    name = models.SlugField(
-        unique=True, help_text="The unique identifier of the answer."
-    )
-    question = models.OneToOneField(
-        FAQuestion, on_delete=models.CASCADE, related_name="answer"
-    )
-
-    class Meta:
-        verbose_name = "FAQ Answer"
-
-    def __str__(self) -> str:
-        return self.name
-
-
 class FAQAnswerLocale(models.Model):
-    answer = models.ForeignKey(
-        FAQAnswer, on_delete=models.CASCADE, related_name="locales"
+    """
+    A translated answer to a `FAQuestion`.
+    """
+
+    question = models.OneToOneField(
+        FAQuestion, on_delete=models.CASCADE, related_name="answers"
     )
     language = models.CharField(max_length=10, choices=settings.LANGUAGES)
     text = models.TextField()
 
     class Meta:
-        unique_together = ["answer", "language"]
+        unique_together = ["question", "language"]
         verbose_name = "FAQ Answer Locale"
+
+    def __str__(self) -> str:
+        return self.text

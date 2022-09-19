@@ -5,7 +5,7 @@ Administration interface of the `faq` app.
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from faq.models import FAQAnswer, FAQAnswerLocale, FAQuestion, FAQuestionLocale
+from faq.models import FAQAnswerLocale, FAQuestion, FAQuestionLocale
 
 
 class HasAnswerListFilter(admin.SimpleListFilter):
@@ -21,11 +21,11 @@ class HasAnswerListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() == "1":
             return queryset.filter(
-                answer__isnull=False,
+                answers__isnull=False,
             )
         if self.value() == "0":
             return queryset.filter(
-                answer__isnull=True,
+                answers__isnull=True,
             )
         return queryset
 
@@ -46,46 +46,18 @@ class FAQuestionAdmin(admin.ModelAdmin):
     list_display = ("name", "rank", "enabled", "has_answer")
     list_filter = (HasAnswerListFilter, "enabled")
     ordering = ("rank",)
-    inlines = (FAQuestionLocaleInline,)
+    inlines = (FAQuestionLocaleInline, FAQAnswerLocaleInline)
 
     def get_queryset(self, request):
         qst = super().get_queryset(request)
-        qst = qst.select_related("answer")
+        qst = qst.select_related("answers")
         return qst
 
     @admin.display(description="has answer?", boolean=True)
     def has_answer(self, obj) -> bool:
         try:
-            obj.answer.pk
-        except FAQuestion.answer.RelatedObjectDoesNotExist:
+            obj.answers
+        except FAQuestion.answers.RelatedObjectDoesNotExist:  # pylint: disable=no-member
             return False
         else:
             return True
-
-
-@admin.register(FAQAnswer)
-class FAQAnswerAdmin(admin.ModelAdmin):
-    search_fields = ("name", "question__name")
-    list_display = (
-        "name",
-        "question",
-        "get_q_rank",
-        "get_q_enabled",
-    )
-    list_filter = ("question__enabled",)
-    inlines = (FAQAnswerLocaleInline,)
-
-    def get_queryset(self, request):
-        qst = super().get_queryset(request)
-        qst = qst.select_related("question").order_by("question__rank")
-        return qst
-
-    @admin.display(description="question rank", ordering="question__rank")
-    def get_q_rank(self, obj):
-        return obj.question.rank
-
-    @admin.display(
-        description="question enabled?", ordering="question__enabled", boolean=True
-    )
-    def get_q_enabled(self, obj):
-        return obj.question.enabled
