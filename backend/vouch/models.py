@@ -31,10 +31,10 @@ class Voucher(models.Model):
         related_name="vouchers_received",
     )
     is_public = models.BooleanField(
-        default=False, help_text="Should the voucher be public?"
+        default=True, help_text="Should the voucher be public?"
     )
     value = models.FloatField(
-        default=0,
+        default=1,
         help_text="The vouch value given by the vouching user to receiving user.",
     )
 
