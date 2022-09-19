@@ -50,7 +50,7 @@ class FAQuestionAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qst = super().get_queryset(request)
-        qst = qst.select_related("answers")
+        qst = qst.prefetch_related("answers")
         return qst
 
     @admin.display(description="has answer?", boolean=True)
