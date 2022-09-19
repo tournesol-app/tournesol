@@ -32,7 +32,7 @@ class FAQuestion(models.Model):
 
     def get_text(self, related="locales", lang=None):
         """
-        Return the localized text of a related instance.
+        Return the translated text of a related instance.
 
         A related instance can be a question or an answer.
         """
@@ -49,7 +49,7 @@ class FAQuestion(models.Model):
 
     def get_text_prefetch(self, related="locales", lang=None):
         """
-        Return the localized text of a related instance.
+        Return the translated text of a related instance.
 
         Contrary to `self.get_text` this method consider the related instances
         as already prefetched with `prefetch_related`, and use `.all()` instead
@@ -72,11 +72,11 @@ class FAQuestion(models.Model):
         return locale.text
 
     def get_question_text_prefetch(self, lang=None):
-        """Return the localized text of the question."""
+        """Return the translated text of the question."""
         return self.get_text_prefetch(related="locales", lang=lang)
 
     def get_answer_text_prefetch(self, lang=None):
-        """Return the localized text of the answer."""
+        """Return the translated text of the answer."""
         return self.get_text_prefetch(related="answers", lang=lang)
 
 

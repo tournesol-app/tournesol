@@ -64,7 +64,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
     def test_list_faq_language_unknown(self):
         """
         When no HTTP Accept-Language header is present in the request, the
-        `en` localization must be returned.
+        `en` translation must be returned.
         """
         response = self.client.get(self.faq_base_url)
         results = response.data["results"]
@@ -80,8 +80,8 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
 
     def test_list_faq_language_unavailable(self):
         """
-        When the requested localization is not available in the database, the
-        `en` localization must be returned.
+        When the requested translation is not available in the database, the
+        `en` translation must be returned.
         """
         response = self.client.get(
             self.faq_base_url, HTTP_ACCEPT_LANGUAGE=self.unavailable_lang
@@ -99,7 +99,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
 
     def test_list_faq_language_available(self):
         """
-        When a known language is requested, the matching localization must be
+        When a known language is requested, the matching translation must be
         returned.
         """
         response = self.client.get(
