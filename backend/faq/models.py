@@ -34,7 +34,7 @@ class FAQuestion(models.Model):
         """
         Return the localized text of a related instance.
 
-        A related instance could be a question or an answer.
+        A related instance can be a question or an answer.
         """
         if lang is None:
             lang = translation.get_language()
