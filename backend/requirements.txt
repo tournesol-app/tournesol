@@ -9,7 +9,6 @@ django-rest-registration==0.7.0
 django-sql-utils==0.6.1
 djangorestframework==3.13.1
 drf-spectacular==0.21.2
-fuzzysearch==0.7.3
 Pillow==9.0.1
 psycopg2-binary==2.9.3
 PyYAML==5.4.1
@@ -20,7 +19,7 @@ langdetect==1.0.9
 pandas==1.4.1
 numpy==1.22.3
 scipy==1.8.0
-numexpr==2.8.1
+numexpr==2.8.3
 
 # API Youtube data
 google-api-python-client==2.36.0

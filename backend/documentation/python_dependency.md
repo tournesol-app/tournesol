@@ -43,11 +43,6 @@ https://github.com/tqdm/tqdm
 
 Progress bar for python
 
-### Fuzzysearch
-https://github.com/bevacqua/fuzzysearch
-
-Better algorithm for find result with partial text
-
 ### django-oauth-toolkit
 https://github.com/jazzband/django-oauth-toolkit
 

@@ -23,7 +23,6 @@ from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
-from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.models.rate_later import RateLater
 from tournesol.serializers.metadata import VideoMetadata
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
@@ -284,12 +283,8 @@ class Entity(models.Model):
 
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of criteria score per criteria for the entity"""
-        if poll.algorithm == ALGORITHM_MEHESTAN:
-            min_score_base = -MEHESTAN_MAX_SCALED_SCORE
-            max_score_base = MEHESTAN_MAX_SCALED_SCORE
-        else:
-            min_score_base = -1.0
-            max_score_base = 1.0
+        min_score_base = -MEHESTAN_MAX_SCALED_SCORE
+        max_score_base = MEHESTAN_MAX_SCALED_SCORE
 
         # Fetch data with QuerySet
         contributor_rating_criteria_score_list = [

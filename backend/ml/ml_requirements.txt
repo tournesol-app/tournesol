@@ -1,8 +1,0 @@
-# production
-torch==1.9.1
-gin-config==0.4.0
-Bottleneck==1.3.4
-
-
-# dev
-matplotlib==3.4.2 

@@ -30,7 +30,7 @@ class Poll(models.Model):
     entity_type = models.CharField(max_length=32, choices=ENTITY_TYPE_CHOICES)
     criterias = models.ManyToManyField("Criteria", through="CriteriaRank")
     algorithm = models.CharField(
-        max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
+        max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_MEHESTAN
     )
     active = models.BooleanField(
         default=True,
