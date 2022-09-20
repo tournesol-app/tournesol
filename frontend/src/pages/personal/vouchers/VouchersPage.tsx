@@ -8,6 +8,7 @@ import { PersonalVouchersProvider } from './context';
 import CreateVoucherForm from './CreateVoucherForm';
 import GivenVouchers from './GivenVouchers';
 import ReceivedVouchers from './ReceivedVouchers';
+import VotingRight from './VotingRight';
 
 const PersonalVouchersPage = () => {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ const PersonalVouchersPage = () => {
             <ReceivedVouchers />
           </Grid>
         </Grid>
+        <VotingRight />
       </ContentBox>
     </PersonalVouchersProvider>
   );

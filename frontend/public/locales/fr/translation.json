@@ -483,6 +483,13 @@
     "givenVouchersTitle": "Utilisateurs pour lesquels vous vous portez garant",
     "noVoucherReceived": "Aucun.",
     "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous",
+    "votingRight": {
+      "nullValue": "Indéterminé",
+      "percentage": "{{value}}\u00a0%",
+      "title": "Droit de vote",
+      "description": "Votre droit de vote change la manière dont vos comparaisons sont prises en compte dans les recommandations de Tournesol. Vous pouvez l'augmenter en utilisant une adresse e-mail certifiée ou quand d'autres utilisateurs se portent garant pour vous.",
+      "value": "Votre droit de vote actuel\u00a0: {{value}}"
+    },
     "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'acquérir un droit de vote plus important sur Tournesol, y compris si leur adresse e-mail n'est pas considérée comme fiable. Sur Tournesol, la liste des utilisateurs pour lesquels vous vous portez garant, ou qui se portent garant pour vous, est une information publique."
   },
   "myRateLaterListPage": {

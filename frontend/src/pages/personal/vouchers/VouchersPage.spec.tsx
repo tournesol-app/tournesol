@@ -11,6 +11,8 @@ import {
   CancelablePromise,
   GivenVoucher,
   ReadOnlyVoucher,
+  AccountsService,
+  UserProfile,
 } from 'src/services/openapi';
 
 import VouchersPage from './VouchersPage';
@@ -75,6 +77,14 @@ describe('VouchersPage', () => {
           by: 'received username 2',
         },
       ]) as () => CancelablePromise<ReadOnlyVoucher[]>);
+  });
+
+  beforeEach(() => {
+    jest
+      .spyOn(AccountsService, 'accountsProfileRetrieve')
+      .mockImplementation((async () => ({
+        voting_right: 0.4574183,
+      })) as () => CancelablePromise<UserProfile>);
   });
 
   it('creates a voucher when the form is submitted', async () => {
@@ -224,5 +234,10 @@ describe('VouchersPage', () => {
      */
     screen.findByText('Not found');
     expect(voucherElement).toBeInTheDocument();
+  });
+
+  it('displays vouching score', async () => {
+    render(<Component />);
+    await screen.findByText('personalVouchers.votingRight.value');
   });
 });
