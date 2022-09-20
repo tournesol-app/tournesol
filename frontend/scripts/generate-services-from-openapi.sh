@@ -10,8 +10,5 @@ else
     source "../.env.development"
 fi
 
-# mkdir -p tmp
-# wget -O tmp/openapi.yaml "$REACT_APP_API_URL/schema/"
 cd ..
 yarn run openapi
-# rm -rf tmp
