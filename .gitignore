@@ -31,3 +31,9 @@
 # --
 
 .idea
+
+# -- --
+# VS Code
+# -- --
+
+.vscode
