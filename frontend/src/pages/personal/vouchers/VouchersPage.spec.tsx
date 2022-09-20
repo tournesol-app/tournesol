@@ -102,6 +102,10 @@ describe('VouchersPage', () => {
   it('handles error on form submit', async () => {
     const error = new ApiError(
       {
+        method: 'GET',
+        url: 'some url',
+      },
+      {
         url: 'some url',
         ok: false,
         status: 400,
@@ -174,6 +178,10 @@ describe('VouchersPage', () => {
 
   it('handles error on given voucher deletion', async () => {
     const error = new ApiError(
+      {
+        method: 'GET',
+        url: 'some url',
+      },
       {
         url: 'some url',
         ok: false,
