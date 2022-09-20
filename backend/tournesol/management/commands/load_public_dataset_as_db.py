@@ -1,11 +1,11 @@
-import random
 import concurrent
+import random
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
+from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from core.models import User
@@ -19,11 +19,12 @@ RANDOM_SEED = 0
 
 thread_pool = ThreadPoolExecutor(max_workers=10)
 
+
 class Command(BaseCommand):
     help = "Generate a new database for dev purposes, derived from the public dataset"
 
     def add_arguments(self, parser):
-        parser.add_argument('--user-sampling', type=float, default=None)
+        parser.add_argument("--user-sampling", type=float, default=None)
 
     def create_user(self, username):
         # TODO assign trusted or not-trusted address at random
@@ -44,7 +45,6 @@ class Command(BaseCommand):
             # .result() will reraise any exception occured during refresh
             future.result()
 
-
     def handle(self, *args, **options):
         random.seed(RANDOM_SEED)
 
@@ -58,13 +58,14 @@ class Command(BaseCommand):
 
             usernames = public_dataset.public_username.unique()
             if options["user_sampling"]:
-                usernames = pd.Series(usernames).sample(frac=options["user_sampling"], random_state=RANDOM_SEED).values
+                usernames = (
+                    pd.Series(usernames)
+                    .sample(frac=options["user_sampling"], random_state=RANDOM_SEED)
+                    .values
+                )
                 public_dataset = public_dataset[public_dataset.public_username.isin(usernames)]
 
-            users = {
-                username: self.create_user(username)
-                for username in usernames
-            }
+            users = {username: self.create_user(username) for username in usernames}
             print(f"Created {len(users)} users")
 
             videos = self.create_videos(set(public_dataset.video_a) | set(public_dataset.video_b))
@@ -89,15 +90,15 @@ class Command(BaseCommand):
                 nb_comparisons += 1
             print(f"Created {nb_comparisons} comparisons")
 
-            print(f"Computing n_ratings...")
+            print("Computing n_ratings...")
             for entity in Entity.objects.iterator():
                 entity.update_n_ratings()
-            print(f"Done.")
+            print("Done.")
 
         if settings.YOUTUBE_API_KEY:
             print("Fetching video metadata from Youtube...")
             self.fetch_video_metadata(videos)
             print("Done.")
-        
+
         print("Running ml-train...")
         call_command("ml_train")
