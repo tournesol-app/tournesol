@@ -1,9 +1,3 @@
-/*
-  Because of a regression in CRA v5, Typescript is wrongly enforced here
-  See https://github.com/facebook/create-react-app/pull/11875
-*/
-// eslint-disable-next-line
-// @ts-nocheck
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { within } from '@testing-library/dom';
@@ -11,7 +5,13 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { act } from 'react-dom/test-utils';
 
-import { UsersService, ApiError } from 'src/services/openapi';
+import {
+  UsersService,
+  ApiError,
+  CancelablePromise,
+  GivenVoucher,
+  ReadOnlyVoucher,
+} from 'src/services/openapi';
 
 import VouchersPage from './VouchersPage';
 
@@ -22,24 +22,26 @@ describe('VouchersPage', () => {
     </SnackbarProvider>
   );
 
-  const getUsernameInput = () =>
-    screen.queryByLabelText('personalVouchers.usernameLabel *');
+  const getUsernameInput = (): HTMLInputElement => {
+    const result = screen.queryByLabelText('personalVouchers.usernameLabel *');
+    if (result === null) throw new Error('Username input not found');
+    return result as HTMLInputElement;
+  };
 
-  const submitForm = async ({ username }) => {
+  const submitForm = async ({ username }: { username: string }) => {
     const input = getUsernameInput();
-    expect(input).toBeTruthy();
     await userEvent.click(input);
     await userEvent.keyboard(username);
     await userEvent.keyboard('{Enter}');
   };
 
-  const findGivenVoucher = async (username) => {
+  const findGivenVoucher = async (username: string) => {
     const container = await screen.findByTestId('given-vouchers-list');
     expect(container.getAttribute('role')).toEqual('list');
     return await within(container).findByRole('listitem', { name: username });
   };
 
-  const findReceivedVoucher = async (username) => {
+  const findReceivedVoucher = async (username: string) => {
     const container = await screen.findByTestId('received-vouchers-list');
     expect(container.getAttribute('role')).toEqual('list');
     return await within(container).findByRole('listitem', { name: username });
@@ -48,51 +50,43 @@ describe('VouchersPage', () => {
   beforeEach(() => {
     jest
       .spyOn(UsersService, 'usersMeVouchersGivenList')
-      .mockImplementation(async () => [
+      .mockImplementation((async () => [
         {
           to: 'to_username1',
           by: 'by_username',
-          value: 1.0,
-          is_public: true,
         },
         {
           to: 'to_username2',
           by: 'by_username',
-          value: 1.0,
-          is_public: true,
         },
-      ]);
+      ]) as () => CancelablePromise<GivenVoucher[]>);
   });
 
   beforeEach(() => {
     jest
       .spyOn(UsersService, 'usersMeVouchersReceivedList')
-      .mockImplementation(async () => [
+      .mockImplementation((async () => [
         {
           to: 'current user',
           by: 'received username 1',
-          value: 1.0,
-          is_public: true,
         },
         {
           to: 'current user',
           by: 'received username 2',
-          value: 1.0,
-          is_public: true,
         },
-      ]);
+      ]) as () => CancelablePromise<ReadOnlyVoucher[]>);
   });
 
   it('creates a voucher when the form is submitted', async () => {
     const createdVoucher = {
       to: 'someone',
       by: 'current user',
-      value: 1.0,
-      is_public: true,
     };
     const createVoucherServiceSpy = jest
       .spyOn(UsersService, 'usersMeVouchersCreate')
-      .mockImplementation(async () => createdVoucher);
+      .mockImplementation(
+        (async () => createdVoucher) as () => CancelablePromise<GivenVoucher>
+      );
 
     render(<Component />);
     await act(() => submitForm({ username: 'someone' }));
@@ -106,18 +100,22 @@ describe('VouchersPage', () => {
   });
 
   it('handles error on form submit', async () => {
-    const error = new ApiError({
-      url: 'some url',
-      status: 400,
-      statusText: 'Bad Request',
-      body: { to: ['some error'] },
-    });
+    const error = new ApiError(
+      {
+        url: 'some url',
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        body: { to: ['some error'] },
+      },
+      'error'
+    );
 
     jest
       .spyOn(UsersService, 'usersMeVouchersCreate')
-      .mockImplementation(async () => {
+      .mockImplementation((async (): Promise<GivenVoucher> => {
         throw error;
-      });
+      }) as () => CancelablePromise<GivenVoucher>);
 
     render(<Component />);
     await act(() => submitForm({ username: 'someone' }));
@@ -155,7 +153,9 @@ describe('VouchersPage', () => {
   it('deletes a given voucher', async () => {
     const destroyVoucherServiceSpy = jest
       .spyOn(UsersService, 'usersMeVouchersGivenDestroy')
-      .mockImplementation(async () => undefined);
+      .mockImplementation(
+        (async () => undefined) as () => CancelablePromise<void>
+      );
 
     render(<Component />);
     const voucherElement = await findGivenVoucher('to_username1');
@@ -173,17 +173,21 @@ describe('VouchersPage', () => {
   });
 
   it('handles error on given voucher deletion', async () => {
-    const error = new ApiError({
-      url: 'some url',
-      status: 404,
-      statusText: 'Not Found',
-      body: { detail: 'Not found.' },
-    });
+    const error = new ApiError(
+      {
+        url: 'some url',
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        body: { detail: 'Not found.' },
+      },
+      'error'
+    );
     const destroyVoucherServiceSpy = jest
       .spyOn(UsersService, 'usersMeVouchersGivenDestroy')
-      .mockImplementation(async () => {
+      .mockImplementation((async (): Promise<void> => {
         throw error;
-      });
+      }) as () => CancelablePromise<void>);
 
     render(<Component />);
     const voucherElement = await findGivenVoucher('to_username1');
