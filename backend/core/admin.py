@@ -49,9 +49,10 @@ class UserAdmin(DjangoUserAdmin):
     list_display = (
         "username",
         "email",
-        "is_trusted",
         "is_active",
+        "is_trusted",
         "get_n_comparisons",
+        "voting_right",
         "date_joined",
     )
     add_fieldsets = (
