@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0009_trust_score_isnow_voting_right'),
+        ("core", "0009_trust_score_isnow_voting_right"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='voting_right',
-            field=models.FloatField(blank=True, default=None, help_text='The voting right assigned to the user based on the vouching mechanism.', null=True),
+            model_name="user",
+            name="voting_right",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="The voting right assigned to the user based on the vouching mechanism.",
+                null=True,
+            ),
         ),
     ]
