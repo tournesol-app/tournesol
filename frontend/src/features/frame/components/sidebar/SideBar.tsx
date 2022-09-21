@@ -21,6 +21,7 @@ import { topBarHeight } from '../topbar/TopBar';
 import {
   Compare as CompareIcon,
   EmojiEvents as EmojiEventsIcon,
+  Help as HelpIcon,
   Home as HomeIcon,
   Info as InfoIcon,
   ListAlt as ListIcon,
@@ -169,6 +170,12 @@ const SideBar = () => {
       displayText: t('menu.myResults'),
     },
     { displayText: 'divider_2' },
+    {
+      id: RouteID.FAQ,
+      targetUrl: '/faq',
+      IconComponent: HelpIcon,
+      displayText: t('menu.faq'),
+    },
     {
       id: RouteID.About,
       targetUrl: '/about',
