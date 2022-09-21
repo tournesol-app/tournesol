@@ -112,13 +112,13 @@ def trust_algo():
     # Import users and pretrust status
     users = list(
         User.objects.all()
-        .annotate(_is_trusted=Q(pk__in=User.trusted_users()))
+        .annotate(in_trusted_users=Q(pk__in=User.trusted_users()))
         .only("id")
     )
     users_index__user_id = {
         user.id: user_index for user_index, user in enumerate(users)
     }
-    pretrusts = np.array([int(u._is_trusted) for u in users])
+    pretrusts = np.array([int(u.in_trusted_users) for u in users])
     nb_users = len(users)
 
     # Import vouching matrix
