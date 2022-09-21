@@ -2,7 +2,9 @@
 Models related to the vouching system.
 """
 
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from core.models.user import User
 
@@ -50,6 +52,10 @@ class Voucher(models.Model):
     def get_given_to(user):
         vouchers = Voucher.objects.filter(to=user)
         return vouchers, vouchers.exists()
+
+    def clean(self):
+        if self.by == self.to:
+            raise ValidationError(_("A user cannot vouch for himself."))
 
     def save(self, *args, **kwargs):
         if self.pk:
