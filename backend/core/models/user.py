@@ -196,6 +196,7 @@ class User(AbstractUser):
     )
     voting_right = models.FloatField(
         null=True,
+        blank=True,
         default=None,
         help_text="The voting right assigned to the user based on the vouching mechanism.",
     )
