@@ -13,8 +13,8 @@ from twitterbot.twitter_api import TwitterBot
 from twitterbot.uploader_twitter_account import get_twitter_account_from_video_id
 
 
-def get_best_criteria(video, n):
-    """Get the n best criteria"""
+def get_best_criteria(video, nb_criteria):
+    """Get the nb_criteria best-rated criteria"""
 
     criteria_list = (
         video.all_criteria_scores.filter(
@@ -22,10 +22,10 @@ def get_best_criteria(video, n):
             score_mode=ScoreMode.DEFAULT,
         )
         .exclude(criteria="largely_recommended")
-        .order_by("-score")[:n]
+        .order_by("-score")[:nb_criteria]
     )
 
-    if len(criteria_list) < n:
+    if len(criteria_list) < nb_criteria:
         raise ValueError("Not enough criteria to show!")
 
     return [(crit.criteria, crit.score) for crit in criteria_list]

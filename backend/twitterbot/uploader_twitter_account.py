@@ -4,7 +4,7 @@ Used for the Tournesol twitter bot.
 """
 
 import re
-from urllib.parse import urlparse, unquote
+from urllib.parse import unquote, urlparse
 
 import requests
 
@@ -27,7 +27,7 @@ def get_twitter_account_from_channel_id(channel_id):
 
     uploader_url = f"https://www.youtube.com/channel/{channel_id}/about"
 
-    resp = requests.get(uploader_url, headers={"user-agent": "curl/7.68.0"})
+    resp = requests.get(uploader_url, headers={"user-agent": "curl/7.68.0"}, timeout=10)
     twitter_names = get_twitter_handles_from_html(resp.text)
 
     if len({name.lower() for name in twitter_names}) == 1:

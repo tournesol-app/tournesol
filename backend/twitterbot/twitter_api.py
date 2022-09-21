@@ -17,6 +17,7 @@ class TwitterBot:
         self.consumer_secret = account_cred["CONSUMER_SECRET"]
         self.access_token = account_cred["ACCESS_TOKEN"]
         self.access_token_secret = account_cred["ACCESS_TOKEN_SECRET"]
+        self.api = None
 
     def authenticate(self):
 
