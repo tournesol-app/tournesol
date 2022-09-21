@@ -19,16 +19,21 @@ YOUTUBE_UID_REGEX = (
 
 
 class VideoEntity(EntityType):
+    """
+    Video entity type
+
+    Handles the metadata specific to videos, retrieved from the YouTube API.
+    """
     name = TYPE_VIDEO
     metadata_serializer_class = VideoMetadata
 
     @classmethod
-    def filter_date_lte(cls, qs, dt):
-        return qs.filter(metadata__publication_date__lte=dt.date().isoformat())
+    def filter_date_lte(cls, qs, max_date):
+        return qs.filter(metadata__publication_date__lte=max_date.date().isoformat())
 
     @classmethod
-    def filter_date_gte(cls, qs, dt):
-        return qs.filter(metadata__publication_date__gte=dt.date().isoformat())
+    def filter_date_gte(cls, qs, min_date):
+        return qs.filter(metadata__publication_date__gte=min_date.date().isoformat())
 
     @classmethod
     def get_uid_regex(cls, namespace: str) -> str:
@@ -37,6 +42,7 @@ class VideoEntity(EntityType):
         return ''
 
     def update_metadata_field(self) -> None:
+        # pylint: disable=import-outside-toplevel
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
         try:
             metadata = get_video_metadata(
@@ -65,6 +71,7 @@ class VideoEntity(EntityType):
 
     @classmethod
     def update_search_vector(cls, entity) -> None:
+        # pylint: disable=import-outside-toplevel
         from tournesol.utils.video_language import language_to_postgres_config
 
         language_config = language_to_postgres_config(entity.metadata["language"])

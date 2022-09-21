@@ -1,7 +1,10 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from twitterbot.uploader_twitter_account import get_twitter_account_from_channel_id, get_twitter_handles_from_html
+from twitterbot.uploader_twitter_account import (
+    get_twitter_account_from_channel_id,
+    get_twitter_handles_from_html,
+)
 
 
 @patch("twitterbot.uploader_twitter_account.requests.get")

@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from tournesol.models import Comparison, ContributorRating
 
 
+# pylint: disable=unused-argument
 @receiver(post_save, sender=Comparison)
 def initialize_ratings_on_comparison_creation(sender, instance, created, **kwargs):
     if not created:

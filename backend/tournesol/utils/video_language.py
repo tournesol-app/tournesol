@@ -4,7 +4,7 @@ from collections import Counter
 from django.conf import settings
 from langdetect import DetectorFactory, detect, lang_detect_exception
 
-LANGUAGE_CODE_TO_NAME_MATCHING = {code: name for code, name in settings.LANGUAGES}
+LANGUAGE_CODE_TO_NAME_MATCHING = dict(settings.LANGUAGES)
 ACCEPTED_LANGUAGE_CODES = set(LANGUAGE_CODE_TO_NAME_MATCHING.keys())
 
 # Language configurations supported by Postgres full-text search
@@ -67,7 +67,7 @@ def languages_detection(title, description):
 
 
 def compute_video_language(uploader, title, description):
-    from tournesol.models.entity import Entity
+    from tournesol.models.entity import Entity  # pylint: disable=import-outside-toplevel
 
     # Get language(s) from other videos of the same uploader
     lang_list = (

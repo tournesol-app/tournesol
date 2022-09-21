@@ -9,14 +9,14 @@ from tournesol.utils.video_language import compute_video_language
 logger = logging.getLogger(__name__)
 
 # Get credentials and create an API client
-api_service_name = "youtube"
-api_version = "v3"
+API_SERVICE_NAME = "youtube"
+API_VERSION = "v3"
 
-youtube = None
+YOUTUBE = None
 YOUTUBE_API_KEY = settings.YOUTUBE_API_KEY
 if YOUTUBE_API_KEY:
-    youtube = googleapiclient.discovery.build(
-        api_service_name, api_version, developerKey=YOUTUBE_API_KEY
+    YOUTUBE = googleapiclient.discovery.build(
+        API_SERVICE_NAME, API_VERSION, developerKey=YOUTUBE_API_KEY
     )
 
 
@@ -29,12 +29,13 @@ class YoutubeNotConfiguredError(Exception):
 
 
 def get_youtube_video_details(video_id):
-    if not youtube:
+    if not YOUTUBE:
         raise YoutubeNotConfiguredError(
             "YouTube client not initialized, did you provide an API key?"
         )
 
-    request = youtube.videos().list(
+    # pylint: disable=no-member
+    request = YOUTUBE.videos().list(
         part="snippet,contentDetails,statistics,status", id=video_id
     )
     return request.execute()
@@ -45,7 +46,7 @@ def get_video_metadata(video_id, compute_language=True):
         yt_response = get_youtube_video_details(video_id)
     except YoutubeNotConfiguredError:
         return {}
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         logger.error("Failed to retrieve video metadata from Youtube", exc_info=True)
         return {}
 

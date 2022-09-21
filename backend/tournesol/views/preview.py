@@ -1,4 +1,3 @@
-# pylint: disable=R0201
 """
 API returning preview images of some Tournesol front end's page.
 
@@ -14,18 +13,20 @@ from django.http import FileResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw, ImageFont
+from requests.exceptions import Timeout
 from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
 from tournesol.models.entity import Entity
 from tournesol.utils.cache import cache_page_no_i18n
+from tournesol.utils.constants import REQUEST_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
 BASE_DIR = settings.BASE_DIR
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
-ENTITY_N_CONTRIBUTORS_YX = (60, 98)
+ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 190)
 
 TOURNESOL_SCORE_XY = (84, 30)
@@ -47,10 +48,10 @@ class BasePreviewAPIView(APIView):
     """
 
     def default_preview(self):
-        default_preview = open(
+        with open(
             str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
-        )
-        response = FileResponse(default_preview, content_type="image/png")
+        ) as default_preview:
+            response = FileResponse(default_preview, content_type="image/png")
         return response
 
     def get_entity(self, uid: str) -> Entity:
@@ -78,8 +79,8 @@ class BasePreviewAPIView(APIView):
     def get_yt_thumbnail(self, entity: Entity) -> Image:
         url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
         try:
-            thumbnail_response = requests.get(url)
-        except ConnectionError as exc:
+            thumbnail_response = requests.get(url, timeout=REQUEST_TIMEOUT)
+        except (ConnectionError, Timeout) as exc:
             logger.error("Preview failed for entity with UID %s.", entity.uid)
             logger.error("Exception caught: %s", exc)
             raise exc
@@ -158,35 +159,35 @@ def get_preview_frame(entity, fnt_config) -> Image:
 
         tournesol_frame_draw.text(
             score_xy,
-            "%.0f" % score,
+            f"{score:.0f}",
             font=fnt_config["ts_score"],
             fill=score_color,
             anchor="mt",
         )
-    x, y = ENTITY_N_CONTRIBUTORS_YX
+    x_coordinate, y_coordinate = ENTITY_N_CONTRIBUTORS_XY
     tournesol_frame_draw.text(
-        (x, y),
+        (x_coordinate, y_coordinate),
         f"{entity.rating_n_ratings}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        (x, y + 26),
+        (x_coordinate, y_coordinate + 26),
         "comparisons",
         font=fnt_config["entity_ratings_label"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        (x, y + 82),
+        (x_coordinate, y_coordinate + 82),
         f"{entity.rating_n_contributors}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        (x, y + 108),
+        (x_coordinate, y_coordinate + 108),
         "contributors",
         font=fnt_config["entity_ratings_label"],
         fill=COLOR_BROWN_FONT,

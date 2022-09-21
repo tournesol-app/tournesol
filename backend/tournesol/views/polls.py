@@ -133,19 +133,19 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         return queryset, filters
 
     def filter_unsafe(self, queryset, filters):
-        """Filter the queryset according to the `unsafe` URL parameters.
+        """
+        Filter the queryset according to the `unsafe` URL parameters.
 
         This method requires a queryset annotated with the entities weighted
         total score.
         """
-        show_unsafe = filters["unsafe"]
-        if show_unsafe:
+        if filters["unsafe"]:
             return queryset
-        else:
-            return queryset.filter(
-                rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
-                tournesol_score__gt=0,
-            )
+
+        return queryset.filter(
+            rating_n_contributors__gte=settings.RECOMMENDATIONS_MIN_CONTRIBUTORS,
+            tournesol_score__gt=0,
+        )
 
     def sort_results(self, queryset, filters):
         """
@@ -179,8 +179,8 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
                 * (F("relevance") + self.search_score_coef * normalized_total_score)
             )
             return queryset.order_by("-search_score", "-pk")
-        else:
-            return queryset.order_by("-total_score", "-pk")
+
+        return queryset.order_by("-total_score", "-pk")
 
     def _build_criteria_weight_condition(
         self, request, poll: Poll, when="criteria_scores__criteria"
@@ -263,10 +263,10 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
         raw_score_mode = request.query_params.get("score_mode", ScoreMode.DEFAULT)
         try:
             score_mode = ScoreMode(raw_score_mode)
-        except ValueError:
+        except ValueError as error:
             raise serializers.ValidationError(
                 {"score_mode": f"Accepted values are: {','.join(ScoreMode.values)}"}
-            )
+            ) from error
 
         criteria_weight = self._build_criteria_weight_condition(
             request, poll, when="all_criteria_scores__criteria"

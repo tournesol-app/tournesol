@@ -21,8 +21,8 @@ class PollScopedViewMixin:
         poll_name = request_kwargs[self.poll_parameter]
         try:
             return Poll.objects.get(name=poll_name)
-        except ObjectDoesNotExist:
-            raise NotFound("The requested poll {0} doesn't exist.".format(poll_name))
+        except ObjectDoesNotExist as error:
+            raise NotFound(f"The requested poll {poll_name} doesn't exist.") from error
 
     def initial(self, request, *args, **kwargs):
         """

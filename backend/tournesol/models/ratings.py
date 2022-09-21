@@ -38,7 +38,7 @@ class ContributorRating(models.Model):
         unique_together = ["user", "entity", "poll"]
 
     def __str__(self):
-        return "%s on %s" % (self.user, self.entity)
+        return f"{self.user} on {self.entity}"
 
 
 class ContributorRatingCriteriaScore(models.Model):
@@ -52,8 +52,8 @@ class ContributorRatingCriteriaScore(models.Model):
     )
     criteria = models.TextField(
         max_length=32,
-        help_text="Name of the criteria",
         db_index=True,
+        help_text="Name of the criteria",
     )
     score = models.FloatField(
         default=0,

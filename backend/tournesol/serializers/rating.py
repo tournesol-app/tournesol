@@ -44,7 +44,7 @@ class ContributorRatingSerializer(ModelSerializer):
         """
         Determine the poll according to the context provided by the view.
         """
-        ret = super(ContributorRatingSerializer, self).to_internal_value(data)
+        ret = super().to_internal_value(data)
         ret["poll_id"] = self.context.get("poll").id
         return ret
 
