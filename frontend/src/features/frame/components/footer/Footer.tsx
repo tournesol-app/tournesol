@@ -40,6 +40,10 @@ const Footer = () => {
           name: 'YouTube',
           to: 'https://www.youtube.com/channel/UCH8TsmKEX_PR4jxsg2W3vOg',
         },
+        {
+          name: 'GitHub',
+          to: 'https://github.com/tournesol-app/tournesol',
+        },
       ],
     },
     {
@@ -73,10 +77,6 @@ const Footer = () => {
         { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         // { name: 'FAQ', to: '' },
         { name: 'Wiki', to: getWikiBaseUrl() },
-        {
-          name: t('footer.sourceCode'),
-          to: 'https://github.com/tournesol-app/tournesol',
-        },
       ],
       trailingDivider: false,
     },
