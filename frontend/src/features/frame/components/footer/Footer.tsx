@@ -1,26 +1,29 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import FooterSection from './FooterSection';
+import FooterSection from 'src/features/frame/components/footer/FooterSection';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import { getWikiBaseUrl } from 'src/utils/url';
 
 const Footer = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
+  const { t } = useTranslation();
+
   const footerSections = [
     {
       id: 'get-recommendations',
-      title: 'Get recommendations',
+      title: t('footer.getRecommendations'),
       items: [
         {
-          name: 'Chrome extension',
+          name: t('footer.chromeExtension'),
           to: getWebExtensionUrl('chrome') || '',
         },
         {
-          name: 'Firefox extension',
+          name: t('footer.firefoxExtension'),
           to: getWebExtensionUrl('firefox') || '',
         },
         { name: 'Twitter Bot EN', to: 'https://twitter.com/tournesolbotfr' },
@@ -29,7 +32,7 @@ const Footer = () => {
     },
     {
       id: 'follow-us',
-      title: 'Follow Us',
+      title: t('footer.followUs'),
       items: [
         { name: 'Twitter', to: 'https://twitter.com/TournesolApp' },
         { name: 'Discord', to: 'https://discord.gg/TvsFB8RNBV' },
@@ -37,42 +40,45 @@ const Footer = () => {
           name: 'YouTube',
           to: 'https://www.youtube.com/channel/UCH8TsmKEX_PR4jxsg2W3vOg',
         },
-        {
-          name: 'Science4all',
-          to: 'https://www.youtube.com/c/Science4Allfran%C3%A7ais',
-        },
       ],
     },
     {
       id: 'support-us',
-      title: 'Support Us',
+      title: t('footer.supportUs'),
       items: [
-        { name: 'Direct Transfer', to: '/about/donate' },
+        { name: t('footer.directTransfer'), to: '/about/donate' },
         { name: 'uTip', to: 'https://utip.io/tournesol' },
         { name: 'PayPal', to: 'https://www.paypal.com/paypalme/tournesolapp' },
-        { name: 'Compare videos 🌻', to: '/comparison' },
+        { name: t('footer.compareVideos'), to: '/comparison' },
       ],
     },
     {
       id: 'research',
-      title: 'Research',
+      title: t('footer.research'),
       items: [
-        { name: 'White Paper', to: 'https://arxiv.org/abs/2107.07334' },
-        { name: 'Public Dataset', to: `${apiUrl}/exports/comparisons/` },
+        {
+          name: t('footer.whitePaper'),
+          to: 'https://arxiv.org/abs/2107.07334',
+        },
+        {
+          name: t('footer.publicDataset'),
+          to: `${apiUrl}/exports/comparisons/`,
+        },
       ],
     },
     {
       id: 'more',
-      title: 'More',
+      title: t('footer.more'),
       items: [
-        { name: 'Privacy Policy', to: '/about/privacy_policy' },
+        { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         // { name: 'FAQ', to: '' },
         { name: 'Wiki', to: getWikiBaseUrl() },
         {
-          name: 'Code Source',
+          name: t('footer.sourceCode'),
           to: 'https://github.com/tournesol-app/tournesol',
         },
       ],
+      trailingDivider: false,
     },
   ];
 
@@ -89,6 +95,7 @@ const Footer = () => {
             key={section.id}
             title={section.title}
             items={section.items}
+            trailingDivider={section.trailingDivider}
           />
         ))}
       </Grid>

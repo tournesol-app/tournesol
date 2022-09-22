@@ -127,10 +127,19 @@
     "shareOnTwitter": "Partager sur Twitter"
   },
   "footer": {
-    "wiki": "wiki",
-    "privacyPolicy": "politique de confidentialité",
-    "donate": "faire un don",
-    "whitePaper": "white paper"
+    "getRecommendations": "Recommandations",
+    "chromeExtension": "Extension Chrome",
+    "firefoxExtension": "Extension Firefox",
+    "followUs": "Suivez-nous",
+    "supportUs": "Nous soutenir",
+    "directTransfer": "Virement direct",
+    "compareVideos": "Comparez des videos 🌻",
+    "research": "Recherche",
+    "whitePaper": "White Paper",
+    "publicDataset": "Base de données publiques",
+    "more": "Plus",
+    "privacyPolicy": "Politique de confidentialité",
+    "sourceCode": "Code source"
   },
   "menu": {
     "home": "Accueil",

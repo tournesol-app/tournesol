@@ -122,10 +122,19 @@
     "shareOnTwitter": "Share on Twitter"
   },
   "footer": {
-    "wiki": "wiki",
-    "privacyPolicy": "privacy policy",
-    "donate": "donate",
-    "whitePaper": "white paper"
+    "getRecommendations": "Get Recommendations",
+    "chromeExtension": "Chrome Extension",
+    "firefoxExtension": "Firefox Extension",
+    "followUs": "Follow Us",
+    "supportUs": "Support Us",
+    "directTransfer": "Direct transfer",
+    "compareVideos": "Compare videos 🌻",
+    "research": "Research",
+    "whitePaper": "White Paper",
+    "publicDataset": "Public dataset",
+    "more": "More",
+    "privacyPolicy": "Privacy policy",
+    "sourceCode": "Source code"
   },
   "menu": {
     "home": "Home",
