@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Box,
   Divider,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Typography,
 } from '@mui/material';
@@ -16,7 +17,7 @@ interface Props {
   sm?: GridSize;
   lg?: GridSize;
   title: string;
-  items: Array<string>;
+  items: Array<{ name: string; to: string }>;
   trailingDivider?: boolean;
 }
 
@@ -40,9 +41,13 @@ const FooterSection = ({
       </Typography>
       <List dense={true}>
         {items.map((item) => (
-          <ListItem key={item}>
-            <ListItemText primary={item} />
-          </ListItem>
+          <ListItemButton
+            LinkComponent={RouterLink}
+            href={item.to}
+            key={item.name}
+          >
+            <ListItemText primary={item.name} />
+          </ListItemButton>
         ))}
       </List>
       {trailingDivider && (
