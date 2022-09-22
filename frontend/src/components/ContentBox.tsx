@@ -7,6 +7,13 @@ interface Props {
   noMinPaddingX?: boolean;
 }
 
+/**
+ * A generic top-level container allowing to have the same layout on all
+ * pages.
+ *
+ * Use it in combination with <ContentHeader> to display the body of the
+ * pages.
+ */
 const ContentBox = ({
   children,
   maxWidth = false,
@@ -16,7 +23,13 @@ const ContentBox = ({
     return null;
   }
   return (
-    <Box px={[noMinPaddingX ? 0 : 2, 2, 3]} py={2}>
+    <Box
+      px={[noMinPaddingX ? 0 : 2, 2, 3]}
+      py={2}
+      // Push the global footer away, to avoid displaying it in the middle
+      // of the screen.
+      minHeight="555px"
+    >
       <Container maxWidth={maxWidth} disableGutters>
         {children}
       </Container>

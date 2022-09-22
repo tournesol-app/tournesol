@@ -38,6 +38,10 @@ const ComparisonPage = () => {
           alignItems: 'center',
           flexDirection: 'column',
           py: 2,
+          // Push the global footer away, to avoid displaying it in the middle
+          // of the screen.
+          // TODO: try to use the custom <ContentBox> instead of <Box>
+          minHeight: '555px',
         }}
       >
         {!pollActive && (
