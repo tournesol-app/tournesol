@@ -15,30 +15,7 @@ def compute_individual_score(scores: pd.DataFrame):
     At this stage, scores will not be normalized between contributors.
     """
     scores = scores[["entity_a", "entity_b", "score"]]
-    scores_sym = pd.concat(
-        [
-            scores,
-            pd.DataFrame(
-                {
-                    "entity_a": scores.entity_b,
-                    "entity_b": scores.entity_a,
-                    "score": -1 * scores.score,
-                }
-            ),
-        ]
-    )
-
-    # "Comparison tensor": matrix with all comparisons, values in [-R_MAX, R_MAX]
-    r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score")
-
-    r_tilde = r / (1.0 + R_MAX)
-    r_tilde2 = r_tilde ** 2
-
-    # r.loc[a:b] is negative when a is prefered to b.
-    l = -1.0 * r_tilde / np.sqrt(1.0 - r_tilde2)  # noqa: E741
-    k = (1.0 - r_tilde2) ** 3
-
-    L = k.mul(l).sum(axis=1)
+    l, k, L = calculate_lkL_from_scores(scores)
     K_diag = pd.DataFrame(
         data=np.diag(k.sum(axis=1) + ALPHA),
         index=k.index,
@@ -67,3 +44,31 @@ def compute_individual_score(scores: pd.DataFrame):
     )
     result.index.name = "entity_id"
     return result
+
+def calculate_lkL_from_scores(scores,filter=None):
+    scores_sym = pd.concat(
+        [
+            scores,
+            pd.DataFrame(
+                {
+                    "entity_a": scores.entity_b,
+                    "entity_b": scores.entity_a,
+                    "score": -1 * scores.score,
+                }
+            ),
+        ]
+    )
+
+    # "Comparison tensor": matrix with all comparisons, values in [-R_MAX, R_MAX]
+    r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score")
+    if filter:
+        r=r.loc[filter]
+    r_tilde = r / (1.0 + R_MAX)
+    r_tilde2 = r_tilde ** 2
+
+    # r.loc[a:b] is negative when a is prefered to b.
+    l = -1.0 * r_tilde / np.sqrt(1.0 - r_tilde2)  # noqa: E741
+    k = (1.0 - r_tilde2) ** 3
+
+    L = k.mul(l).sum(axis=1)
+    return l,k,L
