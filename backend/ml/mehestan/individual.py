@@ -45,7 +45,8 @@ def compute_individual_score(scores: pd.DataFrame):
     result.index.name = "entity_id"
     return result
 
-def calculate_lkL_from_scores(scores,filter=None):
+
+def calculate_lkL_from_scores(scores, filter=None):
     scores_sym = pd.concat(
         [
             scores,
@@ -62,13 +63,13 @@ def calculate_lkL_from_scores(scores,filter=None):
     # "Comparison tensor": matrix with all comparisons, values in [-R_MAX, R_MAX]
     r = scores_sym.pivot(index="entity_a", columns="entity_b", values="score")
     if filter:
-        r=r.loc[filter]
+        r = r.loc[filter]
     r_tilde = r / (1.0 + R_MAX)
-    r_tilde2 = r_tilde ** 2
+    r_tilde2 = r_tilde**2
 
     # r.loc[a:b] is negative when a is prefered to b.
     l = -1.0 * r_tilde / np.sqrt(1.0 - r_tilde2)  # noqa: E741
     k = (1.0 - r_tilde2) ** 3
 
     L = k.mul(l).sum(axis=1)
-    return l,k,L
+    return l, k, L
