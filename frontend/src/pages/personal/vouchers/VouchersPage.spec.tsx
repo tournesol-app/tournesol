@@ -238,6 +238,6 @@ describe('VouchersPage', () => {
 
   it('displays vouching score', async () => {
     render(<Component />);
-    await screen.findByText('personalVouchers.votingRight.value');
+    await screen.findByText('personalVouchers.votingRight.medium');
   });
 });

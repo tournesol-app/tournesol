@@ -478,10 +478,11 @@
     "receivedVouchersTitle": "Users who vouched for you",
     "votingRight": {
       "nullValue": "Unknown",
-      "percentage": "{{value}}%",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
       "title": "Voting right",
-      "description": "Your voting right changes how your comparisons count in Tournesol's recommendations. You can increase it by using a certified email and when other users vouch for you.",
-      "value": "Your current voting right: {{value}}"
+      "description": "Your voting right changes how your comparisons count in Tournesol's recommendations. You can increase it by using a certified email and when other users vouch for you."
     },
     "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher voting right on Tournesol, even if their email address is not considered to be trusted. On Tournesol, the list of users for whom you vouch, or who have vouched for you, is public information."
   },

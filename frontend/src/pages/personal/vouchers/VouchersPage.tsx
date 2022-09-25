@@ -17,15 +17,28 @@ const PersonalVouchersPage = () => {
     <PersonalVouchersProvider>
       <ContentHeader title={t('personalMenu.vouching')} />
       <ContentBox maxWidth="lg">
-        <Card sx={{ marginBottom: 2 }}>
-          <CardContent>
-            <Typography paragraph color="secondary">
-              {t('personalVouchers.aboutVouchingMechanism')}
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <CreateVoucherForm />
-          </CardContent>
-        </Card>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="stretch"
+          sx={{ marginBottom: 2 }}
+        >
+          <Grid item md={8} style={{ display: 'flex' }}>
+            <Card>
+              <CardContent>
+                <Typography paragraph color="secondary">
+                  {t('personalVouchers.aboutVouchingMechanism')}
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+                <CreateVoucherForm />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item md={4} style={{ display: 'flex' }}>
+            <VotingRight />
+          </Grid>
+        </Grid>
         <Grid container spacing={2} justifyContent="space-between">
           <Grid item md={6}>
             <GivenVouchers />
@@ -34,7 +47,6 @@ const PersonalVouchersPage = () => {
             <ReceivedVouchers />
           </Grid>
         </Grid>
-        <VotingRight />
       </ContentBox>
     </PersonalVouchersProvider>
   );
