@@ -85,7 +85,13 @@ const VotingRight = () => {
           </Stack>
           <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
             <Stack direction="row" alignItems="center" sx={{ width: '100%' }}>
-              <Typography variant="h1" sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="h1"
+                sx={{
+                  flexGrow: 1,
+                  textTransform: 'uppercase',
+                }}
+              >
                 {displayedValue}
               </Typography>
               <Stack>
