@@ -409,6 +409,11 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
+  "faq": {
+    "tableOfContent": "Table des Matières",
+    "itSeemsThereIsNoQuestionInFaq": "Il semble qu'il n'y ait pas encore de question dans la FAQ.",
+    "comeAndAskYourQuestionsOnDiscord": "Vennez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ."
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
