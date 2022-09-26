@@ -41,7 +41,11 @@ const FAQ = () => {
           <Typography variant="h6">Table of Content</Typography>
           <List dense={true}>
             {entries.map((entry) => (
-              <ListItemButton key={entry.name} component="a">
+              <ListItemButton
+                key={entry.name}
+                component="a"
+                href={`#${entry.name}`}
+              >
                 <ListItemText>{entry.question}</ListItemText>
               </ListItemButton>
             ))}
@@ -49,7 +53,7 @@ const FAQ = () => {
         </Paper>
         {entries.map((entry) => (
           <React.Fragment key={entry.name}>
-            <Typography variant="h4" gutterBottom>
+            <Typography id={entry.name} variant="h4" gutterBottom>
               {entry.question}
             </Typography>
             <Typography paragraph textAlign="justify">
