@@ -51,16 +51,27 @@ const FAQ = () => {
             ))}
           </List>
         </Paper>
-        {entries.map((entry) => (
-          <React.Fragment key={entry.name}>
-            <Typography id={entry.name} variant="h4" gutterBottom>
-              {entry.question}
-            </Typography>
-            <Typography paragraph textAlign="justify">
-              {entry.answer}
-            </Typography>
-          </React.Fragment>
-        ))}
+        {entries.map((entry) => {
+          const answerParagraphs = entry.answer.split('\n');
+          return (
+            <React.Fragment key={entry.name}>
+              <Typography id={entry.name} variant="h4" gutterBottom>
+                {entry.question}
+              </Typography>
+
+              {/* An answer can be composed of several paragraphs. */}
+              {answerParagraphs.map((paragraph, index) => (
+                <Typography
+                  key={`${entry.name}_p${index}`}
+                  paragraph
+                  textAlign="justify"
+                >
+                  {paragraph}
+                </Typography>
+              ))}
+            </React.Fragment>
+          );
+        })}
       </ContentBox>
     </>
   );
