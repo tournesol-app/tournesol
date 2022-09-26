@@ -14,8 +14,10 @@ import { ContentBox, ContentHeader } from 'src/components';
 import { FAQEntry, FaqService } from 'src/services/openapi';
 
 const FAQ = () => {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [entries, setEntries] = useState<Array<FAQEntry>>([]);
+
+  const currentLang = i18n.resolvedLanguage;
 
   useEffect(() => {
     async function getFaqEntries() {
@@ -30,9 +32,8 @@ const FAQ = () => {
     }
 
     getFaqEntries();
-  }, [setEntries]);
+  }, [currentLang, setEntries]);
 
-  console.log(entries);
   return (
     <>
       <ContentHeader title="Frequently Asked Questions" />
