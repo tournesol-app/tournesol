@@ -28,11 +28,9 @@ make the project even better.
 
 ## Code of Conduct
 
-todo
+> coming soon
 
 ## Efficient Ways to Contribute
-
-todo
 
 ### Add new comparisons
 
@@ -56,7 +54,16 @@ If you would like to support us, please refer to [the donation page][ts-donate].
 
 ### Talk about Tournesol to your friends
 
-todo
+With a bigger community Tournesol can improve its recommendations, and the
+quality of its open database.
+
+Tournesol behaves as the algorithmic representative of its community. The more
+the community is big and diverse, the more the recommendation and the database
+will be representative or a larger scale of the population.
+
+Talking about Tournesol to your friends can help the project to snowball from
+a small initiative to a broadly known step in the ethics of algorithms
+research and large scale recommender systems.
 
 ## Got a Question or Problem?
 
