@@ -26,24 +26,20 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
       sx={{ color: '#fff', p: 2, pb: 2, mb: 2, backgroundColor: '#1282B2' }}
     >
       <Typography variant="h6">{t('faqPage.tableOfContent')}</Typography>
-
-      {entries.length > 0 ? (
-        <List dense={true}>
-          {entries.map((entry) => (
-            <ListItemButton
-              key={entry.name}
-              component="a"
-              href={`#${entry.name}`}
-            >
-              <ListItemText>{entry.question}</ListItemText>
-            </ListItemButton>
-          ))}
-        </List>
-      ) : (
-        <Typography sx={{ mt: 2 }}>
-          {t('faqPage.itSeemsThereIsNoQuestionInFaq')}
-        </Typography>
-      )}
+      <List dense={true}>
+        {entries.map((entry) => (
+          <ListItemButton
+            key={entry.name}
+            component="a"
+            href={`#${entry.name}`}
+          >
+            <ListItemText>{entry.question}</ListItemText>
+          </ListItemButton>
+        ))}
+        <ListItemButton component="a" href={`#no_answer_found`}>
+          <ListItemText>{t('faqPage.iDidFindTheAnswers')}</ListItemText>
+        </ListItemButton>
+      </List>
     </Paper>
   );
 };

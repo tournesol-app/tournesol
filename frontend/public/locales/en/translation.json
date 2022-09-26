@@ -404,10 +404,10 @@
     }
   },
   "faqPage": {
+    "iDidFindTheAnswers": "I didn't find the answer to my questions",
     "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Reccuring questions will be added to the FAQ.",
     "joinUsOnDiscord": "Join Us on Discord",
-    "tableOfContent": "Table of Content",
-    "itSeemsThereIsNoQuestionInFaq": "It seems that there is no question in the FAQ yet."
+    "tableOfContent": "Table of Content"
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",

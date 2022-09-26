@@ -410,10 +410,10 @@
     }
   },
   "faqPage": {
+    "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
     "comeAndAskYourQuestionsOnDiscord": "Vennez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ.",
     "joinUsOnDiscord": "Rejoignez-nous sur Discord",
-    "tableOfContent": "Table des Matières",
-    "itSeemsThereIsNoQuestionInFaq": "Il semble qu'il n'y ait pas encore de question dans la FAQ."
+    "tableOfContent": "Table des Matières"
   },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",

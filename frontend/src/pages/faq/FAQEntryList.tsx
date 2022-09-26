@@ -11,51 +11,57 @@ import { FAQEntry } from 'src/services/openapi';
  *
  * Questions are headings with HTML id, allowing them to be quickly reached
  * using anchors.
+ *
+ * An extra entry is displayed after the provided `entries`, inviting the
+ * users to join Discord if they didn't find the answer to their questions.
  */
 const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
   const { t } = useTranslation();
   return (
     <>
-      {entries.length > 20 ? (
-        entries.map((entry) => {
-          const answerParagraphs = entry.answer.split('\n');
-          return (
-            <Box key={entry.name} mb={4}>
-              <Typography id={entry.name} variant="h4" gutterBottom>
-                {entry.question}
-              </Typography>
+      {entries.map((entry) => {
+        const answerParagraphs = entry.answer.split('\n');
+        return (
+          <Box key={entry.name} mb={4}>
+            <Typography id={entry.name} variant="h4" gutterBottom>
+              {entry.question}
+            </Typography>
 
-              {/* An answer can be composed of several paragraphs. */}
-              {answerParagraphs.map((paragraph, index) => (
-                <Typography
-                  key={`${entry.name}_p${index}`}
-                  paragraph
-                  textAlign="justify"
-                >
-                  {paragraph}
-                </Typography>
-              ))}
-            </Box>
-          );
-        })
-      ) : (
-        <>
-          <Typography paragraph textAlign="justify">
-            {t('faqPage.comeAndAskYourQuestionsOnDiscord')}
-          </Typography>
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              href="https://discord.gg/TvsFB8RNBV"
-              target="_blank"
-              color="secondary"
-              variant="outlined"
-              endIcon={<PeopleAlt />}
-            >
-              {t('faqPage.joinUsOnDiscord')}
-            </Button>
+            {/* An answer can be composed of several paragraphs. */}
+            {answerParagraphs.map((paragraph, index) => (
+              <Typography
+                key={`${entry.name}_p${index}`}
+                paragraph
+                textAlign="justify"
+              >
+                {paragraph}
+              </Typography>
+            ))}
           </Box>
-        </>
-      )}
+        );
+      })}
+
+      {/* Invite the users to join Discord if needed. */}
+      <Box mb={4}>
+        <Typography id="no_answer_found" variant="h4" gutterBottom>
+          {t('faqPage.iDidFindTheAnswers')}
+        </Typography>
+
+        <Typography paragraph textAlign="justify">
+          {t('faqPage.comeAndAskYourQuestionsOnDiscord')}
+        </Typography>
+      </Box>
+      <Box display="flex" justifyContent="flex-end">
+        <Button
+          href="https://discord.gg/TvsFB8RNBV"
+          target="_blank"
+          color="secondary"
+          variant="outlined"
+          endIcon={<PeopleAlt />}
+        >
+          {t('faqPage.joinUsOnDiscord')}
+        </Button>
+      </Box>
     </>
   );
 };
