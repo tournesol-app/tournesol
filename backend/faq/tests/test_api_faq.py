@@ -6,11 +6,11 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from faq.models import FAQAnswerLocale, FAQuestion, FAQuestionLocale
+from faq.models import FAQAnswerLocale, FAQEntry, FAQuestionLocale
 
 
-def create_question(name, rank, enabled):
-    return FAQuestion.objects.create(name=name, rank=rank, enabled=enabled)
+def create_entry(name, rank, enabled):
+    return FAQEntry.objects.create(name=name, rank=rank, enabled=enabled)
 
 
 def create_answer(question, lang, text=None):
@@ -33,7 +33,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         self.client = APIClient()
         self.faq_base_url = "/faq/"
 
-        self.question1 = create_question("i_dont_understand_why", 20, True)
+        self.question1 = create_entry("i_dont_understand_why", 20, True)
 
         self.question1_loc_en = FAQuestionLocale.objects.create(
             question=self.question1,
@@ -130,7 +130,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         """
         Disabled questions must not be returned by the API.
         """
-        question = create_question("new_question", 1, True)
+        question = create_entry("new_question", 1, True)
         create_answer(question, self.default_lang)
 
         response = self.client.get(self.faq_base_url)
@@ -146,7 +146,7 @@ class FAQuestionLocalizedListViewTestCase(TestCase):
         """
         The questions must be ordered by rank.
         """
-        question = create_question("first_question", self.question1.rank - 1, True)
+        question = create_entry("first_question", self.question1.rank - 1, True)
         create_answer(question, self.default_lang, "first_answer")
 
         response = self.client.get(self.faq_base_url)

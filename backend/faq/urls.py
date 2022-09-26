@@ -4,12 +4,12 @@ The `faq` app routes.
 
 from django.urls import path
 
-from faq.views import FAQuestionLocalizedListView
+from faq.views import FAQEntryLocalizedListView
 
 urlpatterns = [
     path(
         "faq/",
-        FAQuestionLocalizedListView.as_view(),
+        FAQEntryLocalizedListView.as_view(),
         name="faq_list_localized",
     ),
 ]

@@ -5,10 +5,10 @@ Serializers of the `faq` app.
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from faq.models import FAQuestion
+from faq.models import FAQEntry
 
 
-class FAQuestionSerializer(ModelSerializer):
+class FAQEntrySerializer(ModelSerializer):
     """
     A translated question with its translated answer.
     """
@@ -17,5 +17,5 @@ class FAQuestionSerializer(ModelSerializer):
     answer = serializers.CharField(source="get_answer_text_prefetch")
 
     class Meta:
-        model = FAQuestion
+        model = FAQEntry
         fields = ["name", "question", "answer"]

@@ -8,7 +8,7 @@ from django.db import models
 from django.utils import translation
 
 
-class FAQuestion(models.Model):
+class FAQEntry(models.Model):
     """
     A Frequently Asked Question.
 
@@ -30,7 +30,7 @@ class FAQuestion(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def get_text(self, related="locales", lang=None):
+    def get_text(self, related="questions", lang=None):
         """
         Return the translated text of a related instance.
 
@@ -47,7 +47,7 @@ class FAQuestion(models.Model):
                 return self.name  # pylint: disable=no-member
         return locale.text
 
-    def get_text_prefetch(self, related="locales", lang=None):
+    def get_text_prefetch(self, related="questions", lang=None):
         """
         Return the translated text of a related instance.
 
@@ -73,7 +73,7 @@ class FAQuestion(models.Model):
 
     def get_question_text_prefetch(self, lang=None):
         """Return the translated text of the question."""
-        return self.get_text_prefetch(related="locales", lang=lang)
+        return self.get_text_prefetch(related="questions", lang=lang)
 
     def get_answer_text_prefetch(self, lang=None):
         """Return the translated text of the answer."""
@@ -82,11 +82,11 @@ class FAQuestion(models.Model):
 
 class FAQuestionLocale(models.Model):
     """
-    A translated `FAQuestion`.
+    A translated question of a `FAQEntry`.
     """
 
     question = models.ForeignKey(
-        FAQuestion, on_delete=models.CASCADE, related_name="locales"
+        FAQEntry, on_delete=models.CASCADE, related_name="questions"
     )
     language = models.CharField(max_length=10, choices=settings.LANGUAGES)
     text = models.CharField(max_length=255)
@@ -101,11 +101,11 @@ class FAQuestionLocale(models.Model):
 
 class FAQAnswerLocale(models.Model):
     """
-    A translated answer to a `FAQuestion`.
+    A translated answer of a `FAQEntry`.
     """
 
     question = models.ForeignKey(
-        FAQuestion, on_delete=models.CASCADE, related_name="answers"
+        FAQEntry, on_delete=models.CASCADE, related_name="answers"
     )
     language = models.CharField(max_length=10, choices=settings.LANGUAGES)
     text = models.TextField()

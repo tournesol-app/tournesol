@@ -5,7 +5,7 @@ Administration interface of the `faq` app.
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from faq.models import FAQAnswerLocale, FAQuestion, FAQuestionLocale
+from faq.models import FAQAnswerLocale, FAQEntry, FAQuestionLocale
 
 
 class HasAnswerListFilter(admin.SimpleListFilter):
@@ -40,8 +40,8 @@ class FAQAnswerLocaleInline(admin.TabularInline):
     extra = 0
 
 
-@admin.register(FAQuestion)
-class FAQuestionAdmin(admin.ModelAdmin):
+@admin.register(FAQEntry)
+class FAQEntryAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_display = ("name", "rank", "enabled", "has_answer")
     list_filter = (HasAnswerListFilter, "enabled")
@@ -57,7 +57,7 @@ class FAQuestionAdmin(admin.ModelAdmin):
     def has_answer(self, obj) -> bool:
         try:
             obj.answers
-        except FAQuestion.answers.RelatedObjectDoesNotExist:  # pylint: disable=no-member
+        except FAQEntry.answers.RelatedObjectDoesNotExist:  # pylint: disable=no-member
             return False
         else:
             return True
