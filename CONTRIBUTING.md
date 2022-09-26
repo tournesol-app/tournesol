@@ -14,38 +14,49 @@ make the project even better.
 - [Got a question or Problem?](#got-a-question-or-problem)
 - [Found a bug?](#found-a-bug)
 - [Missing Feature?](#missing-feature)
-- [The development process / Asking for review](#the-development-process--asking-for-review)
-- [Development guidelines](#development-guidelines)
-  - [Back end](#back-end)
-  - [Front end](#front-end)
-- [Translation](#translation)
+- [Working on the Source Code](#working-on-the-source-code)
+  - [The development process / Asking for review](#the-development-process--asking-for-review)
+  - [Development guidelines](#development-guidelines)
+    - [Back end](#back-end)
+    - [Front end](#front-end)
+  - [Translation](#translation)
 
 ---
 
 ## Code of Conduct
 
+todo
+
 ## Efficient Ways to Contribute
+
+todo
 
 ### Add new comparisons
 
+todo
+
 ### Consider donation
 
+todo
+
 ### Talk about Tournesol to your friends
+
+todo
 
 ## Got a Question or Problem?
 
 Please do not open issues for general support questions as we want to keep
 GitHub issues for bug reports and feature requests.
 
-We collect and answer questions on Discord, in the dedicated channels. This
-way all the community can benefit from your question and also provides
-answers.
+We collect and answer questions on [Discord][tournesol-discord-join], in the
+dedicated channels. This way all the community can benefit from your question
+and also provides answers.
 
 ## Found a Bug?
 
 If you find a bug in the source code, you can help us by submitting an issue
-to our GitHub Repository. Even better, if you are a programmer with spare
-time you can submit a Pull Request with a fix.
+to our [GitHub Repository][tournesol-github-repo]. Even better, if you are a
+programmer with spare time you can submit a Pull Request with a fix.
 
 ## Missing Feature?
 
@@ -54,7 +65,7 @@ Depending on the subject or the complexity, and before planning anything, the
 development team will first discuss the feature to define a clear
 implementation.
 
-## Contributing to the Source code
+## Working on the Source code
 
 ### The development process / Asking for review
 
@@ -129,5 +140,6 @@ On the frontend, translations are handled by `react-i18next`.
   may be useful to learn how to integrate translated content into React components. 
 * To extract the new translation keys, use [`yarn i18n:parse`](./frontend/README.md#yarn-i18nparse)
 
+[tournesol-github-repo]: https://github.com/tournesol-app/tournesol
 [tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
 [tournesol-kanban-board]: https://github.com/tournesol-app/tournesol/projects/9
