@@ -25,7 +25,7 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
       square
       sx={{ color: '#fff', p: 2, pb: 2, mb: 2, backgroundColor: '#1282B2' }}
     >
-      <Typography variant="h6">{t('faq.tableOfContent')}</Typography>
+      <Typography variant="h6">{t('faqPage.tableOfContent')}</Typography>
 
       {entries.length > 0 ? (
         <List dense={true}>
@@ -41,7 +41,7 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
         </List>
       ) : (
         <Typography sx={{ mt: 2 }}>
-          {t('faq.itSeemsThereIsNoQuestionInFaq')}
+          {t('faqPage.itSeemsThereIsNoQuestionInFaq')}
         </Typography>
       )}
     </Paper>

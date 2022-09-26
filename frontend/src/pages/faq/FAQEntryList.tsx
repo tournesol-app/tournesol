@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
+import { PeopleAlt } from '@mui/icons-material';
 
 import { FAQEntry } from 'src/services/openapi';
 
@@ -15,7 +16,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
   const { t } = useTranslation();
   return (
     <>
-      {entries.length > 0 ? (
+      {entries.length > 20 ? (
         entries.map((entry) => {
           const answerParagraphs = entry.answer.split('\n');
           return (
@@ -38,9 +39,22 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
           );
         })
       ) : (
-        <Typography paragraph textAlign="justify">
-          {t('faq.comeAndAskYourQuestionsOnDiscord')}
-        </Typography>
+        <>
+          <Typography paragraph textAlign="justify">
+            {t('faqPage.comeAndAskYourQuestionsOnDiscord')}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              href="https://discord.gg/TvsFB8RNBV"
+              target="_blank"
+              color="secondary"
+              variant="outlined"
+              endIcon={<PeopleAlt />}
+            >
+              {t('faqPage.joinUsOnDiscord')}
+            </Button>
+          </Box>
+        </>
       )}
     </>
   );

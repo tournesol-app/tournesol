@@ -403,10 +403,11 @@
       "message": "An unexpected error has occured."
     }
   },
-  "faq": {
+  "faqPage": {
+    "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Reccuring questions will be added to the FAQ.",
+    "joinUsOnDiscord": "Join Us on Discord",
     "tableOfContent": "Table of Content",
-    "itSeemsThereIsNoQuestionInFaq": "It seems that there is no question in the FAQ yet.",
-    "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Reccuring questions will be added to the FAQ."
+    "itSeemsThereIsNoQuestionInFaq": "It seems that there is no question in the FAQ yet."
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
