@@ -14,6 +14,9 @@ make the project even better.
 - [Got a question or Problem?](#got-a-question-or-problem)
 - [Found a bug?](#found-a-bug)
 - [Missing Feature?](#missing-feature)
+
+**Working with the Source Code**
+
 - [Working on the Source Code](#working-on-the-source-code)
   - [The development process / Asking for review](#the-development-process--asking-for-review)
   - [Development guidelines](#development-guidelines)
@@ -33,11 +36,23 @@ todo
 
 ### Add new comparisons
 
-todo
+Everyone can greatly help the project by
+[submitting new comparisons][ts-compare] 🌻
+
+Comparisons are the cornerstones of Tournesol, they are used to provide
+better recommendations, and to create an open database to help the research
+on ethics of algorithms and large scale recommender systems.
 
 ### Consider donation
 
-todo
+The Tournesol team is small, composed mainly by volunteers, that is why every
+donation counts.
+
+With more support we can improve the project, by hiring new developers to
+speed up the development of the application, by creating partnership to
+make Tournesol more visible on the internet, etc.
+
+If you would like to support us, please refer to [the donation page][ts-donate].
 
 ### Talk about Tournesol to your friends
 
@@ -48,14 +63,14 @@ todo
 Please do not open issues for general support questions as we want to keep
 GitHub issues for bug reports and feature requests.
 
-We collect and answer questions on [Discord][tournesol-discord-join], in the
+We collect and answer questions on [Discord][ts-discord-join], in the
 dedicated channels. This way all the community can benefit from your question
 and also provides answers.
 
 ## Found a Bug?
 
 If you find a bug in the source code, you can help us by submitting an issue
-to our [GitHub Repository][tournesol-github-repo]. Even better, if you are a
+to our [GitHub Repository][ts-github-repo]. Even better, if you are a
 programmer with spare time you can submit a Pull Request with a fix.
 
 ## Missing Feature?
@@ -70,7 +85,7 @@ implementation.
 ### The development process / Asking for review
 
 You can track progress of the code development in the dedicated
-[kaban board][tournesol-kanban-board].
+[kaban board][ts-github-kanban].
 
 Anyone can submit ideas that seem relevant, by creating new issues and
 placing them inside the column `Ideas / Backlog`.
@@ -103,7 +118,7 @@ add one, discuss it with the maintainers to debate about the relevance of
 this test.
 
 To keep track of progress, bugs of the project, join the
-[discord][tournesol-discord-join]
+[discord][ts-discord-join]
 
 ### Development guidelines
 
@@ -140,6 +155,10 @@ On the frontend, translations are handled by `react-i18next`.
   may be useful to learn how to integrate translated content into React components. 
 * To extract the new translation keys, use [`yarn i18n:parse`](./frontend/README.md#yarn-i18nparse)
 
-[tournesol-github-repo]: https://github.com/tournesol-app/tournesol
-[tournesol-discord-join]: https://discord.gg/WvcSG55Bf3
-[tournesol-kanban-board]: https://github.com/tournesol-app/tournesol/projects/9
+[ts-donate]: https://tournesol.app/about/donate
+[ts-compare]: https://tournesol.app/comparison
+
+[ts-github-repo]: https://github.com/tournesol-app/tournesol
+[ts-github-kanban]: https://github.com/tournesol-app/tournesol/projects/9
+
+[ts-discord-join]: https://discord.gg/WvcSG55Bf3
