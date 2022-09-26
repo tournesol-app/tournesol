@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContentBox, ContentHeader } from 'src/components';
+import { useNotifications } from 'src/hooks/useNotifications';
 import FAQTableOfContent from 'src/pages/faq/FAQTableOfContent';
 import FAQEntryList from 'src/pages/faq/FAQEntryList';
 import { FAQEntry, FaqService } from 'src/services/openapi';
@@ -14,6 +15,8 @@ import { FAQEntry, FaqService } from 'src/services/openapi';
  */
 const FAQ = () => {
   const { i18n } = useTranslation();
+  const { contactAdministrator } = useNotifications();
+
   const [entries, setEntries] = useState<Array<FAQEntry>>([]);
 
   const currentLang = i18n.resolvedLanguage;
@@ -26,12 +29,12 @@ const FAQ = () => {
           setEntries(faq.results);
         }
       } catch (error) {
-        // do something
+        contactAdministrator('error');
       }
     }
 
     getFaqEntries();
-  }, [currentLang, setEntries]);
+  }, [currentLang, contactAdministrator, setEntries]);
 
   return (
     <>
