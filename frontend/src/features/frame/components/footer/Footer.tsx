@@ -37,10 +37,6 @@ const Footer = () => {
         { name: 'Twitter', to: 'https://twitter.com/TournesolApp' },
         { name: 'Discord', to: 'https://discord.gg/TvsFB8RNBV' },
         {
-          name: 'YouTube',
-          to: 'https://www.youtube.com/channel/UCH8TsmKEX_PR4jxsg2W3vOg',
-        },
-        {
           name: 'GitHub',
           to: 'https://github.com/tournesol-app/tournesol',
         },
