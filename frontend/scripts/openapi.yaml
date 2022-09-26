@@ -478,7 +478,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedFAQuestionList'
+                $ref: '#/components/schemas/PaginatedFAQEntryList'
           description: ''
   /polls/{name}/:
     get:
@@ -1278,8 +1278,8 @@ paths:
   /users/me/contributor_ratings/{poll_name}/{uid}/:
     get:
       operationId: users_me_contributor_ratings_retrieve
-      description: Retrieve the logged-in user's ratings for a specific video in a
-        given poll (computed automatically from the user's comparisons).
+      description: Retrieve the logged-in user's ratings for a specific entity (computed
+        automatically from the user's comparisons).
       parameters:
       - in: path
         name: poll_name
@@ -1306,7 +1306,7 @@ paths:
     put:
       operationId: users_me_contributor_ratings_update
       description: Update public / private status of the logged-in user ratings for
-        a specific video, in a given poll.
+        a specific entity.
       parameters:
       - in: path
         name: poll_name
@@ -1344,7 +1344,7 @@ paths:
     patch:
       operationId: users_me_contributor_ratings_partial_update
       description: Update public / private status of the logged-in user ratings for
-        a specific video, in a given poll.
+        a specific entity.
       parameters:
       - in: path
         name: poll_name
@@ -1441,7 +1441,7 @@ paths:
   /users/me/entities_to_compare/{poll_name}/:
     get:
       operationId: users_me_entities_to_compare_list
-      description: Retrieve a list of recommendations to compare for the logged user
+      description: Retrieve suggested entities to compare for the logged user
       parameters:
       - in: path
         name: poll_name
@@ -1479,7 +1479,7 @@ paths:
   /users/me/exports/all/:
     get:
       operationId: users_me_exports_all_retrieve
-      description: Download current user data in .zip file
+      description: Download the current user's data in a .zip file
       tags:
       - users
       security:
@@ -1496,7 +1496,7 @@ paths:
   /users/me/exports/comparisons/:
     get:
       operationId: users_me_exports_comparisons_retrieve
-      description: Download current user data in .zip file
+      description: Download the current user's comparisons in a .csv file
       tags:
       - users
       security:
@@ -2332,6 +2332,7 @@ components:
       - total
     ContributorCriteriaCorrelations:
       type: object
+      description: Contains the criterias, and the matrices of correlations and slopes
       properties:
         criterias:
           type: array
@@ -2478,6 +2479,21 @@ components:
         Note that the fields `n_comparisons` and `n_contributors` contain
         the collective values, and are not specific to the user.
       properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        n_comparisons:
+          type: integer
+        n_contributors:
+          type: integer
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         total_score:
           type: number
           format: float
@@ -2487,29 +2503,14 @@ components:
           nullable: true
           description: The aggregated of all criteria for all users in a specific
             poll.
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        is_public:
-          type: boolean
-          readOnly: true
         criteria_scores:
           type: array
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        n_comparisons:
-          type: integer
-        n_contributors:
-          type: integer
+        is_public:
+          type: boolean
+          readOnly: true
       required:
       - criteria_scores
       - is_public
@@ -2747,7 +2748,7 @@ components:
       - video
       - candidate_fr_2022
       type: string
-    FAQuestion:
+    FAQEntry:
       type: object
       description: A translated question with its translated answer.
       properties:
@@ -3207,7 +3208,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
-    PaginatedFAQuestionList:
+    PaginatedFAQEntryList:
       type: object
       properties:
         count:
@@ -3226,7 +3227,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/FAQuestion'
+            $ref: '#/components/schemas/FAQEntry'
     PaginatedRateLaterList:
       type: object
       properties:
