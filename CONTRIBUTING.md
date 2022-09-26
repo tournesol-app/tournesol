@@ -1,12 +1,62 @@
 # Contributing to Tournesol
 
- - [The development process / Asking for review](#the-development-process--asking-for-review)
- - [Development guidelines](#development-guidelines)
-   - [Back end](#back-end)
-   - [Front end](#front-end)
- - [Translation](#translation)
+Tournesol is a collective project made possible by the contributions of many
+donors and volunteers. We would love for you to help us in this adventure to
+make the project even better. 
 
-## The development process / Asking for review
+**Table of Content**
+
+- [Code of Conduct](#code-of-conduct)
+- [Efficient Ways to Contribute](#efficient-ways-to-contribute)
+  - [Add new comparisons](#add-new-comparisons)
+  - [Consider donation](#consider-donation)
+  - [Talk about Tournesol to your friends](#talk-about-tournesol-to-your-friends)
+- [Got a question or Problem?](#got-a-question-or-problem)
+- [Found a bug?](#found-a-bug)
+- [Missing Feature?](#missing-feature)
+- [The development process / Asking for review](#the-development-process--asking-for-review)
+- [Development guidelines](#development-guidelines)
+  - [Back end](#back-end)
+  - [Front end](#front-end)
+- [Translation](#translation)
+
+---
+
+## Code of Conduct
+
+## Efficient Ways to Contribute
+
+### Add new comparisons
+
+### Consider donation
+
+### Talk about Tournesol to your friends
+
+## Got a Question or Problem?
+
+Please do not open issues for general support questions as we want to keep
+GitHub issues for bug reports and feature requests.
+
+We collect and answer questions on Discord, in the dedicated channels. This
+way all the community can benefit from your question and also provides
+answers.
+
+## Found a Bug?
+
+If you find a bug in the source code, you can help us by submitting an issue
+to our GitHub Repository. Even better, if you are a programmer with spare
+time you can submit a Pull Request with a fix.
+
+## Missing Feature?
+
+You can request a new feature by submitting an issue to our GitHub Repository.
+Depending on the subject or the complexity, and before planning anything, the
+development team will first discuss the feature to define a clear
+implementation.
+
+## Contributing to the Source code
+
+### The development process / Asking for review
 
 You can track progress of the code development in the dedicated
 [kaban board][tournesol-kanban-board].
@@ -44,9 +94,9 @@ this test.
 To keep track of progress, bugs of the project, join the
 [discord][tournesol-discord-join]
 
-## Development guidelines
+### Development guidelines
 
-### Back end
+#### Back end
 
 When the back end API is updated, the front end must re-generate its local
 client to match the new API schema.
@@ -62,12 +112,12 @@ end representation the back end OpenAPI schema.
 
 If you're using `dev-env` you can update the schema and the service files by running the script `dev-env/update-openapi.sh`.
 
-### Front end
+#### Front end
 
 To correct the lint of frontend files, it is possible to activate plugin
 directly in your IDE. Otherwise the comamnd `yarn lint:fix` enables you to correct lint automatically.
 
-## Translation
+### Translation
 
 Tournesol is currently available in English and French. When submitting
 changes that involve new texts, please ensure that translation keys
