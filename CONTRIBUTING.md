@@ -15,7 +15,7 @@ make the project even better.
 - [Found a bug?](#found-a-bug)
 - [Missing Feature?](#missing-feature)
 
-**Working with the Source Code**
+**Working on the Source Code**
 
 - [Working on the Source Code](#working-on-the-source-code)
   - [The development process / Asking for review](#the-development-process--asking-for-review)
@@ -35,35 +35,35 @@ make the project even better.
 ### Add new comparisons
 
 Everyone can greatly help the project by
-[submitting new comparisons][ts-compare] 🌻
+[submitting new comparisons][ts-compare] in the application 🌻
 
-Comparisons are the cornerstones of Tournesol, they are used to provide
-better recommendations, and to create an open database to help the research
+Comparisons are the cornerstones of Tournesol. They are used to provide
+better recommendations and to create an open database to help the research
 on ethics of algorithms and large scale recommender systems.
 
-### Consider donation
+### Consider making a donation
 
-The Tournesol team is small, composed mainly by volunteers, that is why every
-donation counts.
+The Tournesol team is small, mainly composed of volunteers. Every
+donation counts for us.
 
 With more support we can improve the project, by hiring new developers to
-speed up the development of the application, by creating partnership to
-make Tournesol more visible on the internet, etc.
+speed up the development of the application, creating partnership to make
+Tournesol more visible on the internet, etc.
 
 If you would like to support us, please refer to [the donation page][ts-donate].
 
 ### Talk about Tournesol to your friends
 
-With a bigger community Tournesol can improve its recommendations, and the
+With a bigger community Tournesol can improve its recommendations and the
 quality of its open database.
 
 Tournesol behaves as the algorithmic representative of its community. The more
 the community is big and diverse, the more the recommendation and the database
-will be representative or a larger scale of the population.
+will be representative of a larger scale of the population opinion.
 
-Talking about Tournesol to your friends can help the project to snowball from
-a small initiative to a broadly known step in the ethics of algorithms
-research and large scale recommender systems.
+Talking about Tournesol to your friends can help the project to transform from
+a small initiative to a broadly known step in the ethics of algorithms and
+large scale recommender systems research.
 
 ## Got a Question or Problem?
 
@@ -76,9 +76,10 @@ and also provides answers.
 
 ## Found a Bug?
 
-If you find a bug in the source code, you can help us by submitting an issue
-to our [GitHub Repository][ts-github-repo]. Even better, if you are a
-programmer with spare time you can submit a Pull Request with a fix.
+If you find a bug in the application or in the source code, you can help us by
+submitting an issue to our [GitHub Repository][ts-github-repo]. Even better,
+if you are a programmer with spare time you can submit a Pull Request with a
+fix.
 
 ## Missing Feature?
 
