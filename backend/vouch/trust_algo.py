@@ -1,9 +1,13 @@
+import logging
+
 import numpy as np
 from django.db.models import Q
 from numpy.typing import NDArray
 
 from core.models.user import User
 from vouch.models import Voucher
+
+logger = logging.getLogger(__name__)
 
 # In this algorithm, we leverage pretrust (e.g., based on email domains) and vouching
 # to securely assign voting rights to a wider set of contributors.
@@ -112,13 +116,17 @@ def trust_algo():
     # Import users and pretrust status
     users = list(
         User.objects.all()
-        .annotate(_is_trusted=Q(pk__in=User.trusted_users()))
+        .annotate(in_trusted_users=Q(pk__in=User.trusted_users()))
         .only("id")
     )
     users_index__user_id = {
         user.id: user_index for user_index, user in enumerate(users)
     }
-    pretrusts = np.array([int(u._is_trusted) for u in users])
+    pretrusts = np.array([int(u.in_trusted_users) for u in users])
+    if np.sum(pretrusts) == 0:
+        logger.warning("Voting right cannot be computed: no pretrusted user exists")
+        return
+
     nb_users = len(users)
 
     # Import vouching matrix
@@ -140,4 +148,3 @@ def trust_algo():
     for user_no, user_model in enumerate(users):
         user_model.voting_right = float(voting_rights[user_no])
     User.objects.bulk_update(users, ["voting_right"])
-    return True

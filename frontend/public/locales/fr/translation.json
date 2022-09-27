@@ -475,7 +475,8 @@
     "noVoucherGiven": "Aucun.",
     "givenVouchersTitle": "Utilisateurs pour lesquels vous vous portez garant",
     "noVoucherReceived": "Aucun.",
-    "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous"
+    "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous",
+    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'acquérir un droit de vote plus important sur Tournesol, y compris si leur adresse e-mail n'est pas considérée comme fiable. Sur Tournesol, la liste des utilisateurs pour lesquels vous vous portez garant, ou qui se portent garant pour vous, est une information publique."
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
@@ -583,7 +584,7 @@
         "title7": "Merci beaucoup !",
         "message7": {
           "p10": "Encore une dernière comparaison et vous pourrez enfin voir vos préférences actuelles.",
-          "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lequelles vous soutenez certains candidat.es."
+          "p20": "Nous espérons sincèrement que vous avez apprécié cette nouvelle manière de voter, qui vous a peut-être permis de mieux réfléchir aux raisons pour lesquelles vous soutenez certains candidat.es."
         }
       }
     }

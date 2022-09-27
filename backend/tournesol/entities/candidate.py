@@ -5,6 +5,7 @@ from django.contrib.postgres.search import SearchVector
 from django.db.models.fields.json import KeyTextTransform
 
 from tournesol.serializers.metadata import CandidateMetadata
+from tournesol.utils.constants import REQUEST_TIMEOUT
 
 from .base import EntityType
 
@@ -15,6 +16,11 @@ WIKIDATA_API_BASE_URL = "https://www.wikidata.org/w/api.php"
 
 
 class CandidateEntity(EntityType):
+    """
+    Election candidate entity type
+
+    Handles the metadata specific to candidates.
+    """
     name = TYPE_CANDIDATE
     metadata_serializer_class = CandidateMetadata
 
@@ -38,6 +44,7 @@ class CandidateEntity(EntityType):
                 "ids": self.wikidata_id,
                 "format": "json",
             },
+            timeout=REQUEST_TIMEOUT,
         )
         resp.raise_for_status()
         wd_item = resp.json()["entities"][self.wikidata_id]

@@ -51,6 +51,7 @@ const CreateVoucherForm = () => {
           inputProps={inputProps}
           size="small"
           variant="outlined"
+          required
         />
         <Button
           type="submit"

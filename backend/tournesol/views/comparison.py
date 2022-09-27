@@ -40,10 +40,7 @@ class ComparisonApiMixin:
         except ObjectDoesNotExist:
             return False
 
-        if comparison:
-            return True
-        else:
-            return False
+        return bool(comparison)
 
 
 class ComparisonListBaseApi(
@@ -110,10 +107,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
 
         if self.comparison_already_exists(poll.pk, self.request):
             raise exceptions.ValidationError(
-                "You've already compared {0} with {1}.".format(
-                    self.request.data["entity_a"]["uid"],
-                    self.request.data["entity_b"]["uid"],
-                )
+                f"You've already compared {self.request.data['entity_a']['uid']} "
+                f"with {self.request.data['entity_b']['uid']}."
             )
         comparison: Comparison = serializer.save()
 
@@ -202,8 +197,8 @@ class ComparisonDetailApi(
                 self.kwargs["uid_a"],
                 self.kwargs["uid_b"],
             )
-        except ObjectDoesNotExist:
-            raise Http404
+        except ObjectDoesNotExist as error:
+            raise Http404 from error
 
         if reverse:
             self._select_serialization(straight=False)
@@ -226,7 +221,7 @@ class ComparisonDetailApi(
         return self.DEFAULT_SERIALIZER
 
     def get_serializer_context(self):
-        context = super(ComparisonDetailApi, self).get_serializer_context()
+        context = super().get_serializer_context()
         context["reverse"] = self.currently_reversed
         context["poll"] = self.poll_from_url
         return context

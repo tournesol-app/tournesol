@@ -46,7 +46,6 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r tests/requirements.txt
-          pip install -r ml/ml_requirements.txt
 
       - name: Python Code Quality Checks
         run: ./scripts/ci/lint.sh

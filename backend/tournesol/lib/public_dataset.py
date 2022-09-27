@@ -9,7 +9,7 @@ def get_dataset(poll_name: str) -> QuerySet:
     Retrieve the public dataset from the database and return a non-evaluated
     Django `RawQuerySet`.
     """
-    from tournesol.models.comparisons import Comparison
+    from tournesol.models.comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
     return Comparison.objects.raw(
         """

@@ -311,7 +311,7 @@ class ComparisonApiTestCase(TestCase):
         )
         self.assertEqual(comparison_criteria_scores[0].weight, 1)
 
-    @patch("tournesol.utils.api_youtube.youtube", None)
+    @patch('tournesol.utils.api_youtube.YOUTUBE', None)
     def test_authenticated_can_create_with_non_existing_entity(self):
         """
         An authenticated user can create a comparison involving entities that
@@ -958,9 +958,10 @@ class ComparisonApiTestCase(TestCase):
                 format="json",
             )
 
+        data = {"entity": {"uid": video_main.uid}}
         self.client.post(
-            "/users/me/video_rate_later/",
-            {"video": {"video_id": video_main.video_id}},
+            f"/users/me/rate_later/{self.poll_videos.name}/",
+            data,
             format="json",
         )
         compare(video_main.uid, videos[0].uid)

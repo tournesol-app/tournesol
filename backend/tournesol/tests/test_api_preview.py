@@ -15,7 +15,7 @@ def raise_(exception):
     raise exception
 
 
-def mock_yt_thumbnail_response(url) -> Response:
+def mock_yt_thumbnail_response(url, timeout=None) -> Response:
     resp = Response()
     resp.status_code = 200
     resp._content = Image.new("1", (1, 1)).tobitmap()
@@ -170,7 +170,7 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
             'inline; filename="tournesol_screenshot_og.png"',
         )
 
-    @patch("requests.get", lambda x: raise_(ConnectionError))
+    @patch("requests.get", lambda x, timeout=None: raise_(ConnectionError))
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
     def test_anon_200_get_with_yt_connection_error(self):
         """

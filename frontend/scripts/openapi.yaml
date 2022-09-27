@@ -450,6 +450,36 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /faq/:
+    get:
+      operationId: faq_list
+      description: List all questions and their answers, translated in a specific
+        language.
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - faq
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFAQEntryList'
+          description: ''
   /polls/{name}/:
     get:
       operationId: polls_retrieve
@@ -641,7 +671,7 @@ paths:
   /preview/.*:
     get:
       operationId: preview_.*_retrieve
-      description: Default website preview
+      description: Default website preview.
       tags:
       - preview
       security:
@@ -658,7 +688,7 @@ paths:
   /preview/entities/{uid}:
     get:
       operationId: preview_entities_retrieve
-      description: Website preview for entities page
+      description: Generic preview of an entity.
       parameters:
       - in: path
         name: uid
@@ -1248,8 +1278,8 @@ paths:
   /users/me/contributor_ratings/{poll_name}/{uid}/:
     get:
       operationId: users_me_contributor_ratings_retrieve
-      description: Retrieve the logged-in user's ratings for a specific video in a
-        given poll (computed automatically from the user's comparisons).
+      description: Retrieve the logged-in user's ratings for a specific entity (computed
+        automatically from the user's comparisons).
       parameters:
       - in: path
         name: poll_name
@@ -1276,7 +1306,7 @@ paths:
     put:
       operationId: users_me_contributor_ratings_update
       description: Update public / private status of the logged-in user ratings for
-        a specific video, in a given poll.
+        a specific entity.
       parameters:
       - in: path
         name: poll_name
@@ -1314,7 +1344,7 @@ paths:
     patch:
       operationId: users_me_contributor_ratings_partial_update
       description: Update public / private status of the logged-in user ratings for
-        a specific video, in a given poll.
+        a specific entity.
       parameters:
       - in: path
         name: poll_name
@@ -1411,7 +1441,7 @@ paths:
   /users/me/entities_to_compare/{poll_name}/:
     get:
       operationId: users_me_entities_to_compare_list
-      description: Retrieve a list of recommendations to compare for the logged user
+      description: Retrieve suggested entities to compare for the logged user
       parameters:
       - in: path
         name: poll_name
@@ -1449,7 +1479,7 @@ paths:
   /users/me/exports/all/:
     get:
       operationId: users_me_exports_all_retrieve
-      description: Download current user data in .zip file
+      description: Download the current user's data in a .zip file
       tags:
       - users
       security:
@@ -1466,7 +1496,7 @@ paths:
   /users/me/exports/comparisons/:
     get:
       operationId: users_me_exports_comparisons_retrieve
-      description: Download current user data in .zip file
+      description: Download the current user's comparisons in a .csv file
       tags:
       - users
       security:
@@ -1847,106 +1877,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedEntityNoExtraFieldList'
           description: ''
-  /users/me/video_rate_later/:
-    get:
-      operationId: users_me_video_rate_later_list
-      description: List all videos of a user's rate later list, or add a video to
-        the list.
-      parameters:
-      - name: limit
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
-        schema:
-          type: integer
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedRateLaterLegacyList'
-          description: ''
-    post:
-      operationId: users_me_video_rate_later_create
-      description: List all videos of a user's rate later list, or add a video to
-        the list.
-      tags:
-      - users
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RateLaterLegacyRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/RateLaterLegacyRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/RateLaterLegacyRequest'
-        required: true
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RateLaterLegacy'
-          description: ''
-        '409':
-          description: 'Conflict: the video is already in the rate later list, or
-            there is an other error with the database query.'
-  /users/me/video_rate_later/{video_id}/:
-    get:
-      operationId: users_me_video_rate_later_retrieve
-      description: Fetch a video from user's rate later list
-      parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RateLaterLegacy'
-          description: ''
-    delete:
-      operationId: users_me_video_rate_later_destroy
-      description: Delete a video from user's rate later list
-      parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - users
-      security:
-      - oauth2:
-        - read write groups
-      responses:
-        '204':
-          description: No response body
   /users/me/vouchers/:
     post:
       operationId: users_me_vouchers_create
@@ -2402,6 +2332,7 @@ components:
       - total
     ContributorCriteriaCorrelations:
       type: object
+      description: Contains the criterias, and the matrices of correlations and slopes
       properties:
         criterias:
           type: array
@@ -2548,6 +2479,24 @@ components:
         Note that the fields `n_comparisons` and `n_contributors` contain
         the collective values, and are not specific to the user.
       properties:
+        uid:
+          type: string
+          description: A unique identifier, build with a namespace and an external
+            id.
+          maxLength: 144
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        n_comparisons:
+          type: integer
+        n_contributors:
+          type: integer
+        metadata:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        total_score:
+          type: number
+          format: float
         tournesol_score:
           type: number
           format: float
@@ -2559,27 +2508,9 @@ components:
           items:
             $ref: '#/components/schemas/ContributorCriteriaScore'
           readOnly: true
-        total_score:
-          type: number
-          format: float
-        type:
-          $ref: '#/components/schemas/TypeEnum'
-        metadata:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        uid:
-          type: string
-          description: A unique identifier, build with a namespace and an external
-            id.
-          maxLength: 144
-        n_comparisons:
-          type: integer
         is_public:
           type: boolean
           readOnly: true
-        n_contributors:
-          type: integer
       required:
       - criteria_scores
       - is_public
@@ -2817,6 +2748,23 @@ components:
       - video
       - candidate_fr_2022
       type: string
+    FAQEntry:
+      type: object
+      description: A translated question with its translated answer.
+      properties:
+        name:
+          type: string
+          description: The unique identifier of the question.
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        question:
+          type: string
+        answer:
+          type: string
+      required:
+      - answer
+      - name
+      - question
     GenderEnum:
       enum:
       - Not Specified
@@ -2839,13 +2787,6 @@ components:
           readOnly: true
         to:
           type: string
-        is_public:
-          type: boolean
-          description: Should the voucher be public?
-        value:
-          type: number
-          format: float
-          description: The vouch value given by the vouching user to receiving user.
       required:
       - by
       - to
@@ -2861,13 +2802,6 @@ components:
         to:
           type: string
           minLength: 1
-        is_public:
-          type: boolean
-          description: Should the voucher be public?
-        value:
-          type: number
-          format: float
-          description: The vouch value given by the vouching user to receiving user.
       required:
       - to
     Length3Cycles:
@@ -3274,7 +3208,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntityNoExtraField'
-    PaginatedRateLaterLegacyList:
+    PaginatedFAQEntryList:
       type: object
       properties:
         count:
@@ -3293,7 +3227,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/RateLaterLegacy'
+            $ref: '#/components/schemas/FAQEntry'
     PaginatedRateLaterList:
       type: object
       properties:
@@ -3602,32 +3536,6 @@ components:
       required:
       - created_at
       - entity
-    RateLaterLegacy:
-      type: object
-      description: |-
-        A serializer transporting `RateLater` data using the legacy couple user
-        and video.
-
-        The poll is automatically set to the default poll by the `RateLater`
-        model.
-      properties:
-        video:
-          $ref: '#/components/schemas/RelatedVideo'
-      required:
-      - video
-    RateLaterLegacyRequest:
-      type: object
-      description: |-
-        A serializer transporting `RateLater` data using the legacy couple user
-        and video.
-
-        The poll is automatically set to the default poll by the `RateLater`
-        model.
-      properties:
-        video:
-          $ref: '#/components/schemas/RelatedVideoRequest'
-      required:
-      - video
     RateLaterRequest:
       type: object
       properties:
@@ -3652,20 +3560,9 @@ components:
         to:
           type: string
           readOnly: true
-        is_public:
-          type: boolean
-          readOnly: true
-          description: Should the voucher be public?
-        value:
-          type: number
-          format: float
-          readOnly: true
-          description: The vouch value given by the vouching user to receiving user.
       required:
       - by
-      - is_public
       - to
-      - value
     Recommendation:
       type: object
       properties:
@@ -4077,92 +3974,6 @@ components:
           maxLength: 144
       required:
       - uid
-    RelatedVideo:
-      type: object
-      description: |-
-        A video serializer that will create the Entity object on validation
-        if it does not exist in the database yet.
-
-        Used by ModelSerializer(s) having one or more nested relations with Entity,
-        and having the constraint to ensure that video instances exist before
-        they can be saved properly.
-      properties:
-        uid:
-          type: string
-          readOnly: true
-          description: A unique identifier, build with a namespace and an external
-            id.
-        name:
-          type: string
-          readOnly: true
-          description: Video title
-        description:
-          type: string
-          readOnly: true
-          nullable: true
-          description: Video description, from YouTube
-        publication_date:
-          type: string
-          format: date
-          readOnly: true
-          nullable: true
-        views:
-          type: integer
-          readOnly: true
-          nullable: true
-        uploader:
-          type: string
-          readOnly: true
-          nullable: true
-          description: Name of the channel on YouTube
-        language:
-          type: string
-          readOnly: true
-          nullable: true
-        rating_n_ratings:
-          type: integer
-          readOnly: true
-          description: Total number of pairwise comparisons for this videofrom certified
-            contributors
-        rating_n_contributors:
-          type: integer
-          readOnly: true
-          description: Total number of certified contributors who rated the video
-        duration:
-          type: integer
-          readOnly: true
-          nullable: true
-        video_id:
-          type: string
-          pattern: ^([A-Za-z0-9-_]{11})$
-      required:
-      - description
-      - duration
-      - language
-      - name
-      - publication_date
-      - rating_n_contributors
-      - rating_n_ratings
-      - uid
-      - uploader
-      - video_id
-      - views
-    RelatedVideoRequest:
-      type: object
-      description: |-
-        A video serializer that will create the Entity object on validation
-        if it does not exist in the database yet.
-
-        Used by ModelSerializer(s) having one or more nested relations with Entity,
-        and having the constraint to ensure that video instances exist before
-        they can be saved properly.
-      properties:
-        video_id:
-          type: string
-          minLength: 1
-          pattern: ^([A-Za-z0-9-_]{11})$
-      required:
-      - video_id
     ReligionEnum:
       enum:
       - Not Specified

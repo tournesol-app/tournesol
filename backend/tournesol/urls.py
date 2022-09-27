@@ -1,5 +1,5 @@
 """
-The tournesol app API routes.
+The `tournesol` app routes.
 """
 
 from django.urls import include, path, re_path
@@ -30,12 +30,7 @@ from .views.polls import (
     PollsView,
 )
 from .views.preview import DynamicWebsitePreviewDefault, DynamicWebsitePreviewEntity
-from .views.rate_later import (
-    LegacyRateLaterDetail,
-    LegacyRateLaterList,
-    RateLaterDetail,
-    RateLaterList,
-)
+from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
     ContributorRatingDetail,
     ContributorRatingList,
@@ -105,17 +100,6 @@ urlpatterns = [
         "users/me/rate_later/<str:poll_name>/<str:uid>/",
         RateLaterDetail.as_view(),
         name="usersme_ratelater_detail",
-    ),
-    # Legacy RateLater API
-    path(
-        "users/me/video_rate_later/",
-        LegacyRateLaterList.as_view(),
-        name="video_rate_later_list",
-    ),
-    path(
-        "users/me/video_rate_later/<str:video_id>/",
-        LegacyRateLaterDetail.as_view(),
-        name="video_rate_later_detail",
     ),
     # Ratings API
     path(

@@ -8,4 +8,6 @@ class TournesolConfig(AppConfig):
     name = "tournesol"
 
     def ready(self):
-        from . import signals  # noqa: F401
+        """Register the signal handlers at the start of the app, via import"""
+        # pylint: disable=import-outside-toplevel,unused-import
+        from . import signals  # noqa

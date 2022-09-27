@@ -13,7 +13,7 @@ from tournesol.views import PollScopedViewMixin
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve a list of recommendations to compare for the logged user",
+        description="Retrieve suggested entities to compare for the logged user",
         parameters=[
             OpenApiParameter(
                 "first_entity_uid", OpenApiTypes.STR, OpenApiParameter.QUERY
@@ -22,9 +22,12 @@ from tournesol.views import PollScopedViewMixin
     )
 )
 class EntitiesToCompareView(PollScopedViewMixin, ListAPIView):
+    """
+    Return suggestions of entities to compare for the logged user.
+    """
     serializer_class = EntityNoExtraFieldSerializer
 
-    def list(self, request, **kwargs):
+    def list(self, request, *args, **kwargs):
         poll = self.poll_from_url
         if poll.name != DEFAULT_POLL_NAME:
             raise ValidationError({"detail": "only poll 'videos' is supported"})

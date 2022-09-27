@@ -21,7 +21,6 @@ import { getRecommendations } from 'src/utils/api/recommendations';
 import { getAllCandidates } from 'src/utils/polls/presidentielle2022';
 import SelectorListBox, { EntitiesTab } from './EntityTabsBox';
 import SelectorPopper from './SelectorPopper';
-import { videoToEntity } from 'src/utils/video';
 import { useLoginState } from 'src/hooks';
 
 interface Props {
@@ -32,6 +31,8 @@ interface Props {
 
 const VideoInput = ({ value, onChange, otherUid }: Props) => {
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
+
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const inputRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useLoginState();
@@ -70,10 +71,11 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
         name: 'rate-later',
         label: t('entitySelector.rateLater'),
         fetch: async () => {
-          const response = await UsersService.usersMeVideoRateLaterList({
+          const response = await UsersService.usersMeRateLaterList({
+            pollName,
             limit: 20,
           });
-          return (response.results ?? []).map((rl) => videoToEntity(rl.video));
+          return (response.results ?? []).map((rl) => rl.entity);
         },
         disabled: !isLoggedIn,
       },
@@ -116,7 +118,7 @@ const VideoInput = ({ value, onChange, otherUid }: Props) => {
         disabled: !isLoggedIn || !otherUid,
       },
     ],
-    [t, isLoggedIn, otherUid]
+    [t, isLoggedIn, otherUid, pollName]
   );
 
   return (

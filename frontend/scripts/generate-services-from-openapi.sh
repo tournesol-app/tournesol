@@ -10,12 +10,5 @@ else
     source "../.env.development"
 fi
 
-# mkdir -p tmp
-# wget -O tmp/openapi.yaml "$REACT_APP_API_URL/schema/"
 cd ..
 yarn run openapi
-# rm -rf tmp
-
-# workaround for bug in quote handling
-sed -i 's/Côte d'\''Ivoire/Côte d\\'\''Ivoire/' src/services/openapi/models/NationalityEnum.ts
-sed -i 's/Côte d'\''Ivoire/Côte d\\'\''Ivoire/' src/services/openapi/models/ResidenceEnum.ts

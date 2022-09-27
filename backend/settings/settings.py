@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "django_prometheus",
     "core",
     "tournesol",
+    "faq",
     "twitterbot",
     "ml",
     "oauth2_provider",
@@ -75,6 +76,11 @@ INSTALLED_APPS = [
     "rest_registration",
     "vouch",
 ]
+
+# Workaround for tests using TransactionTestCase with `serialized_rollback=True`
+# (e.g tests running ml and depending on the default Poll defined by migrations)
+# See bug https://code.djangoproject.com/ticket/30751
+TEST_NON_SERIALIZED_APPS = ["django.contrib.contenttypes", "django.contrib.auth"]
 
 REST_REGISTRATION_MAIN_URL = server_settings.get(
     "REST_REGISTRATION_MAIN_URL", "http://localhost:3000/"

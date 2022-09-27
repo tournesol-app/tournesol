@@ -30,7 +30,7 @@ class Poll(models.Model):
     entity_type = models.CharField(max_length=32, choices=ENTITY_TYPE_CHOICES)
     criterias = models.ManyToManyField("Criteria", through="CriteriaRank")
     algorithm = models.CharField(
-        max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_LICCHAVI
+        max_length=32, choices=ALGORITHM_CHOICES, default=ALGORITHM_MEHESTAN
     )
     active = models.BooleanField(
         default=True,
@@ -97,7 +97,6 @@ class Poll(models.Model):
     @property
     def scale_function(self):
         if self.algorithm == ALGORITHM_MEHESTAN and self.sigmoid_scale is not None:
-            def scale(x):
-                return 4 * MEHESTAN_MAX_SCALED_SCORE / TAU * np.arctan(self.sigmoid_scale * x)
-            return scale
+            return lambda x: (4 * MEHESTAN_MAX_SCALED_SCORE / TAU) * \
+                             np.arctan(self.sigmoid_scale * x)
         return lambda x: x

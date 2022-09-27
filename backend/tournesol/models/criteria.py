@@ -7,6 +7,11 @@ from .poll import Poll
 
 
 class Criteria(models.Model):
+    """
+    Model that just contains the name of the criteria.
+
+    The same criteria name can be used in multiple polls, and for multiple languages.
+    """
     name = models.SlugField(unique=True)
 
     def __str__(self) -> str:
@@ -37,6 +42,7 @@ class CriteriaRank(models.Model):
 
 
 class CriteriaLocale(models.Model):
+    """Criteria localization model"""
     class Meta:
         unique_together = ["criteria", "language"]
 

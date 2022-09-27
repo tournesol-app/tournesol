@@ -1,5 +1,5 @@
 """
-Administration interface of the `tournesol` app
+Administration interface of the `tournesol` app.
 """
 
 from django.contrib import admin, messages
@@ -27,10 +27,12 @@ from .utils.video_language import LANGUAGE_CODE_TO_NAME_MATCHING
 
 
 class MetadataFieldFilter(SimpleListFilter):
+    """Used for metadata filters on entities"""
     parameter_name = None
     metadata_key = None
 
     def lookups(self, request, model_admin):
+        """List the possible metadata filters on entities"""
         field_values = sorted(
             model_admin.model.objects
             .distinct()
@@ -40,20 +42,21 @@ class MetadataFieldFilter(SimpleListFilter):
         return [("", "-")] + [(v, v) for v in field_values]
 
     def queryset(self, request, queryset):
+        """Filter the queryset according to the selected metadata filter"""
         if self.value():
             json_field_query = {f"metadata__{self.metadata_key}": self.value()}
             return queryset.filter(**json_field_query)
-        elif self.value() == "":
+        if self.value() == "":
             json_field_query = (
                 Q(**{f"metadata__{self.metadata_key}": ""})
                 | Q(**{f"metadata__{self.metadata_key}": None})
             )
             return queryset.filter(json_field_query)
-        else:
-            return queryset
+        return queryset
 
 
 class EntityLanguageFilter(MetadataFieldFilter):
+    """Enables the language filter in the entities' admin interface"""
     title = "language"
     parameter_name = "metadataLanguage"
     metadata_key = "language"
@@ -213,11 +216,13 @@ class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
 
 
 class CriteriasInline(admin.TabularInline):
+    """Used to display the criteria in the polls' admin interface"""
     model = CriteriaRank
     extra = 0
 
 
 class CriteriaLocalesInline(admin.TabularInline):
+    """Used to display the localization in the criteria's admin interface"""
     model = CriteriaLocale
     extra = 0
 
@@ -239,29 +244,29 @@ class PollAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qst = super().get_queryset(request)
-        qst = qst.annotate(_n_criteria=SubqueryCount("criterias"))
-        qst = qst.annotate(_n_comparisons=SubqueryCount("comparisons"))
+        qst = qst.annotate(n_criteria=SubqueryCount("criterias"))
+        qst = qst.annotate(n_comparisons=SubqueryCount("comparisons"))
         qst = qst.annotate(
-            _n_comparisons_per_criteria=SubqueryCount(
+            n_comparisons_per_criteria=SubqueryCount(
                 "comparisons__criteria_scores"
             )
         )
         return qst
 
-    @admin.display(description="# criterias", ordering="-_n_criteria")
+    @admin.display(description="# criterias", ordering="-n_criteria")
     def get_n_criteria(self, obj):
-        return obj._n_criteria
+        return obj.n_criteria
 
-    @admin.display(description="# comparisons", ordering="-_n_comparisons")
+    @admin.display(description="# comparisons", ordering="-n_comparisons")
     def get_n_comparisons(self, obj):
-        return obj._n_comparisons
+        return obj.n_comparisons
 
     @admin.display(
         description="# comparisons (x criteria)",
-        ordering="-_n_comparisons_per_criteria",
+        ordering="-n_comparisons_per_criteria",
     )
     def get_n_comparisons_per_criteria(self, obj):
-        return obj._n_comparisons_per_criteria
+        return obj.n_comparisons_per_criteria
 
     @admin.display(description="Proof of vote")
     def get_proof_of_vote_file(self, obj):

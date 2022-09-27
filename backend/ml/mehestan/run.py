@@ -107,7 +107,7 @@ def run_mehestan_for_criterion(
         global_scores = get_global_scores(scaled_scores, score_mode=mode)
         global_scores["criteria"] = criteria
 
-        if update_poll_scaling and mode == ScoreMode.DEFAULT:
+        if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:
             quantile_value = np.quantile(global_scores["score"], POLL_SCALING_QUANTILE)
             scale = (
                 np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE))
