@@ -1,4 +1,5 @@
 import logging
+
 import numpy as np
 from django.db.models import Q
 from numpy.typing import NDArray
