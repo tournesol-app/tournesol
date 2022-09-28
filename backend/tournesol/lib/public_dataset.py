@@ -60,3 +60,52 @@ def get_dataset(poll_name: str) -> QuerySet:
         """,
         {"poll_name": poll_name},
     )
+
+
+def get_user_dataset(poll_name: str) -> QuerySet:
+    """
+    Retrieve users present in the public dataset and return a non-evaluated
+    Django `RawQuerySet`.
+    """
+    from core.models import User  # pylint: disable=import-outside-toplevel
+
+    return User.objects.raw(
+        """
+        SELECT DISTINCT
+            core_user.id,
+            core_user.username,
+            core_user.voting_right
+
+        FROM core_user
+
+        -- all the conditions below are there only to limit the result
+        -- to users who made public comparisons. They should be similar
+        -- to the ones in `get_dataset`
+
+        JOIN tournesol_comparison
+          ON tournesol_comparison.user_id = core_user.id
+
+        JOIN tournesol_poll
+          ON tournesol_poll.id = tournesol_comparison.poll_id
+
+        JOIN tournesol_entity AS entity_1
+          ON entity_1.id = tournesol_comparison.entity_1_id
+
+        JOIN tournesol_entity AS entity_2
+          ON entity_2.id = tournesol_comparison.entity_2_id
+
+        JOIN tournesol_contributorrating AS rating_1
+          ON rating_1.entity_id = tournesol_comparison.entity_1_id
+         AND rating_1.user_id = tournesol_comparison.user_id
+
+        JOIN tournesol_contributorrating AS rating_2
+          ON rating_2.entity_id = tournesol_comparison.entity_2_id
+         AND rating_2.user_id = tournesol_comparison.user_id
+
+        WHERE tournesol_poll.name = %(poll_name)s
+          -- keep only public ratings
+          AND rating_1.is_public = true
+          AND rating_2.is_public = true
+        """,
+        {"poll_name": poll_name},
+    )

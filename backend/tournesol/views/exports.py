@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.lib.public_dataset import get_dataset
+from tournesol.lib.public_dataset import get_dataset, get_user_dataset
 from tournesol.models import Comparison, Poll
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
@@ -70,6 +70,27 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
             "score": comparison.score,
         }
         for comparison in get_dataset(poll_name).iterator()
+    )
+
+
+def write_public_users_file(poll_name: str, write_target) -> None:
+    """
+    Retrieve all users present in the public dataset (i.e. with a least
+    one public comparison), and write them as CSV in `write_target`,
+    an object supporting the Python file API.
+    """
+    fieldnames = [
+        "public_username",
+        "voting_right",
+    ]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "public_username": user.username,
+            "voting_right": user.voting_right,
+        }
+        for user in get_user_dataset(poll_name).iterator()
     )
 
 
@@ -164,4 +185,31 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
                 "username", "email", n_comparisons=Count("*"), user_id=F("id")
             )
         )
+        return response
+
+
+class ExportPublicAllView(APIView):
+    """Export all the public data in a .zip file."""
+    throttle_scope = "api_export_comparisons"
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        description="Download all the public data in a .zip file",
+        responses={200: OpenApiTypes.BINARY},
+    )
+    def get(self, request):
+        zip_root = "tournesol_export"
+
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
+
+        with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+            with StringIO() as output:
+                write_public_comparisons_file(Poll.default_poll().name, output)
+                zip_file.writestr(f"{zip_root}/comparisons.csv", output.getvalue())
+
+            with StringIO() as output:
+                write_public_users_file(Poll.default_poll().name, output)
+                zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
+
         return response

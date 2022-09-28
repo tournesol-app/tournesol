@@ -1,5 +1,6 @@
 import csv
 import io
+import zipfile
 
 from django.core.cache import cache
 from django.test import TestCase
@@ -30,9 +31,9 @@ class ExportTest(TestCase):
         ComparisonCriteriaScore.objects.create(
             comparison=self.comparison, score=5, criteria="largely_recommended"
         )
-        self.user_without_comparisons = UserFactory()
+        self.user_without_comparisons = UserFactory(username="user_without_comparisons")
 
-        self.public_comparisons = UserFactory()
+        self.public_comparisons = UserFactory(username="public_comparisons", voting_right=0.5844)
         self.video_public_1 = VideoFactory()
         self.video_public_2 = VideoFactory()
         self.video_private_3 = VideoFactory()
@@ -74,6 +75,28 @@ class ExportTest(TestCase):
 
         self.client = APIClient()
         cache.clear()
+
+    def add_comparison(self, user, is_public=True):
+        video1 = VideoFactory()
+        video2 = VideoFactory()
+        ContributorRating.objects.create(
+            poll=self.poll_videos,
+            user=user,
+            entity=video1,
+            is_public=is_public,
+        )
+        ContributorRating.objects.create(
+            poll=self.poll_videos,
+            user=user,
+            entity=video2,
+            is_public=is_public,
+        )
+        self.comparison_public = ComparisonFactory(
+            poll=self.poll_videos,
+            user=self.public_comparisons,
+            entity_1=video1,
+            entity_2=video2,
+        )
 
     def test_not_authenticated_cannot_download_comparisons(self):
         resp = self.client.get("/users/me/exports/comparisons/")
@@ -158,3 +181,45 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[0]["video_b"], self.video_public_2.video_id)
         self.assertEqual(comparison_list[1]["video_a"], self.video_public_3.video_id)
         self.assertEqual(comparison_list[1]["video_b"], self.video_public_4.video_id)
+
+    def test_not_authenticated_can_download_all_exports(self):
+        # Make sure this user has multiple public comparisons so
+        # that we can verify they are only added once in the CSV
+        self.add_comparison(user=self.public_comparisons, is_public=True)
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "application/zip")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            "attachment; filename=tournesol_export.zip",
+        )
+
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, 'r') as zip_file:
+            expected_files = [
+                "tournesol_export/comparisons.csv",
+                "tournesol_export/users.csv",
+            ]
+            self.assertEqual(zip_file.namelist(), expected_files)
+
+            with zip_file.open('tournesol_export/comparisons.csv', 'r') as file:
+                content = file.read()
+                expected_content = self.client.get("/exports/comparisons/").content
+                self.assertEqual(content, expected_content)
+
+            with zip_file.open('tournesol_export/users.csv', 'r') as file:
+                content = file.read().decode('utf-8')
+                csv_file = csv.DictReader(io.StringIO(content))
+                rows = list(csv_file)
+
+                usernames = [row["public_username"] for row in rows]
+                self.assertNotIn(self.user_with_comparisons.username, usernames)
+                self.assertNotIn(self.user_without_comparisons.username, usernames)
+                self.assertIn(self.public_comparisons.username, usernames)
+
+                username = self.public_comparisons.username
+                user_rows = [row for row in rows if row["public_username"] == username]
+                self.assertEqual(len(user_rows), 1)
+                user_row = user_rows[0]
+                self.assertEqual(user_row["voting_right"], '0.5844')
