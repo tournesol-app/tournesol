@@ -120,7 +120,7 @@ class ExportAllView(APIView):
         # Folder name in ZIP archive which contains the above files
         zip_root = f"export_{request.user.username}"
 
-        response = HttpResponse(content_type="application/x-zip-compressed")
+        response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
 
         with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:

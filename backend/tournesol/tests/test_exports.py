@@ -106,11 +106,13 @@ class ExportTest(TestCase):
         self.client.force_authenticate(self.user_with_comparisons)
         resp = self.client.get("/users/me/exports/all/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.headers["Content-Type"], "application/zip")
 
     def test_authenticated_without_comparisons_can_download_all(self):
         self.client.force_authenticate(self.user_without_comparisons)
         resp = self.client.get("/users/me/exports/all/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.headers["Content-Type"], "application/zip")
 
     def test_not_authenticated_can_download_public_comparisons(self):
         resp = self.client.get("/exports/comparisons/")
