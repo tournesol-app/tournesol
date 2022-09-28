@@ -35,7 +35,7 @@ const PersonalVouchersPage = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item md={4} style={{ display: 'flex' }}>
+          <Grid item md={4} xs={12} style={{ display: 'flex' }}>
             <VotingRight />
           </Grid>
         </Grid>
