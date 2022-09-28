@@ -22,7 +22,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
       {entries.map((entry) => {
         const answerParagraphs = entry.answer.split('\n');
         return (
-          <Box key={entry.name} mb={4}>
+          <Box key={`q_${entry.name}`} mb={4}>
             <Typography id={entry.name} variant="h4" gutterBottom>
               {entry.question}
             </Typography>
@@ -30,7 +30,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
             {/* An answer can be composed of several paragraphs. */}
             {answerParagraphs.map((paragraph, index) => (
               <Typography
-                key={`${entry.name}_p${index}`}
+                key={`$a_{entry.name}_p${index}`}
                 paragraph
                 textAlign="justify"
               >
@@ -41,7 +41,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
         );
       })}
 
-      {/* Invite the users to join Discord if needed. */}
+      {/* Always display an extra entry to explain how to ask more questions. */}
       <Box mb={4}>
         <Typography id="no_answer_found" variant="h4" gutterBottom>
           {t('faqPage.iDidFindTheAnswers')}

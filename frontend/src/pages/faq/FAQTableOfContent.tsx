@@ -29,13 +29,15 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
       <List dense={true}>
         {entries.map((entry) => (
           <ListItemButton
-            key={entry.name}
+            key={`$toc_{entry.name}`}
             component="a"
             href={`#${entry.name}`}
           >
             <ListItemText>{entry.question}</ListItemText>
           </ListItemButton>
         ))}
+        {/* Always display an extra entry to explain how to ask more
+            questions. */}
         <ListItemButton component="a" href={`#no_answer_found`}>
           <ListItemText>{t('faqPage.iDidFindTheAnswers')}</ListItemText>
         </ListItemButton>
