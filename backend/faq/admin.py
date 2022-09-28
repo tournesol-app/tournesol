@@ -8,6 +8,16 @@ from django.utils.translation import gettext_lazy as _
 from faq.models import FAQAnswerLocale, FAQEntry, FAQuestionLocale
 
 
+@admin.action(description=_("Enable the selected entries."))
+def enable_entries(modeladmin, request, queryset):
+    queryset.update(enabled=True)
+
+
+@admin.action(description=_("Disable the selected entries."))
+def disable_entries(modeladmin, request, queryset):
+    queryset.update(enabled=False)
+
+
 class HasAnswerListFilter(admin.SimpleListFilter):
     title = _("has answer?")
     parameter_name = "has_answer"
@@ -42,6 +52,7 @@ class FAQAnswerLocaleInline(admin.TabularInline):
 
 @admin.register(FAQEntry)
 class FAQEntryAdmin(admin.ModelAdmin):
+    actions = [enable_entries, disable_entries]
     search_fields = ("name",)
     list_display = ("name", "rank", "enabled", "has_answer")
     list_filter = (HasAnswerListFilter, "enabled")

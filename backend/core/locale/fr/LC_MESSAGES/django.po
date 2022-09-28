@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-21 12:30+0000\n"
+"POT-Creation-Date: 2022-09-28 08:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,15 +92,23 @@ msgstr ""
 msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
-#: faq/admin.py:12
+#: faq/admin.py:11
+msgid "Enable the selected entries."
+msgstr "Activer les entrées sélectionnées."
+
+#: faq/admin.py:16
+msgid "Disable the selected entries."
+msgstr "Désactiver les entrées sélectionnées."
+
+#: faq/admin.py:22
 msgid "has answer?"
 msgstr "a une réponse?"
 
-#: faq/admin.py:17
+#: faq/admin.py:27
 msgid "Yes"
 msgstr "Oui"
 
-#: faq/admin.py:18
+#: faq/admin.py:28
 msgid "No"
 msgstr "Non"
 

@@ -10,9 +10,12 @@ from django.utils import translation
 
 class FAQEntry(models.Model):
     """
-    A Frequently Asked Question.
+    An entry of a FAQ (Frequently Asked Questions).
 
-    Questions cannot be grouped by tag for now, but could be in the future.
+    A `FAQEntry` consists of a question and an answer, both translated in zero
+    or more languages.
+
+    Entries cannot be grouped by tag for now, but could be in the future.
     """
 
     name = models.SlugField(
@@ -25,7 +28,7 @@ class FAQEntry(models.Model):
 
     class Meta:
         ordering = ["rank"]
-        verbose_name = "FAQ Question"
+        verbose_name = "FAQ Entry"
 
     def __str__(self) -> str:
         return self.name
