@@ -2,20 +2,11 @@
 Administration interface of the `faq` app.
 """
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext_lazy
 
 from faq.models import FAQAnswerLocale, FAQEntry, FAQuestionLocale
-
-
-@admin.action(description=_("Enable the selected entries."))
-def enable_entries(modeladmin, request, queryset):
-    queryset.update(enabled=True)
-
-
-@admin.action(description=_("Disable the selected entries."))
-def disable_entries(modeladmin, request, queryset):
-    queryset.update(enabled=False)
 
 
 class HasAnswerListFilter(admin.SimpleListFilter):
@@ -52,7 +43,7 @@ class FAQAnswerLocaleInline(admin.TabularInline):
 
 @admin.register(FAQEntry)
 class FAQEntryAdmin(admin.ModelAdmin):
-    actions = [enable_entries, disable_entries]
+    actions = ["enable_entries", "disable_entries"]
     search_fields = ("name",)
     list_display = ("name", "rank", "enabled", "has_answer")
     list_filter = (HasAnswerListFilter, "enabled")
@@ -72,3 +63,31 @@ class FAQEntryAdmin(admin.ModelAdmin):
             return False
         else:
             return True
+
+    @admin.action(description=_("Enable the selected entries."))
+    def enable_entries(self, request, queryset):
+        updated = queryset.update(enabled=True)
+        self.message_user(
+            request,
+            ngettext_lazy(
+                "%d entry was successfully marked as enabled.",
+                "%d entries were successfully marked as enabled.",
+                updated,
+            )
+            % updated,
+            messages.SUCCESS,
+        )
+
+    @admin.action(description=_("Disable the selected entries."))
+    def disable_entries(self, request, queryset):
+        updated = queryset.update(enabled=False)
+        self.message_user(
+            request,
+            ngettext_lazy(
+                "%d entry was successfully marked as disabled.",
+                "%d entries were successfully marked as disabled.",
+                updated,
+            )
+            % updated,
+            messages.SUCCESS,
+        )
