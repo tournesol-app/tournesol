@@ -10,9 +10,12 @@ import {
   getWikiBaseUrl,
   twitterTournesolBotEnUrl,
   twitterTournesolBotFrUrl,
-  twitterTournesolAppUrl,
+  twitterTournesolUrl,
   discordTournesolInviteUrl,
-  githubTournesolAppUrl,
+  githubTournesolUrl,
+  utipTournesolUrl,
+  paypalTournesolUrl,
+  whitePaperUrl,
 } from 'src/utils/url';
 import { theme } from 'src/theme';
 
@@ -42,11 +45,11 @@ const Footer = () => {
       id: 'follow-us',
       title: t('footer.followUs'),
       items: [
-        { name: 'Twitter', to: twitterTournesolAppUrl },
+        { name: 'Twitter', to: twitterTournesolUrl },
         { name: 'Discord', to: discordTournesolInviteUrl },
         {
           name: 'GitHub',
-          to: githubTournesolAppUrl,
+          to: githubTournesolUrl,
         },
       ],
     },
@@ -55,8 +58,8 @@ const Footer = () => {
       title: t('footer.supportUs'),
       items: [
         { name: t('footer.directTransfer'), to: '/about/donate' },
-        { name: 'uTip', to: 'https://utip.io/tournesol' },
-        { name: 'PayPal', to: 'https://www.paypal.com/paypalme/tournesolapp' },
+        { name: 'uTip', to: utipTournesolUrl },
+        { name: 'PayPal', to: paypalTournesolUrl },
         { name: t('footer.compareVideos'), to: '/comparison' },
       ],
     },
@@ -66,7 +69,7 @@ const Footer = () => {
       items: [
         {
           name: t('footer.whitePaper'),
-          to: 'https://arxiv.org/abs/2107.07334',
+          to: whitePaperUrl,
         },
         {
           name: t('footer.publicDataset'),

@@ -5,12 +5,36 @@ export const getWikiBaseUrl = () => {
   return `https://wiki.${location.host}`;
 };
 
-export const twitterTournesolAppUrl = 'https://twitter.com/TournesolApp';
-export const twitterTournesolBotEnUrl = 'https://twitter.com/tournesolbot';
-export const twitterTournesolBotFrUrl = 'https://twitter.com/tournesolbotfr';
+/**
+ * Social links
+ */
 
+// Discord
 export const discordTournesolInviteUrl =
   'https://discord.com/invite/TvsFB8RNBV';
 
-export const githubTournesolAppUrl =
-  'https://github.com/tournesol-app/tournesol';
+// Twitter
+export const twitterTournesolUrl = 'https://twitter.com/TournesolApp';
+export const twitterTournesolBotEnUrl = 'https://twitter.com/tournesolbot';
+export const twitterTournesolBotFrUrl = 'https://twitter.com/tournesolbotfr';
+
+// GitHub
+export const githubTournesolUrl = 'https://github.com/tournesol-app/tournesol';
+
+/**
+ * Donation
+ */
+
+// PayPal
+export const paypalTournesolUrl =
+  'https://www.paypal.com/paypalme/tournesolapp';
+
+// uTip
+export const utipTournesolUrl = 'https://utip.io/tournesol';
+
+/**
+ * Research
+ */
+
+// Papers
+export const whitePaperUrl = 'https://arxiv.org/abs/2107.07334';
