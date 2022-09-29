@@ -21,8 +21,12 @@ export const twitterTournesolBotFrUrl = 'https://twitter.com/tournesolbotfr';
 // GitHub
 export const githubTournesolUrl = 'https://github.com/tournesol-app/tournesol';
 
+// LinkedIn
+export const linkedInTournesolUrl =
+  'https://www.linkedin.com/company/tournesol-app';
+
 /**
- * Donation
+ * Support
  */
 
 // PayPal

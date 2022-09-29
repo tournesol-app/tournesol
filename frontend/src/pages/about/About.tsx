@@ -9,7 +9,7 @@ import {
   discordTournesolInviteUrl,
   getWikiBaseUrl,
   githubTournesolUrl,
-  utipTournesolUrl,
+  linkedInTournesolUrl,
   whitePaperUrl,
 } from 'src/utils/url';
 import PublicDownloadSection from './PublicDownloadSection';
@@ -152,7 +152,7 @@ const AboutPage = () => {
                 </a>
                 , or our{' '}
                 <a
-                  href="https://www.linkedin.com/company/tournesol-app/"
+                  href={linkedInTournesolUrl}
                   target="_blank"
                   style={{ color: 'white' }}
                   rel="noreferrer"
@@ -377,7 +377,7 @@ const AboutPage = () => {
                 benefit from contributions by multiple volunteers. Find our
                 wonderful contributors on{' '}
                 <a
-                  href={`${utipTournesolUrl}/graphs/contributors`}
+                  href={`${githubTournesolUrl}/graphs/contributors`}
                   target="_blank"
                   rel="noreferrer"
                 >
