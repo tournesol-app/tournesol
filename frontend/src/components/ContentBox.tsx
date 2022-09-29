@@ -1,6 +1,9 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
 
+import { contentHeaderHeight } from 'src/components/ContentHeader';
+import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
+
 interface Props {
   maxWidth?: false | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
@@ -22,13 +25,19 @@ const ContentBox = ({
   if (!children) {
     return null;
   }
+
+  // 224px represents the current height of the <Footer>. If more items are
+  // added in it, its height may increase.
+  const innerHeight =
+    window.innerHeight - topBarHeight - contentHeaderHeight - 224;
+
   return (
     <Box
       px={[noMinPaddingX ? 0 : 2, 2, 3]}
       py={2}
       // Push the global footer away, to avoid displaying it in the middle
       // of the screen.
-      minHeight="555px"
+      minHeight={`${innerHeight}px`}
     >
       <Container maxWidth={maxWidth} disableGutters>
         {children}
