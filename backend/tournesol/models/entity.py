@@ -49,6 +49,19 @@ class EntityQueryset(models.QuerySet):
             )
         )
 
+    def with_prefetched_poll_ratings(self, poll_name):
+        # pylint: disable=import-outside-toplevel
+        from tournesol.models.entity_poll_rating import EntityPollRating
+        return self.prefetch_related(
+            Prefetch(
+                "all_poll_ratings",
+                queryset=EntityPollRating.objects.filter(
+                    poll__name=poll_name,
+                ),
+                to_attr="single_poll_ratings"
+            )
+        )
+
     def filter_with_text_query(self, query: str, languages=None):
         """
         This custom query enables to use the index on 'search_vector' independently of
@@ -201,6 +214,35 @@ class Entity(models.Model):
             .count()
         )
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
+
+    def update_entity_poll_rating(self, poll, ratings: tuple = None):
+        """
+        Update the related `EntityPollRating` object.
+
+        The new ratings can be provided directly by passing `ratings` as
+        argument, or automatically computed by reading the database instead.
+
+        TODO: the `ratings` parameter won't be needed anymore when the ratings
+              fields will be removed from the `Entity` model. Don't forget to
+              delete it.
+
+        Keyword arguments:
+        poll -- the poll inside which the ratings will be saved
+        ratings -- the first item is the nbr of comparisons, the second the
+                   nbr of contributors
+        """
+        from .entity_poll_rating import EntityPollRating  # pylint: disable=import-outside-toplevel
+
+        entity_rating, _ = EntityPollRating.objects.get_or_create(
+            poll=poll, entity=self
+        )
+
+        if ratings:
+            entity_rating.n_comparisons = ratings[0]
+            entity_rating.n_contributors = ratings[1]
+            entity_rating.save(update_fields=["n_comparisons", "n_contributors"])
+        else:
+            entity_rating.update_n_ratings()
 
     def auto_remove_from_rate_later(self, poll, user) -> None:
         """

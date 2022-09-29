@@ -16,6 +16,7 @@ from tournesol.models import (
     ContributorRatingCriteriaScore,
     Entity,
     EntityCriteriaScore,
+    EntityPollRating,
     Poll,
     RateLater,
 )
@@ -264,6 +265,64 @@ class ComparisonApiTestCase(TestCase):
             response.data["criteria_scores"][0]["weight"],
             data["criteria_scores"][0]["weight"],
         )
+
+    def test_creating_comparison_updates_the_ratings(self):
+        """
+        Ensure the `EntityPollRating`s are automatically created after each
+        comparison.
+
+        Also ensure these `EntityPollRating`s are updated if they already
+        exist.
+        """
+        data = deepcopy(self.non_existing_comparison)
+        self.client.force_authenticate(user=self.user)
+
+        # The `EntityPollRating`s don't exist yet.
+        with self.assertRaises(EntityPollRating.DoesNotExist):
+            EntityPollRating.objects.get(
+                entity__uid=self.non_existing_comparison["entity_a"]["uid"]
+            )
+
+        with self.assertRaises(EntityPollRating.DoesNotExist):
+            EntityPollRating.objects.get(
+                entity__uid=self.non_existing_comparison["entity_b"]["uid"]
+            )
+
+        self.client.post(
+            self.comparisons_base_url,
+            data,
+            format="json",
+        )
+
+        # The `EntityPollRating`s have been created.
+        rating_a = EntityPollRating.objects.get(
+            entity__uid=self.non_existing_comparison["entity_a"]["uid"]
+        )
+
+        rating_b = EntityPollRating.objects.get(
+            entity__uid=self.non_existing_comparison["entity_b"]["uid"]
+        )
+
+        self.assertEqual(rating_a.n_comparisons, 3)
+        self.assertEqual(rating_a.n_contributors, 1)
+        self.assertEqual(rating_b.n_comparisons, 3)
+        self.assertEqual(rating_b.n_contributors, 2)
+
+        self.client.force_authenticate(user=self.other)
+        self.client.post(
+            self.comparisons_base_url,
+            data,
+            format="json",
+        )
+
+        rating_a.refresh_from_db()
+        rating_b.refresh_from_db()
+
+        # The `EntityPollRating`s have been updated.
+        self.assertEqual(rating_a.n_comparisons, 4)
+        self.assertEqual(rating_a.n_contributors, 2)
+        self.assertEqual(rating_b.n_comparisons, 4)
+        self.assertEqual(rating_b.n_contributors, 2)
 
     def test_authenticated_can_create_without_optional(self):
         """

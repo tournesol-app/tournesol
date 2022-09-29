@@ -10,6 +10,7 @@ from tournesol.models import (
     ContributorScaling,
     Entity,
     EntityCriteriaScore,
+    EntityPollRating,
     Poll,
 )
 from tournesol.models.entity_score import ScoreMode
@@ -58,14 +59,17 @@ def save_entity_scores(
 
 def save_tournesol_scores(poll):
     entities = []
+    entity_poll_ratings = []
+
     for entity in (
         Entity.objects.filter(all_criteria_scores__poll=poll)
         .distinct()
         .with_prefetched_scores(poll_name=poll.name)
+        .with_prefetched_poll_ratings(poll_name=poll.name)
     ):
         if poll.algorithm == ALGORITHM_MEHESTAN:
-            # The tournesol score is simply the score associated with the main criteria
-            entity.tournesol_score = next(
+            # The tournesol score is simply the score of the main criteria.
+            tournesol_score = next(
                 (
                     s.score
                     for s in entity.criteria_scores
@@ -74,14 +78,24 @@ def save_tournesol_scores(poll):
                 None,
             )
         else:
-            entity.tournesol_score = 10 * sum(
+            tournesol_score = 10 * sum(
                 criterion.score for criterion in entity.criteria_scores
             )
+
+        entity.tournesol_score = tournesol_score
         entities.append(entity)
+
+        if entity.single_poll_ratings:
+            entity_poll_rating = entity.single_poll_ratings[0]
+            entity_poll_rating.tournesol_score = tournesol_score
+            entity_poll_ratings.append(entity_poll_rating)
 
     # Updating all entities at once increases the risk of a database deadlock.
     # We use an explicitly low `batch_size` value to reduce this risk.
     Entity.objects.bulk_update(entities, ["tournesol_score"], batch_size=1000)
+    EntityPollRating.objects.bulk_update(
+        entity_poll_ratings, ["tournesol_score"], batch_size=1000
+    )
 
 
 def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
