@@ -3,12 +3,10 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import { ContentHeader } from 'src/components';
-import { contentHeaderHeight } from 'src/components/ContentHeader';
+import { ContentBox, ContentHeader } from 'src/components';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import Comparison from 'src/features/comparisons/Comparison';
 import ComparisonSeries from 'src/features/comparisonSeries/ComparisonSeries';
-import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 
 /**
  * Display the standard comparison UI or the poll tutorial.
@@ -31,33 +29,28 @@ const ComparisonPage = () => {
   const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
-  // Push the global footer away, to avoid displaying it in the middle
-  // of the screen.
-  // TODO: try to use the custom <ContentBox> instead of <Box> to remove
-  // this logic.
-  const minHeight =
-    window.innerHeight - topBarHeight - contentHeaderHeight - 224;
-
   return (
     <>
       <ContentHeader title={t('comparison.submitAComparison')} />
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          py: 2,
-          minHeight: minHeight,
-        }}
-      >
-        {!pollActive && (
-          <Box pb={3} textAlign="center" color="neutral.main">
-            <Typography>{t('comparison.inactivePoll')}</Typography>
-            <Typography>
-              {t('comparison.inactivePollComparisonCannotBeSubmittedOrEdited')}
-            </Typography>
-          </Box>
-        )}
+      <ContentBox>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          {!pollActive && (
+            <Box pb={3} textAlign="center" color="neutral.main">
+              <Typography>{t('comparison.inactivePoll')}</Typography>
+              <Typography>
+                {t(
+                  'comparison.inactivePollComparisonCannotBeSubmittedOrEdited'
+                )}
+              </Typography>
+            </Box>
+          )}
+
 
         {series === 'true' && tutorialLength > 0 ? (
           <ComparisonSeries
@@ -73,6 +66,7 @@ const ComparisonPage = () => {
           <Comparison />
         )}
       </Box>
+     </ContentBox>
     </>
   );
 };
