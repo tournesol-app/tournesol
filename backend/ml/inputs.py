@@ -28,7 +28,7 @@ class MlInput(ABC):
             * `score`: float
             * `weight`: float
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_ratings_properties(self) -> pd.DataFrame:
@@ -42,7 +42,7 @@ class MlInput(ABC):
             * `is_trusted`: bool
             * `is_supertrusted`: bool
         """
-        pass
+        raise NotImplementedError
 
 
 class MlInputFromPublicDataset(MlInput):
@@ -58,12 +58,12 @@ class MlInputFromPublicDataset(MlInput):
     def get_comparisons(
         self, trusted_only=False, criteria=None, user_id=None
     ) -> pd.DataFrame:
-        df = self.public_dataset.copy(deep=False)
+        dtf = self.public_dataset.copy(deep=False)
         if criteria is not None:
-            df = df[df.criteria == criteria]
+            dtf = dtf[dtf.criteria == criteria]
         if user_id is not None:
-            df = df[df.user_id == user_id]
-        return df[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
+            dtf = dtf[dtf.user_id == user_id]
+        return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
     def get_ratings_properties(self):
         user_entities_pairs = pd.Series(
@@ -74,11 +74,11 @@ class MlInputFromPublicDataset(MlInput):
                 )
             )
         )
-        df = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
-        df["is_public"] = True
-        top_users = df.value_counts("user_id").index[:6]
-        df["is_trusted"] = df["is_supertrusted"] = df["user_id"].isin(top_users)
-        return df
+        dtf = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
+        dtf["is_public"] = True
+        top_users = dtf.value_counts("user_id").index[:6]
+        dtf["is_trusted"] = dtf["is_supertrusted"] = dtf["user_id"].isin(top_users)
+        return dtf
 
 
 class MlInputFromDb(MlInput):
@@ -156,8 +156,8 @@ class MlInputFromDb(MlInput):
             user_id=F("comparison__user_id"),
         )
         if len(values) > 0:
-            df = pd.DataFrame(values)
-            return df[
+            dtf = pd.DataFrame(values)
+            return dtf[
                 ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]
             ]
 
