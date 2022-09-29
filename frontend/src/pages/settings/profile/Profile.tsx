@@ -1,30 +1,25 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
+
 import Grid from '@mui/material/Grid';
 
-import { ContentHeader, SettingsSection } from 'src/components';
-import SettingsMenu from '../../../features/settings/SettingsMenu';
-import ProfileForm from '../../../features/settings/profile/ProfileForm';
-import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
-import { contentHeaderHeight } from 'src/components/ContentHeader';
+import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
+import SettingsMenu from 'src/features/settings/SettingsMenu';
+import ProfileForm from 'src/features/settings/profile/ProfileForm';
+
+import { mainSectionBp, settingsMenuBp } from '../layout';
 
 function ProfilePage() {
   const { t } = useTranslation();
 
-  // Push the global footer away, to avoid displaying it in the middle
-  // of the screen.
-  // TODO: try to use the custom <ContentBox> instead of <Box> to remove
-  // this logic.
-  const minHeight =
-    window.innerHeight - topBarHeight - contentHeaderHeight - 224 - 32;
-
+  // subSectionBreakP can be changed independently of mainSectionBp
+  const subSectionBreakP = mainSectionBp;
   return (
     <>
       <ContentHeader title={`${t('settings.title')} > ${t('profile')}`} />
-      <Box m={4} minHeight={minHeight}>
+      <ContentBox maxWidth="xl">
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={3}>
+          <Grid item {...settingsMenuBp}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -32,16 +27,14 @@ function ProfilePage() {
             item
             direction="column"
             alignItems="stretch"
-            xs={12}
-            sm={12}
-            md={9}
+            {...mainSectionBp}
           >
-            <SettingsSection title={t('profile')} xs={12}>
+            <SettingsSection title={t('profile')} {...subSectionBreakP}>
               <ProfileForm />
             </SettingsSection>
           </Grid>
         </Grid>
-      </Box>
+      </ContentBox>
     </>
   );
 }
