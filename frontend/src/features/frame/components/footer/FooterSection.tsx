@@ -18,6 +18,7 @@ interface Props {
   lg?: GridSize;
   title: string;
   items: Array<{ name: string; to: string }>;
+  disableItemsGutters?: boolean;
   trailingDivider?: boolean;
 }
 
@@ -32,6 +33,7 @@ const FooterSection = ({
   lg = 2,
   title,
   items,
+  disableItemsGutters = false,
   trailingDivider = true,
 }: Props) => {
   return (
@@ -42,9 +44,10 @@ const FooterSection = ({
       <List dense={true}>
         {items.map((item) => (
           <ListItemButton
+            key={item.name}
             LinkComponent={RouterLink}
             href={item.to}
-            key={item.name}
+            disableGutters={disableItemsGutters}
           >
             <ListItemText primary={item.name} />
           </ListItemButton>

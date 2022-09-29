@@ -1,12 +1,20 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import FooterSection from 'src/features/frame/components/footer/FooterSection';
 import { getWebExtensionUrl } from 'src/utils/extension';
-import { getWikiBaseUrl } from 'src/utils/url';
+import {
+  getWikiBaseUrl,
+  twitterTournesolBotEnUrl,
+  twitterTournesolBotFrUrl,
+  twitterTournesolAppUrl,
+  discordTournesolInviteUrl,
+  githubTournesolAppUrl,
+} from 'src/utils/url';
+import { theme } from 'src/theme';
 
 const Footer = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -26,19 +34,19 @@ const Footer = () => {
           name: t('footer.firefoxExtension'),
           to: getWebExtensionUrl('firefox') || '',
         },
-        { name: 'Twitter Bot EN', to: 'https://twitter.com/tournesolbotfr' },
-        { name: 'Twitter Bot FR', to: 'https://twitter.com/tournesolbot' },
+        { name: 'Twitter Bot EN', to: twitterTournesolBotEnUrl },
+        { name: 'Twitter Bot FR', to: twitterTournesolBotFrUrl },
       ],
     },
     {
       id: 'follow-us',
       title: t('footer.followUs'),
       items: [
-        { name: 'Twitter', to: 'https://twitter.com/TournesolApp' },
-        { name: 'Discord', to: 'https://discord.gg/TvsFB8RNBV' },
+        { name: 'Twitter', to: twitterTournesolAppUrl },
+        { name: 'Discord', to: discordTournesolInviteUrl },
         {
           name: 'GitHub',
-          to: 'https://github.com/tournesol-app/tournesol',
+          to: githubTournesolAppUrl,
         },
       ],
     },
@@ -78,12 +86,16 @@ const Footer = () => {
     },
   ];
 
+  const lessThanLargeScreen = useMediaQuery(theme.breakpoints.down('lg'), {
+    noSsr: true,
+  });
+
   return (
     <Box padding={2} color="#fff" bgcolor="#1282B2">
       <Grid
         container
         spacing={2}
-        justifyContent="space-around"
+        justifyContent={lessThanLargeScreen ? 'flex-start' : 'space-around'}
         alignContent="center"
       >
         {footerSections.map((section) => (
@@ -91,6 +103,7 @@ const Footer = () => {
             key={section.id}
             title={section.title}
             items={section.items}
+            disableItemsGutters={!lessThanLargeScreen}
             trailingDivider={section.trailingDivider}
           />
         ))}
