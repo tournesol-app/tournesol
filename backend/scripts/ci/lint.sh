@@ -12,7 +12,7 @@ chk1=$?
 flake8 --config=.flake8 ${@:-}
 chk2=$?
 
-pylint --rcfile=.pylintrc ${@:-core faq tournesol twitterbot vouch}
+pylint --rcfile=.pylintrc ${@:-core faq ml tournesol twitterbot vouch}
 chk3=$?
 
 ! (( chk1 || chk2 || chk3 ))

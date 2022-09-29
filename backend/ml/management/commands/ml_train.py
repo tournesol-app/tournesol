@@ -16,9 +16,9 @@ class Command(BaseCommand):
         for poll in Poll.objects.filter(active=True):
             ml_input = MlInputFromDb(poll_name=poll.name)
 
-            if poll.algorithm == ALGORITHM_LICCHAVI:
-                raise NotImplementedError("Licchavi is no longer supported")
-            elif poll.algorithm == ALGORITHM_MEHESTAN:
+            if poll.algorithm == ALGORITHM_MEHESTAN:
                 run_mehestan(ml_input=ml_input, poll=poll)
+            elif poll.algorithm == ALGORITHM_LICCHAVI:
+                raise NotImplementedError("Licchavi is no longer supported")
             else:
                 raise ValueError(f"unknown algorithm {repr(poll.algorithm)}'")
