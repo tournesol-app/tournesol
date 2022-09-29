@@ -4,6 +4,11 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Typography, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
+import {
+  discordTournesolInviteUrl,
+  githubTournesolUrl,
+  utipTournesolUrl,
+} from 'src/utils/url';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +54,7 @@ const DonatePage = () => {
               please consider helping us, through coding or through donations.
               Check-out our{' '}
               <a
-                href="https://github.com/tournesol-app/tournesol"
+                href={githubTournesolUrl}
                 target="_blank"
                 rel="noreferrer"
                 className={classes.link}
@@ -58,7 +63,7 @@ const DonatePage = () => {
               </a>
               , or join our{' '}
               <a
-                href="https://discord.gg/TvsFB8RNBV"
+                href={discordTournesolInviteUrl}
                 target="_blank"
                 rel="noreferrer"
                 className={classes.link}
@@ -73,7 +78,7 @@ const DonatePage = () => {
             {t('about.donateHowTo')}
           </Typography>
           <Link
-            href="https://utip.io/tournesol"
+            href={utipTournesolUrl}
             rel="noopener"
             target="_blank"
             underline="none"
@@ -92,7 +97,7 @@ const DonatePage = () => {
                 <Trans t={t} i18nKey="about.donateWithUtipDescription">
                   uTip is an online crowdfunding platform. Visit our{' '}
                   <a
-                    href="https://utip.io/tournesol"
+                    href={utipTournesolUrl}
                     target="_blank"
                     rel="noreferrer"
                     className={classes.link}

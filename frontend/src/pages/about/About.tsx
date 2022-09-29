@@ -5,7 +5,13 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Grid, Typography, Box, Card, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
-import { getWikiBaseUrl } from 'src/utils/url';
+import {
+  discordTournesolInviteUrl,
+  getWikiBaseUrl,
+  githubTournesolUrl,
+  utipTournesolUrl,
+  whitePaperUrl,
+} from 'src/utils/url';
 import PublicDownloadSection from './PublicDownloadSection';
 
 const useStyles = makeStyles(() => ({
@@ -110,7 +116,7 @@ const AboutPage = () => {
                 large-scale algorithms robustly beneficial for all of humanity.
                 Find out more with our{' '}
                 <a
-                  href="https://arxiv.org/abs/2107.07334"
+                  href={whitePaperUrl}
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: 'white' }}
@@ -128,7 +134,7 @@ const AboutPage = () => {
                 </a>
                 , our{' '}
                 <a
-                  href="https://github.com/tournesol-app/tournesol"
+                  href={githubTournesolUrl}
                   target="_blank"
                   style={{ color: 'white' }}
                   rel="noreferrer"
@@ -137,7 +143,7 @@ const AboutPage = () => {
                 </a>
                 , our{' '}
                 <a
-                  href="https://discord.gg/TvsFB8RNBV"
+                  href={discordTournesolInviteUrl}
                   target="_blank"
                   style={{ color: 'white' }}
                   rel="noreferrer"
@@ -371,7 +377,7 @@ const AboutPage = () => {
                 benefit from contributions by multiple volunteers. Find our
                 wonderful contributors on{' '}
                 <a
-                  href="https://github.com/tournesol-app/tournesol/graphs/contributors"
+                  href={`${utipTournesolUrl}/graphs/contributors`}
                   target="_blank"
                   rel="noreferrer"
                 >
