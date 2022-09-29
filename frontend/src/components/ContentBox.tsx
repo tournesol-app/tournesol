@@ -28,7 +28,7 @@ const ContentBox = ({
 
   // 224px represents the current height of the <Footer>. If more items are
   // added in it, its height may increase.
-  const innerHeight =
+  const minHeight =
     window.innerHeight - topBarHeight - contentHeaderHeight - 224;
 
   return (
@@ -37,7 +37,7 @@ const ContentBox = ({
       py={2}
       // Push the global footer away, to avoid displaying it in the middle
       // of the screen.
-      minHeight={`${innerHeight}px`}
+      minHeight={minHeight}
     >
       <Container maxWidth={maxWidth} disableGutters>
         {children}
