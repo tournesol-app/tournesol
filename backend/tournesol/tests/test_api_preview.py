@@ -48,6 +48,8 @@ class DynamicWebsitePreviewDefaultTestCase(TestCase):
             response.headers["Content-Disposition"],
             'inline; filename="tournesol_screenshot_og.png"',
         )
+        content = b''.join(response.streaming_content)
+        self.assertGreater(len(content), 0)
 
     def test_anon_200_get(self):
         """

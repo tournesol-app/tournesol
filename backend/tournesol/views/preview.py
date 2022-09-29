@@ -48,11 +48,13 @@ class BasePreviewAPIView(APIView):
     """
 
     def default_preview(self):
-        with open(
+        # The file needs to remain open to be streamed and will be closed automatically
+        # by FileResponse. A context-manager should not be used here.
+        # pylint: disable=consider-using-with
+        default_preview = open(
             str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
-        ) as default_preview:
-            response = FileResponse(default_preview, content_type="image/png")
-        return response
+        )
+        return FileResponse(default_preview, content_type="image/png")
 
     def get_entity(self, uid: str) -> Entity:
         try:
