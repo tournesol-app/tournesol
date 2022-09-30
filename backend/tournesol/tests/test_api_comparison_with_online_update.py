@@ -25,10 +25,6 @@ class FirstComparisonWithOnlineHeuristicMehestanTest(TransactionTestCase):
     def test_insert_individual_scores_after_new_comparison_with_online_heuristic_update(
         self,
     ):
-
-        contrib_before_insert = set(
-            ContributorRatingCriteriaScore.objects.all().values_list()
-        )
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         self.assertEqual(
             EntityCriteriaScore.objects.filter(score_mode="default").count(), 0

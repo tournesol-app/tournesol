@@ -1,12 +1,9 @@
 import logging
-import os
 from functools import partial
-from multiprocessing import Pool
 from typing import Set, Tuple
 
 import numpy as np
 import pandas as pd
-from django import db
 
 from core.models import User
 from ml.inputs import MlInput, MlInputFromDb
@@ -259,25 +256,10 @@ def apply_and_return_scaling_on_individual_scores_online_heuristics(
     entity_id_a, theta_star_a, delta_star_a = new_data_a
     entity_id_b, theta_star_b, delta_star_b = new_data_b
     all_user_scalings = ml_input.get_user_scalings()
-    all_indiv_score_a = ml_input.get_indiv_score(
-        entity_id=entity_id_a, criteria=criteria
-    )
-    all_indiv_score_b = ml_input.get_indiv_score(
-        entity_id=entity_id_b, criteria=criteria
-    )
 
-    if all_indiv_score_b.empty:
-        if all_indiv_score_a.empty:
-            all_indiv_score = pd.DataFrame(
-                columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"]
-            )
-        else:
-            all_indiv_score = all_indiv_score_a
-    else:
-        if all_indiv_score_a.empty:
-            all_indiv_score = all_indiv_score_b
-        else:
-            all_indiv_score = pd.concat([all_indiv_score_a, all_indiv_score_b])
+    all_indiv_score = ml_input.get_indiv_score(
+        entity_id_in=[entity_id_a, entity_id_b], criteria=criteria
+    )
 
     if all_indiv_score.empty:
         all_indiv_score = pd.DataFrame(
@@ -296,9 +278,8 @@ def apply_and_return_scaling_on_individual_scores_online_heuristics(
         user_id, entity_id_b, theta_star_b, delta_star_b, all_indiv_score
     )
 
-    df = all_indiv_score.merge(
-        ml_input.get_ratings_properties(), how="inner", on=["user_id", "entity_id"]
-    )
+    df_ratings = ml_input.get_ratings_properties(django_orm_union=False)
+    df = all_indiv_score.merge(df_ratings, how="inner", on=["user_id", "entity_id"])
 
     df["is_public"].fillna(False, inplace=True)
     df["is_trusted"].fillna(False, inplace=True)
@@ -396,7 +377,6 @@ def run_online_heuristics(
     user_id: str,
     poll: Poll,
     delete_comparison_case: bool,
-    parallel_computing: bool = True,
 ):
     """
     This function use multiprocessing.
@@ -435,7 +415,8 @@ def run_online_heuristics(
         user_id=user_id,
         delete_comparison_case=delete_comparison_case,
     )
-    save_tournesol_scores(poll)
+
+    save_tournesol_scores(poll, list_of_entities=[uid_a, uid_b])
     logger.info(
         "Online Heuristic Mehestan for poll '%s': main_criteria Done", poll.name
     )
@@ -451,25 +432,15 @@ def run_online_heuristics(
     )
     # compute each criterion in parallel
     remaining_criteria = [c for c in criteria if c != poll.main_criteria]
-    if parallel_computing:
-        os.register_at_fork(before=db.connections.close_all)
 
-        cpu_count = os.cpu_count() or 1
-        with Pool(processes=max(1, cpu_count - 1)) as pool:
-            for _ in pool.imap_unordered(
-                partial_online_heuristics,
-                remaining_criteria,
-            ):
-                pass
-    else:
-        for criterion in remaining_criteria:
-            logger.info(
-                "Sequential Online Heuristic Mehestan  \
-                for poll '%s  for criterion '%s': Start ",
-                poll.name,
-                criterion,
-            )
-            partial_online_heuristics(criterion)
+    for criterion in remaining_criteria:
+        logger.info(
+            "Sequential Online Heuristic Mehestan  \
+            for poll '%s  for criterion '%s': Start ",
+            poll.name,
+            criterion,
+        )
+        partial_online_heuristics(criterion)
 
     logger.info("Online Heuristic Mehestan for poll '%s': Done", poll.name)
 
@@ -485,5 +456,4 @@ def update_user_scores(
         user_id=user.pk,
         poll=poll,
         delete_comparison_case=delete_comparison_case,
-        parallel_computing=False,
     )

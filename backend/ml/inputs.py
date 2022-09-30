@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 import pandas as pd
+from django.db import connection
 from django.db.models import Case, F, QuerySet, When
 from django.db.models.expressions import RawSQL
 
@@ -37,7 +38,7 @@ class MlInput(ABC):
         pass
 
     @abstractmethod
-    def get_ratings_properties(self) -> pd.DataFrame:
+    def get_ratings_properties(self, django_orm_union=True) -> pd.DataFrame:
         """Fetch data about contributor ratings properties
 
         Returns:
@@ -62,6 +63,7 @@ class MlInput(ABC):
         criteria: Optional[str] = None,
         entity_id: Optional[str] = None,
         user_id: Optional[int] = None,
+        entity_id_in=None,
     ) -> pd.DataFrame:
         pass
 
@@ -86,7 +88,7 @@ class MlInputFromPublicDataset(MlInput):
             df = df[df.user_id == user_id]
         return df[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
-    def get_ratings_properties(self):
+    def get_ratings_properties(self, django_orm_union=True):
         user_entities_pairs = pd.Series(
             iter(
                 set(self.public_dataset.groupby(["user_id", "entity_a"]).indices.keys())
@@ -105,7 +107,7 @@ class MlInputFromPublicDataset(MlInput):
         return
 
     def get_indiv_score(
-        self, criteria=None, user_id=None, entity_id=None
+        self, criteria=None, user_id=None, entity_id=None, entity_id_in=None
     ) -> pd.DataFrame:
         return
 
@@ -117,14 +119,40 @@ class MlInputFromDb(MlInput):
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
-    def get_supertrusted_users(self) -> QuerySet[User]:
-        n_alternatives = (
-            Entity.objects.filter(comparisons_entity_1__poll__name=self.poll_name)
-            .union(
-                Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name)
+    def get_supertrusted_users(self, django_orm_union=True) -> QuerySet[User]:
+        if django_orm_union:
+            n_alternatives = (
+                Entity.objects.filter(comparisons_entity_1__poll__name=self.poll_name)
+                .union(
+                    Entity.objects.filter(
+                        comparisons_entity_2__poll__name=self.poll_name
+                    )
+                )
+                .count()
             )
-            .count()
-        )
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                select count(DISTINCT(euid)) FROM
+                (
+                    select distinct(entity_1_id) as euid from tournesol_comparison
+                        where poll_id=(select p.id from tournesol_poll p
+                            WHERE p.name = %s)
+                        union
+                    select distinct(entity_2_id) as euid from tournesol_comparison
+                        where poll_id=(select p.id from tournesol_poll p
+                            WHERE p.name = %s)
+                ) as subquery
+                """,
+                    (
+                        self.poll_name,
+                        self.poll_name,
+                    ),
+                )
+                row = cursor.fetchone()
+                n_alternatives = row[0]
+
         users = User.objects.alias(
             n_compared_entities=RawSQL(
                 """
@@ -201,7 +229,7 @@ class MlInputFromDb(MlInput):
             ]
         )
 
-    def get_ratings_properties(self):
+    def get_ratings_properties(self, django_orm_union=True):
         values = (
             ContributorRating.objects.filter(
                 poll__name=self.poll_name,
@@ -212,12 +240,15 @@ class MlInputFromDb(MlInput):
                 ),
                 is_supertrusted=Case(
                     When(
-                        user__in=self.get_supertrusted_users().values("id"), then=True
+                        user__in=self.get_supertrusted_users(
+                            django_orm_union=django_orm_union
+                        ).values("id"),
+                        then=True,
                     ),
                     default=False,
                 ),
             )
-            .values(
+            .values_list(
                 "user_id",
                 "entity_id",
                 "is_public",
@@ -235,7 +266,16 @@ class MlInputFromDb(MlInput):
                     "is_supertrusted",
                 ]
             )
-        return pd.DataFrame(values)
+        return pd.DataFrame.from_records(
+            values,
+            columns=[
+                "user_id",
+                "entity_id",
+                "is_public",
+                "is_trusted",
+                "is_supertrusted",
+            ],
+        )
 
     def get_user_scalings(self, user_id=None) -> pd.DataFrame:
         """Fetch saved invidiual scalings
@@ -274,7 +314,7 @@ class MlInputFromDb(MlInput):
         return pd.DataFrame(values)
 
     def get_indiv_score(
-        self, criteria=None, user_id=None, entity_id=None
+        self, criteria=None, user_id=None, entity_id=None, entity_id_in=None
     ) -> pd.DataFrame:
 
         scores_queryset = ContributorRatingCriteriaScore.objects.filter(
@@ -292,7 +332,10 @@ class MlInputFromDb(MlInput):
             scores_queryset = scores_queryset.filter(
                 contributor_rating__entity_id=entity_id
             )
-
+        if entity_id_in is not None:
+            scores_queryset = scores_queryset.filter(
+                contributor_rating__entity_id__in=entity_id_in
+            )
         values = scores_queryset.values(
             "raw_score",
             "raw_uncertainty",

@@ -13,6 +13,7 @@ class Command(BaseCommand):
     """
     Runs Machine Learning task, to update scores periodically
     """
+
     help = "Runs the ml"
 
     def add_arguments(self, parser):

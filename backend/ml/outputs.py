@@ -66,13 +66,18 @@ def save_entity_scores(
         )
 
 
-def save_tournesol_scores(poll):
+def save_tournesol_scores(poll, list_of_entities=None):
     entities = []
-    for entity in (
+    entities_to_look_through = (
         Entity.objects.filter(all_criteria_scores__poll=poll)
         .distinct()
         .with_prefetched_scores(poll_name=poll.name)
-    ):
+    )
+    if list_of_entities:
+        entities_to_look_through = entities_to_look_through.filter(
+            uid__in=list_of_entities
+        )
+    for entity in entities_to_look_through:
         if poll.algorithm == ALGORITHM_MEHESTAN:
             # The tournesol score is simply the score associated with the main criteria
             entity.tournesol_score = next(
@@ -263,7 +268,14 @@ def insert_or_update_contributor_score(
     else:
         data = [(user_id, entity_id, criteria, raw_score, raw_uncertainty)]
         scores = pd.DataFrame(
-            data, columns=["user_id", "entity_id", "criteria", "raw_score", "raw_uncertainty"]
+            data,
+            columns=[
+                "user_id",
+                "entity_id",
+                "criteria",
+                "raw_score",
+                "raw_uncertainty",
+            ],
         )
         save_contributor_scores(
             poll,
