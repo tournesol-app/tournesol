@@ -160,18 +160,10 @@ def _run_online_heuristics_for_criterion(
     # we need to recompute global score for a and b
     # in order to so, we need all individual scaled score concerning a and b
     # we will get those and inject the new raw score before scaling for {a|b}/criteria/user_id
-    theta_star_a = new_raw_scores.loc[
-        new_raw_scores.index == entity_id_a, "raw_score"
-    ].values.squeeze()[()]
-    delta_star_a = new_raw_uncertainties.loc[
-        new_raw_uncertainties.index == entity_id_a, "raw_uncertainty"
-    ].values.squeeze()[()]
-    theta_star_b = new_raw_scores.loc[
-        new_raw_scores.index == entity_id_b, "raw_score"
-    ].values.squeeze()[()]
-    delta_star_b = new_raw_uncertainties.loc[
-        new_raw_uncertainties.index == entity_id_b, "raw_uncertainty"
-    ].values.squeeze()[()]
+    theta_star_a = new_raw_scores.loc[entity_id_a, "raw_score"]
+    delta_star_a = new_raw_uncertainties.loc[entity_id_a, "raw_uncertainty"]
+    theta_star_b = new_raw_scores.loc[entity_id_b, "raw_score"]
+    delta_star_b = new_raw_uncertainties.loc[entity_id_b, "raw_uncertainty"]
     new_data_a = (entity_id_a, theta_star_a, delta_star_a)
     new_data_b = (entity_id_b, theta_star_b, delta_star_b)
 
