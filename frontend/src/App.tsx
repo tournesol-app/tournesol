@@ -27,6 +27,7 @@ import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
+import FAQ from './pages/faq/FAQ';
 
 // The Analysis Page uses recharts which is a rather big library,
 // thus we choose to load it lazily.
@@ -63,6 +64,9 @@ function App() {
       <Frame>
         <Switch>
           {/* About routes */}
+          <PublicRoute path="/faq">
+            <FAQ />
+          </PublicRoute>
           <PublicRoute path="/about/privacy_policy">
             <PrivacyPolicy />
           </PublicRoute>
