@@ -84,9 +84,9 @@ fix.
 ## Missing Feature?
 
 You can request a new feature by submitting an issue to our GitHub Repository.
-Depending on the subject or the complexity, and before planning anything, the
-development team will first discuss the feature to define a clear
-implementation.
+Depending on the subject or the complexity the development team will first
+evaluate the value of the feature for the whole community, then plan how it
+can be implemented and where it fits in the project's priorities.
 
 ## Working on the Source code
 
