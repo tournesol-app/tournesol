@@ -55,7 +55,7 @@ const CriteriaScoresDistributionChart = ({
     [distribution, bins, t]
   );
 
-  const tooltipFormatter = useCallback(
+  const tooltipFormatter: (value: number) => [number, string] = useCallback(
     (value: number) => [value, t('criteriaScoresDistribution.label')],
     [t]
   );
