@@ -85,7 +85,7 @@ class ExportTest(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures that the csv contians a single row with the correct score
         csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
-        comparison_list = [row for row in csv_file]
+        comparison_list = list(csv_file)
         self.assertEqual(len(comparison_list), 1)
         self.assertEqual(float(comparison_list[0]["score"]), 5.0)
 
@@ -95,7 +95,7 @@ class ExportTest(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures the csv does not contain information about comparison criteria score
         csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
-        comparison_list = [row for row in csv_file]
+        comparison_list = list(csv_file)
         self.assertEqual(len(comparison_list), 0)
 
     def test_not_authenticated_cannot_download_all(self):
@@ -119,7 +119,7 @@ class ExportTest(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures the csv does not contain information that are not public comparisons
         csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
-        comparison_list = [row for row in csv_file]
+        comparison_list = list(csv_file)
         self.assertEqual(len(comparison_list), 1)
         self.assertEqual(comparison_list[0]["video_a"], self.video_public_1.video_id)
         self.assertEqual(comparison_list[0]["video_b"], self.video_public_2.video_id)
@@ -152,7 +152,7 @@ class ExportTest(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Ensures the csv does not contain information that are not public comparisons
         csv_file = csv.DictReader(io.StringIO(resp.content.decode()))
-        comparison_list = [row for row in csv_file]
+        comparison_list = list(csv_file)
         self.assertEqual(len(comparison_list), 2)
         self.assertEqual(comparison_list[0]["video_a"], self.video_public_1.video_id)
         self.assertEqual(comparison_list[0]["video_b"], self.video_public_2.video_id)
