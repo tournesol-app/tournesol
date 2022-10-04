@@ -9,11 +9,17 @@ import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
-import { UsersService, ContributorRating } from 'src/services/openapi';
+import {
+  UsersService,
+  ContributorRating,
+  PollsService,
+  Recommendation,
+} from 'src/services/openapi';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
+import { useLoginState } from 'src/hooks';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -50,10 +56,91 @@ const isUidValid = (uid: string) => uid.match(/\w+:.+/);
 
 const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
   const classes = useStyles();
+  const { isLoggedIn } = useLoginState();
 
+  return (
+    <div className={classes.root}>
+      {isLoggedIn ? (
+        <EntitySelectorInnerAuth
+          title={title}
+          value={value}
+          onChange={onChange}
+          otherUid={otherUid}
+          light={light}
+        />
+      ) : (
+        <EntitySelectorInnerAnonymous title={title} value={value} />
+      )}
+    </div>
+  );
+};
+
+const EntitySelectorInnerAnonymous = ({
+  title,
+  value,
+}: {
+  title: string;
+  value: SelectorValue;
+}) => {
+  const { isLoggedIn } = useLoginState();
+  const { name: pollName } = useCurrentPoll();
+
+  const { uid } = value;
+  const [entityFallback, setEntityFallback] = useState<Recommendation>();
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function getEntity() {
+      return await PollsService.pollsEntitiesRetrieve({ name: pollName, uid });
+    }
+
+    getEntity().then((entity) => {
+      setLoading(false);
+      setEntityFallback(entity);
+    });
+    // handle the catch
+  }, [isLoggedIn, pollName, uid]);
+
+  return (
+    <>
+      <Box
+        mx={1}
+        marginTop="4px"
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+      >
+        <Typography
+          variant="h6"
+          color="secondary"
+          flexGrow={1}
+          sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+        >
+          {title}
+        </Typography>
+      </Box>
+
+      {entityFallback ? (
+        <EntityCard compact entity={entityFallback} settings={undefined} />
+      ) : (
+        <EmptyEntityCard compact loading={loading} />
+      )}
+    </>
+  );
+};
+
+const EntitySelectorInnerAuth = ({
+  title,
+  value,
+  onChange,
+  otherUid,
+  light,
+}: Props) => {
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
+
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
 
@@ -100,7 +187,7 @@ const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
     if (isUidValid(uid) && rating == null) {
       loadRating();
     }
-  }, [loadRating, uid, rating]);
+  }, [loadRating, rating, uid]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
@@ -166,7 +253,7 @@ const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
   }, [handleRatingUpdate, rating]);
 
   return (
-    <div className={classes.root}>
+    <>
       <Box
         mx={1}
         marginTop="4px"
@@ -216,7 +303,7 @@ const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
       ) : (
         <EmptyEntityCard compact loading={loading} />
       )}
-    </div>
+    </>
   );
 };
 

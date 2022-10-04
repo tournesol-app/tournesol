@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CircularProgress, Button, Grid, Card } from '@mui/material';
 
-import EntitySelector, {
+import EntitySelectorInnerAuth, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
 import CriteriaSlider from 'src/features/comparisons/CriteriaSlider';
@@ -121,7 +121,7 @@ const ComparisonSection = () => {
           alignSelf: 'start',
         }}
       >
-        <EntitySelector
+        <EntitySelectorInnerAuth
           title={`${entityName} 1`}
           value={selectorA}
           onChange={setSelectorA}
@@ -137,7 +137,7 @@ const ComparisonSection = () => {
           alignSelf: 'start',
         }}
       >
-        <EntitySelector
+        <EntitySelectorInnerAuth
           title={`${entityName} 2`}
           value={selectorB}
           onChange={setSelectorB}
