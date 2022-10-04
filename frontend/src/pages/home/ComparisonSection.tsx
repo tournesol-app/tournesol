@@ -8,8 +8,9 @@ import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
 import CriteriaSlider from 'src/features/comparisons/CriteriaSlider';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { useLoginState, useCurrentPoll } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
+import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { getEntityName } from 'src/utils/constants';
 import { getTutorialVideos } from 'src/utils/polls/videos';
 import { selectRandomEntity } from 'src/utils/entity';
@@ -17,13 +18,22 @@ import { selectRandomEntity } from 'src/utils/entity';
 /**
  * The Comparison Section.
  *
- * Contains two videos and a single slider, and a button inviting to submit the
- * comparison. The button redirects to the comparison interface.
+ * Contains two videos and a single slider, and a button inviting to submit
+ * the comparison. The button redirects to the comparison interface.
+ *
+ * The videos are selected from the pool provided by `getTutorialVideos`. To
+ * modify this behaviour consider passing `getTutorialVideos` as a prop to
+ * this component.
  */
 const ComparisonSection = () => {
   const { t } = useTranslation();
 
-  const { criterias, name: pollName } = useCurrentPoll();
+  const { criterias, options, name: pollName } = useCurrentPoll();
+  const tutorialLength = options?.tutorialLength ?? 4;
+
+  const { isLoggedIn } = useLoginState();
+  const [tutoRedirect, setTutoRedirect] = useState(true);
+
   const [isLoading, setIsLoading] = useState(true);
   const [criteriaValue, setCriteriaValue] = useState(0);
 
@@ -43,7 +53,10 @@ const ComparisonSection = () => {
   const entityName = getEntityName(t, pollName);
 
   /**
-   * Create a comparison in the same way they are created in the tutorial.
+   * Select the two videos of the comparison.
+   *
+   * These videos are selected from the pool returned by `getTutorialVideos`
+   * to keep the home page comparison in sync with the tutorial.
    */
   useEffect(() => {
     async function getAlternativesAsync(
@@ -71,6 +84,26 @@ const ComparisonSection = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /**
+   * Determine if the user should be redirected to the tutorial when clicking
+   * on the submit button.
+   */
+  useEffect(() => {
+    async function getNumberComparisonsAsync(pName: string): Promise<number> {
+      return (await getUserComparisonsRaw(pName, 1)).count || 0;
+    }
+
+    if (isLoggedIn) {
+      getNumberComparisonsAsync(pollName).then((comparisonsNumber) => {
+        if (comparisonsNumber >= tutorialLength) {
+          setTutoRedirect(false);
+        }
+      });
+    } else {
+      setTutoRedirect(true);
+    }
+  }, [isLoggedIn, pollName, tutorialLength]);
 
   return (
     <Grid
@@ -141,7 +174,11 @@ const ComparisonSection = () => {
               color="primary"
               size="large"
               component={Link}
-              to={`/comparison/?uidA=${uidA}&uidB=${uidB}`}
+              to={
+                tutoRedirect
+                  ? `/comparison/?series=true&uidA=${uidA}&uidB=${uidB}`
+                  : `/comparison/?uidA=${uidA}&uidB=${uidB}`
+              }
             >
               Compare the videos
             </Button>
