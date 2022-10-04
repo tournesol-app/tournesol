@@ -64,9 +64,6 @@ const ComparisonSection = () => {
     ) {
       const alts = await getAlts();
 
-      if (isLoading) {
-        setIsLoading(false);
-      }
       if (alts.length > 0) {
         return alts;
       }
@@ -80,6 +77,10 @@ const ComparisonSection = () => {
         setComparison([entityA.uid, entityB.uid]);
         setSelectorA({ uid: entityA.uid, rating: null });
         setSelectorB({ uid: entityB.uid, rating: null });
+      }
+
+      if (isLoading) {
+        setIsLoading(false);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,7 +160,7 @@ const ComparisonSection = () => {
         component={Card}
         elevation={2}
       >
-        {selectorA.rating && selectorB.rating && !isLoading ? (
+        {!isLoading ? (
           <>
             <CriteriaSlider
               criteria={criterias[0].name}
