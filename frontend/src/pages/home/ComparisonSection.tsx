@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -7,9 +7,12 @@ import { CircularProgress, Button, Grid, Card } from '@mui/material';
 import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
-import { getEntityName } from 'src/utils/constants';
-import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import CriteriaSlider from 'src/features/comparisons/CriteriaSlider';
+import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { Recommendation } from 'src/services/openapi';
+import { getEntityName } from 'src/utils/constants';
+import { getTutorialVideos } from 'src/utils/polls/videos';
+import { selectRandomEntity } from 'src/utils/entity';
 
 /**
  * The Comparison Section.
@@ -24,17 +27,9 @@ const ComparisonSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [criteriaValue, setCriteriaValue] = useState(0);
 
-  const fetchWeeklyComparison = () => {
-    if (isLoading) {
-      setIsLoading(false);
-    }
-    // TODO This must return two video ids of the weekly comparison
-    // TODO If the two weekly videos have already been compared, change one of them
-    // using the same method as Auto function
-    return ['yt:vqDbMEdLiCs', 'yt:1PGm8LslEb4'];
-  };
-
-  const [uidA, uidB] = fetchWeeklyComparison();
+  const [comparison, setComparison] = useState<[string, string]>(['', '']);
+  const uidA = comparison[0];
+  const uidB = comparison[1];
 
   const [selectorA, setSelectorA] = useState<SelectorValue>({
     uid: uidA,
@@ -46,6 +41,36 @@ const ComparisonSection = () => {
   });
 
   const entityName = getEntityName(t, pollName);
+
+  /**
+   * Create a comparison in the same way they are created in the tutorial.
+   */
+  useEffect(() => {
+    async function getAlternativesAsync(
+      getAlts: () => Promise<Array<Recommendation>>
+    ) {
+      const alts = await getAlts();
+
+      if (isLoading) {
+        setIsLoading(false);
+      }
+      if (alts.length > 0) {
+        return alts;
+      }
+      return [];
+    }
+
+    getAlternativesAsync(getTutorialVideos).then((videos) => {
+      if (videos.length > 0) {
+        const entityA = selectRandomEntity(videos, []);
+        const entityB = selectRandomEntity(videos, [entityA.uid]);
+        setComparison([entityA.uid, entityB.uid]);
+        setSelectorA({ uid: entityA.uid, rating: null });
+        setSelectorB({ uid: entityB.uid, rating: null });
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Grid
