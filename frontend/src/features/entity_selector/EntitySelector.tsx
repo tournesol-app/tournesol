@@ -182,18 +182,20 @@ const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
         >
           {title}
         </Typography>
-        <AutoEntityButton
-          disabled={loading}
-          currentUid={uid}
-          otherUid={otherUid}
-          onClick={() => {
-            setInputValue('');
-            setLoading(true);
-          }}
-          onResponse={(uid) => {
-            uid ? onChange({ uid, rating: null }) : setLoading(false);
-          }}
-        />
+        {!light && (
+          <AutoEntityButton
+            disabled={loading}
+            currentUid={uid}
+            otherUid={otherUid}
+            onClick={() => {
+              setInputValue('');
+              setLoading(true);
+            }}
+            onResponse={(uid) => {
+              uid ? onChange({ uid, rating: null }) : setLoading(false);
+            }}
+          />
+        )}
       </Box>
       <Box mx={1} marginBottom={1}>
         {!light && (
