@@ -45,7 +45,7 @@
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "You must be logged in to display personal scores.",
-      "noPersonalScore": "You have not compared this video yet."
+      "noPersonalScore": "Your ratings have not been computed yet."
     },
     "activatePersonalScores": "Display personal scores"
   },
