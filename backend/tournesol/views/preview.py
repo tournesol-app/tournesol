@@ -1,3 +1,4 @@
+# pylint: disable=R0201
 """
 API returning preview images of some Tournesol front end's page.
 
@@ -7,6 +8,7 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 import logging
 from io import BytesIO
 
+import numpy
 import requests
 from django.conf import settings
 from django.http import FileResponse, HttpResponse
@@ -71,11 +73,11 @@ class BasePreviewAPIView(APIView):
             return False
         return True
 
-    def get_ts_logo(self, length: int):
+    def get_ts_logo(self, size: tuple):
         return (
             Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
             .convert("RGBA")
-            .resize((length, length))
+            .resize(size)
         )
 
     def get_yt_thumbnail(self, entity: Entity) -> Image:
@@ -270,4 +272,72 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         preview_image.paste(youtube_thumbnail, box=(120, 0))
         self._draw_logo(preview_image, entity)
         preview_image.save(response, "png")
+        return response
+
+
+class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
+    """
+    Return the preview of the Tournesol front end's comparison page.
+    """
+
+    permission_classes = []
+
+    # TODO: set the same cache value as DynamicWebsitePreviewEntity
+    @method_decorator(cache_page_no_i18n(0 * 2))
+    @extend_schema(
+        description="Preview of the website comparison page.",
+        responses={200: OpenApiTypes.BINARY},
+    )
+    def get(self, request, uid_a, uid_b):
+        final_size = (440, 240)
+        padding_space = numpy.subtract(final_size, YT_THUMBNAIL_MQ_SIZE)
+
+        try:
+            entity_a = self.get_entity(uid_a)
+            entity_b = self.get_entity(uid_b)
+        except Entity.DoesNotExist:
+            return self.default_preview()
+
+        if not self.is_video(entity_a) or not self.is_video(entity_b):
+            return self.default_preview()
+
+        try:
+            thumbnail_a = self.get_yt_thumbnail(entity_a)
+            thumbnail_b = self.get_yt_thumbnail(entity_b)
+        except ConnectionError:
+            return self.default_preview()
+
+        final = Image.new("RGBA", final_size, COLOR_WHITE_BACKGROUND)
+
+        # Crop the two YT thumbnails.
+        # Thumbnail A is cropped from 0 to YT_THUMBNAIL_MQ_SIZE / 2.
+        # Thumbnail B is cropped from YT_THUMBNAIL_MQ_SIZE / 2 to YT_THUMBNAIL_MQ_SIZE.
+        halved_yt_thumb_size = numpy.divide(YT_THUMBNAIL_MQ_SIZE, 2)
+        crop_box_a = (0, 0, int(halved_yt_thumb_size[0]), YT_THUMBNAIL_MQ_SIZE[1])
+        crop_box_b = (
+            int(halved_yt_thumb_size[0]),
+            0,
+            YT_THUMBNAIL_MQ_SIZE[0],
+            YT_THUMBNAIL_MQ_SIZE[1],
+        )
+
+        # Add the padding before pasting the thumbnails in the final image.
+        paste_x_a = padding_space[0]
+        paste_x_b = padding_space[0] + int(halved_yt_thumb_size[0])
+
+        final.paste(thumbnail_a.crop(crop_box_a), (paste_x_a, 0))
+        final.paste(thumbnail_b.crop(crop_box_b), (paste_x_b, 0))
+
+        logo_size = (34, 34)
+        logo_x = (
+            padding_space[0] + int(halved_yt_thumb_size[0]) - int(logo_size[0] / 2)
+        )
+        logo_y = int(YT_THUMBNAIL_MQ_SIZE[1] / 2) - int(logo_size[1] / 2)
+        final.alpha_composite(
+            self.get_ts_logo(logo_size),
+            dest=(logo_x, logo_y),
+        )
+
+        response = HttpResponse(content_type="image/png")
+        final.save(response, "png")
         return response
