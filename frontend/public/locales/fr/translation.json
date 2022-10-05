@@ -48,7 +48,7 @@
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
-      "noPersonalScore": "Vos scores n'ont pas encore été calculés."
+      "noPersonalScore": "Vous n'avez pas comparé cette vidéo, ou vos scores n'ont pas encore été calculés."
     },
     "activatePersonalScores": "Afficher les scores personnels"
   },
