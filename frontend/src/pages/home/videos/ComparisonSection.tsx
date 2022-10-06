@@ -35,7 +35,7 @@ const ComparisonSection = () => {
               </Box>
               <Box textAlign="center">
                 <Metrics
-                  text="Comparisons"
+                  text={t('stats.comparisons')}
                   count={9999}
                   lastMonthCount={100}
                   verbose
