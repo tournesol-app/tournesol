@@ -110,7 +110,6 @@ const HomeComparison = () => {
     <Grid
       container
       sx={{
-        maxWidth: '880px',
         gap: '8px',
       }}
     >

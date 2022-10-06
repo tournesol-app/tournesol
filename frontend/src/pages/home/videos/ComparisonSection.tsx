@@ -9,14 +9,14 @@ const ComparisonSection = () => {
   // const { t } = useTranslation();
 
   return (
-    <Grid container justifyContent="space-around" spacing={2}>
-      <Grid item lg={4} xl={8}>
+    <Grid container justifyContent="center" spacing={4}>
+      <Grid item lg={6} xl={6}>
         <Box display="flex" justifyContent="center">
           <HomeComparison />
         </Box>
       </Grid>
       {/* TODO: move the following item in its own component. */}
-      <Grid item lg={4} xl={4}>
+      <Grid item lg={3} xl={3}>
         <Box
           display="flex"
           flexDirection="column"
