@@ -26,7 +26,7 @@ const ComparisonSection = () => {
         >
           <Paper square>
             <Box p={2} pb={0}>
-              <Typography paragraph textAlign="justify">
+              <Typography paragraph textAlign="justify" fontSize={17}>
                 {t('comparisonSection.theSimpliestWayToContribute')}
               </Typography>
             </Box>
