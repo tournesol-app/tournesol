@@ -281,7 +281,8 @@
   },
   "username": "Username",
   "metrics": {
-    "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
+    "evolutionDuringTheLast30Days": "Evolution during the last 30 days.",
+    "duringTheLast30Days": "during the last 30 days."
   },
   "stats": {
     "ratedVideos": "Rated videos",

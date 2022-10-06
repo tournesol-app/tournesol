@@ -1,13 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import HomeComparison from './HomeComparison';
 
 const ComparisonSection = () => {
   const { t } = useTranslation();
+
+  const color = '#fff';
 
   return (
     <Grid container justifyContent="center" spacing={4}>
@@ -16,7 +18,6 @@ const ComparisonSection = () => {
           <HomeComparison />
         </Box>
       </Grid>
-      {/* TODO: move the following item in its own component. */}
       <Grid item lg={3} xl={3}>
         <Box
           display="flex"
@@ -24,16 +25,22 @@ const ComparisonSection = () => {
           justifyContent="space-between"
           gap={2}
         >
-          <Paper square>
-            <Box p={2} pb={0}>
+          <Paper square elevation={0}>
+            <Box p={2} bgcolor="#1282B2" color={color}>
               <Typography paragraph textAlign="justify" fontSize={17}>
                 {t('comparisonSection.theSimpliestWayToContribute')}
               </Typography>
-            </Box>
-          </Paper>
-          <Paper square>
-            <Box p={2}>
-              <Metrics text="Comparisons" count={9999} lastMonthCount={100} />
+              <Box pb={2}>
+                <Divider sx={{ backgroundColor: color }} />
+              </Box>
+              <Box textAlign="center">
+                <Metrics
+                  text="Comparisons"
+                  count={9999}
+                  lastMonthCount={100}
+                  verbose
+                />
+              </Box>
             </Box>
           </Paper>
         </Box>

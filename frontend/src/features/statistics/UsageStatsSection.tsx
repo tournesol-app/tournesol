@@ -8,6 +8,7 @@ interface statsProp {
   text: string;
   count: number;
   lastMonthCount: number;
+  verbose?: boolean;
 }
 
 interface statsData {
@@ -19,7 +20,12 @@ interface statsData {
   lastMonthComparisonCount: number;
 }
 
-export const Metrics = ({ text, count, lastMonthCount }: statsProp) => {
+export const Metrics = ({
+  text,
+  count,
+  lastMonthCount,
+  verbose = false,
+}: statsProp) => {
   const { t } = useTranslation();
   const tooltipTitle = t('metrics.evolutionDuringTheLast30Days');
 
@@ -38,6 +44,11 @@ export const Metrics = ({ text, count, lastMonthCount }: statsProp) => {
           + {lastMonthCount}
         </Typography>
       </Tooltip>
+      {verbose && (
+        <Typography component="span">
+          &nbsp;{t('metrics.duringTheLast30Days')}
+        </Typography>
+      )}
     </>
   );
 };
