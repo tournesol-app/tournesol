@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Paper, Typography } from '@mui/material';
 
@@ -6,7 +7,7 @@ import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import HomeComparison from './HomeComparison';
 
 const ComparisonSection = () => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Grid container justifyContent="center" spacing={4}>
@@ -26,9 +27,7 @@ const ComparisonSection = () => {
           <Paper square>
             <Box p={2} pb={0}>
               <Typography paragraph textAlign="justify">
-                The simpliest way to contribute to Tournesol is to compare
-                videos. What would you like your relatives to be recommended on
-                YouTube?
+                {t('comparisonSection.theSimpliestWayToContribute')}
               </Typography>
             </Box>
           </Paper>
