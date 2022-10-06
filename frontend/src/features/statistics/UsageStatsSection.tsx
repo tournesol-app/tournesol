@@ -26,7 +26,7 @@ export const Metrics = ({
   lastMonthCount,
   verbose = false,
 }: statsProp) => {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const tooltipTitle = t('metrics.evolutionDuringTheLast30Days');
 
   return (
@@ -36,12 +36,12 @@ export const Metrics = ({
       </Typography>
       <br />
       <Typography component="span" sx={{ fontSize: '50px', lineHeight: '1em' }}>
-        {count}
+        {count.toLocaleString(i18n.resolvedLanguage)}
       </Typography>
       <br />
       <Tooltip title={tooltipTitle}>
         <Typography component="span" sx={{ fontSize: '24px' }}>
-          + {lastMonthCount}
+          + {lastMonthCount.toLocaleString(i18n.resolvedLanguage)}
         </Typography>
       </Tooltip>
       {verbose && (
