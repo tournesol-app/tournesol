@@ -33,7 +33,7 @@ const AlternatingBackgroundColorSectionList = ({
               [theme.breakpoints.down('md')]: {
                 padding: '32px 16px 32px 16px',
               },
-              background: i % 2 == 0 ? secondaryBackground : 'white',
+              background: i % 2 == 0 ? secondaryBackground : '#FAF8F3',
               color: i % 2 == 0 ? secondaryColor : 'black',
             }}
           >

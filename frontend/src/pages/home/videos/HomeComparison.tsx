@@ -16,7 +16,7 @@ import { getTutorialVideos } from 'src/utils/polls/videos';
 import { selectRandomEntity } from 'src/utils/entity';
 
 /**
- * The Comparison Section.
+ * The Home Comparison.
  *
  * Contains two videos and a single slider, and a button inviting to submit
  * the comparison. The button redirects to the comparison interface.
@@ -25,7 +25,7 @@ import { selectRandomEntity } from 'src/utils/entity';
  * modify this behaviour consider passing `getTutorialVideos` as a prop to
  * this component.
  */
-const ComparisonSection = () => {
+const HomeComparison = () => {
   const { t } = useTranslation();
 
   const { criterias, options, name: pollName } = useCurrentPoll();
@@ -192,4 +192,4 @@ const ComparisonSection = () => {
   );
 };
 
-export default ComparisonSection;
+export default HomeComparison;

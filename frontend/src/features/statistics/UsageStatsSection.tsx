@@ -19,7 +19,7 @@ interface statsData {
   lastMonthComparisonCount: number;
 }
 
-const Metrics = ({ text, count, lastMonthCount }: statsProp) => {
+export const Metrics = ({ text, count, lastMonthCount }: statsProp) => {
   const { t } = useTranslation();
   const tooltipTitle = t('metrics.evolutionDuringTheLast30Days');
 
