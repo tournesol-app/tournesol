@@ -9,8 +9,11 @@
         display: flex;
         flex-direction: column;
       }
-      body > img {
+      body > a {
         margin-bottom: 6px;
+      }
+      body > a > img {
+        width: 120px;
       }
       button {
         background-color: #506ad4;
@@ -50,7 +53,7 @@
     <script type="module" src="menu.js"></script>
   </head>
   <body>
-    <img src="https://tournesol.app/svg/Logo.svg" />
+    <a href="https://tournesol.app/"><img src="https://tournesol.app/svg/Logo.svg" alt="Tournesol Logo" /></a>
     <button id="rate_now">Rate now</button>
     <button id="rate_later">Rate later</button>
     <button id="details">Analysis</button>
