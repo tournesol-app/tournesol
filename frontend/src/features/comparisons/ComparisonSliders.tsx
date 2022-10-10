@@ -55,7 +55,7 @@ const ComparisonSliders = ({
 
   const castToComparison = (
     c: ComparisonRequest | null,
-    pendingRatings: criteriaValuesType
+    pendingRatings: CriteriaValuesType
   ): ComparisonRequest => {
     if (c != null) {
       return c;
