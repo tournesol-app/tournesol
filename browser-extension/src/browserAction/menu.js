@@ -18,6 +18,15 @@ function get_current_tab_video_id() {
 }
 
 /**
+ * Open the Tournesol home page.
+ */
+function openTournesolHome() {
+  chrome.tabs.create({
+    url: `https://tournesol.app`,
+  });
+}
+
+/**
  * Open the Tournesol comparison page in a new tab.
  */
 function rateNowAction(event) {
@@ -96,11 +105,14 @@ function openAnalysisPageAction(event) {
  * Create the action menu.
  */
 document.addEventListener('DOMContentLoaded', function () {
+  document
+    .getElementById('tournesol_home')
+    .addEventListener('click', openTournesolHome);
   document.getElementById('rate_now').addEventListener('click', rateNowAction);
   document
     .getElementById('rate_later')
     .addEventListener('click', addToRateLaterAction);
   document
-    .getElementById('details')
+    .getElementById('analysis')
     .addEventListener('click', openAnalysisPageAction);
 });
