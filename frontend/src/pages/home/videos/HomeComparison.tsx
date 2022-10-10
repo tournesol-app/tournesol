@@ -12,8 +12,13 @@ import { useLoginState, useCurrentPoll } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { getEntityName } from 'src/utils/constants';
-import { getTutorialVideos } from 'src/utils/polls/videos';
+import { setPendingRating } from 'src/utils/comparison';
 import { selectRandomEntity } from 'src/utils/entity';
+import { getTutorialVideos } from 'src/utils/polls/videos';
+
+interface Props {
+  enablePendingComparison?: boolean;
+}
 
 /**
  * The Home Comparison.
@@ -25,7 +30,7 @@ import { selectRandomEntity } from 'src/utils/entity';
  * modify this behaviour consider passing `getTutorialVideos` as a prop to
  * this component.
  */
-const HomeComparison = () => {
+const HomeComparison = ({ enablePendingComparison = false }: Props) => {
   const { t } = useTranslation();
 
   const { criterias, options, name: pollName } = useCurrentPoll();
@@ -106,6 +111,16 @@ const HomeComparison = () => {
     }
   }, [isLoggedIn, pollName, tutorialLength]);
 
+  const handleSliderChange = (criterion: string, value: number | undefined) => {
+    if (value) {
+      setCriteriaValue(value);
+
+      if (enablePendingComparison) {
+        setPendingRating(uidA, uidB, criterion, value);
+      }
+    }
+  };
+
   return (
     <Grid
       container
@@ -165,9 +180,7 @@ const HomeComparison = () => {
               criteria={criterias[0].name}
               criteriaLabel={criterias[0].label}
               criteriaValue={criteriaValue}
-              handleSliderChange={(_, value) => {
-                if (value) setCriteriaValue(value);
-              }}
+              handleSliderChange={handleSliderChange}
             />
             <Button
               variant="contained"

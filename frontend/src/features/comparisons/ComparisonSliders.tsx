@@ -13,6 +13,8 @@ import type {
 
 import CriteriaSlider from './CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
+import { getAllPendingRatings } from 'src/utils/comparison';
+import { CriteriaValuesType } from 'src/utils/types';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -43,36 +45,56 @@ const ComparisonSliders = ({
   uidB: string;
   isComparisonPublic?: boolean;
 }) => {
-  const { t } = useTranslation();
   const classes = useStyles();
+
+  const { t } = useTranslation();
   const { criteriaByName, criterias, active: isPollActive } = useCurrentPoll();
+
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
-  const castToComparison = (c: ComparisonRequest | null): ComparisonRequest => {
-    return c
-      ? c
-      : {
-          entity_a: { uid: uidA },
-          entity_b: { uid: uidB },
-          criteria_scores: criterias
-            .filter((c) => !c.optional)
-            .map((c) => ({ criteria: c.name, score: 0 })),
-        };
+  const castToComparison = (
+    c: ComparisonRequest | null,
+    pendingRatings: criteriaValuesType
+  ): ComparisonRequest => {
+    if (c != null) {
+      return c;
+    }
+
+    return {
+      entity_a: { uid: uidA },
+      entity_b: { uid: uidB },
+      criteria_scores: criterias
+        .filter((c) => !c.optional)
+        .map((c) => ({ criteria: c.name, score: pendingRatings[c.name] || 0 })),
+    };
   };
   const [comparison, setComparison] = useState<ComparisonRequest>(
-    castToComparison(initialComparison)
+    castToComparison(initialComparison, {})
   );
   const [submitted, setSubmitted] = useState(false);
 
-  type criteriaValuesType = { [s: string]: number | undefined };
-  const criteriaValues: criteriaValuesType = {};
+  const criteriaValues: CriteriaValuesType = {};
   comparison.criteria_scores.forEach((cs: ComparisonCriteriaScore) => {
     criteriaValues[cs.criteria] = cs.score || 0;
   });
 
+  /**
+   * If `initialComparison` is set, initialize the sliders with the provided
+   * ratings, else create a new comparison.
+   *
+   * If pending ratings are detected for the couple uidA / uidB, the new
+   * comparison is initialized with them.
+   */
   useEffect(
-    () => setComparison(castToComparison(initialComparison)),
+    () => {
+      setComparison(
+        castToComparison(
+          initialComparison,
+          getAllPendingRatings(uidA, uidB, criterias, true)
+        )
+      );
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [initialComparison]
   );

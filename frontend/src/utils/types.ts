@@ -26,6 +26,8 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
+export type CriteriaValuesType = { [s: string]: number | undefined };
+
 export type RelatedEntityObject =
   | EntityNoExtraField
   | RelatedEntity
