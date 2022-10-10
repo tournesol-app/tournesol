@@ -12,7 +12,7 @@ import { useLoginState, useCurrentPoll } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { getEntityName } from 'src/utils/constants';
-import { setPendingRating } from 'src/utils/comparison';
+import { setPendingRating } from 'src/utils/comparison/pending';
 import { selectRandomEntity } from 'src/utils/entity';
 import { getTutorialVideos } from 'src/utils/polls/videos';
 
@@ -116,7 +116,7 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
       setCriteriaValue(value);
 
       if (enablePendingComparison) {
-        setPendingRating(uidA, uidB, criterion, value);
+        setPendingRating(pollName, uidA, uidB, criterion, value);
       }
     }
   };

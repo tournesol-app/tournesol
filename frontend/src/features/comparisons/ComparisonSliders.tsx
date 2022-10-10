@@ -13,7 +13,7 @@ import type {
 
 import CriteriaSlider from './CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { getAllPendingRatings } from 'src/utils/comparison';
+import { getAllPendingRatings } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 
 const useStyles = makeStyles(() => ({
@@ -48,7 +48,12 @@ const ComparisonSliders = ({
   const classes = useStyles();
 
   const { t } = useTranslation();
-  const { criteriaByName, criterias, active: isPollActive } = useCurrentPoll();
+  const {
+    criteriaByName,
+    criterias,
+    name: pollName,
+    active: isPollActive,
+  } = useCurrentPoll();
 
   const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -91,7 +96,7 @@ const ComparisonSliders = ({
       setComparison(
         castToComparison(
           initialComparison,
-          getAllPendingRatings(uidA, uidB, criterias, true)
+          getAllPendingRatings(pollName, uidA, uidB, criterias, true)
         )
       );
     },
