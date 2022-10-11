@@ -228,54 +228,75 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
 
-        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
-          <PeopleCard
-            name="Lê Nguyên Hoang"
-            image="/people/Le.jpeg"
-            institution="IC School, EPFL"
-            role={t('about.rolePresident')}
-            title="Dr. in Mathematics"
-            job="AI Researcher and Communicator"
-          />
-        </Grid>
+        <Grid container item xs={12} md={9} className={classes.container}>
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <PeopleCard
+              name="Lê Nguyên Hoang"
+              image="/people/Le.jpeg"
+              institution=""
+              role={t('about.rolePresident')}
+              title="Dr. in Mathematics"
+              job="AI Researcher and Communicator"
+            />
+          </Grid>
 
-        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
-          <PeopleCard
-            name="Louis Faucon"
-            image="/people/Louis.jpeg"
-            institution="MSCI, Inc."
-            role={t('about.roleTreasurer')}
-            title="Dr. in Computer Science"
-            job="Software engineer"
-          />
-        </Grid>
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <PeopleCard
+              name="Louis Faucon"
+              image="/people/Louis.jpeg"
+              institution="Oracle Labs"
+              role={t('about.roleTreasurer')}
+              title="Dr. in Computer Science"
+              job="Software engineer"
+            />
+          </Grid>
 
-        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
-          <PeopleCard
-            name="Aidan Jungo"
-            image="/people/Aidan.jpg"
-            institution="CFS Engineering SA"
-            role={t('about.roleSecretary')}
-            title="Master of Science"
-            job="Research Scientist"
-          />
-        </Grid>
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <PeopleCard
+              name="Aidan Jungo"
+              image="/people/Aidan.jpg"
+              institution="CFS Engineering SA"
+              role={t('about.roleSecretary')}
+              title="Master of Science"
+              job="Research Scientist"
+            />
+          </Grid>
 
-        <Grid item xs={12} sm={5} lg={3} className={classes.container}>
-          <PeopleCard
-            name="Romain"
-            image="/people/Tournecat.jpeg"
-            institution="Association Tournesol"
-            role={t('about.roleDeveloper')}
-            title="Cat lover"
-            job="Senior Software Engineer"
-          />
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <PeopleCard
+              name="Romain"
+              image="/people/Tournecat.jpeg"
+              institution=""
+              role="Association employee"
+              title="Cat lover"
+              job="Senior Software Engineer"
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4} className={classes.container}>
+            <PeopleCard
+              name="Adrien Matissart"
+              image="/people/Adrien.jpeg"
+              institution="Association Tournesol"
+              title=""
+              role=""
+              job="Senior Software Engineer"
+            />
+          </Grid>
         </Grid>
       </Grid>
 
       <Grid container className={classes.root}>
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
+            <Typography variant="h1">
+              {t('about.weThankOurPartners')}
+            </Typography>
+          </ContentBox>
+        </Grid>
+
+        <Grid item xs={12} className={classes.container}>
+          <ContentBox className={classes.card}>
             <img height="84px" src="/logos/EPFL_Logo.png" />
             <Typography variant="h4">
               {t('about.partnershipWithEpfl')}
@@ -286,24 +307,7 @@ const AboutPage = () => {
           </ContentBox>
         </Grid>
 
-        <Grid item xs={12} sm={4} className={classes.container}>
-          <PeopleCard
-            name="Adrien Matissart"
-            image="/people/Adrien.jpeg"
-            institution="IC School, EPFL"
-            title="Tech lead, architect"
-            role="Research Engineer"
-            job=""
-          />
-        </Grid>
-      </Grid>
-
-      <Grid
-        container
-        className={classes.root}
-        sx={{ bgcolor: 'background.menu' }}
-      >
-        <Grid item xs={12} md={6} className={classes.container}>
+        <Grid item xs={12} md={4} className={classes.container}>
           <Link
             href="https://www.polyconseil.fr/"
             rel="noopener"
@@ -328,7 +332,7 @@ const AboutPage = () => {
           </Link>
         </Grid>
 
-        <Grid item xs={12} md={6} className={classes.container}>
+        <Grid item xs={12} md={4} className={classes.container}>
           <Link
             href="https://kleis.ch/"
             rel="noopener"
@@ -350,7 +354,11 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid container className={classes.root}>
+      <Grid
+        container
+        className={classes.root}
+        sx={{ bgcolor: 'background.menu' }}
+      >
         <Grid item xs={12} md={6} className={classes.container}>
           <ContentBox>
             <img height="64px" src="/logos/Foss_Logo.png" />
