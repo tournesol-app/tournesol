@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { CircularProgress, Button, Grid, Card } from '@mui/material';
+import {
+  CircularProgress,
+  Button,
+  Grid,
+  Card,
+  Alert,
+  Box,
+} from '@mui/material';
 
 import EntitySelectorInnerAuth, {
   SelectorValue,
@@ -40,6 +47,7 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
   const [tutoRedirect, setTutoRedirect] = useState(true);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState(false);
   const [criteriaValue, setCriteriaValue] = useState(0);
 
   const [comparison, setComparison] = useState<[string, string]>(['', '']);
@@ -75,19 +83,27 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
       return [];
     }
 
-    getAlternativesAsync(getTutorialVideos).then((videos) => {
-      if (videos.length > 0) {
-        const entityA = selectRandomEntity(videos, []);
-        const entityB = selectRandomEntity(videos, [entityA.uid]);
-        setComparison([entityA.uid, entityB.uid]);
-        setSelectorA({ uid: entityA.uid, rating: null });
-        setSelectorB({ uid: entityB.uid, rating: null });
-      }
+    getAlternativesAsync(getTutorialVideos)
+      .then((videos) => {
+        if (videos.length > 0) {
+          const entityA = selectRandomEntity(videos, []);
+          const entityB = selectRandomEntity(videos, [entityA.uid]);
+          setComparison([entityA.uid, entityB.uid]);
+          setSelectorA({ uid: entityA.uid, rating: null });
+          setSelectorB({ uid: entityB.uid, rating: null });
+        }
 
-      if (isLoading) {
-        setIsLoading(false);
-      }
-    });
+        if (isLoading) {
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isLoading) {
+          setIsLoading(false);
+        }
+
+        setApiError(true);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -168,36 +184,42 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column',
-          py: 2,
-          px: 4,
         }}
         component={Card}
         elevation={2}
       >
         {!isLoading ? (
-          <>
-            <CriteriaSlider
-              criteria={criterias[0].name}
-              criteriaLabel={criterias[0].label}
-              criteriaValue={criteriaValue}
-              handleSliderChange={handleSliderChange}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              component={Link}
-              to={
-                tutoRedirect
-                  ? `/comparison/?series=true&uidA=${uidA}&uidB=${uidB}`
-                  : `/comparison/?uidA=${uidA}&uidB=${uidB}`
-              }
-            >
-              Compare the videos
-            </Button>
-          </>
+          apiError ? (
+            <Alert severity="warning" variant="filled" sx={{ width: '100%' }}>
+              {t('homeComparison.sorryAnErrorPreventedToLoadTheVideos')}
+            </Alert>
+          ) : (
+            <Box py={2} px={4}>
+              <CriteriaSlider
+                criteria={criterias[0].name}
+                criteriaLabel={criterias[0].label}
+                criteriaValue={criteriaValue}
+                handleSliderChange={handleSliderChange}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                component={Link}
+                to={
+                  tutoRedirect
+                    ? `/comparison/?series=true&uidA=${uidA}&uidB=${uidB}`
+                    : `/comparison/?uidA=${uidA}&uidB=${uidB}`
+                }
+              >
+                {t('homeComparison.compareTheVideos')}
+              </Button>
+            </Box>
+          )
         ) : (
-          <CircularProgress />
+          <Box py={2} px={4}>
+            <CircularProgress />
+          </Box>
         )}
       </Grid>
     </Grid>

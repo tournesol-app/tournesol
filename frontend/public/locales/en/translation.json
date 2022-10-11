@@ -443,6 +443,10 @@
   "comparisonSection": {
     "theSimpliestWayToContribute": "The simpliest way to contribute to Tournesol is to compare videos. What would you like your relatives to be recommended on YouTube?"
   },
+  "homeComparison": {
+    "sorryAnErrorPreventedToLoadTheVideos": "Sorry, an error prevented to load the videos.",
+    "compareTheVideos": "Compare the videos"
+  },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
     "resetYourPassword": "Reset your password",
