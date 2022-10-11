@@ -444,7 +444,7 @@
     "theSimpliestWayToContribute": "The simpliest way to contribute to Tournesol is to compare videos. What would you like your relatives to be recommended on YouTube?"
   },
   "homeComparison": {
-    "sorryAnErrorPreventedToLoadTheVideos": "Sorry, an error prevented to load the videos.",
+    "sorryTheComparisonIsTemporarilyUnavailable": "Sorry, the comparison of video is temporarily unavailable. Please try again later.",
     "compareTheVideos": "Compare the videos"
   },
   "reset": {

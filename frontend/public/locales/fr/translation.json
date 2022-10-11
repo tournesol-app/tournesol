@@ -450,7 +450,7 @@
     "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ?"
   },
   "homeComparison": {
-    "sorryAnErrorPreventedToLoadTheVideos": "Désolé, une erreur a empéché le chargement des vidéos.",
+    "sorryTheComparisonIsTemporarilyUnavailable": "Désolé, la comparaison de vidéo est momentanément indisponible. Veuillez réessayer plus tard.",
     "compareTheVideos": "Comparer les vidéos"
   },
   "reset": {

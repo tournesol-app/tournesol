@@ -176,25 +176,21 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
           light
         />
       </Grid>
-      <Grid
-        item
-        xs={12}
-        sx={{
-          mt: 1,
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-        component={Card}
-        elevation={2}
-      >
+      <Grid item xs={12} mt={1} component={Card} elevation={2}>
         {!isLoading ? (
           apiError ? (
             <Alert severity="warning" variant="filled" sx={{ width: '100%' }}>
-              {t('homeComparison.sorryAnErrorPreventedToLoadTheVideos')}
+              {t('homeComparison.sorryTheComparisonIsTemporarilyUnavailable')}
             </Alert>
           ) : (
-            <Box py={2} px={4}>
+            <Box
+              width="100%"
+              py={2}
+              px={4}
+              display="flex"
+              alignItems="center"
+              flexDirection="column"
+            >
               <CriteriaSlider
                 criteria={criterias[0].name}
                 criteriaLabel={criterias[0].label}
@@ -217,7 +213,13 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
             </Box>
           )
         ) : (
-          <Box py={2} px={4}>
+          <Box
+            py={2}
+            px={4}
+            display="flex"
+            alignItems="center"
+            flexDirection="column"
+          >
             <CircularProgress />
           </Box>
         )}
