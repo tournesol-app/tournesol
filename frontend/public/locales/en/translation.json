@@ -436,6 +436,7 @@
     "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your YouTube home page. You can also add a video in your rate later list or immediately rate the video with just a few clicks.",
     "getTheExtensionButton": "Get the extension",
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
+    "theStatsCouldNotBeDisplayed": "The stats could not be displayed.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
     "tournesolPlatformDescription": "Tournesol is an <1>free and open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <4>collaboratively</4> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <7>robustly beneficial</7> for all of humanity."
   },

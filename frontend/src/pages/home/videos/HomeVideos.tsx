@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import ExtensionSection from 'src/pages/home/videos/ExtensionSection';
 import ContributeSection from 'src/pages/home/videos/ContributeSection';
 import TitleSection from 'src/pages/home/TitleSection';
@@ -18,6 +18,7 @@ import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 const HomeVideosPage = () => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
+  const { showWarningAlert } = useNotifications();
   const { baseUrl, active, name: pollName } = useCurrentPoll();
 
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
@@ -34,12 +35,12 @@ const HomeVideosPage = () => {
           setStats(pollStats);
         }
       } catch (reason) {
-        console.error(reason);
+        showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
       }
     }
 
     getPollStatsAsync(pollName);
-  }, [pollName]);
+  }, [pollName, showWarningAlert, t]);
 
   return (
     <AlternatingBackgroundColorSectionList>

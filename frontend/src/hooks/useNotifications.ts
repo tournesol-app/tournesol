@@ -61,6 +61,15 @@ export const useNotifications = () => {
     [enqueueSnackbar]
   );
 
+  const showWarningAlert = useCallback(
+    (message: React.ReactNode) => {
+      enqueueSnackbar(message, {
+        variant: 'warning',
+      });
+    },
+    [enqueueSnackbar]
+  );
+
   const showErrorAlert = useCallback(
     (message: React.ReactNode) => {
       enqueueSnackbar(message, {
@@ -183,6 +192,7 @@ export const useNotifications = () => {
   return {
     showInfoAlert,
     showSuccessAlert,
+    showWarningAlert,
     showErrorAlert,
     showTooManyRequests,
     contactAdministrator,
