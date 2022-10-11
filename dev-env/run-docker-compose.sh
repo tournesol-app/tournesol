@@ -121,13 +121,13 @@ wait_for is_api_ready "api"
 
 if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
   docker exec tournesol-dev-api python manage.py load_public_dataset_as_db "$@"
-fi
 
-echo 'Creating Superuser:'
-USERNAME="${1:-"user"}"
-PASSWORD="${2:-"tournesol"}"
-EMAIL="${3:-"superuser@example.com"}"
-docker exec -e DJANGO_SUPERUSER_USERNAME="$USERNAME" -e DJANGO_SUPERUSER_EMAIL="$EMAIL" -e DJANGO_SUPERUSER_PASSWORD="$PASSWORD" tournesol-dev-api python manage.py createsuperuser --no-input
+  echo 'Creating Superuser:'
+  USERNAME="user"
+  PASSWORD="tournesol"
+  EMAIL="superuser@example.com"
+  docker exec -e DJANGO_SUPERUSER_USERNAME="$USERNAME" -e DJANGO_SUPERUSER_EMAIL="$EMAIL" -e DJANGO_SUPERUSER_PASSWORD="$PASSWORD" tournesol-dev-api python manage.py createsuperuser --no-input
+fi
 
 echo 'Creating OAuth Application:'
 # OAUTH_CLIENT_ID="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)" || true

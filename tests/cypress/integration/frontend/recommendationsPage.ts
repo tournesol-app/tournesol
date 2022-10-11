@@ -36,9 +36,6 @@ describe('Recommendations page', () => {
           // The month input must be checked.
           cy.contains('A month ago', {matchCase: false}).should('be.visible');
           cy.get('input[type=checkbox][name=Month]').should('be.checked');
-
-          // Currently there is no recent video in the development data.
-          cy.contains('No video corresponds to your search criterias.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: a year ago', () => {
