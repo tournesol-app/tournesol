@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
-import { Statistics, StatsService } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks';
+import { getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
 interface statsProp {
@@ -71,24 +71,19 @@ const StatsSection = ({ externalData }: StatsSectionProps) => {
   });
 
   useEffect(() => {
+    async function getPollStatsAsync(pollName: string) {
+      try {
+        const pollStats = await getPollStats(pollName);
+        if (pollStats) {
+          setData(pollStats);
+        }
+      } catch (reason) {
+        console.error(reason);
+      }
+    }
+
     if (!externalData) {
-      StatsService.statsRetrieve()
-        .then((value: Statistics) => {
-          const pollStats = value.polls.find(({ name }) => name === pollName);
-          if (pollStats === undefined) return;
-          setData({
-            userCount: value.active_users.total,
-            comparedEntityCount: pollStats.compared_entities.total,
-            comparisonCount: pollStats.comparisons.total,
-            lastMonthUserCount: value.active_users.joined_last_month,
-            lastMonthComparedEntityCount:
-              pollStats.compared_entities.added_last_month,
-            lastMonthComparisonCount: pollStats.comparisons.added_last_month,
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      getPollStatsAsync(pollName);
     }
   }, [externalData, pollName]);
 

@@ -12,46 +12,33 @@ import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
 import ComparisonSection from './ComparisonSection';
-import { Statistics, StatsService } from 'src/services/openapi';
 import { PollStats } from 'src/utils/types';
+import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
   const { baseUrl, active, name: pollName } = useCurrentPoll();
 
-  const [stats, seStats] = useState<PollStats>({
-    userCount: 0,
-    lastMonthUserCount: 0,
-    comparedEntityCount: 0,
-    lastMonthComparedEntityCount: 0,
-    comparisonCount: 0,
-    lastMonthComparisonCount: 0,
-  });
+  const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
 
   /**
    * Retrieve the Tournesol's statistics at the root of the home page to
    * provide them to each section needing them.
    */
   useEffect(() => {
-    StatsService.statsRetrieve()
-      .then((value: Statistics) => {
-        const pollStats = value.polls.find(({ name }) => name === pollName);
-        if (pollStats === undefined) return;
-        seStats({
-          userCount: value.active_users.total,
-          comparedEntityCount: pollStats.compared_entities.total,
-          comparisonCount: pollStats.comparisons.total,
-          lastMonthUserCount: value.active_users.joined_last_month,
-          lastMonthComparedEntityCount:
-            pollStats.compared_entities.added_last_month,
-          lastMonthComparisonCount: pollStats.comparisons.added_last_month,
-        });
-      })
-      .catch((error) => {
-        // do not use the console
-        console.error(error);
-      });
+    async function getPollStatsAsync(pollName: string) {
+      try {
+        const pollStats = await getPollStats(pollName);
+        if (pollStats) {
+          setStats(pollStats);
+        }
+      } catch (reason) {
+        console.error(reason);
+      }
+    }
+
+    getPollStatsAsync(pollName);
   }, [pollName]);
 
   return (
