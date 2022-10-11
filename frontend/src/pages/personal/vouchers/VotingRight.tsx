@@ -7,11 +7,15 @@ import {
   Stack,
   Tooltip,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 import { AccountsService, UserProfile } from 'src/services/openapi';
 import { usePersonalVouchers } from './context';
@@ -37,6 +41,26 @@ const Thumb = ({
         )}
       </IconButton>
     </Tooltip>
+  );
+};
+
+const DescriptionDialog = ({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>{t('personalVouchers.votingRight.title')}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          <Trans t={t} i18nKey="personalVouchers.votingRight.description" />
+        </DialogContentText>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -69,6 +93,17 @@ const VotingRight = () => {
     else return t('personalVouchers.votingRight.high');
   }, [userProfile, t]);
 
+  const [descriptionDialogOpen, setDescriptionDialogOpen] =
+    React.useState(false);
+
+  const handleDescriptionInfoClick = React.useCallback(() => {
+    setDescriptionDialogOpen(true);
+  }, []);
+
+  const handleDescriptionDialogClose = React.useCallback(() => {
+    setDescriptionDialogOpen(false);
+  }, []);
+
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent sx={{ height: '100%' }}>
@@ -77,11 +112,13 @@ const VotingRight = () => {
             <Typography color="text.secondary">
               {t('personalVouchers.votingRight.title')}
             </Typography>
-            <Tooltip title={t('personalVouchers.votingRight.description')}>
-              <IconButton>
-                <InfoIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <IconButton onClick={handleDescriptionInfoClick}>
+              <InfoIcon fontSize="small" />
+            </IconButton>
+            <DescriptionDialog
+              open={descriptionDialogOpen}
+              onClose={handleDescriptionDialogClose}
+            />
           </Stack>
           <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
             <Stack direction="row" alignItems="center" sx={{ width: '100%' }}>

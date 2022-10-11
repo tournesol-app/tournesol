@@ -489,7 +489,7 @@
       "medium": "Moyen",
       "high": "Élevé",
       "title": "Droit de vote",
-      "description": "Votre droit de vote change la manière dont vos comparaisons sont prises en compte dans les recommandations de Tournesol. Vous pouvez l'augmenter en utilisant une adresse e-mail certifiée ou quand d'autres utilisateurs se portent garant pour vous.",
+      "description": "Votre droit de vote change la manière dont vos comparaisons sont prises en compte dans les recommandations de Tournesol.<br><br>Vous pouvez l'augmenter en utilisant une adresse e-mail certifiée ou quand d'autres utilisateurs se portent garant pour vous.",
       "isTrusted": "Vous utilisez une adresse e-mail certifiée",
       "isNotTrusted": "Vous n'utilisez pas une adresse e-mail certifiée",
       "hasReceivedVouchers": "Des utilisateurs se portent garant pour vous",
