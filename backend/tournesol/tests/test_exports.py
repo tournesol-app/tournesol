@@ -198,6 +198,7 @@ class ExportTest(TestCase):
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, 'r') as zip_file:
             expected_files = [
+                "tournesol_export/README.txt",
                 "tournesol_export/comparisons.csv",
                 "tournesol_export/users.csv",
             ]
