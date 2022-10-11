@@ -34,6 +34,15 @@ export type RelatedEntityObject =
   | Recommendation;
 export type VideoObject = Video | VideoSerializerWithCriteria;
 
+export type PollStats = {
+  userCount: number;
+  lastMonthUserCount: number;
+  comparedEntityCount: number;
+  lastMonthComparedEntityCount: number;
+  comparisonCount: number;
+  lastMonthComparisonCount: number;
+};
+
 /**
  * An exhaustive list of route ids helping to enforce type checking in each
  * place a route id is required.

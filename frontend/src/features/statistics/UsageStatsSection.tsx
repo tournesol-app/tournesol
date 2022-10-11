@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
+
 import { Statistics, StatsService } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks';
+import { PollStats } from 'src/utils/types';
 
 interface statsProp {
   text: string;
@@ -11,13 +14,8 @@ interface statsProp {
   verbose?: boolean;
 }
 
-interface statsData {
-  userCount: number;
-  lastMonthUserCount: number;
-  comparedEntityCount: number;
-  lastMonthComparedEntityCount: number;
-  comparisonCount: number;
-  lastMonthComparisonCount: number;
+interface StatsSectionProps {
+  externalData?: PollStats;
 }
 
 export const Metrics = ({
@@ -53,9 +51,17 @@ export const Metrics = ({
   );
 };
 
-const StatsSection = () => {
+/**
+ * Display the Tournesol main statistics.
+ *
+ * If `externalData` is provided, the component displays it instead of
+ * retrieving the data from the API.
+ */
+const StatsSection = ({ externalData }: StatsSectionProps) => {
   const { t } = useTranslation();
-  const [data, setData] = useState<statsData>({
+  const { name: pollName } = useCurrentPoll();
+
+  const [data, setData] = useState<PollStats>({
     userCount: 0,
     lastMonthUserCount: 0,
     comparedEntityCount: 0,
@@ -63,27 +69,28 @@ const StatsSection = () => {
     comparisonCount: 0,
     lastMonthComparisonCount: 0,
   });
-  const { name: pollName } = useCurrentPoll();
 
   useEffect(() => {
-    StatsService.statsRetrieve()
-      .then((value: Statistics) => {
-        const pollStats = value.polls.find(({ name }) => name === pollName);
-        if (pollStats === undefined) return;
-        setData({
-          userCount: value.active_users.total,
-          comparedEntityCount: pollStats.compared_entities.total,
-          comparisonCount: pollStats.comparisons.total,
-          lastMonthUserCount: value.active_users.joined_last_month,
-          lastMonthComparedEntityCount:
-            pollStats.compared_entities.added_last_month,
-          lastMonthComparisonCount: pollStats.comparisons.added_last_month,
+    if (!externalData) {
+      StatsService.statsRetrieve()
+        .then((value: Statistics) => {
+          const pollStats = value.polls.find(({ name }) => name === pollName);
+          if (pollStats === undefined) return;
+          setData({
+            userCount: value.active_users.total,
+            comparedEntityCount: pollStats.compared_entities.total,
+            comparisonCount: pollStats.comparisons.total,
+            lastMonthUserCount: value.active_users.joined_last_month,
+            lastMonthComparedEntityCount:
+              pollStats.compared_entities.added_last_month,
+            lastMonthComparisonCount: pollStats.comparisons.added_last_month,
+          });
+        })
+        .catch((error) => {
+          console.error(error);
         });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [pollName]);
+    }
+  }, [externalData, pollName]);
 
   const comparedEntitiesTitle = useMemo(() => {
     switch (pollName) {
@@ -109,22 +116,32 @@ const StatsSection = () => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.activatedAccounts')}
-            count={data.userCount}
-            lastMonthCount={data.lastMonthUserCount}
+            count={externalData?.userCount || data.userCount}
+            lastMonthCount={
+              externalData?.lastMonthUserCount || data.lastMonthUserCount
+            }
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.comparisons')}
-            count={data.comparisonCount}
-            lastMonthCount={data.lastMonthComparisonCount}
+            count={externalData?.comparisonCount || data.comparisonCount}
+            lastMonthCount={
+              externalData?.lastMonthComparisonCount ||
+              data.lastMonthComparisonCount
+            }
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={comparedEntitiesTitle}
-            count={data.comparedEntityCount}
-            lastMonthCount={data.lastMonthComparedEntityCount}
+            count={
+              externalData?.comparedEntityCount || data.comparedEntityCount
+            }
+            lastMonthCount={
+              externalData?.lastMonthComparedEntityCount ||
+              data.lastMonthComparedEntityCount
+            }
           />
         </Grid>
       </Grid>

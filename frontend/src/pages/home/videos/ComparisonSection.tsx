@@ -6,7 +6,16 @@ import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import HomeComparison from './HomeComparison';
 
-const ComparisonSection = () => {
+interface ComparisonStats {
+  comparisonCount: number;
+  lastMonthComparisonCount: number;
+}
+
+interface Props {
+  comparisonStats?: ComparisonStats;
+}
+
+const ComparisonSection = ({ comparisonStats }: Props) => {
   const { t } = useTranslation();
 
   const color = '#fff';
@@ -36,8 +45,10 @@ const ComparisonSection = () => {
               <Box textAlign="center">
                 <Metrics
                   text={t('stats.comparisons')}
-                  count={9999}
-                  lastMonthCount={100}
+                  count={comparisonStats?.comparisonCount || 0}
+                  lastMonthCount={
+                    comparisonStats?.lastMonthComparisonCount || 0
+                  }
                   verbose
                 />
               </Box>
