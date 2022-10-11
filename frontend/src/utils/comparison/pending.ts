@@ -1,13 +1,21 @@
 import { PollCriteria } from 'src/services/openapi';
 import { CriteriaValuesType } from 'src/utils/types';
 
-const PENDING_NS = 'pending';
+const PENDING_NS = 'pendingComparisons';
+
+const initPending = () => '{}';
 
 /**
- * Save a criterion rating for a couple of entity.
+ * Save a criterion rating for a couple of entities in a given poll.
  *
  * The rating is saved in the browser's local storage, and can be retrieved
  * with `getPendingRating`.
+ *
+ * The ratings are saved with the following structure:
+ *
+ *  {
+ *     `${pollName}/${uidA}/${uidB}`: ${rating},
+ *  }
  *
  * @param poll The name of the poll.
  * @param uidA UID of the entity A.
@@ -22,10 +30,16 @@ export const setPendingRating = (
   criterion: string,
   rating: number
 ) => {
-  localStorage.setItem(
-    `${PENDING_NS}/${poll}/${uidA}/${uidB}/${criterion}`,
-    rating.toString()
-  );
+  let pending = localStorage.getItem(PENDING_NS);
+
+  if (pending == null) {
+    pending = initPending();
+  }
+
+  const pendingJSON = JSON.parse(pending);
+  pendingJSON[`${poll}/${uidA}/${uidB}/${criterion}`] = rating;
+
+  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
 
 /**
@@ -39,18 +53,22 @@ export const getPendingRating = (
   uidB: string,
   criterion: string,
   pop?: boolean
-) => {
-  const rating = localStorage.getItem(
-    `${PENDING_NS}/${poll}/${uidA}/${uidB}/${criterion}`
-  );
+): number | null => {
+  const pending = localStorage.getItem(PENDING_NS);
 
-  if (pop) {
-    localStorage.removeItem(
-      `${PENDING_NS}/${poll}/${uidA}/${uidB}/${criterion}`
-    );
+  if (pending == null) {
+    return null;
   }
 
-  return rating ? Number.parseInt(rating) : null;
+  const pendingJSON = JSON.parse(pending);
+  const rating = pendingJSON[`${poll}/${uidA}/${uidB}/${criterion}`];
+
+  if (pop) {
+    delete pendingJSON[`${poll}/${uidA}/${uidB}/${criterion}`];
+    localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+  }
+
+  return rating ? rating : null;
 };
 
 /**
@@ -64,7 +82,7 @@ export const getAllPendingRatings = (
   uidB: string,
   criterias: PollCriteria[],
   pop?: boolean
-) => {
+): CriteriaValuesType => {
   const pendings: CriteriaValuesType = {};
 
   criterias.map((criterion) => {
