@@ -13,7 +13,10 @@ import type {
 
 import CriteriaSlider from './CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { getAllPendingRatings } from 'src/utils/comparison/pending';
+import {
+  clearPendingRating,
+  getAllPendingRatings,
+} from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 
 const useStyles = makeStyles(() => ({
@@ -138,6 +141,8 @@ const ComparisonSliders = ({
     } else {
       comparison.criteria_scores.push({ criteria, score, weight: 1 });
     }
+
+    clearPendingRating(pollName, uidA, uidB, criteria);
     setComparison({ ...comparison }); // this is only here to refresh the state
   };
 

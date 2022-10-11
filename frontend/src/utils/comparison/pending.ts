@@ -1,9 +1,19 @@
 import { PollCriteria } from 'src/services/openapi';
 import { CriteriaValuesType } from 'src/utils/types';
 
+// Name of the key used in the browser's local storage.
 const PENDING_NS = 'pendingComparisons';
 
 const initPending = () => '{}';
+
+const makePendingKey = (
+  poll: string,
+  uidA: string,
+  uidB: string,
+  criterion: string
+) => {
+  return `${poll}/${uidA}/${uidB}/${criterion}`;
+};
 
 /**
  * Save a criterion rating for a couple of entities in a given poll.
@@ -37,13 +47,14 @@ export const setPendingRating = (
   }
 
   const pendingJSON = JSON.parse(pending);
-  pendingJSON[`${poll}/${uidA}/${uidB}/${criterion}`] = rating;
+  pendingJSON[makePendingKey(poll, uidA, uidB, criterion)] = rating;
 
   localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
 
 /**
- * Retrieve a previously saved criterion rating for a couple of entity.
+ * Retrieve a previously saved criterion rating for a couple of entities in a
+ * given poll.
  *
  * If `pop` is true, the rating is deleted from the browser's local storage.
  */
@@ -61,14 +72,37 @@ export const getPendingRating = (
   }
 
   const pendingJSON = JSON.parse(pending);
-  const rating = pendingJSON[`${poll}/${uidA}/${uidB}/${criterion}`];
+  const pendingKey = makePendingKey(poll, uidA, uidB, criterion);
+
+  const rating = pendingJSON[pendingKey];
 
   if (pop) {
-    delete pendingJSON[`${poll}/${uidA}/${uidB}/${criterion}`];
+    delete pendingJSON[pendingKey];
     localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
   }
 
   return rating ? rating : null;
+};
+
+/**
+ * Delete a previously saved criterion rating for a couple of entities in a
+ * given poll.
+ */
+export const clearPendingRating = (
+  poll: string,
+  uidA: string,
+  uidB: string,
+  criterion: string
+) => {
+  const pending = localStorage.getItem(PENDING_NS);
+
+  if (pending == null) {
+    return;
+  }
+
+  const pendingJSON = JSON.parse(pending);
+  delete pendingJSON[makePendingKey(poll, uidA, uidB, criterion)];
+  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
 
 /**
