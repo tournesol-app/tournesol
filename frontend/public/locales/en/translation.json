@@ -403,6 +403,9 @@
       "message": "An unexpected error has occured."
     }
   },
+  "faqEntryList": {
+    "urlOfTheQuestionCopied": "URL of the question copied."
+  },
   "faqPage": {
     "iDidFindTheAnswers": "I didn't find the answer to my questions",
     "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Recurring questions will be added to the FAQ.",

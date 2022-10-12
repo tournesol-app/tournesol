@@ -12,6 +12,7 @@ import {
 import { Link, PeopleAlt } from '@mui/icons-material';
 
 import { FAQEntry } from 'src/services/openapi';
+import { useSnackbar } from 'notistack';
 
 /**
  * The Entry List section of the FAQ page.
@@ -24,12 +25,16 @@ import { FAQEntry } from 'src/services/openapi';
  */
 const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const copyUriToClipboard = (
     event: React.MouseEvent<HTMLElement>,
     anchor: string
   ) => {
     navigator.clipboard.writeText(window.location.toString() + `#${anchor}`);
+    enqueueSnackbar(t('faqEntryList.urlOfTheQuestionCopied'), {
+      variant: 'success',
+    });
   };
 
   return (
