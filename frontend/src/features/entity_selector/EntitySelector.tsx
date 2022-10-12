@@ -92,11 +92,13 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
       return await PollsService.pollsEntitiesRetrieve({ name: pollName, uid });
     }
 
-    getEntity().then((entity) => {
-      setLoading(false);
-      setEntityFallback(entity);
-    });
-    // handle the catch
+    // Wait for a not null / not empty UID before making an HTTP request.
+    if (uid) {
+      getEntity().then((entity) => {
+        setLoading(false);
+        setEntityFallback(entity);
+      });
+    }
   }, [isLoggedIn, pollName, uid]);
 
   return entityFallback ? (
