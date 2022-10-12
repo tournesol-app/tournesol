@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import { PeopleAlt } from '@mui/icons-material';
 
 import { FAQEntry } from 'src/services/openapi';
@@ -23,20 +23,24 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
         const answerParagraphs = entry.answer.split('\n');
         return (
           <Box key={`q_${entry.name}`} mb={4}>
-            <Typography id={entry.name} variant="h4" gutterBottom>
-              {entry.question}
-            </Typography>
+            <Paper square>
+              <Box p={2} pb="1px">
+                <Typography id={entry.name} variant="h4" gutterBottom>
+                  {entry.question}
+                </Typography>
 
-            {/* An answer can be composed of several paragraphs. */}
-            {answerParagraphs.map((paragraph, index) => (
-              <Typography
-                key={`$a_{entry.name}_p${index}`}
-                paragraph
-                textAlign="justify"
-              >
-                {paragraph}
-              </Typography>
-            ))}
+                {/* An answer can be composed of several paragraphs. */}
+                {answerParagraphs.map((paragraph, index) => (
+                  <Typography
+                    key={`$a_{entry.name}_p${index}`}
+                    paragraph
+                    textAlign="justify"
+                  >
+                    {paragraph}
+                  </Typography>
+                ))}
+              </Box>
+            </Paper>
           </Box>
         );
       })}
