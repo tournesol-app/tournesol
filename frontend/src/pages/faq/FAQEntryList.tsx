@@ -11,8 +11,9 @@ import {
 } from '@mui/material';
 import { Link, PeopleAlt } from '@mui/icons-material';
 
-import { FAQEntry } from 'src/services/openapi';
 import { useSnackbar } from 'notistack';
+import { FAQEntry } from 'src/services/openapi';
+import { SNACKBAR_DYNAMIC_FEEDBACK_MS } from 'src/utils/notifications';
 
 /**
  * The Entry List section of the FAQ page.
@@ -34,6 +35,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
     navigator.clipboard.writeText(window.location.toString() + `#${anchor}`);
     enqueueSnackbar(t('faqEntryList.urlOfTheQuestionCopied'), {
       variant: 'success',
+      autoHideDuration: SNACKBAR_DYNAMIC_FEEDBACK_MS,
     });
   };
 
