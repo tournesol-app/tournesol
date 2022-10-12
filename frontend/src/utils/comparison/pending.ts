@@ -15,6 +15,15 @@ const makePendingKey = (
   return `${poll}/${uidA}/${uidB}/${criterion}`;
 };
 
+const keyIsInvalid = (
+  poll: string,
+  uidA: string,
+  uidB: string,
+  criterion: string | null
+) => {
+  return [poll, uidA, uidB, criterion].includes('');
+};
+
 /**
  * Save a criterion rating for a couple of entities in a given poll.
  *
@@ -46,6 +55,10 @@ export const setPendingRating = (
     pending = initPending();
   }
 
+  if (keyIsInvalid(poll, uidA, uidB, criterion)) {
+    return null;
+  }
+
   const pendingJSON = JSON.parse(pending);
   pendingJSON[makePendingKey(poll, uidA, uidB, criterion)] = rating;
 
@@ -68,6 +81,10 @@ export const getPendingRating = (
   const pending = localStorage.getItem(PENDING_NS);
 
   if (pending == null) {
+    return null;
+  }
+
+  if (keyIsInvalid(poll, uidA, uidB, criterion)) {
     return null;
   }
 
@@ -100,6 +117,10 @@ export const clearPendingRating = (
     return;
   }
 
+  if (keyIsInvalid(poll, uidA, uidB, criterion)) {
+    return;
+  }
+
   const pendingJSON = JSON.parse(pending);
   delete pendingJSON[makePendingKey(poll, uidA, uidB, criterion)];
   localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
@@ -118,6 +139,14 @@ export const getAllPendingRatings = (
   pop?: boolean
 ): CriteriaValuesType => {
   const pendings: CriteriaValuesType = {};
+
+  if (keyIsInvalid(poll, uidA, uidB, null)) {
+    return {};
+  }
+
+  if (criterias.length === 0) {
+    return {};
+  }
 
   criterias.map((criterion) => {
     const pendingRating = getPendingRating(
