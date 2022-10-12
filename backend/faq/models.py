@@ -29,6 +29,7 @@ class FAQEntry(models.Model):
     class Meta:
         ordering = ["rank"]
         verbose_name = "FAQ Entry"
+        verbose_name_plural = "FAQ Entries"
 
     def __str__(self) -> str:
         return self.name

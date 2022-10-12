@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-28 08:19+0000\n"
+"POT-Creation-Date: 2022-10-12 20:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,39 +92,39 @@ msgstr ""
 msgid "Tournesol Password Reset"
 msgstr "Réinitialisation de votre mot de passe sur Tournesol"
 
-#: faq/admin.py:12
+#: faq/admin.py:13
 msgid "has answer?"
 msgstr "a une réponse?"
 
-#: faq/admin.py:17
+#: faq/admin.py:18
 msgid "Yes"
 msgstr "Oui"
 
-#: faq/admin.py:18
+#: faq/admin.py:19
 msgid "No"
 msgstr "Non"
 
-#: faq/admin.py:66
+#: faq/admin.py:67
 msgid "Enable the selected entries."
 msgstr "Activer les entrées sélectionnées."
 
-#: faq/admin.py:70
+#: faq/admin.py:73
 #, python-format
 msgid "%d entry was successfully marked as enabled."
 msgid_plural "%d entries were successfully marked as enabled."
-msgstr[0] "%s entrée a été activée avec succès."
-msgstr[1] "%s entrées ont été activées avec succès."
+msgstr[0] "%d entrée a été activée avec succès."
+msgstr[1] "%d entrées ont été activées avec succès."
 
-#: faq/admin.py:75
+#: faq/admin.py:81
 msgid "Disable the selected entries."
 msgstr "Désactiver les entrées sélectionnées."
 
-#: faq/admin.py:79
+#: faq/admin.py:87
 #, python-format
 msgid "%d entry was successfully marked as disabled."
 msgid_plural "%d entries were successfully marked as disabled."
-msgstr[0] "%s entrée a été désactivée avec succès."
-msgstr[1] "%s entrées ont été désactivées avec succès."
+msgstr[0] "%d entrée a été désactivée avec succès."
+msgstr[1] "%d entrées ont été désactivées avec succès."
 
 #: vouch/models.py:58
 msgid "A user cannot vouch for himself."
