@@ -11,7 +11,7 @@ import {
   Box,
 } from '@mui/material';
 
-import EntitySelectorInnerAuth, {
+import EntitySelector, {
   SelectorValue,
 } from 'src/features/entity_selector/EntitySelector';
 import CriteriaSlider from 'src/features/comparisons/CriteriaSlider';
@@ -178,7 +178,7 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
           alignSelf: 'start',
         }}
       >
-        <EntitySelectorInnerAuth
+        <EntitySelector
           title={`${entityName} 1`}
           value={selectorA}
           onChange={setSelectorA}
@@ -194,7 +194,7 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
           alignSelf: 'start',
         }}
       >
-        <EntitySelectorInnerAuth
+        <EntitySelector
           title={`${entityName} 2`}
           value={selectorB}
           onChange={setSelectorB}
