@@ -404,7 +404,7 @@
     }
   },
   "faqEntryList": {
-    "urlOfTheQuestionCopied": "URL of the question copied."
+    "questionURLCopied": "Question's URL copied."
   },
   "faqPage": {
     "iDidFindTheAnswers": "I didn't find the answer to my questions",

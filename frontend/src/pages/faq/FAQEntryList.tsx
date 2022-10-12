@@ -33,7 +33,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
     anchor: string
   ) => {
     navigator.clipboard.writeText(window.location.toString() + `#${anchor}`);
-    enqueueSnackbar(t('faqEntryList.urlOfTheQuestionCopied'), {
+    enqueueSnackbar(t('faqEntryList.questionURLCopied'), {
       variant: 'success',
       autoHideDuration: SNACKBAR_DYNAMIC_FEEDBACK_MS,
     });
