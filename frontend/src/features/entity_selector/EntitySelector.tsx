@@ -69,19 +69,16 @@ const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
           light={light}
         />
       ) : (
-        <EntitySelectorInnerAnonymous title={title} value={value} />
+        <EntitySelectorInnerAnonymous value={value} />
       )}
     </div>
   );
 };
 
-const EntitySelectorInnerAnonymous = ({
-  title,
-  value,
-}: {
-  title: string;
-  value: SelectorValue;
-}) => {
+/**
+ * Display the content of an EntitySelector for anonymous users.
+ */
+const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
   const { isLoggedIn } = useLoginState();
   const { name: pollName } = useCurrentPoll();
 
@@ -102,31 +99,10 @@ const EntitySelectorInnerAnonymous = ({
     // handle the catch
   }, [isLoggedIn, pollName, uid]);
 
-  return (
-    <>
-      <Box
-        mx={1}
-        marginTop="4px"
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-      >
-        <Typography
-          variant="h6"
-          color="secondary"
-          flexGrow={1}
-          sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-        >
-          {title}
-        </Typography>
-      </Box>
-
-      {entityFallback ? (
-        <EntityCard compact entity={entityFallback} settings={undefined} />
-      ) : (
-        <EmptyEntityCard compact loading={loading} />
-      )}
-    </>
+  return entityFallback ? (
+    <EntityCard compact entity={entityFallback} settings={undefined} />
+  ) : (
+    <EmptyEntityCard compact loading={loading} />
   );
 };
 
@@ -254,45 +230,46 @@ const EntitySelectorInnerAuth = ({
 
   return (
     <>
-      <Box
-        mx={1}
-        marginTop="4px"
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-      >
-        <Typography
-          variant="h6"
-          color="secondary"
-          flexGrow={1}
-          sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-        >
-          {title}
-        </Typography>
-        {!light && (
-          <AutoEntityButton
-            disabled={loading}
-            currentUid={uid}
-            otherUid={otherUid}
-            onClick={() => {
-              setInputValue('');
-              setLoading(true);
-            }}
-            onResponse={(uid) => {
-              uid ? onChange({ uid, rating: null }) : setLoading(false);
-            }}
-          />
-        )}
-      </Box>
-      <Box mx={1} marginBottom={1}>
-        {!light && (
-          <EntityInput
-            value={inputValue || uid}
-            onChange={handleChange}
-            otherUid={otherUid}
-          />
-        )}
-      </Box>
+      {!light && (
+        <>
+          <Box
+            mx={1}
+            marginTop="4px"
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+          >
+            <Typography
+              variant="h6"
+              color="secondary"
+              flexGrow={1}
+              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+            >
+              {title}
+            </Typography>
+            <AutoEntityButton
+              disabled={loading}
+              currentUid={uid}
+              otherUid={otherUid}
+              onClick={() => {
+                setInputValue('');
+                setLoading(true);
+              }}
+              onResponse={(uid) => {
+                uid ? onChange({ uid, rating: null }) : setLoading(false);
+              }}
+            />
+          </Box>
+
+          <Box mx={1} marginBottom={1}>
+            <EntityInput
+              value={inputValue || uid}
+              onChange={handleChange}
+              otherUid={otherUid}
+            />
+          </Box>
+        </>
+      )}
 
       {rating ? (
         <EntityCard
