@@ -86,10 +86,14 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
     }
 
     async function getUserComparisonsAsync(
+      loggedIn: boolean,
       pName: string
     ): Promise<[number, string[]]> {
-      const paginatedComparisons = await getUserComparisonsRaw(pName, 100);
+      if (!loggedIn) {
+        return [0, []];
+      }
 
+      const paginatedComparisons = await getUserComparisonsRaw(pName, 100);
       let results: string[] = [];
 
       if (paginatedComparisons.results) {
@@ -101,7 +105,7 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
       return [paginatedComparisons.count || 0, results];
     }
 
-    const comparisonsPromise = getUserComparisonsAsync(pollName);
+    const comparisonsPromise = getUserComparisonsAsync(isLoggedIn, pollName);
     const alternativesPromise = getAlternativesAsync(getTutorialVideos);
 
     Promise.all([comparisonsPromise, alternativesPromise])
