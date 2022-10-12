@@ -1,8 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Paper, Typography } from '@mui/material';
-import { PeopleAlt } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+} from '@mui/material';
+import { Link, PeopleAlt } from '@mui/icons-material';
 
 import { FAQEntry } from 'src/services/openapi';
 
@@ -17,6 +24,14 @@ import { FAQEntry } from 'src/services/openapi';
  */
 const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
   const { t } = useTranslation();
+
+  const copyUriToClipboard = (
+    event: React.MouseEvent<HTMLElement>,
+    anchor: string
+  ) => {
+    navigator.clipboard.writeText(window.location.toString() + `#${anchor}`);
+  };
+
   return (
     <>
       {entries.map((entry) => {
@@ -25,9 +40,29 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
           <Box key={`q_${entry.name}`} mb={4}>
             <Paper square>
               <Box p={2} pb="1px">
-                <Typography id={entry.name} variant="h4" gutterBottom>
-                  {entry.question}
-                </Typography>
+                <Grid container>
+                  <Grid item xs={11}>
+                    <Typography id={entry.name} variant="h4" gutterBottom>
+                      {entry.question}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="flex-end"
+                    >
+                      <IconButton
+                        aria-label="Copy URI to clicboard"
+                        onClick={(event) => {
+                          copyUriToClipboard(event, entry.name);
+                        }}
+                      >
+                        <Link />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                </Grid>
 
                 {/* An answer can be composed of several paragraphs. */}
                 {answerParagraphs.map((paragraph, index) => (
