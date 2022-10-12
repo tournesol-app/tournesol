@@ -255,7 +255,19 @@ const ComparisonSeries = ({
   }
 
   if (redirectTo && step >= length) {
-    return <Redirect to={{ pathname: redirectTo }} />;
+    const keepUIDs = searchParams.get('keep_uids_after_redirect');
+    const futureSearchParams = new URLSearchParams();
+
+    if (keepUIDs === 'true') {
+      futureSearchParams.append('uidA', uidA);
+      futureSearchParams.append('uidB', uidB);
+    }
+
+    return (
+      <Redirect
+        to={{ pathname: redirectTo, search: futureSearchParams.toString() }}
+      />
+    );
   }
 
   return (
