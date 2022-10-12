@@ -53,7 +53,7 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
                       justifyContent="flex-end"
                     >
                       <IconButton
-                        aria-label="Copy URI to clicboard"
+                        aria-label="Copy URI to clipboard"
                         onClick={(event) => {
                           copyUriToClipboard(event, entry.name);
                         }}
