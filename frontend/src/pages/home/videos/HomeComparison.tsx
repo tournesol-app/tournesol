@@ -20,7 +20,7 @@ import { Recommendation } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { getEntityName } from 'src/utils/constants';
 import { setPendingRating } from 'src/utils/comparison/pending';
-import { selectRandomEntity } from 'src/utils/entity';
+import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getTutorialVideos } from 'src/utils/polls/videos';
 
 interface Props {
@@ -66,7 +66,9 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
   const entityName = getEntityName(t, pollName);
 
   /**
-   * Select the two videos of the comparison.
+   * This effect determines if the user should be redirected to the tutorial
+   * when clicking on the submit button, and selects the two videos of the
+   * comparison.
    *
    * These videos are selected from the pool returned by `getTutorialVideos`
    * to keep the home page comparison in sync with the tutorial.
@@ -83,16 +85,55 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
       return [];
     }
 
-    getAlternativesAsync(getTutorialVideos)
-      .then((videos) => {
-        if (videos.length > 0) {
-          const entityA = selectRandomEntity(videos, []);
-          const entityB = selectRandomEntity(videos, [entityA.uid]);
+    async function getUserComparisonsAsync(
+      pName: string
+    ): Promise<[number, string[]]> {
+      const paginatedComparisons = await getUserComparisonsRaw(pName, 100);
+
+      let results: string[] = [];
+
+      if (paginatedComparisons.results) {
+        results = paginatedComparisons.results.map(
+          (comp) => comp.entity_a.uid + '/' + comp.entity_b.uid
+        );
+      }
+
+      return [paginatedComparisons.count || 0, results];
+    }
+
+    const comparisonsPromise = getUserComparisonsAsync(pollName);
+    const alternativesPromise = getAlternativesAsync(getTutorialVideos);
+
+    Promise.all([comparisonsPromise, alternativesPromise])
+      .then(([comparisons, entities]) => {
+        // Deterine if the user should be redirected to the tutorial.
+        let shouldBeRedirected = true;
+        if (isLoggedIn && comparisons[0] >= tutorialLength) {
+          shouldBeRedirected = false;
+        }
+        setTutoRedirect(shouldBeRedirected);
+
+        // Build the comparison.
+        if (entities.length > 0) {
+          const entityA = selectRandomEntity(entities, []);
+          let alreadyComparedWithA: string[] = [];
+
+          // Exlude entities already compared with A.
+          if (isLoggedIn) {
+            alreadyComparedWithA = alreadyComparedWith(
+              entityA.uid,
+              comparisons[1]
+            );
+          }
+
+          const entityB = selectRandomEntity(
+            entities,
+            alreadyComparedWithA.concat([entityA.uid])
+          );
           setComparison([entityA.uid, entityB.uid]);
           setSelectorA({ uid: entityA.uid, rating: null });
           setSelectorB({ uid: entityB.uid, rating: null });
         }
-
         if (isLoading) {
           setIsLoading(false);
         }
@@ -104,27 +145,8 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
 
         setApiError(true);
       });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  /**
-   * Determine if the user should be redirected to the tutorial when clicking
-   * on the submit button.
-   */
-  useEffect(() => {
-    async function getNumberComparisonsAsync(pName: string): Promise<number> {
-      return (await getUserComparisonsRaw(pName, 1)).count || 0;
-    }
-
-    if (isLoggedIn) {
-      getNumberComparisonsAsync(pollName).then((comparisonsNumber) => {
-        if (comparisonsNumber >= tutorialLength) {
-          setTutoRedirect(false);
-        }
-      });
-    } else {
-      setTutoRedirect(true);
-    }
   }, [isLoggedIn, pollName, tutorialLength]);
 
   const handleSliderChange = (criterion: string, value: number | undefined) => {
