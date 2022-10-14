@@ -31,11 +31,16 @@ class Command(BaseCommand):
         # TODO assign trusted or not-trusted address at random
         is_pretrusted = random.random() < PRETRUSTED_PROBABILITY
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
-        return User.objects.create_user(
+        user = User.objects.create_user(
             username=username,
             email=email,
             is_staff=username in SEED_USERS
         )
+        if user.is_staff:
+            # Set a default password for staff accounts (used in e2e tests, etc.)
+            user.set_password("tournesol")
+            user.save()
+        return user
 
     def create_videos(self, video_ids):
         videos = {}
