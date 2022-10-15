@@ -21,10 +21,13 @@ class ContributorRatingSerializer(ModelSerializer):
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
     )
+    comparison_date = SerializerMethodField(
+        help_text="Date of comparison(oldest / newest) to order ratings"
+    )
 
     class Meta:
         model = ContributorRating
-        fields = ["entity", "is_public", "criteria_scores", "n_comparisons"]
+        fields = ["entity", "is_public", "criteria_scores", "n_comparisons", "comparison_date"]
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_comparisons(self, obj):
@@ -39,6 +42,21 @@ class ContributorRatingSerializer(ModelSerializer):
             Q(poll=self.context["poll"])
             & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
         ).count()
+
+    @extend_schema_field(OpenApiTypes.DATETIME)
+    def get_comparison_date(self, obj):
+        """
+        The dates of each comparisons
+        """
+        if hasattr(obj, "comparison_date"):
+            # Use annotated field if it has been defined by the queryset
+            return obj.comparison_date
+        
+        comparisons = obj.user.comparisons.filter(
+            Q(poll=self.context["poll"])
+            & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
+        )
+        return list(comparisons.values_list("datetime_add", flat=True))
 
     def to_internal_value(self, data):
         """

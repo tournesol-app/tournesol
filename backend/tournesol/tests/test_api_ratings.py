@@ -244,6 +244,41 @@ class RatingApi(TestCase):
         self.assertEqual(rating["entity"]["uid"], self.video2.uid)
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
+    
+    def test_authenticated_can_order_list(self):
+        """
+        An authenticated user can list its ratings related to a poll with specific order.
+        """
+        self.client.force_authenticate(user=self.user2)
+
+        # get ratings by number of comparisons - the most compared first
+        response = self.client.get(self.ratings_base_url + "order_by=n_comparisons/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sorted_array = sorted(response.data["results"], key=lambda x: x["n_comparisons"])
+        self.assertEqual(response.data["results"], sorted_array)
+
+        # get ratings by number of comparisons - the least compared first
+        response = self.client.get(self.ratings_base_url + "order_by=-n_comparisons/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sorted_array = sorted(response.data["results"], key=lambda x: x["n_comparisons"], reverse=True)
+        self.assertEqual(response.data["results"], sorted_array)
+
+        # get ratings by comparison date - the most recent one first
+        response = self.client.get(self.ratings_base_url + "order_by=comparison_date/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sorted_array = sorted(response.data["results"], key=lambda x: x["comparison_date"])
+        self.assertEqual(response.data["results"], sorted_array)
+
+        # get ratings by comparison date - the oldest first
+        response = self.client.get(self.ratings_base_url + "order_by=-comparison_date/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sorted_array = sorted(response.data["results"], key=lambda x: x["comparison_date"], reverse=True)
+        self.assertEqual(response.data["results"], sorted_array)
+        
+        # bad parameter
+        response = self.client.get(self.ratings_base_url + "order_by=comparison/", format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) 
+
 
     def test_authenticated_can_list_with_filter(self):
         """
