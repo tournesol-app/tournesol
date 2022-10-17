@@ -28,8 +28,7 @@ class Command(BaseCommand):
         parser.add_argument("--user-sampling", type=float, default=None)
 
     def create_user(self, username):
-        # TODO assign trusted or not-trusted address at random
-        is_pretrusted = random.random() < PRETRUSTED_PROBABILITY
+        is_pretrusted = random.random() < PRETRUSTED_PROBABILITY  # nosec B311
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
         user = User.objects.create_user(
             username=username,
@@ -58,7 +57,7 @@ class Command(BaseCommand):
             future.result()
 
     def create_test_user(self):
-        User.objects.create_user(
+        User.objects.create_user(  # hardcoded password is delibarate # nosec B106
             username="user1",
             password="tournesol",
             email="user1@tournesol.app"
