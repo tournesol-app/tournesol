@@ -105,18 +105,18 @@ const StatsSection = ({ externalData }: StatsSectionProps) => {
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.activatedAccounts')}
-            count={externalData?.userCount || data.userCount}
+            count={externalData?.userCount ?? data.userCount}
             lastMonthCount={
-              externalData?.lastMonthUserCount || data.lastMonthUserCount
+              externalData?.lastMonthUserCount ?? data.lastMonthUserCount
             }
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Metrics
             text={t('stats.comparisons')}
-            count={externalData?.comparisonCount || data.comparisonCount}
+            count={externalData?.comparisonCount ?? data.comparisonCount}
             lastMonthCount={
-              externalData?.lastMonthComparisonCount ||
+              externalData?.lastMonthComparisonCount ??
               data.lastMonthComparisonCount
             }
           />
@@ -125,10 +125,10 @@ const StatsSection = ({ externalData }: StatsSectionProps) => {
           <Metrics
             text={comparedEntitiesTitle}
             count={
-              externalData?.comparedEntityCount || data.comparedEntityCount
+              externalData?.comparedEntityCount ?? data.comparedEntityCount
             }
             lastMonthCount={
-              externalData?.lastMonthComparedEntityCount ||
+              externalData?.lastMonthComparedEntityCount ??
               data.lastMonthComparedEntityCount
             }
           />
