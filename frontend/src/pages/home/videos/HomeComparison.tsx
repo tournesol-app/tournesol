@@ -16,7 +16,6 @@ import EntitySelector, {
 } from 'src/features/entity_selector/EntitySelector';
 import CriteriaSlider from 'src/features/comparisons/CriteriaSlider';
 import { useLoginState, useCurrentPoll } from 'src/hooks';
-import { Recommendation } from 'src/services/openapi';
 import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { getEntityName } from 'src/utils/constants';
 import { setPendingRating } from 'src/utils/comparison/pending';
