@@ -23,10 +23,6 @@ import { setPendingRating } from 'src/utils/comparison/pending';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getTutorialVideos } from 'src/utils/polls/videos';
 
-interface Props {
-  enablePendingComparison?: boolean;
-}
-
 /**
  * The Home Comparison.
  *
@@ -37,7 +33,7 @@ interface Props {
  * modify this behaviour consider passing `getTutorialVideos` as a prop to
  * this component.
  */
-const HomeComparison = ({ enablePendingComparison = false }: Props) => {
+const HomeComparison = () => {
   const { t } = useTranslation();
 
   const { criterias, options, name: pollName } = useCurrentPoll();
@@ -156,10 +152,7 @@ const HomeComparison = ({ enablePendingComparison = false }: Props) => {
   const handleSliderChange = (criterion: string, value: number | undefined) => {
     if (value) {
       setCriteriaValue(value);
-
-      if (enablePendingComparison) {
-        setPendingRating(pollName, uidA, uidB, criterion, value);
-      }
+      setPendingRating(pollName, uidA, uidB, criterion, value);
     }
   };
 

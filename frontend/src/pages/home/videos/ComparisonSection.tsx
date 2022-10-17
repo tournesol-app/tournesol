@@ -24,7 +24,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
     <Grid container justifyContent="center" spacing={4}>
       <Grid item lg={6} xl={6}>
         <Box display="flex" justifyContent="center">
-          <HomeComparison enablePendingComparison={true} />
+          <HomeComparison />
         </Box>
       </Grid>
       <Grid item lg={3} xl={3}>
