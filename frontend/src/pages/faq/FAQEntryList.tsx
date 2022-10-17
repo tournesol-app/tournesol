@@ -49,7 +49,14 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
               <Box p={2} pb="1px">
                 <Grid container>
                   <Grid item xs={11}>
-                    <Typography id={entry.name} variant="h4" gutterBottom>
+                    <Typography
+                      id={entry.name}
+                      variant="h4"
+                      gutterBottom
+                      // Match the IconButton padding to align the two items
+                      // nicely, even when the title fits on several lines.
+                      sx={{ pt: 1 }}
+                    >
                       {entry.question}
                     </Typography>
                   </Grid>
