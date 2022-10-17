@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks';
-import { getPollStats } from 'src/utils/api/stats';
+import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
 interface statsProp {
@@ -61,14 +61,7 @@ const StatsSection = ({ externalData }: StatsSectionProps) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const [data, setData] = useState<PollStats>({
-    userCount: 0,
-    lastMonthUserCount: 0,
-    comparedEntityCount: 0,
-    lastMonthComparedEntityCount: 0,
-    comparisonCount: 0,
-    lastMonthComparisonCount: 0,
-  });
+  const [data, setData] = useState<PollStats>(DEFAULT_POLL_STATS);
 
   useEffect(() => {
     async function getPollStatsAsync(pollName: string) {
