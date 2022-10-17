@@ -114,7 +114,7 @@ function dev_env_init() {
   wait_for is_api_ready "api"
 
   if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
-    docker exec tournesol-dev-api python manage.py load_public_dataset_as_db "$@"
+    docker exec tournesol-dev-api python manage.py load_public_dataset "$@"
 
     echo 'Creating Superuser:'
     USERNAME="user"
