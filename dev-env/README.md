@@ -65,3 +65,13 @@ To recreate the containers (e.g to update the backend dependencies) while preser
 ```bash
 ./run-docker-compose.sh help
 ```
+
+## Dump the current database
+
+```bash
+./dump-db.sh
+```
+
+A .sql.tgz file will be written to this directory (e.g `dump_2022-10-17T16:18:10Z.sql.tgz`).
+
+Maintainer can rename this file into `dump-for-dev-env.sql.tgz` to update the database used on dev-env initialization and in e2e tests.
