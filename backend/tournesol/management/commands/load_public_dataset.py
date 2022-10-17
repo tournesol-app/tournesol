@@ -10,7 +10,7 @@ from django.db import transaction
 
 from core.models import User
 from core.models.user import EmailDomain
-from tournesol.models import Comparison, Poll, ContributorRating, ComparisonCriteriaScore, Entity
+from tournesol.models import Comparison, ComparisonCriteriaScore, ContributorRating, Entity, Poll
 from tournesol.models.poll import ALGORITHM_MEHESTAN
 
 PUBLIC_DATASET_URL = "https://api.tournesol.app/exports/comparisons/"
