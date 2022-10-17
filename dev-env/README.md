@@ -5,7 +5,7 @@
 * curl
 
 
-## On Windows
+### On Windows
 
 It is recommended on Windows to install:
 * **WSL2**, with a Linux distribution (just execute `wsl --install` in a Powershell as administrator. More info here: https://docs.microsoft.com/en-us/windows/wsl/install)
@@ -24,10 +24,10 @@ If `git diff` displays unexpected modifications (`old mode 100755 new mode 10064
 If `compose up` fails with `=> ERROR resolve image config for docker.io/docker/dockerfile:1`, a solution is usually to delete the Docker config.json in WSL2: `bash -c 'rm ~/.docker/config.json'`
 
 
-## Start the containers
+## Initialize the containers
 
 ```bash
-./run-docker-compose.sh
+./run-docker-compose.sh init
 ```
 
 The script will create 3 containers:
@@ -48,8 +48,8 @@ A superuser will be created automatically with username `user` and the default p
 
 Then, the application is accessible on http://localhost:3000.
 
-The created database includes metadata about ~ 5000 videos, as well as 5 sample accounts with usernames
-`user1`, `user2`, `user3`, `user4` and `user5`, and password `tournesol`.
+The created database includes video metadata, users and comparisons derived from a subset of Tournesol public dataset.
+An additional non-admin user is also created: `user1` with password `tournesol`.
 
 
 ## Rebuild the containers while preserving the database
@@ -58,4 +58,10 @@ By default, the database content is initialized with test data.
 To recreate the containers (e.g to update the backend dependencies) while preserving the data, use:
 ```bash
 ./run-docker-compose.sh restart
+```
+
+## See all available commands
+
+```bash
+./run-docker-compose.sh help
 ```
