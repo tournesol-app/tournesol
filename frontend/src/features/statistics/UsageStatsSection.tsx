@@ -11,7 +11,8 @@ interface statsProp {
   text: string;
   count: number;
   lastMonthCount: number;
-  verbose?: boolean;
+  // Add an explanation text after `lastMonthCount`.
+  lastMonthAsText?: boolean;
 }
 
 interface StatsSectionProps {
@@ -22,7 +23,7 @@ export const Metrics = ({
   text,
   count,
   lastMonthCount,
-  verbose = false,
+  lastMonthAsText = false,
 }: statsProp) => {
   const { i18n, t } = useTranslation();
   const tooltipTitle = t('metrics.evolutionDuringTheLast30Days');
@@ -42,7 +43,7 @@ export const Metrics = ({
           + {lastMonthCount.toLocaleString(i18n.resolvedLanguage)}
         </Typography>
       </Tooltip>
-      {verbose && (
+      {lastMonthAsText && (
         <Typography component="span">
           &nbsp;{t('metrics.duringTheLast30Days')}
         </Typography>

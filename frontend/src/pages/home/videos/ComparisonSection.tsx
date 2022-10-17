@@ -49,7 +49,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
                   lastMonthCount={
                     comparisonStats?.lastMonthComparisonCount || 0
                   }
-                  verbose
+                  lastMonthAsText
                 />
               </Box>
             </Box>
