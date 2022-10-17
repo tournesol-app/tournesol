@@ -6,6 +6,10 @@ const PENDING_NS = 'pendingComparisons';
 
 const initPending = () => '{}';
 
+const pendingIsEmpty = (pending: string) => {
+  return pending == null || pending === initPending();
+};
+
 const makePendingKey = (
   poll: string,
   uidA: string,
@@ -78,9 +82,9 @@ export const getPendingRating = (
   criterion: string,
   pop?: boolean
 ): number | null => {
-  const pending = localStorage.getItem(PENDING_NS);
+  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
 
-  if (pending == null) {
+  if (pendingIsEmpty(pending)) {
     return null;
   }
 
@@ -111,9 +115,9 @@ export const clearPendingRating = (
   uidB: string,
   criterion: string
 ) => {
-  const pending = localStorage.getItem(PENDING_NS);
+  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
 
-  if (pending == null) {
+  if (pendingIsEmpty(pending)) {
     return;
   }
 
@@ -177,9 +181,9 @@ export const clearAllPendingRatings = (
   uidB: string,
   criterias: PollCriteria[]
 ) => {
-  const pending = localStorage.getItem(PENDING_NS);
+  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
 
-  if (pending == null) {
+  if (pendingIsEmpty(pending)) {
     return;
   }
 
