@@ -29,7 +29,7 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
       <List dense={true}>
         {entries.map((entry) => (
           <ListItemButton
-            key={`$toc_{entry.name}`}
+            key={`toc_${entry.name}`}
             component="a"
             href={`#${entry.name}`}
           >

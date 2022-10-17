@@ -409,6 +409,9 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
+  "faqEntryList": {
+    "questionURLCopied": "URL de la question copiée."
+  },
   "faqPage": {
     "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
     "comeAndAskYourQuestionsOnDiscord": "Venez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ.",
