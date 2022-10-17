@@ -29,7 +29,7 @@ const keyIsInvalid = (
 };
 
 /**
- * Save a criterion rating for a couple of entities in a given poll.
+ * Save a criterion rating for a pair of entities in a given poll.
  *
  * The rating is saved in the browser's local storage, and can be retrieved
  * with `getPendingRating`.
@@ -70,10 +70,13 @@ export const setPendingRating = (
 };
 
 /**
- * Retrieve a previously saved criterion rating for a couple of entities in a
+ * Retrieve a previously saved criterion rating for a pair of entities in a
  * given poll.
  *
  * If `pop` is true, the rating is deleted from the browser's local storage.
+ *
+ * See `getAllPendingRatings` to get all criterion ratings related to a pair
+ * of entities.
  */
 export const getPendingRating = (
   poll: string,
@@ -106,8 +109,11 @@ export const getPendingRating = (
 };
 
 /**
- * Delete a previously saved criterion rating for a couple of entities in a
+ * Delete a previously saved criterion rating for a pair of entities in a
  * given poll.
+ *
+ * See `clearAllPendingRatings` to clear all criterion ratings related to
+ * a pair of entities.
  */
 export const clearPendingRating = (
   poll: string,
@@ -131,9 +137,13 @@ export const clearPendingRating = (
 };
 
 /**
- * Retrieve all previously saved criterion ratings for a couple of entity.
+ * Retrieve all previously saved criterion ratings for a pair of entities in a
+ * given poll.
  *
  * If `pop` is true, the ratings are deleted from the browser's local storage.
+ *
+ * To avoid parsing and writing a JSON content for each criterion, this
+ * function doesn't call `getPendingRating`.
  */
 export const getAllPendingRatings = (
   poll: string,
@@ -142,7 +152,13 @@ export const getAllPendingRatings = (
   criterias: PollCriteria[],
   pop?: boolean
 ): CriteriaValuesType => {
-  const pendings: CriteriaValuesType = {};
+  const pendingCriteria: CriteriaValuesType = {};
+
+  const pending = localStorage.getItem(PENDING_NS) ?? initPending();
+
+  if (pendingIsEmpty(pending)) {
+    return {};
+  }
 
   if (keyIsInvalid(poll, uidA, uidB, null)) {
     return {};
@@ -152,24 +168,27 @@ export const getAllPendingRatings = (
     return {};
   }
 
+  const pendingJSON = JSON.parse(pending);
+
   criterias.map((criterion) => {
-    const pendingRating = getPendingRating(
-      poll,
-      uidA,
-      uidB,
-      criterion.name,
-      pop
-    );
-    if (pendingRating) {
-      pendings[criterion.name] = pendingRating;
+    const pendingKey = makePendingKey(poll, uidA, uidB, criterion.name);
+    const rating = pendingJSON[pendingKey];
+
+    if (rating) {
+      pendingCriteria[criterion.name] = rating;
+
+      if (pop) {
+        delete pendingJSON[pendingKey];
+      }
     }
   });
 
-  return pendings;
+  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+  return pendingCriteria;
 };
 
 /**
- * Delete all previously saved criterion ratings for a couple of entities in a
+ * Delete all previously saved criterion ratings for a pair of entities in a
  * given poll.
  *
  * To avoid parsing and writing a JSON content for each criterion, this
