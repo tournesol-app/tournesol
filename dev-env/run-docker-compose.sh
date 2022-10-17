@@ -175,9 +175,8 @@ Commands:
 EOF
 }
 
-[[ -z "${1-}" ]] && dev_env_init && exit
-case $1 in
-	init)
+case ${1:-""} in
+	""|init)
     dev_env_init ;;
   download)
     DOWNLOAD_PUBLIC_DATASET=true
