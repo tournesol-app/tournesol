@@ -154,11 +154,11 @@ const HomeComparison = () => {
         }}
       >
         <EntitySelector
+          variant="noControl"
           title={`${entityName} 1`}
           value={selectorA}
           onChange={setSelectorA}
           otherUid={uidB}
-          light
         />
       </Grid>
       <Grid
@@ -170,11 +170,11 @@ const HomeComparison = () => {
         }}
       >
         <EntitySelector
+          variant="noControl"
           title={`${entityName} 2`}
           value={selectorB}
           onChange={setSelectorB}
           otherUid={uidA}
-          light
         />
       </Grid>
       <Grid item xs={12} mt={1} component={Card} elevation={2}>

@@ -43,7 +43,7 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
-  light?: boolean;
+  variant?: 'regular' | 'noControl';
 }
 
 export interface SelectorValue {
@@ -54,7 +54,13 @@ export interface SelectorValue {
 
 const isUidValid = (uid: string) => uid.match(/\w+:.+/);
 
-const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
+const EntitySelector = ({
+  title,
+  value,
+  onChange,
+  otherUid,
+  variant = 'regular',
+}: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
 
@@ -66,7 +72,7 @@ const EntitySelector = ({ title, value, onChange, otherUid, light }: Props) => {
           value={value}
           onChange={onChange}
           otherUid={otherUid}
-          light={light}
+          variant={variant}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -113,7 +119,7 @@ const EntitySelectorInnerAuth = ({
   value,
   onChange,
   otherUid,
-  light,
+  variant,
 }: Props) => {
   const { name: pollName, options } = useCurrentPoll();
 
@@ -121,6 +127,15 @@ const EntitySelectorInnerAuth = ({
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
+
+  let showEntityInput = true;
+  let showRatingControl = true;
+
+  switch (variant) {
+    case 'noControl':
+      showEntityInput = false;
+      showRatingControl = false;
+  }
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -232,7 +247,7 @@ const EntitySelectorInnerAuth = ({
 
   return (
     <>
-      {!light && (
+      {showEntityInput && (
         <>
           <Box
             mx={1}
@@ -277,7 +292,7 @@ const EntitySelectorInnerAuth = ({
         <EntityCard
           compact
           entity={rating.entity}
-          settings={light ? undefined : toggleAction}
+          settings={showRatingControl ? toggleAction : undefined}
         />
       ) : (
         <EmptyEntityCard compact loading={loading} />
