@@ -160,15 +160,17 @@ Commands:
   download
   Download up-to-date public dataset and initialize dev-env with this data.
   Options for 'load_public_dataset' management command can be passed.
+  WARNING: if a Youtube API key has been configured, a large amount of queries
+  to the API may be required to fetch metadata about all videos.
     ./run-docker-compose.sh download
     ./run-docker-compose.sh download --user-sampling 0.1
 
   restart
-  Restart dev_env services using the existing database. Containers will be rebuilt if necessary.
+  Recreate containers and restart all dev_env services using the existing database. Containers will be rebuilt if necessary.
     ./run-docker-compose.sh restart
 
   stop
-  Stop dev containers. The database will be persisted in "DB_DIR" folder.
+  Stop dev containers. The database will be persisted in "$DB_DIR" folder.
     ./run-docker-compose.sh stop
 EOF
 }
