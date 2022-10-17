@@ -163,3 +163,39 @@ export const getAllPendingRatings = (
 
   return pendings;
 };
+
+/**
+ * Delete all previously saved criterion ratings for a couple of entities in a
+ * given poll.
+ *
+ * To avoid parsing and writing a JSON content for each criterion, this
+ * function doesn't call `clearPendingRating`.
+ */
+export const clearAllPendingRatings = (
+  poll: string,
+  uidA: string,
+  uidB: string,
+  criterias: PollCriteria[]
+) => {
+  const pending = localStorage.getItem(PENDING_NS);
+
+  if (pending == null) {
+    return;
+  }
+
+  if (keyIsInvalid(poll, uidA, uidB, null)) {
+    return;
+  }
+
+  if (criterias.length === 0) {
+    return;
+  }
+
+  const pendingJSON = JSON.parse(pending);
+
+  criterias.map((criterion) => {
+    delete pendingJSON[makePendingKey(poll, uidA, uidB, criterion.name)];
+  });
+
+  localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
+};

@@ -14,6 +14,7 @@ import type {
 import CriteriaSlider from './CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
+  clearAllPendingRatings,
   clearPendingRating,
   getAllPendingRatings,
 } from 'src/utils/comparison/pending';
@@ -99,7 +100,7 @@ const ComparisonSliders = ({
       setComparison(
         castToComparison(
           initialComparison,
-          getAllPendingRatings(pollName, uidA, uidB, criterias, true)
+          getAllPendingRatings(pollName, uidA, uidB, criterias)
         )
       );
     },
@@ -120,6 +121,7 @@ const ComparisonSliders = ({
     try {
       await submit(comparison);
     } finally {
+      clearAllPendingRatings(pollName, uidA, uidB, criterias);
       setDisableSubmit(false);
     }
 
