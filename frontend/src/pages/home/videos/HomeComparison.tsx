@@ -122,19 +122,13 @@ const HomeComparison = () => {
           setSelectorA({ uid: entityA.uid, rating: null });
           setSelectorB({ uid: entityB.uid, rating: null });
         }
-        if (isLoading) {
-          setIsLoading(false);
-        }
+
+        setIsLoading(false);
       })
       .catch(() => {
-        if (isLoading) {
-          setIsLoading(false);
-        }
-
+        setIsLoading(false);
         setApiError(true);
       });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, pollName, tutorialLength]);
 
   const handleSliderChange = (criterion: string, value: number | undefined) => {
