@@ -16,6 +16,8 @@ import { OrderedDialogs } from 'src/utils/types';
 // instead
 const MIN_LENGTH = 2;
 
+const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
+
 interface Props {
   dialogs?: OrderedDialogs;
   generateInitial?: boolean;
@@ -157,6 +159,14 @@ const ComparisonSeries = ({
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
       setStep(newStep);
+    }
+
+    // Inform the child component `<Comparison>` to not trigger any additional
+    // refresh of its states. When the last comparison of the series is made,
+    // this component will be unmounted, so does the child component
+    // `<Comparison>`.
+    if (newStep === length) {
+      return { uid: UNMOUNT_SIGNAL, refreshLeft: false };
     }
 
     const newComparisons = comparisonIsNew

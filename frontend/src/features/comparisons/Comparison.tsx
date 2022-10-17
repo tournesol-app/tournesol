@@ -183,6 +183,12 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
 
     if (afterSubmitCallback) {
       const suggestion = afterSubmitCallback(c.entity_a.uid, c.entity_b.uid);
+
+      // Do not update the selectors when receiving this message.
+      if (suggestion.uid === '__UNMOUNTING_PARENT__') {
+        return;
+      }
+
       if (suggestion.uid) {
         if (suggestion.refreshLeft) {
           onChangeA({ uid: suggestion.uid, rating: null });
