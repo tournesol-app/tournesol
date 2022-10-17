@@ -25,6 +25,7 @@ interface Props {
   length: number;
   // redirect to this URL when the series is over
   redirectTo?: string;
+  keepUIDsAfterRedirect?: boolean;
   resumable?: boolean;
 }
 
@@ -46,6 +47,7 @@ const ComparisonSeries = ({
   getAlternatives,
   length,
   redirectTo,
+  keepUIDsAfterRedirect,
   resumable,
 }: Props) => {
   const location = useLocation();
@@ -268,11 +270,14 @@ const ComparisonSeries = ({
 
   if (redirectTo && step >= length) {
     const futureSearchParams = new URLSearchParams();
-    if (uidA) {
-      futureSearchParams.append('uidA', uidA);
-    }
-    if (uidB) {
-      futureSearchParams.append('uidB', uidB);
+
+    if (keepUIDsAfterRedirect) {
+      if (uidA) {
+        futureSearchParams.append('uidA', uidA);
+      }
+      if (uidB) {
+        futureSearchParams.append('uidB', uidB);
+      }
     }
 
     return (

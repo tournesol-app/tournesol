@@ -162,6 +162,7 @@ export const polls: Array<SelectablePoll> = [
           tutorialAlternatives: getAllCandidates,
           tutorialDialogs: getPresidentielleTutorialDialogs,
           tutorialRedirectTo: '/personal/feedback',
+          tutorialKeepUIDsAfterRedirect: false,
           unsafeDefault: true,
         },
       ]
@@ -185,6 +186,7 @@ export const polls: Array<SelectablePoll> = [
     tutorialAlternatives: getTutorialVideos,
     tutorialDialogs: getVideosTutorialDialogs,
     tutorialRedirectTo: '/comparison',
+    tutorialKeepUIDsAfterRedirect: true,
   },
 ];
 

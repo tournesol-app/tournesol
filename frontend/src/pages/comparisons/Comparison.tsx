@@ -26,7 +26,7 @@ const ComparisonPage = () => {
   const tutorialAlternatives = options?.tutorialAlternatives ?? undefined;
   const tutorialDialogs = options?.tutorialDialogs ?? undefined;
   const redirectTo = options?.tutorialRedirectTo ?? '/comparisons';
-
+  const keepUIDsAfterRedirect = options?.tutorialKeepUIDsAfterRedirect ?? true;
   const dialogs = tutorialDialogs ? tutorialDialogs(t) : undefined;
 
   return (
@@ -56,6 +56,7 @@ const ComparisonPage = () => {
             getAlternatives={tutorialAlternatives}
             length={tutorialLength}
             redirectTo={`${baseUrl}${redirectTo}`}
+            keepUIDsAfterRedirect={keepUIDsAfterRedirect}
             resumable={true}
           />
         ) : (
