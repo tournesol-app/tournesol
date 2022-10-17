@@ -98,7 +98,7 @@ export const getPendingRating = (
     localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
   }
 
-  return rating ? rating : null;
+  return rating ?? null;
 };
 
 /**
