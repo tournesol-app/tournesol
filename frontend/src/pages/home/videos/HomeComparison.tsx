@@ -70,17 +70,6 @@ const HomeComparison = () => {
    * to keep the home page comparison in sync with the tutorial.
    */
   useEffect(() => {
-    async function getAlternativesAsync(
-      getAlts: () => Promise<Array<Recommendation>>
-    ) {
-      const alts = await getAlts();
-
-      if (alts.length > 0) {
-        return alts;
-      }
-      return [];
-    }
-
     async function getUserComparisonsAsync(
       loggedIn: boolean,
       pName: string
@@ -102,7 +91,7 @@ const HomeComparison = () => {
     }
 
     const comparisonsPromise = getUserComparisonsAsync(isLoggedIn, pollName);
-    const alternativesPromise = getAlternativesAsync(getTutorialVideos);
+    const alternativesPromise = getTutorialVideos();
 
     Promise.all([comparisonsPromise, alternativesPromise])
       .then(([comparisons, entities]) => {
