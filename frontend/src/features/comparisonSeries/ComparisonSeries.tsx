@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { Container, Step, StepLabel, Stepper } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
@@ -10,13 +10,31 @@ import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 
-// this constant controls the render of the series, if the `length` prop of
+const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
+
+// This constant controls the render of the series, if the `length` prop of
 // the `ComparisonSeries` component is strictly inferior to this value, a
 // simple `Comparison` component with not extra features will be rendered
-// instead
+// instead.
 const MIN_LENGTH = 2;
 
-const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
+// This URL parameter is a flag asking the component to preserve the UIDs
+// present in the URL during the final redirection. Without it, users
+// having already completed the series will be redirected to an empty
+// comparison when trying to access a series link for a pair of UIDs.
+//
+// Example:
+//
+//    /comparison?series=true&uidA=${uidA}&uidB=${uidB}&keep_uids_after_redirect=true
+//
+// will redirect to:
+//
+//    /comparison?uidA=${uidA}&uidB=${uidB}
+//
+// instead of:
+//
+//    /comparison
+const URL_PARAM_KEEP_UIDS = 'keep_uids_after_redirect';
 
 interface Props {
   dialogs?: OrderedDialogs;
@@ -48,6 +66,9 @@ const ComparisonSeries = ({
   redirectTo,
   resumable,
 }: Props) => {
+  const history = useHistory();
+  const location = useLocation();
+
   const { name: pollName } = useCurrentPoll();
 
   // trigger the initialization on the first render only, to allow users to
@@ -91,6 +112,22 @@ const ComparisonSeries = ({
    * series.
    */
   useEffect(() => {
+    function cleanURLParams() {
+      // The URL_PARAM_KEEP_UIDS parameter shouldn't be kept if the user
+      // hasn't completed the series yet.
+      if (step < length - 1) {
+        const currentParams = new URLSearchParams(location.search);
+        const keepUID = currentParams.get(URL_PARAM_KEEP_UIDS);
+
+        if (keepUID === 'true') {
+          currentParams.delete(URL_PARAM_KEEP_UIDS);
+          history.push({ search: currentParams.toString() });
+        }
+      }
+    }
+
+    cleanURLParams();
+
     async function getAlternativesAsync(
       getAlts: () => Promise<Array<Entity | Recommendation>>
     ) {
