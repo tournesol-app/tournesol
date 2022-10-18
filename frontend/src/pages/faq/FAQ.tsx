@@ -32,7 +32,9 @@ const FAQ = () => {
    * `alreadyScrolled`.
    */
   useEffect(() => {
-    if (hash) {
+    // Do not scroll when it's not required.
+    if (hash && entries.length > 0) {
+      // Scroll only one time.
       if (!alreadyScrolled.current) {
         const element = document.getElementById(hash.substring(1));
         if (element) {
