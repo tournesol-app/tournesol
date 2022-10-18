@@ -204,6 +204,12 @@ class ExportTest(TestCase):
             ]
             self.assertEqual(zip_file.namelist(), expected_files)
 
+            with zip_file.open('tournesol_export/README.txt', 'r') as file:
+                content = file.read()
+                with open('tournesol/resources/export_readme.txt', 'rb') as readme_file:
+                    expected_content = readme_file.read()
+                self.assertEqual(content, expected_content)
+
             with zip_file.open('tournesol_export/comparisons.csv', 'r') as file:
                 content = file.read()
                 expected_content = self.client.get("/exports/comparisons/").content
