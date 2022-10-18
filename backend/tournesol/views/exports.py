@@ -19,13 +19,17 @@ from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 README_CONTENT = """\
-This is the public database of Tournesol (https://tournesol.app/).
+This archive contains the public datasets of the Tournesol project.
+
+All files are available under the terms of the Open Data Commons Attribution
+License (ODC-By) v1.0.
+
+See: https://opendatacommons.org/licenses/by/odc_by_1.0_public_text.txt
 
 
 comparisons.csv:
 
-This file contains all the comparisons of public videos made by Tournesol's
-users.
+This file contains all the public video comparisons made by Tournesol's users.
 
 
 users.csv:
