@@ -18,23 +18,31 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 def get_annotated_ratings():
-    # TODO: limit this querysets to the desired poll
-    comparison_counts = (
-        Comparison.objects.filter(user=OuterRef("user"))
+    """
+    Return a `ContributorRating` queryset with additional annotations like:
+        - the number of comparisons made by the user for the entity
+        - the date of the last comparison made for this entity
+
+    This queryset expects to be evaluated with a specific poll, user and
+    entity.
+    """
+    n_comparisons = (
+        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
         .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
         .annotate(count=Func("id", function="Count"))
         .values("count")
     )
 
     last_compared_at = (
-        Comparison.objects.filter(user=OuterRef("user"))
+        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
         .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-        .values("datetime_add").order_by("-datetime_add")
+        .values("datetime_add")
+        .order_by("-datetime_add")
     )[:1]
 
     return ContributorRating.objects.annotate(
-        n_comparisons=Subquery(comparison_counts),
-        last_compared_at=Subquery(last_compared_at)
+        n_comparisons=Subquery(n_comparisons),
+        last_compared_at=Subquery(last_compared_at),
     ).order_by("-entity__metadata__publication_date", "-pk")
 
 
@@ -57,6 +65,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
     Get or update the current user's rating for the designated entity.
     Used in particular to get or update the is_public attribute.
     """
+
     serializer_class = ContributorRatingSerializer
 
     def get_object(self):
@@ -83,6 +92,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
 )
 class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
     """List the contributor's rated entities on the given poll and their scores."""
+
     queryset = ContributorRating.objects.none()
 
     def get_serializer_class(self):
