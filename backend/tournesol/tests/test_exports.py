@@ -4,6 +4,7 @@ import zipfile
 
 from django.core.cache import cache
 from django.test import TestCase
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -187,35 +188,39 @@ class ExportTest(TestCase):
         # that we can verify they are only added once in the CSV
         self.add_comparison(user=self.public_comparisons, is_public=True)
 
-        response = self.client.get("/exports/all/")
+        with freeze_time("2022-10-01 12:34:56", tz_offset=0):
+            response = self.client.get("/exports/all/")
+
+        expected_root = "tournesol_export_20221001T123456Z"
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
         self.assertEqual(
             response.headers["Content-Disposition"],
-            "attachment; filename=tournesol_export.zip",
+            "attachment; filename={root}.zip".format(root=expected_root),
         )
 
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, 'r') as zip_file:
             expected_files = [
-                "tournesol_export/README.txt",
-                "tournesol_export/comparisons.csv",
-                "tournesol_export/users.csv",
+                expected_root + "/README.txt",
+                expected_root + "/comparisons.csv",
+                expected_root + "/users.csv",
             ]
             self.assertEqual(zip_file.namelist(), expected_files)
 
-            with zip_file.open('tournesol_export/README.txt', 'r') as file:
+            with zip_file.open(expected_root + '/README.txt', 'r') as file:
                 content = file.read()
                 with open('tournesol/resources/export_readme.txt', 'rb') as readme_file:
                     expected_content = readme_file.read()
                 self.assertEqual(content, expected_content)
 
-            with zip_file.open('tournesol_export/comparisons.csv', 'r') as file:
+            with zip_file.open(expected_root + '/comparisons.csv', 'r') as file:
                 content = file.read()
                 expected_content = self.client.get("/exports/comparisons/").content
                 self.assertEqual(content, expected_content)
 
-            with zip_file.open('tournesol_export/users.csv', 'r') as file:
+            with zip_file.open(expected_root + '/users.csv', 'r') as file:
                 content = file.read().decode('utf-8')
                 csv_file = csv.DictReader(io.StringIO(content))
                 rows = list(csv_file)

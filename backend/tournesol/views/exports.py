@@ -1,4 +1,5 @@
 import csv
+import datetime
 import zipfile
 from io import StringIO
 
@@ -198,7 +199,8 @@ class ExportPublicAllView(APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
-        zip_root = "tournesol_export"
+        now = datetime.datetime.utcnow()
+        zip_root = f"tournesol_export_{now.strftime('%Y%m%dT%H%M%SZ')}"
 
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
