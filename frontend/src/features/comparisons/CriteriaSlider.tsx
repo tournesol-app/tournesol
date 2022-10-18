@@ -103,7 +103,7 @@ const CriteriaSlider = ({
   criteria: string;
   criteriaLabel: string;
   criteriaValue: number | undefined;
-  disabled: boolean;
+  disabled?: boolean;
   handleSliderChange: (criteria: string, value: number | undefined) => void;
 }) => {
   const { t } = useTranslation();

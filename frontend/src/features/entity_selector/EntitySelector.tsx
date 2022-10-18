@@ -9,11 +9,17 @@ import EntityCard from 'src/components/entity/EntityCard';
 import EmptyEntityCard from 'src/components/entity/EmptyEntityCard';
 import { ActionList } from 'src/utils/types';
 import { extractVideoId } from 'src/utils/video';
-import { UsersService, ContributorRating } from 'src/services/openapi';
+import {
+  UsersService,
+  ContributorRating,
+  PollsService,
+  Recommendation,
+} from 'src/services/openapi';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import AutoEntityButton from './AutoEntityButton';
 import EntityInput from './EntityInput';
+import { useLoginState } from 'src/hooks';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -37,6 +43,7 @@ interface Props {
   value: SelectorValue;
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
+  variant?: 'regular' | 'noControl';
 }
 
 export interface SelectorValue {
@@ -47,14 +54,88 @@ export interface SelectorValue {
 
 const isUidValid = (uid: string) => uid.match(/\w+:.+/);
 
-const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
+const EntitySelector = ({
+  title,
+  value,
+  onChange,
+  otherUid,
+  variant = 'regular',
+}: Props) => {
   const classes = useStyles();
+  const { isLoggedIn } = useLoginState();
 
+  return (
+    <div className={classes.root}>
+      {isLoggedIn ? (
+        <EntitySelectorInnerAuth
+          title={title}
+          value={value}
+          onChange={onChange}
+          otherUid={otherUid}
+          variant={variant}
+        />
+      ) : (
+        <EntitySelectorInnerAnonymous value={value} />
+      )}
+    </div>
+  );
+};
+
+/**
+ * Display the content of an EntitySelector for anonymous users.
+ */
+const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
+  const { isLoggedIn } = useLoginState();
+  const { name: pollName } = useCurrentPoll();
+
+  const { uid } = value;
+  const [entityFallback, setEntityFallback] = useState<Recommendation>();
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function getEntity() {
+      return await PollsService.pollsEntitiesRetrieve({ name: pollName, uid });
+    }
+
+    // Wait for a not null / not empty UID before making an HTTP request.
+    if (uid) {
+      getEntity().then((entity) => {
+        setLoading(false);
+        setEntityFallback(entity);
+      });
+    }
+  }, [isLoggedIn, pollName, uid]);
+
+  return entityFallback ? (
+    <EntityCard compact entity={entityFallback} settings={undefined} />
+  ) : (
+    <EmptyEntityCard compact loading={loading} />
+  );
+};
+
+const EntitySelectorInnerAuth = ({
+  title,
+  value,
+  onChange,
+  otherUid,
+  variant,
+}: Props) => {
   const { name: pollName, options } = useCurrentPoll();
 
   const { uid, rating, ratingIsExpired } = value;
+
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState(value.uid);
+
+  let showEntityInput = true;
+  let showRatingControl = true;
+
+  switch (variant) {
+    case 'noControl':
+      showEntityInput = false;
+      showRatingControl = false;
+  }
 
   const loadRating = useCallback(async () => {
     setLoading(true);
@@ -99,7 +180,7 @@ const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
     if (isUidValid(uid) && rating == null) {
       loadRating();
     }
-  }, [loadRating, uid, rating]);
+  }, [loadRating, rating, uid]);
 
   useEffect(() => {
     // Reload rating after the parent (comparison) form has been submitted.
@@ -165,49 +246,58 @@ const EntitySelector = ({ title, value, onChange, otherUid }: Props) => {
   }, [handleRatingUpdate, rating]);
 
   return (
-    <div className={classes.root}>
-      <Box
-        mx={1}
-        marginTop="4px"
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-      >
-        <Typography
-          variant="h6"
-          color="secondary"
-          flexGrow={1}
-          sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
-        >
-          {title}
-        </Typography>
-        <AutoEntityButton
-          disabled={loading}
-          currentUid={uid}
-          otherUid={otherUid}
-          onClick={() => {
-            setInputValue('');
-            setLoading(true);
-          }}
-          onResponse={(uid) => {
-            uid ? onChange({ uid, rating: null }) : setLoading(false);
-          }}
-        />
-      </Box>
-      <Box mx={1} marginBottom={1}>
-        <EntityInput
-          value={inputValue || uid}
-          onChange={handleChange}
-          otherUid={otherUid}
-        />
-      </Box>
+    <>
+      {showEntityInput && (
+        <>
+          <Box
+            mx={1}
+            marginTop="4px"
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+          >
+            <Typography
+              variant="h6"
+              color="secondary"
+              flexGrow={1}
+              sx={{ '&:first-letter': { textTransform: 'capitalize' } }}
+            >
+              {title}
+            </Typography>
+            <AutoEntityButton
+              disabled={loading}
+              currentUid={uid}
+              otherUid={otherUid}
+              onClick={() => {
+                setInputValue('');
+                setLoading(true);
+              }}
+              onResponse={(uid) => {
+                uid ? onChange({ uid, rating: null }) : setLoading(false);
+              }}
+            />
+          </Box>
+
+          <Box mx={1} marginBottom={1}>
+            <EntityInput
+              value={inputValue || uid}
+              onChange={handleChange}
+              otherUid={otherUid}
+            />
+          </Box>
+        </>
+      )}
 
       {rating ? (
-        <EntityCard compact entity={rating.entity} settings={toggleAction} />
+        <EntityCard
+          compact
+          entity={rating.entity}
+          settings={showRatingControl ? toggleAction : undefined}
+        />
       ) : (
         <EmptyEntityCard compact loading={loading} />
       )}
-    </div>
+    </>
   );
 };
 
