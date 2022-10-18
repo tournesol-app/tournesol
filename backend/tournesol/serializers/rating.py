@@ -21,13 +21,17 @@ class ContributorRatingSerializer(ModelSerializer):
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
     )
-    comparison_date = SerializerMethodField(
-        help_text="Date of comparison(oldest / newest) to order ratings"
-    )
+    last_compared_at = SerializerMethodField()
 
     class Meta:
         model = ContributorRating
-        fields = ["entity", "is_public", "criteria_scores", "n_comparisons", "comparison_date"]
+        fields = [
+            "entity",
+            "is_public",
+            "criteria_scores",
+            "n_comparisons",
+            "last_compared_at",
+        ]
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_comparisons(self, obj):
@@ -44,19 +48,19 @@ class ContributorRatingSerializer(ModelSerializer):
         ).count()
 
     @extend_schema_field(OpenApiTypes.DATETIME)
-    def get_comparison_date(self, obj):
-        """
-        The dates of each comparisons
-        """
-        if hasattr(obj, "comparison_date"):
+    def get_last_compared_at(self, obj):
+        if not hasattr(obj, "last_compared_at"):
             # Use annotated field if it has been defined by the queryset
-            return obj.comparison_date
-        
-        comparisons = obj.user.comparisons.filter(
-            Q(poll=self.context["poll"])
-            & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
+            return obj.last_compared_at
+
+        last_compared_at = (
+            obj.user.comparisons.filter(poll=self.context["poll"])
+            .filter(Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
+            .values("datetime_add")
+            .order_by("-datetime_add")[:1]
         )
-        return list(comparisons.values_list("datetime_add", flat=True))
+
+        return last_compared_at.first()["datetime_add"]
 
     def to_internal_value(self, data):
         """

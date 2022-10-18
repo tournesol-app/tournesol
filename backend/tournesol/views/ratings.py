@@ -18,14 +18,23 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
 def get_annotated_ratings():
+    # TODO: limit this querysets to the desired poll
     comparison_counts = (
         Comparison.objects.filter(user=OuterRef("user"))
         .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
         .annotate(count=Func("id", function="Count"))
         .values("count")
     )
+
+    last_compared_at = (
+        Comparison.objects.filter(user=OuterRef("user"))
+        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
+        .values("datetime_add").order_by("-datetime_add")
+    )[:1]
+
     return ContributorRating.objects.annotate(
-        n_comparisons=Subquery(comparison_counts)
+        n_comparisons=Subquery(comparison_counts),
+        last_compared_at=Subquery(last_compared_at)
     ).order_by("-entity__metadata__publication_date", "-pk")
 
 
@@ -102,7 +111,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                 )
 
         order_by = self.kwargs.get("order_by")
-        
+
         if order_by:
             if order_by == "comparison_date":
                 max_comparison_date = (
@@ -112,7 +121,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                     .values("max")
                 )
                 ratings = ratings.annotate(
-                    comparison_date = Subquery(max_comparison_date)
+                    comparison_date=Subquery(max_comparison_date)
                 ).order_by("-comparison_date")
             elif order_by == "-comparison_date":
                 max_comparison_date = (
@@ -122,7 +131,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                     .values("min")
                 )
                 ratings = ratings.annotate(
-                    comparison_date = Subquery(max_comparison_date)
+                    comparison_date=Subquery(max_comparison_date)
                 ).order_by("comparison_date")
             elif order_by == "n_comparisons":
                 ratings = ratings.order_by("-n_comparisons")
