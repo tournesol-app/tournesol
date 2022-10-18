@@ -53,14 +53,18 @@ class ContributorRatingSerializer(ModelSerializer):
             # Use annotated field if it has been defined by the queryset
             return obj.last_compared_at
 
-        last_compared_at = (
+        last_comparison = (
             obj.user.comparisons.filter(poll=self.context["poll"])
             .filter(Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
-            .values("datetime_add")
-            .order_by("-datetime_add")[:1]
-        )
+            .values("datetime_lastedit")
+            .order_by("-datetime_lastedit")[:1]
+        ).first()
 
-        return last_compared_at.first()["datetime_add"]
+        # When a `ContributorRating` doesn't have any related comparison.
+        if not last_comparison:
+            return None
+
+        return last_comparison["datetime_lastedit"]
 
     def to_internal_value(self, data):
         """

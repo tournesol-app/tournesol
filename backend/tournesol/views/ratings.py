@@ -36,8 +36,8 @@ def get_annotated_ratings():
     last_compared_at = (
         Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
         .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-        .values("datetime_add")
-        .order_by("-datetime_add")
+        .values("datetime_lastedit")
+        .order_by("-datetime_lastedit")
     )[:1]
 
     return ContributorRating.objects.annotate(
