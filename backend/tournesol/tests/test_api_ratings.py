@@ -264,15 +264,15 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["results"], sorted_array)
 
         # get ratings by comparison date - the most recent one first
-        response = self.client.get(self.ratings_base_url + "order_by=comparison_date/", format="json")
+        response = self.client.get(self.ratings_base_url + "order_by=last_compared_at/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        sorted_array = sorted(response.data["results"], key=lambda x: x["comparison_date"])
+        sorted_array = sorted(response.data["results"], key=lambda x: x["last_compared_at"])
         self.assertEqual(response.data["results"], sorted_array)
 
         # get ratings by comparison date - the oldest first
-        response = self.client.get(self.ratings_base_url + "order_by=-comparison_date/", format="json")
+        response = self.client.get(self.ratings_base_url + "order_by=-last_compared_at/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        sorted_array = sorted(response.data["results"], key=lambda x: x["comparison_date"], reverse=True)
+        sorted_array = sorted(response.data["results"], key=lambda x: x["last_compared_at"], reverse=True)
         self.assertEqual(response.data["results"], sorted_array)
         
         # bad parameter

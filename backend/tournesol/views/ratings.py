@@ -123,30 +123,14 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
         order_by = self.kwargs.get("order_by")
 
         if order_by:
-            if order_by == "comparison_date":
-                max_comparison_date = (
-                    Comparison.objects.filter(user=OuterRef("user"))
-                    .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-                    .annotate(max=Func("datetime_add", function="Max"))
-                    .values("max")
-                )
-                ratings = ratings.annotate(
-                    comparison_date=Subquery(max_comparison_date)
-                ).order_by("-comparison_date")
-            elif order_by == "-comparison_date":
-                max_comparison_date = (
-                    Comparison.objects.filter(user=OuterRef("user"))
-                    .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
-                    .annotate(min=Func("datetime_add", function="Min"))
-                    .values("min")
-                )
-                ratings = ratings.annotate(
-                    comparison_date=Subquery(max_comparison_date)
-                ).order_by("comparison_date")
+            if order_by == "last_compared_at":
+                ratings.order_by("last_compared_at")
+            elif order_by == "-last_compared_at":
+                ratings.order_by("-last_compared_at")
             elif order_by == "n_comparisons":
-                ratings = ratings.order_by("-n_comparisons")
-            elif order_by == "-n_comparisons":
                 ratings = ratings.order_by("n_comparisons")
+            elif order_by == "-n_comparisons":
+                ratings = ratings.order_by("-n_comparisons")
             else:
                 raise exceptions.ValidationError(
                     "'order_by' URL param is not valid"
