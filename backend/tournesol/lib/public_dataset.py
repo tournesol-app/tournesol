@@ -62,10 +62,10 @@ def get_dataset(poll_name: str) -> QuerySet:
     )
 
 
-def get_user_dataset(poll_name: str) -> QuerySet:
+def get_users_dataset(poll_name: str) -> QuerySet:
     """
-    Retrieve users present in the public dataset and return a non-evaluated
-    Django `RawQuerySet`.
+    Retrieve users with at least one public comparison and return a
+    non-evaluated Django `RawQuerySet`.
     """
     from core.models import User  # pylint: disable=import-outside-toplevel
 

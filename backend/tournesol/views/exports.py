@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.lib.public_dataset import get_dataset, get_user_dataset
+from tournesol.lib.public_dataset import get_dataset, get_users_dataset
 from tournesol.models import Comparison, Poll
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
@@ -115,7 +115,7 @@ def write_public_users_file(poll_name: str, write_target) -> None:
             "public_username": user.username,
             "voting_right": user.voting_right,
         }
-        for user in get_user_dataset(poll_name).iterator()
+        for user in get_users_dataset(poll_name).iterator()
     )
 
 
