@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
@@ -14,12 +15,33 @@ import { FAQEntry, FaqService } from 'src/services/openapi';
  * their questions directly on Discord.
  */
 const FAQ = () => {
+  const { hash } = useLocation();
   const { i18n } = useTranslation();
   const { contactAdministrator } = useNotifications();
 
+  const alreadyScrolled = React.useRef(false);
   const [entries, setEntries] = useState<Array<FAQEntry>>([]);
 
   const currentLang = i18n.resolvedLanguage;
+
+  /**
+   * Automatically scroll to the requested anchor, after the entries has been
+   * loaded.
+   *
+   * Performed only after the first loading thanks to the ref
+   * `alreadyScrolled`.
+   */
+  useEffect(() => {
+    if (hash) {
+      if (!alreadyScrolled.current) {
+        const element = document.getElementById(hash.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          alreadyScrolled.current = true;
+        }
+      }
+    }
+  }, [hash, entries]);
 
   useEffect(() => {
     async function getFaqEntries() {
