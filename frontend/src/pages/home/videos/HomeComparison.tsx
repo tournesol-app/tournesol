@@ -132,7 +132,7 @@ const HomeComparison = () => {
   }, [isLoggedIn, pollName, tutorialLength]);
 
   const handleSliderChange = (criterion: string, value: number | undefined) => {
-    if (value) {
+    if (value != null) {
       setCriteriaValue(value);
       setPendingRating(pollName, uidA, uidB, criterion, value);
     }
