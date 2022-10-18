@@ -222,3 +222,7 @@ export const clearAllPendingRatings = (
 
   localStorage.setItem(PENDING_NS, JSON.stringify(pendingJSON));
 };
+
+export const resetPendingRatings = () => {
+  localStorage.setItem(PENDING_NS, initPending());
+};

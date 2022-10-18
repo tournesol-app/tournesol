@@ -14,9 +14,9 @@ import type {
 import CriteriaSlider from './CriteriaSlider';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import {
-  clearAllPendingRatings,
   clearPendingRating,
   getAllPendingRatings,
+  resetPendingRatings,
 } from 'src/utils/comparison/pending';
 import { CriteriaValuesType } from 'src/utils/types';
 
@@ -117,11 +117,11 @@ const ComparisonSliders = ({
 
   const submitComparison = async () => {
     setDisableSubmit(true);
+    resetPendingRatings();
 
     try {
       await submit(comparison);
     } finally {
-      clearAllPendingRatings(pollName, uidA, uidB, criterias);
       setDisableSubmit(false);
     }
 
