@@ -32,7 +32,8 @@ const FAQEntryList = ({ entries }: { entries: Array<FAQEntry> }) => {
     event: React.MouseEvent<HTMLElement>,
     anchor: string
   ) => {
-    navigator.clipboard.writeText(window.location.toString() + `#${anchor}`);
+    const uri = `${location.protocol}//${location.host}${location.pathname}#${anchor}`;
+    navigator.clipboard.writeText(uri);
     enqueueSnackbar(t('faqEntryList.questionURLCopied'), {
       variant: 'success',
       autoHideDuration: SNACKBAR_DYNAMIC_FEEDBACK_MS,
