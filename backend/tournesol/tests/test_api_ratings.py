@@ -256,7 +256,35 @@ class RatingApi(TestCase):
         An authenticated user can list its ratings related to a poll by the
         number of comparisons.
         """
-        self.client.force_authenticate(user=self.user2)
+        new_user = UserFactory()
+
+        self.client.force_authenticate(user=new_user)
+
+        new_video1 = VideoFactory()
+        new_video2 = VideoFactory()
+        new_video3 = VideoFactory()
+        new_video4 = VideoFactory()
+
+        ContributorRatingFactory(user=new_user, entity=new_video1, is_public=True)
+        ContributorRatingFactory(user=new_user, entity=new_video2, is_public=True)
+        ContributorRatingFactory(user=new_user, entity=new_video3, is_public=True)
+        ContributorRatingFactory(user=new_user, entity=new_video4, is_public=True)
+
+        # new_video1 has 3 comparisons
+        for entity_b in [new_video2, new_video3, new_video4]:
+            ComparisonFactory(
+                user=new_user,
+                entity_1=new_video1,
+                entity_2=entity_b,
+            )
+
+        # new_video2 has 2 comparisons
+        for entity_b in [new_video3]:
+            ComparisonFactory(
+                user=new_user,
+                entity_1=new_video2,
+                entity_2=entity_b,
+            )
 
         # The least compared first.
         response = self.client.get(
@@ -264,20 +292,20 @@ class RatingApi(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        sorted_array = sorted(
-            response.data["results"], key=lambda x: x["n_comparisons"]
+        self.assertEqual(
+            [r["n_comparisons"] for r in response.data["results"]],
+            [1, 2, 2, 3]
         )
-        self.assertEqual(response.data["results"], sorted_array)
 
         # The most compared first.
         response = self.client.get(
             self.ratings_base_url + "order_by=-n_comparisons/", format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        sorted_array = sorted(
-            response.data["results"], key=lambda x: x["n_comparisons"], reverse=True
+        self.assertEqual(
+            [r["n_comparisons"] for r in response.data["results"]],
+            [3, 2, 2, 1]
         )
-        self.assertEqual(response.data["results"], sorted_array)
 
     def test_authenticated_can_list_ordered_by_last_compared_at(self):
         """
@@ -310,6 +338,7 @@ class RatingApi(TestCase):
 
         ten_days_ago = self.comparison_user2.datetime_lastedit - timedelta(days=10)
         ten_days_ahead = self.comparison_user2.datetime_lastedit + timedelta(days=10)
+        # update() allows to bypass the auto_now=True of the `datetime_lastedit` field.
         Comparison.objects.filter(pk=comp_old.pk).update(datetime_lastedit=ten_days_ago)
         Comparison.objects.filter(pk=comp_recent.pk).update(datetime_lastedit=ten_days_ahead)
 
@@ -342,7 +371,7 @@ class RatingApi(TestCase):
         """
         self.client.force_authenticate(user=self.user2)
         response = self.client.get(
-            self.ratings_base_url + "order_by=comparison/", format="json"
+            self.ratings_base_url + "order_by=INVALID/", format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
