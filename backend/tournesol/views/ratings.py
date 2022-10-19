@@ -43,7 +43,7 @@ def get_annotated_ratings():
     return ContributorRating.objects.annotate(
         n_comparisons=Subquery(n_comparisons),
         last_compared_at=Subquery(last_compared_at),
-    ).order_by("-entity__metadata__publication_date", "-pk")
+    )
 
 
 @extend_schema_view(
@@ -124,9 +124,9 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
 
         if order_by:
             if order_by == "last_compared_at":
-                ratings.order_by("last_compared_at")
+                ratings = ratings.order_by("last_compared_at")
             elif order_by == "-last_compared_at":
-                ratings.order_by("-last_compared_at")
+                ratings = ratings.order_by("-last_compared_at")
             elif order_by == "n_comparisons":
                 ratings = ratings.order_by("n_comparisons")
             elif order_by == "-n_comparisons":
@@ -135,6 +135,10 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                 raise exceptions.ValidationError(
                     "'order_by' URL param is not valid"
                 )
+        else:
+            # Default ordering.
+            # TODO: should be agreed with the team.
+            ratings.order_by("-entity__metadata__publication_date", "-pk")
         return ratings
 
 

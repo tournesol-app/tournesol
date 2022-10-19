@@ -1,10 +1,12 @@
+from datetime import timedelta
+
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import ContributorRating, Poll
+from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
@@ -40,7 +42,7 @@ class RatingApi(TestCase):
             entity_2=self.video2,
         )
         ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
-        ComparisonFactory(
+        self.comparison_user2 = ComparisonFactory(
             user=self.user2,
             entity_1=self.video1,
             entity_2=self.video2,
@@ -260,6 +262,7 @@ class RatingApi(TestCase):
         response = self.client.get(
             self.ratings_base_url + "order_by=n_comparisons/", format="json"
         )
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         sorted_array = sorted(
             response.data["results"], key=lambda x: x["n_comparisons"]
@@ -281,19 +284,47 @@ class RatingApi(TestCase):
         An authenticated user can list its ratings related to a poll by the
         last comparison date.
         """
+
+        video_old1 = VideoFactory()
+        video_old2 = VideoFactory()
+        video_recent1 = VideoFactory()
+        video_recent2 = VideoFactory()
+
+        ContributorRatingFactory(user=self.user2, entity=video_old1, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=video_old2, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=video_recent1, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=video_recent2, is_public=True)
+
+        comp_old = ComparisonFactory(
+            user=self.user2,
+            entity_1=video_old1,
+            entity_2=video_old2,
+        )
+
+        comp_recent = ComparisonFactory(
+            user=self.user2,
+            entity_1=video_recent1,
+            entity_2=video_recent2,
+
+        )
+
+        ten_days_ago = self.comparison_user2.datetime_lastedit - timedelta(days=10)
+        ten_days_ahead = self.comparison_user2.datetime_lastedit + timedelta(days=10)
+        Comparison.objects.filter(pk=comp_old.pk).update(datetime_lastedit=ten_days_ago)
+        Comparison.objects.filter(pk=comp_recent.pk).update(datetime_lastedit=ten_days_ahead)
+
         self.client.force_authenticate(user=self.user2)
 
         # The oldest first
         response = self.client.get(
             self.ratings_base_url + "order_by=last_compared_at/", format="json"
         )
-        import ipdb; ipdb.set_trace()
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         sorted_array = sorted(
             response.data["results"], key=lambda x: x["last_compared_at"]
         )
-        self.assertEqual(response.data["results"], sorted_array)
-
+        self.assertEqual(response.data["results"], sorted_array, response.data["results"])
         # The most recent first
         response = self.client.get(
             self.ratings_base_url + "order_by=-last_compared_at/", format="json"
