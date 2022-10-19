@@ -17,6 +17,14 @@ from tournesol.serializers.rating import (
 )
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
+# The only values accepted by the URL parameter `order_by` in the list APIs.
+ALLOWED_ORDER_BY_VALUES = [
+    "last_compared_at",
+    "-last_compared_at",
+    "n_comparisons",
+    "-n_comparisons",
+]
+
 
 def get_annotated_ratings():
     """
@@ -80,10 +88,23 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve the logged in user's ratings per video in a given poll"
-        "(computed automatically from the user's comparisons).",
+        description="Retrieve the logged-in user's ratings per entity in a given poll"
+        " (computed automatically from the user's comparisons).",
         parameters=[
-            OpenApiParameter("is_public", OpenApiTypes.BOOL, OpenApiParameter.QUERY)
+            OpenApiParameter(
+                "is_public",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Filter public or private ratings.",
+            ),
+            OpenApiParameter(
+                "order_by",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Order the results by:"
+                + ", ".join(ALLOWED_ORDER_BY_VALUES)
+                + ".",
+            ),
         ],
     ),
     post=extend_schema(
@@ -95,14 +116,6 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
     """List the contributor's rated entities on the given poll and their scores."""
 
     queryset = ContributorRating.objects.none()
-
-    # The only values accepted by the URL parameter `order_by`.
-    allowed_order_by_values = [
-        "last_compared_at",
-        "-last_compared_at",
-        "n_comparisons",
-        "-n_comparisons",
-    ]
 
     def _filter_queryset_by_visibility(self, qst):
         is_public = self.request.query_params.get("is_public")
@@ -125,12 +138,12 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
 
         If not order is specified, the default order is used.
         """
-        order_by = self.kwargs.get("order_by")
+        order_by = self.request.query_params.get("order_by")
 
         if not order_by:
             return qst.order_by("-entity__metadata__publication_date", "-pk")
 
-        if order_by not in self.allowed_order_by_values:
+        if order_by not in ALLOWED_ORDER_BY_VALUES:
             raise ValidationError("The URL parameter 'order_by' is invalid.")
         return qst.order_by(order_by)
 

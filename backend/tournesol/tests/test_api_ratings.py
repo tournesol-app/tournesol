@@ -287,9 +287,7 @@ class RatingApi(TestCase):
             )
 
         # The least compared first.
-        response = self.client.get(
-            self.ratings_base_url + "order_by=n_comparisons/", format="json"
-        )
+        response = self.client.get(self.ratings_base_url + "?order_by=n_comparisons")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
@@ -297,9 +295,7 @@ class RatingApi(TestCase):
         )
 
         # The most compared first.
-        response = self.client.get(
-            self.ratings_base_url + "order_by=-n_comparisons/", format="json"
-        )
+        response = self.client.get(self.ratings_base_url + "?order_by=-n_comparisons")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             [r["n_comparisons"] for r in response.data["results"]], [3, 2, 2, 1]
@@ -345,7 +341,7 @@ class RatingApi(TestCase):
 
         # The oldest first
         response = self.client.get(
-            self.ratings_base_url + "order_by=last_compared_at/", format="json"
+            self.ratings_base_url + "?order_by=last_compared_at",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -357,7 +353,7 @@ class RatingApi(TestCase):
         )
         # The most recent first
         response = self.client.get(
-            self.ratings_base_url + "order_by=-last_compared_at/", format="json"
+            self.ratings_base_url + "?order_by=-last_compared_at",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         sorted_array = sorted(
