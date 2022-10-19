@@ -2449,9 +2449,14 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - criteria_scores
       - entity
+      - last_compared_at
       - n_comparisons
     ContributorRatingCreateRequest:
       type: object

@@ -21,7 +21,7 @@ class ContributorRatingSerializer(ModelSerializer):
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
     )
-    last_compared_at = SerializerMethodField()
+    last_compared_at = SerializerMethodField(read_only=True)
 
     class Meta:
         model = ContributorRating
@@ -49,7 +49,7 @@ class ContributorRatingSerializer(ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.DATETIME)
     def get_last_compared_at(self, obj):
-        if not hasattr(obj, "last_compared_at"):
+        if hasattr(obj, "last_compared_at"):
             # Use annotated field if it has been defined by the queryset
             return obj.last_compared_at
 
@@ -80,7 +80,14 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
 
     class Meta:
         model = ContributorRating
-        fields = ["uid", "is_public", "entity", "criteria_scores", "n_comparisons"]
+        fields = [
+            "uid",
+            "is_public",
+            "entity",
+            "criteria_scores",
+            "n_comparisons",
+            "last_compared_at",
+        ]
 
     def validate(self, attrs):
         uid = attrs.pop("uid")

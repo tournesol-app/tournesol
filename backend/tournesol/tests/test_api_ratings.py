@@ -368,7 +368,7 @@ class RatingApi(TestCase):
         """
         self.client.force_authenticate(user=self.user2)
         response = self.client.get(
-            self.ratings_base_url + "order_by=INVALID/", format="json"
+            self.ratings_base_url + "?order_by=INVALID", format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
