@@ -293,8 +293,7 @@ class RatingApi(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [r["n_comparisons"] for r in response.data["results"]],
-            [1, 2, 2, 3]
+            [r["n_comparisons"] for r in response.data["results"]], [1, 2, 2, 3]
         )
 
         # The most compared first.
@@ -303,8 +302,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            [r["n_comparisons"] for r in response.data["results"]],
-            [3, 2, 2, 1]
+            [r["n_comparisons"] for r in response.data["results"]], [3, 2, 2, 1]
         )
 
     def test_authenticated_can_list_ordered_by_last_compared_at(self):
@@ -333,14 +331,15 @@ class RatingApi(TestCase):
             user=self.user2,
             entity_1=video_recent1,
             entity_2=video_recent2,
-
         )
 
         ten_days_ago = self.comparison_user2.datetime_lastedit - timedelta(days=10)
         ten_days_ahead = self.comparison_user2.datetime_lastedit + timedelta(days=10)
         # update() allows to bypass the auto_now=True of the `datetime_lastedit` field.
         Comparison.objects.filter(pk=comp_old.pk).update(datetime_lastedit=ten_days_ago)
-        Comparison.objects.filter(pk=comp_recent.pk).update(datetime_lastedit=ten_days_ahead)
+        Comparison.objects.filter(pk=comp_recent.pk).update(
+            datetime_lastedit=ten_days_ahead
+        )
 
         self.client.force_authenticate(user=self.user2)
 
@@ -353,7 +352,9 @@ class RatingApi(TestCase):
         sorted_array = sorted(
             response.data["results"], key=lambda x: x["last_compared_at"]
         )
-        self.assertEqual(response.data["results"], sorted_array, response.data["results"])
+        self.assertEqual(
+            response.data["results"], sorted_array, response.data["results"]
+        )
         # The most recent first
         response = self.client.get(
             self.ratings_base_url + "order_by=-last_compared_at/", format="json"
