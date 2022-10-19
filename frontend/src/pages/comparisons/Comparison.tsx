@@ -51,22 +51,21 @@ const ComparisonPage = () => {
             </Box>
           )}
 
-
-        {series === 'true' && tutorialLength > 0 ? (
-          <ComparisonSeries
-            dialogs={dialogs}
-            generateInitial={true}
-            getAlternatives={tutorialAlternatives}
-            length={tutorialLength}
-            redirectTo={`${baseUrl}${redirectTo}`}
-            keepUIDsAfterRedirect={keepUIDsAfterRedirect}
-            resumable={true}
-          />
-        ) : (
-          <Comparison />
-        )}
-      </Box>
-     </ContentBox>
+          {series === 'true' && tutorialLength > 0 ? (
+            <ComparisonSeries
+              dialogs={dialogs}
+              generateInitial={true}
+              getAlternatives={tutorialAlternatives}
+              length={tutorialLength}
+              redirectTo={`${baseUrl}${redirectTo}`}
+              keepUIDsAfterRedirect={keepUIDsAfterRedirect}
+              resumable={true}
+            />
+          ) : (
+            <Comparison />
+          )}
+        </Box>
+      </ContentBox>
     </>
   );
 };
