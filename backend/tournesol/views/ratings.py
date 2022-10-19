@@ -95,6 +95,30 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
 
     queryset = ContributorRating.objects.none()
 
+    # The only values accepted by the URL parameter `order_by`.
+    allowed_order_by_values = [
+        "last_compared_at",
+        "-last_compared_at",
+        "n_comparisons",
+        "-n_comparisons",
+    ]
+
+    def _order_queryset(self, qst):
+        """
+        Return an ordered queryset based on the `order_by` URL parameter. Raise
+        `ValidationError` if the `order_by` value is not accepted by this view.
+
+        If not order is specified, the default order is used.
+        """
+        order_by = self.kwargs.get("order_by")
+
+        if not order_by:
+            return qst.order_by("-entity__metadata__publication_date", "-pk")
+
+        if order_by not in self.allowed_order_by_values:
+            raise exceptions.ValidationError("The URL parameter 'order_by' is invalid.")
+        return qst.order_by(order_by)
+
     def get_serializer_class(self):
         if self.request.method == "POST":
             return ContributorRatingCreateSerializer
@@ -120,25 +144,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
                     "'is_public' query param must be 'true' or 'false'"
                 )
 
-        order_by = self.kwargs.get("order_by")
-
-        if order_by:
-            if order_by == "last_compared_at":
-                ratings = ratings.order_by("last_compared_at")
-            elif order_by == "-last_compared_at":
-                ratings = ratings.order_by("-last_compared_at")
-            elif order_by == "n_comparisons":
-                ratings = ratings.order_by("n_comparisons")
-            elif order_by == "-n_comparisons":
-                ratings = ratings.order_by("-n_comparisons")
-            else:
-                raise exceptions.ValidationError(
-                    "'order_by' URL param is not valid"
-                )
-        else:
-            # Default ordering.
-            # TODO: should be agreed with the team.
-            ratings.order_by("-entity__metadata__publication_date", "-pk")
+        ratings = self._order_queryset(ratings)
         return ratings
 
 
