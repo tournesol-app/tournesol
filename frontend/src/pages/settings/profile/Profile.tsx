@@ -6,8 +6,10 @@ import Grid from '@mui/material/Grid';
 import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import ProfileForm from 'src/features/settings/profile/ProfileForm';
-
-import { mainSectionBreakpoints, settingsMenuBreakpoints } from '../layout';
+import {
+  mainSectionBreakpoints,
+  settingsMenuBreakpoints,
+} from 'src/pages/settings/layout';
 
 function ProfilePage() {
   const { t } = useTranslation();

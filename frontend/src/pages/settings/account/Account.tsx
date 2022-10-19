@@ -8,7 +8,6 @@ import DeleteAccountForm from 'src/features/settings/account/DeleteAccountForm';
 import EmailAddressForm from 'src/features/settings/account/EmailAddressForm';
 import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
-
 import {
   mainSectionBreakpoints,
   settingsMenuBreakpoints,
