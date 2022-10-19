@@ -101,7 +101,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
                 "order_by",
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
-                description="Order the results by:"
+                description="Order the results by: "
                 + ", ".join(ALLOWED_ORDER_BY_VALUES)
                 + ".",
             ),
