@@ -1205,8 +1205,8 @@ paths:
   /users/me/contributor_ratings/{poll_name}/:
     get:
       operationId: users_me_contributor_ratings_list
-      description: Retrieve the logged in user's ratings per video in a given poll(computed
-        automatically from the user's comparisons).
+      description: Retrieve the logged-in user's ratings per entity in a given poll
+        (computed automatically from the user's comparisons).
       parameters:
       - in: path
         name: poll_name
@@ -1229,6 +1229,13 @@ paths:
         name: is_public
         schema:
           type: boolean
+        description: Filter public or private ratings.
+      - in: query
+        name: order_by
+        schema:
+          type: string
+        description: 'Order the results by: last_compared_at, -last_compared_at, n_comparisons,
+          -n_comparisons.'
       tags:
       - users
       security:
@@ -2413,9 +2420,14 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - criteria_scores
       - entity
+      - last_compared_at
       - n_comparisons
     ContributorRatingCreate:
       type: object
@@ -2437,9 +2449,14 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - criteria_scores
       - entity
+      - last_compared_at
       - n_comparisons
     ContributorRatingCreateRequest:
       type: object
