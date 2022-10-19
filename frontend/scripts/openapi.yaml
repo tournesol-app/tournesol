@@ -1205,8 +1205,8 @@ paths:
   /users/me/contributor_ratings/{poll_name}/:
     get:
       operationId: users_me_contributor_ratings_list
-      description: Retrieve the logged in user's ratings per video in a given poll(computed
-        automatically from the user's comparisons).
+      description: Retrieve the logged-in user's ratings per entity in a given poll
+        (computed automatically from the user's comparisons).
       parameters:
       - in: path
         name: poll_name
@@ -1229,6 +1229,13 @@ paths:
         name: is_public
         schema:
           type: boolean
+        description: Filter public or private ratings.
+      - in: query
+        name: order_by
+        schema:
+          type: string
+        description: 'Order the results by: last_compared_at, -last_compared_at, n_comparisons,
+          -n_comparisons.'
       tags:
       - users
       security:
@@ -1413,6 +1420,96 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContributorRatingUpdateAll'
+          description: ''
+  /users/me/contributor_ratings/{poll_name}/order_by={order_by}/:
+    get:
+      operationId: users_me_contributor_ratings_order_by=_list
+      description: Retrieve the logged-in user's ratings per entity in a given poll
+        (computed automatically from the user's comparisons).
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: order_by
+        schema:
+          type: string
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: is_public
+        schema:
+          type: boolean
+        description: Filter public or private ratings.
+      - in: query
+        name: order_by
+        schema:
+          type: string
+        description: 'Order the results by: last_compared_at, -last_compared_at, n_comparisons,
+          -n_comparisons.'
+      tags:
+      - users
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContributorRatingList'
+          description: ''
+    post:
+      operationId: users_me_contributor_ratings_order_by=_create
+      description: Initialize the rating object for the current user about a specific
+        video in a given poll, with optional visibility settings.
+      parameters:
+      - in: path
+        name: poll_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: order_by
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributorRatingCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContributorRatingCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContributorRatingCreateRequest'
+        required: true
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorRatingCreate'
           description: ''
   /users/me/criteria_correlations/{poll_name}/:
     get:
@@ -2413,9 +2510,14 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - criteria_scores
       - entity
+      - last_compared_at
       - n_comparisons
     ContributorRatingCreate:
       type: object
