@@ -1,11 +1,12 @@
 """
-API endpoint to manipulate contributor ratings.
+API endpoint to interact with the contributor's ratings.
 """
 from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import exceptions, generics
+from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from tournesol.models import Comparison, ContributorRating
@@ -103,6 +104,20 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
         "-n_comparisons",
     ]
 
+    def _filter_queryset_by_visibility(self, qst):
+        is_public = self.request.query_params.get("is_public")
+        if is_public:
+            if is_public == "true":
+                qst = qst.filter(is_public=True)
+            elif is_public == "false":
+                qst = qst.filter(is_public=False)
+            else:
+                raise ValidationError(
+                    "The URL parameter 'is_public' must be 'true' or 'false'"
+                )
+
+        return qst
+
     def _order_queryset(self, qst):
         """
         Return an ordered queryset based on the `order_by` URL parameter. Raise
@@ -116,7 +131,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
             return qst.order_by("-entity__metadata__publication_date", "-pk")
 
         if order_by not in self.allowed_order_by_values:
-            raise exceptions.ValidationError("The URL parameter 'order_by' is invalid.")
+            raise ValidationError("The URL parameter 'order_by' is invalid.")
         return qst.order_by(order_by)
 
     def get_serializer_class(self):
@@ -133,17 +148,8 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
             .select_related("entity")
             .prefetch_related("criteria_scores")
         )
-        is_public = self.request.query_params.get("is_public")
-        if is_public:
-            if is_public == "true":
-                ratings = ratings.filter(is_public=True)
-            elif is_public == "false":
-                ratings = ratings.filter(is_public=False)
-            else:
-                raise exceptions.ValidationError(
-                    "'is_public' query param must be 'true' or 'false'"
-                )
 
+        ratings = self._filter_queryset_by_visibility(ratings)
         ratings = self._order_queryset(ratings)
         return ratings
 
