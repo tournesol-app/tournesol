@@ -7,19 +7,19 @@ import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 import ProfileForm from 'src/features/settings/profile/ProfileForm';
 
-import { mainSectionBp, settingsMenuBp } from '../layout';
+import { mainSectionBreakpoints, settingsMenuBreakpoints } from '../layout';
 
 function ProfilePage() {
   const { t } = useTranslation();
 
   // subSectionBreakP can be changed independently of mainSectionBp
-  const subSectionBreakP = mainSectionBp;
+  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader title={`${t('settings.title')} > ${t('profile')}`} />
       <ContentBox maxWidth="xl">
         <Grid container spacing={4}>
-          <Grid item {...settingsMenuBp}>
+          <Grid item {...settingsMenuBreakpoints}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -27,9 +27,9 @@ function ProfilePage() {
             item
             direction="column"
             alignItems="stretch"
-            {...mainSectionBp}
+            {...mainSectionBreakpoints}
           >
-            <SettingsSection title={t('profile')} {...subSectionBreakP}>
+            <SettingsSection title={t('profile')} {...subSectionBreakpoints}>
               <ProfileForm />
             </SettingsSection>
           </Grid>

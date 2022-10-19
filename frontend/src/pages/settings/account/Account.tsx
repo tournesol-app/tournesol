@@ -9,14 +9,17 @@ import EmailAddressForm from 'src/features/settings/account/EmailAddressForm';
 import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
 
-import { mainSectionBp, settingsMenuBp } from '../layout';
+import {
+  mainSectionBreakpoints,
+  settingsMenuBreakpoints,
+} from 'src/pages/settings/layout';
 
 export const AccountPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
   // subSectionBreakP can be changed independently of mainSectionBp
-  const subSectionBreakP = mainSectionBp;
+  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader
@@ -24,7 +27,7 @@ export const AccountPage = () => {
       />
       <ContentBox maxWidth="xl">
         <Grid container spacing={4}>
-          <Grid item {...settingsMenuBp}>
+          <Grid item {...settingsMenuBreakpoints}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -33,24 +36,24 @@ export const AccountPage = () => {
             direction="column"
             alignItems="stretch"
             spacing={3}
-            {...mainSectionBp}
+            {...mainSectionBreakpoints}
           >
             <SettingsSection
               title={t('settings.changeEmailAddress')}
-              {...subSectionBreakP}
+              {...subSectionBreakpoints}
             >
               <EmailAddressForm />
             </SettingsSection>
             <SettingsSection
               title={t('settings.changePassword')}
-              {...subSectionBreakP}
+              {...subSectionBreakpoints}
             >
               <PasswordForm />
             </SettingsSection>
             <Box marginTop={8} />
             <SettingsSection
               title={t('settings.exportAllData')}
-              {...subSectionBreakP}
+              {...subSectionBreakpoints}
             >
               <ExportAllDataForm />
             </SettingsSection>
@@ -63,7 +66,7 @@ export const AccountPage = () => {
                   {t('settings.deleteAccount')}
                 </Typography>
               }
-              {...subSectionBreakP}
+              {...subSectionBreakpoints}
             >
               <DeleteAccountForm />
             </SettingsSection>
