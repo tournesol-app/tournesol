@@ -103,11 +103,6 @@ urlpatterns = [
     ),
     # Ratings API
     path(
-        "users/me/contributor_ratings/<str:poll_name>/order_by=<str:order_by>/",
-        ContributorRatingList.as_view(),
-        name="ratings_me_order_list",
-    ),
-    path(
         "users/me/contributor_ratings/<str:poll_name>/",
         ContributorRatingList.as_view(),
         name="ratings_me_list",
