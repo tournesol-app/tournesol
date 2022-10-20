@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
-import { Grid, Typography, Box, Card, Link } from '@mui/material';
+import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
 import {
@@ -19,6 +19,9 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     padding: '32px 0px 32px 0px',
     justifyContent: 'center',
+  },
+  noMaxWidth: {
+    maxWidth: '100%',
   },
   container: {
     display: 'flex',
@@ -389,14 +392,20 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid
-        container
-        className={classes.root}
-        sx={{ background: '#1282B2', color: 'white' }}
-      >
-        <Grid item xs={12} className={classes.container}>
-          <ContentBox>
-            <PublicDownloadSection />
+      <Grid container className={classes.root}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={10}
+          lg={8}
+          xl={8}
+          className={classes.container}
+        >
+          <ContentBox className={classes.noMaxWidth}>
+            <Paper sx={{ background: '#1282B2', color: 'white', p: 2 }} square>
+              <PublicDownloadSection />
+            </Paper>
           </ContentBox>
         </Grid>
       </Grid>
