@@ -180,20 +180,20 @@ class TrustAlgoTest(TestCase):
     def test_trust_algo(self):
         users = list(User.objects.all())
         for user in users:
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
 
         trust_algo()
         users = list(User.objects.all())
-        self.assertTrue(users[1].voting_right >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
-        self.assertTrue(users[2].voting_right > EPSILON)
-        self.assertAlmostEqual(users[9].voting_right, 0)
-        self.assertAlmostEqual(users[8].voting_right, 0)
+        self.assertTrue(users[1].trust_score >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
+        self.assertTrue(users[2].trust_score > EPSILON)
+        self.assertAlmostEqual(users[9].trust_score, 0)
+        self.assertAlmostEqual(users[8].trust_score, 0)
 
         vouch18 = Voucher(by=self.user_1, to=self.user_8, value=100.0)
         vouch18.save()
         trust_algo()
         users = list(User.objects.all())
-        self.assertTrue(users[8].voting_right > EPSILON)
+        self.assertTrue(users[8].trust_score > EPSILON)
 
     def test_trust_algo_without_pretrusted_users_is_noop(self):
         # Keep only users without trusted emails
@@ -202,24 +202,24 @@ class TrustAlgoTest(TestCase):
         ).delete()
 
         for user in User.objects.all():
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
         trust_algo()
         for user in User.objects.all():
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
 
     def test_trust_algo_without_voucher(self):
         Voucher.objects.all().delete()
 
         for user in User.objects.all():
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
 
         trust_algo()
 
         for user in User.objects.all():
             if user.is_trusted:
-                self.assertEqual(user.voting_right, MIN_PRETRUST_VOTING_RIGHT)
+                self.assertEqual(user.trust_score, MIN_PRETRUST_VOTING_RIGHT)
             else:
-                self.assertEqual(user.voting_right, 0.0)
+                self.assertEqual(user.trust_score, 0.0)
 
     def test_trust_algo_db_requests_count(self):
         with self.assertNumQueries(3):

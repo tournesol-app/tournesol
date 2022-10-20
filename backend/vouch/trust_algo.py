@@ -146,5 +146,5 @@ def trust_algo():
     # Turn relative_posttrust into voting rights
     voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
     for user_no, user_model in enumerate(users):
-        user_model.voting_right = float(voting_rights[user_no])
-    User.objects.bulk_update(users, ["voting_right"])
+        user_model.trust_score = float(voting_rights[user_no])
+    User.objects.bulk_update(users, ["trust_score"])

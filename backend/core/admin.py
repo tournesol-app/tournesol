@@ -56,7 +56,7 @@ class UserAdmin(DjangoUserAdmin):
         "is_active",
         "is_trusted",
         "get_n_comparisons",
-        "voting_right",
+        "trust_score",
         "date_joined",
     )
     add_fieldsets = (
