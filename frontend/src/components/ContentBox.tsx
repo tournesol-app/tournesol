@@ -26,10 +26,7 @@ const ContentBox = ({
     return null;
   }
 
-  // 224px represents the current height of the <Footer>. If more items are
-  // added in it, its height may increase.
-  const minHeight =
-    window.innerHeight - topBarHeight - contentHeaderHeight - 224;
+  const minHeight = window.innerHeight - topBarHeight - contentHeaderHeight;
 
   return (
     <Box
