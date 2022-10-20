@@ -28,7 +28,7 @@ APPROXIMATION_ERROR = 1e-8
 IMPLICIT_PRETRUST_VOUCH = 0.1
 
 # The algorithm guarantees that every pre-trusted user is given a trust score
-# which is at least MIN_PRETRUST_TRUST_SCORE. Moreover all users' trust score
+# which is at least MIN_PRETRUST_TRUST_SCORE. Moreover, all users' trust score
 # will be at most 1.
 MIN_PRETRUST_TRUST_SCORE = 0.8
 
