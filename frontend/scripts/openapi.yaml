@@ -408,6 +408,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/Entity'
           description: ''
+  /exports/all/:
+    get:
+      operationId: exports_all_retrieve
+      description: Download all the public data in a .zip file
+      tags:
+      - exports
+      security:
+      - oauth2:
+        - read write groups
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /exports/comparisons/:
     get:
       operationId: exports_comparisons_retrieve
