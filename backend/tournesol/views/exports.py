@@ -194,6 +194,7 @@ class ExportPublicAllView(APIView):
     throttle_scope = "api_export_comparisons"
     permission_classes = [AllowAny]
 
+    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
         description="Download all the public data in a .zip file",
         responses={200: OpenApiTypes.BINARY},
