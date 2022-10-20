@@ -92,9 +92,9 @@ class ExportTest(TestCase):
             entity=video2,
             is_public=is_public,
         )
-        self.comparison_public = ComparisonFactory(
+        ComparisonFactory(
             poll=self.poll_videos,
-            user=self.public_comparisons,
+            user=user,
             entity_1=video1,
             entity_2=video2,
         )
