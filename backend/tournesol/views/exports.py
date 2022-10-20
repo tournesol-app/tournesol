@@ -119,7 +119,7 @@ class ExportComparisonsView(APIView):
 
 class ExportPublicComparisonsView(APIView):
     """
-    Export all public comparisons made in all polls by all users as a CSV file.
+    Export all public comparisons made in the default poll by all users as a CSV file.
     """
 
     permission_classes = [AllowAny]
@@ -127,8 +127,8 @@ class ExportPublicComparisonsView(APIView):
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
-        description="Download all public comparisons made in all polls by all users in a CSV"
-                    " file.",
+        description="Download all public comparisons made in the `videos` poll by all users in a"
+                    " CSV file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -201,7 +201,7 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
 
 class ExportPublicAllView(APIView):
     """
-    Export the complete public dataset in a .zip file.
+    Export the complete public dataset of the default poll in a .zip file.
     """
 
     throttle_scope = "api_export_comparisons"
@@ -209,7 +209,7 @@ class ExportPublicAllView(APIView):
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
-        description="Download the complete public dataset in a .zip file.",
+        description="Download the complete public dataset of the `videos` poll in a .zip file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
