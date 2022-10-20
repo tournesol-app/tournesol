@@ -10,11 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name="user",
-            name="voting_right",
+            old_name="voting_right",
+            new_name="trust_score",
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name="user",
             name="trust_score",
             field=models.FloatField(
