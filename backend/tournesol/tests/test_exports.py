@@ -231,7 +231,7 @@ class ExportTest(TestCase):
                 user_rows = [row for row in rows if row["public_username"] == username]
                 self.assertEqual(len(user_rows), 1)
                 user_row = user_rows[0]
-                self.assertEqual(user_row["voting_right"], '0.5844')
+                self.assertEqual(user_row["trust_score"], '0.5844')
 
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")

@@ -82,14 +82,14 @@ def write_public_users_file(poll_name: str, write_target) -> None:
     """
     fieldnames = [
         "public_username",
-        "voting_right",
+        "trust_score",
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(
         {
             "public_username": user.username,
-            "voting_right": user.voting_right,
+            "trust_score": user.voting_right,
         }
         for user in get_users_dataset(poll_name).iterator()
     )
