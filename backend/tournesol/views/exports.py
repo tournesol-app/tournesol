@@ -106,7 +106,8 @@ class ExportComparisonsView(APIView):
     throttle_scope = "api_users_me_export"
 
     @extend_schema(
-        description="Download the current user's comparisons in a .csv file",
+        description="Download all comparisons made in all polls by the logged-in user in a"
+                    " CSV file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -126,7 +127,8 @@ class ExportPublicComparisonsView(APIView):
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
-        description="Download public data in .csv file",
+        description="Download all public comparisons made in all polls by all users in a CSV"
+                    " file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -207,7 +209,7 @@ class ExportPublicAllView(APIView):
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
-        description="Download all the public data in a .zip file",
+        description="Download the complete public dataset in a .zip file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
