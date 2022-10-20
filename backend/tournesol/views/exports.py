@@ -22,8 +22,10 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 
 def write_comparisons_file(request, write_target):
     """
-    Writes a user's comparisons as a CSV file to write_target which can be
-    among other options an HttpResponse or a StringIO
+    Write all user's comparisons as a CSV file to `write_target` which can be
+    among other options an HttpResponse or a StringIO.
+
+    Comparisons from all polls are included.
     """
     fieldnames = ["video_a", "video_b", "criteria", "weight", "score"]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
@@ -96,7 +98,10 @@ def write_public_users_file(poll_name: str, write_target) -> None:
 
 
 class ExportComparisonsView(APIView):
-    """Export all the comparisons made by the logged user in a CSV file."""
+    """
+    Export all comparisons made in all polls by the logged user as a CSV file.
+    """
+
     permission_classes = [IsAuthenticated]
     throttle_scope = "api_users_me_export"
 
@@ -112,7 +117,10 @@ class ExportComparisonsView(APIView):
 
 
 class ExportPublicComparisonsView(APIView):
-    """Export all the public comparisons made by any user."""
+    """
+    Export all public comparisons made in all polls by all users as a CSV file.
+    """
+
     permission_classes = [AllowAny]
     throttle_scope = "api_export_comparisons"
 
@@ -190,7 +198,10 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
 
 
 class ExportPublicAllView(APIView):
-    """Export all the public data in a .zip file."""
+    """
+    Export the complete public dataset in a .zip file.
+    """
+
     throttle_scope = "api_export_comparisons"
     permission_classes = [AllowAny]
 
