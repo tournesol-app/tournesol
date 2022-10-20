@@ -9,39 +9,42 @@ from vouch.models import Voucher
 
 logger = logging.getLogger(__name__)
 
-# In this algorithm, we leverage pretrust (e.g., based on email domains) and vouching
-# to securely assign voting rights to a wider set of contributors.
-# The algorithm inputs pretrust status and a vouching directed graph.
+# In this algorithm, we leverage pre-trust (e.g., based on email domains) and
+# vouching to securely assign trust scores to a wider set of contributors. The
+# algorithm inputs pre-trust status and a vouching directed graph.
 
-# If PRETRUST_BIAS == 1, then vouching yields no voting rights to non-pretrusted users.
-# If PRETRUST_BIAS is close to 0, then pre-trust vanishes (which is very unsafe).
+# If PRETRUST_BIAS == 1, then vouching yields no trust to non-pre-trusted
+# users. If PRETRUST_BIAS is close to 0, then pre-trust vanishes (which is
+# very unsafe).
 PRETRUST_BIAS = 0.2
 
-# Voting rights are computed iteratively, which yields an approximate solution.
+# Trust scores are computed iteratively, which yields an approximate solution.
 APPROXIMATION_ERROR = 1e-8
 
-# In our model, users that vouch for few (if any) implicitly vouch for pre-trusted users.
-# IMPLICIT_PRETRUST_VOUCH is the implicit amount of vouch given to pretrusted,
-# as opposed to the explicit vouches, each of which is of unit value.
+# In our model, users that vouch for few (if any) implicitly vouch for
+# pre-trusted users. IMPLICIT_PRETRUST_VOUCH is the implicit amount of vouch
+# given to pre-trusted, as opposed to the explicit vouches, each of which is
+# of unit value.
 IMPLICIT_PRETRUST_VOUCH = 0.1
 
-# The algorithm guarantees that every pretrusted user is allocated a voting right
-# which is at least MIN_PRETRUST_VOTING_RIGHT
-# Moreover all users' voting rights will be at most 1
-MIN_PRETRUST_VOTING_RIGHT = 0.8
+# The algorithm guarantees that every pre-trusted user is given a trust score
+# which is at least MIN_PRETRUST_TRUST_SCORE. Moreover all users' trust score
+# will be at most 1.
+MIN_PRETRUST_TRUST_SCORE = 0.8
 
 
 def normalize_vouch_matrix(vouch_matrix: NDArray, pretrusts: NDArray) -> NDArray:
     """
     Vouch matrix normalization guarantees three properties:
-    - The sum of normalized vouches given by a voucher equals 1.
-    - Each voucher vouchees for pretrusted users.
-    - Vouchers that explicitly vouch for many barely vouch for pretrusted users
+        - The sum of normalized vouches given by a voucher equals 1.
+        - Each voucher vouches for pre-trusted users.
+        - Vouchers that explicitly vouch for many barely vouch for pre-trusted
+          users.
 
     Keyword arguments:
     vouch_matrix -- A 2 dimensional array of vouch values.
-         The 1st dimension is the voucher, the 2nd is the vouchee.
-         vouch_matrix[voucher][vouchee] > 0 if voucher vouched for vouchee.
+                    The 1st dimension is the voucher, the 2nd is the vouchee.
+                    vouch_matrix[voucher][vouchee] > 0 if voucher vouched for vouchee.
     pretrusts -- pretrusts[u] > 0 if u is pretrusted.
     """
     normalized_vouch_matrix = np.zeros(vouch_matrix.shape)
@@ -88,17 +91,17 @@ def compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts: NDA
     return new_relative_trusts
 
 
-def compute_voting_rights(relative_posttrusts, pretrusts):
+def compute_trust_scores(relative_posttrusts, pretrusts):
     """
-    Go from ratio of trust to actual voting weight that should be assigned to
+    Go from ratio of trust to actual trust weight that should be assigned to
     users given the trust the network puts in them.
     """
     min_relative_trusts_of_pretrusteds = np.amin(
         relative_posttrusts,
         where=pretrusts > 0,
-        initial=MIN_PRETRUST_VOTING_RIGHT,
+        initial=MIN_PRETRUST_TRUST_SCORE,
     )
-    scale = MIN_PRETRUST_VOTING_RIGHT / min_relative_trusts_of_pretrusteds
+    scale = MIN_PRETRUST_TRUST_SCORE / min_relative_trusts_of_pretrusteds
     scaled_relative_trusts = np.array(relative_posttrusts) * scale
     clipped_relative_trusts = scaled_relative_trusts.clip(max=1)
     return clipped_relative_trusts
@@ -124,7 +127,7 @@ def trust_algo():
     }
     pretrusts = np.array([int(u.in_trusted_users) for u in users])
     if np.sum(pretrusts) == 0:
-        logger.warning("Voting right cannot be computed: no pretrusted user exists")
+        logger.warning("Trust scores cannot be computed: no pre-trusted user exists")
         return
 
     nb_users = len(users)
@@ -143,8 +146,8 @@ def trust_algo():
         normalized_vouch_matrix, relative_pretrusts
     )
 
-    # Turn relative_posttrust into voting rights
-    voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
+    # Turn relative_posttrust into trust scores
+    trust_scores = compute_trust_scores(relative_posttrusts, pretrusts)
     for user_no, user_model in enumerate(users):
-        user_model.trust_score = float(voting_rights[user_no])
+        user_model.trust_score = float(trust_scores[user_no])
     User.objects.bulk_update(users, ["trust_score"])

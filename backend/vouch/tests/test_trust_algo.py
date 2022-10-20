@@ -9,10 +9,10 @@ from core.models.user import EmailDomain, User
 from core.tests.factories.user import UserFactory
 from vouch.models import Voucher
 from vouch.trust_algo import (
-    MIN_PRETRUST_VOTING_RIGHT,
+    MIN_PRETRUST_TRUST_SCORE,
     PRETRUST_BIAS,
     compute_relative_posttrusts,
-    compute_voting_rights,
+    compute_trust_scores,
     normalize_vouch_matrix,
     trust_algo,
 )
@@ -83,7 +83,7 @@ class TrustAlgoUnitTest(TestCase):
         )
         self.assertAlmostEqual(relative_posttrusts[untrusted_user], 0)
 
-    def test_compute_voting_rights(self):
+    def test_compute_trust_scores(self):
         """
         The voting rights of pretrusted users must be at least
         `MIN_PRETRUST_VOTING_RIGHT`. Moreover, unless the voting right is
@@ -101,10 +101,10 @@ class TrustAlgoUnitTest(TestCase):
                 for u in range(self._nb_users)
             ]
         )
-        scale_fac = relative_posttrusts[min_idx] / MIN_PRETRUST_VOTING_RIGHT
-        voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
+        scale_fac = relative_posttrusts[min_idx] / MIN_PRETRUST_TRUST_SCORE
+        voting_rights = compute_trust_scores(relative_posttrusts, pretrusts)
 
-        self.assertAlmostEqual(voting_rights[min_idx], MIN_PRETRUST_VOTING_RIGHT)
+        self.assertAlmostEqual(voting_rights[min_idx], MIN_PRETRUST_TRUST_SCORE)
         for u in range(self._nb_users):
             self.assertTrue(voting_rights[u] >= -EPSILON)
             self.assertTrue(voting_rights[u] <= 1 + EPSILON)
@@ -116,7 +116,7 @@ class TrustAlgoUnitTest(TestCase):
                     voting_rights[u], relative_posttrusts[u] / scale_fac
                 )
             if pretrusts[u] > 0:
-                self.assertTrue(voting_rights[u] >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
+                self.assertTrue(voting_rights[u] >= MIN_PRETRUST_TRUST_SCORE - EPSILON)
 
 
 class TrustAlgoTest(TestCase):
@@ -184,7 +184,7 @@ class TrustAlgoTest(TestCase):
 
         trust_algo()
         users = list(User.objects.all())
-        self.assertTrue(users[1].trust_score >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
+        self.assertTrue(users[1].trust_score >= MIN_PRETRUST_TRUST_SCORE - EPSILON)
         self.assertTrue(users[2].trust_score > EPSILON)
         self.assertAlmostEqual(users[9].trust_score, 0)
         self.assertAlmostEqual(users[8].trust_score, 0)
@@ -217,7 +217,7 @@ class TrustAlgoTest(TestCase):
 
         for user in User.objects.all():
             if user.is_trusted:
-                self.assertEqual(user.trust_score, MIN_PRETRUST_VOTING_RIGHT)
+                self.assertEqual(user.trust_score, MIN_PRETRUST_TRUST_SCORE)
             else:
                 self.assertEqual(user.trust_score, 0.0)
 
