@@ -34,7 +34,9 @@ class ExportTest(TestCase):
         )
         self.user_without_comparisons = UserFactory(username="user_without_comparisons")
 
-        self.public_comparisons = UserFactory(username="public_comparisons", voting_right=0.5844)
+        self.public_comparisons = UserFactory(
+            username="public_comparisons", trust_score=0.5844
+        )
         self.video_public_1 = VideoFactory()
         self.video_public_2 = VideoFactory()
         self.video_private_3 = VideoFactory()
@@ -193,12 +195,15 @@ class ExportTest(TestCase):
         self.assertEqual(response.headers["Content-Type"], "application/zip")
 
         content_disposition = response.headers["Content-Disposition"]
-        match = re.search("attachment; filename=(tournesol_export_\\d{8}T\\d{6}Z).zip", content_disposition)
+        match = re.search(
+            "attachment; filename=(tournesol_export_\\d{8}T\\d{6}Z).zip",
+            content_disposition,
+        )
         self.assertIsNotNone(match)
         root = match.group(1)
 
         zip_content = io.BytesIO(response.content)
-        with zipfile.ZipFile(zip_content, 'r') as zip_file:
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
             expected_files = [
                 root + "/README.txt",
                 root + "/comparisons.csv",
@@ -206,19 +211,19 @@ class ExportTest(TestCase):
             ]
             self.assertEqual(zip_file.namelist(), expected_files)
 
-            with zip_file.open(root + '/README.txt', 'r') as file:
+            with zip_file.open(root + "/README.txt", "r") as file:
                 content = file.read()
-                with open('tournesol/resources/export_readme.txt', 'rb') as readme_file:
+                with open("tournesol/resources/export_readme.txt", "rb") as readme_file:
                     expected_content = readme_file.read()
                 self.assertEqual(content, expected_content)
 
-            with zip_file.open(root + '/comparisons.csv', 'r') as file:
+            with zip_file.open(root + "/comparisons.csv", "r") as file:
                 content = file.read()
                 expected_content = self.client.get("/exports/comparisons/").content
                 self.assertEqual(content, expected_content)
 
-            with zip_file.open(root + '/users.csv', 'r') as file:
-                content = file.read().decode('utf-8')
+            with zip_file.open(root + "/users.csv", "r") as file:
+                content = file.read().decode("utf-8")
                 csv_file = csv.DictReader(io.StringIO(content))
                 rows = list(csv_file)
 
@@ -231,7 +236,7 @@ class ExportTest(TestCase):
                 user_rows = [row for row in rows if row["public_username"] == username]
                 self.assertEqual(len(user_rows), 1)
                 user_row = user_rows[0]
-                self.assertEqual(user_row["trust_score"], '0.5844')
+                self.assertEqual(user_row["trust_score"], "0.5844")
 
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
@@ -249,9 +254,9 @@ class ExportTest(TestCase):
 
         zip_content = io.BytesIO(response.content)
 
-        with zipfile.ZipFile(zip_content, 'r') as zip_file:
-            with zip_file.open(root + '/users.csv', 'r') as file:
-                content = file.read().decode('utf-8')
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            with zip_file.open(root + "/users.csv", "r") as file:
+                content = file.read().decode("utf-8")
                 csv_file = csv.DictReader(io.StringIO(content))
                 rows = list(csv_file)
 
