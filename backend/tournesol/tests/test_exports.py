@@ -232,3 +232,29 @@ class ExportTest(TestCase):
                 self.assertEqual(len(user_rows), 1)
                 user_row = user_rows[0]
                 self.assertEqual(user_row["voting_right"], '0.5844')
+
+    def test_all_export_sorts_by_username(self):
+        last_user = UserFactory(username="z")
+        first_user = UserFactory(username="a")
+
+        self.add_comparison(user=last_user, is_public=True)
+        self.add_comparison(user=first_user, is_public=True)
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content_disposition = response.headers["Content-Disposition"]
+        match = re.search("filename=(.+).zip", content_disposition)
+        root = match.group(1)
+
+        zip_content = io.BytesIO(response.content)
+
+        with zipfile.ZipFile(zip_content, 'r') as zip_file:
+            with zip_file.open(root + '/users.csv', 'r') as file:
+                content = file.read().decode('utf-8')
+                csv_file = csv.DictReader(io.StringIO(content))
+                rows = list(csv_file)
+
+                usernames = [row["public_username"] for row in rows]
+                self.assertEqual("a", usernames[0])
+                self.assertEqual("z", usernames[-1])

@@ -106,6 +106,8 @@ def get_users_dataset(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
+
+        ORDER BY core_user.username
         """,
         {"poll_name": poll_name},
     )
