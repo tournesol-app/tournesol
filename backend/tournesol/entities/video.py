@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import List
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
@@ -24,8 +25,17 @@ class VideoEntity(EntityType):
 
     Handles the metadata specific to videos, retrieved from the YouTube API.
     """
+
     name = TYPE_VIDEO
     metadata_serializer_class = VideoMetadata
+
+    @classmethod
+    def get_allowed_meta_order_fields(cls) -> List[str]:
+        """
+        Return a list of metadata fields that can be used to order an entity
+        list.
+        """
+        return ["duration", "publication_date"]
 
     @classmethod
     def filter_date_lte(cls, qs, max_date):
@@ -39,11 +49,12 @@ class VideoEntity(EntityType):
     def get_uid_regex(cls, namespace: str) -> str:
         if namespace == YOUTUBE_UID_NAMESPACE:
             return YOUTUBE_UID_REGEX
-        return ''
+        return ""
 
     def update_metadata_field(self) -> None:
         # pylint: disable=import-outside-toplevel
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
+
         try:
             metadata = get_video_metadata(
                 self.instance.metadata["video_id"], compute_language=False
@@ -83,13 +94,17 @@ class VideoEntity(EntityType):
                 KeyTextTransform("name", "metadata"), weight="A", config=language_config
             )
             + SearchVector(
-                KeyTextTransform("uploader", "metadata"), weight="A", config=language_config
+                KeyTextTransform("uploader", "metadata"),
+                weight="A",
+                config=language_config,
             )
             + SearchVector(
                 KeyTextTransform("tags", "metadata"), weight="A", config=language_config
             )
             + SearchVector(
-                KeyTextTransform("description", "metadata"), weight="C", config=language_config
+                KeyTextTransform("description", "metadata"),
+                weight="C",
+                config=language_config,
             )
         )
 
