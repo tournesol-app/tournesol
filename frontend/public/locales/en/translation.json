@@ -249,6 +249,14 @@
     "noVideoComparedYet": "You haven't compared any video yet",
     "compareVideosButton": "Compare videos"
   },
+  "ratingOrderByInput": {
+    "orderBy": "Order by",
+    "order": "Order",
+    "lastComparisonDate(ASC)": "Last comparison date (ASC)",
+    "lastComparisonDate(DESC)": "Last comparison date (DESC)",
+    "numberOfComparisons(ASC)": "Number of comparisons (ASC)",
+    "numberOfComparisons(DESC)": "Number of comparisons (DESC)"
+  },
   "options": "Options",
   "contextualRecommendations": {
     "channel": "Channel",
