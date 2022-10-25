@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Iterable, List, Optional, Type
+from typing import Dict, Iterable, List, Type
 
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F
@@ -186,12 +186,12 @@ class EntityType(ABC):
         return qs.filter(add_time__gte=min_date)
 
     @classmethod
-    def get_allowed_meta_order_fields(cls) -> Optional[List[str]]:
+    def get_allowed_meta_order_fields(cls) -> List[str]:
         """
         Return a list of metadata fields that can be used to order an entity
         list.
         """
-        return None
+        return []
 
     @classmethod
     @abstractmethod
