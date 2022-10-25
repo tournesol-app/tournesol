@@ -114,4 +114,7 @@ export type SelectablePoll = {
   tutorialKeepUIDsAfterRedirect?: boolean;
   // whether the 'unsafe' recommendations should be included by default
   unsafeDefault?: boolean;
+  // list of entity type specific metadata that can be used to order a list of
+  // entities
+  extraMetadataOrderBy?: Array<string>;
 };

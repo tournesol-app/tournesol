@@ -252,10 +252,10 @@
   "ratingOrderByInput": {
     "orderBy": "Order by",
     "order": "Order",
-    "lastComparisonDate(ASC)": "Last comparison date (asc.)",
-    "lastComparisonDate(DESC)": "Last comparison date (desc.)",
-    "numberOfComparisons(ASC)": "Number of comparisons (asc.)",
-    "numberOfComparisons(DESC)": "Number of comparisons (desc.)"
+    "lastComparisonDate": "Last comparison date",
+    "(asc)": "(asc.)",
+    "(desc)": "(desc.)",
+    "numberOfComparisons": "Number of comparisons"
   },
   "options": "Options",
   "contextualRecommendations": {
@@ -572,6 +572,10 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
+  },
+  "videoMetadata": {
+    "duration": "Duration",
+    "publication_date": "Publication date"
   },
   "presidentielle2022": {
     "dialogs": {

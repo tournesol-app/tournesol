@@ -123,6 +123,32 @@ export const getEntityName = (t: TFunction, pollName: string) => {
   }
 };
 
+/**
+ * Return the translated name of an metadata.
+ */
+export function getMetadataName(
+  t: TFunction,
+  pollName: string,
+  metadata: string
+): string | undefined {
+  let name;
+
+  switch (pollName) {
+    case YOUTUBE_POLL_NAME:
+      switch (metadata) {
+        case 'duration':
+          name = t('videoMetadata.duration');
+          break;
+        case 'publication_date':
+          name = t('videoMetadata.publication_date');
+          break;
+      }
+      break;
+  }
+
+  return name;
+}
+
 export const getRecommendationPageName = (
   t: TFunction,
   pollName: string,
@@ -182,6 +208,7 @@ export const polls: Array<SelectablePoll> = [
     withSearchBar: true,
     topBarBackground: null,
     comparisonsCanBePublic: true,
+    extraMetadataOrderBy: ['duration', 'publication_date'],
     tutorialLength: 4,
     tutorialAlternatives: getTutorialVideos,
     tutorialDialogs: getVideosTutorialDialogs,
