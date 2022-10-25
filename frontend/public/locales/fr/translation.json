@@ -258,10 +258,10 @@
   "ratingOrderByInput": {
     "orderBy": "Trier par",
     "order": "Ordre",
-    "lastComparisonDate(ASC)": "Dernière comparaison (ASC)",
-    "lastComparisonDate(DESC)": "Dernière comparaison (DESC)",
-    "numberOfComparisons(ASC)": "Nombre de comparaisons (ASC)",
-    "numberOfComparisons(DESC)": "Nombre de comparaisons (DESC)"
+    "lastComparisonDate(ASC)": "Dernière comparaison (crois.)",
+    "lastComparisonDate(DESC)": "Dernière comparaison (décrois.)",
+    "numberOfComparisons(ASC)": "Nombre de comparaisons (crois.)",
+    "numberOfComparisons(DESC)": "Nombre de comparaisons (décrois.)"
   },
   "options": "Options",
   "contextualRecommendations": {

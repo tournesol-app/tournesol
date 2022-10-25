@@ -1,3 +1,6 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   FormControl,
   InputLabel,
@@ -5,14 +8,8 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { TitledSection } from 'src/components';
 
-export const isPublicChoices = {
-  true: 'Public',
-  false: 'Private',
-};
+import { TitledSection } from 'src/components';
 
 interface FilterProps {
   value: string;

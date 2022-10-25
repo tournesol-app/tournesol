@@ -252,10 +252,10 @@
   "ratingOrderByInput": {
     "orderBy": "Order by",
     "order": "Order",
-    "lastComparisonDate(ASC)": "Last comparison date (ASC)",
-    "lastComparisonDate(DESC)": "Last comparison date (DESC)",
-    "numberOfComparisons(ASC)": "Number of comparisons (ASC)",
-    "numberOfComparisons(DESC)": "Number of comparisons (DESC)"
+    "lastComparisonDate(ASC)": "Last comparison date (asc.)",
+    "lastComparisonDate(DESC)": "Last comparison date (desc.)",
+    "numberOfComparisons(ASC)": "Number of comparisons (asc.)",
+    "numberOfComparisons(DESC)": "Number of comparisons (desc.)"
   },
   "options": "Options",
   "contextualRecommendations": {
