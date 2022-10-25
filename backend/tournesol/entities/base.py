@@ -19,9 +19,8 @@ class EntityType(ABC):
     Abstract base class for the processing specific to each entity type (mainly about metadata).
     """
 
-    # The 'name' of this entity type corresponds
-    # to the `type` field in Entity,
-    # and to the `entity_type` in Poll.
+    # The name of this entity type corresponds to the `type` field of the
+    # `Entity` model, and to the `entity_type` field of a `Poll`.
     name: str
     metadata_serializer_class: Type[Serializer]
 
@@ -185,6 +184,14 @@ class EntityType(ABC):
     @classmethod
     def filter_date_gte(cls, qs, min_date):
         return qs.filter(add_time__gte=min_date)
+
+    @classmethod
+    def get_allowed_meta_order_fields(cls) -> List[str]:
+        """
+        Return a list of metadata fields that can be used to order an entity
+        list.
+        """
+        return []
 
     @classmethod
     @abstractmethod

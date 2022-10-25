@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -360,6 +361,74 @@ class RatingApi(TestCase):
             response.data["results"], key=lambda x: x["last_compared_at"], reverse=True
         )
         self.assertEqual(response.data["results"], sorted_array)
+
+    def test_authenticated_can_list_videos_by_duration(self):
+        """
+        An authenticated user can list its ratings related to the `videos`
+        poll by the entities' duration.
+        """
+
+        self.client.force_authenticate(user=self.user1)
+
+        metadata1 = self.video1.metadata
+        metadata2 = self.video2.metadata
+        metadata1["duration"] = 10
+        metadata2["duration"] = 20
+        self.video1.metadata = metadata1
+        self.video2.metadata = metadata2
+        self.video1.save(update_fields=["metadata"])
+        self.video2.save(update_fields=["metadata"])
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=duration", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=-duration", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video1.uid)
+
+    def test_authenticated_can_list_videos_by_publication_date(self):
+        """
+        An authenticated user can list its ratings related to the `videos`
+        poll by the entities' publication date.
+        """
+
+        self.client.force_authenticate(user=self.user1)
+
+        metadata1 = self.video1.metadata
+        metadata2 = self.video2.metadata
+
+        ten_day_sago = timezone.datetime.fromisoformat(
+            metadata2["publication_date"]
+        ) - timedelta(days=10)
+        metadata1["publication_date"] = str(ten_day_sago)
+
+        self.video1.metadata = metadata1
+        self.video1.save(update_fields=["metadata"])
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=publication_date", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=-publication_date", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video1.uid)
 
     def test_authenticated_cannot_list_with_invalid_order_by(self):
         """

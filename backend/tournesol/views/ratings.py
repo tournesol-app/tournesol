@@ -9,7 +9,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from tournesol.models import Comparison, ContributorRating
+from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
@@ -18,12 +18,14 @@ from tournesol.serializers.rating import (
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 # The only values accepted by the URL parameter `order_by` in the list APIs.
-ALLOWED_ORDER_BY_VALUES = [
+ALLOWED_GENERIC_ORDER_BY_VALUES = [
     "last_compared_at",
     "-last_compared_at",
     "n_comparisons",
     "-n_comparisons",
 ]
+
+DEFAULT_ORDER_BY = ["-last_compared_at", "-pk"]
 
 
 def get_annotated_ratings():
@@ -102,8 +104,8 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
                 description="Order the results by: "
-                + ", ".join(ALLOWED_ORDER_BY_VALUES)
-                + ".",
+                + ", ".join(ALLOWED_GENERIC_ORDER_BY_VALUES)
+                + ", or any allowed metadata field.",
             ),
         ],
     ),
@@ -131,7 +133,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
 
         return qst
 
-    def _order_queryset(self, qst):
+    def _order_queryset(self, poll: Poll, qst):
         """
         Return an ordered queryset based on the `order_by` URL parameter. Raise
         `ValidationError` if the `order_by` value is not accepted by this view.
@@ -141,11 +143,18 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
         order_by = self.request.query_params.get("order_by")
 
         if not order_by:
-            return qst.order_by("-entity__metadata__publication_date", "-pk")
+            return qst.order_by(*DEFAULT_ORDER_BY)
 
-        if order_by not in ALLOWED_ORDER_BY_VALUES:
-            raise ValidationError("The URL parameter 'order_by' is invalid.")
-        return qst.order_by(order_by)
+        if order_by in ALLOWED_GENERIC_ORDER_BY_VALUES:
+            return qst.order_by(order_by)
+
+        sign = "-" if order_by[0] == "-" else ""
+        field = order_by[1:] if order_by[0] == "-" else order_by
+
+        if field in poll.entity_cls.get_allowed_meta_order_fields():
+            return qst.order_by(f"{sign}entity__metadata__{field}")
+
+        raise ValidationError("The URL parameter 'order_by' is invalid.")
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -163,7 +172,7 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
         )
 
         ratings = self._filter_queryset_by_visibility(ratings)
-        ratings = self._order_queryset(ratings)
+        ratings = self._order_queryset(self.poll_from_url, ratings)
         return ratings
 
 
