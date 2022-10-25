@@ -9,11 +9,14 @@ describe('"My rated videos" page', () => {
 
     // Mark all videos as public.
     cy.contains('button', 'Options', {matchCase: false}).click();
+    cy.contains('Filter by visibility').should('be.visible');
+    cy.contains('Order by').should('be.visible');
     cy.contains('button', 'Mark all as public').click();
 
     // Close options
     cy.contains('button', 'Options').click();
     cy.contains('Filter by visibility').should('not.exist');
+    cy.contains('Order by').should('not.exist');
 
     // Toggle public status of first video
     cy.contains('label', 'Public', {matchCase: false}).click();
@@ -28,7 +31,7 @@ describe('"My rated videos" page', () => {
     cy.contains(/Showing videos 1 to 20 of \d+/).should('be.visible');
   })
 
-  it('visit ratings page with filter in URL', () => {
+  it('visit ratings page with `isPublic` param in URL', () => {
     cy.visit('/ratings?isPublic=false');
     cy.focused().type("user1");
     cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
@@ -36,7 +39,16 @@ describe('"My rated videos" page', () => {
     cy.contains('label', 'Private', {matchCase: false}).within(
       () => cy.get('input[type=checkbox]').should('be.checked')
     );
-  })
+  });
+
+  it('visit ratings page with `orderBy` param in URL', () => {
+    cy.visit('/ratings?orderBy=-last_compared_at');
+    cy.focused().type("user1");
+    cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+    cy.contains('button', 'Options', {matchCase: false}).click();
+    cy.get('input[data-testid=order-by-metadata-input]').should('have.value', '-last_compared_at');
+  });
+
   it('entities\'s thumbnails are clickable', () => {
     cy.visit('/ratings');
     cy.focused().type("user1");
