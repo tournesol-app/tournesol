@@ -124,7 +124,7 @@ export const getEntityName = (t: TFunction, pollName: string) => {
 };
 
 /**
- * Return the translated name of an metadata.
+ * Return the translated name of a metadata.
  */
 export function getMetadataName(
   t: TFunction,
