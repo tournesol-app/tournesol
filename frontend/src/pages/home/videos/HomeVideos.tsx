@@ -7,7 +7,6 @@ import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import ExtensionSection from 'src/pages/home/videos/ExtensionSection';
-import ContributeSection from 'src/pages/home/videos/ContributeSection';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
@@ -43,7 +42,7 @@ const HomeVideosPage = () => {
   }, [pollName, showWarningAlert, t]);
 
   return (
-    <AlternatingBackgroundColorSectionList>
+    <AlternatingBackgroundColorSectionList lastItemIsPrimary>
       <TitleSection title={t('home.collaborativeContentRecommendations')}>
         <Typography paragraph>
           <Trans t={t} i18nKey="home.tournesolPlatformDescription">
@@ -117,7 +116,6 @@ const HomeVideosPage = () => {
         }}
       />
       <ExtensionSection />
-      <ContributeSection />
       <UsageStatsSection externalData={stats} />
       <PollListSection />
     </AlternatingBackgroundColorSectionList>
