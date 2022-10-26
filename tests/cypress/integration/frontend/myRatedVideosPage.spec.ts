@@ -63,10 +63,12 @@ describe('My rated elements page', () => {
     describe('ratings ordering', () => {
       const asc = " (asc.)";
       const desc = " (desc.)";
-      // Generic parameter available for all entity types
+
+      // Generic parameter available for all entity types.
       const lastComparedAtLabel = "Last comparison date";
       const nComparisonsLabel = "Number of comparisons";
-      // Video specific metadata
+
+      // Video specific metadata.
       const durationLabel = "Duration";
       const publicationDateLabel = "Publication date";
 
@@ -78,12 +80,14 @@ describe('My rated elements page', () => {
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.contains('Order by').should('be.visible');
 
+        // Ascending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(lastComparedAtLabel + asc, {matchCase: false}).click();
         cy.location().should((loc) => {
           expect(loc.search).to.eq('?orderBy=last_compared_at')
         });
 
+        // Descending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(lastComparedAtLabel + desc, {matchCase: false}).click();
         cy.location().should((loc) => {
@@ -99,6 +103,7 @@ describe('My rated elements page', () => {
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.contains('Order by').should('be.visible');
 
+        // Ascending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(nComparisonsLabel + asc, {matchCase: false}).click();
         cy.location().should((loc) => {
@@ -107,6 +112,7 @@ describe('My rated elements page', () => {
 
         cy.contains('1 comparison by you').should('be.visible');
 
+        // Descending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(nComparisonsLabel + desc, {matchCase: false}).click();
         cy.location().should((loc) => {
@@ -123,25 +129,29 @@ describe('My rated elements page', () => {
     
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.contains('Order by').should('be.visible');
-    
+
+        // Ascending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(durationLabel + asc, {matchCase: false}).click();
         cy.location().should((loc) => {
           expect(loc.search).to.eq('?orderBy=duration')
         });
 
+        // Descending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(durationLabel + desc, {matchCase: false}).click();
         cy.location().should((loc) => {
           expect(loc.search).to.eq('?orderBy=-duration')
         });
 
+        // Ascending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(publicationDateLabel + asc, {matchCase: false}).click();
         cy.location().should((loc) => {
           expect(loc.search).to.eq('?orderBy=publication_date')
         });
 
+        // Descending order.
         cy.get('div[id=order-by-metadata]').click();
         cy.contains(publicationDateLabel + desc, {matchCase: false}).click();
         cy.location().should((loc) => {
