@@ -2,10 +2,16 @@ import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
-import { Grid, Typography, Box, Card, Link } from '@mui/material';
+import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
-import { getWikiBaseUrl } from 'src/utils/url';
+import {
+  discordTournesolInviteUrl,
+  getWikiBaseUrl,
+  githubTournesolUrl,
+  linkedInTournesolUrl,
+  whitePaperUrl,
+} from 'src/utils/url';
 import PublicDownloadSection from './PublicDownloadSection';
 
 const useStyles = makeStyles(() => ({
@@ -13,6 +19,9 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     padding: '32px 0px 32px 0px',
     justifyContent: 'center',
+  },
+  noMaxWidth: {
+    maxWidth: '100%',
   },
   container: {
     display: 'flex',
@@ -110,7 +119,7 @@ const AboutPage = () => {
                 large-scale algorithms robustly beneficial for all of humanity.
                 Find out more with our{' '}
                 <a
-                  href="https://arxiv.org/abs/2107.07334"
+                  href={whitePaperUrl}
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: 'white' }}
@@ -128,7 +137,7 @@ const AboutPage = () => {
                 </a>
                 , our{' '}
                 <a
-                  href="https://github.com/tournesol-app/tournesol"
+                  href={githubTournesolUrl}
                   target="_blank"
                   style={{ color: 'white' }}
                   rel="noreferrer"
@@ -137,7 +146,7 @@ const AboutPage = () => {
                 </a>
                 , our{' '}
                 <a
-                  href="https://discord.gg/TvsFB8RNBV"
+                  href={discordTournesolInviteUrl}
                   target="_blank"
                   style={{ color: 'white' }}
                   rel="noreferrer"
@@ -146,7 +155,7 @@ const AboutPage = () => {
                 </a>
                 , or our{' '}
                 <a
-                  href="https://www.linkedin.com/company/tournesol-app/"
+                  href={linkedInTournesolUrl}
                   target="_blank"
                   style={{ color: 'white' }}
                   rel="noreferrer"
@@ -371,7 +380,7 @@ const AboutPage = () => {
                 benefit from contributions by multiple volunteers. Find our
                 wonderful contributors on{' '}
                 <a
-                  href="https://github.com/tournesol-app/tournesol/graphs/contributors"
+                  href={`${githubTournesolUrl}/graphs/contributors`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -383,14 +392,20 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid
-        container
-        className={classes.root}
-        sx={{ background: '#1282B2', color: 'white' }}
-      >
-        <Grid item xs={12} className={classes.container}>
-          <ContentBox>
-            <PublicDownloadSection />
+      <Grid container className={classes.root}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={10}
+          lg={8}
+          xl={8}
+          className={classes.container}
+        >
+          <ContentBox className={classes.noMaxWidth}>
+            <Paper sx={{ background: '#1282B2', color: 'white', p: 2 }} square>
+              <PublicDownloadSection />
+            </Paper>
           </ContentBox>
         </Grid>
       </Grid>

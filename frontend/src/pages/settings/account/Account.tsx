@@ -2,28 +2,31 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Grid, Typography, useTheme } from '@mui/material';
 
-import ContentHeader from 'src/components/ContentHeader';
+import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
 import PasswordForm from 'src/features/settings/account/PasswordForm';
 import DeleteAccountForm from 'src/features/settings/account/DeleteAccountForm';
 import EmailAddressForm from 'src/features/settings/account/EmailAddressForm';
 import ExportAllDataForm from 'src/features/settings/account/ExportAllDataForm';
 import SettingsMenu from 'src/features/settings/SettingsMenu';
-import { SettingsSection } from 'src/components';
+import {
+  mainSectionBreakpoints,
+  settingsMenuBreakpoints,
+} from 'src/pages/settings/layout';
 
 export const AccountPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  // sectionBreakP can be changed independently of breakP
-  const breakP = { xs: 12, sm: 12, md: 9, lg: 9, xl: 10 };
-  const sectionBreakP = breakP;
+
+  // subSectionBreakP can be changed independently of mainSectionBp
+  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader
         title={`${t('settings.title')} > ${t('settings.account')}`}
       />
-      <Box m={4}>
+      <ContentBox maxWidth="xl">
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={3} lg={3} xl={2}>
+          <Grid item {...settingsMenuBreakpoints}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -32,24 +35,24 @@ export const AccountPage = () => {
             direction="column"
             alignItems="stretch"
             spacing={3}
-            {...breakP}
+            {...mainSectionBreakpoints}
           >
             <SettingsSection
               title={t('settings.changeEmailAddress')}
-              {...sectionBreakP}
+              {...subSectionBreakpoints}
             >
               <EmailAddressForm />
             </SettingsSection>
             <SettingsSection
               title={t('settings.changePassword')}
-              {...sectionBreakP}
+              {...subSectionBreakpoints}
             >
               <PasswordForm />
             </SettingsSection>
             <Box marginTop={8} />
             <SettingsSection
               title={t('settings.exportAllData')}
-              {...sectionBreakP}
+              {...subSectionBreakpoints}
             >
               <ExportAllDataForm />
             </SettingsSection>
@@ -62,13 +65,13 @@ export const AccountPage = () => {
                   {t('settings.deleteAccount')}
                 </Typography>
               }
-              {...sectionBreakP}
+              {...subSectionBreakpoints}
             >
               <DeleteAccountForm />
             </SettingsSection>
           </Grid>
         </Grid>
-      </Box>
+      </ContentBox>
     </>
   );
 };

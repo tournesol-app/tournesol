@@ -17,7 +17,6 @@ const AlternatingBackgroundColorSectionList = ({
     <div
       style={{
         width: '100%',
-        paddingBottom: 32,
       }}
     >
       <Grid container>
