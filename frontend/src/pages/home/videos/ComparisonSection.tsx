@@ -41,7 +41,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
             pl={4}
             pr={4}
           >
-            Contribute
+            {t('comparisonSection.contribute')}
           </Typography>
         </Divider>
       </Box>
