@@ -56,7 +56,19 @@ const AlternatingBackgroundColorSectionList = ({
   lastItemIsPrimary?: boolean;
 }) => {
   const theme = useTheme();
-  const lastItem = children.at(-1);
+
+  // children.at(-1) didn't work here...
+  const lastItem = children.slice(children.length - 1);
+
+  const nextColor = (idx: number): string => {
+    return idx % 2 == 0 ? secondaryColor : theme.palette.text.primary;
+  };
+
+  const nextBackground = (idx: number): string => {
+    return idx % 2 == 0
+      ? secondaryBackground
+      : theme.palette.background.primary;
+  };
 
   return (
     <Grid container width="100%">
@@ -66,10 +78,8 @@ const AlternatingBackgroundColorSectionList = ({
           key={i}
           child={child}
           verticalPadding={i == 0 ? firstElemVerticalPadding : verticalPadding}
-          color={i % 2 == 0 ? secondaryColor : theme.palette.text.primary}
-          background={
-            i % 2 == 0 ? secondaryBackground : theme.palette.background.primary
-          }
+          color={nextColor(i)}
+          background={nextBackground(i)}
         />
       ))}
 
