@@ -6,12 +6,12 @@ const SectionGridItem = ({
   child,
   color,
   background,
-  verticalPadding,
+  padding,
 }: {
   child: React.ReactNode;
   color: string;
   background: string;
-  verticalPadding: string;
+  padding: string;
 }) => {
   const theme = useTheme();
 
@@ -22,9 +22,10 @@ const SectionGridItem = ({
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        padding: verticalPadding,
+        padding: padding,
         [theme.breakpoints.down('md')]: {
-          padding: `${verticalPadding} 16px ${verticalPadding} 16px`,
+          p: padding,
+          px: { xs: '16px', md: padding },
         },
         color: color,
         background: background,
@@ -37,20 +38,19 @@ const SectionGridItem = ({
 
 const AlternatingBackgroundColorSectionList = ({
   children,
-  secondaryBackground = '#1282B2',
   secondaryColor = 'white',
-  verticalPadding = '48px',
-  firstElemVerticalPadding = '32px',
+  secondaryBackground = '#1282B2',
+  itemPadding = '48px',
+  firstItemPadding = '32px',
   lastItemIsPrimary,
 }: {
   children: React.ReactNode[];
-  secondaryBackground?: string;
   secondaryColor?: string;
-  // Allow the first item to have a different padding than the rest of the
-  // items.
-  firstElemVerticalPadding?: string;
+  secondaryBackground?: string;
   // Used to wrap every item.
-  verticalPadding?: string;
+  itemPadding?: string;
+  // Allow the first item to have a different padding.
+  firstItemPadding?: string;
   // If true the last item will use the primary color regardless of its
   // position in the list.
   lastItemIsPrimary?: boolean;
@@ -77,7 +77,7 @@ const AlternatingBackgroundColorSectionList = ({
         <SectionGridItem
           key={i}
           child={child}
-          verticalPadding={i == 0 ? firstElemVerticalPadding : verticalPadding}
+          padding={i == 0 ? firstItemPadding : itemPadding}
           color={nextColor(i)}
           background={nextBackground(i)}
         />
@@ -86,7 +86,7 @@ const AlternatingBackgroundColorSectionList = ({
       {/* display the last item */}
       <SectionGridItem
         child={lastItem}
-        verticalPadding={verticalPadding}
+        padding={itemPadding}
         color={
           lastItemIsPrimary
             ? theme.palette.text.primary
