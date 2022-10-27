@@ -56,50 +56,42 @@ const AlternatingBackgroundColorSectionList = ({
   lastItemIsPrimary?: boolean;
 }) => {
   const theme = useTheme();
-
-  const isLastItem = (idx: number) => {
-    return idx === children.length - 1;
-  };
+  const lastItem = children.at(-1);
 
   return (
     <Grid container width="100%">
-      {children.map((child: React.ReactNode, i: number) =>
-        isLastItem(i) ? (
-          <SectionGridItem
-            key={i}
-            child={child}
-            verticalPadding={verticalPadding}
-            color={
-              lastItemIsPrimary
-                ? theme.palette.text.primary
-                : i % 2 == 0
-                ? secondaryColor
-                : theme.palette.text.primary
-            }
-            background={
-              lastItemIsPrimary
-                ? theme.palette.background.primary
-                : i % 2 == 0
-                ? secondaryBackground
-                : theme.palette.background.primary
-            }
-          />
-        ) : (
-          <SectionGridItem
-            key={i}
-            child={child}
-            verticalPadding={
-              i == 0 ? firstElemVerticalPadding : verticalPadding
-            }
-            color={i % 2 == 0 ? secondaryColor : theme.palette.text.primary}
-            background={
-              i % 2 == 0
-                ? secondaryBackground
-                : theme.palette.background.primary
-            }
-          />
-        )
-      )}
+      {/* display all items except the last one */}
+      {children.slice(0, -1).map((child: React.ReactNode, i: number) => (
+        <SectionGridItem
+          key={i}
+          child={child}
+          verticalPadding={i == 0 ? firstElemVerticalPadding : verticalPadding}
+          color={i % 2 == 0 ? secondaryColor : theme.palette.text.primary}
+          background={
+            i % 2 == 0 ? secondaryBackground : theme.palette.background.primary
+          }
+        />
+      ))}
+
+      {/* display the last item */}
+      <SectionGridItem
+        child={lastItem}
+        verticalPadding={verticalPadding}
+        color={
+          lastItemIsPrimary
+            ? theme.palette.text.primary
+            : children.length % 2 != 0
+            ? secondaryColor
+            : theme.palette.text.primary
+        }
+        background={
+          lastItemIsPrimary
+            ? theme.palette.background.primary
+            : children.length % 2 != 0
+            ? secondaryBackground
+            : theme.palette.background.primary
+        }
+      />
     </Grid>
   );
 };
