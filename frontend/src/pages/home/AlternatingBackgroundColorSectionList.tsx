@@ -60,11 +60,11 @@ const AlternatingBackgroundColorSectionList = ({
   // children.at(-1) didn't work here...
   const lastItem = children.slice(children.length - 1);
 
-  const nextColor = (idx: number): string => {
+  const colorAtIndex = (idx: number): string => {
     return idx % 2 == 0 ? secondaryColor : theme.palette.text.primary;
   };
 
-  const nextBackground = (idx: number): string => {
+  const backgroundColorAtIndex = (idx: number): string => {
     return idx % 2 == 0
       ? secondaryBackground
       : theme.palette.background.primary;
@@ -78,8 +78,8 @@ const AlternatingBackgroundColorSectionList = ({
           key={i}
           child={child}
           padding={i == 0 ? firstItemPadding : itemPadding}
-          color={nextColor(i)}
-          background={nextBackground(i)}
+          color={colorAtIndex(i)}
+          background={backgroundColorAtIndex(i)}
         />
       ))}
 
@@ -90,16 +90,12 @@ const AlternatingBackgroundColorSectionList = ({
         color={
           lastItemIsPrimary
             ? theme.palette.text.primary
-            : children.length % 2 != 0
-            ? secondaryColor
-            : theme.palette.text.primary
+            : colorAtIndex(children.length - 1)
         }
         background={
           lastItemIsPrimary
             ? theme.palette.background.primary
-            : children.length % 2 != 0
-            ? secondaryBackground
-            : theme.palette.background.primary
+            : backgroundColorAtIndex(children.length - 1)
         }
       />
     </Grid>
