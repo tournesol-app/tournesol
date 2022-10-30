@@ -11,6 +11,7 @@ declare module '@mui/material/styles/createPalette' {
 
   interface TypeBackground {
     menu: string;
+    primary: string;
   }
 }
 
@@ -33,6 +34,7 @@ export const theme = responsiveFontSizes(
       },
       background: {
         menu: '#FAF8F3',
+        primary: '#FAFAFA',
       },
     },
     typography: {
