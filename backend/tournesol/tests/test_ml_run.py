@@ -84,6 +84,20 @@ class TestMlTrain(TransactionTestCase):
         self.assertEqual(scores_mode_default.filter(poll=Poll.default_poll()).count(), 8)
 
 
+    def test_ml_run_with_video_having_score_zero(self):
+        video = VideoFactory()
+        ComparisonCriteriaScoreFactory(
+            comparison__entity_1=video,
+            score=0,
+            criteria="largely_recommended",
+        )
+
+        self.assertEqual(video.tournesol_score, None)
+        call_command("ml_train")
+        video.refresh_from_db()
+        self.assertAlmostEqual(video.tournesol_score, 0.0)
+
+
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to supertrusted users (as staff member)
         user1 = UserFactory(email="user@verified.test", is_staff=True)
