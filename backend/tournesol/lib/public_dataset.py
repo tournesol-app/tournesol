@@ -74,7 +74,7 @@ def get_users_dataset(poll_name: str) -> QuerySet:
         SELECT DISTINCT
             core_user.id,
             core_user.username,
-            core_user.voting_right
+            core_user.trust_score
 
         FROM core_user
 
