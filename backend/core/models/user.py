@@ -198,7 +198,8 @@ class User(AbstractUser):
         null=True,
         blank=True,
         default=None,
-        help_text="The trust score assigned to the user based on the vouching mechanism.",
+        help_text="The trust score assigned to the user based on trusted"
+                  " domains and the vouching mechanism.",
     )
 
     # @property
