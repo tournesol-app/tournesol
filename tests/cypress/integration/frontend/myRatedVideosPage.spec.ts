@@ -69,16 +69,6 @@ describe('My rated elements page', () => {
       const durationLabel = "Duration";
       const publicationDateLabel = "Publication date";
 
-      it('the default ordering is `-last_compared_at`', () => {
-        cy.visit('/ratings');
-        cy.focused().type("user1");
-        cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-
-        cy.location().should((loc) => {
-          expect(loc.search).to.eq('?orderBy=-last_compared_at')
-        });
-      });
-
       it('the ratings can be order by `last_compared_at`', () => {
         cy.visit('/ratings');
         cy.focused().type("user1");
