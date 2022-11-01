@@ -446,8 +446,8 @@
     "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
     "theStatsCouldNotBeDisplayed": "The stats could not be displayed.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project, aiming to identify public interest videos that should be largely recommended.",
-    "helpUsAdvanceResearch": "Help us advance research in the ethics of algorithms and recommendation systems by giving your opinion on the videos you have watched."
+    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
+    "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended."
   },
   "comparisonSection": {
     "contribute": "Contribute",
