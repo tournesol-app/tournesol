@@ -8,6 +8,8 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
+import CallMadeIcon from '@mui/icons-material/CallMade';
+import CallReceivedIcon from '@mui/icons-material/CallReceived';
 
 import { TitledSection } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
@@ -44,28 +46,28 @@ function RatingOrderByInput(props: FilterProps) {
         >
           <MenuItem value="last_compared_at">
             {t('ratingOrderByInput.lastComparisonDate')}&nbsp;
-            {t('ratingOrderByInput.(asc)')}
+            <CallMadeIcon fontSize="small" />
           </MenuItem>
           <MenuItem value="-last_compared_at">
             {t('ratingOrderByInput.lastComparisonDate')}&nbsp;
-            {t('ratingOrderByInput.(desc)')}
+            <CallReceivedIcon fontSize="small" />
           </MenuItem>
           <MenuItem value="n_comparisons">
             {t('ratingOrderByInput.numberOfComparisons')}&nbsp;
-            {t('ratingOrderByInput.(asc)')}
+            <CallMadeIcon fontSize="small" />
           </MenuItem>
           <MenuItem value="-n_comparisons">
             {t('ratingOrderByInput.numberOfComparisons')}&nbsp;
-            {t('ratingOrderByInput.(desc)')}
+            <CallReceivedIcon fontSize="small" />
           </MenuItem>
           {extraMetadataOrderBy.map((metadata) => [
             <MenuItem key={`${metadata}`} value={`${metadata}`}>
               {getMetadataName(t, pollName, metadata)}&nbsp;
-              {t('ratingOrderByInput.(asc)')}
+              <CallMadeIcon fontSize="small" />
             </MenuItem>,
             <MenuItem key={`-${metadata}`} value={`-${metadata}`}>
               {getMetadataName(t, pollName, metadata)}&nbsp;
-              {t('ratingOrderByInput.(desc)')}
+              <CallReceivedIcon fontSize="small" />
             </MenuItem>,
           ])}
         </Select>

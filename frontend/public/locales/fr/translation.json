@@ -259,8 +259,6 @@
     "orderBy": "Trier par",
     "order": "Ordre",
     "lastComparisonDate": "Dernière comparaison",
-    "(asc)": "(crois.)",
-    "(desc)": "(décrois.)",
     "numberOfComparisons": "Nombre de comparaisons"
   },
   "options": "Options",

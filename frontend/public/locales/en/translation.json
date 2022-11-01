@@ -253,8 +253,6 @@
     "orderBy": "Order by",
     "order": "Order",
     "lastComparisonDate": "Last comparison date",
-    "(asc)": "(asc.)",
-    "(desc)": "(desc.)",
     "numberOfComparisons": "Number of comparisons"
   },
   "options": "Options",
