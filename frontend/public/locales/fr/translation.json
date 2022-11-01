@@ -452,8 +452,8 @@
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
     "theStatsCouldNotBeDisplayed": "Les statistiques n'ont pas pu être affichées.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent, qui vise à identifier les vidéos d'utilité publique qui devraient être largement recommandées.",
-    "helpUsAdvanceResearch": "Aidez-nous a faire avancer la recherche dans l'éthique des algorithmes et des systèmes de recommandation en donnant votre avis sur les vidéos que vous avez regardées."
+    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommendations.",
+    "helpUsAdvanceResearch": "Aidez-nous à faire avancer la recherche en donnant votre avis sur les vidéos que vous avez regardées pour identifier les vidéos d'utilité publique qui devraient être largement recommandées."
   },
   "comparisonSection": {
     "contribute": "Contribuer",
