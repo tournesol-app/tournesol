@@ -42,7 +42,6 @@ function RatingOrderByInput(props: FilterProps) {
           onChange={handleChange}
           inputProps={{ 'data-testid': 'order-by-metadata-input' }}
         >
-          <MenuItem value="">--</MenuItem>
           <MenuItem value="last_compared_at">
             {t('ratingOrderByInput.lastComparisonDate')}&nbsp;
             {t('ratingOrderByInput.(asc)')}

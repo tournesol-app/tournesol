@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Collapse, Grid } from '@mui/material';
 
@@ -9,6 +9,8 @@ import IsPublicFilter from './IsPublicFilter';
 import MarkAllRatingsMenu from './MarkAllRatings';
 import RatingOrderByInput from './RatingOrderByInput';
 
+const DEFAULT_FILTER_ORDER_BY = '-last_compared_at';
+
 function RatingsFilter() {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -17,6 +19,17 @@ function RatingsFilter() {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  // Append default URL parameters if needed.
+  useEffect(() => {
+    const defaults = [{ key: 'orderBy', value: DEFAULT_FILTER_ORDER_BY }];
+
+    defaults.map((param) => {
+      if (!filterParams.get(param.key)) {
+        setFilter(param.key, param.value);
+      }
+    });
+  }, [filterParams, setFilter]);
 
   return (
     <Box color="text.secondary">
@@ -33,7 +46,7 @@ function RatingsFilter() {
           </Grid>
           <Grid item xs={12} sm={6} md={5} lg={4}>
             <RatingOrderByInput
-              value={filterParams.get('orderBy') ?? ''}
+              value={filterParams.get('orderBy') ?? DEFAULT_FILTER_ORDER_BY}
               onChange={(value) => setFilter('orderBy', value)}
             />
           </Grid>
