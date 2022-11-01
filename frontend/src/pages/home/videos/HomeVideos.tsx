@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 
@@ -44,15 +44,12 @@ const HomeVideosPage = () => {
   return (
     <AlternatingBackgroundColorSectionList lastItemIsPrimary>
       <TitleSection title={t('home.collaborativeContentRecommendations')}>
-        <Typography paragraph>
-          <Trans t={t} i18nKey="home.tournesolPlatformDescription">
-            Tournesol is an <strong>open source</strong> platform which aims to{' '}
-            <strong>collaboratively</strong> identify top videos of public
-            utility by eliciting contributors&apos; judgements on content
-            quality. We hope to contribute to making today&apos;s and
-            tomorrow&apos;s large-scale algorithms{' '}
-            <strong>robustly beneficial</strong> for all of humanity.
-          </Trans>
+        <Typography paragraph fontSize="1.1em">
+          {t('home.tournesolIsAParticipatoryResearchProject')}
+        </Typography>
+
+        <Typography paragraph fontSize="1.1em">
+          {t('home.helpUsAdvanceResearch')}
         </Typography>
 
         {active ? (

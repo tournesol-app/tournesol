@@ -10,12 +10,15 @@
 <p>
 <p align="center">
   <i>
-    Tournesol is free software designed to collaboratively identify public interest videos that should be largely recommended.
+    Tournesol is a free software designed to collaboratively identify public
+    interest videos that should be largely recommended.
   </i>
 </p>
 <p align="center">
   <i>
-    Participants are invited to judge the videos' quality, and build together an open database to help the research in AI ethics and recommendation systems.
+    Participants are invited to judge the videos' quality, and build together
+    an open database to help the research in AI ethics and recommendation
+    systems.
   </i>
 </p>
 
