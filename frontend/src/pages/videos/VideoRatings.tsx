@@ -19,6 +19,8 @@ import { scrollToTop } from 'src/utils/ui';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import EntityList from 'src/features/entities/EntityList';
 
+const DEFAULT_FILTER_ORDER_BY = '-last_compared_at';
+
 const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
   const { t } = useTranslation();
   return (
@@ -69,7 +71,7 @@ const VideoRatingsPage = () => {
     setIsLoading(true);
     const urlParams = new URLSearchParams(location.search);
     const isPublicParam = urlParams.get('isPublic');
-    const orderByParam = urlParams.get('orderBy');
+    const orderByParam = urlParams.get('orderBy') || DEFAULT_FILTER_ORDER_BY;
 
     const isPublic = isPublicParam ? isPublicParam === 'true' : undefined;
     const orderBy = orderByParam ?? undefined;
@@ -130,7 +132,11 @@ const VideoRatingsPage = () => {
       <ContentBox noMinPaddingX maxWidth="lg">
         {options?.comparisonsCanBePublic === true && (
           <Box px={{ xs: 2, sm: 0 }}>
-            <RatingsFilter />
+            <RatingsFilter
+              defaultFilters={[
+                { name: 'orderBy', value: DEFAULT_FILTER_ORDER_BY },
+              ]}
+            />
           </Box>
         )}
         <LoaderWrapper isLoading={isLoading}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Collapse, Grid } from '@mui/material';
 
@@ -9,27 +9,23 @@ import IsPublicFilter from './IsPublicFilter';
 import MarkAllRatingsMenu from './MarkAllRatings';
 import RatingOrderByInput from './RatingOrderByInput';
 
-const DEFAULT_FILTER_ORDER_BY = '-last_compared_at';
-
-function RatingsFilter() {
+function RatingsFilter({
+  defaultFilters = [],
+}: {
+  // A list of default values used to initialize the filters.
+  defaultFilters: Array<{ name: string; value: string }>;
+}) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const [filterParams, setFilter] = useListFilter();
+  const [filterParams, setFilter] = useListFilter({ defaults: defaultFilters });
+
+  const defaultFilterOrderBy = defaultFilters
+    .filter((param) => param.name === 'orderBy' && param.value != null)
+    .pop() ?? { value: '' };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-
-  // Append default URL parameters if needed.
-  useEffect(() => {
-    const defaults = [{ key: 'orderBy', value: DEFAULT_FILTER_ORDER_BY }];
-
-    defaults.map((param) => {
-      if (!filterParams.get(param.key)) {
-        setFilter(param.key, param.value);
-      }
-    });
-  }, [filterParams, setFilter]);
 
   return (
     <Box color="text.secondary">
@@ -46,7 +42,7 @@ function RatingsFilter() {
           </Grid>
           <Grid item xs={12} sm={6} md={5} lg={4}>
             <RatingOrderByInput
-              value={filterParams.get('orderBy') ?? DEFAULT_FILTER_ORDER_BY}
+              value={filterParams.get('orderBy') ?? defaultFilterOrderBy.value}
               onChange={(value) => setFilter('orderBy', value)}
             />
           </Grid>
