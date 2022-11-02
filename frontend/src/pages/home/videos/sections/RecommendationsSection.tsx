@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
-import HomeComparison from './HomeComparison';
+import HomeRecommendations from './HomeRecommendations';
 
 interface ComparedEntityStats {
   comparedEntityCount: number;
@@ -71,7 +71,7 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
         </Grid>
         <Grid item lg={6} xl={6}>
           <Box display="flex" justifyContent="center">
-            <HomeComparison />
+            <HomeRecommendations />
           </Box>
         </Grid>
       </Grid>
