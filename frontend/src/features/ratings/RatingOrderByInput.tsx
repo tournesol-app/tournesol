@@ -45,12 +45,12 @@ function RatingOrderByInput(props: FilterProps) {
         icon: CallReceivedIcon,
       },
       {
-        label: t('ratingOrderByInput.lastComparisonDate'),
+        label: t('ratingOrderByInput.numberOfComparisons'),
         value: 'n_comparisons',
         icon: CallMadeIcon,
       },
       {
-        label: t('ratingOrderByInput.lastComparisonDate'),
+        label: t('ratingOrderByInput.numberOfComparisons'),
         value: '-n_comparisons',
         icon: CallReceivedIcon,
       },

@@ -19,10 +19,6 @@ function RatingsFilter({
   const [expanded, setExpanded] = useState(false);
   const [filterParams, setFilter] = useListFilter({ defaults: defaultFilters });
 
-  const defaultFilterOrderBy = defaultFilters
-    .filter((param) => param.name === 'orderBy' && param.value != null)
-    .pop() ?? { value: '' };
-
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -42,7 +38,7 @@ function RatingsFilter({
           </Grid>
           <Grid item xs={12} sm={6} md={5} lg={4}>
             <RatingOrderByInput
-              value={filterParams.get('orderBy') ?? defaultFilterOrderBy.value}
+              value={filterParams.get('orderBy') ?? ''}
               onChange={(value) => setFilter('orderBy', value)}
             />
           </Grid>

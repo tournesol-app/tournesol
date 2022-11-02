@@ -250,10 +250,10 @@
     "compareVideosButton": "Compare videos"
   },
   "ratingOrderByInput": {
-    "orderBy": "Order by",
-    "order": "Order",
     "lastComparisonDate": "Last comparison date",
-    "numberOfComparisons": "Number of comparisons"
+    "numberOfComparisons": "Number of comparisons",
+    "orderBy": "Order by",
+    "order": "Order"
   },
   "options": "Options",
   "contextualRecommendations": {

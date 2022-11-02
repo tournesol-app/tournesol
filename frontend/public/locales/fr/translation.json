@@ -256,10 +256,10 @@
     "compareVideosButton": "Comparer des vidéos"
   },
   "ratingOrderByInput": {
-    "orderBy": "Trier par",
-    "order": "Ordre",
     "lastComparisonDate": "Dernière comparaison",
-    "numberOfComparisons": "Nombre de comparaisons"
+    "numberOfComparisons": "Nombre de comparaisons",
+    "orderBy": "Trier par",
+    "order": "Ordre"
   },
   "options": "Options",
   "contextualRecommendations": {
