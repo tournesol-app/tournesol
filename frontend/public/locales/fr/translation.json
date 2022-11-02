@@ -449,17 +449,17 @@
       "pollIsClosed": "Le scrutin est maintenant fermé.",
       "seeResults": "Voir les résultats"
     },
+    "theStatsCouldNotBeDisplayed": "Les statistiques n'ont pas pu être affichées.",
+    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
+    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommendations.",
+    "helpUsAdvanceResearch": "Aidez-nous à faire avancer la recherche en donnant votre avis sur les vidéos que vous avez regardées pour identifier les vidéos d'utilité publique qui devraient être largement recommandées.",
     "contributeTitle": "Participez !",
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
     "compareButton": "Commencer à comparer",
     "useOurExtension": "Utilisez l'extension !",
     "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
-    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
-    "theStatsCouldNotBeDisplayed": "Les statistiques n'ont pas pu être affichées.",
-    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommendations.",
-    "helpUsAdvanceResearch": "Aidez-nous à faire avancer la recherche en donnant votre avis sur les vidéos que vous avez regardées pour identifier les vidéos d'utilité publique qui devraient être largement recommandées."
+    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>."
   },
   "comparisonSection": {
     "contribute": "Contribuer",
@@ -468,6 +468,10 @@
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Désolé, la comparaison de vidéo est momentanément indisponible. Veuillez réessayer plus tard.",
     "compareTheVideos": "Comparer les vidéos"
+  },
+  "recommendationsSection": {
+    "recommendations": "Recommandations",
+    "eachComparisonHelps": "Chaque comparaison permet au représentant algorithmique d'améliorer ses recommandations. Vous aussi, donnez votre avis afin d'améliorer les recommandations de miliers de personnes."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",

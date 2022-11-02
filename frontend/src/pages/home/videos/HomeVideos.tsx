@@ -13,6 +13,7 @@ import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection'
 import ExtensionSection from 'src/pages/home/videos/sections/ExtensionSection';
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
+import RecommendationsSection from './sections/RecommendationsSection';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -110,6 +111,12 @@ const HomeVideosPage = () => {
         comparisonStats={{
           comparisonCount: stats.comparisonCount,
           lastMonthComparisonCount: stats.lastMonthComparisonCount,
+        }}
+      />
+      <RecommendationsSection
+        comparedEntityStats={{
+          comparedEntityCount: stats.comparedEntityCount,
+          lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
         }}
       />
       <ExtensionSection />
