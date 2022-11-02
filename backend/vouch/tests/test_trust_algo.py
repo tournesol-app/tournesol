@@ -26,7 +26,7 @@ class TrustAlgoUnitTest(TestCase):
         return pretrusts * TRUSTED_EMAIL_PRETRUST
 
     def get_random_vouch_matrix(self):
-        random_vouch = (np.random.rand(self._nb_users, self._nb_users) > 0.5).astype(int)
+        random_vouch = (np.random.rand(self._nb_users, self._nb_users) > 0.1).astype(int)
         # One cannot vouch for oneself
         np.fill_diagonal(random_vouch, 0)
         return random_vouch
@@ -38,8 +38,16 @@ class TrustAlgoUnitTest(TestCase):
         """
         vouch_matrix = self.get_random_vouch_matrix()
         weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
+
+        # Weight vouch matrix is "row-substochastic"
         for u in range(self._nb_users):
             self.assertLessEqual(np.sum(weighted_vouch_matrix[u]), 1)
+
+        # Weight vouch is strictly positive where the initial vouch_matrix
+        # is strictly positive
+        self.assertTrue(
+            np.array_equal(vouch_matrix > 0, weighted_vouch_matrix > 0)
+        )
 
     def test_compute_byztrust(self):
         """
