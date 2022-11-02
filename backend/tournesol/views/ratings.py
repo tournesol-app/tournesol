@@ -25,7 +25,10 @@ ALLOWED_GENERIC_ORDER_BY_VALUES = [
     "-n_comparisons",
 ]
 
-DEFAULT_ORDER_BY = ["-last_compared_at", "-pk"]
+# Appended to the positional arguments of all calls to QuerySet.order_by()
+EXTRA_ORDER_BY = "-pk"
+
+DEFAULT_ORDER_BY = ["-last_compared_at", EXTRA_ORDER_BY]
 
 
 def get_annotated_ratings():
@@ -146,13 +149,13 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
             return qst.order_by(*DEFAULT_ORDER_BY)
 
         if order_by in ALLOWED_GENERIC_ORDER_BY_VALUES:
-            return qst.order_by(order_by)
+            return qst.order_by(order_by, EXTRA_ORDER_BY)
 
         sign = "-" if order_by[0] == "-" else ""
         field = order_by[1:] if order_by[0] == "-" else order_by
 
         if field in poll.entity_cls.get_allowed_meta_order_fields():
-            return qst.order_by(f"{sign}entity__metadata__{field}")
+            return qst.order_by(f"{sign}entity__metadata__{field}", EXTRA_ORDER_BY)
 
         raise ValidationError("The URL parameter 'order_by' is invalid.")
 

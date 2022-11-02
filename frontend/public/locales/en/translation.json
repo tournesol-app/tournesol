@@ -249,6 +249,12 @@
     "noVideoComparedYet": "You haven't compared any video yet",
     "compareVideosButton": "Compare videos"
   },
+  "ratingOrderByInput": {
+    "lastComparisonDate": "Last comparison date",
+    "numberOfComparisons": "Number of comparisons",
+    "orderBy": "Order by",
+    "order": "Order"
+  },
   "options": "Options",
   "contextualRecommendations": {
     "channel": "Channel",
@@ -565,6 +571,10 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
+  },
+  "videoMetadata": {
+    "duration": "Duration",
+    "publication_date": "Publication date"
   },
   "presidentielle2022": {
     "dialogs": {
