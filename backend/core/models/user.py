@@ -219,7 +219,7 @@ class User(AbstractUser):
     #     return True if any_rejected else False
 
     @classmethod
-    def trusted_users(cls) -> QuerySet["User"]:
+    def with_trusted_email(cls) -> QuerySet["User"]:
         accepted_domain = EmailDomain.objects.filter(
             domain=OuterRef("user_email_domain"), status=EmailDomain.STATUS_ACCEPTED
         )
@@ -241,7 +241,7 @@ class User(AbstractUser):
 
     @classmethod
     def supertrusted_seed_users(cls) -> QuerySet["User"]:
-        return cls.trusted_users().filter(is_staff=True)
+        return cls.with_trusted_email().filter(is_staff=True)
 
     @classmethod
     def validate_email_unique_with_plus(cls, email: str, username="") -> str:
@@ -300,8 +300,14 @@ class User(AbstractUser):
         return email
 
     @property
+    def has_trusted_email(self):
+        return User.with_trusted_email().filter(pk=self.pk).exists()
+
+    @property
     def is_trusted(self):
-        return User.trusted_users().filter(pk=self.pk).exists()
+        # TODO: remove this property. Use 'has_trusted_email' instead,
+        # and rename the associated field in the /accounts/profile/ API.
+        return self.has_trusted_email
 
     def ensure_email_domain_exists(self):
         if not self.email:

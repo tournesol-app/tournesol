@@ -86,14 +86,14 @@ def trust_algo():
     # Import users and pretrust status
     users = list(
         User.objects.all()
-        .annotate(in_trusted_users=Q(pk__in=User.trusted_users()))
+        .annotate(with_trusted_email=Q(pk__in=User.with_trusted_email()))
         .only("id")
     )
     users_index__user_id = {
         user.id: user_index for user_index, user in enumerate(users)
     }
     pretrusts = np.array([
-        TRUSTED_EMAIL_PRETRUST if u.in_trusted_users else 0.0
+        TRUSTED_EMAIL_PRETRUST if u.with_trusted_email else 0.0
         for u in users
     ])
     if np.sum(pretrusts) == 0:

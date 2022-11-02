@@ -170,7 +170,7 @@ class TrustAlgoTest(TestCase):
         trust_algo()
 
         for user in User.objects.all():
-            if user.is_trusted:
+            if user.has_trusted_email:
                 self.assertEqual(user.trust_score, TRUSTED_EMAIL_PRETRUST)
             else:
                 self.assertEqual(user.trust_score, 0.0)
