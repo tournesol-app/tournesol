@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
+
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
+import { useCurrentPoll } from 'src/hooks';
 import HomeRecommendations from './HomeRecommendations';
 
 interface ComparedEntityStats {
@@ -16,6 +18,18 @@ interface Props {
 
 const RecommendationsSection = ({ comparedEntityStats }: Props) => {
   const { t } = useTranslation();
+  const { name: pollName } = useCurrentPoll();
+
+  const comparedEntitiesTitle = useMemo(() => {
+    switch (pollName) {
+      case 'videos':
+        return t('stats.ratedVideos');
+      case 'presidentielle2022':
+        return t('stats.ratedCandidates');
+      default:
+        throw new Error(`Unknown poll: ${pollName}`);
+    }
+  }, [pollName, t]);
 
   return (
     <Box>
@@ -63,7 +77,7 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
                 </Box>
                 <Box textAlign="center">
                   <Metrics
-                    text={t('stats.comparisons')}
+                    text={comparedEntitiesTitle}
                     count={comparedEntityStats?.comparedEntityCount || 0}
                     lastMonthCount={
                       comparedEntityStats?.lastMonthComparedEntityCount || 0
