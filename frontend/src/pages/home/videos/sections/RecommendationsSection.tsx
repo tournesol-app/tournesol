@@ -26,7 +26,13 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
         mb={6}
         width="100%"
       >
-        <Divider component="div" sx={{ width: { xs: '100%', lg: '75%' } }}>
+        <Divider
+          component="div"
+          sx={{
+            width: { xs: '100%', lg: '75%' },
+            '&::before, &::after': { borderColor: '#fff' },
+          }}
+        >
           <Typography
             variant="h1"
             component="h2"
