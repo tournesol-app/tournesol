@@ -260,6 +260,10 @@
     "channel": "Channel",
     "comparedWith": "Compared with"
   },
+  "recommendationsSubset": {
+    "bestOfLastMonth": "Best of last month",
+    "bestOfAllTime": "Best of all time"
+  },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
     "deleteYourAccount": "Delete your account",

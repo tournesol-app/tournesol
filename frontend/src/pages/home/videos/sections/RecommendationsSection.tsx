@@ -91,7 +91,7 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
         </Grid>
         <Grid item lg={6} xl={6}>
           <Box display="flex" justifyContent="center">
-            <RecommendationsSubset />
+            <RecommendationsSubset displayControls />
           </Box>
         </Grid>
       </Grid>
