@@ -38,9 +38,9 @@ class IsTrustedFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset: QuerySet[User]):
         if self.value() == "1":
-            return queryset.filter(pk__in=User.trusted_users())
+            return queryset.filter(pk__in=User.with_trusted_email())
         if self.value() == "0":
-            return queryset.exclude(pk__in=User.trusted_users())
+            return queryset.exclude(pk__in=User.with_trusted_email())
 
         return queryset
 

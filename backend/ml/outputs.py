@@ -3,9 +3,7 @@ from typing import Iterable, Optional, Union
 import numpy as np
 import pandas as pd
 from django.db import transaction
-from django.db.models import Q
 
-from core.models import User
 from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
@@ -132,7 +130,6 @@ def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
 def save_contributor_scores(
     poll: Poll,
     contributor_scores,
-    trusted_filter: Optional[bool] = None,
     single_criteria: Optional[str] = None,
     single_user_id: Optional[int] = None,
 ):
@@ -187,11 +184,6 @@ def save_contributor_scores(
     scores_to_delete = ContributorRatingCriteriaScore.objects.filter(
         contributor_rating__poll=poll
     )
-    if trusted_filter is not None:
-        trusted_query = Q(contributor_rating__user__in=User.trusted_users())
-        scores_to_delete = scores_to_delete.filter(
-            trusted_query if trusted_filter else ~trusted_query
-        )
 
     if single_criteria is not None:
         scores_to_delete = scores_to_delete.filter(criteria=single_criteria)

@@ -13,98 +13,65 @@ logger = logging.getLogger(__name__)
 # vouching to securely assign trust scores to a wider set of contributors. The
 # algorithm inputs pre-trust status and a vouching directed graph.
 
-# If PRETRUST_BIAS == 1, then vouching yields no trust to non-pre-trusted
-# users. If PRETRUST_BIAS is close to 0, then pre-trust vanishes (which is
-# very unsafe).
-PRETRUST_BIAS = 0.2
 
 # Trust scores are computed iteratively, which yields an approximate solution.
 APPROXIMATION_ERROR = 1e-8
 
-# In our model, users that vouch for few (if any) implicitly vouch for
-# pre-trusted users. IMPLICIT_PRETRUST_VOUCH is the implicit amount of vouch
-# given to pre-trusted, as opposed to the explicit vouches, each of which is
-# of unit value.
-IMPLICIT_PRETRUST_VOUCH = 0.1
+# In our model we assume that each participating contributor implicitly
+# vouches for a sink. The sink counts for SINK_VOUCH vouchees. As a result, when a
+# contributor with less than SINK_VOUCH vouchees vouches for more vouchees,
+# the amount of trust scores the contributor assigns grows almost
+# linearly, thereby not penalizing previously vouched contributors.
+# Vouching is thereby not (too) disincentivized.
+SINK_VOUCH = 5
 
 # The algorithm guarantees that every pre-trusted user is given a trust score
-# which is at least MIN_PRETRUST_TRUST_SCORE. Moreover, all users' trust score
+# which is at least TRUSTED_EMAIL_PRETRUST. Moreover, all users' trust score
 # will be at most 1.
-MIN_PRETRUST_TRUST_SCORE = 0.8
+TRUSTED_EMAIL_PRETRUST = 0.8
+
+# When considering a random walker on the vouch network,
+# (1 - VOUCH_DECAY) is the probability that the random walker resets
+# its walk at each iteration.
+# ByzTrust essentially robustifies the random walk, by frequently
+# preventing the walker from visiting too frequently visited contributors,
+# thereby bounding the maximal influence of such contributors.
+VOUCH_DECAY = 0.8
 
 
-def normalize_vouch_matrix(vouch_matrix: NDArray, pretrusts: NDArray) -> NDArray:
+def get_weighted_vouch_matrix(vouch_matrix: NDArray) -> NDArray:
     """
-    Vouch matrix normalization guarantees three properties:
-        - The sum of normalized vouches given by a voucher equals 1.
-        - Each voucher vouches for pre-trusted users.
-        - Vouchers that explicitly vouch for many barely vouch for pre-trusted
-          users.
+    Returns the weighted_vouch_matrix, derived from the vouch_matrix
+    (composed of explicit Voucher created by users).
 
-    Keyword arguments:
-    vouch_matrix -- A 2 dimensional array of vouch values.
-                    The 1st dimension is the voucher, the 2nd is the vouchee.
-                    vouch_matrix[voucher][vouchee] > 0 if voucher vouched for vouchee.
-    pretrusts -- pretrusts[u] > 0 if u is pretrusted.
+    The weighted_vouch_matrix integrates implicit vouches, i.e vouches
+    attributed to a sink, such as the sum of weighted vouches given by
+    any voucher is at most one.
     """
-    normalized_vouch_matrix = np.zeros(vouch_matrix.shape)
 
-    nb_users = len(pretrusts)  # Number of users
-    nb_pretrusted = np.sum(
-        np.array(pretrusts) > 0, axis=0
-    )  # Number of pretrusted users
-
-    # TODO/PERF this could be done with numpy instead of nested for loops (100x speed up)
-    for voucher in range(nb_users):
-        n_vouches_by_voucher = np.sum(np.array(vouch_matrix[voucher]) > 0, axis=0)
-        normalization_constant = (
-            IMPLICIT_PRETRUST_VOUCH * nb_pretrusted + n_vouches_by_voucher
-        )
-        for vouchee in range(nb_users):
-            if pretrusts[vouchee] > 0:
-                normalized_vouch_matrix[voucher][vouchee] += (
-                    IMPLICIT_PRETRUST_VOUCH / normalization_constant
-                )
-            if vouch_matrix[voucher][vouchee] > 0:
-                normalized_vouch_matrix[voucher][vouchee] += 1 / normalization_constant
-    return normalized_vouch_matrix
+    n_vouches_by_voucher = vouch_matrix.sum(axis=1)
+    weighted_denominator = n_vouches_by_voucher + SINK_VOUCH
+    weighted_vouch_matrix = vouch_matrix / weighted_denominator[:, np.newaxis]
+    return weighted_vouch_matrix
 
 
-def compute_relative_posttrusts(normalized_vouch_matrix, relative_pretrusts: NDArray):
+def compute_byztrust(weighted_vouch_matrix, pretrusts: NDArray):
     """
-    Return a vector of global trust values per user, given the vouchers in the
-    network and the set of pre-trusted users. This part comes directly from
-    EigenTrust.
+    Return a vector of trust scores per user, given the vouch network
+    and the pre-trust scores (based on user's email domains).
+    ByzTrust is inspired from EigenTrust.
     """
-    relative_trusts = relative_pretrusts
-    new_relative_trusts = relative_trusts
-    delta = 10
+    trusts = pretrusts
+    delta = np.inf
     while delta >= APPROXIMATION_ERROR:
-        new_relative_trusts = normalized_vouch_matrix.T.dot(relative_trusts)
+        # Apply vouch decay
+        new_trusts = pretrusts + VOUCH_DECAY * weighted_vouch_matrix.T.dot(trusts)
+        # Clip to avoid power concentration
+        new_trusts = new_trusts.clip(max=1.0)
 
-        new_relative_trusts = (
-            1 - PRETRUST_BIAS
-        ) * new_relative_trusts + PRETRUST_BIAS * relative_pretrusts
-
-        delta = np.linalg.norm(new_relative_trusts - relative_trusts)
-        relative_trusts = new_relative_trusts
-    return new_relative_trusts
-
-
-def compute_trust_scores(relative_posttrusts, pretrusts):
-    """
-    Go from ratio of trust to actual trust weight that should be assigned to
-    users given the trust the network puts in them.
-    """
-    min_relative_trusts_of_pretrusteds = np.amin(
-        relative_posttrusts,
-        where=pretrusts > 0,
-        initial=MIN_PRETRUST_TRUST_SCORE,
-    )
-    scale = MIN_PRETRUST_TRUST_SCORE / min_relative_trusts_of_pretrusteds
-    scaled_relative_trusts = np.array(relative_posttrusts) * scale
-    clipped_relative_trusts = scaled_relative_trusts.clip(max=1)
-    return clipped_relative_trusts
+        delta = np.linalg.norm(new_trusts - trusts, ord=1)
+        trusts = new_trusts
+    return trusts
 
 
 def trust_algo():
@@ -119,35 +86,36 @@ def trust_algo():
     # Import users and pretrust status
     users = list(
         User.objects.all()
-        .annotate(in_trusted_users=Q(pk__in=User.trusted_users()))
+        .annotate(with_trusted_email=Q(pk__in=User.with_trusted_email()))
         .only("id")
     )
     users_index__user_id = {
         user.id: user_index for user_index, user in enumerate(users)
     }
-    pretrusts = np.array([int(u.in_trusted_users) for u in users])
+    pretrusts = np.array([
+        TRUSTED_EMAIL_PRETRUST if u.with_trusted_email else 0.0
+        for u in users
+    ])
     if np.sum(pretrusts) == 0:
         logger.warning("Trust scores cannot be computed: no pre-trusted user exists")
         return
 
     nb_users = len(users)
 
-    # Import vouching matrix
+    # Import vouch matrix
     vouch_matrix = np.zeros([nb_users, nb_users], dtype=float)
     for vouch in Voucher.objects.iterator():
         voucher = users_index__user_id[vouch.by_id]
         vouchee = users_index__user_id[vouch.to_id]
         vouch_matrix[voucher][vouchee] = vouch.value
 
-    # Compute relative posttrusts
-    normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
-    relative_pretrusts = pretrusts / np.sum(pretrusts)
-    relative_posttrusts = compute_relative_posttrusts(
-        normalized_vouch_matrix, relative_pretrusts
-    )
+    # Compute weighted vouch matrix (row-substochastic)
+    weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
 
-    # Turn relative_posttrust into trust scores
-    trust_scores = compute_trust_scores(relative_posttrusts, pretrusts)
+    # Compute trust scores using ByzTrust
+    trust_scores = compute_byztrust(weighted_vouch_matrix, pretrusts)
+
+    # Update `trust_score` in the database
     for user_no, user_model in enumerate(users):
         user_model.trust_score = float(trust_scores[user_no])
     User.objects.bulk_update(users, ["trust_score"])

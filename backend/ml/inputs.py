@@ -116,12 +116,12 @@ class MlInputFromDb(MlInput):
             have_compared_all_alternatives = users.filter(
                 n_compared_entities__gte=n_alternatives
             )
-            return User.trusted_users().filter(pk__in=have_compared_all_alternatives)
+            return User.with_trusted_email().filter(pk__in=have_compared_all_alternatives)
 
         n_supertrusted_seed = User.supertrusted_seed_users().count()
         return User.supertrusted_seed_users().union(
             users.filter(
-                pk__in=User.trusted_users(),
+                pk__in=User.with_trusted_email(),
                 n_compared_entities__gte=self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE,
             )
             .exclude(pk__in=User.supertrusted_seed_users())
@@ -141,7 +141,7 @@ class MlInputFromDb(MlInput):
 
         if trusted_only:
             scores_queryset = scores_queryset.filter(
-                comparison__user__in=User.trusted_users()
+                comparison__user__in=User.with_trusted_email()
             )
 
         if user_id is not None:
@@ -179,7 +179,7 @@ class MlInputFromDb(MlInput):
             )
             .annotate(
                 is_trusted=Case(
-                    When(user__in=User.trusted_users(), then=True), default=False
+                    When(user__in=User.with_trusted_email(), then=True), default=False
                 ),
                 is_supertrusted=Case(
                     When(user__in=self.get_supertrusted_users().values("id"), then=True),
