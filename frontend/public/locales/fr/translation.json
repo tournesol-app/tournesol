@@ -266,7 +266,7 @@
     "channel": "Chaîne",
     "comparedWith": "Comparé avec"
   },
-  "recommendationsSubset": {
+  "recommendationsSubsetControls": {
     "bestOfLastMonth": "Top du mois dernier",
     "bestOfAllTime": "Top de tous les temps"
   },

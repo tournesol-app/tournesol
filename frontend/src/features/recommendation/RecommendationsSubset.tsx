@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Grid, Stack, useTheme } from '@mui/material';
-import { RadioButtonUnchecked, CheckCircleOutline } from '@mui/icons-material';
+import { Box, Grid } from '@mui/material';
 
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
+import RecommendationsSubsetControls from './RecommendationsSubsetControls';
 
 interface RecommendationsSubsetProps {
+  // the maximum number of entity to display
   nbr?: number;
+  // if true display few buttons allowing to filter the recommendations
   displayControls?: boolean;
+  // the color of the control buttons
   controlsColor?: string;
 }
 
@@ -20,12 +22,9 @@ const RecommendationsSubset = ({
   displayControls = false,
   controlsColor = '#fff',
 }: RecommendationsSubsetProps) => {
-  const theme = useTheme();
-
-  const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
-  const [recoDate, setRecoDate] = useState('');
+  const [recoDate, setRecoDate] = useState('Month');
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
 
   useEffect(() => {
@@ -45,64 +44,19 @@ const RecommendationsSubset = ({
     getRecommendationsAsync();
   }, [criterias, nbr, pollName, recoDate]);
 
-  const onDateControlClick = (event: React.MouseEvent<HTMLElement>) => {
-    setRecoDate(event.currentTarget.getAttribute('data-reco-date') ?? '');
+  const dateControlChangeCallback = (value: string) => {
+    setRecoDate(value ?? '');
   };
 
   return (
     <Box>
       {displayControls && (
         <Box mb={2}>
-          <Stack direction="row" justifyContent="center" spacing={2}>
-            <Button
-              variant="outlined"
-              endIcon={
-                recoDate === '' ? (
-                  <CheckCircleOutline />
-                ) : (
-                  <RadioButtonUnchecked />
-                )
-              }
-              disableElevation
-              sx={{
-                color:
-                  recoDate === '' ? theme.palette.primary.main : controlsColor,
-                borderColor:
-                  recoDate === '' ? theme.palette.primary.main : controlsColor,
-                '&:hover': { color: theme.palette.primary.main },
-              }}
-              data-reco-date=""
-              onClick={onDateControlClick}
-            >
-              {t('recommendationsSubset.bestOfLastMonth')}
-            </Button>
-            <Button
-              variant="outlined"
-              endIcon={
-                recoDate === 'Month' ? (
-                  <CheckCircleOutline />
-                ) : (
-                  <RadioButtonUnchecked />
-                )
-              }
-              disableElevation
-              sx={{
-                color:
-                  recoDate === 'Month'
-                    ? theme.palette.primary.main
-                    : controlsColor,
-                borderColor:
-                  recoDate === 'Month'
-                    ? theme.palette.primary.main
-                    : controlsColor,
-                '&:hover': { color: theme.palette.primary.main },
-              }}
-              data-reco-date="Month"
-              onClick={onDateControlClick}
-            >
-              {t('recommendationsSubset.bestOfAllTime')}
-            </Button>
-          </Stack>
+          <RecommendationsSubsetControls
+            controlsColor={controlsColor}
+            selectedDate={recoDate}
+            dateControlChangeCallback={dateControlChangeCallback}
+          />
         </Box>
       )}
       <Grid container gap={2} flexDirection="column">

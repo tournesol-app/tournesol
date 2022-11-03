@@ -260,7 +260,7 @@
     "channel": "Channel",
     "comparedWith": "Compared with"
   },
-  "recommendationsSubset": {
+  "recommendationsSubsetControls": {
     "bestOfLastMonth": "Best of last month",
     "bestOfAllTime": "Best of all time"
   },
