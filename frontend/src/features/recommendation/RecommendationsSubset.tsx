@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Grid, Stack, useTheme } from '@mui/material';
+import { RadioButtonUnchecked, CheckCircleOutline } from '@mui/icons-material';
 
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks';
@@ -55,10 +56,19 @@ const RecommendationsSubset = ({
           <Stack direction="row" justifyContent="center" spacing={2}>
             <Button
               variant="outlined"
+              endIcon={
+                recoDate === '' ? (
+                  <CheckCircleOutline />
+                ) : (
+                  <RadioButtonUnchecked />
+                )
+              }
               disableElevation
               sx={{
-                color: controlsColor,
-                borderColor: controlsColor,
+                color:
+                  recoDate === '' ? theme.palette.primary.main : controlsColor,
+                borderColor:
+                  recoDate === '' ? theme.palette.primary.main : controlsColor,
                 '&:hover': { color: theme.palette.primary.main },
               }}
               data-reco-date=""
@@ -68,10 +78,23 @@ const RecommendationsSubset = ({
             </Button>
             <Button
               variant="outlined"
+              endIcon={
+                recoDate === 'Month' ? (
+                  <CheckCircleOutline />
+                ) : (
+                  <RadioButtonUnchecked />
+                )
+              }
               disableElevation
               sx={{
-                color: controlsColor,
-                borderColor: controlsColor,
+                color:
+                  recoDate === 'Month'
+                    ? theme.palette.primary.main
+                    : controlsColor,
+                borderColor:
+                  recoDate === 'Month'
+                    ? theme.palette.primary.main
+                    : controlsColor,
                 '&:hover': { color: theme.palette.primary.main },
               }}
               data-reco-date="Month"
