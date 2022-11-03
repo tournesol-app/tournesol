@@ -5,7 +5,7 @@ import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll } from 'src/hooks';
-import RecommendationsSubset from 'src/features/recommendation/RecommendationsSubset';
+import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 
 interface ComparedEntityStats {
   comparedEntityCount: number;
