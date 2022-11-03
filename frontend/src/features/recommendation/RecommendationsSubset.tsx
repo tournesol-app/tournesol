@@ -7,13 +7,17 @@ import { useCurrentPoll } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { getRecommendations } from 'src/utils/api/recommendations';
 
+interface RecommendationsSubsetProps {
+  nbr?: number;
+}
+
 /**
  * TODO: make this component generic:
  * - rename HomeRecommendations -> RecommendationsExtract
  * - make the limit configurable
  * - make the offset configurable
  */
-const HomeRecommendations = () => {
+const RecommendationsSubset = ({ nbr = 4 }: RecommendationsSubsetProps) => {
   const { criterias, name: pollName } = useCurrentPoll();
 
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
@@ -22,7 +26,7 @@ const HomeRecommendations = () => {
     const getRecommendationsAsync = async () => {
       const recommendations = await getRecommendations(
         pollName,
-        4,
+        nbr,
         '',
         criterias
       );
@@ -30,7 +34,7 @@ const HomeRecommendations = () => {
     };
 
     getRecommendationsAsync();
-  }, [criterias, pollName]);
+  }, [criterias, nbr, pollName]);
 
   return (
     <Grid container gap={2} flexDirection="column">
@@ -47,4 +51,4 @@ const HomeRecommendations = () => {
   );
 };
 
-export default HomeRecommendations;
+export default RecommendationsSubset;

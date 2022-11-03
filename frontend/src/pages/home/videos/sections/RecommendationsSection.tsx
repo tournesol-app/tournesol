@@ -5,7 +5,7 @@ import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import { useCurrentPoll } from 'src/hooks';
-import HomeRecommendations from './HomeRecommendations';
+import RecommendationsSubset from 'src/features/recommendation/RecommendationsSubset';
 
 interface ComparedEntityStats {
   comparedEntityCount: number;
@@ -91,7 +91,7 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
         </Grid>
         <Grid item lg={6} xl={6}>
           <Box display="flex" justifyContent="center">
-            <HomeRecommendations />
+            <RecommendationsSubset />
           </Box>
         </Grid>
       </Grid>
