@@ -11,32 +11,42 @@ import { getRecommendations } from 'src/utils/api/recommendations';
 interface RecommendationsSubsetProps {
   nbr?: number;
   displayControls?: boolean;
+  controlsColor?: string;
 }
 
 const RecommendationsSubset = ({
   nbr = 4,
   displayControls = false,
+  controlsColor = '#fff',
 }: RecommendationsSubsetProps) => {
   const theme = useTheme();
 
   const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
+  const [recoDate, setRecoDate] = useState('');
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('date', recoDate);
+
     const getRecommendationsAsync = async () => {
       const recommendations = await getRecommendations(
         pollName,
         nbr,
-        '',
+        searchParams.toString(),
         criterias
       );
       setEntities(recommendations.results ?? []);
     };
 
     getRecommendationsAsync();
-  }, [criterias, nbr, pollName]);
+  }, [criterias, nbr, pollName, recoDate]);
+
+  const onDateControlClick = (event: React.MouseEvent<HTMLElement>) => {
+    setRecoDate(event.currentTarget.getAttribute('data-reco-date') ?? '');
+  };
 
   return (
     <Box>
@@ -46,24 +56,26 @@ const RecommendationsSubset = ({
             <Button
               variant="outlined"
               disableElevation
-              // TODO: see how we can add this to the theme palette
               sx={{
-                color: '#fff',
-                borderColor: '#fff',
+                color: controlsColor,
+                borderColor: controlsColor,
                 '&:hover': { color: theme.palette.primary.main },
               }}
+              data-reco-date=""
+              onClick={onDateControlClick}
             >
               {t('recommendationsSubset.bestOfLastMonth')}
             </Button>
             <Button
               variant="outlined"
               disableElevation
-              // TODO: see how we can add this to the theme palette
               sx={{
-                color: '#fff',
-                borderColor: '#fff',
+                color: controlsColor,
+                borderColor: controlsColor,
                 '&:hover': { color: theme.palette.primary.main },
               }}
+              data-reco-date="Month"
+              onClick={onDateControlClick}
             >
               {t('recommendationsSubset.bestOfAllTime')}
             </Button>
