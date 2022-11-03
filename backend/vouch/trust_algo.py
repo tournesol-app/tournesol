@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 APPROXIMATION_ERROR = 1e-8
 
 # In our model we assume that each participating contributor implicitly
-# vouches for a sink. The sink counts for 10 vouchees. As a result, when a
-# contributor with less than 10 vouchees vouches for more vouchees,
+# vouches for a sink. The sink counts for SINK_VOUCH vouchees. As a result, when a
+# contributor with less than SINK_VOUCH vouchees vouches for more vouchees,
 # the amount of trust scores the contributor assigns grows almost
 # linearly, thereby not penalizing previously vouched contributors.
 # Vouching is thereby not (too) disincentivized.
-SINK_VOUCH = 10
+SINK_VOUCH = 5
 
 # The algorithm guarantees that every pre-trusted user is given a trust score
 # which is at least TRUSTED_EMAIL_PRETRUST. Moreover, all users' trust score
