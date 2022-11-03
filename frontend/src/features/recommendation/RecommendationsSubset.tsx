@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Grid, Stack } from '@mui/material';
+import { Box, Button, Grid, Stack, useTheme } from '@mui/material';
 
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks';
@@ -17,6 +17,8 @@ const RecommendationsSubset = ({
   nbr = 4,
   displayControls = false,
 }: RecommendationsSubsetProps) => {
+  const theme = useTheme();
+
   const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
@@ -41,10 +43,28 @@ const RecommendationsSubset = ({
       {displayControls && (
         <Box mb={2}>
           <Stack direction="row" justifyContent="center" spacing={2}>
-            <Button variant="contained" disableElevation>
+            <Button
+              variant="outlined"
+              disableElevation
+              // TODO: see how we can add this to the theme palette
+              sx={{
+                color: '#fff',
+                borderColor: '#fff',
+                '&:hover': { color: theme.palette.primary.main },
+              }}
+            >
               {t('recommendationsSubset.bestOfLastMonth')}
             </Button>
-            <Button variant="contained" disableElevation>
+            <Button
+              variant="outlined"
+              disableElevation
+              // TODO: see how we can add this to the theme palette
+              sx={{
+                color: '#fff',
+                borderColor: '#fff',
+                '&:hover': { color: theme.palette.primary.main },
+              }}
+            >
               {t('recommendationsSubset.bestOfAllTime')}
             </Button>
           </Stack>
