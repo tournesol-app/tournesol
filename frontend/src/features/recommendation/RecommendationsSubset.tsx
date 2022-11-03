@@ -11,12 +11,6 @@ interface RecommendationsSubsetProps {
   nbr?: number;
 }
 
-/**
- * TODO: make this component generic:
- * - rename HomeRecommendations -> RecommendationsExtract
- * - make the limit configurable
- * - make the offset configurable
- */
 const RecommendationsSubset = ({ nbr = 4 }: RecommendationsSubsetProps) => {
   const { criterias, name: pollName } = useCurrentPoll();
 
