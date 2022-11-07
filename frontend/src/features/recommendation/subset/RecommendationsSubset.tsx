@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import EntityCard from 'src/components/entity/EntityCard';
@@ -24,6 +24,8 @@ const RecommendationsSubset = ({
   displayControls = false,
   controlsColor = '#fff',
 }: RecommendationsSubsetProps) => {
+  const theme = useTheme();
+
   const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
@@ -76,7 +78,13 @@ const RecommendationsSubset = ({
         ) : (
           <Grid container gap={2} flexDirection="column">
             {entities.map((entity) => (
-              <Grid item key={entity.uid}>
+              <Grid
+                item
+                key={entity.uid}
+                // Allow the RecommendationsSubset's parent to overwrite the
+                // text color without impacting the EntityCard.
+                sx={{ color: theme.palette.text.primary }}
+              >
                 <EntityCard
                   entity={entity}
                   compact={false}
