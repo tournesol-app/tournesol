@@ -240,8 +240,8 @@ const ComparisonSliders = ({
               <InfoIcon fontSize="small" color="inherit" />
               <Typography variant="caption" color="textSecondary">
                 {initialComparison
-                  ? t('comparison.comparisonInPublicDataset')
-                  : t('comparison.comparisonInPublicDatasetAfterSubmission')}
+                  ? t('comparison.comparisonInPublicData')
+                  : t('comparison.comparisonInPublicDataAfterSubmission')}
               </Typography>
             </>
           )}

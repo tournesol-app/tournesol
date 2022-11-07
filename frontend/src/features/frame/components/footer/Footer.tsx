@@ -72,8 +72,8 @@ const Footer = () => {
           to: whitePaperUrl,
         },
         {
-          name: t('footer.publicDataset'),
-          to: `${apiUrl}/exports/comparisons/`,
+          name: t('footer.publicDatabase'),
+          to: `${apiUrl}/exports/all/`,
         },
       ],
     },
