@@ -89,6 +89,7 @@ const RecommendationsSubset = ({
                   entity={entity}
                   compact={false}
                   entityTypeConfig={{ video: { displayPlayer: false } }}
+                  sxNoBorder
                 />
               </Grid>
             ))}

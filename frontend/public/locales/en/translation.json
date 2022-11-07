@@ -472,7 +472,8 @@
   },
   "recommendationsSection": {
     "recommendations": "Recommendations",
-    "eachComparisonHelps": "Each comparison helps the algorithmic representative to improve its recommendations. You too, give your own opinion to improve the recommendations of thousands of users."
+    "eachComparisonHelps": "Each comparison helps the algorithmic representative to improve its recommendations. You too, give your own opinion to improve the recommendations of thousands of users.",
+    "seeMore": "See more"
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",

@@ -478,7 +478,8 @@
   },
   "recommendationsSection": {
     "recommendations": "Recommandations",
-    "eachComparisonHelps": "Chaque comparaison permet au représentant algorithmique d'améliorer ses recommandations. Vous aussi, donnez votre avis afin d'améliorer les recommandations de milliers de personnes."
+    "eachComparisonHelps": "Chaque comparaison permet au représentant algorithmique d'améliorer ses recommandations. Vous aussi, donnez votre avis afin d'améliorer les recommandations de milliers de personnes.",
+    "seeMore": "Voir plus"
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",

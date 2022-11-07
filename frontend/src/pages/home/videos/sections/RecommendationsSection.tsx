@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
-import { useCurrentPoll } from 'src/hooks';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
+import { useCurrentPoll } from 'src/hooks';
 
 interface ComparedEntityStats {
   comparedEntityCount: number;
@@ -90,8 +91,22 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
           </Box>
         </Grid>
         <Grid item lg={6} xl={6}>
-          <Box display="flex" justifyContent="center">
+          <Box
+            display="flex"
+            justifyContent="center"
+            flexDirection="column"
+            gap={2}
+          >
             <RecommendationsSubset displayControls />
+            <Box display="flex" justifyContent="center">
+              <Button
+                variant="contained"
+                component={Link}
+                to="/recommendations"
+              >
+                {t('recommendationsSection.seeMore')}
+              </Button>
+            </Box>
           </Box>
         </Grid>
       </Grid>
