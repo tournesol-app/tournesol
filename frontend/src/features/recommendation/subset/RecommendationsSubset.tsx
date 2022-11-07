@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import EntityCard from 'src/components/entity/EntityCard';
@@ -23,9 +24,11 @@ const RecommendationsSubset = ({
   displayControls = false,
   controlsColor = '#fff',
 }: RecommendationsSubsetProps) => {
+  const { t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [recoDate, setRecoDate] = useState('Month');
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
 
@@ -66,17 +69,23 @@ const RecommendationsSubset = ({
         </Box>
       )}
       <LoaderWrapper isLoading={isLoading}>
-        <Grid container gap={2} flexDirection="column">
-          {entities.map((entity) => (
-            <Grid item key={entity.uid}>
-              <EntityCard
-                entity={entity}
-                compact={false}
-                entityTypeConfig={{ video: { displayPlayer: false } }}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {entities.length === 0 ? (
+          <Typography paragraph textAlign="center">
+            {t('recommendationsSubset.noRecommendationHasBeenFound')}
+          </Typography>
+        ) : (
+          <Grid container gap={2} flexDirection="column">
+            {entities.map((entity) => (
+              <Grid item key={entity.uid}>
+                <EntityCard
+                  entity={entity}
+                  compact={false}
+                  entityTypeConfig={{ video: { displayPlayer: false } }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </LoaderWrapper>
     </Box>
   );

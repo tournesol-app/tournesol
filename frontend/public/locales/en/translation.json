@@ -260,6 +260,9 @@
     "channel": "Channel",
     "comparedWith": "Compared with"
   },
+  "recommendationsSubset": {
+    "noRecommendationHasBeenFound": "No recommendation has been found."
+  },
   "recommendationsSubsetControls": {
     "bestOfLastMonth": "Best of last month",
     "bestOfAllTime": "Best of all time"
