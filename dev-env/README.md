@@ -72,6 +72,22 @@ To recreate the containers (e.g to update the backend dependencies) while preser
 ./dump-db.sh
 ```
 
-A .sql.tgz file will be written to this directory (e.g `dump_2022-10-17T16:18:10Z.sql.tgz`).
+A .sql.gz file will be written to the directory "./db" (e.g `dump_2022-10-17T16:18:10Z.sql.gz`).
 
-Maintainer can rename this file into `dump-for-dev-env.sql.tgz` to update the database used on dev-env initialization and in e2e tests.
+
+### Push a dev-env db version to the GitHub Container Registry (for Maintainers)
+
+> **Note**  
+> To authenticate to the Container registry (ghcr.io) you will need to login (via `docker login`)
+> using a GitHub personal access token.  
+> See [Authenticating to the Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry) for more details.
+
+The dev-env database (loaded by default when initializing the dev-env) is hosted as a Docker image: [ghcr.io/ghcr.io/tournesol-app/postgres-dev-env](https://github.com/tournesol-app/tournesol/pkgs/container/postgres-dev-env) on GitHub. The exact version used in the dev-env and end-to-end tests can be found in [docker-compose.yml](./docker-compose.yml).
+
+To build and push a new version of this image using a dump created as above, use the following commands:
+
+```bash
+docker build db --build-arg DUMP_FILE=YOUR_DUMP_FILE_NAME --tag ghcr.io/tournesol-app/postgres-dev-env:YOUR_NEW_TAG
+
+docker push ghcr.io/tournesol-app/postgres-dev-env:YOUR_NEW_TAG
+```

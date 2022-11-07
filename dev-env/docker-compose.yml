@@ -3,7 +3,7 @@ version: "3.3"
 services:
   db:
     container_name: tournesol-dev-db
-    image: postgres:13-bullseye
+    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2022-11-07}
     user: ${DB_UID}:${DB_GID}
     volumes:
       - ./db-data:/var/lib/postgresql/data

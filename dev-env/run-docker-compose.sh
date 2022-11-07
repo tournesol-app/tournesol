@@ -99,16 +99,13 @@ function dev_env_init() {
   rm -rf $DB_DIR
   mkdir -p $DB_DIR
 
+  if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
+    # The database should be initialized as empty
+    export DB_IMAGE="postgres:13-bullseye"
+  fi
+
   compose_up db
   wait_for is_db_ready "db"
-
-  if ! [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
-    echo 'Importing dev-env dump'
-    tar xvf "$CURRENT_DIR/dump-for-dev-env.sql.tgz"
-    mv dump.sql "$CURRENT_DIR/$DB_DIR/"
-    docker exec --env PGPASSWORD=password tournesol-dev-db bash -c "psql -1 -q -d tournesol -U tournesol < /var/lib/postgresql/data/dump.sql"
-    rm "$CURRENT_DIR/$DB_DIR/dump.sql"
-  fi
 
   compose_up
   wait_for is_api_ready "api"
