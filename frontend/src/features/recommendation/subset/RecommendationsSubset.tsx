@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Box, Grid } from '@mui/material';
 
+import { LoaderWrapper } from 'src/components';
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
@@ -24,6 +25,7 @@ const RecommendationsSubset = ({
 }: RecommendationsSubsetProps) => {
   const { criterias, name: pollName } = useCurrentPoll();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [recoDate, setRecoDate] = useState('Month');
   const [entities, setEntities] = useState<Array<Recommendation>>([]);
 
@@ -32,12 +34,16 @@ const RecommendationsSubset = ({
     searchParams.append('date', recoDate);
 
     const getRecommendationsAsync = async () => {
+      setIsLoading(true);
+
       const recommendations = await getRecommendations(
         pollName,
         nbr,
         searchParams.toString(),
         criterias
       );
+
+      setIsLoading(false);
       setEntities(recommendations.results ?? []);
     };
 
@@ -59,17 +65,19 @@ const RecommendationsSubset = ({
           />
         </Box>
       )}
-      <Grid container gap={2} flexDirection="column">
-        {entities.map((entity) => (
-          <Grid item key={entity.uid}>
-            <EntityCard
-              entity={entity}
-              compact={false}
-              entityTypeConfig={{ video: { displayPlayer: false } }}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      <LoaderWrapper isLoading={isLoading}>
+        <Grid container gap={2} flexDirection="column">
+          {entities.map((entity) => (
+            <Grid item key={entity.uid}>
+              <EntityCard
+                entity={entity}
+                compact={false}
+                entityTypeConfig={{ video: { displayPlayer: false } }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </LoaderWrapper>
     </Box>
   );
 };
