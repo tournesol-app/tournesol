@@ -68,8 +68,8 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
             justifyContent="space-between"
             gap={2}
           >
-            <Paper square elevation={0}>
-              <Box p={2} bgcolor="#fff">
+            <Paper elevation={0}>
+              <Box p={2} bgcolor="#fff" borderRadius={1}>
                 <Typography paragraph textAlign="justify" fontSize={17}>
                   {t('recommendationsSection.eachComparisonHelps')}
                 </Typography>

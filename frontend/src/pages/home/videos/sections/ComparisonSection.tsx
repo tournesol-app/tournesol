@@ -58,8 +58,8 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
             justifyContent="space-between"
             gap={2}
           >
-            <Paper square elevation={0}>
-              <Box p={2} bgcolor="#1282B2" color={color}>
+            <Paper elevation={0}>
+              <Box p={2} bgcolor="#1282B2" color={color} borderRadius={1}>
                 <Typography paragraph textAlign="justify" fontSize={17}>
                   {t('comparisonSection.theSimpliestWayToContribute')}
                 </Typography>
