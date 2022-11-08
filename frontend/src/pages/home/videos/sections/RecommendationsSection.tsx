@@ -70,7 +70,7 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
           >
             <Paper elevation={0}>
               <Box p={2} bgcolor="#fff" borderRadius={1}>
-                <Typography paragraph textAlign="justify" fontSize={17}>
+                <Typography paragraph fontSize={17}>
                   {t('recommendationsSection.eachComparisonHelps')}
                 </Typography>
                 <Box pb={2}>
