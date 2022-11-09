@@ -131,7 +131,7 @@ application-level port fowarding. This will forward all connections to the
 local port `8080` over the secure channel.
 
 ```shell
-sudo ssh -N -D 8080 staging.tournesol.app
+ssh -N -D 8080 staging.tournesol.app
 ```
 
 Run this command in a terminal and activate the proxy from your browser
