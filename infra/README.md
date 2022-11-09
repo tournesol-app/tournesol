@@ -108,7 +108,7 @@ SSH connection and a SOCKS proxy.
 
 ### Example: accessing the staging admin
 
-First, you need to configure in your web browser a local proxy SOCKS using
+First, you need to configure in your web browser a local SOCKS proxy using
 SOCKS v5 at `127.0.0.1:8080`. To greatly ease the configuration you can use
 a browser extention instead of using the default browser interface.
 
