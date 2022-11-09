@@ -104,14 +104,13 @@ To protect the back end admin interface, its access is restricted to HTTP
 requests coming from its own host.
 
 Users having an account on the server can access this interface by using an
-SSH connection.
+SSH connection and a SOCKS proxy.
 
 ### Example: accessing the staging admin
 
 First, you need to configure in your web browser a local proxy SOCKS using
-SOCKS v5 at `127.0.0.1:8080`. To avoid sending all your web traffic to the
-staging server, you can use a browser extention to easily configure your
-proxy.
+SOCKS v5 at `127.0.0.1:8080`. To greatly ease the configuration you can use
+a browser extention instead of using the default browser interface.
 
 - Mozilla Firefox: [FoxyProxy Standard][foxy-proxy-firefox]
 - Google Chrome: [FoxyProxy Standard][foxy-proxy-chromium]
@@ -124,27 +123,27 @@ proxy (use the wildcard mode):
 - api.tournesol.app
 - api.staging.tournesol.app
 
-Your proxy is now available in your browser actions. Select the option use
-proxies based on their predefined patterns and priorities, in order to
-automatically use the created proxy when the requested URLs match the defined
-patterns.
+Your proxy is now available in your browser actions, but an SSH connection to
+the staging server is still required to complete the process.
 
-Now create an SSH connection to the target server by using an
+Finally create an SSH connection to the target server by using an
 application-level port fowarding. This will forward all connections to the
-local port 8080 over the secure channel.
+local port `8080` over the secure channel.
 
 ```shell
 sudo ssh -N -D 8080 staging.tournesol.app
 ```
 
-Run this command in addition each time you want to access the back end admin
-interface.
+Run this command in a terminal and activate the proxy from your browser
+actions to make the admin interface accessible (use the option "use proxies
+based on their predefined patterns and priorities" to proxy only requests
+targetting the configured HTTP addresses).
 
 ```
 https://api.staging.tournesol.app/admin/
 ```
 
-Close the SSH connection when you are done.
+Close the SSH connection and disable the proxy when you are done.
 
 ## Dump Tournesol DB
 
