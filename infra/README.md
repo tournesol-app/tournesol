@@ -100,8 +100,8 @@ source ./ansible/scripts/get-vm-secrets.sh "tournesol-vm" "jst"
 
 ## Accessing the back end admin interface
 
-To protect the back end's admin interface, its access is restricted to
-HTTP requests coming from its own host.
+To protect the back end admin interface, its access is restricted to HTTP
+requests coming from its own host.
 
 Users having an account on the server can access this interface by using an
 SSH connection.
@@ -119,7 +119,7 @@ proxy.
 Install FoxyProxy Standard, and configure a new manual proxy at `127.0.0.1`
 using the port `8080`, and the SOCKS protocol v5. In the proxy settings, add
 two inclusive URL patterns to specify which addresses are allowed to use the
-proxy:
+proxy (use the wildcard mode):
 
 - api.tournesol.app
 - api.staging.tournesol.app
