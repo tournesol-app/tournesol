@@ -104,38 +104,47 @@ To protect the back end's admin interface, its access is restricted to
 HTTP requests coming from its own host.
 
 Users having an account on the server can access this interface by using an
-SSH tunnel.
+SSH connection.
 
 ### Example: accessing the staging admin
 
-First, edit your own `/etc/hosts` or equivalent. This is required to make our
-requests reach the correct NGINX virtual host, and not the default one.
+First, you need to configure in your web browser a local proxy SOCKS using
+SOCKS v5 at `127.0.0.1:8080`. To avoid sending all your web traffic to the
+staging server, you can use a browser extention to easily configure your
+proxy.
 
-```
-127.0.0.1    api.staging.tournesol.app
-```
+- Mozilla Firefox: [FoxyProxy Standard][foxy-proxy-firefox]
+- Google Chrome: [FoxyProxy Standard][foxy-proxy-chromium]
 
-Then create an SSH tunnel to the server.
+Install FoxyProxy Standard, and configure a new manual proxy at `127.0.0.1`
+using the port `8080`, and the SOCKS protocol v5. In the proxy settings, add
+two inclusive URL patterns to specify which addresses are allowed to use the
+proxy:
+
+- api.tournesol.app
+- api.staging.tournesol.app
+
+Your proxy is now available in your browser actions. Select the option use
+proxies based on their predefined patterns and priorities, in order to
+automatically use the created proxy when the requested URLs match the defined
+patterns.
+
+Now create an SSH connection to the target server by using an
+application-level port fowarding. This will forward all connections to the
+local port 8080 over the secure channel.
 
 ```shell
-sudo ssh -L 443:staging.tournesol.app:443 {duser}@staging.tournesol.app -i /home/{luser}/.ssh/private_key
+sudo ssh -N -D 8080 staging.tournesol.app
 ```
 
-Where:
-- `{duser}` is your username on the distant server ;
-- `{luser}` is the username on your local host able to connect to the distant server.
-
-The bound local port must be 443 to avoid CSRF error when connecting to the
-administration interface through the tunnel. To bind the port 443, superuser
-privileges are required, hence the usage of `sudo`.
-
-You can now connect to the back end with by using this URL in your web browser:
+Run this command in addition each time you want to access the back end admin
+interface.
 
 ```
 https://api.staging.tournesol.app/admin/
 ```
 
-Exit the tunnel when you are done.
+Close the SSH connection when you are done.
 
 ## Dump Tournesol DB
 
@@ -185,3 +194,7 @@ Copyright 2021-2022 Association Tournesol and contributors.
 
 Included license:
  - [AGPL-3.0-or-later](./LICENSE)
+
+
+[foxy-proxy-firefox]: https://addons.mozilla.org/en-US/firefox/addon/foxyproxy-standard/
+[foxy-proxy-chromium]: https://chrome.google.com/webstore/detail/foxyproxy-standard/gcknhkkoolaabfmlnjonogaaifnjlfnp
