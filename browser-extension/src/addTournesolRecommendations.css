@@ -19,7 +19,7 @@
   justify-content: space-between;
 
   border: solid 3px #f3bd00;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #f3bd0011;
 
   width: calc(100% - var(--ytd-rich-grid-item-margin) * 2);
@@ -130,6 +130,7 @@
 .video_thumb {
   width: 100%;
   background: green;
+  border-radius: 12px;
 }
 
 .video_title {
