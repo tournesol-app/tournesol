@@ -475,6 +475,19 @@
     "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
     "seeMore": "See more"
   },
+  "researchSection": {
+    "ourDataAreOpen": "Our data are open",
+    "theTournesolPublicDatabaseIsPublished": "The Tournesol public database is published under the terms of the Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>",
+    "download": "Download",
+    "may2021": "May 2021",
+    "june2021": "June 2021",
+    "february2022": "February 2022",
+    "october2022": "October 2022",
+    "scientificLiterature": "Scientific literature",
+    "research": "Research",
+    "weHopeToContribute": "\"We want to contribute to make the large-scale algorithms deployed robust and beneficial to all humanity.\"",
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of criteria scores."
+  },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
     "resetYourPassword": "Reset your password",

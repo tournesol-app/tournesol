@@ -481,6 +481,19 @@
     "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur.rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
     "seeMore": "Voir plus"
   },
+  "researchSection": {
+    "ourDataAreOpen": "Nos données sont ouvertes",
+    "theTournesolPublicDatabaseIsPublished": "La base de données publique est publiée sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>",
+    "download": "Télécharger",
+    "may2021": "Mai 2021",
+    "june2021": "Juin 2021",
+    "february2022": "Février 2022",
+    "october2022": "Octobre 2022",
+    "scientificLiterature": "Littérature scientifique",
+    "research": "Recherche",
+    "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »",
+    "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères."
+  },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
     "resetYourPassword": "Réinitialisez votre mot de passe",
