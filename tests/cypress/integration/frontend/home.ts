@@ -34,7 +34,7 @@ describe('Home', () => {
         cy.visit('/');
         cy.contains('Start').click()
   
-        cy.focused().type('user1');
+        cy.focused().type('aidjango');
         cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
         
         // Users having already several comparisons are considered as having

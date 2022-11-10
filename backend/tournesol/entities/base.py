@@ -217,7 +217,7 @@ class EntityType(ABC):
     def update_metadata_field(self) -> None:
         raise NotImplementedError
 
-    def refresh_metadata(self, *, force=False, save=True):
+    def refresh_metadata(self, *, force=False, save=True, **kwargs):
         if not force and not self.metadata_needs_to_be_refreshed():
             logging.debug(
                 "Not refreshing metadata for entity %s. Last attempt at %s",
@@ -233,7 +233,7 @@ class EntityType(ABC):
             # or unexpected errors in the refresh process.
             self.instance.save(update_fields=["last_metadata_request_at"])
 
-        self.update_metadata_field()
+        self.update_metadata_field(**kwargs)
         # Ensure that the metadata format is valid after refresh
         self.instance.metadata = self.cleaned_metadata
         self.instance.metadata_timestamp = timezone.now()

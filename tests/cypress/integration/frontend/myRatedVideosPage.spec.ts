@@ -1,9 +1,12 @@
 describe('My rated elements page', () => {
   describe('Poll - videos', () => {
+    const TEST_USERNAME = "aidjango";
+    const TEST_PASSWORD = "tournesol";
+
     it('can list and update ratings status', () => {
       cy.visit('/ratings');
-      cy.focused().type("user1");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
 
       // All rated videos are listed.
       cy.contains(/Showing videos 1 to 20 of \d+/).should('be.visible');
@@ -32,8 +35,8 @@ describe('My rated elements page', () => {
 
     it('visit ratings page with `isPublic` param in URL', () => {
       cy.visit('/ratings?isPublic=false');
-      cy.focused().type("user1");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
       cy.contains('button', 'Options', {matchCase: false}).click();
       cy.contains('label', 'Private', {matchCase: false}).within(
         () => cy.get('input[type=checkbox]').should('be.checked')
@@ -42,8 +45,8 @@ describe('My rated elements page', () => {
 
     it('entities\'s thumbnails are clickable', () => {
       cy.visit('/ratings');
-      cy.focused().type("user1");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
 
       const thumbnail = cy.get('img.entity-thumbnail').first();
       thumbnail.click();
@@ -52,8 +55,9 @@ describe('My rated elements page', () => {
 
     it('entities\'s titles are clickable', () => {
       cy.visit('/ratings');
-      cy.focused().type("user1");
-      cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+      cy.focused().type(TEST_USERNAME);
+      cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
+
 
       const videoCard = cy.get('div[data-testid=video-card-info]').first();
       videoCard.find('h6').click();
@@ -71,8 +75,9 @@ describe('My rated elements page', () => {
 
       it('the ratings can be order by `last_compared_at`', () => {
         cy.visit('/ratings');
-        cy.focused().type("user1");
-        cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+        cy.focused().type(TEST_USERNAME);
+        cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
+  
 
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.contains('Order by').should('be.visible');
@@ -94,9 +99,9 @@ describe('My rated elements page', () => {
 
       it('the ratings can be order by `n_comparisons`', () => {
         cy.visit('/ratings');
-        cy.focused().type("user1");
-        cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-
+        cy.focused().type(TEST_USERNAME);
+        cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
+  
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.contains('Order by').should('be.visible');
 
@@ -116,14 +121,14 @@ describe('My rated elements page', () => {
           expect(loc.search).to.eq('?orderBy=-n_comparisons')
         });
 
-        cy.contains('28 comparisons by you').should('be.visible');
+        cy.contains('29 comparisons by you').should('be.visible');
       });
 
       it('the ratings can be order by video specific metadata fields', () => {
         cy.visit('/ratings');
-        cy.focused().type("user1");
-        cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
-    
+        cy.focused().type(TEST_USERNAME);
+        cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
+      
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.contains('Order by').should('be.visible');
 
@@ -158,8 +163,8 @@ describe('My rated elements page', () => {
 
       it('visit ratings page with `orderBy` param in URL', () => {
         cy.visit('/ratings?orderBy=-last_compared_at');
-        cy.focused().type("user1");
-        cy.get('input[name="password"]').click().type("tournesol").type('{enter}');
+        cy.focused().type(TEST_USERNAME);
+        cy.get('input[name="password"]').click().type(TEST_PASSWORD).type('{enter}');
         cy.contains('button', 'Options', {matchCase: false}).click();
         cy.get('input[data-testid=order-by-metadata-input]').should('have.value', '-last_compared_at');
       });
