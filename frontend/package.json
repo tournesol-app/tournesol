@@ -96,5 +96,8 @@
         "name": "Français"
       }
     ]
+  },
+  "resolutions": {
+    "@types/react": "^17"
   }
 }
