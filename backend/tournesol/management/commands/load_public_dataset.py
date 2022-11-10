@@ -28,7 +28,9 @@ class Command(BaseCommand):
         parser.add_argument("--user-sampling", type=float, default=None)
 
     def create_user(self, username):
-        is_pretrusted = random.random() < PRETRUSTED_PROBABILITY  # nosec B311
+        is_pretrusted = (
+            username in SEED_USERS
+        ) or random.random() < PRETRUSTED_PROBABILITY  # nosec B311
         email = f"{username}@trusted.example" if is_pretrusted else f"{username}@example.com"
         user = User.objects.create_user(
             username=username,
