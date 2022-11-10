@@ -1,4 +1,4 @@
-# TournesolDataViz
+# Tournesol Data Visualization
 
 The Tournesol public data visualization tool made with Streamlit.
 
@@ -17,7 +17,7 @@ pip install -r requirements.txt
 To run Sreamlit on a localhost:
 
 ```bash
-streamlit run analytics.py
+streamlit run tournesol_dataviz.py
 ```
 
 ## Copyright & License
