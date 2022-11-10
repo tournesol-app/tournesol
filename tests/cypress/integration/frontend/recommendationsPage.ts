@@ -66,7 +66,7 @@ describe('Recommendations page', () => {
           cy.contains('Filters', {matchCase: false}).click();
 
           cy.contains('A year ago', {matchCase: false}).should('be.visible');
-          cy.get('input[type=checkbox][name=""]').check();
+          cy.contains('All time', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=""]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
 
