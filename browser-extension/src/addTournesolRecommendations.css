@@ -1,3 +1,7 @@
+:root {
+  --ts-container-padding: 16px;
+}
+
 #tournesol_container {
   position: relative;
   box-sizing: border-box;
@@ -6,7 +10,9 @@
   margin-right: 0;
   margin-top: 45px;
   margin-bottom: 16px; /* 40px for tournesol container - 24px for margin-top of youtube recommendations */
-  padding: 16px 8px;
+
+  padding: var(--ts-container-padding);
+  padding-bottom: 0;
 
   display: flex;
   flex-flow: row wrap;
@@ -118,8 +124,6 @@
 
 .video_box {
   position: relative;
-  margin-left: calc(var(--ytd-rich-grid-item-margin) / 2);
-  margin-right: calc(var(--ytd-rich-grid-item-margin) / 2);
   width: calc(100% / 4 - var(--ytd-rich-grid-item-margin) - 0.01px);
 }
 
@@ -157,9 +161,12 @@
 .details_div {
   cursor: pointer;
   position: relative;
+
   display: flex;
-  flex-direction: column;
   gap: 10px;
+  flex-direction: column;
+
+  padding-bottom: var(--ts-container-padding);
 }
 
 .details_div > h2 {
