@@ -18,8 +18,8 @@ export const useListFilter = ({
     }
   });
 
-  const setFilter = (key: string, value: string) => {
-    if (value || setEmptyValues) {
+  const setFilter = (key: string, value: string | null) => {
+    if (value || (setEmptyValues && value === '')) {
       searchParams.set(key, value);
     } else {
       searchParams.delete(key);
