@@ -6,6 +6,12 @@ import streamlit as st
 
 from utils import CRITERIA, CRITERI_EXT, MSG_NO_DATA, TCOLOR, api_get_tournesol_scores
 
+st.set_page_config(
+    page_title="Tournesol",
+    page_icon="🌻",
+    initial_sidebar_state="expanded",
+)
+
 
 def add_sidebar_select_channels():
 

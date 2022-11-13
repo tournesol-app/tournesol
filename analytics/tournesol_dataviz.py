@@ -1,6 +1,11 @@
 import streamlit as st
 from PIL import Image
 
+st.set_page_config(
+    page_title="Tournesol",
+    page_icon="🌻",
+    initial_sidebar_state="expanded",
+)
 
 st.title("Tournesol data visualization")
 

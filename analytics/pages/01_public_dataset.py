@@ -8,6 +8,12 @@ from sklearn.linear_model import LinearRegression
 
 from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
+st.set_page_config(
+    page_title="Tournesol",
+    page_icon="🌻",
+    initial_sidebar_state="expanded",
+)
+
 
 def add_sidebar_select_user():
 
@@ -203,10 +209,14 @@ def add_expander_cursor_position():
 
             for user in selected_users:
                 df_user = df[df["public_username"] == user]
-                fig.add_trace(go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21))
+                fig.add_trace(
+                    go.Histogram(x=df_user[selected_crit], name=user, nbinsx=21)
+                )
 
         else:
-            fig.add_trace(go.Histogram(x=df[selected_crit], name="all users", nbinsx=21))
+            fig.add_trace(
+                go.Histogram(x=df[selected_crit], name="all users", nbinsx=21)
+            )
 
         fig.update_layout(barmode="overlay")
         fig.update_traces(opacity=0.7)
