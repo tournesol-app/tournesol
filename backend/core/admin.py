@@ -112,6 +112,8 @@ class UserAdmin(DjangoUserAdmin):
 
     @admin.display(ordering="-trust_score", description="Trust score")
     def get_trust_score(self, instance):
+        if instance.trust_score is None:
+            return ""
         return f"{instance.trust_score:.1%}"
 
 
