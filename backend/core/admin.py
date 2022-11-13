@@ -20,6 +20,7 @@ class DegreeAdmin(admin.ModelAdmin):
 
 class IsTrustedFilter(admin.SimpleListFilter):
     """Filter for displaying only trusted or untrusted users"""
+
     title = "is trusted"
     parameter_name = "is_trusted"
 
@@ -48,6 +49,7 @@ class IsTrustedFilter(admin.SimpleListFilter):
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     """Interface to manage general data about users."""
+
     ordering = ["-date_joined"]
     list_filter = DjangoUserAdmin.list_filter + (IsTrustedFilter,)
     list_display = (
@@ -56,7 +58,7 @@ class UserAdmin(DjangoUserAdmin):
         "is_active",
         "is_trusted",
         "get_n_comparisons",
-        "trust_score",
+        "get_trust_score",
         "date_joined",
     )
     add_fieldsets = (
@@ -108,6 +110,12 @@ class UserAdmin(DjangoUserAdmin):
     def is_trusted(self, instance):
         return instance.is_trusted
 
+    @admin.display(ordering="-trust_score", description="Trust score")
+    def get_trust_score(self, instance):
+        if instance.trust_score is None:
+            return ""
+        return f"{instance.trust_score:.1%}"
+
 
 @admin.register(Expertise)
 class ExpertiseAdmin(admin.ModelAdmin):
@@ -132,6 +140,7 @@ def make_rejected(modeladmin, request, queryset):  # pylint: disable=unused-argu
 @admin.register(EmailDomain)
 class EmailDomainAdmin(admin.ModelAdmin):
     """Interface to manage domains and their trust status"""
+
     list_display = (
         "domain",
         "status",
