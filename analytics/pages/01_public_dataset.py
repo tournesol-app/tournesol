@@ -78,7 +78,7 @@ def add_expander_statistics():
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Users", df["public_username"].nunique())
-        col2.metric("Videos", df_stats["Nb of video"].sum())
+        col2.metric("Videos", pd.concat([df['video_a'], df['video_b']]).unique().size)
         col3.metric("Comparisons", df["video_a"].size)
 
         st.write("Number of public comparisons by user:")
