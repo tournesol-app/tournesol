@@ -68,7 +68,7 @@ def api_get_tournesol_scores():
     """Get a dataframe with all videos from tournesol.."""
 
     response = requests.get(
-        f"https://api.tournesol.app/video/?limit=9999&unsafe=true"
+        f"https://api.tournesol.app/video/?limit=99999&unsafe=true"
     ).json()
 
     df = pd.DataFrame.from_dict(response["results"])
