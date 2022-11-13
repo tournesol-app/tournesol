@@ -1,7 +1,5 @@
 import { criteriaToEmoji } from 'src/utils/constants';
 
-export const displayScore = (score: number) => score.toFixed(1);
-
 export const criteriaIcon = (criteriaName: string) => {
   const emoji =
     criteriaName in criteriaToEmoji ? criteriaToEmoji[criteriaName] : undefined;
