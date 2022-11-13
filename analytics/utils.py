@@ -63,7 +63,7 @@ def get_score(row, crit):
             return item["score"]
 
 
-@st.cache
+@st.experimental_memo
 def api_get_tournesol_scores():
     """Get a dataframe with all videos from tournesol.."""
 
