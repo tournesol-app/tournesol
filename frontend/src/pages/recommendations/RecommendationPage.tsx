@@ -82,6 +82,9 @@ function RecommendationsPage() {
     }
     locationSearchRef.current = location.search;
 
+    // `searchParams` is defined as a mutable object outside of this
+    // effect. So it's safer to recreate it here, instead of adding
+    // a dependency to the current effect.
     const searchParams = new URLSearchParams(location.search);
     if (autoLanguageDiscovery && searchParams.get('language') === null) {
       let loadedLanguages = loadRecommendationsLanguages();
@@ -118,6 +121,7 @@ function RecommendationsPage() {
             options
           );
 
+      // A response corresponding to a previous filter state is ignored.
       if (locationSearchRef.current === location.search) {
         setEntities(newEntities);
         setIsLoading(false);
