@@ -66,6 +66,7 @@ class MlInputFromPublicDataset(MlInput):
         return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
     def get_ratings_properties(self):
+        # TODO support trust_scores from the public dataset
         user_entities_pairs = pd.Series(
             iter(
                 set(self.public_dataset.groupby(["user_id", "entity_a"]).indices.keys())
@@ -173,6 +174,7 @@ class MlInputFromDb(MlInput):
         )
 
     def get_ratings_properties(self):
+        # TODO should this be cached?
         values = (
             ContributorRating.objects.filter(
                 poll__name=self.poll_name,
@@ -192,6 +194,7 @@ class MlInputFromDb(MlInput):
                 "is_public",
                 "is_trusted",
                 "is_supertrusted",
+                trust_score=F("user__trust_score"),
             )
         )
         if len(values) == 0:
@@ -202,6 +205,7 @@ class MlInputFromDb(MlInput):
                     "is_public",
                     "is_trusted",
                     "is_supertrusted",
+                    "trust_score",
                 ]
             )
         return pd.DataFrame(values)

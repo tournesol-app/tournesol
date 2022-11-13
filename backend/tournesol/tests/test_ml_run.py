@@ -24,13 +24,11 @@ from django.test import TransactionTestCase
 from core.models import EmailDomain
 from core.tests.factories.user import UserFactory
 from tournesol.models import (
-    ComparisonCriteriaScore,
     ContributorRating,
     ContributorRatingCriteriaScore,
     EntityCriteriaScore,
     Poll,
 )
-from tournesol.models.poll import ALGORITHM_MEHESTAN
 from tournesol.models.scaling import ContributorScaling
 
 from .factories.comparison import ComparisonCriteriaScoreFactory, VideoFactory
@@ -57,6 +55,8 @@ class TestMlTrain(TransactionTestCase):
         call_command("ml_train")
         self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 20)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 20)
+        # Asserts that all contributors have been assigned a strictly positive voting right
+        self.assertEqual(ContributorRatingCriteriaScore.objects.filter(voting_right__gt=0.).count(), 20)
 
 
     def test_ml_on_multiple_polls(self):
@@ -161,6 +161,12 @@ class TestMlTrain(TransactionTestCase):
         video2.refresh_from_db()
         self.assertAlmostEqual(video1.tournesol_score, -50.6, places=1)
         self.assertAlmostEqual(video2.tournesol_score, 50.6, places=1)
+        # Asserts that voting rights have been given the correct values based on the number of
+        # contributors and their verified status
+        # 0.4 = 0.8 [verified] * 0.5 [privacy penalty]
+        # 0.070 ~= (2 [non trusted bias] + 0.1 [non trusted scale] * 10 [num trusted] * 0.8) / 20 [num non trusted] * 0.5 [privacy penalty]
+        self.assertEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating__user=verified_users[0], contributor_rating__entity=video2).voting_right, 0.4)
+        self.assertAlmostEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating__user=non_verified_users[0], contributor_rating__entity=video2).voting_right, 0.12, places=3)
 
 
     def test_tournesol_scores_different_uncertainty(self):

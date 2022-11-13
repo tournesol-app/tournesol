@@ -1,6 +1,14 @@
 import numpy as np
 import pytest
+from django.test import TestCase
 
+from core.models.user import EmailDomain
+from tournesol.models import ContributorRatingCriteriaScore
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+    UserFactory,
+)
 from vouch.voting_rights import OVER_TRUST_BIAS, OVER_TRUST_SCALE, compute_voting_rights
 
 
