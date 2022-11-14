@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Stack,
-  Tooltip,
   IconButton,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -30,7 +29,7 @@ const Thumb = ({
   if (up === undefined) return null;
 
   return (
-    <Tooltip title={up ? upDescription : downDescription}>
+    <Stack direction="row" alignItems="center">
       <IconButton>
         {up ? (
           <TaskAltIcon color="success" />
@@ -38,7 +37,10 @@ const Thumb = ({
           <RadioButtonUncheckedIcon color="disabled" />
         )}
       </IconButton>
-    </Tooltip>
+      <Typography paragraph mb={0}>
+        {up ? upDescription : downDescription}
+      </Typography>
+    </Stack>
   );
 };
 
@@ -120,7 +122,12 @@ const TrustScore = () => {
             />
           </Stack>
           <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-            <Stack direction="row" alignItems="center" sx={{ width: '100%' }}>
+            <Stack
+              direction="column"
+              alignItems="center"
+              sx={{ width: '100%' }}
+              spacing={2}
+            >
               <Typography
                 variant="h1"
                 sx={{
