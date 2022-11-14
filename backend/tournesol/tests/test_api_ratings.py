@@ -1,10 +1,13 @@
+from datetime import timedelta
+
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import ContributorRating, Poll
+from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
@@ -40,7 +43,7 @@ class RatingApi(TestCase):
             entity_2=self.video2,
         )
         ContributorRatingFactory(user=self.user2, entity=self.video2, is_public=True)
-        ComparisonFactory(
+        self.comparison_user2 = ComparisonFactory(
             user=self.user2,
             entity_1=self.video1,
             entity_2=self.video2,
@@ -129,9 +132,13 @@ class RatingApi(TestCase):
         response = self.client.post(
             f"/users/me/contributor_ratings/{poll2.name}/",
             data={"uid": "wd:Q42"},
-            format="json"
+            format="json",
         )
-        self.assertContains(response, "entity has not been found", status_code=status.HTTP_400_BAD_REQUEST)
+        self.assertContains(
+            response,
+            "entity has not been found",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
     def test_authenticated_can_create_rating_as_public(self):
         """
@@ -244,6 +251,195 @@ class RatingApi(TestCase):
         self.assertEqual(rating["entity"]["uid"], self.video2.uid)
         self.assertEqual(rating["is_public"], False)
         self.assertEqual(rating["n_comparisons"], 1)
+
+    def test_authenticated_can_list_ordered_by_n_comparisons(self):
+        """
+        An authenticated user can list its ratings related to a poll by the
+        number of comparisons.
+        """
+        new_user = UserFactory()
+
+        self.client.force_authenticate(user=new_user)
+
+        new_video1 = VideoFactory()
+        new_video2 = VideoFactory()
+        new_video3 = VideoFactory()
+        new_video4 = VideoFactory()
+
+        ContributorRatingFactory(user=new_user, entity=new_video1, is_public=True)
+        ContributorRatingFactory(user=new_user, entity=new_video2, is_public=True)
+        ContributorRatingFactory(user=new_user, entity=new_video3, is_public=True)
+        ContributorRatingFactory(user=new_user, entity=new_video4, is_public=True)
+
+        # new_video1 has 3 comparisons
+        for entity_b in [new_video2, new_video3, new_video4]:
+            ComparisonFactory(
+                user=new_user,
+                entity_1=new_video1,
+                entity_2=entity_b,
+            )
+
+        # new_video2 has 2 comparisons
+        for entity_b in [new_video3]:
+            ComparisonFactory(
+                user=new_user,
+                entity_1=new_video2,
+                entity_2=entity_b,
+            )
+
+        # The least compared first.
+        response = self.client.get(self.ratings_base_url + "?order_by=n_comparisons")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [r["n_comparisons"] for r in response.data["results"]], [1, 2, 2, 3]
+        )
+
+        # The most compared first.
+        response = self.client.get(self.ratings_base_url + "?order_by=-n_comparisons")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [r["n_comparisons"] for r in response.data["results"]], [3, 2, 2, 1]
+        )
+
+    def test_authenticated_can_list_ordered_by_last_compared_at(self):
+        """
+        An authenticated user can list its ratings related to a poll by the
+        last comparison date.
+        """
+
+        video_old1 = VideoFactory()
+        video_old2 = VideoFactory()
+        video_recent1 = VideoFactory()
+        video_recent2 = VideoFactory()
+
+        ContributorRatingFactory(user=self.user2, entity=video_old1, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=video_old2, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=video_recent1, is_public=True)
+        ContributorRatingFactory(user=self.user2, entity=video_recent2, is_public=True)
+
+        comp_old = ComparisonFactory(
+            user=self.user2,
+            entity_1=video_old1,
+            entity_2=video_old2,
+        )
+
+        comp_recent = ComparisonFactory(
+            user=self.user2,
+            entity_1=video_recent1,
+            entity_2=video_recent2,
+        )
+
+        ten_days_ago = self.comparison_user2.datetime_lastedit - timedelta(days=10)
+        ten_days_ahead = self.comparison_user2.datetime_lastedit + timedelta(days=10)
+        # update() allows to bypass the auto_now=True of the `datetime_lastedit` field.
+        Comparison.objects.filter(pk=comp_old.pk).update(datetime_lastedit=ten_days_ago)
+        Comparison.objects.filter(pk=comp_recent.pk).update(
+            datetime_lastedit=ten_days_ahead
+        )
+
+        self.client.force_authenticate(user=self.user2)
+
+        # The oldest first
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=last_compared_at",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sorted_array = sorted(
+            response.data["results"], key=lambda x: x["last_compared_at"]
+        )
+        self.assertEqual(
+            response.data["results"], sorted_array, response.data["results"]
+        )
+        # The most recent first
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=-last_compared_at",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sorted_array = sorted(
+            response.data["results"], key=lambda x: x["last_compared_at"], reverse=True
+        )
+        self.assertEqual(response.data["results"], sorted_array)
+
+    def test_authenticated_can_list_videos_by_duration(self):
+        """
+        An authenticated user can list its ratings related to the `videos`
+        poll by the entities' duration.
+        """
+
+        self.client.force_authenticate(user=self.user1)
+
+        metadata1 = self.video1.metadata
+        metadata2 = self.video2.metadata
+        metadata1["duration"] = 10
+        metadata2["duration"] = 20
+        self.video1.metadata = metadata1
+        self.video2.metadata = metadata2
+        self.video1.save(update_fields=["metadata"])
+        self.video2.save(update_fields=["metadata"])
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=duration", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=-duration", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video1.uid)
+
+    def test_authenticated_can_list_videos_by_publication_date(self):
+        """
+        An authenticated user can list its ratings related to the `videos`
+        poll by the entities' publication date.
+        """
+
+        self.client.force_authenticate(user=self.user1)
+
+        metadata1 = self.video1.metadata
+        metadata2 = self.video2.metadata
+
+        ten_day_sago = timezone.datetime.fromisoformat(
+            metadata2["publication_date"]
+        ) - timedelta(days=10)
+        metadata1["publication_date"] = str(ten_day_sago)
+
+        self.video1.metadata = metadata1
+        self.video1.save(update_fields=["metadata"])
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=publication_date", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video1.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video2.uid)
+
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=-publication_date", format="json"
+        )
+        results = response.data["results"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(results[0]["entity"]["uid"], self.video2.uid)
+        self.assertEqual(results[1]["entity"]["uid"], self.video1.uid)
+
+    def test_authenticated_cannot_list_with_invalid_order_by(self):
+        """
+        An authenticated user cannot list its ratings related to a poll with
+        an invalid `order_by` parameter
+        """
+        self.client.force_authenticate(user=self.user2)
+        response = self.client.get(
+            self.ratings_base_url + "?order_by=INVALID", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_authenticated_can_list_with_filter(self):
         """

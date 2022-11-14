@@ -59,7 +59,7 @@ const PublicDownloadSection = () => {
 
       <Button
         component="a"
-        href={`${api_url}/exports/comparisons/`}
+        href={`${api_url}/exports/all/`}
         download="tournesol_public_export.csv"
         color="primary"
         variant="contained"

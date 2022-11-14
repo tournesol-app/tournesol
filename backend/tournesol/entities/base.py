@@ -19,9 +19,8 @@ class EntityType(ABC):
     Abstract base class for the processing specific to each entity type (mainly about metadata).
     """
 
-    # The 'name' of this entity type corresponds
-    # to the `type` field in Entity,
-    # and to the `entity_type` in Poll.
+    # The name of this entity type corresponds to the `type` field of the
+    # `Entity` model, and to the `entity_type` field of a `Poll`.
     name: str
     metadata_serializer_class: Type[Serializer]
 
@@ -187,6 +186,14 @@ class EntityType(ABC):
         return qs.filter(add_time__gte=min_date)
 
     @classmethod
+    def get_allowed_meta_order_fields(cls) -> List[str]:
+        """
+        Return a list of metadata fields that can be used to order an entity
+        list.
+        """
+        return []
+
+    @classmethod
     @abstractmethod
     def get_uid_regex(cls, namespace: str) -> str:
         """Get a regex able to validate the entity UID."""
@@ -210,7 +217,7 @@ class EntityType(ABC):
     def update_metadata_field(self) -> None:
         raise NotImplementedError
 
-    def refresh_metadata(self, *, force=False, save=True):
+    def refresh_metadata(self, *, force=False, save=True, **kwargs):
         if not force and not self.metadata_needs_to_be_refreshed():
             logging.debug(
                 "Not refreshing metadata for entity %s. Last attempt at %s",
@@ -226,7 +233,7 @@ class EntityType(ABC):
             # or unexpected errors in the refresh process.
             self.instance.save(update_fields=["last_metadata_request_at"])
 
-        self.update_metadata_field()
+        self.update_metadata_field(**kwargs)
         # Ensure that the metadata format is valid after refresh
         self.instance.metadata = self.cleaned_metadata
         self.instance.metadata_timestamp = timezone.now()

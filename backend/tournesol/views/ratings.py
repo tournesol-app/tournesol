@@ -1,14 +1,15 @@
 """
-API endpoint to manipulate contributor ratings.
+API endpoint to interact with the contributor's ratings.
 """
 from django.db.models import Func, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import exceptions, generics
+from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from tournesol.models import Comparison, ContributorRating
+from tournesol.models import Comparison, ContributorRating, Poll
 from tournesol.serializers.rating import (
     ContributorRatingCreateSerializer,
     ContributorRatingSerializer,
@@ -16,17 +17,47 @@ from tournesol.serializers.rating import (
 )
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
+# The only values accepted by the URL parameter `order_by` in the list APIs.
+ALLOWED_GENERIC_ORDER_BY_VALUES = [
+    "last_compared_at",
+    "-last_compared_at",
+    "n_comparisons",
+    "-n_comparisons",
+]
+
+# Appended to the positional arguments of all calls to QuerySet.order_by()
+EXTRA_ORDER_BY = "-pk"
+
+DEFAULT_ORDER_BY = ["-last_compared_at", EXTRA_ORDER_BY]
+
 
 def get_annotated_ratings():
-    comparison_counts = (
-        Comparison.objects.filter(user=OuterRef("user"))
+    """
+    Return a `ContributorRating` queryset with additional annotations like:
+        - the number of comparisons made by the user for the entity
+        - the date of the last comparison made for this entity
+
+    This queryset expects to be evaluated with a specific poll, user and
+    entity.
+    """
+    n_comparisons = (
+        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
         .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
         .annotate(count=Func("id", function="Count"))
         .values("count")
     )
+
+    last_compared_at = (
+        Comparison.objects.filter(poll=OuterRef("poll"), user=OuterRef("user"))
+        .filter(Q(entity_1=OuterRef("entity")) | Q(entity_2=OuterRef("entity")))
+        .values("datetime_lastedit")
+        .order_by("-datetime_lastedit")
+    )[:1]
+
     return ContributorRating.objects.annotate(
-        n_comparisons=Subquery(comparison_counts)
-    ).order_by("-entity__metadata__publication_date", "-pk")
+        n_comparisons=Subquery(n_comparisons),
+        last_compared_at=Subquery(last_compared_at),
+    )
 
 
 @extend_schema_view(
@@ -48,6 +79,7 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
     Get or update the current user's rating for the designated entity.
     Used in particular to get or update the is_public attribute.
     """
+
     serializer_class = ContributorRatingSerializer
 
     def get_object(self):
@@ -61,10 +93,23 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
 
 @extend_schema_view(
     get=extend_schema(
-        description="Retrieve the logged in user's ratings per video in a given poll"
-        "(computed automatically from the user's comparisons).",
+        description="Retrieve the logged-in user's ratings per entity in a given poll"
+        " (computed automatically from the user's comparisons).",
         parameters=[
-            OpenApiParameter("is_public", OpenApiTypes.BOOL, OpenApiParameter.QUERY)
+            OpenApiParameter(
+                "is_public",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Filter public or private ratings.",
+            ),
+            OpenApiParameter(
+                "order_by",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Order the results by: "
+                + ", ".join(ALLOWED_GENERIC_ORDER_BY_VALUES)
+                + ", or any allowed metadata field.",
+            ),
         ],
     ),
     post=extend_schema(
@@ -74,7 +119,45 @@ class ContributorRatingDetail(PollScopedViewMixin, generics.RetrieveUpdateAPIVie
 )
 class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
     """List the contributor's rated entities on the given poll and their scores."""
+
     queryset = ContributorRating.objects.none()
+
+    def _filter_queryset_by_visibility(self, qst):
+        is_public = self.request.query_params.get("is_public")
+        if is_public:
+            if is_public == "true":
+                qst = qst.filter(is_public=True)
+            elif is_public == "false":
+                qst = qst.filter(is_public=False)
+            else:
+                raise ValidationError(
+                    "The URL parameter 'is_public' must be 'true' or 'false'"
+                )
+
+        return qst
+
+    def _order_queryset(self, poll: Poll, qst):
+        """
+        Return an ordered queryset based on the `order_by` URL parameter. Raise
+        `ValidationError` if the `order_by` value is not accepted by this view.
+
+        If not order is specified, the default order is used.
+        """
+        order_by = self.request.query_params.get("order_by")
+
+        if not order_by:
+            return qst.order_by(*DEFAULT_ORDER_BY)
+
+        if order_by in ALLOWED_GENERIC_ORDER_BY_VALUES:
+            return qst.order_by(order_by, EXTRA_ORDER_BY)
+
+        sign = "-" if order_by[0] == "-" else ""
+        field = order_by[1:] if order_by[0] == "-" else order_by
+
+        if field in poll.entity_cls.get_allowed_meta_order_fields():
+            return qst.order_by(f"{sign}entity__metadata__{field}", EXTRA_ORDER_BY)
+
+        raise ValidationError("The URL parameter 'order_by' is invalid.")
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -90,16 +173,9 @@ class ContributorRatingList(PollScopedViewMixin, generics.ListCreateAPIView):
             .select_related("entity")
             .prefetch_related("criteria_scores")
         )
-        is_public = self.request.query_params.get("is_public")
-        if is_public:
-            if is_public == "true":
-                ratings = ratings.filter(is_public=True)
-            elif is_public == "false":
-                ratings = ratings.filter(is_public=False)
-            else:
-                raise exceptions.ValidationError(
-                    "'is_public' query param must be 'true' or 'false'"
-                )
+
+        ratings = self._filter_queryset_by_visibility(ratings)
+        ratings = self._order_queryset(self.poll_from_url, ratings)
         return ratings
 
 

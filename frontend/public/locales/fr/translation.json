@@ -48,7 +48,7 @@
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",
-      "noPersonalScore": "Vous n'avez pas encore comparé cette vidéo."
+      "noPersonalScore": "Vous n'avez pas comparé cette vidéo, ou vos scores n'ont pas encore été calculés."
     },
     "activatePersonalScores": "Afficher les scores personnels"
   },
@@ -71,8 +71,8 @@
     "removeOptionalCriterias": "Supprimer les critères optionnels",
     "addOptionalCriterias": "Ajouter les critères optionnels",
     "changeOneItem": "Changez l'un des deux éléments pour faire une nouvelle comparaison.",
-    "comparisonInPublicDataset": "Cette comparaison fait partie des données publiques.",
-    "comparisonInPublicDatasetAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
+    "comparisonInPublicData": "Cette comparaison fait partie des données publiques.",
+    "comparisonInPublicDataAfterSubmission": "Après enregistrement, cette comparaison fera partie des données publiques.",
     "editComparison": "Modifier la comparaison",
     "criteriaSkipped": "ignoré",
     "submitAComparison": "Soumettre une comparaison",
@@ -127,10 +127,18 @@
     "shareOnTwitter": "Partager sur Twitter"
   },
   "footer": {
-    "wiki": "wiki",
-    "privacyPolicy": "politique de confidentialité",
-    "donate": "faire un don",
-    "whitePaper": "white paper"
+    "getRecommendations": "Recommandations",
+    "chromeExtension": "Extension Chrome",
+    "firefoxExtension": "Extension Firefox",
+    "followUs": "Suivez-nous",
+    "supportUs": "Nous soutenir",
+    "directTransfer": "Virement direct",
+    "compareVideos": "Comparez des videos 🌻",
+    "research": "Recherche",
+    "whitePaper": "White Paper",
+    "publicDatabase": "Base de données publique",
+    "more": "Plus",
+    "privacyPolicy": "Politique de confidentialité"
   },
   "menu": {
     "home": "Accueil",
@@ -247,6 +255,12 @@
     "noVideoComparedYet": "Vous n'avez pas encore comparé de vidéo",
     "compareVideosButton": "Comparer des vidéos"
   },
+  "ratingOrderByInput": {
+    "lastComparisonDate": "Dernière comparaison",
+    "numberOfComparisons": "Nombre de comparaisons",
+    "orderBy": "Trier par",
+    "order": "Ordre"
+  },
   "options": "Options",
   "contextualRecommendations": {
     "channel": "Chaîne",
@@ -287,7 +301,8 @@
   },
   "username": "Nom d'utilisateur",
   "metrics": {
-    "evolutionDuringTheLast30Days": "Evolution au cours des 30 derniers jours."
+    "evolutionDuringTheLast30Days": "Évolution au cours des 30 derniers jours.",
+    "duringTheLast30Days": "les 30 derniers jours."
   },
   "stats": {
     "ratedVideos": "Vidéos notées",
@@ -322,9 +337,9 @@
     "rolePresident": "Président",
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
-    "roleDeveloper": "Développeur",
+    "weThankOurPartners": "Nous remercions nos partenaires",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
-    "partenershipWithEpflDetail": "Aujourd'hui notre contributeur principal est l'École Polytechnique Fédérale de Lausanne (EPFL). En particulier Adrien Matissart, ingénieur de recherche au Laboratoire de Calcul Distribué de la Faculté d'Informatique et Communications de l'EPFL, se consacre pleinement au développement de la plateforme Tournesol. Plusieurs autres chercheurs et chercheuses du laboratoire s'occupent quant à eux de concevoir et d'étudier les algorithmes de Tournesol.",
+    "partenershipWithEpflDetail": "Pendant une courte période, un ingénieur de recherche à l'École Polytechnique Fédérale de Lausanne (EPFL) s'est consacré au développement de la plateforme Tournesol. Plusieurs chercheurs et chercheuses du laboratoire d'informatique distributée (DCL) ont également participé à la conception et poursuivent la recherche sur les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
     "partnershipWithPolyconseilDetail": "Nous sommes également accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Depuis août 2021, Polyconseil met à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous apporte chaque mois des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
     "partnershipWithKleis": "Partenariat avec Kleis Technology",
@@ -409,6 +424,9 @@
       "message": "Une erreur innatendu est survenue."
     }
   },
+  "faqEntryList": {
+    "questionURLCopied": "URL de la question copiée."
+  },
   "faqPage": {
     "iDidFindTheAnswers": "Je n'ai pas trouvé la réponse à mes questions",
     "comeAndAskYourQuestionsOnDiscord": "Venez poser vos questions directement sur notre serveur Discord. Les questions qui reviennent souvent seront ajoutées à la FAQ.",
@@ -438,8 +456,18 @@
     "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>.",
+    "theStatsCouldNotBeDisplayed": "Les statistiques n'ont pas pu être affichées.",
     "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolPlatformDescription": "Tournesol est une plateforme <1>libre et open source</1> qui propose un outil de décision collaboratif transparent. Le but principal de cet outil est d'identifier les contenus informationel d'utilité publique de grande qualité en s'appuyant sur le jugement de contributeurs. Une autre application de l'algorithme de Tournesol que nous explorons en ce moment est l'évaluation des candidats à une élection.<br><br>Grâce aux données collectées sur cette plateforme, nous espérons rendre les algorithmes d'aujourd'hui et de demain <7>robustement bénéfique</7> à grande échelle, pour toute l'humanité."
+    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommendations.",
+    "helpUsAdvanceResearch": "Aidez-nous à faire avancer la recherche en donnant votre avis sur les vidéos que vous avez regardées pour identifier les vidéos d'utilité publique qui devraient être largement recommandées."
+  },
+  "comparisonSection": {
+    "contribute": "Contribuer",
+    "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ?"
+  },
+  "homeComparison": {
+    "sorryTheComparisonIsTemporarilyUnavailable": "Désolé, la comparaison de vidéo est momentanément indisponible. Veuillez réessayer plus tard.",
+    "compareTheVideos": "Comparer les vidéos"
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -562,6 +590,10 @@
     "videos": "vidéos",
     "entityCandidate": "candidat",
     "entityVideo": "vidéo"
+  },
+  "videoMetadata": {
+    "duration": "Durée",
+    "publication_date": "Date de publication"
   },
   "presidentielle2022": {
     "dialogs": {

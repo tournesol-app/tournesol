@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/material';
 import TopBar, { topBarHeight } from './components/topbar/TopBar';
+import Footer from './components/footer/Footer';
 import SideBar from './components/sidebar/SideBar';
 import StorageError from './components/StorageError';
 
@@ -84,6 +85,7 @@ const Frame = ({ children }: Props) => {
         {!isEmbedded && <SideBar />}
         <main className={classes.main}>
           {hasStorageError ? <StorageError /> : children}
+          <Footer />
         </main>
       </div>
     </>

@@ -26,11 +26,22 @@ export type ActionList = Array<
   (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
 >;
 
+export type CriteriaValuesType = { [s: string]: number | undefined };
+
 export type RelatedEntityObject =
   | EntityNoExtraField
   | RelatedEntity
   | Recommendation;
 export type VideoObject = Video | VideoSerializerWithCriteria;
+
+export type PollStats = {
+  userCount: number;
+  lastMonthUserCount: number;
+  comparedEntityCount: number;
+  lastMonthComparedEntityCount: number;
+  comparisonCount: number;
+  lastMonthComparisonCount: number;
+};
 
 /**
  * An exhaustive list of route ids helping to enforce type checking in each
@@ -99,6 +110,11 @@ export type SelectablePoll = {
   tutorialDialogs?: (t: TFunction) => OrderedDialogs;
   // redirect to this page after the last comparison is submitted
   tutorialRedirectTo?: string;
+  // if true, the two UIDs present in the URL will be kept after the redirection
+  tutorialKeepUIDsAfterRedirect?: boolean;
   // whether the 'unsafe' recommendations should be included by default
   unsafeDefault?: boolean;
+  // list of entity type specific metadata that can be used to order a list of
+  // entities
+  extraMetadataOrderBy?: Array<string>;
 };

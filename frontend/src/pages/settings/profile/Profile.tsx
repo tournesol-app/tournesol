@@ -1,20 +1,27 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
+
 import Grid from '@mui/material/Grid';
 
-import { ContentHeader, SettingsSection } from 'src/components';
-import SettingsMenu from '../../../features/settings/SettingsMenu';
-import ProfileForm from '../../../features/settings/profile/ProfileForm';
+import { ContentBox, ContentHeader, SettingsSection } from 'src/components';
+import SettingsMenu from 'src/features/settings/SettingsMenu';
+import ProfileForm from 'src/features/settings/profile/ProfileForm';
+import {
+  mainSectionBreakpoints,
+  settingsMenuBreakpoints,
+} from 'src/pages/settings/layout';
 
 function ProfilePage() {
   const { t } = useTranslation();
+
+  // subSectionBreakP can be changed independently of mainSectionBp
+  const subSectionBreakpoints = mainSectionBreakpoints;
   return (
     <>
       <ContentHeader title={`${t('settings.title')} > ${t('profile')}`} />
-      <Box m={4}>
+      <ContentBox maxWidth="xl">
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={3}>
+          <Grid item {...settingsMenuBreakpoints}>
             <SettingsMenu />
           </Grid>
           <Grid
@@ -22,16 +29,14 @@ function ProfilePage() {
             item
             direction="column"
             alignItems="stretch"
-            xs={12}
-            sm={12}
-            md={9}
+            {...mainSectionBreakpoints}
           >
-            <SettingsSection title={t('profile')} xs={12}>
+            <SettingsSection title={t('profile')} {...subSectionBreakpoints}>
               <ProfileForm />
             </SettingsSection>
           </Grid>
         </Grid>
-      </Box>
+      </ContentBox>
     </>
   );
 }

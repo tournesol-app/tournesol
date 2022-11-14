@@ -5,11 +5,15 @@ from django.views.decorators.cache import cache_page
 
 def cache_page_no_i18n(timeout: float):
     """
-    This decorator activates the default language before calling `cache_page`.
+    This decorator activates the default language before calling the Django's
+    decorator `cache_page`.
 
-    By default, `cache_page` includes the request language code in its cache key.
-    Some API responses (e.g public export files) don't depend on the language
-    and can be cached under a single key using this decorator.
+    By default, `cache_page` includes the request language code in its cache
+    key. Some API responses (e.g. public export files) don't depend on the
+    language and can be cached under a single key using this decorator.
+
+    Keyword arguments:
+    timeout -- time to live of the cached page, in seconds.
     """
 
     def decorator(view):

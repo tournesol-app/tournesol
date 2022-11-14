@@ -1,4 +1,5 @@
 import csv
+import datetime
 import zipfile
 from io import StringIO
 
@@ -12,7 +13,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.lib.public_dataset import get_dataset
+from tournesol.lib.public_dataset import get_dataset, get_users_dataset
 from tournesol.models import Comparison, Poll
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
@@ -21,8 +22,10 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 
 def write_comparisons_file(request, write_target):
     """
-    Writes a user's comparisons as a CSV file to write_target which can be
-    among other options an HttpResponse or a StringIO
+    Write all user's comparisons as a CSV file to `write_target` which can be
+    among other options an HttpResponse or a StringIO.
+
+    Comparisons from all polls are included.
     """
     fieldnames = ["video_a", "video_b", "criteria", "weight", "score"]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
@@ -73,13 +76,38 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
     )
 
 
+def write_public_users_file(poll_name: str, write_target) -> None:
+    """
+    Retrieve all users present in the public dataset (i.e. with a least
+    one public comparison), and write them as CSV in `write_target`,
+    an object supporting the Python file API.
+    """
+    fieldnames = [
+        "public_username",
+        "trust_score",
+    ]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "public_username": user.username,
+            "trust_score": user.trust_score,
+        }
+        for user in get_users_dataset(poll_name).iterator()
+    )
+
+
 class ExportComparisonsView(APIView):
-    """Export all the comparisons made by the logged user in a CSV file."""
+    """
+    Export all comparisons made in all polls by the logged user as a CSV file.
+    """
+
     permission_classes = [IsAuthenticated]
     throttle_scope = "api_users_me_export"
 
     @extend_schema(
-        description="Download the current user's comparisons in a .csv file",
+        description="Download all comparisons made in all polls by the logged-in user in a"
+                    " CSV file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -90,13 +118,17 @@ class ExportComparisonsView(APIView):
 
 
 class ExportPublicComparisonsView(APIView):
-    """Export all the public comparisons made by any user."""
+    """
+    Export all public comparisons made in the default poll by all users as a CSV file.
+    """
+
     permission_classes = [AllowAny]
     throttle_scope = "api_export_comparisons"
 
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
-        description="Download public data in .csv file",
+        description="Download all public comparisons made in the `videos` poll by all users in a"
+                    " CSV file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -120,7 +152,7 @@ class ExportAllView(APIView):
         # Folder name in ZIP archive which contains the above files
         zip_root = f"export_{request.user.username}"
 
-        response = HttpResponse(content_type="application/x-zip-compressed")
+        response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
 
         with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
@@ -164,4 +196,40 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
                 "username", "email", n_comparisons=Count("*"), user_id=F("id")
             )
         )
+        return response
+
+
+class ExportPublicAllView(APIView):
+    """
+    Export the complete public dataset of the default poll in a .zip file.
+    """
+
+    throttle_scope = "api_export_comparisons"
+    permission_classes = [AllowAny]
+
+    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
+    @extend_schema(
+        description="Download the complete public dataset of the `videos` poll in a .zip file.",
+        responses={200: OpenApiTypes.BINARY},
+    )
+    def get(self, request):
+        now = datetime.datetime.utcnow()
+        zip_root = f"tournesol_export_{now.strftime('%Y%m%dT%H%M%SZ')}"
+
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
+
+        with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+            readme_path = "tournesol/resources/export_readme.txt"
+            with open(readme_path, "r", encoding="utf-8") as readme_file:
+                zip_file.writestr(f"{zip_root}/README.txt", readme_file.read())
+
+            with StringIO() as output:
+                write_public_comparisons_file(Poll.default_poll().name, output)
+                zip_file.writestr(f"{zip_root}/comparisons.csv", output.getvalue())
+
+            with StringIO() as output:
+                write_public_users_file(Poll.default_poll().name, output)
+                zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
+
         return response

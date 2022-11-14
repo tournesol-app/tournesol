@@ -19,6 +19,8 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { polls } from 'src/utils/constants';
 import PollSelector from './PollSelector';
 
+// Allow to position contents like the footer relatively to the top of the
+// page.
 export const topBarHeight = 80;
 
 const useStyles = makeStyles(() => ({

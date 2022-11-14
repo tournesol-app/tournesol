@@ -1,4 +1,5 @@
 import logging
+import threading
 
 import googleapiclient.discovery
 from django.conf import settings
@@ -7,17 +8,23 @@ from django.utils.dateparse import parse_duration
 from tournesol.utils.video_language import compute_video_language
 
 logger = logging.getLogger(__name__)
+thread_local = threading.local()
 
-# Get credentials and create an API client
-API_SERVICE_NAME = "youtube"
-API_VERSION = "v3"
 
-YOUTUBE = None
-YOUTUBE_API_KEY = settings.YOUTUBE_API_KEY
-if YOUTUBE_API_KEY:
-    YOUTUBE = googleapiclient.discovery.build(
-        API_SERVICE_NAME, API_VERSION, developerKey=YOUTUBE_API_KEY
-    )
+def get_youtube_client():
+    youtube_api_key = settings.YOUTUBE_API_KEY
+    if not youtube_api_key:
+        return None
+
+    if not hasattr(thread_local, "youtube"):
+        # Get credentials and create an API client
+        api_service_name = "youtube"
+        api_version = "v3"
+        thread_local.youtube = googleapiclient.discovery.build(
+            api_service_name, api_version, developerKey=youtube_api_key
+        )
+
+    return thread_local.youtube
 
 
 class VideoNotFound(Exception):
@@ -29,15 +36,13 @@ class YoutubeNotConfiguredError(Exception):
 
 
 def get_youtube_video_details(video_id):
-    if not YOUTUBE:
+    youtube = get_youtube_client()
+    if not youtube:
         raise YoutubeNotConfiguredError(
             "YouTube client not initialized, did you provide an API key?"
         )
 
-    # pylint: disable=no-member
-    request = YOUTUBE.videos().list(
-        part="snippet,contentDetails,statistics,status", id=video_id
-    )
+    request = youtube.videos().list(part="snippet,contentDetails,statistics,status", id=video_id)
     return request.execute()
 
 

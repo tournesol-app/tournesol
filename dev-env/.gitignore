@@ -1,3 +1,2 @@
 /db-data
-.dockerignore
-Dockerfile
+*.sql.gz

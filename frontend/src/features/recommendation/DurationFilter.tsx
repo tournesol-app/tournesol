@@ -12,7 +12,7 @@ const TYPING_DELAY = 300;
 interface DurationFilterProps {
   valueMin: string;
   valueMax: string;
-  onChangeCallback: (filter: { param: string; value: string }) => void;
+  onChangeCallback: (filter: { param: string; value: string | null }) => void;
 }
 
 /**
@@ -44,12 +44,12 @@ function DurationFilter({
 
   const clearMinDuration = () => {
     setMinDuration('');
-    onChangeCallback({ param: 'duration_gte', value: '' });
+    onChangeCallback({ param: 'duration_gte', value: null });
   };
 
   const clearMaxDuration = () => {
     setMaxDuration('');
-    onChangeCallback({ param: 'duration_lte', value: '' });
+    onChangeCallback({ param: 'duration_lte', value: null });
   };
 
   /**
@@ -71,7 +71,8 @@ function DurationFilter({
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => onChangeCallback({ param: 'duration_gte', value: minDuration }),
+      () =>
+        onChangeCallback({ param: 'duration_gte', value: minDuration || null }),
       TYPING_DELAY
     );
 
@@ -81,7 +82,8 @@ function DurationFilter({
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => onChangeCallback({ param: 'duration_lte', value: maxDuration }),
+      () =>
+        onChangeCallback({ param: 'duration_lte', value: maxDuration || null }),
       TYPING_DELAY
     );
 
