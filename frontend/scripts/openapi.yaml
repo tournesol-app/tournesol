@@ -3471,12 +3471,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         is_trusted:
           type: boolean
     PoliticalAffiliationEnum:
@@ -3800,12 +3800,12 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
       required:
       - email
       - id
@@ -3952,12 +3952,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         password_confirm:
           type: string
           writeOnly: true
@@ -4549,12 +4549,12 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         is_trusted:
           type: boolean
       required:
@@ -4696,12 +4696,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         is_trusted:
           type: boolean
       required:
