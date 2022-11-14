@@ -7,6 +7,7 @@ import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 import { useCurrentPoll } from 'src/hooks';
+import SectionTitle from './SectionTitle';
 
 interface ComparedEntityStats {
   comparedEntityCount: number;
@@ -46,32 +47,10 @@ const RecommendationsSection = ({
 
   return (
     <Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        mb={6}
-        width="100%"
-      >
-        <Divider
-          component="div"
-          role="presentation"
-          sx={{
-            width: { xs: '100%', lg: '75%' },
-            '&::before, &::after': { borderColor: '#fff' },
-          }}
-        >
-          <Typography
-            variant="h1"
-            component="h2"
-            textAlign="center"
-            pl={4}
-            pr={4}
-          >
-            {t('recommendationsSection.recommendations')}
-          </Typography>
-        </Divider>
-      </Box>
+      <SectionTitle
+        title={t('recommendationsSection.recommendations')}
+        dividerColor="#fff"
+      />
 
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
