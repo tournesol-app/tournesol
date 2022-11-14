@@ -7,17 +7,15 @@ import {
   Stack,
   Tooltip,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { AccountsService, UserProfile } from 'src/services/openapi';
+import DialogBox from 'src/components/DialogBox';
+
 import { usePersonalVouchers } from './context';
 
 const Thumb = ({
@@ -52,16 +50,18 @@ const DescriptionDialog = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation();
-  return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{t('personalVouchers.trustScore.title')}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          <Trans t={t} i18nKey="personalVouchers.trustScore.description" />
-        </DialogContentText>
-      </DialogContent>
-    </Dialog>
+  const dialog = React.useMemo(
+    () => ({
+      title: t('personalVouchers.trustScore.title'),
+      messages: [
+        t('personalVouchers.trustScore.description.explanation'),
+        t('personalVouchers.trustScore.description.howToChangeIt'),
+        t('personalVouchers.trustScore.description.includedInPublicDatabase'),
+      ],
+    }),
+    [t]
   );
+  return <DialogBox open={open} onClose={onClose} dialog={dialog} />;
 };
 
 const TrustScore = () => {

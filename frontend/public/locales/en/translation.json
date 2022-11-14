@@ -510,7 +510,11 @@
       "medium": "Medium",
       "high": "High",
       "title": "Trust score",
-      "description": "Your trust score changes how your comparisons count in Tournesol's recommendations.<br><br>You can increase it by using a certified email and when other users vouch for you.<br><br>Tournesol includes your trust score in the public database if you have at least one comparison of public videos.",
+      "description": {
+        "explanation": "Your trust score changes how your comparisons count in Tournesol's recommendations.",
+        "howToChangeIt": "You can increase it by using a certified email and when other users vouch for you.",
+        "includedInPublicDatabase": "Tournesol includes your trust score in the public database if you have at least one comparison of public videos."
+      },
       "isTrusted": "Your email address is certified",
       "isNotTrusted": "Your email address is not certified",
       "hasReceivedVouchers": "Other users vouch for you",
