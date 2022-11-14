@@ -54,17 +54,17 @@ const DescriptionDialog = ({
   const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{t('personalVouchers.votingRight.title')}</DialogTitle>
+      <DialogTitle>{t('personalVouchers.trustScore.title')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          <Trans t={t} i18nKey="personalVouchers.votingRight.description" />
+          <Trans t={t} i18nKey="personalVouchers.trustScore.description" />
         </DialogContentText>
       </DialogContent>
     </Dialog>
   );
 };
 
-const VotingRight = () => {
+const TrustScore = () => {
   const { t } = useTranslation();
   const [userProfile, setUserProfile] = React.useState<
     UserProfile | undefined
@@ -81,16 +81,15 @@ const VotingRight = () => {
 
   const displayedValue = React.useMemo(() => {
     if (userProfile === undefined) return undefined;
-    const { voting_right: votingRight } = userProfile;
+    const { trust_score: trustScore } = userProfile;
 
-    if (votingRight === undefined) return undefined;
+    if (trustScore === undefined) return undefined;
 
-    if (votingRight === null)
-      return t('personalVouchers.votingRight.nullValue');
+    if (trustScore === null) return t('personalVouchers.trustScore.nullValue');
 
-    if (votingRight < 0.2) return t('personalVouchers.votingRight.low');
-    else if (votingRight < 0.8) return t('personalVouchers.votingRight.medium');
-    else return t('personalVouchers.votingRight.high');
+    if (trustScore < 0.2) return t('personalVouchers.trustScore.low');
+    else if (trustScore < 0.8) return t('personalVouchers.trustScore.medium');
+    else return t('personalVouchers.trustScore.high');
   }, [userProfile, t]);
 
   const [descriptionDialogOpen, setDescriptionDialogOpen] =
@@ -110,7 +109,7 @@ const VotingRight = () => {
         <Stack gap={1} sx={{ height: '100%' }}>
           <Stack direction="row" alignItems="center">
             <Typography color="text.secondary">
-              {t('personalVouchers.votingRight.title')}
+              {t('personalVouchers.trustScore.title')}
             </Typography>
             <IconButton onClick={handleDescriptionInfoClick}>
               <InfoIcon fontSize="small" />
@@ -134,9 +133,9 @@ const VotingRight = () => {
               <Stack>
                 <Thumb
                   up={userProfile?.is_trusted}
-                  upDescription={t('personalVouchers.votingRight.isTrusted')}
+                  upDescription={t('personalVouchers.trustScore.isTrusted')}
                   downDescription={t(
-                    'personalVouchers.votingRight.isNotTrusted'
+                    'personalVouchers.trustScore.isNotTrusted'
                   )}
                 />
                 <Thumb
@@ -146,10 +145,10 @@ const VotingRight = () => {
                       : undefined
                   }
                   upDescription={t(
-                    'personalVouchers.votingRight.hasReceivedVouchers'
+                    'personalVouchers.trustScore.hasReceivedVouchers'
                   )}
                   downDescription={t(
-                    'personalVouchers.votingRight.hasNotReceivedVouchers'
+                    'personalVouchers.trustScore.hasNotReceivedVouchers'
                   )}
                 />
               </Stack>
@@ -161,4 +160,4 @@ const VotingRight = () => {
   );
 };
 
-export default VotingRight;
+export default TrustScore;

@@ -83,7 +83,7 @@ describe('VouchersPage', () => {
     jest
       .spyOn(AccountsService, 'accountsProfileRetrieve')
       .mockImplementation((async () => ({
-        voting_right: 0.4574183,
+        trust_score: 0.4574183,
       })) as () => CancelablePromise<UserProfile>);
   });
 
@@ -238,6 +238,6 @@ describe('VouchersPage', () => {
 
   it('displays vouching score', async () => {
     render(<Component />);
-    await screen.findByText('personalVouchers.votingRight.medium');
+    await screen.findByText('personalVouchers.trustScore.medium');
   });
 });

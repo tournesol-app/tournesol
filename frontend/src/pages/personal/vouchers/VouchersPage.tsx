@@ -8,7 +8,7 @@ import { PersonalVouchersProvider } from './context';
 import CreateVoucherForm from './CreateVoucherForm';
 import GivenVouchers from './GivenVouchers';
 import ReceivedVouchers from './ReceivedVouchers';
-import VotingRight from './VotingRight';
+import TrustScore from './TrustScore';
 
 const PersonalVouchersPage = () => {
   const { t } = useTranslation();
@@ -36,7 +36,7 @@ const PersonalVouchersPage = () => {
             </Card>
           </Grid>
           <Grid item md={4} xs={12} style={{ display: 'flex' }}>
-            <VotingRight />
+            <TrustScore />
           </Grid>
         </Grid>
         <Grid container spacing={2} justifyContent="space-between">
