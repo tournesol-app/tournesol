@@ -17,12 +17,15 @@ interface RecommendationsSubsetProps {
   displayControls?: boolean;
   // the color of the control buttons
   controlsColor?: string;
+  // called when the recommendation date is changed by the controls
+  onRecoDateChange?: (selectedDate: string) => void;
 }
 
 const RecommendationsSubset = ({
   nbr = 4,
   displayControls = false,
   controlsColor = '#fff',
+  onRecoDateChange,
 }: RecommendationsSubsetProps) => {
   const theme = useTheme();
 
@@ -56,7 +59,11 @@ const RecommendationsSubset = ({
   }, [criterias, nbr, pollName, recoDate]);
 
   const dateControlChangeCallback = (value: string) => {
-    setRecoDate(value ?? '');
+    setRecoDate(value);
+
+    if (onRecoDateChange) {
+      onRecoDateChange(value);
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -13,13 +13,25 @@ interface ComparedEntityStats {
   lastMonthComparedEntityCount: number;
 }
 
-interface Props {
+interface RecommendationsSectionProps {
   comparedEntityStats?: ComparedEntityStats;
 }
 
-const RecommendationsSection = ({ comparedEntityStats }: Props) => {
+/**
+ * A home page section that displays a subset of recommended entities.
+ */
+const RecommendationsSection = ({
+  comparedEntityStats,
+}: RecommendationsSectionProps) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+
+  // Determine the date filter applied when the user click on the see more
+  // button.
+  const [seeMoreDate, setSeeMoreDate] = useState('Month');
+  const onRecoDateChangeCallback = (selectedDate: string) => {
+    setSeeMoreDate(selectedDate);
+  };
 
   const comparedEntitiesTitle = useMemo(() => {
     switch (pollName) {
@@ -43,6 +55,7 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
       >
         <Divider
           component="div"
+          role="presentation"
           sx={{
             width: { xs: '100%', lg: '75%' },
             '&::before, &::after': { borderColor: '#fff' },
@@ -97,12 +110,15 @@ const RecommendationsSection = ({ comparedEntityStats }: Props) => {
             flexDirection="column"
             gap={2}
           >
-            <RecommendationsSubset displayControls />
+            <RecommendationsSubset
+              displayControls
+              onRecoDateChange={onRecoDateChangeCallback}
+            />
             <Box display="flex" justifyContent="center">
               <Button
                 variant="contained"
                 component={Link}
-                to="/recommendations"
+                to={`/recommendations?date=${seeMoreDate}`}
               >
                 {t('recommendationsSection.seeMore')}
               </Button>
