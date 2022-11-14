@@ -513,7 +513,7 @@
     "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous",
     "trustScore": {
       "nullValue": "Indéterminé",
-      "low": "Bas",
+      "low": "Faible",
       "medium": "Moyen",
       "high": "Élevé",
       "title": "Score de confiance",
