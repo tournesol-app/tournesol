@@ -89,8 +89,8 @@ const TrustScore = () => {
 
     if (trustScore === null) return t('personalVouchers.trustScore.nullValue');
 
-    if (trustScore < 0.2) return t('personalVouchers.trustScore.low');
-    else if (trustScore < 0.8) return t('personalVouchers.trustScore.medium');
+    if (trustScore < 0.1) return t('personalVouchers.trustScore.low');
+    else if (trustScore < 0.5) return t('personalVouchers.trustScore.medium');
     else return t('personalVouchers.trustScore.high');
   }, [userProfile, t]);
 
