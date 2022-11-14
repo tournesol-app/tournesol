@@ -12,7 +12,7 @@ import {
   Recommendation,
 } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { displayScore, criteriaIcon, criterionColor } from 'src/utils/criteria';
+import { criteriaIcon, criterionColor } from 'src/utils/criteria';
 import useCriteriaChartData, {
   CriterionChartScores,
 } from 'src/hooks/useCriteriaChartData';
@@ -184,7 +184,7 @@ const ScoreLabel = ({
       fill={color}
       style={{ fontSize: 14, fontWeight: 'bold' }}
     >
-      {displayScore(score)}
+      {score.toFixed(0)}
     </text>
   );
 };

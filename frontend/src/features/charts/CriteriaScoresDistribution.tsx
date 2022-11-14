@@ -18,21 +18,19 @@ import { PollsService, CriteriaDistributionScore } from 'src/services/openapi';
 import useSelectedCriterion from 'src/hooks/useSelectedCriterion';
 import { criterionColor } from 'src/utils/criteria';
 
-const displayScore = (score: number) => score.toFixed(0);
-
 const binLabel = (index: number, bins: number[], t: TFunction) => {
   if (index === 0)
     return t('criteriaScoresDistribution.lessThan', {
-      score: displayScore(bins[1]),
+      score: bins[1].toFixed(0),
     });
   if (index > 0 && index < bins.length - 2)
     return t('criteriaScoresDistribution.fromTo', {
-      from: displayScore(bins[index]),
-      to: displayScore(bins[index + 1]),
+      from: bins[index].toFixed(0),
+      to: bins[index + 1].toFixed(0),
     });
   if (index === bins.length - 2)
     return t('criteriaScoresDistribution.greaterThan', {
-      score: displayScore(bins[bins.length - 2]),
+      score: bins[bins.length - 2].toFixed(0),
     });
 };
 
