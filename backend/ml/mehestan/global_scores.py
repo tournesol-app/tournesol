@@ -22,9 +22,9 @@ TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION = 0.1  # f_⨯
 
 
 def get_user_scaling_weights(ml_input: MlInput):
-    ratings_properties = ml_input.get_ratings_properties()[
+    ratings_properties = ml_input.ratings_properties[
         ["user_id", "is_trusted", "is_supertrusted"]
-    ]
+    ].copy()
     df = ratings_properties.groupby("user_id").first()
     df["scaling_weight"] = SCALING_WEIGHT_NONTRUSTED
     df["scaling_weight"].mask(
@@ -212,8 +212,8 @@ def compute_scaling(
 
 
 def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFrame):
-    rp = ml_input.get_ratings_properties()
-    rp.set_index(["user_id", "entity_id"], inplace=True)
+    rp = ml_input.ratings_properties
+    rp = rp.set_index(["user_id", "entity_id"])
     rp = rp[rp.is_supertrusted]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
     df["score"] = df["raw_score"]
@@ -260,11 +260,11 @@ def compute_scaled_scores(
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
     supertrusted_scaling = get_scaling_for_supertrusted(ml_input, individual_scores)
-    rp = ml_input.get_ratings_properties()
+    rp = ml_input.ratings_properties
 
     non_supertrusted_users = rp["user_id"][~rp.is_supertrusted].unique()
     supertrusted_users = rp["user_id"][rp.is_supertrusted].unique()
-    rp.set_index(["user_id", "entity_id"], inplace=True)
+    rp = rp.set_index(["user_id", "entity_id"])
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="left")
     df["is_public"].fillna(False, inplace=True)
     df["is_trusted"].fillna(False, inplace=True)

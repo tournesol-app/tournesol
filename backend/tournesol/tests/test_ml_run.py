@@ -12,8 +12,8 @@ That's why `TransactionTestCase` is required here.
 As `TransactionTestCase` allows to commmit changes into the database, its default behavior is to reset
 the database between each test case. That would delete all data from the test database, including
 the default Poll and criteria, defined by the database migrations.
-For tests that depend on this default Poll, `serialized_rollback = True` to reload the initial state
-of the database after each test.
+For tests that depend on this default Poll, `serialized_rollback = True` must be used to reload the
+initial state of the database after each test.
 
 Find more details on https://docs.djangoproject.com/en/4.0/topics/testing/overview/#rollback-emulation
 """

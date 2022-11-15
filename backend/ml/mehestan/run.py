@@ -74,17 +74,17 @@ def update_user_scores(poll: Poll, user: User):
         )
 
 
-def add_voting_rights(scaled_scores, score_mode=ScoreMode.DEFAULT):
+def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.DEFAULT):
     """
     Add a "voting_right" column to the ratings_df DataFrame
 
     Parameters
     ----------
-    - ratings_df:
+    - ratings_properties_df:
         DataFrame of ratings. All ratings must be on the same criteria and the df must have
         columns: user_id, entity_id, trust_score, is_public
     """
-    ratings_df = scaled_scores.copy(deep=True)
+    ratings_df = ratings_properties_df.copy(deep=True)
     ratings_df["voting_right"] = 0.
     ratings_df["privacy_penalty"] = ratings_df.is_public.map({
         True: VOTE_WEIGHT_PUBLIC_RATINGS,
@@ -96,12 +96,12 @@ def add_voting_rights(scaled_scores, score_mode=ScoreMode.DEFAULT):
     if score_mode == ScoreMode.ALL_EQUAL:
         ratings_df["voting_right"] = 1
     if score_mode == ScoreMode.DEFAULT:
-        for (_, scores) in ratings_df.groupby("entity_id"):
+        for (_, ratings_group) in ratings_df.groupby("entity_id"):
             # trust score would be possibly None (NULL) when new users are created and when
             # computation of trust scores fail for any reason (e.g. no user pre-trusted)
-            scores.trust_score.fillna(0.0, inplace=True)
-            ratings_df.loc[scores.index, "voting_right"] = compute_voting_rights(
-                scores.trust_score.to_numpy(), scores.privacy_penalty.to_numpy()
+            ratings_group.trust_score.fillna(0.0, inplace=True)
+            ratings_df.loc[ratings_group.index, "voting_right"] = compute_voting_rights(
+                ratings_group.trust_score.to_numpy(), ratings_group.privacy_penalty.to_numpy()
             )
     return ratings_df
 

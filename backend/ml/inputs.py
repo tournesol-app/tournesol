@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
+from functools import cached_property
 from typing import Optional
 
 import pandas as pd
@@ -30,8 +31,8 @@ class MlInput(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def get_ratings_properties(self) -> pd.DataFrame:
+    @abstractproperty
+    def ratings_properties(self) -> pd.DataFrame:
         """Fetch data about contributor ratings properties
 
         Returns:
@@ -65,7 +66,8 @@ class MlInputFromPublicDataset(MlInput):
             dtf = dtf[dtf.user_id == user_id]
         return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
-    def get_ratings_properties(self):
+    @cached_property
+    def ratings_properties(self):
         # TODO support trust_scores from the public dataset
         user_entities_pairs = pd.Series(
             iter(
@@ -173,8 +175,8 @@ class MlInputFromDb(MlInput):
             ]
         )
 
-    def get_ratings_properties(self):
-        # TODO should this be cached?
+    @cached_property
+    def ratings_properties(self):
         values = (
             ContributorRating.objects.filter(
                 poll__name=self.poll_name,
