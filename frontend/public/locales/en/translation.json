@@ -520,7 +520,7 @@
       "hasReceivedVouchers": "Other users vouch for you",
       "hasNotReceivedVouchers": "No other users vouch for you"
     },
-    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher voting right on Tournesol, even if their email address is not considered to be trusted. On Tournesol, the list of users for whom you vouch, or who have vouched for you, is public information."
+    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"

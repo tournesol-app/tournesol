@@ -527,7 +527,7 @@
       "hasReceivedVouchers": "Des utilisateurs se portent garant pour vous",
       "hasNotReceivedVouchers": "Aucun utilisateur ne se porte garant pour vous"
     },
-    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'acquérir un droit de vote plus important sur Tournesol, y compris si leur adresse e-mail n'est pas considérée comme fiable. Sur Tournesol, la liste des utilisateurs pour lesquels vous vous portez garant, ou qui se portent garant pour vous, est une information publique."
+    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'augmenter leur score de confiance, y compris si leur adresse e-mail n'est pas considérée comme fiable. Sur Tournesol, la liste des utilisateurs pour lesquels vous vous portez garant ou qui se portent garant pour vous est une information publique."
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
