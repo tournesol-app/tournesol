@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Box,
   Typography,
@@ -7,14 +9,13 @@ import {
   Stack,
   IconButton,
 } from '@mui/material';
+
 import InfoIcon from '@mui/icons-material/Info';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { useTranslation } from 'react-i18next';
 
-import { AccountsService, UserProfile } from 'src/services/openapi';
 import DialogBox from 'src/components/DialogBox';
-
+import { AccountsService, UserProfile } from 'src/services/openapi';
 import { usePersonalVouchers } from './context';
 
 const Thumb = ({
@@ -29,14 +30,12 @@ const Thumb = ({
   if (up === undefined) return null;
 
   return (
-    <Stack direction="row" alignItems="center">
-      <IconButton>
-        {up ? (
-          <TaskAltIcon color="success" />
-        ) : (
-          <RadioButtonUncheckedIcon color="disabled" />
-        )}
-      </IconButton>
+    <Stack direction="row" gap={1} alignItems="center">
+      {up ? (
+        <TaskAltIcon color="success" />
+      ) : (
+        <RadioButtonUncheckedIcon color="disabled" />
+      )}
       <Typography paragraph mb={0}>
         {up ? upDescription : downDescription}
       </Typography>
@@ -108,7 +107,7 @@ const TrustScore = () => {
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent sx={{ height: '100%' }}>
-        <Stack gap={1} sx={{ height: '100%' }}>
+        <Stack gap={1} height="100%">
           <Stack direction="row" alignItems="center">
             <Typography color="text.secondary">
               {t('personalVouchers.trustScore.title')}
@@ -121,44 +120,36 @@ const TrustScore = () => {
               onClose={handleDescriptionDialogClose}
             />
           </Stack>
-          <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-            <Stack
-              direction="column"
-              alignItems="center"
-              sx={{ width: '100%' }}
-              spacing={2}
-            >
-              <Typography
-                variant="h1"
-                sx={{
-                  flexGrow: 1,
-                  textTransform: 'uppercase',
-                }}
-              >
-                {displayedValue}
-              </Typography>
-              <Stack>
-                <Thumb
-                  up={userProfile?.is_trusted}
-                  upDescription={t('personalVouchers.trustScore.isTrusted')}
-                  downDescription={t(
-                    'personalVouchers.trustScore.isNotTrusted'
-                  )}
-                />
-                <Thumb
-                  up={
-                    receivedVouchers !== undefined
-                      ? receivedVouchers.length > 0
-                      : undefined
-                  }
-                  upDescription={t(
-                    'personalVouchers.trustScore.hasReceivedVouchers'
-                  )}
-                  downDescription={t(
-                    'personalVouchers.trustScore.hasNotReceivedVouchers'
-                  )}
-                />
-              </Stack>
+          <Box
+            height="100%"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            gap={2}
+          >
+            <Typography variant="h1" component="span" textTransform="uppercase">
+              {displayedValue}
+            </Typography>
+            <Stack gap={1}>
+              <Thumb
+                up={userProfile?.is_trusted}
+                upDescription={t('personalVouchers.trustScore.isTrusted')}
+                downDescription={t('personalVouchers.trustScore.isNotTrusted')}
+              />
+              <Thumb
+                up={
+                  receivedVouchers !== undefined
+                    ? receivedVouchers.length > 0
+                    : undefined
+                }
+                upDescription={t(
+                  'personalVouchers.trustScore.hasReceivedVouchers'
+                )}
+                downDescription={t(
+                  'personalVouchers.trustScore.hasNotReceivedVouchers'
+                )}
+              />
             </Stack>
           </Box>
         </Stack>
