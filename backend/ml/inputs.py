@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from functools import cached_property
 from typing import Optional
 
@@ -31,7 +31,8 @@ class MlInput(ABC):
         """
         raise NotImplementedError
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def ratings_properties(self) -> pd.DataFrame:
         """Fetch data about contributor ratings properties
 
