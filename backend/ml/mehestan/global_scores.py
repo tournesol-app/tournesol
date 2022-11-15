@@ -17,9 +17,6 @@ SCALING_WEIGHT_SUPERTRUSTED = W
 SCALING_WEIGHT_TRUSTED = 1.0
 SCALING_WEIGHT_NONTRUSTED = 0.0
 
-TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT = 2.0  # w_⨯,default
-TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION = 0.1  # f_⨯
-
 
 def get_user_scaling_weights(ml_input: MlInput):
     ratings_properties = ml_input.ratings_properties[
