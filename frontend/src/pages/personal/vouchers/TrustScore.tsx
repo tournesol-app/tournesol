@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -51,7 +51,7 @@ const DescriptionDialog = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation();
-  const dialog = React.useMemo(
+  const dialog = useMemo(
     () => ({
       title: t('personalVouchers.trustScore.title'),
       messages: [
@@ -67,12 +67,10 @@ const DescriptionDialog = ({
 
 const TrustScore = () => {
   const { t } = useTranslation();
-  const [userProfile, setUserProfile] = React.useState<
-    UserProfile | undefined
-  >();
+  const [userProfile, setUserProfile] = useState<UserProfile | undefined>();
   const { receivedVouchers } = usePersonalVouchers();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadUserProfile = async () => {
       const userProfile = await AccountsService.accountsProfileRetrieve();
       setUserProfile(userProfile);
@@ -80,7 +78,7 @@ const TrustScore = () => {
     loadUserProfile();
   }, []);
 
-  const displayedValue = React.useMemo(() => {
+  const displayedValue = useMemo(() => {
     if (userProfile === undefined) return undefined;
     const { trust_score: trustScore } = userProfile;
 
@@ -93,14 +91,13 @@ const TrustScore = () => {
     else return t('personalVouchers.trustScore.high');
   }, [userProfile, t]);
 
-  const [descriptionDialogOpen, setDescriptionDialogOpen] =
-    React.useState(false);
+  const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false);
 
-  const handleDescriptionInfoClick = React.useCallback(() => {
+  const handleDescriptionInfoClick = useCallback(() => {
     setDescriptionDialogOpen(true);
   }, []);
 
-  const handleDescriptionDialogClose = React.useCallback(() => {
+  const handleDescriptionDialogClose = useCallback(() => {
     setDescriptionDialogOpen(false);
   }, []);
 
