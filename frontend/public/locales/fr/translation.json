@@ -518,14 +518,14 @@
       "high": "Élevé",
       "title": "Score de confiance",
       "description": {
-        "explanation": "Votre score de confiance change la manière dont vos comparaisons sont prises en compte dans les recommandations de Tournesol.",
-        "howToChangeIt": "Vous pouvez l'augmenter en utilisant une adresse e-mail certifiée ou quand d'autres utilisateurs se portent garant pour vous.",
+        "explanation": "Votre score de confiance détermine à quel point vos comparaisons influencent les recommandations de Tournesol.",
+        "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine fiable ou lorsque d'autres personnes se portent garant pour vous.",
         "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
-      "isTrusted": "Vous utilisez une adresse e-mail certifiée",
-      "isNotTrusted": "Vous n'utilisez pas une adresse e-mail certifiée",
-      "hasReceivedVouchers": "Des utilisateurs se portent garant pour vous",
-      "hasNotReceivedVouchers": "Aucun utilisateur ne se porte garant pour vous"
+      "isTrusted": "Votre adresse e-mail est fiable.",
+      "isNotTrusted": "Votre adresse e-mail n'est pas fiable.",
+      "hasReceivedVouchers": "Vous avez au moins un garant.",
+      "hasNotReceivedVouchers": "Vous n'avez pas encore de garant."
     },
     "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'augmenter leur score de confiance, y compris si leur adresse e-mail n'est pas considérée comme fiable. La liste des utilisateurs pour lesquels vous vous portez garant ou qui se portent garant pour vous est une information publique."
   },

@@ -511,14 +511,14 @@
       "high": "High",
       "title": "Trust score",
       "description": {
-        "explanation": "Your trust score changes how your comparisons count in Tournesol's recommendations.",
-        "howToChangeIt": "You can increase it by using a certified email and when other users vouch for you.",
+        "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
+        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch of you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
-      "isTrusted": "Your email address is certified",
-      "isNotTrusted": "Your email address is not certified",
-      "hasReceivedVouchers": "Other users vouch for you",
-      "hasNotReceivedVouchers": "No other users vouch for you"
+      "isTrusted": "Your email address is trusted.",
+      "isNotTrusted": "Your email address is not trusted.",
+      "hasReceivedVouchers": "Other users vouch for you.",
+      "hasNotReceivedVouchers": "No other user vouch for you."
     },
     "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
