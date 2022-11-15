@@ -25,6 +25,7 @@ from core.models import EmailDomain
 from core.tests.factories.user import UserFactory
 from tournesol.models import (
     ComparisonCriteriaScore,
+    ContributorRating,
     ContributorRatingCriteriaScore,
     EntityCriteriaScore,
     Poll,
@@ -41,139 +42,203 @@ class TestMlTrain(TransactionTestCase):
 
     def setUp(self) -> None:
         EmailDomain.objects.create(domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED)
-        EmailDomain.objects.create(domain="@not_verified.test", status=EmailDomain.STATUS_REJECTED)
-        self.user1 = UserFactory(email="user1@verified.test")
-        self.user2 = UserFactory(email="user2@verified.test")
-
-        self.video1 = VideoFactory()
-        self.video2 = VideoFactory()
-
-        self.poll = PollWithCriteriasFactory.create()
-
-        # Comparison on custom poll
-        ComparisonCriteriaScoreFactory.create_batch(
-            10, comparison__user=self.user1, comparison__poll=self.poll
-        )
-
-        # Comparison on default poll
-        ComparisonCriteriaScoreFactory(
-            comparison__user=self.user1,
-            comparison__entity_1=self.video1,
-            comparison__entity_2=self.video2,
-            score=10,
-            criteria="largely_recommended",
-        )
-        ComparisonCriteriaScoreFactory(
-            comparison__user=self.user2,
-            comparison__entity_1=self.video1,
-            comparison__entity_2=self.video2,
-            score=10,
-            criteria="largely_recommended",
-        )   
-
-        for i in range(10):
-            # Reduce uncertainty on user1 scores by creating additional comparisons
-            ComparisonCriteriaScoreFactory(
-                comparison__user=self.user1,
-                score=0,
-                criteria="largely_recommended",
-            )
-
-            # Create comparisons by non-verified users (will be accounted with lower weight by Mehestan)
-            not_trusted_user = UserFactory(email=f"not_trusted_user{i}@not_verified.test")
-            ComparisonCriteriaScoreFactory(
-                comparison__user=not_trusted_user,
-                comparison__entity_1=self.video1,
-                comparison__entity_2=self.video2,
-                score=-10,
-                criteria="largely_recommended",
-            )
 
 
     def test_ml_train(self):
+        user1 = UserFactory(email="user1@verified.test")
+
+        # Create 10 comparisons on 20 distinct videos
+        ComparisonCriteriaScoreFactory.create_batch(
+            10, comparison__user=user1,
+        )
+
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         call_command("ml_train")
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 42)
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 64)
+        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 20)
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 20)
 
-    def test_ml_on_multiple_poll(self):
+
+    def test_ml_on_multiple_polls(self):
+        user1 = UserFactory(email="user1@verified.test")
+        poll2 = PollWithCriteriasFactory.create()
+
+        # Create 4 comparisons on 8 distinct entitites on the default poll
+        ComparisonCriteriaScoreFactory.create_batch(
+            4, comparison__user=user1, comparison__poll=Poll.default_poll()
+        )
+
+        # Create 10 comparisons on 20 distinct videos in the custom poll
+        ComparisonCriteriaScoreFactory.create_batch(
+            10, comparison__user=user1, comparison__poll=poll2
+        )
+
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
-        self.assertEqual(ComparisonCriteriaScore.objects.exclude(comparison__poll=self.poll).count(), 22)
-        self.assertEqual(ComparisonCriteriaScore.objects.filter(comparison__poll=self.poll).count(), 10)
-        self.assertEqual(len(self.poll.criterias_list), 1)
+        self.assertEqual(len(poll2.criterias_list), 1)
 
         call_command("ml_train")
 
         scores_mode_default = EntityCriteriaScore.objects.filter(score_mode="default")
-        self.assertEqual(scores_mode_default.count(), 42)
-        self.assertEqual(scores_mode_default.filter(poll=self.poll).count(), 20)
-        self.assertEqual(scores_mode_default.filter(poll=Poll.default_poll()).count(), 22)
+        self.assertEqual(scores_mode_default.count(), 28)
+        self.assertEqual(scores_mode_default.filter(poll=poll2).count(), 20)
+        self.assertEqual(scores_mode_default.filter(poll=Poll.default_poll()).count(), 8)
 
 
-    def test_tournesol_score_are_computed(self):
-        """
-        The `tournesol_score` of each entity must be computed during an
-        ML train.
-        """
-        self.assertEqual(self.video1.tournesol_score, None)
-        self.assertEqual(self.video2.tournesol_score, None)
-        call_command("ml_train")
-        self.video1.refresh_from_db()
-        self.video2.refresh_from_db()
-
-        self.assertAlmostEqual(self.video1.tournesol_score, -57.4, places=1)
-        self.assertAlmostEqual(self.video2.tournesol_score, 57.4, places=1)
-
-
-class TestMlTrainMehestan(TransactionTestCase):
-    def setUp(self) -> None:
-        self.poll = PollWithCriteriasFactory(algorithm=ALGORITHM_MEHESTAN)
-        self.video1 = VideoFactory()
-        self.video2 = VideoFactory()
-
-        EmailDomain.objects.create(domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED)
-
+    def test_individual_scaling_are_computed(self):
         # User 1 will belong to supertrusted users (as staff member)
-        self.user1 = UserFactory(email="user1@verified.test", is_staff=True)
+        user1 = UserFactory(email="user@verified.test", is_staff=True)
+        user2 = UserFactory()
 
-        ComparisonCriteriaScoreFactory.create_batch(
-            10, comparison__user=self.user1, comparison__poll=self.poll
-        )
-
-        for i in range(10):
-            not_trusted_user = UserFactory(email=f"not_trusted_user{i}@not_verified.test")
-            ComparisonCriteriaScoreFactory(
-                comparison__poll=self.poll,
-                comparison__user=not_trusted_user,
-                comparison__entity_1=self.video1,
-                comparison__entity_2=self.video2,
-                score=-10,
+        for user in [user1, user2]:
+            ComparisonCriteriaScoreFactory.create_batch(
+                10,
+                comparison__user=user,
+                criteria="largely_recommended"
             )
 
-    def test_ml_train(self):
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorScaling.objects.count(), 0)
 
         call_command("ml_train")
 
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 22)
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="all_equal").count(), 22)
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="trusted_only").count(), 20)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 40)
-        self.assertEqual(ContributorScaling.objects.count(), 11)
+        self.assertEqual(ContributorScaling.objects.count(), 2)
 
-        # Check scaling values
-        scaling = ContributorScaling.objects.get(user=self.user1)
+        # Check scaling values for user1
+        supertrusted_scaling = ContributorScaling.objects.get(user=user1)
+        self.assertAlmostEqual(supertrusted_scaling.scale, 1.0)
+        self.assertAlmostEqual(supertrusted_scaling.translation, 0.0)
+        # Scaling uncertainties are not defined for supertrusted users
+        self.assertIsNone(supertrusted_scaling.scale_uncertainty)
+        self.assertIsNone(supertrusted_scaling.translation_uncertainty)
+
+        # Check scaling values for user2
+        scaling = ContributorScaling.objects.get(user=user2)
         self.assertAlmostEqual(scaling.scale, 1.0)
         self.assertAlmostEqual(scaling.translation, 0.0)
-        # Scaling uncertainties are not defined for supertrusted users
-        self.assertIsNone(scaling.scale_uncertainty)
-        self.assertIsNone(scaling.translation_uncertainty)
+        self.assertAlmostEqual(scaling.scale_uncertainty, 1.0)
+        self.assertAlmostEqual(scaling.translation_uncertainty, 1.0)
 
-        # Check tournesol score is saved and scaled correctly
-        self.video1.refresh_from_db()
-        self.video2.refresh_from_db()
-        self.assertGreater(self.video1.tournesol_score, 20)
-        self.assertLess(self.video2.tournesol_score, -20)
+
+    def test_tournesol_scores_different_trust(self):
+        # 10 pretrusted users
+        verified_users = [
+            UserFactory(email=f"user_{n}@verified.test")
+            for n in range(10)
+        ]
+
+        # 20 non_verified_users
+        non_verified_users = UserFactory.create_batch(20)
+
+        video1 = VideoFactory()
+        video2 = VideoFactory()
+
+        # Pretrusted users prefer video 2
+        for user in verified_users:
+            ComparisonCriteriaScoreFactory(
+                comparison__user=user,
+                comparison__entity_1=video1,
+                comparison__entity_2=video2,
+                score=10,
+                criteria="largely_recommended",
+            )
+
+        # Other users prefer video 1
+        for user in non_verified_users:
+            ComparisonCriteriaScoreFactory(
+                comparison__user=user,
+                comparison__entity_1=video1,
+                comparison__entity_2=video2,
+                score=-10,
+                criteria="largely_recommended",
+            )
+
+        self.assertEqual(video1.tournesol_score, None)
+        self.assertEqual(video2.tournesol_score, None)
+        call_command("ml_train")
+        video1.refresh_from_db()
+        video2.refresh_from_db()
+        self.assertAlmostEqual(video1.tournesol_score, -50.6, places=1)
+        self.assertAlmostEqual(video2.tournesol_score, 50.6, places=1)
+
+
+    def test_tournesol_scores_different_uncertainty(self):
+        user1 = UserFactory()
+        user2 = UserFactory()
+
+        video1 = VideoFactory()
+        video2 = VideoFactory()
+
+        # User1 prefers video1
+        ComparisonCriteriaScoreFactory(
+            comparison__user=user1,
+            comparison__entity_1=video1,
+            comparison__entity_2=video2,
+            score=-10,
+            criteria="largely_recommended",
+        )
+
+        # User2 prefers video2
+        ComparisonCriteriaScoreFactory(
+            comparison__user=user2,
+            comparison__entity_1=video1,
+            comparison__entity_2=video2,
+            score=10,
+            criteria="largely_recommended",
+        )
+
+        # Reduce uncertainty on user1 scores by creating additional comparisons
+        ComparisonCriteriaScoreFactory.create_batch(
+            10,
+            comparison__user=user1,
+            score=0,
+            criteria="largely_recommended",
+        )
+
+        self.assertEqual(video1.tournesol_score, None)
+        self.assertEqual(video2.tournesol_score, None)
+        call_command("ml_train")
+        video1.refresh_from_db()
+        video2.refresh_from_db()
+
+        self.assertAlmostEqual(video1.tournesol_score, 57.4, places=1)
+        self.assertAlmostEqual(video2.tournesol_score, -57.4, places=1)
+
+
+    def test_tournesol_scores_different_privacy_status(self):
+        user1 = UserFactory()
+        user2 = UserFactory()
+
+        video1 = VideoFactory()
+        video2 = VideoFactory()
+
+        # User1 prefers video1, and their ratings are public
+        ComparisonCriteriaScoreFactory(
+            comparison__user=user1,
+            comparison__entity_1=video1,
+            comparison__entity_2=video2,
+            score=-10,
+            criteria="largely_recommended",
+        )
+        ContributorRating.objects.filter(user=user1).update(is_public=True)
+
+        # User2 prefers video2, and their ratings are private
+        ComparisonCriteriaScoreFactory(
+            comparison__user=user2,
+            comparison__entity_1=video1,
+            comparison__entity_2=video2,
+            score=10,
+            criteria="largely_recommended",
+        )
+        ContributorRating.objects.filter(user=user2).update(is_public=False)
+
+
+        self.assertEqual(video1.tournesol_score, None)
+        self.assertEqual(video2.tournesol_score, None)
+        call_command("ml_train")
+        video1.refresh_from_db()
+        video2.refresh_from_db()
+
+        self.assertAlmostEqual(video1.tournesol_score, 50.6, places=1)
+        self.assertAlmostEqual(video2.tournesol_score, -50.6, places=1)

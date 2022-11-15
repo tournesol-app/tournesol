@@ -101,10 +101,13 @@ def run_mehestan_for_criterion(
 
         if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:
             quantile_value = np.quantile(global_scores["score"], POLL_SCALING_QUANTILE)
-            scale = (
-                np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE))
-                / quantile_value
-            )
+            if quantile_value == 0.0:
+                scale = 1.0
+            else:
+                scale = (
+                    np.tan(POLL_SCALING_SCORE_AT_QUANTILE * TAU / (4 * MAX_SCORE))
+                    / quantile_value
+                )
             poll.sigmoid_scale = scale
             poll.save(update_fields=["sigmoid_scale"])
 
