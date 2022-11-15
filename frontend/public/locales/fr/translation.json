@@ -520,7 +520,7 @@
       "description": {
         "explanation": "Votre score de confiance change la manière dont vos comparaisons sont prises en compte dans les recommandations de Tournesol.",
         "howToChangeIt": "Vous pouvez l'augmenter en utilisant une adresse e-mail certifiée ou quand d'autres utilisateurs se portent garant pour vous.",
-        "includedInPublicDatabase": "Tournesol inclut votre score de confiance dans la base de données publique si vous avez au moins une comparaison de videos publiques."
+        "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
       "isTrusted": "Vous utilisez une adresse e-mail certifiée",
       "isNotTrusted": "Vous n'utilisez pas une adresse e-mail certifiée",
