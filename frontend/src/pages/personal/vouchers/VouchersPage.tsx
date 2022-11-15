@@ -8,6 +8,7 @@ import { PersonalVouchersProvider } from './context';
 import CreateVoucherForm from './CreateVoucherForm';
 import GivenVouchers from './GivenVouchers';
 import ReceivedVouchers from './ReceivedVouchers';
+import TrustScore from './TrustScore';
 
 const PersonalVouchersPage = () => {
   const { t } = useTranslation();
@@ -16,15 +17,28 @@ const PersonalVouchersPage = () => {
     <PersonalVouchersProvider>
       <ContentHeader title={t('personalMenu.vouching')} />
       <ContentBox maxWidth="lg">
-        <Card sx={{ marginBottom: 2 }}>
-          <CardContent>
-            <Typography paragraph color="secondary">
-              {t('personalVouchers.aboutVouchingMechanism')}
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <CreateVoucherForm />
-          </CardContent>
-        </Card>
+        <Grid
+          container
+          mb={2}
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="stretch"
+        >
+          <Grid item display="flex" md={8}>
+            <Card>
+              <CardContent>
+                <Typography paragraph color="secondary">
+                  {t('personalVouchers.aboutVouchingMechanism')}
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+                <CreateVoucherForm />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item display="flex" xs={12} md={4}>
+            <TrustScore />
+          </Grid>
+        </Grid>
         <Grid container spacing={2} justifyContent="space-between">
           <Grid item md={6}>
             <GivenVouchers />
