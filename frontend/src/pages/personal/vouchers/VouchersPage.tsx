@@ -19,12 +19,12 @@ const PersonalVouchersPage = () => {
       <ContentBox maxWidth="lg">
         <Grid
           container
+          mb={2}
           spacing={2}
           justifyContent="space-between"
           alignItems="stretch"
-          sx={{ marginBottom: 2 }}
         >
-          <Grid item md={8} style={{ display: 'flex' }}>
+          <Grid item display="flex" md={8}>
             <Card>
               <CardContent>
                 <Typography paragraph color="secondary">
@@ -35,7 +35,7 @@ const PersonalVouchersPage = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item md={4} xs={12} style={{ display: 'flex' }}>
+          <Grid item display="flex" xs={12} md={4}>
             <TrustScore />
           </Grid>
         </Grid>
