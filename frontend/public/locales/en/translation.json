@@ -512,7 +512,7 @@
       "title": "Trust score",
       "description": {
         "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
-        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch of you.",
+        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
       "isTrusted": "Your email address is trusted.",
