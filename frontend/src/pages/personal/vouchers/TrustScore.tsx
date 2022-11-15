@@ -18,6 +18,9 @@ import DialogBox from 'src/components/DialogBox';
 import { AccountsService, UserProfile } from 'src/services/openapi';
 import { usePersonalVouchers } from './context';
 
+const TRUST_SCORE_LOW = 0.1;
+const TRUST_SCORE_MEDIUM = 0.5;
+
 const Thumb = ({
   up,
   upDescription,
@@ -86,9 +89,13 @@ const TrustScore = () => {
 
     if (trustScore === null) return t('personalVouchers.trustScore.nullValue');
 
-    if (trustScore < 0.1) return t('personalVouchers.trustScore.low');
-    else if (trustScore < 0.5) return t('personalVouchers.trustScore.medium');
-    else return t('personalVouchers.trustScore.high');
+    if (trustScore < TRUST_SCORE_LOW) {
+      return t('personalVouchers.trustScore.low');
+    } else if (trustScore < TRUST_SCORE_MEDIUM) {
+      return t('personalVouchers.trustScore.medium');
+    } else {
+      return t('personalVouchers.trustScore.high');
+    }
   }, [userProfile, t]);
 
   const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false);
