@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const PrivacyPolicyPage = () => {
   const { t } = useTranslation();
@@ -34,67 +34,57 @@ const PrivacyPolicyPage = () => {
           </Typography>
           <Typography variant="h5">{t('privacyPolicy.ratings')}</Typography>
           <Typography paragraph>
-            <Trans t={t} i18nKey="privacyPolicy.whyTournesolCollectsRatings" />
+            {t('privacyPolicy.whyTournesolCollectsRatings')}
           </Typography>
           <Typography variant="h5">{t('privacyPolicy.search')}</Typography>
           <Typography paragraph>
-            <Trans
-              t={t}
-              i18nKey="privacyPolicy.whyTournesolCollectsSearchQueries"
-            />
+            {t('privacyPolicy.whyTournesolCollectsSearchQueries')}
           </Typography>
           <Typography variant="h5">
             {t('privacyPolicy.contributorProfile')}
           </Typography>
           <Typography paragraph>
-            <Trans
-              t={t}
-              i18nKey="privacyPolicy.whyTournesolCollectsContributorProfile"
-            />
+            {t('privacyPolicy.whyTournesolCollectsContributorProfile')}
           </Typography>
           <Typography variant="h5">{t('privacyPolicy.contactForm')}</Typography>
           <Typography paragraph>
-            <Trans t={t} i18nKey="privacyPolicy.thereIsNoContactForm" />
+            {t('privacyPolicy.thereIsNoContactForm')}
           </Typography>
           <Typography variant="h5">
             {t('privacyPolicy.loginInformation')}
           </Typography>
           <Typography paragraph>
-            <Trans t={t} i18nKey="privacyPolicy.loginInformationDetails" />
+            {t('privacyPolicy.loginInformationDetails')}
           </Typography>
           <Typography variant="h5">
             {t('privacyPolicy.embeddedContentFromOtherWebsites')}
           </Typography>
           <Typography paragraph>
-            <Trans
-              t={t}
-              i18nKey="privacyPolicy.whatDataCollectEmbeddedWebsites"
-            />
+            {t('privacyPolicy.whatDataCollectEmbeddedWebsites')}
           </Typography>
           <Typography variant="h4" gutterBottom sx={{ fontStyle: 'italic' }}>
             {t('privacyPolicy.whoTournesolSharesUsersNContributorsDataWith')}
           </Typography>
           <Typography paragraph>
-            <Trans
-              t={t}
-              i18nKey="privacyPolicy.whoTournesolSharesUsersNContributorsDataWithParagraph"
-            />
+            {t(
+              'privacyPolicy.whoTournesolSharesUsersNContributorsDataWithParagraph'
+            )}
           </Typography>
           <Typography variant="h5">{t('privacyPolicy.publicData')}</Typography>
           <Typography paragraph>
-            <Trans t={t} i18nKey="privacyPolicy.whereGoPublicData" />
+            {t('privacyPolicy.whereGoPublicData')}
           </Typography>
           <Typography variant="h5">
             {t('privacyPolicy.aggregateData')}
           </Typography>
           <Typography paragraph>
-            <Trans t={t} i18nKey="privacyPolicy.whereGoAggregateData" />
+            {t('privacyPolicy.whereGoAggregateData')}
           </Typography>
           <Typography variant="h5">
             {t('privacyPolicy.researchPurposes')}
           </Typography>
           <Typography paragraph>
-            <Trans t={t} i18nKey="privacyPolicy.researchPurposesParagraph" />
+            {t('privacyPolicy.researchPurposesParagraph')}
           </Typography>
           <Typography variant="h4" gutterBottom sx={{ fontStyle: 'italic' }}>
             {t('privacyPolicy.howLongTournesolRetainsContributorsData')}
