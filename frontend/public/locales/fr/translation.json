@@ -267,7 +267,7 @@
     "comparedWith": "Comparé avec"
   },
   "recommendationsSubset": {
-    "noRecommendationHasBeenFound": "Aucune recommandation n'a été trouvée."
+    "noRecommendationHasBeenFound": "Aucune recommandation n'a été trouvée dans la langue actuelle."
   },
   "recommendationsSubsetControls": {
     "bestOfLastMonth": "Top du mois dernier",

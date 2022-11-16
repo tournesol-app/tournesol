@@ -29,7 +29,7 @@ const RecommendationsSubset = ({
 }: RecommendationsSubsetProps) => {
   const theme = useTheme();
 
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { criterias, name: pollName } = useCurrentPoll();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -40,6 +40,7 @@ const RecommendationsSubset = ({
   useEffect(() => {
     const searchParams = new URLSearchParams();
     searchParams.append('date', recoDate);
+    searchParams.append('language', i18n.resolvedLanguage);
 
     const getRecommendationsAsync = async () => {
       setIsLoading(true);
@@ -56,7 +57,7 @@ const RecommendationsSubset = ({
     };
 
     getRecommendationsAsync();
-  }, [criterias, nbr, pollName, recoDate]);
+  }, [criterias, i18n.resolvedLanguage, nbr, pollName, recoDate]);
 
   const dateControlChangeCallback = (value: string) => {
     setRecoDate(value);
