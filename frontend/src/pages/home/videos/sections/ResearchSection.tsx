@@ -81,25 +81,28 @@ const ScientificLiteratureWidget = () => {
   const papers = [
     {
       name: 'Tournesol: A quest for a large, secure and trustworthy database of reliable human judgments',
-      submitted: t('researchSection.may2021'),
+      submitted:
+        'Hoang, L. N., Faucon, L., Jungo, A., Volodin, S., Papuc, D., Liossatos, O., ... & El-Mhamdi, E. M. (2021).',
       url: 'https://arxiv.org/abs/2107.07334',
       icon: MenuBook,
     },
     {
       name: 'Strategyproof Learning: Building Trustworthy User-Generated Datasets',
-      submitted: t('researchSection.june2021'),
+      submitted: 'Farhadkhani, S., Guerraoui, R., & Hoang, L. N. (2021).',
       url: 'https://arxiv.org/abs/2106.02398',
       icon: PieChart,
     },
     {
       name: 'Robust Sparse Voting',
-      submitted: t('researchSection.february2022'),
+      submitted:
+        'Allouah, Y., Guerraoui, R., Hoang, L. N., & Villemaud, O. (2022).',
       url: 'https://arxiv.org/abs/2202.08656',
       icon: HowToVote,
     },
     {
       name: 'Tournesol: Permissionless Collaborative Algorithmic Governance with Security Guarantees',
-      submitted: t('researchSection.october2022'),
+      submitted:
+        "Beylerian, R., Colbois, B., Faucon, L., Hoang, L. N., Jungo, A., Noac'h, A. L., & Matissart, A. (2022).",
       url: 'https://arxiv.org/abs/2211.01179',
       icon: VerifiedUser,
     },
