@@ -25,11 +25,6 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
     <Box>
       <SectionTitle title={t('comparisonSection.contribute')} />
       <Grid container justifyContent="center" spacing={4}>
-        <Grid item lg={9} xl={6}>
-          <Box display="flex" justifyContent="center">
-            <HomeComparison />
-          </Box>
-        </Grid>
         <Grid item lg={3} xl={3}>
           <Box
             display="flex"
@@ -57,6 +52,11 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
                 </Box>
               </Box>
             </Paper>
+          </Box>
+        </Grid>
+        <Grid item lg={9} xl={6}>
+          <Box display="flex" justifyContent="center">
+            <HomeComparison />
           </Box>
         </Grid>
       </Grid>
