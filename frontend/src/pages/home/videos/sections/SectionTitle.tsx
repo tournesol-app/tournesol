@@ -12,7 +12,7 @@ interface SectionTitleProps {
  */
 const SectionTitle = ({ title, dividerColor }: SectionTitleProps) => {
   let sx: SxProps = {
-    width: { xs: '100%', lg: '75%' },
+    width: { xs: '100%', xl: '75%' },
   };
 
   if (dividerColor) {
