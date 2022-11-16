@@ -164,7 +164,7 @@ class TestMlTrain(TransactionTestCase):
         # Asserts that voting rights have been given the correct values based on the number of
         # contributors and their verified status
         # 0.4 = 0.8 [verified] * 0.5 [privacy penalty]
-        # 0.070 ~= (2 [non trusted bias] + 0.1 [non trusted scale] * 10 [num trusted] * 0.8) / 20 [num non trusted] * 0.5 [privacy penalty]
+        # 0.12 ~= (2 [non trusted bias] + 0.1 [non trusted scale] * 10 [num trusted] * 0.8 * 0.5 [privacy penalty]) / 20 [num non trusted]
         self.assertEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating__user=verified_users[0], contributor_rating__entity=video2).voting_right, 0.4)
         self.assertAlmostEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating__user=non_verified_users[0], contributor_rating__entity=video2).voting_right, 0.12, places=3)
 
