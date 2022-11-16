@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Redirect } from 'react-router-dom';
+import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
@@ -28,6 +28,7 @@ import { polls } from './utils/constants';
 import PollRoutes from './app/PollRoutes';
 import { PollProvider } from './hooks/useCurrentPoll';
 import FAQ from './pages/faq/FAQ';
+import { scrollToTop } from './utils/ui';
 
 // The Analysis Page uses recharts which is a rather big library,
 // thus we choose to load it lazily.
@@ -49,6 +50,16 @@ const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
   });
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    scrollToTop();
+  }, [pathname]);
+
+  return null;
+};
+
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
@@ -61,6 +72,7 @@ function App() {
 
   return (
     <PollProvider>
+      <ScrollToTop />
       <Frame>
         <Switch>
           {/* About routes */}
