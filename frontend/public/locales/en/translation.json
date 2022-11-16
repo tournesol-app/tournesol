@@ -260,6 +260,13 @@
     "channel": "Channel",
     "comparedWith": "Compared with"
   },
+  "recommendationsSubset": {
+    "noRecommendationHasBeenFound": "No recommendation has been found in the current language."
+  },
+  "recommendationsSubsetControls": {
+    "bestOfLastMonth": "Best of last month",
+    "bestOfAllTime": "Best of all time"
+  },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
     "deleteYourAccount": "Delete your account",
@@ -443,17 +450,17 @@
       "pollIsClosed": "The poll is now closed.",
       "seeResults": "See the results"
     },
+    "theStatsCouldNotBeDisplayed": "The stats could not be displayed.",
+    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
+    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
+    "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended.",
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
     "compareButton": "Compare now",
     "useOurExtension": "Use our extension!",
     "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your YouTube home page. You can also add a video in your rate later list or immediately rate the video with just a few clicks.",
     "getTheExtensionButton": "Get the extension",
-    "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
-    "theStatsCouldNotBeDisplayed": "The stats could not be displayed.",
-    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
-    "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended."
+    "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>."
   },
   "comparisonSection": {
     "contribute": "Contribute",
@@ -462,6 +469,11 @@
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Sorry, the comparison of video is temporarily unavailable. Please try again later.",
     "compareTheVideos": "Compare the videos"
+  },
+  "recommendationsSection": {
+    "recommendations": "Recommendations",
+    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
+    "seeMore": "See more"
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
