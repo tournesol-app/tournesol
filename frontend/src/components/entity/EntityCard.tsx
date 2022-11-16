@@ -8,7 +8,6 @@ import {
   useTheme,
   useMediaQuery,
   Stack,
-  SxProps,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -29,14 +28,12 @@ const EntityCard = ({
   actions = [],
   settings = [],
   compact = false,
-  sxNoBorder = false,
   entityTypeConfig,
 }: {
   entity: RelatedEntityObject;
   actions?: ActionList;
   settings?: ActionList;
   compact?: boolean;
-  sxNoBorder?: boolean;
   // Configuration specific to the entity type.
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
 }) => {
@@ -61,14 +58,8 @@ const EntityCard = ({
     return null;
   };
 
-  let entityCardStyle: SxProps = entityCardMainSx;
-
-  if (sxNoBorder) {
-    entityCardStyle = { ...entityCardStyle, border: 'none' };
-  }
-
   return (
-    <Grid container sx={entityCardStyle}>
+    <Grid container sx={entityCardMainSx}>
       <Grid
         item
         xs={12}
