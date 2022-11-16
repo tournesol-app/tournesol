@@ -352,7 +352,7 @@
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Trusted email domains",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
-    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a trusted domain</2>, or by having other users vouch for you.",
+    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a trusted domain</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },

@@ -358,7 +358,7 @@
     "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un score de confiance limité aux nouveaux comptes créés.",
-    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine fiable</2>, ou en ayant des personnes qui se portent garant.es pour vous.",
+    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine fiable</2>, ou lorsque d'autres personnes se portent garant.es pour vous.",
     "trustedDomainsValuable": "Dans tous les cas, vos contributions sont utiles car elles motiveront et aideront la recherche en éthique des algorithmes et de l'intelligence artificielle",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
