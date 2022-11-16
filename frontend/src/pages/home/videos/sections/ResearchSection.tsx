@@ -56,7 +56,7 @@ const PublicDatabaseWidget = ({ sx }: { sx?: SxProps }) => {
               color={theme.palette.text.primary}
               href="https://opendatacommons.org/licenses/by/summary/"
             >
-              (ODC-BY 1.0)
+              (ODC-BY 1.0).
             </Link>
           </Trans>
         </Typography>
@@ -167,7 +167,6 @@ const ResearchSection = () => {
         </Box>
       </Box>
       <Grid container spacing={4} justifyContent="center">
-        {/* left section */}
         <Grid item lg={5} xl={5}>
           <Paper>
             <Box px={2} sx={{ '& img': { maxWidth: '100%' } }}>
@@ -178,7 +177,6 @@ const ResearchSection = () => {
             </Box>
           </Paper>
         </Grid>
-        {/* right section */}
         <Grid item lg={4} xl={4}>
           <PublicDatabaseWidget sx={{ mb: 4 }} />
           <ScientificLiteratureWidget />
