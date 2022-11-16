@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, Typography, useTheme } from '@mui/material';
+import { Box, Grid, Paper, Typography, useTheme } from '@mui/material';
 
 import { LoaderWrapper } from 'src/components';
 import EntityCard from 'src/components/entity/EntityCard';
@@ -84,24 +84,25 @@ const RecommendationsSubset = ({
             {t('recommendationsSubset.noRecommendationHasBeenFound')}
           </Typography>
         ) : (
-          <Grid container gap={2} flexDirection="column">
-            {entities.map((entity) => (
-              <Grid
-                item
-                key={entity.uid}
-                // Allow the RecommendationsSubset's parent to overwrite the
-                // text color without impacting the EntityCard.
-                sx={{ color: theme.palette.text.primary }}
-              >
-                <EntityCard
-                  entity={entity}
-                  compact={false}
-                  entityTypeConfig={{ video: { displayPlayer: false } }}
-                  sxNoBorder
-                />
-              </Grid>
-            ))}
-          </Grid>
+          <Paper sx={{ p: 1, bgcolor: 'background.primary' }}>
+            <Grid container gap={1} flexDirection="column">
+              {entities.map((entity) => (
+                <Grid
+                  item
+                  key={entity.uid}
+                  // Allow the RecommendationsSubset's parent to overwrite the
+                  // text color without impacting the EntityCard.
+                  sx={{ color: theme.palette.text.primary }}
+                >
+                  <EntityCard
+                    entity={entity}
+                    compact={false}
+                    entityTypeConfig={{ video: { displayPlayer: false } }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
         )}
       </LoaderWrapper>
     </Box>
