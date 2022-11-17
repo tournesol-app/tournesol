@@ -171,7 +171,7 @@ def add_expander_detailed_correlation():
         st.plotly_chart(fig)
 
 
-st.title("Tournesol scores")
+st.title("Videos and channels (scores analyses)")
 
 # Load public dataset (the function is cached to not overload the API)
 st.session_state.df_scores = api_get_tournesol_scores()
