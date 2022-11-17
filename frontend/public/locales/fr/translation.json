@@ -484,9 +484,10 @@
   "researchSection": {
     "ourDataAreOpen": "Nos données sont ouvertes",
     "tournesolIsAnOpenlyAltruisticProject": "Tournesol est un projet ouvertement altruiste.",
-    "inOrderThatOtherProjectsCanBenefitEtc": "Afin que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol, nous mettons à disposion une base de données constituée par toutes contributions publiques.",
+    "weHopeThatOtherProjectsCanBenefitEtc": "Nous espérons que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol. Pour cela nous mettons à disposion une base de données constituée par toutes contributions publiques que tout le monde peut utiliser.",
     "theseDataArePublishedUnderODCBY": "Ces données sont publiées sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
-    "download": "Télécharger",
+    "downloadTheDatabase": "Télécharger la base de données",
+    "accessTheCodeOnGitHub": "Accédez au code sur GitHub",
     "scientificLiterature": "Littérature scientifique",
     "research": "Recherche",
     "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »",
