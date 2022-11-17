@@ -49,9 +49,15 @@ const PublicDatabaseWidget = ({ sx }: { sx?: SxProps }) => {
       </Box>
       <Box p={2}>
         <Typography paragraph>
-          <Trans i18nKey="researchSection.theTournesolPublicDatabaseIsPublished">
-            The Tournesol public database is published under the terms of the
-            Open Data Commons Attribution License
+          {t('researchSection.tournesolIsAnOpenlyAltruisticProject')}
+        </Typography>
+        <Typography paragraph>
+          {t('researchSection.inOrderThatOtherProjectsCanBenefitEtc')}
+        </Typography>
+        <Typography paragraph>
+          <Trans i18nKey="researchSection.theseDataArePublishedUnderODCBY">
+            These data are published under the terms of the Open Data Commons
+            Attribution License
             <Link
               color={theme.palette.text.primary}
               href="https://opendatacommons.org/licenses/by/summary/"
@@ -167,19 +173,47 @@ const ResearchSection = () => {
         </Box>
       </Box>
       <Grid container spacing={4} justifyContent="center">
-        <Grid item lg={5} xl={5}>
+        <Grid item lg={4} xl={4}>
+          <PublicDatabaseWidget sx={{ mb: 4 }} />
+          <ScientificLiteratureWidget />
+        </Grid>
+        <Grid item lg={8} xl={5}>
           <Paper>
+            <Box
+              p={2}
+              color="#fff"
+              bgcolor="#1282B2"
+              sx={{
+                borderTopLeftRadius: 'inherit',
+                borderTopRightRadius: 'inherit',
+              }}
+            >
+              <Typography variant="h4">
+                {t('researchSection.visualizeTheData')}
+              </Typography>
+            </Box>
             <Box px={2} sx={{ '& img': { maxWidth: '100%' } }}>
+              <Box p={2}>
+                <Typography paragraph mb={0}>
+                  <Trans i18nKey="researchSection.youCanQuicklyExploreEtc">
+                    You can quickly explore our public database with our
+                    appplication
+                    <Link
+                      color="text.primary"
+                      href="https://github.com/tournesol-app/tournesol/tree/main/analytics"
+                    >
+                      Tournesol Data Visualization
+                    </Link>
+                    made with Streamlit.
+                  </Trans>
+                </Typography>
+              </Box>
               <img
                 src="/images/criteria_pearson_correlation_matrix_2022_10_10.png"
                 alt={t('researchSection.personCorrelationCoefficientMatrix')}
               />
             </Box>
           </Paper>
-        </Grid>
-        <Grid item lg={4} xl={4}>
-          <PublicDatabaseWidget sx={{ mb: 4 }} />
-          <ScientificLiteratureWidget />
         </Grid>
       </Grid>
     </Box>

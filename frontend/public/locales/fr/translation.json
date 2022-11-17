@@ -483,11 +483,15 @@
   },
   "researchSection": {
     "ourDataAreOpen": "Nos données sont ouvertes",
-    "theTournesolPublicDatabaseIsPublished": "La base de données publique est publiée sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>",
+    "tournesolIsAnOpenlyAltruisticProject": "Tournesol est un projet ouvertement altruiste.",
+    "inOrderThatOtherProjectsCanBenefitEtc": "Afin que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol, nous mettons à disposion une base de données constituée par toutes contributions publiques.",
+    "theseDataArePublishedUnderODCBY": "Ces données sont publiées sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
     "download": "Télécharger",
     "scientificLiterature": "Littérature scientifique",
     "research": "Recherche",
     "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »",
+    "visualizeTheData": "Visualisez les données",
+    "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visiualization</1> réalisée avec Streamlit.",
     "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères."
   },
   "reset": {
