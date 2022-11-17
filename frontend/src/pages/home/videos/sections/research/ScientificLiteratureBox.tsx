@@ -73,7 +73,7 @@ const ScientificLiteratureBox = () => {
         sx={{ borderTopLeftRadius: 'inherit', borderTopRightRadius: 'inherit' }}
       >
         <Typography variant="h4">
-          {t('researchSection.scientificLiterature')}
+          {t('scientificLiteratureBox.scientificLiterature')}
         </Typography>
       </Box>
       {/* Here px=1 is used instead of the regular p=2 as the list as already

@@ -481,16 +481,22 @@
     "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur.rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
     "seeMore": "Voir plus"
   },
-  "researchSection": {
+  "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Nos données sont ouvertes",
     "tournesolIsAnOpenlyAltruisticProject": "Tournesol est un projet ouvertement altruiste.",
     "weHopeThatOtherProjectsCanBenefitEtc": "Nous espérons que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol. Pour cela nous mettons à disposion une base de données constituée par toutes contributions publiques que tout le monde peut utiliser.",
     "theseDataArePublishedUnderODCBY": "Ces données sont publiées sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
     "downloadTheDatabase": "Télécharger la base de données",
-    "accessTheCodeOnGitHub": "Accédez au code sur GitHub",
+    "accessTheCodeOnGitHub": "Accédez au code sur GitHub"
+  },
+  "researchSection": {
     "research": "Recherche",
-    "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »",
-    "scientificLiterature": "Littérature scientifique",
+    "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »"
+  },
+  "scientificLiteratureBox": {
+    "scientificLiterature": "Littérature scientifique"
+  },
+  "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
     "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visiualization</1> réalisée avec Streamlit.",
     "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères."

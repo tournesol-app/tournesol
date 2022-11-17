@@ -18,13 +18,13 @@ const VisualizeDataBox = () => {
         }}
       >
         <Typography variant="h4">
-          {t('researchSection.visualizeTheData')}
+          {t('visualizeDataBox.visualizeTheData')}
         </Typography>
       </Box>
       <Box px={2} sx={{ '& img': { maxWidth: '100%' } }}>
         <Box p={2}>
           <Typography paragraph mb={0}>
-            <Trans i18nKey="researchSection.youCanQuicklyExploreEtc">
+            <Trans i18nKey="visualizeDataBox.youCanQuicklyExploreEtc">
               You can quickly explore our public database with our appplication
               <Link
                 color="text.primary"
@@ -38,7 +38,7 @@ const VisualizeDataBox = () => {
         </Box>
         <img
           src="/images/criteria_pearson_correlation_matrix_2022_10_10.png"
-          alt={t('researchSection.personCorrelationCoefficientMatrix')}
+          alt={t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         />
       </Box>
     </Paper>

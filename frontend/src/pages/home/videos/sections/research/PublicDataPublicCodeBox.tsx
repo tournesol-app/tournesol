@@ -22,18 +22,18 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
           }}
         >
           <Typography variant="h4">
-            {t('researchSection.ourDataAreOpen')}
+            {t('publicDataPublicCodeBox.ourDataAreOpen')}
           </Typography>
         </Box>
         <Box p={2}>
           <Typography paragraph>
-            {t('researchSection.tournesolIsAnOpenlyAltruisticProject')}
+            {t('publicDataPublicCodeBox.tournesolIsAnOpenlyAltruisticProject')}
           </Typography>
           <Typography paragraph>
-            {t('researchSection.weHopeThatOtherProjectsCanBenefitEtc')}
+            {t('publicDataPublicCodeBox.weHopeThatOtherProjectsCanBenefitEtc')}
           </Typography>
           <Typography paragraph>
-            <Trans i18nKey="researchSection.theseDataArePublishedUnderODCBY">
+            <Trans i18nKey="publicDataPublicCodeBox.theseDataArePublishedUnderODCBY">
               These data are published under the terms of the Open Data Commons
               Attribution License
               <Link
@@ -54,7 +54,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             to={`${apiUrl}/exports/all/`}
             endIcon={<Download />}
           >
-            {t('researchSection.downloadTheDatabase')}
+            {t('publicDataPublicCodeBox.downloadTheDatabase')}
           </Button>
         </Box>
       </Paper>
@@ -68,7 +68,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             href="https://github.com/tournesol-app/tournesol"
             endIcon={<GitHub />}
           >
-            {t('researchSection.accessTheCodeOnGitHub')}
+            {t('publicDataPublicCodeBox.accessTheCodeOnGitHub')}
           </Button>
         </Box>
       </Paper>

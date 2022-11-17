@@ -475,16 +475,22 @@
     "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
     "seeMore": "See more"
   },
-  "researchSection": {
+  "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Our data are open",
     "tournesolIsAnOpenlyAltruisticProject": "Tournesol is an openly altruistic project.",
     "weHopeThatOtherProjectsCanBenefitEtc": "We hope that other projects can benefit from the efforts of the Tournesol community. To this end we are making available a database made up of all public contributions that anyone can use.",
     "theseDataArePublishedUnderODCBY": "These data are published under the terms of the Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
     "downloadTheDatabase": "Download the database",
-    "accessTheCodeOnGitHub": "Access the code on GitHub",
+    "accessTheCodeOnGitHub": "Access the code on GitHub"
+  },
+  "researchSection": {
     "research": "Research",
-    "weHopeToContribute": "\"We want to contribute to make the large-scale algorithms deployed robust and beneficial to all humanity.\"",
-    "scientificLiterature": "Scientific literature",
+    "weHopeToContribute": "\"We want to contribute to make the large-scale algorithms deployed robust and beneficial to all humanity.\""
+  },
+  "scientificLiteratureBox": {
+    "scientificLiterature": "Scientific literature"
+  },
+  "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
     "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> appplication made with Streamlit.",
     "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of criteria scores."
