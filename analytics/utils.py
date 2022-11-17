@@ -43,8 +43,14 @@ def set_df(users=[]):
 
     index = ["video_a", "video_b", "public_username"]
 
+    for idx in index + ["criteria"]:
+        df_tmp[idx] = df_tmp[idx].astype("category")
+
     df = df_tmp.pivot(index=index, columns="criteria", values="score")
     df.reset_index(inplace=True)
+
+    for crit in CRITERIA:
+        df[crit] = df[crit].astype("float16")
 
     if users:
         df = df[df["public_username"].isin(users)]
