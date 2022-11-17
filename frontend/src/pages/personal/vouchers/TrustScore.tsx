@@ -20,6 +20,21 @@ import { usePersonalVouchers } from './context';
 
 const TRUST_SCORE_LOW = 0.1;
 const TRUST_SCORE_MEDIUM = 0.5;
+const TRUST_SCORE_LOW_COLOR = 'text.secondary';
+const TRUST_SCORE_MEDIUM_COLOR = '#506AD4';
+const TRUST_SCORE_HIGH_COLOR = '#2e7d32';
+
+const getTrustScoreColor = (trustScore: number | null | undefined) => {
+  if (!trustScore || trustScore < TRUST_SCORE_LOW) {
+    return TRUST_SCORE_LOW_COLOR;
+  }
+
+  if (trustScore < TRUST_SCORE_MEDIUM) {
+    return TRUST_SCORE_MEDIUM_COLOR;
+  }
+
+  return TRUST_SCORE_HIGH_COLOR;
+};
 
 const Thumb = ({
   up,
@@ -132,7 +147,13 @@ const TrustScore = () => {
             justifyContent="center"
             gap={2}
           >
-            <Typography variant="h1" component="span" textTransform="uppercase">
+            <Typography
+              variant="h1"
+              component="span"
+              fontWeight="bold"
+              textTransform="uppercase"
+              color={getTrustScoreColor(userProfile?.trust_score)}
+            >
               {displayedValue}
             </Typography>
             <Stack gap={1}>

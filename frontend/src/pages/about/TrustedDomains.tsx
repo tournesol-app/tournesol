@@ -48,10 +48,9 @@ const TrustedDomains = () => {
             <p>{t('about.trustedDomainsToProtectTournesol')}</p>
             <p>
               <Trans t={t} i18nKey="about.trustedDomainsGainMoreVotingRights">
-                You can gain significantly more voting rights by validating{' '}
-                <strong>an email address from a trusted domain</strong>. We are
-                currently working on designing additional means for contributors
-                to gain voting rights.
+                You can gain significantly more trust by validating{' '}
+                <strong>an email address from a trusted domain</strong>, or by
+                having other users vouch for you.
               </Trans>
             </p>
             <p>{t('about.trustedDomainsValuable')}</p>

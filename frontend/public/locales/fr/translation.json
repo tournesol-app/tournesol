@@ -364,8 +364,8 @@
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
     "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine fiables",
-    "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un droit de vote limité aux nouveaux comptes créés.",
-    "trustedDomainsGainMoreVotingRights": "Vous pouvez obtenir un droit de vote significativement plus important en validant <2>une adresse e-mail provenant d'un domaine fiable</2>. Nous réfléchissons actuellement à des moyens alternatifs pour que les utilisateurs puissent bénéficier d'un droit de vote plus important.",
+    "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un score de confiance limité aux nouveaux comptes créés.",
+    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine fiable</2>, ou lorsque d'autres personnes se portent garant.es pour vous.",
     "trustedDomainsValuable": "Dans tous les cas, vos contributions sont utiles car elles motiveront et aideront la recherche en éthique des algorithmes et de l'intelligence artificielle",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
@@ -530,16 +530,16 @@
       "high": "Élevé",
       "title": "Score de confiance",
       "description": {
-        "explanation": "Votre score de confiance change la manière dont vos comparaisons sont prises en compte dans les recommandations de Tournesol.",
-        "howToChangeIt": "Vous pouvez l'augmenter en utilisant une adresse e-mail certifiée ou quand d'autres utilisateurs se portent garant pour vous.",
+        "explanation": "Votre score de confiance détermine à quel point vos comparaisons influencent les recommandations de Tournesol.",
+        "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine fiable ou lorsque d'autres personnes se portent garant.es pour vous.",
         "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
-      "isTrusted": "Vous utilisez une adresse e-mail certifiée",
-      "isNotTrusted": "Vous n'utilisez pas une adresse e-mail certifiée",
-      "hasReceivedVouchers": "Des utilisateurs se portent garant pour vous",
-      "hasNotReceivedVouchers": "Aucun utilisateur ne se porte garant pour vous"
+      "isTrusted": "Votre adresse e-mail est fiable.",
+      "isNotTrusted": "Votre adresse e-mail n'est pas fiable.",
+      "hasReceivedVouchers": "Vous avez au moins un garant.",
+      "hasNotReceivedVouchers": "Vous n'avez pas encore de garant."
     },
-    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'acquérir un droit de vote plus important sur Tournesol, y compris si leur adresse e-mail n'est pas considérée comme fiable. Sur Tournesol, la liste des utilisateurs pour lesquels vous vous portez garant, ou qui se portent garant pour vous, est une information publique."
+    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs, vous leur permettez d'augmenter leur score de confiance, y compris si leur adresse e-mail n'est pas considérée comme fiable. La liste des utilisateurs pour lesquels vous vous portez garant ou qui se portent garant pour vous est une information publique."
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"

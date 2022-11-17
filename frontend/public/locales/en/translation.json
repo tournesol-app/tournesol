@@ -358,8 +358,8 @@
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Trusted email domains",
-    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited voting right to newly created accounts.",
-    "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
+    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
+    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a trusted domain</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
@@ -523,16 +523,16 @@
       "high": "High",
       "title": "Trust score",
       "description": {
-        "explanation": "Your trust score changes how your comparisons count in Tournesol's recommendations.",
-        "howToChangeIt": "You can increase it by using a certified email and when other users vouch for you.",
+        "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
+        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
-      "isTrusted": "Your email address is certified",
-      "isNotTrusted": "Your email address is not certified",
-      "hasReceivedVouchers": "Other users vouch for you",
-      "hasNotReceivedVouchers": "No other users vouch for you"
+      "isTrusted": "Your email address is trusted.",
+      "isNotTrusted": "Your email address is not trusted.",
+      "hasReceivedVouchers": "Other users vouch for you.",
+      "hasNotReceivedVouchers": "No other user vouch for you."
     },
-    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher voting right on Tournesol, even if their email address is not considered to be trusted. On Tournesol, the list of users for whom you vouch, or who have vouched for you, is public information."
+    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
