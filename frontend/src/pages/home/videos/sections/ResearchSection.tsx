@@ -19,11 +19,12 @@ import {
   ListItemButton,
 } from '@mui/material';
 import {
+  Campaign,
   Download,
   GitHub,
+  MedicalInformation,
   MenuBook,
   VerifiedUser,
-  PieChart,
   HowToVote,
 } from '@mui/icons-material';
 
@@ -105,31 +106,41 @@ const ScientificLiteratureWidget = () => {
 
   const papers = [
     {
-      name: 'Tournesol: A quest for a large, secure and trustworthy database of reliable human judgments',
+      name: 'Tournesol: Permissionless Collaborative Algorithmic Governance with Security Guarantees.',
       submitted:
-        'Hoang, L. N., Faucon, L., Jungo, A., Volodin, S., Papuc, D., Liossatos, O., ... & El-Mhamdi, E. M. (2021).',
+        'Romain Beylerian, Bérangère Colbois, Louis Faucon, Lê Nguyên Hoang, Aidan Jungo, ' +
+        "Alain Le Noac'h, Adrien Matissart (2022). ArXiV.",
+      url: 'https://arxiv.org/abs/2211.01179',
+      icon: VerifiedUser,
+    },
+    {
+      name: 'Tournesol: A quest for a large, secure and trustworthy database of reliable human judgments.',
+      submitted:
+        'Lê-Nguyên Hoang, Louis Faucon, Aidan Jungo, Sergei Volodin, Dalia Papuc, Orfeas Liossatos, ' +
+        'Ben Crulis, Mariame Tighanimine, Isabela Constantin, Anastasiia Kucherenko, Alexandre Maurer, ' +
+        'Felix Grimberg, Vlad Nitu, Chris Vossen, Sébastien Rouault, El-Mahdi El-Mhamdi (2021). ArXiV.',
       url: 'https://arxiv.org/abs/2107.07334',
       icon: MenuBook,
     },
     {
-      name: 'Strategyproof Learning: Building Trustworthy User-Generated Datasets',
-      submitted: 'Farhadkhani, S., Guerraoui, R., & Hoang, L. N. (2021).',
-      url: 'https://arxiv.org/abs/2106.02398',
-      icon: PieChart,
-    },
-    {
       name: 'Robust Sparse Voting',
       submitted:
-        'Allouah, Y., Guerraoui, R., Hoang, L. N., & Villemaud, O. (2022).',
+        'Youssef Allouah, Rachid Guerraoui, Lê-Nguyên Hoang, Oscar Villemaud (2022). ArXiV.',
       url: 'https://arxiv.org/abs/2202.08656',
       icon: HowToVote,
     },
     {
-      name: 'Tournesol: Permissionless Collaborative Algorithmic Governance with Security Guarantees',
+      name: 'Recommendation Algorithms, a Neglected Opportunity for Public Health.',
       submitted:
-        "Beylerian, R., Colbois, B., Faucon, L., Hoang, L. N., Jungo, A., Noac'h, A. L., & Matissart, A. (2022).",
-      url: 'https://arxiv.org/abs/2211.01179',
-      icon: VerifiedUser,
+        'Lê Nguyên Hoang, Louis Faucon & El-Mahdi El-Mhamdi (2021). Revue Médecine et Philosophie.',
+      url: 'https://philpapers.org/rec/HOARAA',
+      icon: MedicalInformation,
+    },
+    {
+      name: 'Science Communication Desperately Needs More Aligned Recommendation Algorithms.',
+      submitted: 'Lê Nguyên Hoang (2020). Frontiers Communications.',
+      url: 'https://www.frontiersin.org/articles/10.3389/fcomm.2020.598454/full',
+      icon: Campaign,
     },
   ];
 
@@ -193,8 +204,7 @@ const ResearchSection = () => {
       </Box>
       <Grid container spacing={4} justifyContent="center">
         <Grid item lg={4} xl={4}>
-          <PublicDatabaseWidget sx={{ mb: 2 }} />
-          <ScientificLiteratureWidget />
+          <PublicDatabaseWidget />
         </Grid>
         <Grid item lg={8} xl={5}>
           <Paper>
@@ -233,6 +243,9 @@ const ResearchSection = () => {
               />
             </Box>
           </Paper>
+        </Grid>
+        <Grid item xl={9}>
+          <ScientificLiteratureWidget />
         </Grid>
       </Grid>
     </Box>
