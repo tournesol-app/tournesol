@@ -139,7 +139,7 @@ def run_mehestan_for_criterion(
     }
     for mode in ScoreMode:
         scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
-        global_scores = get_global_scores(scaled_scores_with_voting_rights, score_mode=mode)
+        global_scores = get_global_scores(scaled_scores_with_voting_rights)
         global_scores["criteria"] = criteria
 
         if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:

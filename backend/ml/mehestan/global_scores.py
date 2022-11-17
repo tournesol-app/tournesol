@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 from ml.inputs import MlInput
-from tournesol.models.entity_score import ScoreMode
 
 from .primitives import BrMean, QrDev, QrMed, QrUnc
 
@@ -311,7 +310,7 @@ def compute_scaled_scores(
     return df, all_scalings
 
 
-def get_global_scores(scaled_scores: pd.DataFrame, score_mode: ScoreMode):
+def get_global_scores(scaled_scores: pd.DataFrame):
     if len(scaled_scores) == 0:
         return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
 
