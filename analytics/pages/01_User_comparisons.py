@@ -78,7 +78,7 @@ def add_expander_statistics():
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Users", df["public_username"].nunique())
-        col2.metric("Videos", pd.concat([df['video_a'], df['video_b']]).unique().size)
+        col2.metric("Videos", pd.concat([df["video_a"], df["video_b"]]).unique().size)
         col3.metric("Comparisons", df["video_a"].size)
 
         st.write("Number of public comparisons by user:")
@@ -223,7 +223,7 @@ def add_expander_cursor_position():
         st.plotly_chart(fig)
 
 
-st.title("Comparisons Public Dataset")
+st.title("User comparisons (public dataset)")
 
 # Load public dataset (the function is cached to not overload the API)
 st.session_state.df = set_df()
