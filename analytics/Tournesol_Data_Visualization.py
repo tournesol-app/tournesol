@@ -7,7 +7,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.title("Tournesol data visualization")
+st.title("Tournesol Data Visualization")
 
 col1, col2 = st.columns(2)
 
