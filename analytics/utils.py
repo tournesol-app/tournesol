@@ -16,7 +16,7 @@ CRITERIA = [
     "backfire_risk",
 ]
 
-CRITERI_EXT = CRITERIA + ["views", "duration", "tournesol_score"]
+CRITERI_EXT = CRITERIA + ["views", "duration"]
 
 TCOLOR = [
     "#1282b2",
@@ -83,7 +83,5 @@ def api_get_tournesol_scores():
         df[crit] = df.apply(lambda x: get_score(x, crit), axis=1)
 
     df.drop(columns=["criteria_scores"], inplace=True)
-
-    df["tournesol_score"] = df[CRITERIA].sum(axis=1)
 
     return df
