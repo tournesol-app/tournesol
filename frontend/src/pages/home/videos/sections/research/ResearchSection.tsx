@@ -28,7 +28,7 @@ const ResearchSection = () => {
         <Grid item lg={8} xl={5}>
           <VisualizeDataBox />
         </Grid>
-        <Grid item xl={9}>
+        <Grid item xl={9} width="100%">
           <ScientificLiteratureBox />
         </Grid>
       </Grid>

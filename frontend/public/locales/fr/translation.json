@@ -494,7 +494,9 @@
     "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »"
   },
   "scientificLiteratureBox": {
-    "scientificLiterature": "Littérature scientifique"
+    "scientificLiterature": "Littérature scientifique",
+    "chosenArticles": "Articles choisis",
+    "studenWorks": "Travaux édutiant"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",

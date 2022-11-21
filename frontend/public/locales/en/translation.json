@@ -488,7 +488,9 @@
     "weHopeToContribute": "\"We want to contribute to make the large-scale algorithms deployed robust and beneficial to all humanity.\""
   },
   "scientificLiteratureBox": {
-    "scientificLiterature": "Scientific literature"
+    "scientificLiterature": "Scientific literature",
+    "chosenArticles": "Chosen articles",
+    "studenWorks": "Student works"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
