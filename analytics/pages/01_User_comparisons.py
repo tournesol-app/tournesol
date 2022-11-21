@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
 st.set_page_config(
-    page_title="Tournesol",
+    page_title="Tournesol - Users' comparisons",
     page_icon="🌻",
     initial_sidebar_state="expanded",
 )
@@ -223,7 +223,7 @@ def add_expander_cursor_position():
         st.plotly_chart(fig)
 
 
-st.title("User comparisons (public dataset)")
+st.title("Users' comparisons (public dataset)")
 
 # Load public dataset (the function is cached to not overload the API)
 st.session_state.df = set_df()

@@ -7,7 +7,7 @@ import streamlit as st
 from utils import CRITERIA, CRITERI_EXT, MSG_NO_DATA, TCOLOR, api_get_tournesol_scores
 
 st.set_page_config(
-    page_title="Tournesol",
+    page_title="Tournesol - Videos and channels",
     page_icon="🌻",
     initial_sidebar_state="expanded",
 )
@@ -171,7 +171,7 @@ def add_expander_detailed_correlation():
         st.plotly_chart(fig)
 
 
-st.title("Videos and channels (scores analyses)")
+st.title("Videos and channels (computed scores)")
 
 # Load public dataset (the function is cached to not overload the API)
 st.session_state.df_scores = api_get_tournesol_scores()
