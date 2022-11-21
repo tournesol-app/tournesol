@@ -13,9 +13,13 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown(
-        "This application has been created to explore the public dataset of"
-        " [tournesol.app](https://tournesol.app). You can found information and visualization of"
-        " the public dataset the aggregated results of the Tournesol algorithm."
+        "This application allows to explore the public data of"
+        " [tournesol.app](https://tournesol.app)."
+    )
+    st.markdown(
+        "You can visualize the public dataset made of users' individual"
+        " ratings and the collective ratings computed by the Tournesol"
+        " algorithms."
     )
 
 with col2:
