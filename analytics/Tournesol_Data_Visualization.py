@@ -18,7 +18,7 @@ with col1:
     )
     st.markdown(
         "You can visualize the public dataset made of users' individual"
-        " ratings and the collective ratings computed by the Tournesol"
+        " ratings and the collective scores computed by the Tournesol"
         " algorithms."
     )
 
