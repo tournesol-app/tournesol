@@ -4,7 +4,7 @@ The Tournesol public data visualization tool made with Streamlit.
 
 This application allows to explore:
 - the Tournesol public dataset made of users' individual ratings
-- the resulting collective ratings computed by the back end's algorithms
+- the resulting collective scores computed by the back end's algorithms
 
 ## Install
 
