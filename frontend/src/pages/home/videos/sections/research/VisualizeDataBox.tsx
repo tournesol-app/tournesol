@@ -41,6 +41,11 @@ const VisualizeDataBox = () => {
           alt={t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         />
       </Box>
+      <Box p={2} display="flex" justifyContent="center">
+        <Typography variant="caption">
+          {t('visualizeDataBox.personCorrelationCoefficientMatrix')}
+        </Typography>
+      </Box>
     </Paper>
   );
 };
