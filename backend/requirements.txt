@@ -9,7 +9,7 @@ django-rest-registration==0.7.0
 django-sql-utils==0.6.1
 djangorestframework==3.13.1
 drf-spectacular==0.21.2
-Pillow==9.0.1
+Pillow==9.3.0
 psycopg2-binary==2.9.3
 PyYAML==5.4.1
 tqdm==4.62.1
