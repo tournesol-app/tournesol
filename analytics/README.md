@@ -2,6 +2,10 @@
 
 The Tournesol public data visualization tool made with Streamlit.
 
+This application allows to explore:
+- the Tournesol public dataset made of users' individual ratings
+- the resulting collective scores computed by the back end's algorithms
+
 ## Install
 
 Create a new Python virtual environment, and install the requirements. Be sure
@@ -17,7 +21,7 @@ pip install -r requirements.txt
 To run Sreamlit on a localhost:
 
 ```bash
-streamlit run tournesol_dataviz.py
+streamlit run Tournesol_Data_Visualization.py
 ```
 
 ## Copyright & License
