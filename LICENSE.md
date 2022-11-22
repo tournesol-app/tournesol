@@ -19,9 +19,9 @@ their dedicated `README.md` file.
 The following software use the Free/Libre copyleft GNU Affero General Public
 License v3.0 or later.
 
-- [analytics](./analytics/LICENSE)
 - [backend](./backend/LICENSE)
 - [browser-extension](./browser-extension/LICENSE)
+- [data-visualization](./data-visualization/LICENSE)
 - [frontend](./frontend/LICENSE)
 - [infra](./infra/LICENSE)
 
