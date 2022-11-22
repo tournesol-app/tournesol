@@ -7,7 +7,8 @@ import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
 import { Metrics } from 'src/features/statistics/UsageStatsSection';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 import { useCurrentPoll } from 'src/hooks';
-import SectionTitle from './SectionTitle';
+import SectionTitle from '../SectionTitle';
+import UseOurExtension from './UseOurExtension';
 
 interface ComparedEntityStats {
   comparedEntityCount: number;
@@ -105,6 +106,7 @@ const RecommendationsSection = ({
           </Box>
         </Grid>
       </Grid>
+      <UseOurExtension />
     </Box>
   );
 };

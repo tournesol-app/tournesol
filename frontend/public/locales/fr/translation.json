@@ -465,9 +465,9 @@
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
     "compareButton": "Commencer à comparer",
     "useOurExtension": "Utilisez l'extension !",
-    "webExtensionDescription": "En utilisant l'extension, vous retrouverez les vidéos recommandées par la communauté Tournesol directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
+    "webExtensionDescription": "L'extension navigateur vous permet de retrouver les vidéos recommandées par la communauté directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
-    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <2>Mozilla Firefox</2>, et <4>Google Chrome</4> ou <6>Chromium</6>."
+    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <1>Mozilla Firefox</1>, et <3>Google Chrome</3> ou <5>Chromium</5>."
   },
   "comparisonSection": {
     "contribute": "Contribuer",
