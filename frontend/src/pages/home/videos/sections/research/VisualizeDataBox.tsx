@@ -28,7 +28,7 @@ const VisualizeDataBox = () => {
               You can quickly explore our public database with our appplication
               <Link
                 color="text.primary"
-                href="https://github.com/tournesol-app/tournesol/tree/main/analytics"
+                href="https://github.com/tournesol-app/tournesol/tree/main/data-visualization"
               >
                 Tournesol Data Visualization
               </Link>
