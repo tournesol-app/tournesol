@@ -52,7 +52,8 @@ on [Discord][tournesol-discord-join].
 
 ## Structure of the repository
 
-- [data-visualization](./data-visualization) contains tools to analyse Tournesol data
+- [data-visualization](./data-visualization) contains a Streamlit app to
+  visualize the Tournesol public data
 - [docs](./docs) contains different kinds of documentations related to the
   project
 - [dev-env](./dev-env) contains the info to create the Tournesol development
