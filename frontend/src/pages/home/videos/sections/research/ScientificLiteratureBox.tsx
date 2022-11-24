@@ -146,7 +146,7 @@ const ScientificLiteratureBox = () => {
             indicatorColor="secondary"
           >
             <Tab
-              label={t('scientificLiteratureBox.chosenArticles')}
+              label={t('scientificLiteratureBox.papers')}
               {...a11yProps(0)}
             />
             <Tab
