@@ -133,7 +133,7 @@ const ScientificLiteratureBox = () => {
         sx={{ borderTopLeftRadius: 'inherit', borderTopRightRadius: 'inherit' }}
       >
         <Typography variant="h4">
-          {t('scientificLiteratureBox.scientificLiterature')}
+          {t('scientificLiteratureBox.ourPublications')}
         </Typography>
       </Box>
       <Box>
