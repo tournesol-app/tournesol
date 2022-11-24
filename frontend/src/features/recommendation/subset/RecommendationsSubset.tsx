@@ -40,7 +40,7 @@ const RecommendationsSubset = ({
   useEffect(() => {
     const searchParams = new URLSearchParams();
     searchParams.append('date', recoDate);
-    searchParams.append('language', i18n.resolvedLanguage);
+    //searchParams.append('language', i18n.resolvedLanguage);
 
     const getRecommendationsAsync = async () => {
       setIsLoading(true);

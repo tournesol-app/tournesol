@@ -467,7 +467,7 @@
     "useOurExtension": "Utilisez l'extension !",
     "webExtensionDescription": "L'extension navigateur vous permet de retrouver les vidéos recommandées par la communauté directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
-    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <1>Mozilla Firefox</1>, et <3>Google Chrome</3> ou <5>Chromium</5>."
+    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <1>Mozilla Firefox</1>, <3>Google Chrome</3> et probablement leurs dérivés."
   },
   "comparisonSection": {
     "contribute": "Contribuer",
