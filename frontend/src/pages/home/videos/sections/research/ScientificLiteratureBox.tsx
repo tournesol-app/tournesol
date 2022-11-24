@@ -105,7 +105,7 @@ const ScientificLiteratureBox = () => {
     {
       name: 'Active learning for video recommendation system.',
       authors: "Marc Gay-Balmaz, EPFL Master's Thesis (2022).",
-      url: 'https://www.dropbox.com/sh/kztfgpz0epfr460/AACO-37hc-KdZmgfxvsxHmjLa/Active%20Learning%20%28Marc%20Gay-Balmaz%29.pdf',
+      url: 'https://www.dropbox.com/sh/kztfgpz0epfr460/AACO-37hc-KdZmgfxvsxHmjLa/Active%20Learning%20%28Marc%20Gay-Balmaz%29.pdf?dl=1',
       icon: School,
     },
     {
@@ -113,13 +113,13 @@ const ScientificLiteratureBox = () => {
         'Byzantine-resilient account validation through vouching : research and application to' +
         ' Tournesol project.',
       authors: "Bérangère Colbois. EPFL Master's semester project (2022).",
-      url: 'https://www.dropbox.com/sh/kztfgpz0epfr460/AAA6m1mb4OfmiOZ3wUS8s4dLa/Bayesian%20Byzantine%20voting%20rights%20%28Mac%20Vandelle%29.pdf',
+      url: 'https://www.dropbox.com/sh/kztfgpz0epfr460/AAAXHAWRGKh3MWXhfSDUkVkXa/Vouching%20%28B%C3%A9rang%C3%A8re%20Colbois%29.pdf?dl=1',
       icon: School,
     },
     {
       name: 'Bayesian Byzantine Resistance.',
       authors: "Marc Vandelle. EPFL Master's semester project (2022).",
-      url: 'https://www.dropbox.com/sh/kztfgpz0epfr460/AAAXHAWRGKh3MWXhfSDUkVkXa/Vouching%20%28B%C3%A9rang%C3%A8re%20Colbois%29.pdf',
+      url: 'https://www.dropbox.com/sh/kztfgpz0epfr460/AAA6m1mb4OfmiOZ3wUS8s4dLa/Bayesian%20Byzantine%20voting%20rights%20%28Mac%20Vandelle%29.pdf?dl=1',
       icon: School,
     },
   ];
@@ -184,11 +184,7 @@ const ScientificLiteratureBox = () => {
             {studentWorks.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
-                  <ListItemButton
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener"
-                  >
+                  <ListItemButton href={article.url}>
                     <ListItemAvatar>
                       <Avatar>
                         <article.icon />
