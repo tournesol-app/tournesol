@@ -5,25 +5,31 @@ has chosen to distribute its software and its other productions under the
 terms of different licenses.
 
 We pledge to respect users freedom by using
-[Free/Libre licenses][gnu-freesoftware] for our software. When using Creative
-Commons licenses, we seek to use licenses
+[Free/Libre licenses][gnu-freesoftware] for our source code. When using
+Creative Commons licenses, we seek to use licenses
 [approved for Free Cultural Works][cc-freeculturalworks] as much as possible.
 
-You can find the copyright notice of each software and other production in
-their dedicated `README.md` file.
+Note that some software may include third-party licensed materials in addition
+their source code. You will find the copyright notice of each licensed
+material composing the software in their dedicated `README.md` file.
 
 ## GNU Affero General Public License v3.0 or later
 
 ![GNU AGPL v3.0 logo](./docs/logos/agplv3-with-text-162x68.png)
 
-The following software use the Free/Libre copyleft GNU Affero General Public
+The following source code use the Free/Libre copyleft GNU Affero General Public
 License v3.0 or later.
 
-- [backend](./backend/LICENSE)
-- [browser-extension](./browser-extension/LICENSE)
-- [data-visualization](./data-visualization/LICENSE)
-- [frontend](./frontend/LICENSE)
-- [infra](./infra/LICENSE)
+- backend - [copyrights][ts-backend-copyrights],
+  [source code license](./backend/LICENSE)
+- browser-extension - [copyrights][ts-browser-ext-copyrights],
+  [source code license](./browser-extension/LICENSE)
+- data-visualization, [copyrights][ts-data-viz-copyrights],
+  [source code license](./data-visualization/LICENSE)
+- frontend, [copyrights][ts-frontend-copyrights],
+  [source code license](./frontend/LICENSE)
+- infra, [copyrights][ts-infra-copyrights],
+  [source code license](./infra/LICENSE)
 
 See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
@@ -49,6 +55,13 @@ v1.0.
 
 See the [human-readable disclaimer][odc-by-1.0-disclaimer], or the
 [full legal code][odc-by-1.0-fulllegalcode] for more information.
+
+[ts-backend-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/backend#copyright--license
+[ts-browser-ext-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/browser-extension#copyright--license
+[ts-data-viz-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/data-visualization#copyright--license
+[ts-frontend-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/frontend#copyright--license
+[ts-infra-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/infra#copyright--license
+
 
 [gnu-agpl-3.0]: https://www.gnu.org/licenses/agpl-3.0.en.html
 [gnu-freesoftware]: https://www.gnu.org/philosophy/free-sw.en.html
