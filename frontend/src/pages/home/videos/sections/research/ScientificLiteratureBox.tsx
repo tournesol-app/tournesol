@@ -141,7 +141,9 @@ const ScientificLiteratureBox = () => {
           <Tabs
             value={selectedTab}
             onChange={handleTabChange}
-            aria-label="basic tabs example"
+            aria-label="Publication types"
+            textColor="secondary"
+            indicatorColor="secondary"
           >
             <Tab
               label={t('scientificLiteratureBox.chosenArticles')}
