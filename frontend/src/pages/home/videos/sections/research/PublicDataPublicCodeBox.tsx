@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Link, Paper, Typography, Button, SxProps } from '@mui/material';
@@ -47,8 +46,8 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
         <Box display="flex" justifyContent="center">
           <Button
             variant="contained"
-            component={RouterLink}
-            to={`${apiUrl}/exports/all/`}
+            component={Link}
+            href={`${apiUrl}/exports/all/`}
             endIcon={<Download />}
           >
             {t('publicDataPublicCodeBox.downloadTheDatabase')}
