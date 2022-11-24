@@ -475,6 +475,27 @@
     "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
     "seeMore": "See more"
   },
+  "publicDataPublicCodeBox": {
+    "ourDataAreOpen": "Our data are open",
+    "weHopeThatOtherProjectsCanBenefitEtc": "We hope that other projects can benefit from the efforts of the Tournesol community. To this end we are making available a database made up of all public contributions that anyone can use.",
+    "theseDataArePublishedUnderODCBY": "These data are published under the terms of the Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
+    "downloadTheDatabase": "Download the database",
+    "accessTheCodeOnGitHub": "Access the code on GitHub"
+  },
+  "researchSection": {
+    "research": "Research",
+    "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
+  },
+  "scientificLiteratureBox": {
+    "ourPublications": "Our publictions",
+    "papers": "Papers",
+    "studenWorks": "Student works"
+  },
+  "visualizeDataBox": {
+    "visualizeTheData": "Visualize the data",
+    "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> appplication made with Streamlit.",
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of comparison criteria scores (2022/10/10)."
+  },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
     "resetYourPassword": "Reset your password",
@@ -517,16 +538,16 @@
     "noVoucherReceived": "None.",
     "receivedVouchersTitle": "Users who vouched for you",
     "trustScore": {
-      "nullValue": "Unknown",
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
       "title": "Trust score",
       "description": {
         "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
         "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
+      "nullValue": "Unknown",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
       "isTrusted": "Your email address is trusted.",
       "isNotTrusted": "Your email address is not trusted.",
       "hasReceivedVouchers": "Other users vouch for you.",

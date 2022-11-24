@@ -481,6 +481,27 @@
     "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur.rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
     "seeMore": "Voir plus"
   },
+  "publicDataPublicCodeBox": {
+    "ourDataAreOpen": "Nos données sont ouvertes",
+    "weHopeThatOtherProjectsCanBenefitEtc": "Nous espérons que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol. Pour cela nous mettons à disposion une base de données constituée par toutes contributions publiques que tout le monde peut utiliser.",
+    "theseDataArePublishedUnderODCBY": "Ces données sont publiées sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
+    "downloadTheDatabase": "Télécharger la base de données",
+    "accessTheCodeOnGitHub": "Accédez au code sur GitHub"
+  },
+  "researchSection": {
+    "research": "Recherche",
+    "weSeekToSupportResearch": "« Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains. »"
+  },
+  "scientificLiteratureBox": {
+    "ourPublications": "Nos publications",
+    "papers": "Articles",
+    "studenWorks": "Travaux étudiants"
+  },
+  "visualizeDataBox": {
+    "visualizeTheData": "Visualisez les données",
+    "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visiualization</1> réalisée avec Streamlit.",
+    "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères de comparaison (2022/10/10)."
+  },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
     "resetYourPassword": "Réinitialisez votre mot de passe",
@@ -524,16 +545,16 @@
     "noVoucherReceived": "Aucun.",
     "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous",
     "trustScore": {
-      "nullValue": "Indéterminé",
-      "low": "Faible",
-      "medium": "Moyen",
-      "high": "Élevé",
       "title": "Score de confiance",
       "description": {
         "explanation": "Votre score de confiance détermine à quel point vos comparaisons influencent les recommandations de Tournesol.",
         "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine fiable ou lorsque d'autres personnes se portent garant.es pour vous.",
         "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
+      "nullValue": "Indéterminé",
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé",
       "isTrusted": "Votre adresse e-mail est fiable.",
       "isNotTrusted": "Votre adresse e-mail n'est pas fiable.",
       "hasReceivedVouchers": "Vous avez au moins un garant.",

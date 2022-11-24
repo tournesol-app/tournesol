@@ -11,9 +11,10 @@ import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
 import ExtensionSection from 'src/pages/home/videos/sections/ExtensionSection';
+import RecommendationsSection from 'src/pages/home/videos/sections/RecommendationsSection';
+import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
-import RecommendationsSection from './sections/RecommendationsSection';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -119,6 +120,7 @@ const HomeVideosPage = () => {
           lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
         }}
       />
+      <ResearchSection />
       <ExtensionSection />
       <UsageStatsSection externalData={stats} />
       <PollListSection />
