@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import cached_property
 from typing import Optional
 
 import pandas as pd
@@ -30,8 +31,9 @@ class MlInput(ABC):
         """
         raise NotImplementedError
 
+    @property
     @abstractmethod
-    def get_ratings_properties(self) -> pd.DataFrame:
+    def ratings_properties(self) -> pd.DataFrame:
         """Fetch data about contributor ratings properties
 
         Returns:
@@ -65,7 +67,9 @@ class MlInputFromPublicDataset(MlInput):
             dtf = dtf[dtf.user_id == user_id]
         return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
-    def get_ratings_properties(self):
+    @cached_property
+    def ratings_properties(self):
+        # TODO support trust_scores from the public dataset
         user_entities_pairs = pd.Series(
             iter(
                 set(self.public_dataset.groupby(["user_id", "entity_a"]).indices.keys())
@@ -172,7 +176,8 @@ class MlInputFromDb(MlInput):
             ]
         )
 
-    def get_ratings_properties(self):
+    @cached_property
+    def ratings_properties(self):
         values = (
             ContributorRating.objects.filter(
                 poll__name=self.poll_name,
@@ -192,6 +197,7 @@ class MlInputFromDb(MlInput):
                 "is_public",
                 "is_trusted",
                 "is_supertrusted",
+                trust_score=F("user__trust_score"),
             )
         )
         if len(values) == 0:
@@ -202,6 +208,7 @@ class MlInputFromDb(MlInput):
                     "is_public",
                     "is_trusted",
                     "is_supertrusted",
+                    "trust_score",
                 ]
             )
         return pd.DataFrame(values)

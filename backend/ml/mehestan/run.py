@@ -20,6 +20,7 @@ from ml.outputs import (
 from tournesol.models import Poll
 from tournesol.models.entity_score import ScoreMode
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
+from vouch.voting_rights import compute_voting_rights
 
 from .global_scores import compute_scaled_scores, get_global_scores
 from .individual import compute_individual_score
@@ -29,6 +30,9 @@ logger = logging.getLogger(__name__)
 MAX_SCORE = MEHESTAN_MAX_SCALED_SCORE
 POLL_SCALING_QUANTILE = 0.99
 POLL_SCALING_SCORE_AT_QUANTILE = 50.0
+
+VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
+VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
 
 
 def get_individual_scores(
@@ -45,7 +49,9 @@ def get_individual_scores(
         individual_scores.append(scores.reset_index())
 
     if len(individual_scores) == 0:
-        return pd.DataFrame(columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"])
+        return pd.DataFrame(
+            columns=["user_id", "entity_id", "raw_score", "raw_uncertainty"]
+        )
 
     result = pd.concat(individual_scores, ignore_index=True, copy=False)
     return result[["user_id", "entity_id", "raw_score", "raw_uncertainty"]]
@@ -61,11 +67,43 @@ def update_user_scores(poll: Poll, user: User):
                 "score": "raw_score",
                 "uncertainty": "raw_uncertainty",
             },
-            inplace=True
+            inplace=True,
         )
         save_contributor_scores(
             poll, scores, single_criteria=criteria, single_user_id=user.pk
         )
+
+
+def add_voting_rights(ratings_properties_df: pd.DataFrame, score_mode=ScoreMode.DEFAULT):
+    """
+    Add a "voting_right" column to the ratings_df DataFrame
+
+    Parameters
+    ----------
+    - ratings_properties_df:
+        DataFrame of ratings. All ratings must be on the same criteria and the df must have
+        columns: user_id, entity_id, trust_score, is_public
+    """
+    ratings_df = ratings_properties_df.copy(deep=True)
+    ratings_df["voting_right"] = 0.
+    ratings_df["privacy_penalty"] = ratings_df.is_public.map({
+        True: VOTE_WEIGHT_PUBLIC_RATINGS,
+        False: VOTE_WEIGHT_PRIVATE_RATINGS,
+    })
+    if score_mode == ScoreMode.TRUSTED_ONLY:
+        ratings_df = ratings_df[ratings_df["is_trusted"]]
+        ratings_df["voting_right"] = 1
+    if score_mode == ScoreMode.ALL_EQUAL:
+        ratings_df["voting_right"] = 1
+    if score_mode == ScoreMode.DEFAULT:
+        for (_, ratings_group) in ratings_df.groupby("entity_id"):
+            # trust score would be possibly None (NULL) when new users are created and when
+            # computation of trust scores fail for any reason (e.g. no user pre-trusted)
+            ratings_group.trust_score.fillna(0.0, inplace=True)
+            ratings_df.loc[ratings_group.index, "voting_right"] = compute_voting_rights(
+                ratings_group.trust_score.to_numpy(), ratings_group.privacy_penalty.to_numpy()
+            )
+    return ratings_df
 
 
 def run_mehestan_for_criterion(
@@ -95,8 +133,13 @@ def run_mehestan_for_criterion(
     indiv_scores["criteria"] = criteria
     save_contributor_scalings(poll, criteria, scalings)
 
+    scaled_scores_with_voting_rights_per_score_mode = {
+        mode: add_voting_rights(scaled_scores, score_mode=mode)
+        for mode in ScoreMode
+    }
     for mode in ScoreMode:
-        global_scores = get_global_scores(scaled_scores, score_mode=mode)
+        scaled_scores_with_voting_rights = scaled_scores_with_voting_rights_per_score_mode[mode]
+        global_scores = get_global_scores(scaled_scores_with_voting_rights)
         global_scores["criteria"] = criteria
 
         if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:
@@ -134,12 +177,14 @@ def run_mehestan_for_criterion(
         )
 
     scale_function = poll.scale_function
+    scaled_scores = scaled_scores_with_voting_rights_per_score_mode[ScoreMode.DEFAULT]
     scaled_scores["uncertainty"] = 0.5 * (
         scale_function(scaled_scores["score"] + scaled_scores["uncertainty"])
         - scale_function(scaled_scores["score"] - scaled_scores["uncertainty"])
     )
     scaled_scores["score"] = scale_function(scaled_scores["score"])
     scaled_scores["criteria"] = criteria
+
     save_contributor_scores(poll, scaled_scores, single_criteria=criteria)
 
     logger.info(

@@ -26,9 +26,7 @@ class ContributorRating(models.Model):
         related_name="contributorvideoratings",
     )
     poll = models.ForeignKey(
-        Poll,
-        on_delete=models.CASCADE,
-        related_name="contributor_ratings"
+        Poll, on_delete=models.CASCADE, related_name="contributor_ratings"
     )
     is_public = models.BooleanField(
         default=False, null=False, help_text="Should the rating be public?"
@@ -72,6 +70,11 @@ class ContributorRatingCriteriaScore(models.Model):
     raw_uncertainty = models.FloatField(
         default=0,
         help_text="Computed individual uncertainty without any scaling applied",
+    )
+    voting_right = models.FloatField(
+        default=0,
+        help_text="Voting right computed based on trust scores and contributors having rated the "
+        "entity on the criteria",
     )
 
     class Meta:
