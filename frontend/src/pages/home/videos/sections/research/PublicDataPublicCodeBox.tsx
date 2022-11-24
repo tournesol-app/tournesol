@@ -27,9 +27,6 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
         </Box>
         <Box p={2}>
           <Typography paragraph>
-            {t('publicDataPublicCodeBox.tournesolIsAnOpenlyAltruisticProject')}
-          </Typography>
-          <Typography paragraph>
             {t('publicDataPublicCodeBox.weHopeThatOtherProjectsCanBenefitEtc')}
           </Typography>
           <Typography paragraph>

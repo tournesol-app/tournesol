@@ -477,7 +477,6 @@
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Our data are open",
-    "tournesolIsAnOpenlyAltruisticProject": "Tournesol is an openly altruistic project.",
     "weHopeThatOtherProjectsCanBenefitEtc": "We hope that other projects can benefit from the efforts of the Tournesol community. To this end we are making available a database made up of all public contributions that anyone can use.",
     "theseDataArePublishedUnderODCBY": "These data are published under the terms of the Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
     "downloadTheDatabase": "Download the database",
@@ -485,7 +484,7 @@
   },
   "researchSection": {
     "research": "Research",
-    "weHopeToContribute": "\"We want to contribute to make the large-scale algorithms deployed robust and beneficial to all humanity.\""
+    "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
   },
   "scientificLiteratureBox": {
     "scientificLiterature": "Scientific literature",
@@ -539,16 +538,16 @@
     "noVoucherReceived": "None.",
     "receivedVouchersTitle": "Users who vouched for you",
     "trustScore": {
-      "nullValue": "Unknown",
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
       "title": "Trust score",
       "description": {
         "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
         "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
+      "nullValue": "Unknown",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
       "isTrusted": "Your email address is trusted.",
       "isNotTrusted": "Your email address is not trusted.",
       "hasReceivedVouchers": "Other users vouch for you.",

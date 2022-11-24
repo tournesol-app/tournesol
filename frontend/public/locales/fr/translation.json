@@ -483,7 +483,6 @@
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Nos données sont ouvertes",
-    "tournesolIsAnOpenlyAltruisticProject": "Tournesol est un projet ouvertement altruiste.",
     "weHopeThatOtherProjectsCanBenefitEtc": "Nous espérons que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol. Pour cela nous mettons à disposion une base de données constituée par toutes contributions publiques que tout le monde peut utiliser.",
     "theseDataArePublishedUnderODCBY": "Ces données sont publiées sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
     "downloadTheDatabase": "Télécharger la base de données",
@@ -491,12 +490,12 @@
   },
   "researchSection": {
     "research": "Recherche",
-    "weHopeToContribute": "« Nous voulons contribuer à rendre les algorithmes déployés à grande échelle robustes, et bénéfiques pour toute l'humanité. »"
+    "weSeekToSupportResearch": "« Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains. »"
   },
   "scientificLiteratureBox": {
     "scientificLiterature": "Littérature scientifique",
     "chosenArticles": "Articles choisis",
-    "studenWorks": "Travaux édutiants"
+    "studenWorks": "Travaux étudiants"
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
@@ -546,16 +545,16 @@
     "noVoucherReceived": "Aucun.",
     "receivedVouchersTitle": "Utilisateurs qui se portent garant pour vous",
     "trustScore": {
-      "nullValue": "Indéterminé",
-      "low": "Faible",
-      "medium": "Moyen",
-      "high": "Élevé",
       "title": "Score de confiance",
       "description": {
         "explanation": "Votre score de confiance détermine à quel point vos comparaisons influencent les recommandations de Tournesol.",
         "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine fiable ou lorsque d'autres personnes se portent garant.es pour vous.",
         "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
+      "nullValue": "Indéterminé",
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé",
       "isTrusted": "Votre adresse e-mail est fiable.",
       "isNotTrusted": "Votre adresse e-mail n'est pas fiable.",
       "hasReceivedVouchers": "Vous avez au moins un garant.",
