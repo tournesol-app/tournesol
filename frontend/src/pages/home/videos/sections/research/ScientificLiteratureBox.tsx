@@ -157,18 +157,17 @@ const ScientificLiteratureBox = () => {
           <List>
             {chosenArticles.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <article.icon />
-                    </Avatar>
-                  </ListItemAvatar>
+                <ListItem disablePadding>
                   <ListItemButton
                     href={article.url}
                     target="_blank"
                     rel="noopener"
-                    disableGutters
                   >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <article.icon />
+                      </Avatar>
+                    </ListItemAvatar>
                     <ListItemText
                       primary={article.name}
                       secondary={article.authors}
@@ -184,18 +183,17 @@ const ScientificLiteratureBox = () => {
           <List>
             {studentWorks.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <article.icon />
-                    </Avatar>
-                  </ListItemAvatar>
+                <ListItem disablePadding>
                   <ListItemButton
                     href={article.url}
                     target="_blank"
                     rel="noopener"
-                    disableGutters
                   >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <article.icon />
+                      </Avatar>
+                    </ListItemAvatar>
                     <ListItemText
                       primary={article.name}
                       secondary={article.authors}
