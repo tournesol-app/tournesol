@@ -55,33 +55,26 @@ const RecommendationsSection = ({
 
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-between"
-            gap={2}
-          >
-            <Paper elevation={0}>
-              <Box p={2} bgcolor="background.primary" borderRadius={1}>
-                <Typography paragraph fontSize={17}>
-                  {t('recommendationsSection.eachComparisonHelps')}
-                </Typography>
-                <Box pb={2}>
-                  <Divider />
-                </Box>
-                <Box textAlign="center">
-                  <Metrics
-                    text={comparedEntitiesTitle}
-                    count={comparedEntityStats?.comparedEntityCount || 0}
-                    lastMonthCount={
-                      comparedEntityStats?.lastMonthComparedEntityCount || 0
-                    }
-                    lastMonthAsText
-                  />
-                </Box>
+          <Paper elevation={0}>
+            <Box p={2} bgcolor="background.primary" borderRadius={1}>
+              <Typography paragraph fontSize={17}>
+                {t('recommendationsSection.eachComparisonHelps')}
+              </Typography>
+              <Box pb={2}>
+                <Divider />
               </Box>
-            </Paper>
-          </Box>
+              <Box textAlign="center">
+                <Metrics
+                  text={comparedEntitiesTitle}
+                  count={comparedEntityStats?.comparedEntityCount || 0}
+                  lastMonthCount={
+                    comparedEntityStats?.lastMonthComparedEntityCount || 0
+                  }
+                  lastMonthAsText
+                />
+              </Box>
+            </Box>
+          </Paper>
         </Grid>
         <Grid item lg={9} xl={6}>
           <Box
