@@ -56,7 +56,7 @@ const RecommendationsSection = ({
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>
-            <Box p={2} bgcolor="background.primary" borderRadius={1}>
+            <Box p={2} borderRadius={1}>
               <Typography paragraph fontSize={17}>
                 {t('recommendationsSection.eachComparisonHelps')}
               </Typography>
