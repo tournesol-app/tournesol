@@ -102,10 +102,14 @@ Copyright 2021-2022 Association Tournesol and contributors.
     You should have received a copy of the GNU Affero General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-See the full license file [AGPL-3.0-or-later](./LICENSE).
+See the full legal code [AGPL-3.0-or-later][lic-agpl-3.0-or-later].
 
 **Images**
 
 | material | files | copyright | license |
 |---|---|---|---|
-| Mozilla Firefox logo | public/logos/Fx-Browser-icon-fullColor.svg | Mozilla Corporation | Mozilla Public License Version 2.0 |
+| Mozilla Firefox logo | `public/logos/Fx-Browser-icon-fullColor.svg` | Mozilla Corporation | [Mozilla Public License Version 2.0][lic-frontend-mpl-2.0] |
+
+
+[lic-agpl-3.0-or-later]: ./LICENSE.AGPL-3.0-or-later.txt
+[lic-frontend-mpl-2.0]: ./LICENSE.MPL-2.0.txt
