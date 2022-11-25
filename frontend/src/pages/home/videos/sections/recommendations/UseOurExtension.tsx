@@ -62,15 +62,18 @@ const UseOurExtension = () => {
                       </Box>
                     </Grid>
                   ) : (
-                    <Alert severity="info" variant="filled">
-                      <Trans
-                        t={t}
-                        i18nKey="home.extensionNotAvailableOnYourBrowser"
-                      >
-                        The extension is not available on your web browser. You
-                        may use it on <b>Firefox</b>, <b>Google Chrome</b>.
-                      </Trans>
-                    </Alert>
+                    <Grid item xl={9}>
+                      <Alert severity="info" variant="filled">
+                        <Trans
+                          t={t}
+                          i18nKey="home.extensionNotAvailableOnYourBrowser"
+                        >
+                          The extension is not available on your web browser.
+                          You may use it on <b>Firefox</b>, <b>Google Chrome</b>
+                          .
+                        </Trans>
+                      </Alert>
+                    </Grid>
                   )}
                 </Grid>
               </Grid>
