@@ -34,48 +34,36 @@ const UseOurExtension = () => {
                   />
                 </Box>
               </Grid>
-              <Grid item>
-                <Grid
-                  container
-                  alignItems="center"
-                  justifyContent="center"
-                  spacing={2}
-                >
-                  <Grid item xl={9}>
-                    <Typography paragraph m={0} textAlign="justify">
-                      {t('home.webExtensionDescription')}
-                    </Typography>
-                  </Grid>
-                  {webExtensionUrl ? (
-                    <Grid item xl={3}>
-                      <Box display="flex" justifyContent="center">
-                        <Button
-                          color="primary"
-                          variant="contained"
-                          component="a"
-                          href={webExtensionUrl}
-                          target="_blank"
-                          endIcon={<Extension />}
-                        >
-                          {t('home.getTheExtensionButton')}
-                        </Button>
-                      </Box>
-                    </Grid>
-                  ) : (
-                    <Grid item xl={9}>
-                      <Alert severity="info" variant="filled">
-                        <Trans
-                          t={t}
-                          i18nKey="home.extensionNotAvailableOnYourBrowser"
-                        >
-                          The extension is not available on your web browser.
-                          You may use it on <b>Firefox</b>, <b>Google Chrome</b>
-                          .
-                        </Trans>
-                      </Alert>
-                    </Grid>
-                  )}
-                </Grid>
+              <Grid item xl={9}>
+                <Typography paragraph m={0} textAlign="justify">
+                  {t('home.webExtensionDescription')}
+                </Typography>
+              </Grid>
+              <Grid item xl={9}>
+                {webExtensionUrl ? (
+                  <Box display="flex" justifyContent="center">
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      component="a"
+                      href={webExtensionUrl}
+                      target="_blank"
+                      endIcon={<Extension />}
+                    >
+                      {t('home.getTheExtensionButton')}
+                    </Button>
+                  </Box>
+                ) : (
+                  <Alert severity="info" variant="filled">
+                    <Trans
+                      t={t}
+                      i18nKey="home.extensionNotAvailableOnYourBrowser"
+                    >
+                      The extension is not available on your web browser. You
+                      may use it on <b>Firefox</b>, <b>Google Chrome</b>.
+                    </Trans>
+                  </Alert>
+                )}
               </Grid>
             </Grid>
           </Paper>
