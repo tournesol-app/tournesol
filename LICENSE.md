@@ -20,16 +20,11 @@ material composing the software in their dedicated `README.md` file.
 The following source code use the Free/Libre copyleft GNU Affero General Public
 License v3.0 or later.
 
-- backend - [copyrights][ts-backend-copyrights],
-  [source code license](./backend/LICENSE)
-- browser-extension - [copyrights][ts-browser-ext-copyrights],
-  [source code license](./browser-extension/LICENSE)
-- data-visualization, [copyrights][ts-data-viz-copyrights],
-  [source code license](./data-visualization/LICENSE)
-- frontend, [copyrights][ts-frontend-copyrights],
-  [source code license](./frontend/LICENSE)
-- infra, [copyrights][ts-infra-copyrights],
-  [source code license](./infra/LICENSE)
+- [backend][ts-browser-ext-copyrights]
+- [browser-extension][ts-browser-ext-copyrights]
+- [data-visualization][ts-data-viz-copyrights]
+- [frontend][ts-frontend-copyrights]
+- [infra][ts-infra-copyrights]
 
 See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
