@@ -85,6 +85,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Copyright & License
 
+**Source code**
+
 Copyright 2021-2022 Association Tournesol and contributors.
 
     This program is free software: you can redistribute it and/or modify
@@ -100,5 +102,10 @@ Copyright 2021-2022 Association Tournesol and contributors.
     You should have received a copy of the GNU Affero General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-Included license:
- - [AGPL-3.0-or-later](./LICENSE)
+See the full license file [AGPL-3.0-or-later](./LICENSE).
+
+**Images**
+
+| material | files | copyright | license |
+|---|---|---|---|
+| Mozilla Firefox logo | public/logos/Fx-Browser-icon-fullColor.svg | Mozilla Corporation | Mozilla Public License Version 2.0 |
