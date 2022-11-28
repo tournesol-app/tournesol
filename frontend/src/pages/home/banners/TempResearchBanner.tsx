@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Box,
@@ -12,6 +13,8 @@ import {
 import { Biotech, Campaign } from '@mui/icons-material';
 
 const TempResearchBanner = () => {
+  const { t } = useTranslation();
+
   return (
     <Box py={3} bgcolor="#1282B2">
       <Grid container width="100%" flexDirection="column" alignItems="center">
@@ -20,10 +23,7 @@ const TempResearchBanner = () => {
             <Stack spacing={2} direction="row" alignItems="center">
               <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
               <Typography paragraph>
-                Is the Tournesol project really effective? We are currently
-                investigating the impact of the Tournesol browser extension on
-                the YouTube viewers&apos; habits. Join our research study to
-                help us improve Tournesol!
+                {t('tempResearchBanner.isTheTournesolProjectReallyEffective')}
               </Typography>
               <Box display="flex" justifyContent="center">
                 <Button
@@ -34,7 +34,7 @@ const TempResearchBanner = () => {
                   href="https://tournesol.app"
                   endIcon={<Biotech />}
                 >
-                  Join
+                  {t('tempResearchBanner.join')}
                 </Button>
               </Box>
             </Stack>

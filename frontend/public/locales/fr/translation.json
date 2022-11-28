@@ -441,6 +441,10 @@
     "joinUsOnDiscord": "Rejoignez-nous sur Discord",
     "tableOfContent": "Table des Matières"
   },
+  "tempResearchBanner": {
+    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de l'extension navigateur sur les habitudes d'usage de YouTube. Rejoingnez notre étude pour nous aider à améliorer Tournesol !",
+    "join": "Participer"
+  },
   "home": {
     "exploreTournesolPossibilities": "Découvrez toutes les possibilités de Tournesol",
     "tournesolToComparedMultipleTypesOfAlternatives": "Tournesol permet de comparer toutes sortes de choses. Avec les boutons ci-dessous vous pouvez basculer d'un univers à un autre:",
