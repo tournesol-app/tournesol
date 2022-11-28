@@ -14,6 +14,7 @@ import RecommendationsSection from 'src/pages/home/videos/sections/recommendatio
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
+import TempResearchBanner from '../banners/TempResearchBanner';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -43,86 +44,92 @@ const HomeVideosPage = () => {
   }, [pollName, showWarningAlert, t]);
 
   return (
-    <AlternatingBackgroundColorSectionList lastItemIsPrimary>
-      <TitleSection title={t('home.collaborativeContentRecommendations')}>
-        <Typography paragraph fontSize="1.1em">
-          {t('home.tournesolIsAParticipatoryResearchProject')}
-        </Typography>
+    <>
+      {/* Temporary banner, hardcoded here as long as we don't have an API control them. */}
+      <TempResearchBanner />
+      <AlternatingBackgroundColorSectionList lastItemIsPrimary>
+        <TitleSection title={t('home.collaborativeContentRecommendations')}>
+          <Typography paragraph fontSize="1.1em">
+            {t('home.tournesolIsAParticipatoryResearchProject')}
+          </Typography>
 
-        <Typography paragraph fontSize="1.1em">
-          {t('home.helpUsAdvanceResearch')}
-        </Typography>
+          <Typography paragraph fontSize="1.1em">
+            {t('home.helpUsAdvanceResearch')}
+          </Typography>
 
-        {active ? (
-          <Stack spacing={2} direction="row">
-            {!isLoggedIn && (
-              <Button
-                size="large"
-                color="inherit"
-                variant="outlined"
-                component={Link}
-                to={`/signup`}
-                sx={{
-                  px: 4,
-                  textAlign: 'center',
-                  fontSize: '120%',
-                }}
-              >
-                {t('home.generic.createAccount')}
-              </Button>
-            )}
-            <Button
-              size="large"
-              color="primary"
-              variant="contained"
-              component={Link}
-              to={`${baseUrl}/comparison?series=true`}
-              sx={{
-                px: 4,
-                fontSize: '120%',
-              }}
-            >
-              {t('home.generic.start')}
-            </Button>
-          </Stack>
-        ) : (
-          <Box width="100%">
-            <Divider sx={{ my: 1 }} />
-            <Typography paragraph>{t('home.generic.pollIsClosed')}</Typography>
+          {active ? (
             <Stack spacing={2} direction="row">
+              {!isLoggedIn && (
+                <Button
+                  size="large"
+                  color="inherit"
+                  variant="outlined"
+                  component={Link}
+                  to={`/signup`}
+                  sx={{
+                    px: 4,
+                    textAlign: 'center',
+                    fontSize: '120%',
+                  }}
+                >
+                  {t('home.generic.createAccount')}
+                </Button>
+              )}
               <Button
                 size="large"
                 color="primary"
                 variant="contained"
                 component={Link}
-                to={`${baseUrl}/recommendations`}
+                to={`${baseUrl}/comparison?series=true`}
                 sx={{
                   px: 4,
                   fontSize: '120%',
                 }}
               >
-                {t('home.generic.seeResults')}
+                {t('home.generic.start')}
               </Button>
             </Stack>
-          </Box>
-        )}
-      </TitleSection>
-      <ComparisonSection
-        comparisonStats={{
-          comparisonCount: stats.comparisonCount,
-          lastMonthComparisonCount: stats.lastMonthComparisonCount,
-        }}
-      />
-      <RecommendationsSection
-        comparedEntityStats={{
-          comparedEntityCount: stats.comparedEntityCount,
-          lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
-        }}
-      />
-      <ResearchSection />
-      <UsageStatsSection externalData={stats} />
-      <PollListSection />
-    </AlternatingBackgroundColorSectionList>
+          ) : (
+            <Box width="100%">
+              <Divider sx={{ my: 1 }} />
+              <Typography paragraph>
+                {t('home.generic.pollIsClosed')}
+              </Typography>
+              <Stack spacing={2} direction="row">
+                <Button
+                  size="large"
+                  color="primary"
+                  variant="contained"
+                  component={Link}
+                  to={`${baseUrl}/recommendations`}
+                  sx={{
+                    px: 4,
+                    fontSize: '120%',
+                  }}
+                >
+                  {t('home.generic.seeResults')}
+                </Button>
+              </Stack>
+            </Box>
+          )}
+        </TitleSection>
+        <ComparisonSection
+          comparisonStats={{
+            comparisonCount: stats.comparisonCount,
+            lastMonthComparisonCount: stats.lastMonthComparisonCount,
+          }}
+        />
+        <RecommendationsSection
+          comparedEntityStats={{
+            comparedEntityCount: stats.comparedEntityCount,
+            lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
+          }}
+        />
+        <ResearchSection />
+        <UsageStatsSection externalData={stats} />
+        <PollListSection />
+      </AlternatingBackgroundColorSectionList>
+    </>
   );
 };
 
