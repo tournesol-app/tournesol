@@ -14,7 +14,7 @@ import RecommendationsSection from 'src/pages/home/videos/sections/recommendatio
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
-import TempResearchBanner from '../banners/TempResearchBanner';
+import TempStudyBanner from '../banners/TempStudyBanner';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
@@ -46,7 +46,7 @@ const HomeVideosPage = () => {
   return (
     <>
       {/* Temporary banner, hardcoded here as long as we don't have an API control them. */}
-      <TempResearchBanner />
+      <TempStudyBanner />
       <AlternatingBackgroundColorSectionList lastItemIsPrimary>
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
           <Typography paragraph fontSize="1.1em">
