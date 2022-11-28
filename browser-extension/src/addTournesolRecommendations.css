@@ -14,10 +14,6 @@
   padding: var(--ts-container-padding);
   padding-bottom: 0;
 
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-
   border: solid 3px #f3bd00;
   border-radius: 12px;
   background: #f3bd0011;
@@ -27,6 +23,30 @@
     var(--ytd-rich-grid-items-per-row) *
       (var(--ytd-rich-grid-item-max-width) + var(--ytd-rich-grid-item-margin))
   );
+}
+
+/* MUI <Paper> style imitation */
+#tournesol_banner {
+  padding: 16px;
+  margin-bottom: 16px;
+
+  font-size: 16px;
+  letter-spacing: 0.2px;
+
+  color: #1d1a14;
+  background-color: white;
+
+  border-radius: 4px;
+  box-shadow:
+    0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%),
+    0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+#tournesol_videos_flexcontainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
 }
 
 #tournesol_title {

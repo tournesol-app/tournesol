@@ -5,6 +5,11 @@
 
 const videosPerRow = 4;
 const rowsWhenExpanded = 3;
+
+// These are placeholder values that will be updated.
+const TS_BANNER_DATE_START = new Date('2024-01-01T00:00:00Z');
+const TS_BANNER_DATE_END = new Date('2024-06-01T00:00:00Z');
+
 let isExpanded = false;
 
 let videos = [];
@@ -40,6 +45,44 @@ const getParentComponent = () => {
   } catch (error) {
     return;
   }
+};
+
+/**
+ * Create and return a banner.
+ *
+ * The banner invites the users to join our study about the impact of the
+ * browser extension has on their YouTube usage.
+ *
+ * @returns HTMLDivElement
+ */
+const createBanner = () => {
+  const banner = document.createElement('div');
+  banner.id = 'tournesol_banner';
+
+  const bannerText = document.createElement('p');
+  bannerText.textContent =
+    'Is the Tournesol project really effective? We are currently investigating' +
+    " the impact of our browser extension on the YouTube viewers' habits. Join" +
+    ' our research study to help us improve Tournesol!';
+
+  banner.append(bannerText);
+  return banner;
+};
+
+const bannerShouldBeDisplayed = () => {
+  const now = new Date();
+
+  if (TS_BANNER_DATE_START <= now && now <= TS_BANNER_DATE_END) {
+    return true;
+  }
+
+  return false;
+};
+
+const createVideosFlexContainer = () => {
+  const container = document.createElement('div');
+  container.id = 'tournesol_videos_flexcontainer';
+  return container;
 };
 
 const getTournesolComponent = () => {
@@ -114,6 +157,13 @@ const getTournesolComponent = () => {
 
   tournesol_container.append(inline_div);
 
+  if (bannerShouldBeDisplayed()) {
+    tournesol_container.append(createBanner());
+  }
+
+  const videosFlexContainer = createVideosFlexContainer();
+  tournesol_container.append(videosFlexContainer);
+
   function make_video_box(video) {
     // Div whith everything about a video
     const video_box = document.createElement('div');
@@ -175,10 +225,10 @@ const getTournesolComponent = () => {
     return video_box;
   }
 
-  videos.forEach((video) => tournesol_container.append(make_video_box(video)));
+  videos.forEach((video) => videosFlexContainer.append(make_video_box(video)));
   if (isExpanded) {
     additionalVideos.forEach((video) =>
-      tournesol_container.append(make_video_box(video))
+      videosFlexContainer.append(make_video_box(video))
     );
   }
 
