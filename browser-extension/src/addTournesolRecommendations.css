@@ -94,9 +94,8 @@
 
 .tournesol_mui_like_button {
   margin: 0;
-  padding: 6px 16px;
+  padding: 10px 16px;
 
-  min-height: 36.5px;
   min-width: 64px;
 
   cursor: pointer;
