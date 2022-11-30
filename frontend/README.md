@@ -102,38 +102,38 @@ Copyright 2021-2022 Association Tournesol and contributors.
     You should have received a copy of the GNU Affero General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-See the full legal code [AGPL-3.0-or-later][lic-agpl-3.0-or-later].
+See the full legal code [AGPL-3.0-or-later][lic-frontend-agpl-3.0-or-later].
 
 ### Images
 
 #### Firefox Browser logo
 
-    Firefox Browser logo - Copyright by Mozilla Corporation
+    Copyright 2019 Mozilla Corporation
 
     Firefox Browser logo is licensed under the
-    Mozilla Public License Version 2.0.
+    Mozilla Public License Version 2.0 (MPL 2.0).
 
     You should have received a copy of the license along with this
     work. If not, see <https://www.mozilla.org/en-US/MPL/2.0/>.
 
-See the full legal code [Mozilla Public License Version 2.0][lic-frontend-mpl-2.0].
+See the full legal code
+[Mozilla Public License Version 2.0][lic-frontend-mpl-2.0].
 
 Affected materials:
 - `public/logos/Fx-Browser-icon-fullColor.svg`
 
 #### Tournesol Criteria Icons
 
-    Tournesol Criteria Icons - Copyright by Chris Vossen
+    Copyright 2021 Association Tournesol - Author Chris Vossen
 
     Tournesol Criteria Icons are licensed under the
     Creative Comons Attribution-ShareAlike 4.0 International
-    (CC BY-SA 4.0) License.
+    License (CC BY-SA 4.0).
 
     You should have received a copy of the license along with this
     work. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 
-
-See the full legal code [CC BY-SA 4.0][lic-cc-by-sa-4.0].
+See the full legal code [CC BY-SA 4.0][lic-frontend-cc-by-sa-4.0].
 
 Affected materials:
 - `public/images/criteriaIcons/reliability.svg`
@@ -146,6 +146,6 @@ Affected materials:
 - `public/images/criteriaIcons/better_habits.svg`
 - `public/images/criteriaIcons/backfire_risk.svg`
 
-[lic-agpl-3.0-or-later]: ./LICENSE.AGPL-3.0-or-later.txt
-[lic-cc-by-sa-4.0]: ./LICENSE.CC-BY-SA-4.0.txt
+[lic-frontend-agpl-3.0-or-later]: ./LICENSE.AGPL-3.0-or-later.txt
+[lic-frontend-cc-by-sa-4.0]: ./LICENSE.CC-BY-SA-4.0.txt
 [lic-frontend-mpl-2.0]: ./LICENSE.MPL-2.0.txt
