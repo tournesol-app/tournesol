@@ -72,7 +72,7 @@ const createBanner = () => {
   const actionButtonContainer = document.createElement('div');
   const actionButton = document.createElement('a');
   actionButton.textContent = 'Join';
-  actionButton.className = "tournesol_mui_like_button";
+  actionButton.className = 'tournesol_mui_like_button';
   actionButton.setAttribute('href', 'https://tournesol.app');
   actionButton.setAttribute('target', '_blank');
   actionButton.setAttribute('rel', 'noopener');
