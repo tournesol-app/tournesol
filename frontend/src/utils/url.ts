@@ -6,6 +6,12 @@ export const getWikiBaseUrl = () => {
 };
 
 /**
+ * Mailing list
+ */
+export const tournesolTalksMailingListUrl =
+  'https://framalistes.org/sympa/subscribe/tournesoltalks';
+
+/**
  * Social links
  */
 
@@ -17,6 +23,9 @@ export const discordTournesolInviteUrl =
 export const twitterTournesolUrl = 'https://twitter.com/TournesolApp';
 export const twitterTournesolBotEnUrl = 'https://twitter.com/tournesolbot';
 export const twitterTournesolBotFrUrl = 'https://twitter.com/tournesolbotfr';
+
+// Twitch
+export const twitchTournesolUrl = 'https://twitch.tv/tournesolapp';
 
 // GitHub
 export const githubTournesolUrl = 'https://github.com/tournesol-app/tournesol';
