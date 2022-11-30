@@ -59,6 +59,13 @@ const createBanner = () => {
   const banner = document.createElement('div');
   banner.id = 'tournesol_banner';
 
+  const bannerIconContainer = document.createElement('div');
+  const icon = document.createElement('img');
+  icon.id = 'tournesol_banner_icon';
+  icon.setAttribute('src', chrome.extension.getURL('images/campaign.svg'));
+  icon.setAttribute('alt', 'Megaphone icon');
+  bannerIconContainer.append(icon);
+
   // The first flex item is the text.
   const bannerTextContainer = document.createElement('div');
   const bannerText = document.createElement('p');
@@ -78,6 +85,7 @@ const createBanner = () => {
   actionButton.setAttribute('rel', 'noopener');
   actionButtonContainer.append(actionButton);
 
+  banner.appendChild(bannerIconContainer);
   banner.appendChild(bannerTextContainer);
   banner.appendChild(actionButtonContainer);
   return banner;

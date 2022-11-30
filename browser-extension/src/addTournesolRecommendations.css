@@ -39,7 +39,6 @@
   gap: 16px;
 
   font-size: 16px;
-  letter-spacing: 0.2px;
 
   color: var(--ts-palette-text-primary);
   background-color: white;
@@ -49,6 +48,14 @@
     0px 2px 1px -1px rgb(0 0 0 / 20%),
     0px 1px 1px 0px rgb(0 0 0 / 14%),
     0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+#tournesol_banner p {
+  letter-spacing: 0.2px;
+}
+
+#tournesol_banner_icon {
+  width: 35px;
 }
 
 #tournesol_videos_flexcontainer {
