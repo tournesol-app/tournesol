@@ -59,13 +59,27 @@ const createBanner = () => {
   const banner = document.createElement('div');
   banner.id = 'tournesol_banner';
 
+  // The first flex item is the text.
+  const bannerTextContainer = document.createElement('div');
   const bannerText = document.createElement('p');
   bannerText.textContent =
     'Is the Tournesol project really effective? We are currently investigating' +
     " the impact of our browser extension on the YouTube viewers' habits. Join" +
     ' our research study to help us improve Tournesol!';
+  bannerTextContainer.append(bannerText);
 
-  banner.append(bannerText);
+  // The second flex item is the action button.
+  const actionButtonContainer = document.createElement('div');
+  const actionButton = document.createElement('a');
+  actionButton.textContent = 'Join';
+  actionButton.className = "tournesol_mui_like_button";
+  actionButton.setAttribute('href', 'https://tournesol.app');
+  actionButton.setAttribute('target', '_blank');
+  actionButton.setAttribute('rel', 'noopener');
+  actionButtonContainer.append(actionButton);
+
+  banner.appendChild(bannerTextContainer);
+  banner.appendChild(actionButtonContainer);
   return banner;
 };
 

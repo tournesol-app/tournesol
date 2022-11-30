@@ -1,5 +1,9 @@
 :root {
   --ts-container-padding: 16px;
+
+  --ts-palette-primary-main: #ffc800;
+  --ts-palette-primary-main-hover: #b28c00;
+  --ts-palette-text-primary: #1d1a14;
 }
 
 #tournesol_container {
@@ -30,10 +34,14 @@
   padding: 16px;
   margin-bottom: 16px;
 
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
   font-size: 16px;
   letter-spacing: 0.2px;
 
-  color: #1d1a14;
+  color: var(--ts-palette-text-primary);
   background-color: white;
 
   border-radius: 4px;
@@ -82,6 +90,40 @@
 #tournesol_icon {
   position: absolute;
   left: 0px;
+}
+
+.tournesol_mui_like_button {
+  margin: 0;
+  padding: 6px 16px;
+
+  min-height: 36.5px;
+  min-width: 64px;
+
+  cursor: pointer;
+  line-height: 24.5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  color: var(--ts-palette-text-primary);
+  background-color: var(--ts-palette-primary-main);
+
+  border-radius: 4px;
+  box-shadow:
+    0px 3px 1px -2px rgb(0 0 0 / 20%),
+    0px 2px 2px 0px rgb(0 0 0 / 14%),
+    0px 1px 5px 0px rgb(0 0 0 / 12%);
+}
+
+.tournesol_mui_like_button:hover {
+  text-decoration: none;
+  background-color: rgb(178, 140, 0);
+  box-shadow:
+    0px 2px 4px -1px rgb(0 0 0 / 20%),
+    0px 4px 5px 0px rgb(0 0 0 / 14%),
+    0px 1px 10px 0px rgb(0 0 0 / 12%);
 }
 
 .tournesol_simple_button {
