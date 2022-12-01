@@ -131,10 +131,10 @@ Affected materials:
 
     You are free to share, copy and redistribute the material in any medium
     or format, and/or to adapt remix, transform, and build upon the material
-    for any purpose, even commercially, as long as  give appropriate credit,
-    provide a link to the license, and indicate if changes were made. You may
-    do so in any reasonable manner, but not in any way that suggests the
-    licensor endorses you or your use.
+    for any purpose, even commercially, as long as you give appropriate
+    credit, provide a link to the license, and indicate if changes were made.
+    You may do so in any reasonable manner, but not in any way that suggests
+    the licensor endorses you or your use.
 
     You should have received a copy of the license along with this
     work. If not, see <https://creativecommons.org/licenses/by/4.0/>.
