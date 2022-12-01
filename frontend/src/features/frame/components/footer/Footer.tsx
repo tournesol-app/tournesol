@@ -8,6 +8,8 @@ import FooterSection from 'src/features/frame/components/footer/FooterSection';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import {
   getWikiBaseUrl,
+  linkedInTournesolUrl,
+  twitchTournesolUrl,
   twitterTournesolBotEnUrl,
   twitterTournesolBotFrUrl,
   twitterTournesolUrl,
@@ -15,6 +17,7 @@ import {
   githubTournesolUrl,
   utipTournesolUrl,
   paypalTournesolUrl,
+  tournesolTalksMailingListUrl,
   whitePaperUrl,
 } from 'src/utils/url';
 import { theme } from 'src/theme';
@@ -47,6 +50,8 @@ const Footer = () => {
       items: [
         { name: 'Twitter', to: twitterTournesolUrl },
         { name: 'Discord', to: discordTournesolInviteUrl },
+        { name: 'Twitch', to: twitchTournesolUrl },
+        { name: 'LinkedIn', to: linkedInTournesolUrl },
         {
           name: 'GitHub',
           to: githubTournesolUrl,
@@ -74,6 +79,10 @@ const Footer = () => {
         {
           name: t('footer.publicDatabase'),
           to: `${apiUrl}/exports/all/`,
+        },
+        {
+          name: t('footer.tournesolTalksMailingList'),
+          to: tournesolTalksMailingListUrl,
         },
       ],
     },
