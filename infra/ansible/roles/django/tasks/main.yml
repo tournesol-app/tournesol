@@ -238,3 +238,22 @@
     state: "{{ 'started' if tournesol_twitterbot_schedule is defined else 'stopped' }}"
     enabled: "{{ 'yes' if tournesol_twitterbot_schedule is defined else 'no' }}"
     daemon_reload: yes
+
+# scheduled task: Sync Youtube playlists
+
+- name: Copy tournesol-yt-playlists service
+  template:
+    dest: /etc/systemd/system/tournesol-yt-playlists.service
+    src: tournesol-yt-playlists.service.j2
+
+- name: Copy tournesol-yt-playlists timer
+  template:
+    dest: /etc/systemd/system/tournesol-yt-playlists.timer
+    src: tournesol-yt-playlists.timer.j2
+
+- name: Enable and start tournesol-yt-playlists timer
+  systemd:
+    name: tournesol-yt-playlists.timer
+    state: "{{ 'started' if tournesol_yt_playlists_schedule is defined else 'stopped' }}"
+    enabled: "{{ 'yes' if tournesol_yt_playlists_schedule is defined else 'no' }}"
+    daemon_reload: yes
