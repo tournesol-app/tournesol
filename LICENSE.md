@@ -20,11 +20,11 @@ material composing the software in their dedicated `README.md` file.
 The following source code use the Free/Libre copyleft GNU Affero General Public
 License v3.0 or later.
 
-- [backend][ts-browser-ext-copyrights]
-- [browser-extension][ts-browser-ext-copyrights]
-- [data-visualization][ts-data-viz-copyrights]
-- [frontend][ts-frontend-copyrights]
-- [infra][ts-infra-copyrights]
+- [backend](./backend/README.md#copyright--license)
+- [browser-extension](./browser-extension/README.md#copyright--license)
+- [data-visualization](./data-visualization/README.md#copyright--license)
+- [frontend](./frontend/README.md#copyright--license)
+- [infra](./infra/README.md#copyright--license)
 
 See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 
@@ -50,13 +50,6 @@ v1.0.
 
 See the [human-readable disclaimer][odc-by-1.0-disclaimer], or the
 [full legal code][odc-by-1.0-fulllegalcode] for more information.
-
-[ts-backend-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/backend#copyright--license
-[ts-browser-ext-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/browser-extension#copyright--license
-[ts-data-viz-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/data-visualization#copyright--license
-[ts-frontend-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/frontend#copyright--license
-[ts-infra-copyrights]: https://github.com/tournesol-app/tournesol/tree/main/infra#copyright--license
-
 
 [gnu-agpl-3.0]: https://www.gnu.org/licenses/agpl-3.0.en.html
 [gnu-freesoftware]: https://www.gnu.org/philosophy/free-sw.en.html
