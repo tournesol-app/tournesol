@@ -1,8 +1,10 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Paper, Typography, Button, SxProps } from '@mui/material';
+import { Box, Link, Typography, Button, SxProps } from '@mui/material';
 import { Download, GitHub } from '@mui/icons-material';
+
+import TitledPaper from 'src/components/TitledPaper';
 
 const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -10,21 +12,11 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
 
   return (
     <Box sx={sx}>
-      <Paper sx={{ mb: 2 }}>
-        <Box
-          p={2}
-          color="#fff"
-          bgcolor="#1282B2"
-          sx={{
-            borderTopLeftRadius: 'inherit',
-            borderTopRightRadius: 'inherit',
-          }}
-        >
-          <Typography variant="h4">
-            {t('publicDataPublicCodeBox.ourDataAreOpen')}
-          </Typography>
-        </Box>
-        <Box p={2}>
+      <TitledPaper
+        title={t('publicDataPublicCodeBox.ourDataAreOpen')}
+        sx={{ mb: 2 }}
+      >
+        <>
           <Typography paragraph>
             {t('publicDataPublicCodeBox.weHopeThatOtherProjectsCanBenefitEtc')}
           </Typography>
@@ -40,34 +32,42 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
               </Link>
             </Trans>
           </Typography>
-        </Box>
-      </Paper>
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Box display="flex" justifyContent="center">
-          <Button
-            variant="contained"
-            component={Link}
-            href={`${apiUrl}/exports/all/`}
-            endIcon={<Download />}
-          >
-            {t('publicDataPublicCodeBox.downloadTheDatabase')}
-          </Button>
-        </Box>
-      </Paper>
-      <Paper sx={{ p: 2 }}>
-        <Box display="flex" justifyContent="center">
-          <Button
-            variant="contained"
-            component={Link}
-            target="_blank"
-            rel="noopener"
-            href="https://github.com/tournesol-app/tournesol"
-            endIcon={<GitHub />}
-          >
-            {t('publicDataPublicCodeBox.accessTheCodeOnGitHub')}
-          </Button>
-        </Box>
-      </Paper>
+          <Box display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              component={Link}
+              href={`${apiUrl}/exports/all/`}
+              endIcon={<Download />}
+            >
+              {t('publicDataPublicCodeBox.downloadTheDatabase')}
+            </Button>
+          </Box>
+        </>
+      </TitledPaper>
+      <TitledPaper
+        title={t('publicDataPublicCodeBox.ourAlgorithmsAreFree')}
+        sx={{ mb: 2 }}
+      >
+        <>
+          <Typography paragraph>
+            {t(
+              'publicDataPublicCodeBox.ourAlgorithmsAndAllOurCodeAreFreeSoftware'
+            )}
+          </Typography>
+          <Box display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              component={Link}
+              target="_blank"
+              rel="noopener"
+              href="https://github.com/tournesol-app/tournesol"
+              endIcon={<GitHub />}
+            >
+              {t('publicDataPublicCodeBox.accessTheCodeOnGitHub')}
+            </Button>
+          </Box>
+        </>
+      </TitledPaper>
     </Box>
   );
 };

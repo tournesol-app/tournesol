@@ -487,6 +487,8 @@
     "weHopeThatOtherProjectsCanBenefitEtc": "Nous espérons que d'autres projets puissent bénéficier des efforts déployés par la communauté Tournesol. Pour cela nous mettons à disposion une base de données constituée par toutes contributions publiques que tout le monde peut utiliser.",
     "theseDataArePublishedUnderODCBY": "Ces données sont publiées sous la licence Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
     "downloadTheDatabase": "Télécharger la base de données",
+    "ourAlgorithmsAreFree": "Nos algorithmes sont Libres",
+    "ourAlgorithmsAndAllOurCodeAreFreeSoftware": "Dans une optique de transparence et de partage des connaissances, nos algorithmes et tous les codes sources que nous avons créés sont des Logiciels Libres.",
     "accessTheCodeOnGitHub": "Accédez au code sur GitHub"
   },
   "researchSection": {

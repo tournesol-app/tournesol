@@ -1,52 +1,39 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Link, Paper, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
+
+import TitledPaper from 'src/components/TitledPaper';
 
 const VisualizeDataBox = () => {
   const { t } = useTranslation();
 
   return (
-    <Paper>
-      <Box
-        p={2}
-        color="#fff"
-        bgcolor="#1282B2"
-        sx={{
-          borderTopLeftRadius: 'inherit',
-          borderTopRightRadius: 'inherit',
-        }}
-      >
-        <Typography variant="h4">
-          {t('visualizeDataBox.visualizeTheData')}
+    <TitledPaper title={t('visualizeDataBox.visualizeTheData')}>
+      <Box mb={2} sx={{ '& img': { maxWidth: '100%' } }}>
+        <Typography paragraph>
+          <Trans i18nKey="visualizeDataBox.youCanQuicklyExploreEtc">
+            You can quickly explore our public database with our appplication
+            <Link
+              color="text.primary"
+              href="https://github.com/tournesol-app/tournesol/tree/main/data-visualization"
+            >
+              Tournesol Data Visualization
+            </Link>
+            made with Streamlit.
+          </Trans>
         </Typography>
-      </Box>
-      <Box px={2} sx={{ '& img': { maxWidth: '100%' } }}>
-        <Box p={2}>
-          <Typography paragraph mb={0}>
-            <Trans i18nKey="visualizeDataBox.youCanQuicklyExploreEtc">
-              You can quickly explore our public database with our appplication
-              <Link
-                color="text.primary"
-                href="https://github.com/tournesol-app/tournesol/tree/main/data-visualization"
-              >
-                Tournesol Data Visualization
-              </Link>
-              made with Streamlit.
-            </Trans>
-          </Typography>
-        </Box>
         <img
           src="/images/criteria_pearson_correlation_matrix_2022_10_10.png"
           alt={t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         />
       </Box>
-      <Box p={2} display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center">
         <Typography variant="caption">
           {t('visualizeDataBox.personCorrelationCoefficientMatrix')}
         </Typography>
       </Box>
-    </Paper>
+    </TitledPaper>
   );
 };
 
