@@ -127,13 +127,19 @@ Affected materials:
     Copyright 2021 Association Tournesol - Author Chris Vossen
 
     Tournesol Criteria Icons are licensed under the
-    Creative Comons Attribution-ShareAlike 4.0 International
-    License (CC BY-SA 4.0).
+    Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+    You are free to share, copy and redistribute the material in any medium
+    or format, and/or to adapt remix, transform, and build upon the material
+    for any purpose, even commercially, as long as  give appropriate credit,
+    provide a link to the license, and indicate if changes were made. You may
+    do so in any reasonable manner, but not in any way that suggests the
+    licensor endorses you or your use.
 
     You should have received a copy of the license along with this
-    work. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+    work. If not, see <https://creativecommons.org/licenses/by/4.0/>.
 
-See the full legal code [CC BY-SA 4.0][lic-frontend-cc-by-sa-4.0].
+See the full legal code [CC BY 4.0][lic-frontend-cc-by-4.0].
 
 Affected materials:
 - `public/images/criteriaIcons/reliability.svg`
@@ -147,5 +153,5 @@ Affected materials:
 - `public/images/criteriaIcons/backfire_risk.svg`
 
 [lic-frontend-agpl-3.0-or-later]: ./LICENSE.AGPL-3.0-or-later.txt
-[lic-frontend-cc-by-sa-4.0]: ./LICENSE.CC-BY-SA-4.0.txt
+[lic-frontend-cc-by-4.0]: ./LICENSE.CC-BY-4.0.txt
 [lic-frontend-mpl-2.0]: ./LICENSE.MPL-2.0.txt
