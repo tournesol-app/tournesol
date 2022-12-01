@@ -68,6 +68,12 @@ All complaints will be reviewed and investigated promptly and fairly.
 All community leaders are obligated to respect the privacy and security of the
 reporter of any incident.
 
+### Discord specificities
+
+In case of need, community leaders can be contacted individually by private
+message on our Discord server. They have the role `@moderator` and are listed
+at the top of the user list of each channel.
+
 ## Enforcement Guidelines
 
 Community leaders will follow these Community Impact Guidelines in determining
