@@ -114,29 +114,47 @@ def get_preview_font_config() -> dict:
     return config
 
 
+def truncate_text(draw, text, font, available_width):
+    if draw.textlength(text, font=font) <= available_width:
+        return text
+
+    # Dichotomic search
+    ellipsis = "…"
+    left = 1
+    right = len(text)
+
+    while right - left > 1:
+        middle = (left + right) // 2
+        truncated = text[:middle] + ellipsis
+        width = draw.textlength(truncated, font=font)
+        if width <= available_width:
+            left = middle
+        else:
+            right = middle
+
+    truncated = text[:left] + ellipsis
+    return truncated
+
+
 def get_preview_frame(entity, fnt_config) -> Image:
     tournesol_frame = Image.new("RGBA", (440, 240), COLOR_WHITE_BACKGROUND)
     tournesol_frame_draw = ImageDraw.Draw(tournesol_frame)
+
     full_title = entity.metadata.get("name", "")
-    truncated_title = full_title[:200]
-    # TODO: optimize this with a dichotomic search
-    while (
-        tournesol_frame_draw.textlength(
-            truncated_title, font=fnt_config["entity_title"]
-        )
-        > 300
-    ):
-        truncated_title = truncated_title[:-4] + "..."
+    truncated_title = truncate_text(
+        tournesol_frame_draw,
+        full_title,
+        font=fnt_config["entity_title"],
+        available_width=300,
+    )
+
     full_uploader = entity.metadata.get("uploader", "")
-    truncated_uploader = full_uploader[:200]
-    # TODO: optimize this with a dichotomic search
-    while (
-        tournesol_frame_draw.textlength(
-            truncated_uploader, font=fnt_config["entity_title"]
-        )
-        > 300
-    ):
-        truncated_uploader = truncated_uploader[:-4] + "..."
+    truncated_uploader = truncate_text(
+        tournesol_frame_draw,
+        full_uploader,
+        font=fnt_config["entity_title"],
+        available_width=300,
+    )
 
     tournesol_frame_draw.text(
         ENTITY_TITLE_XY,
