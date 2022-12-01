@@ -315,7 +315,7 @@
     version: "{{item.version}}"
   with_items:
     - name: grafana-image-renderer
-      version: "3.2.1"
+      version: "3.6.2"
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
   notify: Enable and restart Grafana
 
