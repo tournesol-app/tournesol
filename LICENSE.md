@@ -5,25 +5,26 @@ has chosen to distribute its software and its other productions under the
 terms of different licenses.
 
 We pledge to respect users freedom by using
-[Free/Libre licenses][gnu-freesoftware] for our software. When using Creative
-Commons licenses, we seek to use licenses
+[Free/Libre licenses][gnu-freesoftware] for our source code. When using
+Creative Commons licenses, we seek to use licenses
 [approved for Free Cultural Works][cc-freeculturalworks] as much as possible.
 
-You can find the copyright notice of each software and other production in
-their dedicated `README.md` file.
+Note that some software may include third-party licensed materials in addition
+their source code. You will find the copyright notice of each licensed
+material composing the software in their dedicated `README.md` file.
 
 ## GNU Affero General Public License v3.0 or later
 
 ![GNU AGPL v3.0 logo](./docs/logos/agplv3-with-text-162x68.png)
 
-The following software use the Free/Libre copyleft GNU Affero General Public
+The following source code use the Free/Libre copyleft GNU Affero General Public
 License v3.0 or later.
 
-- [backend](./backend/LICENSE)
-- [browser-extension](./browser-extension/LICENSE)
-- [data-visualization](./data-visualization/LICENSE)
-- [frontend](./frontend/LICENSE)
-- [infra](./infra/LICENSE)
+- [backend](./backend/README.md#copyright--license)
+- [browser-extension](./browser-extension/README.md#copyright--license)
+- [data-visualization](./data-visualization/README.md#copyright--license)
+- [frontend](./frontend/README.md#copyright--license)
+- [infra](./infra/README.md#copyright--license)
 
 See the official [GNU AGPL page][gnu-agpl-3.0] for more information.
 

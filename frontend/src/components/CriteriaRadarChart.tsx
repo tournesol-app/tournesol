@@ -43,7 +43,7 @@ const CriteriaRadarChart = ({ video }: Props) => {
           y="0"
           width="32"
           height="28"
-          href={`/svg/${payload.value}.svg`}
+          href={`/images/criteriaIcons/${payload.value}.svg`}
         />
         <title>{getCriteriaLabel(payload.value)}</title>
       </svg>
