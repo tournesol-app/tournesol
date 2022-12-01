@@ -1,6 +1,16 @@
 
 # Tournesol Code of Conduct
 
+**Table of Content**
+
+ - [Our Pledge](#our-pledge)
+ - [Our Standards](#our-standards)
+ - [Enforcement Responsibilities](#enforcement-responsibilities)
+ - [Scope](#scope)
+ - [Enforcement](#enforcement)
+ - [Enforcement Guidelines](#enforcement-guidelines)
+ - [Attribution](#attribution)
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
