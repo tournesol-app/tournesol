@@ -79,8 +79,9 @@ class BasePreviewAPIView(APIView):
             .resize(size)
         )
 
-    def get_yt_thumbnail(self, entity: Entity) -> Image:
-        url = f"https://img.youtube.com/vi/{entity.video_id}/mqdefault.jpg"
+    def get_yt_thumbnail(self, entity: Entity, quality="mq") -> Image:
+        # Quality can be: hq, mq, sd, or maxres (https://stackoverflow.com/a/34784842/188760)
+        url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
             thumbnail_response = requests.get(url, timeout=REQUEST_TIMEOUT)
         except (ConnectionError, Timeout) as exc:
@@ -134,6 +135,11 @@ def truncate_text(draw, text, font, available_width):
 
     truncated = text[:left] + ellipsis
     return truncated
+
+
+def font_height(font):
+    ascent, descent = font.getmetrics()
+    return ascent + descent
 
 
 def get_preview_frame(entity, fnt_config) -> Image:
@@ -292,6 +298,281 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         return response
 
 
+class ComparisonPreviewGenerator:
+    def __init__(self):
+        # An upscale ratio > 1 generates a bigger image while keeping all the relative sizes
+        # and positions identical (like a zoom). Only integer values are allowed for now.
+        self.upscale_ratio = 2
+
+    def render(self, entity_a, entity_b, thumbnail_a, thumbnail_b):
+        # pylint: disable=too-many-locals
+
+        base_size = (440, 240)
+
+        # All the sizes and positions in this method are relative to the base size, not the
+        # upscaled size. The other methods are responsible for calculating the final (upscaled)
+        # sizes and positions.
+
+        base_margin = 6
+        horizontal_separator_height = base_margin
+        margin_above_entity_descriptions = base_margin
+        entity_descriptions_horizontal_margin = base_margin
+        logo_size = 32
+        margin_above_slider = base_margin * 3
+        margin_below_slider = base_margin
+        vs_band_width = 34
+        vs_tilt_in_pixels = 10
+        text_below_slider = "Which one should be largely recommended?"
+
+        final = self.generate_image(base_size, color=COLOR_WHITE_BACKGROUND)
+
+        thumbnail_size = self.draw_thumbnail(
+            thumbnail_a,
+            target=final,
+            position=(0, 0),
+            width=base_size[0] // 2,
+        )
+        thumbnail_size = self.draw_thumbnail(
+            thumbnail_b,
+            target=final,
+            position=(base_size[0] // 2, 0),
+            width=base_size[0] // 2,
+        )
+
+        self.draw_vs_background(
+            target=final,
+            band_width=vs_band_width,
+            tilt_in_pixels=vs_tilt_in_pixels,
+            height=thumbnail_size[1],
+        )
+        self.draw_horizontal_separator(
+            target=final,
+            top=thumbnail_size[1],
+            height=horizontal_separator_height,
+        )
+
+        self.draw_text(
+            target=final,
+            text="VS",
+            position=(base_size[0] // 2, thumbnail_size[1] // 2),
+            font=self.font(FOOTER_FONT_LOCATION, 20),
+            fill=COLOR_BROWN_FONT,
+            anchor="mm",
+        )
+
+        entity_description_top = (
+            thumbnail_size[1]
+            + horizontal_separator_height
+            + margin_above_entity_descriptions
+        )
+
+        self.draw_logo(
+            target=final,
+            size=logo_size,
+            position=(base_size[0] // 2 - logo_size // 2, entity_description_top),
+        )
+
+        available_width = (
+            base_size[0] // 2
+            - logo_size // 2
+            - entity_descriptions_horizontal_margin * 2
+        )
+        entity_description_height = self.draw_entity_description(
+            entity_a,
+            target=final,
+            position=(entity_descriptions_horizontal_margin, entity_description_top),
+            available_width=available_width,
+        )
+        entity_description_height = self.draw_entity_description(
+            entity_b,
+            target=final,
+            position=(
+                (
+                    base_size[0] // 2
+                    + logo_size // 2
+                    + entity_descriptions_horizontal_margin
+                ),
+                entity_description_top,
+            ),
+            available_width=available_width,
+        )
+
+        slider_top = (
+            entity_description_top
+            + max(entity_description_height, logo_size)
+            + margin_above_slider
+        )
+        slider_height = self.draw_slider(
+            target=final,
+            position=(0, slider_top),
+        )
+
+        self.draw_text(
+            target=final,
+            text=text_below_slider,
+            position=(
+                base_size[0] // 2,
+                slider_top + slider_height + margin_below_slider,
+            ),
+            font=self.font(FOOTER_FONT_LOCATION, 14),
+            fill=COLOR_BROWN_FONT,
+            anchor="mt",
+        )
+
+        return final
+
+    def generate_image(self, base_size, color):
+        final_size = tuple(numpy.multiply(base_size, self.upscale_ratio))
+        return Image.new("RGBA", final_size, color)
+
+    def font(self, name, size):
+        return ImageFont.truetype(str(BASE_DIR / name), size * self.upscale_ratio)
+
+    def load_resource_image(self, filename):
+        return Image.open(BASE_DIR / "tournesol/resources" / filename)
+
+    def draw_thumbnail(self, thumbnail, target, position, width):
+        original_size = thumbnail.size
+        aspect_ratio = original_size[0] / original_size[1]
+        scaled_width = width * self.upscale_ratio
+        scaled_height = int(scaled_width / aspect_ratio)
+        scaled_size = (scaled_width, scaled_height)
+
+        thumbnail = thumbnail.resize(scaled_size)
+        target.paste(thumbnail, tuple(numpy.multiply(position, self.upscale_ratio)))
+
+        return numpy.floor_divide(scaled_size, self.upscale_ratio)
+
+    def draw_vs_background(self, target, band_width, tilt_in_pixels, height):
+        # We render the background in a larger image to generate anti-alias for the tilted lines
+        anti_alias_ratio = 4
+        band_width = band_width * self.upscale_ratio * anti_alias_ratio
+        tilt_in_pixels = tilt_in_pixels * self.upscale_ratio * anti_alias_ratio
+        upscaled_size = tuple(numpy.multiply(target.size, anti_alias_ratio))
+        vs_background = Image.new("RGBA", upscaled_size, (0, 0, 0, 0))
+        top = 0
+        bottom = height * self.upscale_ratio * anti_alias_ratio
+        draw = ImageDraw.Draw(vs_background)
+        draw.polygon(
+            [
+                (
+                    upscaled_size[0] // 2 + tilt_in_pixels - band_width // 2,
+                    top,
+                ),
+                (
+                    upscaled_size[0] // 2 + tilt_in_pixels + band_width // 2,
+                    top,
+                ),
+                (
+                    upscaled_size[0] // 2 - tilt_in_pixels + band_width // 2,
+                    bottom,
+                ),
+                (
+                    upscaled_size[0] // 2 - tilt_in_pixels - band_width // 2,
+                    bottom,
+                ),
+            ],
+            fill=COLOR_YELLOW_BORDER,
+            outline=(0, 0, 0),
+            width=0,
+        )
+        target.alpha_composite(vs_background.resize(target.size))
+
+    def draw_horizontal_separator(self, target, top, height):
+        draw = ImageDraw.Draw(target)
+        draw.rectangle(
+            (
+                (0, top * self.upscale_ratio),
+                (target.size[0], (top + height) * self.upscale_ratio),
+            ),
+            fill=COLOR_YELLOW_BORDER,
+            width=0,
+        )
+
+    def draw_text(self, target, text, position, **text_args):
+        draw = ImageDraw.Draw(target)
+        draw.text(
+            numpy.multiply(position, self.upscale_ratio),
+            text,
+            **text_args,
+        )
+
+    def draw_logo(self, target, size, position):
+        logo_size = (size * self.upscale_ratio, size * self.upscale_ratio)
+        logo = self.load_resource_image("Logo64.png").resize(logo_size)
+        dest = tuple(numpy.multiply(position, self.upscale_ratio))
+        target.alpha_composite(logo, dest=dest)
+
+    def draw_entity_description(self, entity, target, position, available_width):
+        draw = ImageDraw.Draw(target)
+        position = numpy.multiply(position, self.upscale_ratio)
+        available_width *= self.upscale_ratio
+
+        full_uploader = entity.metadata.get("uploader", "")
+        uploader_font = self.font(FOOTER_FONT_LOCATION, 11)
+        truncated_uploader = truncate_text(
+            draw,
+            full_uploader,
+            font=uploader_font,
+            available_width=available_width,
+        )
+        draw.text(
+            position,
+            truncated_uploader,
+            font=uploader_font,
+            fill=COLOR_BROWN_FONT,
+        )
+        uploader_height = font_height(uploader_font)
+
+        full_title = entity.metadata.get("name", "")
+        title_font = self.font(FOOTER_FONT_LOCATION, 14)
+        truncated_title = truncate_text(
+            draw,
+            full_title,
+            font=title_font,
+            available_width=available_width,
+        )
+        draw.text(
+            (position[0], position[1] + uploader_height),
+            truncated_title,
+            font=title_font,
+            fill=COLOR_BROWN_FONT,
+        )
+        title_height = font_height(title_font)
+
+        total_height = (uploader_height + title_height) // self.upscale_ratio
+        return total_height
+
+    def draw_slider(self, target, position):
+        if self.upscale_ratio == 1:
+            comparison_slider = self.load_resource_image("comparison_slider.png")
+        elif self.upscale_ratio == 2:
+            comparison_slider = self.load_resource_image("comparison_slider-2x.png")
+        else:
+            comparison_slider = self.load_resource_image("comparison_slider-4x.png")
+            comparison_slider = comparison_slider.resize(
+                (
+                    target.size[0],
+                    target.size[0] * 160 // 1760,
+                )
+            )
+
+        vertical_margin_in_image = 10
+
+        dest = (
+            position[0] * self.upscale_ratio,
+            (position[1] - vertical_margin_in_image) * self.upscale_ratio,
+        )
+        target.alpha_composite(
+            comparison_slider,
+            dest=dest,
+        )
+        return (
+            comparison_slider.size[1] // self.upscale_ratio
+            - 2 * vertical_margin_in_image
+        )
+
+
 class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
     """
     Return the preview of the Tournesol front end's comparison page.
@@ -306,9 +587,6 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request, uid_a, uid_b):
-        final_size = (440, 240)
-        padding_space = numpy.subtract(final_size, YT_THUMBNAIL_MQ_SIZE)
-
         try:
             entity_a = self.get_entity(uid_a)
             entity_b = self.get_entity(uid_b)
@@ -318,42 +596,15 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         if not self.is_video(entity_a) or not self.is_video(entity_b):
             return self.default_preview()
 
+        thumbnail_quality = "maxres"
         try:
-            thumbnail_a = self.get_yt_thumbnail(entity_a)
-            thumbnail_b = self.get_yt_thumbnail(entity_b)
+            thumbnail_a = self.get_yt_thumbnail(entity_a, quality=thumbnail_quality)
+            thumbnail_b = self.get_yt_thumbnail(entity_b, quality=thumbnail_quality)
         except ConnectionError:
             return self.default_preview()
 
-        final = Image.new("RGBA", final_size, COLOR_WHITE_BACKGROUND)
-
-        # Crop the two YT thumbnails.
-        # Thumbnail A is cropped from 0 to YT_THUMBNAIL_MQ_SIZE / 2.
-        # Thumbnail B is cropped from YT_THUMBNAIL_MQ_SIZE / 2 to YT_THUMBNAIL_MQ_SIZE.
-        halved_yt_thumb_size = numpy.divide(YT_THUMBNAIL_MQ_SIZE, 2)
-        crop_box_a = (0, 0, int(halved_yt_thumb_size[0]), YT_THUMBNAIL_MQ_SIZE[1])
-        crop_box_b = (
-            int(halved_yt_thumb_size[0]),
-            0,
-            YT_THUMBNAIL_MQ_SIZE[0],
-            YT_THUMBNAIL_MQ_SIZE[1],
-        )
-
-        # Add the padding before pasting the thumbnails in the final image.
-        paste_x_a = padding_space[0]
-        paste_x_b = padding_space[0] + int(halved_yt_thumb_size[0])
-
-        final.paste(thumbnail_a.crop(crop_box_a), (paste_x_a, 0))
-        final.paste(thumbnail_b.crop(crop_box_b), (paste_x_b, 0))
-
-        logo_size = (34, 34)
-        logo_x = (
-            padding_space[0] + int(halved_yt_thumb_size[0]) - int(logo_size[0] / 2)
-        )
-        logo_y = int(YT_THUMBNAIL_MQ_SIZE[1] / 2) - int(logo_size[1] / 2)
-        final.alpha_composite(
-            self.get_ts_logo(logo_size),
-            dest=(logo_x, logo_y),
-        )
+        generator = ComparisonPreviewGenerator()
+        final = generator.render(entity_a, entity_b, thumbnail_a, thumbnail_b)
 
         response = HttpResponse(content_type="image/png")
         final.save(response, "png")
