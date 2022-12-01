@@ -9,8 +9,6 @@ import {
   ListItemAvatar,
   ListItemText,
   Avatar,
-  Paper,
-  Typography,
   ListItemButton,
   Tabs,
   Tab,
@@ -23,6 +21,7 @@ import {
   VerifiedUser,
   School,
 } from '@mui/icons-material';
+import TitledPaper from 'src/components/TitledPaper';
 
 function a11yProps(index: number) {
   return {
@@ -125,18 +124,11 @@ const ScientificLiteratureBox = () => {
   ];
 
   return (
-    <Paper>
-      <Box
-        p={2}
-        color="#fff"
-        bgcolor="#1282B2"
-        sx={{ borderTopLeftRadius: 'inherit', borderTopRightRadius: 'inherit' }}
-      >
-        <Typography variant="h4">
-          {t('scientificLiteratureBox.ourPublications')}
-        </Typography>
-      </Box>
-      <Box>
+    <TitledPaper
+      title={t('scientificLiteratureBox.ourPublications')}
+      contentBoxPadding={0}
+    >
+      <>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={selectedTab}
@@ -203,8 +195,8 @@ const ScientificLiteratureBox = () => {
             ))}
           </List>
         </TabPanel>
-      </Box>
-    </Paper>
+      </>
+    </TitledPaper>
   );
 };
 
