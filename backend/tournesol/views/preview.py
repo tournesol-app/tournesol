@@ -256,12 +256,12 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
         # If the score has not been computed yet, display a centered flower.
         if score is None:
-            image.alpha_composite(self.get_ts_logo(34), dest=(43, 24))
+            image.alpha_composite(self.get_ts_logo((34, 34)), dest=(43, 24))
 
         # If the score has been computed, and is positive, display the flower
         # just before the score.
         if score and score > 0:
-            image.alpha_composite(self.get_ts_logo(34), dest=(16, 24))
+            image.alpha_composite(self.get_ts_logo((34, 34)), dest=(16, 24))
 
     # TODO: should this cache be enabled?
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
