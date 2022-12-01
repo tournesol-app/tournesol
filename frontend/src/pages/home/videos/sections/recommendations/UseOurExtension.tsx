@@ -23,12 +23,12 @@ const UseOurExtension = () => {
               <Grid item lg={7} width="100%">
                 <Box display="flex" justifyContent="space-evenly">
                   <img
-                    width="80px"
+                    width="64px"
                     src="/logos/Fx-Browser-icon-fullColor.svg"
                     alt="Mozilla Firefox browser logo."
                   />
                   <img
-                    width="80px"
+                    width="64px"
                     src="/logos/Chrome-Browser-icon-fullColor.svg"
                     alt="Google Chrome browser logo."
                   />
