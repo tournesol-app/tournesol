@@ -1,4 +1,3 @@
-# pylint: disable=R0201
 """
 API returning preview images of some Tournesol front end's page.
 
