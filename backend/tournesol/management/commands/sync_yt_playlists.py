@@ -10,6 +10,7 @@ from tournesol.models import Entity
 from tournesol.models.entity import TYPE_VIDEO
 
 PLAYLISTS = [
+    {"lang": "en", "playlist_id": "PLXX93NlSmUpayYeaNvKaeftX_QwEei3fU"},
     {"lang": "fr", "playlist_id": "PLXX93NlSmUpZkR9NaBXMaPlPalESb5tDv"},
 ]
 
