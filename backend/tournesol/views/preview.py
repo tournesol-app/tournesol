@@ -232,14 +232,14 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
     )
     tournesol_frame_draw.rectangle(
         (
-            tuple(numpy.multiply((113, 0), upscale_ratio)),
-            tuple(numpy.multiply((119, 240), upscale_ratio)),
+            tuple(numpy.multiply((114, 0), upscale_ratio)),
+            tuple(numpy.multiply((120, 240), upscale_ratio)),
         ),
         fill=COLOR_YELLOW_BORDER,
     )
     tournesol_frame_draw.rectangle(
         (
-            tuple(numpy.multiply((119, 180), upscale_ratio)),
+            tuple(numpy.multiply((120, 180), upscale_ratio)),
             tuple(numpy.multiply((440, 186), upscale_ratio)),
         ),
         fill=COLOR_YELLOW_BORDER,
