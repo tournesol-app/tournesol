@@ -102,14 +102,22 @@ class BasePreviewAPIView(APIView):
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
 
 
-def get_preview_font_config() -> dict:
+def get_preview_font_config(upscale_ratio=1) -> dict:
     config = {
-        "ts_score": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 32),
-        "entity_title": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 14),
-        "entity_uploader": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 13),
-        "entity_ratings": ImageFont.truetype(str(BASE_DIR / FOOTER_FONT_LOCATION), 22),
+        "ts_score": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 32 * upscale_ratio
+        ),
+        "entity_title": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
+        ),
+        "entity_uploader": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 13 * upscale_ratio
+        ),
+        "entity_ratings": ImageFont.truetype(
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 22 * upscale_ratio
+        ),
         "entity_ratings_label": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 14
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
     }
     return config
@@ -142,8 +150,10 @@ def font_height(font):
     return ascent + descent
 
 
-def get_preview_frame(entity, fnt_config) -> Image:
-    tournesol_frame = Image.new("RGBA", (440, 240), COLOR_WHITE_BACKGROUND)
+def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
+    tournesol_frame = Image.new(
+        "RGBA", (440 * upscale_ratio, 240 * upscale_ratio), COLOR_WHITE_BACKGROUND
+    )
     tournesol_frame_draw = ImageDraw.Draw(tournesol_frame)
 
     full_title = entity.metadata.get("name", "")
@@ -151,7 +161,7 @@ def get_preview_frame(entity, fnt_config) -> Image:
         tournesol_frame_draw,
         full_title,
         font=fnt_config["entity_title"],
-        available_width=300,
+        available_width=300 * upscale_ratio,
     )
 
     full_uploader = entity.metadata.get("uploader", "")
@@ -159,17 +169,17 @@ def get_preview_frame(entity, fnt_config) -> Image:
         tournesol_frame_draw,
         full_uploader,
         font=fnt_config["entity_title"],
-        available_width=300,
+        available_width=300 * upscale_ratio,
     )
 
     tournesol_frame_draw.text(
-        ENTITY_TITLE_XY,
+        numpy.multiply(ENTITY_TITLE_XY, upscale_ratio),
         truncated_uploader,
         font=fnt_config["entity_uploader"],
         fill=COLOR_BROWN_FONT,
     )
     tournesol_frame_draw.text(
-        (ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 24),
+        numpy.multiply((ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 24), upscale_ratio),
         truncated_title,
         font=fnt_config["entity_title"],
         fill=COLOR_BROWN_FONT,
@@ -185,7 +195,7 @@ def get_preview_frame(entity, fnt_config) -> Image:
             score_xy = TOURNESOL_SCORE_NEGATIVE_XY
 
         tournesol_frame_draw.text(
-            score_xy,
+            numpy.multiply(score_xy, upscale_ratio),
             f"{score:.0f}",
             font=fnt_config["ts_score"],
             fill=score_color,
@@ -193,35 +203,47 @@ def get_preview_frame(entity, fnt_config) -> Image:
         )
     x_coordinate, y_coordinate = ENTITY_N_CONTRIBUTORS_XY
     tournesol_frame_draw.text(
-        (x_coordinate, y_coordinate),
+        numpy.multiply((x_coordinate, y_coordinate), upscale_ratio),
         f"{entity.rating_n_ratings}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        (x_coordinate, y_coordinate + 26),
+        numpy.multiply((x_coordinate, y_coordinate + 26), upscale_ratio),
         "comparisons",
         font=fnt_config["entity_ratings_label"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        (x_coordinate, y_coordinate + 82),
+        numpy.multiply((x_coordinate, y_coordinate + 82), upscale_ratio),
         f"{entity.rating_n_contributors}",
         font=fnt_config["entity_ratings"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
     tournesol_frame_draw.text(
-        (x_coordinate, y_coordinate + 108),
+        numpy.multiply((x_coordinate, y_coordinate + 108), upscale_ratio),
         "contributors",
         font=fnt_config["entity_ratings_label"],
         fill=COLOR_BROWN_FONT,
         anchor="mt",
     )
-    tournesol_frame_draw.rectangle(((113, 0), (119, 240)), fill=COLOR_YELLOW_BORDER)
-    tournesol_frame_draw.rectangle(((119, 180), (440, 186)), fill=COLOR_YELLOW_BORDER)
+    tournesol_frame_draw.rectangle(
+        (
+            tuple(numpy.multiply((113, 0), upscale_ratio)),
+            tuple(numpy.multiply((119, 240), upscale_ratio)),
+        ),
+        fill=COLOR_YELLOW_BORDER,
+    )
+    tournesol_frame_draw.rectangle(
+        (
+            tuple(numpy.multiply((119, 180), upscale_ratio)),
+            tuple(numpy.multiply((440, 186), upscale_ratio)),
+        ),
+        fill=COLOR_YELLOW_BORDER,
+    )
     return tournesol_frame
 
 
@@ -249,7 +271,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
     permission_classes = []
 
-    def _draw_logo(self, image: Image, entity: Entity):
+    def _draw_logo(self, image: Image, entity: Entity, upscale_ratio: int):
         """
         Draw the Tournesol logo on the provided image.
 
@@ -262,12 +284,18 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
         # If the score has not been computed yet, display a centered flower.
         if score is None:
-            image.alpha_composite(self.get_ts_logo((34, 34)), dest=(43, 24))
+            image.alpha_composite(
+                self.get_ts_logo(numpy.multiply((34, 34), upscale_ratio)),
+                dest=tuple(numpy.multiply((43, 24), upscale_ratio)),
+            )
 
         # If the score has been computed, and is positive, display the flower
         # just before the score.
         if score and score > 0:
-            image.alpha_composite(self.get_ts_logo((34, 34)), dest=(16, 24))
+            image.alpha_composite(
+                self.get_ts_logo(numpy.multiply((34, 34), upscale_ratio)),
+                dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
+            )
 
     # TODO: should this cache be enabled?
     @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
@@ -285,15 +313,27 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             return self.default_preview()
 
         response = HttpResponse(content_type="image/png")
-        preview_image = get_preview_frame(entity, get_preview_font_config())
+
+        upscale_ratio = 2
+        fnt_config = get_preview_font_config(upscale_ratio=upscale_ratio)
+        preview_image = get_preview_frame(
+            entity, fnt_config, upscale_ratio=upscale_ratio
+        )
 
         try:
-            youtube_thumbnail = self.get_yt_thumbnail(entity)
+            youtube_thumbnail = self.get_yt_thumbnail(entity, quality="maxres")
         except ConnectionError:
             return self.default_preview()
 
-        preview_image.paste(youtube_thumbnail, box=(120, 0))
-        self._draw_logo(preview_image, entity)
+        youtube_thumbnail = youtube_thumbnail.resize(
+            numpy.multiply((320, 180), upscale_ratio)
+        )
+        preview_image.paste(
+            youtube_thumbnail, box=tuple(numpy.multiply((120, 0), upscale_ratio))
+        )
+
+        self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
+
         preview_image.save(response, "png")
         return response
 
