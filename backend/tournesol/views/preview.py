@@ -28,7 +28,7 @@ BASE_DIR = settings.BASE_DIR
 
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
-ENTITY_TITLE_XY = (128, 190)
+ENTITY_TITLE_XY = (128, 194)
 
 TOURNESOL_SCORE_XY = (84, 30)
 TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
@@ -111,7 +111,7 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
         ),
         "entity_uploader": ImageFont.truetype(
-            str(BASE_DIR / FOOTER_FONT_LOCATION), 13 * upscale_ratio
+            str(BASE_DIR / FOOTER_FONT_LOCATION), 11 * upscale_ratio
         ),
         "entity_ratings": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 22 * upscale_ratio
@@ -179,7 +179,7 @@ def get_preview_frame(entity, fnt_config, upscale_ratio=1) -> Image:
         fill=COLOR_BROWN_FONT,
     )
     tournesol_frame_draw.text(
-        numpy.multiply((ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 24), upscale_ratio),
+        numpy.multiply((ENTITY_TITLE_XY[0], ENTITY_TITLE_XY[1] + 18), upscale_ratio),
         truncated_title,
         font=fnt_config["entity_title"],
         fill=COLOR_BROWN_FONT,
