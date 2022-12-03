@@ -235,7 +235,7 @@ def save_contributor_scores(
                 )
                 for _, row in contributor_scores.iterrows()
             ),
-            bulk_create=10000,
+            batch_size=10000,
         )
 
 
