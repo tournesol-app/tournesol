@@ -1,4 +1,5 @@
 import json
+import sys
 
 import google.oauth2.credentials
 import googleapiclient.discovery
@@ -72,6 +73,17 @@ class Command(BaseCommand):
                 ).execute()
 
     def handle(self, *args, **options):
+        if not settings.YOUTUBE_CHANNEL_CREDENTIALS_JSON:
+            self.stderr.write(
+                "Impossible to sync YouTube playlists. "
+                "`YOUTUBE_CHANNEL_CREDENTIALS_JSON` is not configured."
+            )
+            self.stderr.write(
+                "To get these credentials, follow the instructions "
+                "in scripts/youtube/youtube_channel_oauth_flow.py"
+            )
+            return sys.exit(1)
+
         channel_credentials = json.loads(settings.YOUTUBE_CHANNEL_CREDENTIALS_JSON)
         credentials = google.oauth2.credentials.Credentials(**channel_credentials)
         yt_client = googleapiclient.discovery.build(
