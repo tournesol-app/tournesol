@@ -78,7 +78,14 @@ def save_tournesol_scores(poll):
                 criterion.score for criterion in entity.criteria_scores
             )
         entities.append(entity)
-    Entity.objects.bulk_update(entities, ["tournesol_score"])
+
+    # Updating all entities at once increases the risk of a database deadlock.
+    # We use an explicitly low `batch_size` value to reduce this risk.
+    Entity.objects.bulk_update(
+        entities,
+        ["tournesol_score"],
+        batch_size=1000
+    )
 
 
 def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
