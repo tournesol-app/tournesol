@@ -118,4 +118,11 @@ def trust_algo():
     # Update `trust_score` in the database
     for user_no, user_model in enumerate(users):
         user_model.trust_score = float(trust_scores[user_no])
-    User.objects.bulk_update(users, ["trust_score"])
+
+    # Updating all users at once increases the risk of a database deadlock.
+    # We use an explicitly low `batch_size` value to reduce this risk.
+    User.objects.bulk_update(
+        users,
+        ["trust_score"],
+        batch_size=1000
+    )

@@ -78,7 +78,10 @@ def save_tournesol_scores(poll):
                 criterion.score for criterion in entity.criteria_scores
             )
         entities.append(entity)
-    Entity.objects.bulk_update(entities, ["tournesol_score"])
+
+    # Updating all entities at once increases the risk of a database deadlock.
+    # We use an explicitly low `batch_size` value to reduce this risk.
+    Entity.objects.bulk_update(entities, ["tournesol_score"], batch_size=1000)
 
 
 def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
@@ -186,6 +189,7 @@ def save_contributor_scores(
             )
             for contributor_id, entity_id in ratings_to_create
         ),
+        batch_size=10000,
         ignore_conflicts=True,
     )
     # Refresh the `ratings_id` with the newly created `ContributorRating`s.
@@ -213,20 +217,25 @@ def save_contributor_scores(
     with transaction.atomic():
         scores_to_delete.delete()
         ContributorRatingCriteriaScore.objects.bulk_create(
-            ContributorRatingCriteriaScore(
-                contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],
-                criteria=row.criteria,
-                score=row.score,
-                uncertainty=row.uncertainty,
-                raw_score=row.raw_score,
-                raw_uncertainty=row.raw_uncertainty,
-                # row contains `voting_right` when it comes from a full ML run, but not in the case
-                # of online individual updates. As online updates do not update the global scores,
-                # it makes sense to set the voting right equal to 0. temporarily and to expect it
-                # to be updated during the next ML run.
-                voting_right=row.voting_right if hasattr(row, 'voting_right') else 0.0,
-            )
-            for _, row in contributor_scores.iterrows()
+            (
+                ContributorRatingCriteriaScore(
+                    contributor_rating_id=rating_ids[(row.user_id, row.entity_id)],
+                    criteria=row.criteria,
+                    score=row.score,
+                    uncertainty=row.uncertainty,
+                    raw_score=row.raw_score,
+                    raw_uncertainty=row.raw_uncertainty,
+                    # Row contains `voting_right` when it comes from a full ML run, but not in the
+                    # case of online individual updates. As online updates do not update the
+                    # global scores, it makes sense to set the voting right equal to 0.0
+                    # temporarily and to expect it to be updated during the next ML run.
+                    voting_right=row.voting_right
+                    if hasattr(row, "voting_right")
+                    else 0.0,
+                )
+                for _, row in contributor_scores.iterrows()
+            ),
+            batch_size=10000,
         )
 
 
