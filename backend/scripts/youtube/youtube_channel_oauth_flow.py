@@ -27,7 +27,7 @@ import google_auth_oauthlib.flow
 import json
 
 LOCALHOST_PORT = 8080
-CLIENT_SECRET_FILE_PATH = "path/to/your/client_secret.json"
+CLIENT_SECRET_FILE_PATH = "path/to/your/client_secret.json"  # nosec B105
 
 
 def credentials_to_dict(credentials):
