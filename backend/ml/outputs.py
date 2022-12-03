@@ -225,10 +225,10 @@ def save_contributor_scores(
                     uncertainty=row.uncertainty,
                     raw_score=row.raw_score,
                     raw_uncertainty=row.raw_uncertainty,
-                    # row contains `voting_right` when it comes from a full ML run, but not in the case
-                    # of online individual updates. As online updates do not update the global scores,
-                    # it makes sense to set the voting right equal to 0. temporarily and to expect it
-                    # to be updated during the next ML run.
+                    # Row contains `voting_right` when it comes from a full ML run, but not in the
+                    # case of online individual updates. As online updates do not update the
+                    # global scores, it makes sense to set the voting right equal to 0.0
+                    # temporarily and to expect it to be updated during the next ML run.
                     voting_right=row.voting_right
                     if hasattr(row, "voting_right")
                     else 0.0,
