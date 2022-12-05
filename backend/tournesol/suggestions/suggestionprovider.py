@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db.models import F, Q, QuerySet
+from django.db.models import F, QuerySet
 
 from core.models import User
 from tournesol.models import Comparison, ComparisonCriteriaScore, Entity, Poll
@@ -61,6 +61,9 @@ class SuggestionProvider:
 
         # create required user graphs (none at first in fact)
 
+    # TODO: This method is expensive (it fetches > 10k comparisons). It should probably be cached
+    # since it is used in every call of SuggestionProvider.get_first_video_recommendation and
+    # SuggestionProvider.get_second_video_recommendation
     def _get_user_comparability_augmenting_videos(self) -> list[SuggestedVideo]:
         """"
         Function called to get the videos to recommend while the scale and translation
@@ -71,20 +74,18 @@ class SuggestionProvider:
         supertrusted_comparisons = Comparison.objects.filter(
             poll=self.poll,
             user__in=User.supertrusted_seed_users()
-        )
-        req_entities = (
-            Entity.objects.filter(
-                Q(comparisons_entity_1__in=supertrusted_comparisons)
-                | Q(comparisons_entity_2__in=supertrusted_comparisons)
-            )
-            .distinct()
-            .values_list("uid", flat=True)
+        ).values_list("entity_1__uid", "entity_2__uid")
+
+        supertursted_compared_entities = set(
+            entity_uid
+            for comparison in supertrusted_comparisons
+            for entity_uid in comparison
         )
 
         return [
-            video
-            for uid in req_entities
-            if (video := self._entity_to_video.get(uid)) is not None
+            self._entity_to_video[uid]
+            for uid in supertursted_compared_entities
+            if self._entity_to_video.get(uid)
         ]
 
     def _get_user_rate_later_video_list(self, user: User) -> list[SuggestedVideo]:
