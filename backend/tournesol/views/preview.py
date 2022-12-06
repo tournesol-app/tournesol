@@ -366,42 +366,46 @@ class ComparisonPreviewGenerator:
 
         final = self.generate_image(base_size, color=COLOR_WHITE_BACKGROUND)
 
-        thumbnail_size = self.draw_thumbnail(
+        thumbnail_a_size = self.draw_thumbnail(
             thumbnail_a,
             target=final,
             position=(0, 0),
             width=base_size[0] // 2,
         )
-        thumbnail_size = self.draw_thumbnail(
+        thumbnail_b_size = self.draw_thumbnail(
             thumbnail_b,
             target=final,
             position=(base_size[0] // 2, 0),
             width=base_size[0] // 2,
+        )
+        thumbnail_height = max(
+            thumbnail_a_size[1],
+            thumbnail_b_size[1],
         )
 
         self.draw_vs_background(
             target=final,
             band_width=vs_band_width,
             tilt_in_pixels=vs_tilt_in_pixels,
-            height=thumbnail_size[1],
+            height=thumbnail_height,
         )
         self.draw_horizontal_separator(
             target=final,
-            top=thumbnail_size[1],
+            top=thumbnail_height,
             height=horizontal_separator_height,
         )
 
         self.draw_text(
             target=final,
             text="VS",
-            position=(base_size[0] // 2, thumbnail_size[1] // 2),
+            position=(base_size[0] // 2, thumbnail_height // 2),
             font=self.font(FOOTER_FONT_LOCATION, 20),
             fill=COLOR_BROWN_FONT,
             anchor="mm",
         )
 
         entity_description_top = (
-            thumbnail_size[1]
+            thumbnail_height
             + horizontal_separator_height
             + margin_above_entity_descriptions
         )
@@ -417,13 +421,13 @@ class ComparisonPreviewGenerator:
             - logo_size // 2
             - entity_descriptions_horizontal_margin * 2
         )
-        entity_description_height = self.draw_entity_description(
+        entity_a_description_height = self.draw_entity_description(
             entity_a,
             target=final,
             position=(entity_descriptions_horizontal_margin, entity_description_top),
             available_width=available_width,
         )
-        entity_description_height = self.draw_entity_description(
+        entity_b_description_height = self.draw_entity_description(
             entity_b,
             target=final,
             position=(
@@ -435,6 +439,10 @@ class ComparisonPreviewGenerator:
                 entity_description_top,
             ),
             available_width=available_width,
+        )
+        entity_description_height = max(
+            entity_a_description_height,
+            entity_b_description_height,
         )
 
         slider_top = (
