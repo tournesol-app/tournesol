@@ -7,7 +7,6 @@ import {
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { displayScore } from 'src/utils/criteria';
 import { Recommendation } from 'src/services/openapi';
 import CriteriaIcon from '../CriteriaIcon';
 
@@ -190,9 +189,9 @@ const EntityCardScores = ({
                   criteriaName={max_criteria}
                   emojiSize="26px"
                   imgWidth="32px"
-                  tooltip={`${getCriteriaLabel(max_criteria)}: ${displayScore(
-                    max_score
-                  )}`}
+                  tooltip={`${getCriteriaLabel(
+                    max_criteria
+                  )}: ${max_score.toFixed(0)}`}
                 />
               </>
             )}
@@ -204,9 +203,9 @@ const EntityCardScores = ({
                   criteriaName={min_criteria}
                   emojiSize="26px"
                   imgWidth="32px"
-                  tooltip={`${getCriteriaLabel(min_criteria)}: ${displayScore(
-                    min_score
-                  )}`}
+                  tooltip={`${getCriteriaLabel(
+                    min_criteria
+                  )}: ${min_score.toFixed(0)}`}
                 />
               </>
             )}

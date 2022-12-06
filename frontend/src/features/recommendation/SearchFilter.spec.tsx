@@ -245,7 +245,7 @@ describe('Filters feature', () => {
     });
 
     expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'duration_gte=&duration_lte=40',
+      search: 'duration_lte=40',
     });
   });
 
@@ -263,7 +263,7 @@ describe('Filters feature', () => {
     });
 
     expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'duration_lte=&duration_gte=20',
+      search: 'duration_gte=20',
     });
   });
 

@@ -160,7 +160,7 @@ class ContributorRatingAdmin(admin.ModelAdmin):
 @admin.register(ContributorRatingCriteriaScore)
 class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
     list_filter = ("contributor_rating__poll__name",)
-    list_display = ("id", "contributor_rating", "criteria", "score")
+    list_display = ("id", "contributor_rating", "criteria", "score", "voting_right",)
     readonly_fields = ("contributor_rating",)
     search_fields = ("contributor_rating__entity__uid",)
 

@@ -85,6 +85,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Copyright & License
 
+### Source code
+
 Copyright 2021-2022 Association Tournesol and contributors.
 
     This program is free software: you can redistribute it and/or modify
@@ -100,5 +102,56 @@ Copyright 2021-2022 Association Tournesol and contributors.
     You should have received a copy of the GNU Affero General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-Included license:
- - [AGPL-3.0-or-later](./LICENSE)
+See the full legal code [AGPL-3.0-or-later][lic-frontend-agpl-3.0-or-later].
+
+### Images
+
+#### Firefox Browser logo
+
+    Copyright 2019 Mozilla Corporation
+
+    Firefox Browser logo is licensed under the
+    Mozilla Public License Version 2.0 (MPL 2.0).
+
+    You should have received a copy of the license along with this
+    work. If not, see <https://www.mozilla.org/en-US/MPL/2.0/>.
+
+See the full legal code
+[Mozilla Public License Version 2.0][lic-frontend-mpl-2.0].
+
+Affected materials:
+- `public/logos/Fx-Browser-icon-fullColor.svg`
+
+#### Tournesol Criteria Icons
+
+    Copyright 2021 Association Tournesol - Author Chris Vossen
+
+    Tournesol Criteria Icons are licensed under the
+    Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+    You are free to share, copy and redistribute the material in any medium
+    or format, and/or to adapt remix, transform, and build upon the material
+    for any purpose, even commercially, as long as you give appropriate
+    credit, provide a link to the license, and indicate if changes were made.
+    You may do so in any reasonable manner, but not in any way that suggests
+    the licensor endorses you or your use.
+
+    You should have received a copy of the license along with this
+    work. If not, see <https://creativecommons.org/licenses/by/4.0/>.
+
+See the full legal code [CC BY 4.0][lic-frontend-cc-by-4.0].
+
+Affected materials:
+- `public/images/criteriaIcons/reliability.svg`
+- `public/images/criteriaIcons/pedagogy.svg`
+- `public/images/criteriaIcons/importance.svg`
+- `public/images/criteriaIcons/layman_friendly.svg`
+- `public/images/criteriaIcons/entertaining_relaxing.svg`
+- `public/images/criteriaIcons/engaging.svg`
+- `public/images/criteriaIcons/diversity_inclusion.svg`
+- `public/images/criteriaIcons/better_habits.svg`
+- `public/images/criteriaIcons/backfire_risk.svg`
+
+[lic-frontend-agpl-3.0-or-later]: ./LICENSE.AGPL-3.0-or-later.txt
+[lic-frontend-cc-by-4.0]: ./LICENSE.CC-BY-4.0.txt
+[lic-frontend-mpl-2.0]: ./LICENSE.MPL-2.0.txt

@@ -21,10 +21,17 @@ class ContributorRatingSerializer(ModelSerializer):
     n_comparisons = SerializerMethodField(
         help_text="Number of comparisons submitted by the current user about the current video",
     )
+    last_compared_at = SerializerMethodField(read_only=True)
 
     class Meta:
         model = ContributorRating
-        fields = ["entity", "is_public", "criteria_scores", "n_comparisons"]
+        fields = [
+            "entity",
+            "is_public",
+            "criteria_scores",
+            "n_comparisons",
+            "last_compared_at",
+        ]
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_n_comparisons(self, obj):
@@ -40,6 +47,25 @@ class ContributorRatingSerializer(ModelSerializer):
             & (Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
         ).count()
 
+    @extend_schema_field(OpenApiTypes.DATETIME)
+    def get_last_compared_at(self, obj):
+        if hasattr(obj, "last_compared_at"):
+            # Use annotated field if it has been defined by the queryset
+            return obj.last_compared_at
+
+        last_comparison = (
+            obj.user.comparisons.filter(poll=self.context["poll"])
+            .filter(Q(entity_1=obj.entity) | Q(entity_2=obj.entity))
+            .values("datetime_lastedit")
+            .order_by("-datetime_lastedit")[:1]
+        ).first()
+
+        # When a `ContributorRating` doesn't have any related comparison.
+        if not last_comparison:
+            return None
+
+        return last_comparison["datetime_lastedit"]
+
     def to_internal_value(self, data):
         """
         Determine the poll according to the context provided by the view.
@@ -54,7 +80,14 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
 
     class Meta:
         model = ContributorRating
-        fields = ["uid", "is_public", "entity", "criteria_scores", "n_comparisons"]
+        fields = [
+            "uid",
+            "is_public",
+            "entity",
+            "criteria_scores",
+            "n_comparisons",
+            "last_compared_at",
+        ]
 
     def validate(self, attrs):
         uid = attrs.pop("uid")

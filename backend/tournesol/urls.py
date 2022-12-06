@@ -20,6 +20,7 @@ from .views.exports import (
     ExportAllView,
     ExportComparisonsView,
     ExportProofOfVoteView,
+    ExportPublicAllView,
     ExportPublicComparisonsView,
 )
 from .views.inconsistencies import Length3Cycles, ScoreInconsistencies
@@ -72,6 +73,11 @@ urlpatterns = [
         "exports/comparisons/",
         ExportPublicComparisonsView.as_view(),
         name="export_public",
+    ),
+    path(
+        "exports/all/",
+        ExportPublicAllView.as_view(),
+        name="export_public_all",
     ),
     path(
         "exports/polls/<str:poll_name>/proof_of_vote/",

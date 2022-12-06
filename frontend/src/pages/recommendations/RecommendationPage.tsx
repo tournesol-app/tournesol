@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -47,18 +47,10 @@ function RecommendationsPage() {
   // desired recommendations are collective or personal.
   const collectiveRecoPathname = `${baseUrl}/recommendations`;
 
-  const displayPersonalRecommendations = useMemo((): boolean => {
-    return (
-      allowPublicPersonalRecommendations &&
-      location.pathname !== collectiveRecoPathname &&
-      username !== undefined
-    );
-  }, [
-    allowPublicPersonalRecommendations,
-    collectiveRecoPathname,
-    location.pathname,
-    username,
-  ]);
+  const displayPersonalRecommendations =
+    allowPublicPersonalRecommendations &&
+    location.pathname !== collectiveRecoPathname &&
+    username !== undefined;
 
   const prov:
     | PaginatedRecommendationList
@@ -69,11 +61,8 @@ function RecommendationsPage() {
 
   const [entities, setEntities] = useState(prov);
   const entitiesCount = entities.count || 0;
+  const searchParams = new URLSearchParams(location.search);
 
-  const searchParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
-  );
   const limit = 20;
   const offset = Number(searchParams.get('offset') || 0);
   const autoLanguageDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
@@ -93,6 +82,10 @@ function RecommendationsPage() {
     }
     locationSearchRef.current = location.search;
 
+    // `searchParams` is defined as a mutable object outside of this
+    // effect. So it's safer to recreate it here, instead of adding
+    // a dependency to the current effect.
+    const searchParams = new URLSearchParams(location.search);
     if (autoLanguageDiscovery && searchParams.get('language') === null) {
       let loadedLanguages = loadRecommendationsLanguages();
 
@@ -109,33 +102,32 @@ function RecommendationsPage() {
     const fetchEntities = async () => {
       setIsLoading(true);
 
-      if (displayPersonalRecommendations) {
-        // Get personal recommendations.
-        setEntities(
-          (await getPublicPersonalRecommendations(
+      const newEntities = displayPersonalRecommendations
+        ? // Get personal recommendations.
+          await getPublicPersonalRecommendations(
             username,
             pollName,
             limit,
             location.search,
             criterias,
             options
-          )) || []
-        );
-      } else {
-        // Get collective recommendations.
-        setEntities(
-          (await getRecommendations(
+          )
+        : // Get collective recommendations.
+          await getRecommendations(
             pollName,
             limit,
             location.search,
             criterias,
             options
-          )) || []
-        );
-      }
+          );
 
-      setIsLoading(false);
+      // A response corresponding to a previous filter state is ignored.
+      if (locationSearchRef.current === location.search) {
+        setEntities(newEntities);
+        setIsLoading(false);
+      }
     };
+
     fetchEntities();
   }, [
     autoLanguageDiscovery,
@@ -145,7 +137,6 @@ function RecommendationsPage() {
     location.search,
     options,
     pollName,
-    searchParams,
     username,
   ]);
 

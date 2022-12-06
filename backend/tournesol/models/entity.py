@@ -339,13 +339,18 @@ class Entity(models.Model):
         )
 
     @classmethod
-    def create_from_video_id(cls, video_id):
+    def create_from_video_id(cls, video_id, fetch_metadata=True):
         # pylint: disable=import-outside-toplevel
-        from tournesol.utils.api_youtube import get_video_metadata
+        from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
-        # Returns nothing if no YOUTUBE_API_KEY is not configured.
-        # Can also raise VideoNotFound if the video is private or not found by YouTube.
-        extra_data = get_video_metadata(video_id)
+        if fetch_metadata:
+            try:
+                extra_data = get_video_metadata(video_id)
+            except VideoNotFound:
+                logging.warning("Failed to fetch YT metadata about %s", video_id)
+                raise
+        else:
+            extra_data = {}
 
         serializer = VideoMetadata(
             data={
@@ -353,6 +358,7 @@ class Entity(models.Model):
                 "video_id": video_id,
             }
         )
+
         if serializer.is_valid():
             metadata = serializer.data
         else:

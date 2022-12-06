@@ -40,7 +40,6 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { RouteID } from 'src/utils/types';
-import Footer from './Footer';
 
 export const sideBarWidth = 264;
 
@@ -253,7 +252,7 @@ const SideBar = () => {
           );
         })}
       </List>
-      {drawerOpen && <Footer />}
+      <Divider />
       <LanguageSelector languageName={drawerOpen} />
     </Drawer>
   );

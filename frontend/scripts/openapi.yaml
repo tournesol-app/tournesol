@@ -408,10 +408,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Entity'
           description: ''
+  /exports/all/:
+    get:
+      operationId: exports_all_retrieve
+      description: Download the complete public dataset of the `videos` poll in a
+        .zip file.
+      tags:
+      - exports
+      security:
+      - oauth2:
+        - read write groups
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /exports/comparisons/:
     get:
       operationId: exports_comparisons_retrieve
-      description: Download public data in .csv file
+      description: Download all public comparisons made in the `videos` poll by all
+        users in a CSV file.
       tags:
       - exports
       security:
@@ -1233,8 +1253,8 @@ paths:
   /users/me/contributor_ratings/{poll_name}/:
     get:
       operationId: users_me_contributor_ratings_list
-      description: Retrieve the logged in user's ratings per video in a given poll(computed
-        automatically from the user's comparisons).
+      description: Retrieve the logged-in user's ratings per entity in a given poll
+        (computed automatically from the user's comparisons).
       parameters:
       - in: path
         name: poll_name
@@ -1257,6 +1277,13 @@ paths:
         name: is_public
         schema:
           type: boolean
+        description: Filter public or private ratings.
+      - in: query
+        name: order_by
+        schema:
+          type: string
+        description: 'Order the results by: last_compared_at, -last_compared_at, n_comparisons,
+          -n_comparisons, or any allowed metadata field.'
       tags:
       - users
       security:
@@ -1524,7 +1551,8 @@ paths:
   /users/me/exports/comparisons/:
     get:
       operationId: users_me_exports_comparisons_retrieve
-      description: Download the current user's comparisons in a .csv file
+      description: Download all comparisons made in all polls by the logged-in user
+        in a CSV file.
       tags:
       - users
       security:
@@ -2441,9 +2469,14 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - criteria_scores
       - entity
+      - last_compared_at
       - n_comparisons
     ContributorRatingCreate:
       type: object
@@ -2465,9 +2498,14 @@ components:
           readOnly: true
           description: Number of comparisons submitted by the current user about the
             current video
+        last_compared_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - criteria_scores
       - entity
+      - last_compared_at
       - n_comparisons
     ContributorRatingCreateRequest:
       type: object
@@ -3461,12 +3499,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         is_trusted:
           type: boolean
     PoliticalAffiliationEnum:
@@ -3790,12 +3828,12 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
       required:
       - email
       - id
@@ -3942,12 +3980,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         password_confirm:
           type: string
           writeOnly: true
@@ -4539,12 +4577,12 @@ components:
           format: uri
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         is_trusted:
           type: boolean
       required:
@@ -4686,12 +4724,12 @@ components:
           format: binary
           nullable: true
           description: Your profile picture.
-        voting_right:
+        trust_score:
           type: number
           format: float
           nullable: true
-          description: The voting right assigned to the user based on the vouching
-            mechanism.
+          description: The trust score assigned to the user based on trusted domains
+            and the vouching mechanism.
         is_trusted:
           type: boolean
       required:

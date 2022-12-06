@@ -45,7 +45,7 @@
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "You must be logged in to display personal scores.",
-      "noPersonalScore": "You have not compared this video yet."
+      "noPersonalScore": "You have not compared this video, or your ratings have not been computed yet."
     },
     "activatePersonalScores": "Display personal scores"
   },
@@ -68,8 +68,8 @@
     "removeOptionalCriterias": "Remove optional criterias",
     "addOptionalCriterias": "Add optional criterias",
     "changeOneItem": "Change one of the items to submit a new comparison",
-    "comparisonInPublicDataset": "This comparison is included in the public dataset.",
-    "comparisonInPublicDatasetAfterSubmission": "After submission, this comparison will be included in the public dataset.",
+    "comparisonInPublicData": "This comparison is included in the public data.",
+    "comparisonInPublicDataAfterSubmission": "After submission, this comparison will be included in the public data.",
     "editComparison": "Edit comparison",
     "criteriaSkipped": "skipped",
     "submitAComparison": "Submit a comparison",
@@ -122,10 +122,19 @@
     "shareOnTwitter": "Share on Twitter"
   },
   "footer": {
-    "wiki": "wiki",
-    "privacyPolicy": "privacy policy",
-    "donate": "donate",
-    "whitePaper": "white paper"
+    "getRecommendations": "Get Recommendations",
+    "chromeExtension": "Chrome Extension",
+    "firefoxExtension": "Firefox Extension",
+    "followUs": "Follow Us",
+    "supportUs": "Support Us",
+    "directTransfer": "Direct transfer",
+    "compareVideos": "Compare videos 🌻",
+    "research": "Research",
+    "whitePaper": "White Paper",
+    "publicDatabase": "Public database",
+    "tournesolTalksMailingList": "Tournesol Talks - mailing list",
+    "more": "More",
+    "privacyPolicy": "Privacy policy"
   },
   "menu": {
     "home": "Home",
@@ -241,10 +250,23 @@
     "noVideoComparedYet": "You haven't compared any video yet",
     "compareVideosButton": "Compare videos"
   },
+  "ratingOrderByInput": {
+    "lastComparisonDate": "Last comparison date",
+    "numberOfComparisons": "Number of comparisons",
+    "orderBy": "Order by",
+    "order": "Order"
+  },
   "options": "Options",
   "contextualRecommendations": {
     "channel": "Channel",
     "comparedWith": "Compared with"
+  },
+  "recommendationsSubset": {
+    "noRecommendationHasBeenFound": "No recommendation has been found in the current language."
+  },
+  "recommendationsSubsetControls": {
+    "bestOfLastMonth": "Best of last month",
+    "bestOfAllTime": "Best of all time"
   },
   "settings": {
     "typeKeywordDeleteAccount": "Please type the words <1>{{DELETE_ACCOUNT_KEYWORD}}</1> in the text box below to enable deleting your account.",
@@ -281,7 +303,8 @@
   },
   "username": "Username",
   "metrics": {
-    "evolutionDuringTheLast30Days": "Evolution during the last 30 days."
+    "evolutionDuringTheLast30Days": "Evolution during the last 30 days.",
+    "duringTheLast30Days": "during the last 30 days."
   },
   "stats": {
     "ratedVideos": "Rated videos",
@@ -316,9 +339,9 @@
     "rolePresident": "President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
-    "roleDeveloper": "Developer",
+    "weThankOurPartners": "We thank our partners",
     "partnershipWithEpfl": "Partnership with EPFL",
-    "partenershipWithEpflDetail": "Today, our main contributor is École Polytechnique Fédérale de Lausanne (EPFL). In particular, Adrien Matissart is a research scientist from the Distributed Computing Laboratory of the School of Computer and Communication Sciences who is fully dedicated to the development of the Tournesol platform, while many researchers from the Laboratory are designing and studying the Tournesol algorithms.",
+    "partenershipWithEpflDetail": "For a short period a research engineer at École Polytechnique Fédérale de Lausanne (EPFL) was dedicated to the development of the Tournesol platform. Many researchers from the Distributed Computing Laboratory have also designed and still contribute to the research about Tournesol algorithms.",
     "partnershipWithPolyconseil": "Partnership with Polyconseil",
     "partnershipWithPolyconseilDetail": "We are also supported by the technology and consulting company Polyconseil, in the context of their #Tech4Good program. Since August 2021, Polyconseil allocated a software engineering intern one day per week to the technical development of Tournesol and supported us on a monthly basis through organizational support and UX/UI designs. We are very grateful for their help.",
     "partnershipWithKleis": "Partnership with Kleis Technology",
@@ -336,8 +359,8 @@
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
     "trustedEmailDomains": "Trusted email domains",
-    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited voting right to newly created accounts.",
-    "trustedDomainsGainMoreVotingRights": "You can gain significantly more voting rights by validating <2>an email address from a trusted domain</2>. We are currently working on designing additional means for contributors to gain voting rights.",
+    "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
+    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a trusted domain</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
     "trustedDomainsCurrentList": "Current list of trusted domains"
   },
@@ -359,7 +382,7 @@
     "whoTournesolSharesUsersNContributorsDataWith": "Who Tournesol shares users' and contributors' data with?",
     "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol highly values the protection of users' and contributors' data. In particular, Tournesol knows that some of the contributors' judgments may conflict with the agendas of some political leaders or of their employer. We want contributors to express judgments without the fear of any consequence for their personal life. This is why Tournesol has the option of providing judgments privately or anonymously. Privately provided raw judgments will not be shared with any third party.",
     "publicData": "Public data",
-    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties. Additionally, comparisons between election candidates will all be considered private and Tournesol will not enable users to make these information public on the plateform.",
+    "whereGoPublicData": "Contributors are encouraged, when possible, to compare videos publicly. This will allow us to collect a public database, which, hopefully, will stimulate research on more beneficial recommendation algorithms. This database consists of detailed public contributions, associated with the usernames of the contributors who submitted them. Private ratings, i.e. ratings for which at least one video is rated privately by the contributor, will never be made public, nor shared with third parties. Additionally, comparisons between election candidates will all be considered private and Tournesol will not enable users to make these information public on the plateform. If you have made a comparison of public videos Tournesol includes in the public database your trust score calculated from your email and the users who vouched for you.",
     "aggregateData": "Aggregate data",
     "whereGoAggregateData": "Our algorithms combine contributors’ public and private data to provide aggregate statistics, which are made public. This is typically the case of the Tournesol scores given to different videos or to different candidates to an election. Tournesol also plans to release statistics about subsets of contributors, e.g. to determine how pedagogical a physics video is according to biologists. In any such case, we apply the principles of differential privacy, by adding randomness to the actual aggregation, in order to increase the privacy of your data. The aggregated statistics are likely to be used in scientific articles about the ethics of large scale algorithms and artificial intelligence.",
     "researchPurposes": "Research purposes",
@@ -403,6 +426,9 @@
       "message": "An unexpected error has occured."
     }
   },
+  "faqEntryList": {
+    "questionURLCopied": "Question's URL copied."
+  },
   "faqPage": {
     "iDidFindTheAnswers": "I didn't find the answer to my questions",
     "comeAndAskYourQuestionsOnDiscord": "Join our Discord server to ask directly your questions. Recurring questions will be added to the FAQ.",
@@ -425,15 +451,53 @@
       "pollIsClosed": "The poll is now closed.",
       "seeResults": "See the results"
     },
+    "theStatsCouldNotBeDisplayed": "The stats could not be displayed.",
+    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
+    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
+    "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended.",
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criterias.",
     "compareButton": "Compare now",
     "useOurExtension": "Use our extension!",
-    "webExtensionDescription": "When using the extension, you will find videos recommended by Tournesol's community directly on your YouTube home page. You can also add a video in your rate later list or immediately rate the video with just a few clicks.",
+    "webExtensionDescription": "The browser extension allows to display the videos recommended by the community directly on your YouTube home page. You can also add videos to your rate-later list or immediately rate them in a few clicks.",
     "getTheExtensionButton": "Get the extension",
-    "extensionNotAvailableOnYourBrowser": "The extension is not available on your web browser. You may use it on <2>Firefox</2>, <4>Google Chrome</4> or <6>Chromium</6>.",
-    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolPlatformDescription": "Tournesol is an <1>free and open source</1> platform which proposes a tool for collaborative decision. The main aim of this tool is to <4>collaboratively</4> identify top videos of public utility by eliciting contributors' judgements on content quality. Currently we are also exploring the possibility of using Tournesol's algorithms to evaluates candidates in an election.<br><br>Thanks to the data collected on Tournesol, we hope to contribute to making today's and tomorrow's large-scale algorithms <7>robustly beneficial</7> for all of humanity."
+    "extensionNotAvailableOnYourBrowser": "Unfortunately the extension is not available on your web browser. You may use it on <1>Firefox</1>, <3>Google Chrome</3> and probably on browsers based on them."
+  },
+  "comparisonSection": {
+    "contribute": "Contribute",
+    "theSimpliestWayToContribute": "The simpliest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
+  },
+  "homeComparison": {
+    "sorryTheComparisonIsTemporarilyUnavailable": "Sorry, the comparison of video is temporarily unavailable. Please try again later.",
+    "compareTheVideos": "Compare the videos"
+  },
+  "recommendationsSection": {
+    "recommendations": "Recommendations",
+    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
+    "seeMore": "See more"
+  },
+  "publicDataPublicCodeBox": {
+    "ourDataAreOpen": "Our data are open",
+    "weHopeThatOtherProjectsCanBenefitEtc": "We hope that other projects can benefit from the efforts of the Tournesol community. To this end we are making available a database made up of all public contributions that anyone can use.",
+    "theseDataArePublishedUnderODCBY": "These data are published under the terms of the Open Data Commons Attribution License <1>(ODC-BY 1.0)</1>.",
+    "downloadTheDatabase": "Download the database",
+    "ourAlgorithmsAreFree": "Our algorithms are Free/Libre",
+    "ourAlgorithmsAndAllOurCodeAreFreeSoftware": "In a perspective of transparency and knowledge sharing, the algorithms and all source code we created are Free Software.",
+    "accessTheCodeOnGitHub": "Access the code on GitHub"
+  },
+  "researchSection": {
+    "research": "Research",
+    "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
+  },
+  "scientificLiteratureBox": {
+    "ourPublications": "Our publications",
+    "papers": "Papers",
+    "studenWorks": "Student works"
+  },
+  "visualizeDataBox": {
+    "visualizeTheData": "Visualize the data",
+    "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> appplication made with Streamlit.",
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficient matrix of comparison criteria scores (2022/10/10)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
@@ -476,7 +540,23 @@
     "givenVouchersTitle": "Users you have vouched for",
     "noVoucherReceived": "None.",
     "receivedVouchersTitle": "Users who vouched for you",
-    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher voting right on Tournesol, even if their email address is not considered to be trusted. On Tournesol, the list of users for whom you vouch, or who have vouched for you, is public information."
+    "trustScore": {
+      "title": "Trust score",
+      "description": {
+        "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
+        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
+        "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
+      },
+      "nullValue": "Unknown",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "isTrusted": "Your email address is trusted.",
+      "isNotTrusted": "Your email address is not trusted.",
+      "hasReceivedVouchers": "Other users vouch for you.",
+      "hasNotReceivedVouchers": "No other user vouch for you."
+    },
+    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
@@ -543,6 +623,10 @@
     "videos": "videos",
     "entityCandidate": "candidate",
     "entityVideo": "video"
+  },
+  "videoMetadata": {
+    "duration": "Duration",
+    "publication_date": "Publication date"
   },
   "presidentielle2022": {
     "dialogs": {

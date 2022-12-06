@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import { Container, Step, StepLabel, Stepper } from '@mui/material';
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
@@ -10,10 +10,12 @@ import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 
-// this constant controls the render of the series, if the `length` prop of
+const UNMOUNT_SIGNAL = '__UNMOUNTING_PARENT__';
+
+// This constant controls the render of the series, if the `length` prop of
 // the `ComparisonSeries` component is strictly inferior to this value, a
 // simple `Comparison` component with not extra features will be rendered
-// instead
+// instead.
 const MIN_LENGTH = 2;
 
 interface Props {
@@ -23,6 +25,7 @@ interface Props {
   length: number;
   // redirect to this URL when the series is over
   redirectTo?: string;
+  keepUIDsAfterRedirect?: boolean;
   resumable?: boolean;
 }
 
@@ -44,8 +47,11 @@ const ComparisonSeries = ({
   getAlternatives,
   length,
   redirectTo,
+  keepUIDsAfterRedirect,
   resumable,
 }: Props) => {
+  const location = useLocation();
+
   const { name: pollName } = useCurrentPoll();
 
   // trigger the initialization on the first render only, to allow users to
@@ -159,6 +165,14 @@ const ComparisonSeries = ({
       setStep(newStep);
     }
 
+    // Inform the child component `<Comparison>` to not trigger any additional
+    // refresh of its states. When the last comparison of the series is made,
+    // this component will be unmounted, so does the child component
+    // `<Comparison>`.
+    if (newStep === length) {
+      return { uid: UNMOUNT_SIGNAL, refreshLeft: false };
+    }
+
     const newComparisons = comparisonIsNew
       ? comparisonsMade.concat([lastComparison])
       : comparisonsMade;
@@ -255,7 +269,22 @@ const ComparisonSeries = ({
   }
 
   if (redirectTo && step >= length) {
-    return <Redirect to={{ pathname: redirectTo }} />;
+    const futureSearchParams = new URLSearchParams();
+
+    if (keepUIDsAfterRedirect) {
+      if (uidA) {
+        futureSearchParams.append('uidA', uidA);
+      }
+      if (uidB) {
+        futureSearchParams.append('uidB', uidB);
+      }
+    }
+
+    return (
+      <Redirect
+        to={{ pathname: redirectTo, search: futureSearchParams.toString() }}
+      />
+    );
   }
 
   return (

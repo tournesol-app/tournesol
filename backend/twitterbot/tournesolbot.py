@@ -130,7 +130,7 @@ def select_a_video(tweetable_videos):
 
     # Chose a random video weighted by tournesol score
 
-    selected_video = random.choices(  # nosec - not a cryptographic use, ignore bandit B311 here
+    selected_video = random.choices(  # not a cryptographic use # nosec B311
         tweetable_videos,
         weights=tournesol_score_list
     )[0]

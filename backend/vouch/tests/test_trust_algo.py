@@ -9,15 +9,11 @@ from core.models.user import EmailDomain, User
 from core.tests.factories.user import UserFactory
 from vouch.models import Voucher
 from vouch.trust_algo import (
-    MIN_PRETRUST_VOTING_RIGHT,
-    PRETRUST_BIAS,
-    compute_relative_posttrusts,
-    compute_voting_rights,
-    normalize_vouch_matrix,
+    TRUSTED_EMAIL_PRETRUST,
+    compute_byztrust,
+    get_weighted_vouch_matrix,
     trust_algo,
 )
-
-EPSILON = 0.0000001
 
 
 class TrustAlgoUnitTest(TestCase):
@@ -25,98 +21,57 @@ class TrustAlgoUnitTest(TestCase):
 
     def get_random_pretrust_vector(self):
         pretrusts = np.random.randint(2, size=self._nb_users)
-        # Make sure that at least 1 user is pretrusted
+        # Make sure that at least 1 user is pre-trusted
         pretrusts[0] = 1
-        return pretrusts
+        return pretrusts * TRUSTED_EMAIL_PRETRUST
 
-    def test_normalize_vouch_matrix(self):
+    def get_random_vouch_matrix(self):
+        random_vouch = (np.random.rand(self._nb_users, self._nb_users) > 0.1).astype(int)
+        # One cannot vouch for oneself
+        np.fill_diagonal(random_vouch, 0)
+        return random_vouch
+
+    def test_weighted_vouch_matrix(self):
         """
         The normalized vouch matrix must be row-stochastic, i.e. each
         voucher's total vouch must equal 1.
         """
-        vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
-        user_trusts = self.get_random_pretrust_vector()
-        normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, user_trusts)
+        vouch_matrix = self.get_random_vouch_matrix()
+        weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
+
+        # Weight vouch matrix is "row-substochastic"
         for u in range(self._nb_users):
-            self.assertAlmostEqual(np.sum(normalized_vouch_matrix[u]), 1)
+            self.assertLessEqual(np.sum(weighted_vouch_matrix[u]), 1)
 
-    def test_compute_relative_posttrusts(self):
-        """
-        The sum of relative post trusts must equal 1. Posttrusts must also
-        assign at least `PRETRUST_BIAS` to pretrusted users. Finally, it
-        should assign a zero trust to non-pretrusted non-vouched users.
-        """
-        vouch_matrix = np.random.rand(self._nb_users, self._nb_users)
-        pretrusts = self.get_random_pretrust_vector()
-        relative_pretrusts = pretrusts / np.sum(pretrusts)
-        normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
-        relative_posttrusts = compute_relative_posttrusts(
-            normalized_vouch_matrix, relative_pretrusts
-        )
-
-        # ensure it sums to 1
-        self.assertAlmostEqual(np.sum(relative_posttrusts), 1)
-        # ensure sum_trusted >= PRETRUST_BIAS
+        # Weight vouch is strictly positive where the initial vouch_matrix
+        # is strictly positive
         self.assertTrue(
-            np.sum(
-                [
-                    relative_posttrusts[u]
-                    for u in range(len(relative_posttrusts))
-                    if pretrusts[u] > 0
-                ]
-            )
-            >= PRETRUST_BIAS
+            np.array_equal(vouch_matrix > 0, weighted_vouch_matrix > 0)
         )
-        # ensure that all pretrusted users have a positive relative posttrust
-        for relative_posttrust, pretrust in zip(relative_posttrusts, pretrusts):
+
+    def test_compute_byztrust(self):
+        """
+        The sum of relative post trusts must equal 1. Post-trusts must also
+        assign at least `PRETRUST_BIAS` to pre-trusted users. Finally, it
+        should assign a zero trust to non-pre-trusted non-vouched users.
+        """
+        pretrusts = self.get_random_pretrust_vector()
+        vouch_matrix = self.get_random_vouch_matrix()
+        weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
+        byztrusts = compute_byztrust(weighted_vouch_matrix, pretrusts)
+
+        # ensure that all pre-trusted users have a positive relative post-trust
+        for byztrust, pretrust in zip(byztrusts, pretrusts):
             if pretrust > 0:
-                self.assertTrue(relative_posttrust > 0)
+                self.assertGreaterEqual(byztrust, TRUSTED_EMAIL_PRETRUST)
 
         # ensure that untrusted users than aren't vouched for don't get trust
         untrusted_user = self._nb_users - 1
         pretrusts[untrusted_user] = 0
         vouch_matrix[:, untrusted_user] = 0
-        relative_pretrusts = pretrusts / np.sum(pretrusts)
-        normalized_vouch_matrix = normalize_vouch_matrix(vouch_matrix, pretrusts)
-        relative_posttrusts = compute_relative_posttrusts(
-            normalized_vouch_matrix, relative_pretrusts
-        )
-        self.assertAlmostEqual(relative_posttrusts[untrusted_user], 0)
-
-    def test_compute_voting_rights(self):
-        """
-        The voting rights of pretrusted users must be at least
-        `MIN_PRETRUST_VOTING_RIGHT`. Moreover, unless the voting right is
-        clipped to 1, it must be proportional to posttrust.
-        """
-        pretrusts = self.get_random_pretrust_vector()
-        posttrusts = np.random.randint(20, 100, self._nb_users)
-        for u in range(len(pretrusts)):
-            if pretrusts[u] == 0 and np.random.rand() < 0.5:
-                posttrusts[u] = 0
-        relative_posttrusts = posttrusts / np.sum(posttrusts)
-        min_idx = np.argmin(
-            [
-                relative_posttrusts[u] if pretrusts[u] == 1 else float("inf")
-                for u in range(self._nb_users)
-            ]
-        )
-        scale_fac = relative_posttrusts[min_idx] / MIN_PRETRUST_VOTING_RIGHT
-        voting_rights = compute_voting_rights(relative_posttrusts, pretrusts)
-
-        self.assertAlmostEqual(voting_rights[min_idx], MIN_PRETRUST_VOTING_RIGHT)
-        for u in range(self._nb_users):
-            self.assertTrue(voting_rights[u] >= -EPSILON)
-            self.assertTrue(voting_rights[u] <= 1 + EPSILON)
-            self.assertTrue(
-                voting_rights[u] * scale_fac <= relative_posttrusts[u] + EPSILON
-            )
-            if voting_rights[u] < 1 - EPSILON:
-                self.assertAlmostEqual(
-                    voting_rights[u], relative_posttrusts[u] / scale_fac
-                )
-            if pretrusts[u] > 0:
-                self.assertTrue(voting_rights[u] >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
+        weighted_vouch_matrix = get_weighted_vouch_matrix(vouch_matrix)
+        byztrusts = compute_byztrust(weighted_vouch_matrix, pretrusts)
+        self.assertAlmostEqual(byztrusts[untrusted_user], 0)
 
 
 class TrustAlgoTest(TestCase):
@@ -152,48 +107,47 @@ class TrustAlgoTest(TestCase):
             [
                 # user_0 has given zero voucher
                 # user_1 has given three vouchers
-                Voucher(by=self.user_1, to=self.user_0, value=10),
-                Voucher(by=self.user_1, to=self.user_3, value=13),
-                Voucher(by=self.user_1, to=self.user_7, value=17),
+                Voucher(by=self.user_1, to=self.user_0),
+                Voucher(by=self.user_1, to=self.user_3),
+                Voucher(by=self.user_1, to=self.user_7),
                 # user_2 has given one voucher
-                Voucher(by=self.user_2, to=self.user_5, value=15),
+                Voucher(by=self.user_2, to=self.user_5),
                 # user_3 has given two vouchers
-                Voucher(by=self.user_3, to=self.user_1, value=31),
-                Voucher(by=self.user_3, to=self.user_5, value=35),
+                Voucher(by=self.user_3, to=self.user_1),
+                Voucher(by=self.user_3, to=self.user_5),
                 # user_4 has given one voucher
-                Voucher(by=self.user_4, to=self.user_7, value=47),
+                Voucher(by=self.user_4, to=self.user_7),
                 # user_5 has given one voucher
-                Voucher(by=self.user_5, to=self.user_1, value=51),
+                Voucher(by=self.user_5, to=self.user_1),
                 # user_6 has given zero voucher
                 # user_7 has given two vouchers
-                Voucher(by=self.user_7, to=self.user_1, value=71),
-                Voucher(by=self.user_7, to=self.user_2, value=72),
+                Voucher(by=self.user_7, to=self.user_1),
+                Voucher(by=self.user_7, to=self.user_2),
                 # user_8 has given one voucher
-                Voucher(by=self.user_8, to=self.user_3, value=83),
+                Voucher(by=self.user_8, to=self.user_3),
                 # user_9 has given two vouchers
-                Voucher(by=self.user_9, to=self.user_4, value=94),
-                Voucher(by=self.user_9, to=self.user_5, value=95),
+                Voucher(by=self.user_9, to=self.user_4),
+                Voucher(by=self.user_9, to=self.user_5),
             ]
         )
-
 
     def test_trust_algo(self):
         users = list(User.objects.all())
         for user in users:
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
 
         trust_algo()
         users = list(User.objects.all())
-        self.assertTrue(users[1].voting_right >= MIN_PRETRUST_VOTING_RIGHT - EPSILON)
-        self.assertTrue(users[2].voting_right > EPSILON)
-        self.assertAlmostEqual(users[9].voting_right, 0)
-        self.assertAlmostEqual(users[8].voting_right, 0)
+        self.assertTrue(users[1].trust_score >= TRUSTED_EMAIL_PRETRUST)
+        self.assertTrue(users[2].trust_score > 0)
+        self.assertAlmostEqual(users[9].trust_score, 0)
+        self.assertAlmostEqual(users[8].trust_score, 0)
 
-        vouch18 = Voucher(by=self.user_1, to=self.user_8, value=100.0)
+        vouch18 = Voucher(by=self.user_1, to=self.user_8)
         vouch18.save()
         trust_algo()
         users = list(User.objects.all())
-        self.assertTrue(users[8].voting_right > EPSILON)
+        self.assertTrue(users[8].trust_score > 0)
 
     def test_trust_algo_without_pretrusted_users_is_noop(self):
         # Keep only users without trusted emails
@@ -202,24 +156,24 @@ class TrustAlgoTest(TestCase):
         ).delete()
 
         for user in User.objects.all():
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
         trust_algo()
         for user in User.objects.all():
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
 
     def test_trust_algo_without_voucher(self):
         Voucher.objects.all().delete()
 
         for user in User.objects.all():
-            self.assertIsNone(user.voting_right)
+            self.assertIsNone(user.trust_score)
 
         trust_algo()
 
         for user in User.objects.all():
-            if user.is_trusted:
-                self.assertEqual(user.voting_right, MIN_PRETRUST_VOTING_RIGHT)
+            if user.has_trusted_email:
+                self.assertEqual(user.trust_score, TRUSTED_EMAIL_PRETRUST)
             else:
-                self.assertEqual(user.voting_right, 0.0)
+                self.assertEqual(user.trust_score, 0.0)
 
     def test_trust_algo_db_requests_count(self):
         with self.assertNumQueries(3):

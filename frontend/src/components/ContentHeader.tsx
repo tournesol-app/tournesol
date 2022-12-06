@@ -1,6 +1,10 @@
 import React from 'react';
 import { Box, Chip, Grid, Typography } from '@mui/material';
 
+// Allow to position contents like the footer relatively to the top of the
+// page.
+export const contentHeaderHeight = 61;
+
 /**
  * Display a header.
  *
@@ -25,6 +29,7 @@ const ContentHeader = ({
       color="text.secondary"
       bgcolor="background.menu"
       borderBottom="1px solid rgba(0, 0, 0, 0.12)"
+      height={contentHeaderHeight}
     >
       <Grid container spacing={1} justifyContent="space-between">
         <Grid item>

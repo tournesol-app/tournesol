@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = settings.BASE_DIR
 
+CACHE_DEFAULT_PREVIEW = 3600 * 24  # 24h
+CACHE_ENTITY_PREVIEW = 3600 * 2
+
 FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
@@ -254,7 +257,7 @@ class DynamicWebsitePreviewDefault(BasePreviewAPIView):
 
     permission_classes = []
 
-    @method_decorator(cache_page_no_i18n(3600 * 24))  # 24h cache
+    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
     @extend_schema(
         description="Default website preview.",
         responses={200: OpenApiTypes.BINARY},
@@ -297,8 +300,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
 
-    # TODO: should this cache be enabled?
-    @method_decorator(cache_page_no_i18n(0 * 2))  # 2h cache
+    @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
     @extend_schema(
         description="Generic preview of an entity.",
         responses={200: OpenApiTypes.BINARY},

@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 from ml.inputs import MlInput
-from tournesol.models.entity_score import ScoreMode
 
 from .primitives import BrMean, QrDev, QrMed, QrUnc
 
@@ -17,17 +16,11 @@ SCALING_WEIGHT_SUPERTRUSTED = W
 SCALING_WEIGHT_TRUSTED = 1.0
 SCALING_WEIGHT_NONTRUSTED = 0.0
 
-VOTE_WEIGHT_TRUSTED_PUBLIC = 1.0
-VOTE_WEIGHT_TRUSTED_PRIVATE = 0.5
-
-TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT = 2.0  # w_⨯,default
-TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION = 0.1  # f_⨯
-
 
 def get_user_scaling_weights(ml_input: MlInput):
-    ratings_properties = ml_input.get_ratings_properties()[
+    ratings_properties = ml_input.ratings_properties[
         ["user_id", "is_trusted", "is_supertrusted"]
-    ]
+    ].copy()
     df = ratings_properties.groupby("user_id").first()
     df["scaling_weight"] = SCALING_WEIGHT_NONTRUSTED
     df["scaling_weight"].mask(
@@ -215,8 +208,8 @@ def compute_scaling(
 
 
 def get_scaling_for_supertrusted(ml_input: MlInput, individual_scores: pd.DataFrame):
-    rp = ml_input.get_ratings_properties()
-    rp.set_index(["user_id", "entity_id"], inplace=True)
+    rp = ml_input.ratings_properties
+    rp = rp.set_index(["user_id", "entity_id"])
     rp = rp[rp.is_supertrusted]
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="inner")
     df["score"] = df["raw_score"]
@@ -257,16 +250,17 @@ def compute_scaled_scores(
                 "is_public",
                 "is_trusted",
                 "is_supertrusted",
+                "trust_score",
             ]
         )
         scalings = pd.DataFrame(columns=["s", "tau", "delta_s", "delta_tau"])
         return scores, scalings
     supertrusted_scaling = get_scaling_for_supertrusted(ml_input, individual_scores)
-    rp = ml_input.get_ratings_properties()
+    rp = ml_input.ratings_properties
 
     non_supertrusted_users = rp["user_id"][~rp.is_supertrusted].unique()
     supertrusted_users = rp["user_id"][rp.is_supertrusted].unique()
-    rp.set_index(["user_id", "entity_id"], inplace=True)
+    rp = rp.set_index(["user_id", "entity_id"])
     df = individual_scores.join(rp, on=["user_id", "entity_id"], how="left")
     df["is_public"].fillna(False, inplace=True)
     df["is_trusted"].fillna(False, inplace=True)
@@ -316,70 +310,13 @@ def compute_scaled_scores(
     return df, all_scalings
 
 
-def get_global_scores(scaled_individual_scores: pd.DataFrame, score_mode: ScoreMode):
-    df = scaled_individual_scores.copy(deep=False)
-
-    if len(df) == 0:
+def get_global_scores(scaled_scores: pd.DataFrame):
+    if len(scaled_scores) == 0:
         return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
 
-    if score_mode == ScoreMode.TRUSTED_ONLY:
-        df = df[df["is_trusted"]]
-        df["voting_weight"] = 1
-
-    if score_mode == ScoreMode.ALL_EQUAL:
-        df["voting_weight"] = 1
-
-    if score_mode == ScoreMode.DEFAULT:
-        # Voting weight for non trusted users will be computed per entity
-        df["voting_weight"] = 0
-        df["voting_weight"].mask(
-            (df.is_trusted) & (df.is_public),
-            VOTE_WEIGHT_TRUSTED_PUBLIC,
-            inplace=True,
-        )
-        df["voting_weight"].mask(
-            (df.is_trusted) & (~df.is_public),
-            VOTE_WEIGHT_TRUSTED_PRIVATE,
-            inplace=True,
-        )
-
     global_scores = {}
-    for (entity_id, scores) in df.groupby("entity_id"):
-        if score_mode == ScoreMode.DEFAULT:
-            trusted_weight = scores["voting_weight"].sum()
-            non_trusted_weight = (
-                TOTAL_VOTE_WEIGHT_NONTRUSTED_DEFAULT
-                + TOTAL_VOTE_WEIGHT_NONTRUSTED_FRACTION * trusted_weight
-            )
-            nb_non_trusted_public = (
-                scores["is_public"] & (~scores["is_trusted"])
-            ).sum()
-            nb_non_trusted_private = (
-                ~scores["is_public"] & (~scores["is_trusted"])
-            ).sum()
-
-            if (nb_non_trusted_private > 0) or (nb_non_trusted_public > 0):
-                scores["voting_weight"].mask(
-                    scores["is_public"] & (scores["voting_weight"] == 0),
-                    min(
-                        VOTE_WEIGHT_TRUSTED_PUBLIC,
-                        2
-                        * non_trusted_weight
-                        / (2 * nb_non_trusted_public + nb_non_trusted_private),
-                    ),
-                    inplace=True,
-                )
-                scores["voting_weight"].mask(
-                    ~scores["is_public"] & (scores["voting_weight"] == 0),
-                    min(
-                        VOTE_WEIGHT_TRUSTED_PRIVATE,
-                        non_trusted_weight
-                        / (2 * nb_non_trusted_public + nb_non_trusted_private),
-                    ),
-                    inplace=True,
-                )
-
-        w = scores.voting_weight
+    for (entity_id, scores) in scaled_scores.groupby("entity_id"):
+        w = scores.voting_right
         theta = scores.score
         delta = scores.uncertainty
         rho = QrMed(2 * W, w, theta, delta)

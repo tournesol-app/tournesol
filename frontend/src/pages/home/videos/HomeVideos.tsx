@@ -1,34 +1,56 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
-import { useCurrentPoll, useLoginState } from 'src/hooks';
-import ExtensionSection from 'src/pages/home/videos/ExtensionSection';
-import ContributeSection from 'src/pages/home/videos/ContributeSection';
+import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
+import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
-import AlternatingBackgroundColorSectionList from 'src/pages/home/AlternatingBackgroundColorSectionList';
+import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
+import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
+import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
+import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
+import { PollStats } from 'src/utils/types';
 
 const HomeVideosPage = () => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
-  const { baseUrl, active } = useCurrentPoll();
+  const { showWarningAlert } = useNotifications();
+  const { baseUrl, active, name: pollName } = useCurrentPoll();
+
+  const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
+
+  /**
+   * Retrieve the Tournesol's statistics at the root of the home page to
+   * provide them to each section needing them.
+   */
+  useEffect(() => {
+    async function getPollStatsAsync(pollName: string) {
+      try {
+        const pollStats = await getPollStats(pollName);
+        if (pollStats) {
+          setStats(pollStats);
+        }
+      } catch (reason) {
+        showWarningAlert(t('home.theStatsCouldNotBeDisplayed'));
+      }
+    }
+
+    getPollStatsAsync(pollName);
+  }, [pollName, showWarningAlert, t]);
 
   return (
-    <AlternatingBackgroundColorSectionList>
+    <AlternatingBackgroundColorSectionList lastItemIsPrimary>
       <TitleSection title={t('home.collaborativeContentRecommendations')}>
-        <Typography paragraph>
-          <Trans t={t} i18nKey="home.tournesolPlatformDescription">
-            Tournesol is an <strong>open source</strong> platform which aims to{' '}
-            <strong>collaboratively</strong> identify top videos of public
-            utility by eliciting contributors&apos; judgements on content
-            quality. We hope to contribute to making today&apos;s and
-            tomorrow&apos;s large-scale algorithms{' '}
-            <strong>robustly beneficial</strong> for all of humanity.
-          </Trans>
+        <Typography paragraph fontSize="1.1em">
+          {t('home.tournesolIsAParticipatoryResearchProject')}
+        </Typography>
+
+        <Typography paragraph fontSize="1.1em">
+          {t('home.helpUsAdvanceResearch')}
         </Typography>
 
         {active ? (
@@ -85,10 +107,21 @@ const HomeVideosPage = () => {
           </Box>
         )}
       </TitleSection>
-      <ExtensionSection />
-      <ContributeSection />
+      <ComparisonSection
+        comparisonStats={{
+          comparisonCount: stats.comparisonCount,
+          lastMonthComparisonCount: stats.lastMonthComparisonCount,
+        }}
+      />
+      <RecommendationsSection
+        comparedEntityStats={{
+          comparedEntityCount: stats.comparedEntityCount,
+          lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
+        }}
+      />
+      <ResearchSection />
+      <UsageStatsSection externalData={stats} />
       <PollListSection />
-      <UsageStatsSection />
     </AlternatingBackgroundColorSectionList>
   );
 };

@@ -7,10 +7,19 @@
     width="120px"
     height="120px"
   />
-  <br>
-  <i>Tournesol is a free and open source platform which aims to collaboratively identify top videos of public utility
-    <br>by eliciting contributors' judgements on content quality.</i>
-  <br>
+<p>
+<p align="center">
+  <i>
+    Tournesol is a free software designed to collaboratively identify public
+    interest videos that should be largely recommended.
+  </i>
+</p>
+<p align="center">
+  <i>
+    Participants are invited to judge the videos' quality, and build together
+    an open database to help the research in AI ethics and recommendation
+    systems.
+  </i>
 </p>
 
 <p align="center">
@@ -29,7 +38,7 @@
 
 ---
 
-This repository hosts the free and open source code of the Tournesol platform.
+This repository hosts the source code of the Tournesol platform.
 
 Learn more about the project on our [Wiki][tournesol-wiki], or meet our community
 on [Discord][tournesol-discord-join].
@@ -43,7 +52,8 @@ on [Discord][tournesol-discord-join].
 
 ## Structure of the repository
 
-- [analytics](./analytics) contains tools to analyse Tournesol data
+- [data-visualization](./data-visualization) contains a Streamlit app to
+  visualize the Tournesol public data
 - [docs](./docs) contains different kinds of documentations related to the
   project
 - [dev-env](./dev-env) contains the info to create the Tournesol development

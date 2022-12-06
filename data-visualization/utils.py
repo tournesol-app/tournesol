@@ -16,7 +16,7 @@ CRITERIA = [
     "backfire_risk",
 ]
 
-CRITERI_EXT = CRITERIA + ["views", "duration", "tournesol_score"]
+CRITERI_EXT = CRITERIA + ["views", "duration"]
 
 TCOLOR = [
     "#1282b2",
@@ -43,8 +43,14 @@ def set_df(users=[]):
 
     index = ["video_a", "video_b", "public_username"]
 
+    for idx in index + ["criteria"]:
+        df_tmp[idx] = df_tmp[idx].astype("category")
+
     df = df_tmp.pivot(index=index, columns="criteria", values="score")
     df.reset_index(inplace=True)
+
+    for crit in CRITERIA:
+        df[crit] = df[crit].astype("float16")
 
     if users:
         df = df[df["public_username"].isin(users)]
@@ -63,12 +69,12 @@ def get_score(row, crit):
             return item["score"]
 
 
-@st.cache
+@st.experimental_memo
 def api_get_tournesol_scores():
     """Get a dataframe with all videos from tournesol.."""
 
     response = requests.get(
-        f"https://api.tournesol.app/video/?limit=9999&unsafe=true"
+        f"https://api.tournesol.app/video/?limit=99999&unsafe=true"
     ).json()
 
     df = pd.DataFrame.from_dict(response["results"])
@@ -77,7 +83,5 @@ def api_get_tournesol_scores():
         df[crit] = df.apply(lambda x: get_score(x, crit), axis=1)
 
     df.drop(columns=["criteria_scores"], inplace=True)
-
-    df["tournesol_score"] = df[CRITERIA].sum(axis=1)
 
     return df
