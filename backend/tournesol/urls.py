@@ -190,7 +190,7 @@ urlpatterns = [
     ),
     # Website Previews
     path(
-        "preview/comparisons/<str:uid_a>/<str:uid_b>",
+        "preview/comparison/",
         DynamicWebsitePreviewComparison.as_view(),
         name="website_preview_comparison",
     ),

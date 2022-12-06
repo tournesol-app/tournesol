@@ -210,7 +210,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         self.client = APIClient()
         self.user = UserFactory(username=self._user)
 
-        self.preview_url = "/preview/comparisons/"
+        self.preview_url = "/preview/comparison/"
         self.valid_uid = "yt:sDPk-r18sb0"
         self.valid_uid2 = "yt:VKsekCHBuHI"
 
@@ -242,7 +242,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
 
         self.client.force_authenticate(self.user)
         response = self.client.get(
-            f"{self.preview_url}{self.valid_uid}/{self.valid_uid2}"
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -279,7 +279,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             },
         )
         response = self.client.get(
-            f"{self.preview_url}{self.valid_uid}/{self.valid_uid2}"
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
@@ -294,7 +294,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         the comparison preview of video entities that don't exist in the database.
         """
         response = self.client.get(
-            f"{self.preview_url}{self.valid_uid}/{self.valid_uid2}"
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
@@ -319,7 +319,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             },
         )
         response = self.client.get(
-            f"{self.preview_url}{self.valid_uid}/{self.valid_uid2}"
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
@@ -380,7 +380,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
             },
         )
         response = self.client.get(
-            f"{self.preview_url}{self.valid_uid}/{self.valid_uid2}"
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

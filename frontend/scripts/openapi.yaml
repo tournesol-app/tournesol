@@ -705,18 +705,18 @@ paths:
                 type: string
                 format: binary
           description: ''
-  /preview/comparisons/{uid_a}/{uid_b}:
+  /preview/comparison/:
     get:
-      operationId: preview_comparisons_retrieve
+      operationId: preview_comparison_retrieve
       description: Preview of the website comparison page.
       parameters:
-      - in: path
-        name: uid_a
+      - in: query
+        name: uidA
         schema:
           type: string
         required: true
-      - in: path
-        name: uid_b
+      - in: query
+        name: uidB
         schema:
           type: string
         required: true

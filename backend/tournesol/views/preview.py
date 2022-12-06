@@ -12,7 +12,7 @@ import requests
 from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from django.utils.decorators import method_decorator
-from drf_spectacular.utils import OpenApiTypes, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
 from PIL import Image, ImageDraw, ImageFont
 from requests.exceptions import Timeout
 from rest_framework.views import APIView
@@ -634,8 +634,28 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
     @extend_schema(
         description="Preview of the website comparison page.",
         responses={200: OpenApiTypes.BINARY},
+        parameters=[
+            OpenApiParameter(
+                "uidA",
+                OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                required=True,
+            ),
+            OpenApiParameter(
+                "uidB",
+                OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                required=True,
+            ),
+        ],
     )
-    def get(self, request, uid_a, uid_b):
+    def get(self, request):
+        uid_a = request.query_params.get("uidA")
+        uid_b = request.query_params.get("uidB")
+
+        if uid_a is None or uid_b is None:
+            return self.default_preview()
+
         try:
             entity_a = self.get_entity(uid_a)
             entity_b = self.get_entity(uid_b)
