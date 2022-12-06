@@ -630,8 +630,7 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
 
     permission_classes = []
 
-    # TODO: set the same cache value as DynamicWebsitePreviewEntity
-    @method_decorator(cache_page_no_i18n(0 * 2))
+    @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
     @extend_schema(
         description="Preview of the website comparison page.",
         responses={200: OpenApiTypes.BINARY},
