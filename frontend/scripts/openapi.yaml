@@ -705,6 +705,34 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /preview/comparison/:
+    get:
+      operationId: preview_comparison_retrieve
+      description: Preview of the website comparison page.
+      parameters:
+      - in: query
+        name: uidA
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: uidB
+        schema:
+          type: string
+        required: true
+      tags:
+      - preview
+      security:
+      - oauth2:
+        - read write groups
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /preview/entities/{uid}:
     get:
       operationId: preview_entities_retrieve

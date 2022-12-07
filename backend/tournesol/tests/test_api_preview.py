@@ -197,3 +197,231 @@ class DynamicWebsitePreviewEntityTestCase(TestCase):
             response.headers["Content-Disposition"],
             'inline; filename="tournesol_screenshot_og.png"',
         )
+
+
+class DynamicWebsitePreviewComparisonTestCase(TestCase):
+    """
+    TestCase of the `DynamicWebsitePreviewComparison` API.
+    """
+
+    _user = "username"
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = UserFactory(username=self._user)
+
+        self.preview_url = "/preview/comparison/"
+        self.valid_uid = "yt:sDPk-r18sb0"
+        self.valid_uid2 = "yt:VKsekCHBuHI"
+
+    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
+    def test_auth_200_get(self):
+        """
+        An authenticated user can get the comparison preview image of 2 video entities existing
+        in the database.
+        """
+        Entity.objects.create(
+            uid=self.valid_uid,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid.split(":")[-1],
+                "name": "name",
+                "uploader": "uploader",
+            },
+        )
+        Entity.objects.create(
+            uid=self.valid_uid2,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid2.split(":")[-1],
+                "name": "name2",
+                "uploader": "uploader2",
+            },
+        )
+
+        self.client.force_authenticate(self.user)
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        # The absence of the Content-Disposition header indicates that the
+        # default preview image is not returned, as expected in our case. This
+        # check is not very robust.
+        self.assertNotIn("Content-Disposition", response.headers)
+
+    @patch("requests.get", mock_yt_thumbnail_response)
+    @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
+    def test_anon_200_get_existing_entities(self):
+        """
+        An anonymous user can get the comparison preview image of 2 video entities existing
+        in the database.
+        """
+
+        Entity.objects.create(
+            uid=self.valid_uid,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid.split(":")[-1],
+                "name": "name",
+                "uploader": "uploader",
+            },
+        )
+        Entity.objects.create(
+            uid=self.valid_uid2,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid2.split(":")[-1],
+                "name": "name2",
+                "uploader": "uploader2",
+            },
+        )
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        # The absence of the Content-Disposition header indicates that the
+        # default preview image is not returned, as expected in our case. This
+        # check is not very robust.
+        self.assertNotIn("Content-Disposition", response.headers)
+
+    def test_anon_200_get_non_existing_entities(self):
+        """
+        An anonymous user must get the default preview image, when requesting
+        the comparison preview of video entities that don't exist in the database.
+        """
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_anon_200_get_single_non_existing_entity(self):
+        """
+        An anonymous user must get the default preview image, when requesting
+        the comparison preview of video entities and one of them doesn't exist in the database.
+        """
+        Entity.objects.create(
+            uid=self.valid_uid2,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid2.split(":")[-1],
+                "name": "name2",
+                "uploader": "uploader2",
+                "language": "en",
+            },
+        )
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_anon_200_get_without_required_param(self):
+        """
+        An anonymous user must get the default preview image, when requesting
+        the comparison preview without using the required query parameters.
+        """
+        # Missing `uidA` parameter.
+        response = self.client.get(
+            self.preview_url, {"uidB": self.valid_uid}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+        # Missing `uidB` parameter.
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+        # Missing both `uidA` and `uidB`.
+        response = self.client.get(self.preview_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_anon_200_get_invalid_entity_type(self):
+        """
+        An anonymous user must get the default preview image, when requesting
+        the preview of a non-video entity.
+        """
+        Entity.objects.create(
+            uid=self.valid_uid,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid.split(":")[-1],
+                "name": "name",
+                "uploader": "uploader",
+                "language": "en",
+            },
+        )
+        response = self.client.get(
+            f"{self.preview_url}{self.valid_uid}/zz:an_invalid_id"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    @patch("requests.get", lambda x, timeout=None: raise_(ConnectionError))
+    @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
+    def test_anon_200_get_with_yt_connection_error(self):
+        """
+        An anonymous user must get the default preview image, if a
+        connection error occurs when retrieving the video thumbnail from
+        YouTube.
+        """
+        Entity.objects.create(
+            uid=self.valid_uid,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid.split(":")[-1],
+                "name": "name",
+                "uploader": "uploader",
+            },
+        )
+        Entity.objects.create(
+            uid=self.valid_uid2,
+            type=TYPE_VIDEO,
+            metadata={
+                "video_id": self.valid_uid2.split(":")[-1],
+                "name": "name2",
+                "uploader": "uploader2",
+            },
+        )
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
