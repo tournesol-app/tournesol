@@ -322,8 +322,13 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             entity, fnt_config, upscale_ratio=upscale_ratio
         )
 
+        # Not all YT videos have a `maxres` thumbnail available. It could be
+        # good to use `maxres` instead of the `mq` quality when we are sure
+        # that both videos have a `maxres` thumbnail available. In the
+        # meantime, to avoid creating broken preview images we will use `mq`.
+        thumbnail_quality = "mq"
         try:
-            youtube_thumbnail = self.get_yt_thumbnail(entity, quality="maxres")
+            youtube_thumbnail = self.get_yt_thumbnail(entity, quality=thumbnail_quality)
         except ConnectionError:
             return self.default_preview()
 
