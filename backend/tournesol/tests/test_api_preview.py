@@ -254,7 +254,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
 
     @patch("requests.get", mock_yt_thumbnail_response)
     @patch("tournesol.entities.video.VideoEntity.update_search_vector", lambda x: None)
-    def test_anon_200_get_existing_entity(self):
+    def test_anon_200_get_existing_entities(self):
         """
         An anonymous user can get the comparison preview image of 2 video entities existing
         in the database.
@@ -288,7 +288,7 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         # check is not very robust.
         self.assertNotIn("Content-Disposition", response.headers)
 
-    def test_anon_200_get_non_existing_entity(self):
+    def test_anon_200_get_non_existing_entities(self):
         """
         An anonymous user must get the default preview image, when requesting
         the comparison preview of video entities that don't exist in the database.
@@ -321,6 +321,42 @@ class DynamicWebsitePreviewComparisonTestCase(TestCase):
         response = self.client.get(
             self.preview_url, {"uidA": self.valid_uid, "uidB": self.valid_uid2}
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+    def test_anon_200_get_without_required_param(self):
+        """
+        An anonymous user must get the default preview image, when requesting
+        the comparison preview without using the required query parameters.
+        """
+        # Missing `uidA` parameter.
+        response = self.client.get(
+            self.preview_url, {"uidB": self.valid_uid}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+        # Missing `uidB` parameter.
+        response = self.client.get(
+            self.preview_url, {"uidA": self.valid_uid2}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "image/png")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            'inline; filename="tournesol_screenshot_og.png"',
+        )
+
+        # Missing both `uidA` and `uidB`.
+        response = self.client.get(self.preview_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "image/png")
         self.assertEqual(
