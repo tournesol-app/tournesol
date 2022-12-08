@@ -34,6 +34,7 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "django_email_user=${DJANGO_EMAIL_USER:-""}" \
   -e "django_email_password=${DJANGO_EMAIL_PASSWORD:-""}" \
   -e "youtube_api_key=${YOUTUBE_API_KEY:-""}" \
+  -e "youtube_channel_credentials_json=${YOUTUBE_CHANNEL_CREDENTIALS_JSON:-""}" \
   -e "frontend_oauth_client_id=$FRONTEND_OAUTH_CLIENT_ID" \
   -e "frontend_oauth_client_secret=$FRONTEND_OAUTH_CLIENT_SECRET" \
   -e "grafana_admin_password=$GRAFANA_ADMIN_PASSWORD" \
@@ -59,4 +60,3 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "access_token_secret_twitterbot_en=${TWBOT_ACCESS_TOKEN_SECRET_EN:-""}" \
   -e "discord_infra_alert_webhook=${DISCORD_INFRA_ALERT_WEBHOOK:-""}" \
   -e "discord_twitter_webhook=${DISCORD_TWITTER_WEBHOOK:-""}" \
-  -e "youtube_channel_credentials_json=${YOUTUBE_CHANNEL_CREDENTIALS_JSON:-""}" \

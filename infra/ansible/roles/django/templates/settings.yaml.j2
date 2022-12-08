@@ -51,6 +51,8 @@ SWAGGER_UI_OAUTH2_CLIENT_SECRET: {{swagger_ui_oauth2_client_secret}}
 DJANGO_LOG_LEVEL: {{django_log_level}}
 
 YOUTUBE_API_KEY: {{youtube_api_key}}
+YOUTUBE_CHANNEL_CREDENTIALS_JSON: > # Multiline string in yaml will keep JSON string as is
+    {{ youtube_channel_credentials_json }}
 
 ENABLE_API_WIKIDATA:
     MIGRATIONS: {{django_enable_api_wikidata_migrations}}
