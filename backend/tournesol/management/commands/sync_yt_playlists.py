@@ -19,7 +19,11 @@ PLAYLISTS = [
 class Command(BaseCommand):
     help = "Sync Tournesol recommendations with public playlists on Tournesol Youtube channel"
 
-    def get_videos(self, language):
+    def get_top_recent_videos(self, language):
+        """
+        Get top recent video that should be present in the YouTube playlist
+        for a certain language.
+        """
         return Entity.objects.filter(
             type=TYPE_VIDEO,
             add_time__lte=time_ago(days=3),
@@ -46,7 +50,7 @@ class Command(BaseCommand):
         return items_dict
 
     def sync_playlist(self, yt_client, playlist_id, lang):
-        videos_to_publish = {v.video_id: v for v in self.get_videos(lang)}
+        videos_to_publish = {v.video_id: v for v in self.get_top_recent_videos(lang)}
         existing_items = self.get_existing_items(yt_client, playlist_id)
 
         video_ids_to_delete = set(existing_items.keys()) - set(videos_to_publish.keys())
