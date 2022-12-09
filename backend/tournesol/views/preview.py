@@ -124,7 +124,14 @@ class BasePreviewAPIView(APIView):
             result = result.crop((0, 45, 479, 359 - 45))
             return result
 
-        return self.get_yt_thumbnail(entity, quality="mq")
+        result = self.get_yt_thumbnail(entity, quality="mq")
+
+        # If the thumbnail doesn't exist a placeholder is returned with a different aspect ratio.
+        # We always crop to make sure we always return the expected aspect ratio (16:9).
+        width, height = result.size
+        border_height = (height - width * 9 / 16) // 2
+        result = result.crop((0, border_height, width - 1, height - 1 - border_height))
+        return result
 
 
 def get_preview_font_config(upscale_ratio=1) -> dict:
