@@ -5,7 +5,7 @@ URLS='{{monitored_urls | join(' ')}}'
 for u in $URLS
 do
     echo "checking $u"
-    wget -qO /dev/null "$u" && echo "$u OK" || (
+    curl -s --fail --show-error -o /dev/null "$u" && echo "$u OK" || (
         echo "error checking $u"
 {% if discord_infra_alert_webhook is defined and discord_infra_alert_webhook != "" %}
         wget -qO /dev/null \
