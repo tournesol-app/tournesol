@@ -82,7 +82,9 @@ class BasePreviewAPIView(APIView):
             .resize(size)
         )
 
-    def get_yt_thumbnail(self, entity: Entity, quality="mq") -> Image:
+    def get_yt_thumbnail(
+        self, entity: Entity, quality="mq", return_none_on_404=False
+    ) -> Image:
         # Quality can be: hq, mq, sd, or maxres (https://stackoverflow.com/a/34784842/188760)
         url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
@@ -91,6 +93,9 @@ class BasePreviewAPIView(APIView):
             logger.error("Preview failed for entity with UID %s.", entity.uid)
             logger.error("Exception caught: %s", exc)
             raise exc
+
+        if thumbnail_response.status_code == 404 and return_none_on_404:
+            return None
 
         if thumbnail_response.status_code != 200:
             # We chose to not raise an error here because the responses often
@@ -103,6 +108,30 @@ class BasePreviewAPIView(APIView):
             )
 
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
+
+    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Image:
+        result = self.get_yt_thumbnail(
+            entity, quality="maxres", return_none_on_404=True
+        )
+        if result is not None:
+            return result
+
+        result = self.get_yt_thumbnail(entity, quality="hq", return_none_on_404=True)
+        if result is not None:
+            # HQ quality returns an image of 480x360 with black borders above and below
+            # the thumbnail so we crop the black borders to return the same aspect ratio as
+            # "maxres" and "mq" qualities
+            result = result.crop((0, 45, 479, 359 - 45))
+            return result
+
+        result = self.get_yt_thumbnail(entity, quality="mq")
+
+        # If the thumbnail doesn't exist a placeholder is returned with a different aspect ratio.
+        # We always crop to make sure we always return the expected aspect ratio (16:9).
+        width, height = result.size
+        border_height = (height - width * 9 / 16) // 2
+        result = result.crop((0, border_height, width - 1, height - 1 - border_height))
+        return result
 
 
 def get_preview_font_config(upscale_ratio=1) -> dict:
@@ -322,13 +351,8 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             entity, fnt_config, upscale_ratio=upscale_ratio
         )
 
-        # Not all YT videos have a `maxres` thumbnail available. It could be
-        # good to use `maxres` instead of the `mq` quality when we are sure
-        # that both videos have a `maxres` thumbnail available. In the
-        # meantime, to avoid creating broken preview images we will use `mq`.
-        thumbnail_quality = "mq"
         try:
-            youtube_thumbnail = self.get_yt_thumbnail(entity, quality=thumbnail_quality)
+            youtube_thumbnail = self.get_best_quality_yt_thumbnail(entity)
         except ConnectionError:
             return self.default_preview()
 
@@ -670,14 +694,9 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         if not self.is_video(entity_a) or not self.is_video(entity_b):
             return self.default_preview()
 
-        # Not all YT videos have a `maxres` thumbnail available. It could be
-        # good to use `maxres` instead of the `mq` quality when we are sure
-        # that both videos have a `maxres` thumbnail available. In the
-        # meantime, to avoid creating broken preview images we will use `mq`.
-        thumbnail_quality = "mq"
         try:
-            thumbnail_a = self.get_yt_thumbnail(entity_a, quality=thumbnail_quality)
-            thumbnail_b = self.get_yt_thumbnail(entity_b, quality=thumbnail_quality)
+            thumbnail_a = self.get_best_quality_yt_thumbnail(entity_a)
+            thumbnail_b = self.get_best_quality_yt_thumbnail(entity_b)
         except ConnectionError:
             return self.default_preview()
 
