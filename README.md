@@ -74,7 +74,15 @@ Please refer to the `dev-env` directory or the corresponding documents in
 
 ## Contributing
 
-See the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
+### Code of Conduct
+
+Help us keep Tournesol open and inclusive. Please read and follow our
+[Code of Conduct](./CODE_OF_CONDUCT.md).
+
+### Contributing Guidelines
+
+Read through our [contributing guidelines](./CONTRIBUTING.md) to learn about
+the different ways to help the project.
 
 ### Contributors
 

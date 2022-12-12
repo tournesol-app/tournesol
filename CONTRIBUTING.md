@@ -28,7 +28,8 @@ make the project even better.
 
 ## Code of Conduct
 
-> coming soon
+Help us keep Tournesol open and inclusive. Please read and follow our
+[Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Efficient Ways to Contribute
 
