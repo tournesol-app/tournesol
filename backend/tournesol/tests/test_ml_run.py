@@ -27,6 +27,7 @@ from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     EntityCriteriaScore,
+    EntityPollRating,
     Poll,
 )
 from tournesol.models.scaling import ContributorScaling
@@ -64,6 +65,43 @@ class TestMlTrain(TransactionTestCase):
             ContributorRatingCriteriaScore.objects.filter(voting_right__gt=0.0).count(),
             20,
         )
+
+    def test_tournesol_score_are_computed(self):
+        """
+        The ML train should update the tournesol score of each `Entity` and
+        `EntityPollRating`.
+        """
+        default_poll = Poll.default_poll()
+        user1 = UserFactory(email="user1@verified.test")
+        user2 = UserFactory(email="user2@verified.test")
+
+        video1 = VideoFactory()
+        video2 = VideoFactory()
+        rating_a = EntityPollRating.objects.create(entity=video1, poll=default_poll)
+        rating_b = EntityPollRating.objects.create(entity=video2, poll=default_poll)
+
+        for user in [user1, user2]:
+            ComparisonCriteriaScoreFactory(
+                comparison__user=user,
+                comparison__entity_1=video1,
+                comparison__entity_2=video2,
+                score=10,
+                criteria="largely_recommended",
+            )
+
+        self.assertEqual(video1.tournesol_score, None)
+        self.assertEqual(video2.tournesol_score, None)
+
+        call_command("ml_train")
+        video1.refresh_from_db()
+        video2.refresh_from_db()
+        rating_a.refresh_from_db()
+        rating_b.refresh_from_db()
+
+        self.assertTrue(video1.tournesol_score < 0)
+        self.assertTrue(video2.tournesol_score > 0)
+        self.assertTrue(rating_a.tournesol_score < 0)
+        self.assertTrue(rating_b.tournesol_score > 0)
 
     def test_ml_on_multiple_polls(self):
         user1 = UserFactory(email="user1@verified.test")
