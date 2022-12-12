@@ -41,11 +41,11 @@
     },
     {
       "matches": ["https://*.youtube.com/*"],
-      "js": ["addVideoStatistics.js", "addModal.js", "addRateLaterButton.js"],
+      "js": ["addVideoStatistics.js", "addModal.js", "addRateButtons.js"],
       "css": [
         "addVideoStatistics.css",
         "addModal.css",
-        "addRateLaterButton.css"
+        "addRateButtons.css"
       ],
       "run_at": "document_end",
       "all_frames": true
