@@ -29,7 +29,7 @@ make the project even better.
 ## Code of Conduct
 
 Help us keep Tournesol open and inclusive. Please read and follow our
-[Code of Conduct][ts-github-code-of-conduct].
+[Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Efficient Ways to Contribute
 
@@ -167,7 +167,6 @@ On the frontend, translations are handled by `react-i18next`.
 [ts-donate]: https://tournesol.app/about/donate
 [ts-compare]: https://tournesol.app/comparison
 
-[ts-github-code-of-conduct]: https://github.com/tournesol-app/tournesol/blob/main/CODE_OF_CONDUCT.md
 [ts-github-repo]: https://github.com/tournesol-app/tournesol
 [ts-github-kanban]: https://github.com/tournesol-app/tournesol/projects/9
 

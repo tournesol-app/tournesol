@@ -81,8 +81,8 @@ Help us keep Tournesol open and inclusive. Please read and follow our
 
 ### Contributing Guidelines
 
-Read our [contributing guidelines](./CONTRIBUTING.md) to learn how to help the
-project.
+Read through our [contributing guidelines](./CONTRIBUTING.md) to learn about
+the different ways to help the project.
 
 ### Contributors
 
