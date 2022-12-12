@@ -1,4 +1,3 @@
-
 # Tournesol Code of Conduct
 
 **Table of Content**
@@ -70,8 +69,8 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-`hello@tournesol.app`.
+reported to the community leaders responsible for enforcement using the email
+address `hello -at- tournesol.app`.
 
 All complaints will be reviewed and investigated promptly and fairly.
 
