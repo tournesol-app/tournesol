@@ -52,8 +52,6 @@ class TestMlTrain(TransactionTestCase):
             comparison__user=user1,
         )
 
-        import ipdb; ipdb.set_trace()
-
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         call_command("ml_train")
