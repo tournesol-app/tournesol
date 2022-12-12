@@ -27,7 +27,6 @@ from tournesol.models import (
     ContributorRating,
     ContributorRatingCriteriaScore,
     EntityCriteriaScore,
-    EntityPollRating,
     Poll,
 )
 from tournesol.models.scaling import ContributorScaling
@@ -40,31 +39,33 @@ class TestMlTrain(TransactionTestCase):
     serialized_rollback = True
 
     def setUp(self) -> None:
-        EmailDomain.objects.create(domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED)
-        EmailDomain.objects.create(domain="@not_verified.test", status=EmailDomain.STATUS_REJECTED)
-
-        self.poll = PollWithCriteriasFactory.create()
-        self.poll_videos = Poll.default_poll()
-
-        self.user1 = UserFactory(email="user1@verified.test")
-        self.user2 = UserFactory(email="user2@verified.test")
+        EmailDomain.objects.create(
+            domain="@verified.test", status=EmailDomain.STATUS_ACCEPTED
+        )
 
     def test_ml_train(self):
         user1 = UserFactory(email="user1@verified.test")
 
         # Create 10 comparisons on 20 distinct videos
         ComparisonCriteriaScoreFactory.create_batch(
-            10, comparison__user=user1,
+            10,
+            comparison__user=user1,
         )
+
+        import ipdb; ipdb.set_trace()
 
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         call_command("ml_train")
-        self.assertEqual(EntityCriteriaScore.objects.filter(score_mode="default").count(), 20)
+        self.assertEqual(
+            EntityCriteriaScore.objects.filter(score_mode="default").count(), 20
+        )
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 20)
         # Asserts that all contributors have been assigned a strictly positive voting right
-        self.assertEqual(ContributorRatingCriteriaScore.objects.filter(voting_right__gt=0.).count(), 20)
-
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects.filter(voting_right__gt=0.0).count(),
+            20,
+        )
 
     def test_ml_on_multiple_polls(self):
         user1 = UserFactory(email="user1@verified.test")
@@ -88,8 +89,9 @@ class TestMlTrain(TransactionTestCase):
         scores_mode_default = EntityCriteriaScore.objects.filter(score_mode="default")
         self.assertEqual(scores_mode_default.count(), 28)
         self.assertEqual(scores_mode_default.filter(poll=poll2).count(), 20)
-        self.assertEqual(scores_mode_default.filter(poll=Poll.default_poll()).count(), 8)
-
+        self.assertEqual(
+            scores_mode_default.filter(poll=Poll.default_poll()).count(), 8
+        )
 
     def test_ml_run_with_video_having_score_zero(self):
         video = VideoFactory()
@@ -104,7 +106,6 @@ class TestMlTrain(TransactionTestCase):
         video.refresh_from_db()
         self.assertAlmostEqual(video.tournesol_score, 0.0)
 
-
     def test_individual_scaling_are_computed(self):
         # User 1 will belong to supertrusted users (as staff member)
         user1 = UserFactory(email="user@verified.test", is_staff=True)
@@ -112,9 +113,7 @@ class TestMlTrain(TransactionTestCase):
 
         for user in [user1, user2]:
             ComparisonCriteriaScoreFactory.create_batch(
-                10,
-                comparison__user=user,
-                criteria="largely_recommended"
+                10, comparison__user=user, criteria="largely_recommended"
             )
 
         self.assertEqual(EntityCriteriaScore.objects.count(), 0)
@@ -141,21 +140,10 @@ class TestMlTrain(TransactionTestCase):
         self.assertAlmostEqual(scaling.scale_uncertainty, 1.0)
         self.assertAlmostEqual(scaling.translation_uncertainty, 1.0)
 
-        # Add poll ratings in the default poll.
-        self.video1_poll_rating = EntityPollRating.objects.create(
-            entity=self.video1,
-            poll=self.poll_videos,
-        )
-        self.video2_poll_rating = EntityPollRating.objects.create(
-            entity=self.video2,
-            poll=self.poll_videos,
-        )
-
     def test_tournesol_scores_different_trust(self):
         # 10 pretrusted users
         verified_users = [
-            UserFactory(email=f"user_{n}@verified.test")
-            for n in range(10)
+            UserFactory(email=f"user_{n}@verified.test") for n in range(10)
         ]
 
         # 20 non_verified_users
@@ -186,10 +174,6 @@ class TestMlTrain(TransactionTestCase):
 
         self.assertEqual(video1.tournesol_score, None)
         self.assertEqual(video2.tournesol_score, None)
-
-    def test_ml_train(self):
-        self.assertEqual(EntityCriteriaScore.objects.count(), 0)
-        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
         call_command("ml_train")
         video1.refresh_from_db()
         video2.refresh_from_db()
@@ -199,9 +183,21 @@ class TestMlTrain(TransactionTestCase):
         # contributors and their verified status
         # 0.4 = 0.8 [verified] * 0.5 [privacy penalty]
         # 0.12 ~= (2 [non trusted bias] + 0.1 [non trusted scale] * 10 [num trusted] * 0.8 * 0.5 [privacy penalty]) / 20 [num non trusted]
-        self.assertEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating__user=verified_users[0], contributor_rating__entity=video2).voting_right, 0.4)
-        self.assertAlmostEqual(ContributorRatingCriteriaScore.objects.get(contributor_rating__user=non_verified_users[0], contributor_rating__entity=video2).voting_right, 0.12, places=3)
-
+        self.assertEqual(
+            ContributorRatingCriteriaScore.objects.get(
+                contributor_rating__user=verified_users[0],
+                contributor_rating__entity=video2,
+            ).voting_right,
+            0.4,
+        )
+        self.assertAlmostEqual(
+            ContributorRatingCriteriaScore.objects.get(
+                contributor_rating__user=non_verified_users[0],
+                contributor_rating__entity=video2,
+            ).voting_right,
+            0.12,
+            places=3,
+        )
 
     def test_tournesol_scores_different_uncertainty(self):
         user1 = UserFactory()
@@ -242,33 +238,8 @@ class TestMlTrain(TransactionTestCase):
         video1.refresh_from_db()
         video2.refresh_from_db()
 
-        scores_mode_default = EntityCriteriaScore.objects.filter(score_mode="default")
-        self.assertEqual(scores_mode_default.count(), 42)
-        self.assertEqual(scores_mode_default.filter(poll=self.poll).count(), 20)
-        self.assertEqual(scores_mode_default.filter(poll=Poll.default_poll()).count(), 22)
-
-    def test_tournesol_score_are_computed(self):
-        """
-        The ML train should update the tournesol score of each `Entity` and
-        `EntityPollRating`.
-        """
-        self.assertEqual(self.video1.tournesol_score, None)
-        self.assertEqual(self.video2.tournesol_score, None)
-
-        call_command("ml_train")
-
-        self.video1.refresh_from_db()
-        self.video2.refresh_from_db()
-
         self.assertAlmostEqual(video1.tournesol_score, 57.4, places=1)
         self.assertAlmostEqual(video2.tournesol_score, -57.4, places=1)
-
-        rating_a = EntityPollRating.objects.get(entity=self.video1, poll=self.poll_videos)
-        rating_b = EntityPollRating.objects.get(entity=self.video2, poll=self.poll_videos)
-
-        self.assertAlmostEqual(rating_a.tournesol_score, -57.4, places=1)
-        self.assertAlmostEqual(rating_b.tournesol_score, 57.4, places=1)
-
 
     def test_tournesol_scores_different_privacy_status(self):
         user1 = UserFactory()
@@ -296,7 +267,6 @@ class TestMlTrain(TransactionTestCase):
             criteria="largely_recommended",
         )
         ContributorRating.objects.filter(user=user2).update(is_public=False)
-
 
         self.assertEqual(video1.tournesol_score, None)
         self.assertEqual(video2.tournesol_score, None)
