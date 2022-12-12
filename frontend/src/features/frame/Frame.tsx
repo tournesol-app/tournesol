@@ -85,7 +85,7 @@ const Frame = ({ children }: Props) => {
         {!isEmbedded && <SideBar />}
         <main className={classes.main}>
           {hasStorageError ? <StorageError /> : children}
-          <Footer />
+          {!isEmbedded && <Footer />}
         </main>
       </div>
     </>
