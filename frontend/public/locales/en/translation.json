@@ -437,7 +437,8 @@
   },
   "tempStudyBanner": {
     "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!",
-    "join": "Join"
+    "join": "Join",
+    "loginToParticipate": "Log in to participate"
   },
   "home": {
     "exploreTournesolPossibilities": "Explore Tournesol's Possibilities",
