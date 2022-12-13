@@ -178,6 +178,8 @@ all:
           # different languages depending on the day of the week.
           tournesol_twitterbot_schedule: "*-*-* 18:03:00 Europe/Zurich" # daily.
 
+          tournesol_yt_playlists_schedule: "*-*-* 05:15:00" # daily
+
           ml_train_schedule: "*-*-* 0,6,12,18:20:00" # every 6 hours
 
           mediawiki_backup_schedule: "*-*-* 0,6,12,18:10:00" # every 6 hours
