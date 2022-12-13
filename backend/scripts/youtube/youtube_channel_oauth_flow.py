@@ -7,15 +7,15 @@ Follow these instructions:
 1. Go to https://console.cloud.google.com/apis/credentials
 
     a. Enable access to Youtube API
-        (only if you neved used the Youtube API on this Google Cloud project)
+        (only if you never used the Youtube API on this Google Cloud project)
 
         * In the left menu, go to "Enabled APIs and Services"
         * Search for "Youtube Data API v3"
         * "Enable" the Youtube API on your project
 
     b. Configure OAuth consent screen
-        (only this is not yet configured on your current Google Cloud project,
-        on if you need to edit its scope to include Youtube access)
+        (only if this is not yet configured on your current Google Cloud project,
+        or if you need to edit its scope to include Youtube access)
 
         * In the left menu, go to "OAuth consent screen"
         * Select "External" user type
