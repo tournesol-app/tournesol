@@ -1,0 +1,11 @@
+[Unit]
+Description=Tournesol YT Playlists job
+
+[Service]
+Type=oneshot
+User=gunicorn
+Group=gunicorn
+WorkingDirectory=/srv/tournesol-backend
+Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
+ExecStart=/usr/bin/bash -c "source venv/bin/activate && python manage.py sync_yt_playlists"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'sync_yt_playlists job failed for {{domain_name}}'; fi"
