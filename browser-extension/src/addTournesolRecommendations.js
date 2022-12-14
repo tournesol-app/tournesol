@@ -65,26 +65,30 @@ const isNavigatorLang = (lang) => {
 
   // The shortest ISO 639 code can be followed by other "subtags" like the
   // region, or the variant. Example: 'fr-CA'.
-  if (found.startsWith(expected + "-")) {
+  if (found.startsWith(expected + '-')) {
     return true;
   }
 
   return false;
-}
+};
 
 const getLocalizedBannerText = () => {
   if (isNavigatorLang('fr')) {
-    return 'Le projet Tournesol est-il vraiment efficace? Nous étudions' +
-           " actuellement l'impact de notre extension navigateur sur les" +
-           " habitudes d'utilisation de YouTube. Rejoingnez notre étude" +
-           ' pour nous aider à améliorer Tournesol !';
+    return (
+      'Le projet Tournesol est-il vraiment efficace? Nous étudions' +
+      " actuellement l'impact de notre extension navigateur sur les" +
+      " habitudes d'utilisation de YouTube. Rejoingnez notre étude" +
+      ' pour nous aider à améliorer Tournesol !'
+    );
   }
 
   // Return the 'en' version by default.
-  return 'Is the Tournesol project really effective? We are currently investigating' +
-  " the impact of our browser extension on the YouTube viewers' habits. Join" +
-  ' our research study to help us improve Tournesol!';
-}
+  return (
+    'Is the Tournesol project really effective? We are currently investigating' +
+    " the impact of our browser extension on the YouTube viewers' habits. Join" +
+    ' our research study to help us improve Tournesol!'
+  );
+};
 
 const getLocalizedActionButtonText = () => {
   if (isNavigatorLang('fr')) {
@@ -92,7 +96,7 @@ const getLocalizedActionButtonText = () => {
   }
 
   return 'Join';
-}
+};
 
 /**
  * Create and return a banner.
