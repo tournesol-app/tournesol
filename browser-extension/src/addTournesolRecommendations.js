@@ -6,9 +6,9 @@
 const videosPerRow = 4;
 const rowsWhenExpanded = 3;
 
-// These are placeholder values that will be updated.
-const TS_BANNER_DATE_START = new Date('2024-01-01T00:00:00Z');
-const TS_BANNER_DATE_END = new Date('2024-06-01T00:00:00Z');
+// TODO: these values are placeholder values that will be updated.
+const TS_BANNER_DATE_START = new Date('2022-01-01T00:00:00Z');
+const TS_BANNER_DATE_END = new Date('2024-01-01T00:00:00Z');
 
 let isExpanded = false;
 
@@ -48,6 +48,53 @@ const getParentComponent = () => {
 };
 
 /**
+ * The browser API is expected to return the language indentifier following
+ * the RFC 5646.
+ *
+ * See: https://datatracker.ietf.org/doc/html/rfc5646#section-2.1
+ */
+const isNavigatorLang = (lang) => {
+  let expected = lang.toLowerCase();
+  let found = window.navigator.language.toLocaleLowerCase();
+
+  // `expected` can be the shortest ISO 639 code of a language.
+  //  Example: 'fr'.
+  if (found === expected) {
+    return true;
+  }
+
+  // The shortest ISO 639 code can be followed by other "subtags" like the
+  // region, or the variant. Example: 'fr-CA'.
+  if (found.startsWith(expected + "-")) {
+    return true;
+  }
+
+  return false;
+}
+
+const getLocalizedBannerText = () => {
+  if (isNavigatorLang('fr')) {
+    return 'Le projet Tournesol est-il vraiment efficace? Nous étudions' +
+           " actuellement l'impact de notre extension navigateur sur les" +
+           " habitudes d'utilisation de YouTube. Rejoingnez notre étude" +
+           ' pour nous aider à améliorer Tournesol !';
+  }
+
+  // Return the 'en' version by default.
+  return 'Is the Tournesol project really effective? We are currently investigating' +
+  " the impact of our browser extension on the YouTube viewers' habits. Join" +
+  ' our research study to help us improve Tournesol!';
+}
+
+const getLocalizedActionButtonText = () => {
+  if (isNavigatorLang('fr')) {
+    return 'Participer';
+  }
+
+  return 'Join';
+}
+
+/**
  * Create and return a banner.
  *
  * The banner invites the users to join our study about the impact of the
@@ -69,16 +116,13 @@ const createBanner = () => {
   // The first flex item is the text.
   const bannerTextContainer = document.createElement('div');
   const bannerText = document.createElement('p');
-  bannerText.textContent =
-    'Is the Tournesol project really effective? We are currently investigating' +
-    " the impact of our browser extension on the YouTube viewers' habits. Join" +
-    ' our research study to help us improve Tournesol!';
+  bannerText.textContent = getLocalizedBannerText();
   bannerTextContainer.append(bannerText);
 
   // The second flex item is the action button.
   const actionButtonContainer = document.createElement('div');
   const actionButton = document.createElement('a');
-  actionButton.textContent = 'Join';
+  actionButton.textContent = getLocalizedActionButtonText();
   actionButton.className = 'tournesol_mui_like_button';
   actionButton.setAttribute('href', 'https://tournesol.app');
   actionButton.setAttribute('target', '_blank');
