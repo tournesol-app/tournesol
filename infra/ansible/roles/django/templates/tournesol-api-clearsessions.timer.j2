@@ -1,0 +1,9 @@
+[Unit]
+Description=Tournesol API session clean-up
+
+[Timer]
+OnCalendar={{tournesol_api_clearsessions_schedule}}
+Persistent=yes
+
+[Install]
+WantedBy=timers.target

@@ -182,6 +182,25 @@
     enabled: yes
     daemon_reload: yes
 
+# scheduled task: sessions clean-up
+
+- name: Copy Tournesol API clearsessions service
+  template:
+    dest: /etc/systemd/system/tournesol-api-clearsessions.service
+    src: tournesol-api-clearsessions.service.j2
+
+- name: Copy Tournesol API clearsessions timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-clearsessions.timer
+    src: tournesol-api-clearsessions.timer.j2
+
+- name: Enable and start Tournesol API clearsessions timer
+  systemd:
+    name: tournesol-api-clearsessions.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
 # scheduled task: refresh token clean-up
 
 - name: Copy Tournesol API cleartokens service
