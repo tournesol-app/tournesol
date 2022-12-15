@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.message === 'displayModal') {
-    const displayed = displayModal();
+    const displayed = displayModal(request.modalOptions);
 
     if (displayed) {
       sendResponse({ success: true });
@@ -107,7 +107,7 @@ function initTournesolModal() {
 /**
  * Single entry point to display the extension modal.
  */
-function displayModal() {
+function displayModal({ src, height } = {}) {
   const modal = document.getElementById(EXT_MODAL_ID);
   const iframe = document.getElementById(IFRAME_TOURNESOL_LOGIN_ID);
 
@@ -123,14 +123,20 @@ function displayModal() {
   // prevent visual blink while refreshing the iframe
   iframe.addEventListener('load', display);
 
-  // This manual iframe refresh allows to trigger an access token
-  // refresh (see the content scripts configuration in manifest.json).
-  // This operation is mandatory here as it allows to dismiss any
-  // outdated token in the chrome.storage.local. Using the iframe
-  // without discarding a local outdated token, will erroneously display
-  // the Tournesol home page, instead of the login form.
-  // eslint-disable-next-line no-self-assign
-  iframe.src = iframe.src;
+  if (src) {
+    iframe.src = src;
+  } else {
+    // This manual iframe refresh allows to trigger an access token
+    // refresh (see the content scripts configuration in manifest.json).
+    // This operation is mandatory here as it allows to dismiss any
+    // outdated token in the chrome.storage.local. Using the iframe
+    // without discarding a local outdated token, will erroneously display
+    // the Tournesol home page, instead of the login form.
+    iframe.src = chrome.runtime.getURL('html/tournesol-iframe.html');
+  }
+
+  iframe.style.height = height || '';
+
   return true;
 }
 

@@ -1,0 +1,39 @@
+button.tournesol-rate-button {
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 36px;
+  font-size: 14px;
+  border-radius: 18px;
+  white-space: nowrap;
+  font-weight: 500;
+
+  color: #0f0f0f;
+  background: #ffc800;
+}
+button.tournesol-rate-button:hover {
+  background: #b28c00;
+}
+
+button.tournesol-rate-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  background: #ffc800;
+}
+
+img.tournesol-button-image {
+  margin-left: -6px;
+  margin-right: 6px;
+}
+
+img.tournesol-button-image.tournesol-rate-later {
+  /* Compensate the extra margins inside the Material UI "Add" icon */
+  margin-left: -10px;
+  margin-right: 2px;
+}

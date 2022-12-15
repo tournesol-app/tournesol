@@ -59,6 +59,10 @@ const hasLocalStorageAccess = async () => {
   }
 };
 
+const applyEmbeddedStyle = () => {
+  document.documentElement.classList.add('embedded');
+};
+
 interface Props {
   children?: React.ReactNode;
 }
@@ -75,6 +79,7 @@ const Frame = ({ children }: Props) => {
     };
     if (isEmbedded) {
       checkStorage();
+      applyEmbeddedStyle();
     }
   }, []);
 
@@ -85,7 +90,7 @@ const Frame = ({ children }: Props) => {
         {!isEmbedded && <SideBar />}
         <main className={classes.main}>
           {hasStorageError ? <StorageError /> : children}
-          <Footer />
+          {!isEmbedded && <Footer />}
         </main>
       </div>
     </>
