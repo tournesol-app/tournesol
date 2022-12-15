@@ -63,7 +63,7 @@ function addRateButtons() {
 
     window.clearInterval(timer);
 
-    const addRateButton = ({ id, label, iconSrc, onClick }) => {
+    const addRateButton = ({ id, label, iconSrc, iconClass, onClick }) => {
       // Create Button
       const button = document.createElement('button');
       button.setAttribute('id', id);
@@ -71,7 +71,8 @@ function addRateButtons() {
 
       // Icon
       const image = document.createElement('img');
-      image.setAttribute('class', 'tournesol-button-image');
+      image.classList.add('tournesol-button-image');
+      if (iconClass) image.classList.add(iconClass);
       image.setAttribute('src', iconSrc);
       image.setAttribute('width', '24');
       button.append(image);
@@ -113,6 +114,7 @@ function addRateButtons() {
         id: 'tournesol-rate-later-button',
         label: 'Rate Later',
         iconSrc: chrome.runtime.getURL('images/add.svg'),
+        iconClass: 'tournesol-rate-later',
         onClick: () => {
           rateLaterButton.disabled = true;
 

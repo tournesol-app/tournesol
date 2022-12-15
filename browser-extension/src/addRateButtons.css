@@ -25,3 +25,9 @@ img.tournesol-button-image {
   margin-left: -6px;
   margin-right: 6px;
 }
+
+img.tournesol-button-image.tournesol-rate-later {
+  /* Compensate the extra margins inside the Material UI "Add" icon */
+  margin-left: -10px;
+  margin-right: 2px;
+}
