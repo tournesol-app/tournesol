@@ -63,33 +63,25 @@ function addRateButtons() {
 
     window.clearInterval(timer);
 
-    const addRateButton = ({ id, label, onClick }) => {
+    const addRateButton = ({ id, label, iconSrc, onClick }) => {
       // Create Button
       const button = document.createElement('button');
       button.setAttribute('id', id);
       button.setAttribute('class', 'tournesol-rate-button');
 
-      // Image td for better vertical alignment
-      const img_td = document.createElement('td');
-      img_td.setAttribute('valign', 'middle');
+      // Icon
       const image = document.createElement('img');
       image.setAttribute('class', 'tournesol-button-image');
-      image.setAttribute('src', chrome.runtime.getURL('Logo128.png'));
-      image.setAttribute('width', '20');
-      img_td.append(image);
-      button.append(img_td);
+      image.setAttribute('src', iconSrc);
+      image.setAttribute('width', '24');
+      button.append(image);
 
-      // Text td for better vertical alignment
-      const text_td = document.createElement('td');
-      text_td.setAttribute('valign', 'middle');
-      let text_td_text = document.createTextNode(label);
-      text_td.append(text_td_text);
-      button.append(text_td);
+      // Label
+      const text = document.createTextNode(label);
+      button.append(text);
 
       const setLabel = (label) => {
-        const new_text = document.createTextNode(label);
-        text_td_text.replaceWith(new_text);
-        text_td_text = new_text;
+        text.textContent = label;
       };
 
       // On click
@@ -104,6 +96,7 @@ function addRateButtons() {
     addRateButton({
       id: 'tournesol-rate-now-button',
       label: 'Rate Now',
+      iconSrc: chrome.runtime.getURL('images/compare.svg'),
       onClick: () => {
         chrome.runtime.sendMessage({
           message: 'displayModal',
@@ -119,6 +112,7 @@ function addRateButtons() {
       addRateButton({
         id: 'tournesol-rate-later-button',
         label: 'Rate Later',
+        iconSrc: chrome.runtime.getURL('images/add.svg'),
         onClick: () => {
           rateLaterButton.disabled = true;
 

@@ -7,8 +7,8 @@ button.tournesol-rate-button {
   color: #0f0f0f;
   background: #f3bd00;
   margin-left: 8px;
-  display: inline-block;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
   padding: 0 16px;
   height: 36px;
   font-size: 14px;
@@ -22,6 +22,6 @@ button.tournesol-rate-button:disabled {
 }
 
 img.tournesol-button-image {
+  margin-left: -6px;
   margin-right: 6px;
-  vertical-align: middle;
 }
