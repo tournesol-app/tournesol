@@ -18,7 +18,7 @@ import { Biotech, Campaign } from '@mui/icons-material';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
 
-// TODO: these values are placeholder values that will be updated.
+// TODO: these values are placeholders. Replace them with the correct dates.
 const STUDY_DATE_START = new Date('2022-01-01T00:00:00Z');
 const STUDY_DATE_END = new Date('2024-01-01T00:00:00Z');
 
@@ -35,6 +35,12 @@ const TempStudyBanner = () => {
   const now = new Date();
 
   useEffect(() => {
+    // Anonymous users can't have a proof of vote.
+    if (!isLoggedIn) {
+      return;
+    }
+
+    // Don't make extra HTTP requests when the study is not in progress.
     if (now < STUDY_DATE_START || now > STUDY_DATE_END) {
       return;
     }
@@ -44,8 +50,9 @@ const TempStudyBanner = () => {
       .catch(console.error);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pollName]);
+  }, [isLoggedIn, pollName]);
 
+  // Do not display anything if the study is not in progress.
   if (now < STUDY_DATE_START || now > STUDY_DATE_END) {
     return <></>;
   }
