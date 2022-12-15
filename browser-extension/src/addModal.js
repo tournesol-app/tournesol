@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.message === 'displayModal') {
-    const displayed = displayModal({ src: request.modalSrc });
+    const displayed = displayModal(request.modalOptions);
 
     if (displayed) {
       sendResponse({ success: true });
@@ -107,7 +107,7 @@ function initTournesolModal() {
 /**
  * Single entry point to display the extension modal.
  */
-function displayModal({ src } = {}) {
+function displayModal({ src, height } = {}) {
   const modal = document.getElementById(EXT_MODAL_ID);
   const iframe = document.getElementById(IFRAME_TOURNESOL_LOGIN_ID);
 
@@ -135,6 +135,9 @@ function displayModal({ src } = {}) {
     // eslint-disable-next-line no-self-assign
     iframe.src = 'https://tournesol.app/login?embed=1';
   }
+
+  iframe.style.height = height || '';
+
   return true;
 }
 

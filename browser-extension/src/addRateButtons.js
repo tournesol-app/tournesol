@@ -107,7 +107,10 @@ function addRateButtons() {
       onClick: () => {
         chrome.runtime.sendMessage({
           message: 'displayModal',
-          modalSrc: `https://tournesol.app/comparison?embed=1&uidA=yt%3A${videoId}`,
+          modalOptions: {
+            src: `https://tournesol.app/comparison?embed=1&uidA=yt%3A${videoId}`,
+            height: '90vh',
+          },
         });
       },
     });
