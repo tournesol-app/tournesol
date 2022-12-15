@@ -23,6 +23,8 @@ button.tournesol-rate-button:hover {
 
 button.tournesol-rate-button:disabled {
   opacity: 0.5;
+  cursor: default;
+  background: #ffc800;
 }
 
 img.tournesol-button-image {
