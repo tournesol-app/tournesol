@@ -133,7 +133,7 @@ function displayModal({ src, height } = {}) {
     // without discarding a local outdated token, will erroneously display
     // the Tournesol home page, instead of the login form.
     // eslint-disable-next-line no-self-assign
-    iframe.src = 'https://tournesol.app/login?embed=1';
+    iframe.src = chrome.runtime.getURL('html/tournesol-iframe.html');
   }
 
   iframe.style.height = height || '';
