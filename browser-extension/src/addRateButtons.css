@@ -4,13 +4,17 @@ button.tournesol-rate-button {
   border-radius: 2px;
   cursor: pointer;
   font-family: 'Roboto', 'Noto', sans-serif;
-  color: #f3bd00;
+  color: #0f0f0f;
+  background: #f3bd00;
   margin-left: 8px;
   display: inline-block;
   vertical-align: middle;
-  text-transform: uppercase;
-  font-weight: 500;
+  padding: 0 16px;
   height: 36px;
+  font-size: 14px;
+  border-radius: 18px;
+  white-space: nowrap;
+  font-weight: 500;
 }
 
 button.tournesol-rate-button:disabled {
