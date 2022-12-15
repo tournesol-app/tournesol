@@ -1,5 +1,5 @@
 /**
- * Create the Rate Later button.
+ * Create the Rate Later and the Rate Now buttons.
  *
  * This content script is meant to be run on each YouTube video page.
  */
@@ -40,7 +40,7 @@ function addRateButtons() {
   const timer = window.setInterval(createButtonIsReady, 300);
 
   /**
-   * Create the Rate Later button.
+   * Create the Rate Later and the Rate Now buttons.
    */
   function createButtonIsReady() {
     /*
