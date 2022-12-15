@@ -39,7 +39,9 @@ code {
   top: 80px;
 }
 html.embedded .SnackbarContainer-root.belowTopBar {
-  /* When the site is embedded in the browser extension iframe move the snackback into the title bar */
+  /* when the site is embedded in the browser extension iframe, we move the
+     snackback into the empty page title bar in order to avoid shadowing any
+     page content */
   top: 4px;
 }
 
