@@ -38,5 +38,9 @@ code {
   /* display alerts below the top bar, to avoid hiding buttons */
   top: 80px;
 }
+html.embedded .SnackbarContainer-root.belowTopBar {
+  /* When the site is embedded in the browser extension iframe move the snackback into the title bar */
+  top: 4px;
+}
 
 /* -- end: third-party packages customization -- */
