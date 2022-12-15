@@ -132,7 +132,6 @@ function displayModal({ src, height } = {}) {
     // outdated token in the chrome.storage.local. Using the iframe
     // without discarding a local outdated token, will erroneously display
     // the Tournesol home page, instead of the login form.
-    // eslint-disable-next-line no-self-assign
     iframe.src = chrome.runtime.getURL('html/tournesol-iframe.html');
   }
 
