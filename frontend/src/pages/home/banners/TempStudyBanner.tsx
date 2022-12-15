@@ -15,20 +15,79 @@ import {
 } from '@mui/material';
 import { Biotech, Campaign } from '@mui/icons-material';
 
-import { useCurrentPoll, useLoginState } from 'src/hooks';
+import { useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
+import { getUserComparisons } from 'src/utils/api/comparisons';
+import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 // TODO: these values are placeholders. Replace them with the correct dates.
 const STUDY_DATE_START = new Date('2022-01-01T00:00:00Z');
 const STUDY_DATE_END = new Date('2024-01-01T00:00:00Z');
 
+const ParticipateButton = ({
+  nbComparisons,
+  proofOfVote,
+}: {
+  nbComparisons: number;
+  proofOfVote: string;
+}) => {
+  const { t } = useTranslation();
+
+  if (nbComparisons <= 0) {
+    return (
+      <Button
+        to="/comparison?series=true"
+        color="secondary"
+        variant="outlined"
+        component={RouterLink}
+      >
+        {t('tempStudyBanner.atLeastOneComparisonIsRequired')}
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      variant="contained"
+      component={Link}
+      target="_blank"
+      rel="noopener"
+      href={`https://tournesol.app?proof=${proofOfVote}`}
+      endIcon={<Biotech />}
+    >
+      {t('tempStudyBanner.join')}
+    </Button>
+  );
+};
+
+const LoginToParticipateButton = () => {
+  const { t } = useTranslation();
+  return (
+    <Button
+      to="/login"
+      color="secondary"
+      variant="outlined"
+      component={RouterLink}
+    >
+      {t('tempStudyBanner.loginToParticipate')}
+    </Button>
+  );
+};
+
+/**
+ * Display a temporary study banner.
+ *
+ * This component return an empty React.Fragment if the current date is not
+ * between the dates `STUDY_DATE_START` and `STUDY_DATE_END` (i.e. if the
+ * study is not in progress).
+ */
 const TempStudyBanner = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const { name: pollName } = useCurrentPoll();
   const { isLoggedIn } = useLoginState();
 
+  const [nbComparisons, setNbComparisons] = useState(0);
   const [proofOfVote, setProofOfVote] = useState('');
   const mediaBelowXl = useMediaQuery(theme.breakpoints.down('xl'));
 
@@ -45,12 +104,22 @@ const TempStudyBanner = () => {
       return;
     }
 
-    UsersService.usersMeProofOfVotesRetrieve({ pollName })
-      .then(({ signature }) => setProofOfVote(signature))
+    getUserComparisons(YOUTUBE_POLL_NAME, 1)
+      .then((comparisons) => {
+        setNbComparisons(comparisons.length);
+
+        if (comparisons.length > 0) {
+          UsersService.usersMeProofOfVotesRetrieve({
+            pollName: YOUTUBE_POLL_NAME,
+          })
+            .then(({ signature }) => setProofOfVote(signature))
+            .catch(console.error);
+        }
+      })
       .catch(console.error);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, pollName]);
+  }, [isLoggedIn]);
 
   // Do not display anything if the study is not in progress.
   if (now < STUDY_DATE_START || now > STUDY_DATE_END) {
@@ -77,25 +146,12 @@ const TempStudyBanner = () => {
               </Stack>
               <Box display="flex" justifyContent="flex-end">
                 {isLoggedIn ? (
-                  <Button
-                    variant="contained"
-                    component={Link}
-                    target="_blank"
-                    rel="noopener"
-                    href={`https://tournesol.app?proof=${proofOfVote}`}
-                    endIcon={<Biotech />}
-                  >
-                    {t('tempStudyBanner.join')}
-                  </Button>
+                  <ParticipateButton
+                    nbComparisons={nbComparisons}
+                    proofOfVote={proofOfVote}
+                  />
                 ) : (
-                  <Button
-                    to="/login"
-                    color="secondary"
-                    variant="outlined"
-                    component={RouterLink}
-                  >
-                    {t('tempStudyBanner.loginToParticipate')}
-                  </Button>
+                  <LoginToParticipateButton />
                 )}
               </Box>
             </Stack>
