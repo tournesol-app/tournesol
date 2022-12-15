@@ -40,7 +40,7 @@ code {
 }
 html.embedded .SnackbarContainer-root.belowTopBar {
   /* when the site is embedded in the browser extension iframe, we move the
-     snackback into the empty page title bar in order to avoid shadowing any
+     snackbar into the empty page title bar in order to avoid shadowing any
      page content */
   top: 4px;
 }
