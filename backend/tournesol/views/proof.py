@@ -1,6 +1,8 @@
 """
-API endpoints to interact with the contributor's proofs of work and other
-kind of proof.
+API endpoints to interact with the contributor's proofs.
+
+A proof is a signed message issued by a poll for users that meet specific
+requirements.
 """
 
 from drf_spectacular.types import OpenApiTypes
@@ -8,9 +10,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 
-from tournesol.serializers.proof_of_vote import ProofOfVoteSerializer
-
-from ..models import Comparison
+from ..serializers.proof_of_vote import ProofOfVoteSerializer
 from .mixins.poll import PollScopedViewMixin
 
 
@@ -21,7 +21,8 @@ from .mixins.poll import PollScopedViewMixin
                 "keyword",
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
-                description="Used as an input by the signing algorithm.",
+                description="A keyword identifying a proof. Used as an input"
+                " by the signing algorithm.",
             ),
         ],
     ),
@@ -31,57 +32,37 @@ class ProofView(PollScopedViewMixin, generics.RetrieveAPIView):
     Return a cryptographic signature of the user id, associated to the
     selected poll and optionally to the specified keyword.
 
-    This signature can act as a proof for the users to guarantee they really
-    have an account, and optionally that they meet specific expectations that
-    can be poll dependant.
+    This signature can act as a proof for the users to guarantee they have an
+    activated account, and optionally that they meet specific requirements
+    that can be poll dependant.
 
-    The query parameter `keyword` specifies which set of conditions are
-    expected to be met by the logged-in user. Each set of conditions
-    includes at least having a user account.
+    The query parameter `keyword` identifies the requested proof, and its set
+    of requirements that are expected to be met by the logged-in user. Each
+    set of requirements includes at least having an activated user account.
 
     List of accepted keywords and matching conditions:
 
-        "" (empty): Only check if the user has an account.
+        "" (empty): Same as "activated".
+
+        "activated": Only check if the user has an activated account.
 
         "proof_of_vote": Additionally check if the user has participated in
                          the selected poll.
     """
 
-    _proof_of_vote_keyword = "proof_of_vote"
-
     serializer_class = ProofOfVoteSerializer
 
-    def user_has_voted(self, poll, user):
-        """
-        Return True if the user has at least one comparison in the given poll,
-        False instead.
-
-        TODO: This method, and potentially similar future methods should be
-              implemented by the `Poll` model, not by the view, in order to
-              follow the simple view / complex model pattern recommended by
-              the Django community. The view doesn't need to know the
-              strategies used by the model to check if the users meet the
-              expectations. Calling a single Poll's method with the proper
-              arguments should be enough.
-        """
-        comparisons = Comparison.objects.filter(poll=poll, user=user)
-
-        if comparisons.exists():
-            return True
-        return False
-
     def get_object(self):
-        user = self.request.user
         poll = self.poll_from_url
-        # Only one keyword at a time is supported for now
-        keyword = self.request.query_params.get("keyword", "")
+        user_id = self.request.user.id
 
-        if keyword == self._proof_of_vote_keyword:
-            has_voted = self.user_has_voted(poll, user)
-            if not has_voted:
-                raise PermissionDenied
+        # Only one keyword at a time is supported for now.
+        keyword = self.request.query_params.get("keyword", "activated")
+
+        if not poll.user_meets_proof_requirements(user_id, keyword):
+            raise PermissionDenied
 
         return {
-            "signature": poll.get_user_proof(self.request.user.id, keyword),
+            "signature": poll.get_user_proof(user_id, keyword),
             "poll_name": poll.name,
         }

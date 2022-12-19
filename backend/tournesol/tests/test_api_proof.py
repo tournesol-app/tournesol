@@ -37,8 +37,8 @@ class ProofViewTestCase(TestCase):
 
     def test_auth_200_can_get_default_proof(self):
         """
-        An authenticated user can get a proof of account, even with no
-        comparison.
+        An authenticated user can get a proof of activated account, even with
+        no comparison.
         """
         self.client.force_authenticate(self.user_with_0_comparison)
 
@@ -48,13 +48,23 @@ class ProofViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response.data["signature"].startswith("00084:"))
 
+        default_signature = response.data["signature"]
+
         # An empty query parameter should be considered as a simple proof of
         # account request.
         response = self.client.get(
             f"/users/me/proof/{self.poll.name}/", data={"keyword": ""}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data["signature"].startswith("00084:"))
+        self.assertTrue(response.data["signature"], default_signature)
+
+        # An empty query parameter should be considered as a simple proof of
+        # account request.
+        response = self.client.get(
+            f"/users/me/proof/{self.poll.name}/", data={"keyword": "activated"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["signature"], default_signature)
 
     def test_auth_403_cant_get_proof_of_vote_without_comparison(self):
         """
