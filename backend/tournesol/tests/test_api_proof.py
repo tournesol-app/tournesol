@@ -8,7 +8,7 @@ from .factories.comparison import ComparisonFactory
 from .factories.poll import PollFactory
 
 
-class ProofOfVoteApi(TestCase):
+class ProofViewTestCase(TestCase):
     def setUp(self):
         self.poll = PollFactory()
         self.client = APIClient()

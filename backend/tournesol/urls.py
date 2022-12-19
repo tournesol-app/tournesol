@@ -5,8 +5,6 @@ The `tournesol` app routes.
 from django.urls import include, path, re_path
 from rest_framework import routers
 
-from tournesol.views.proof_of_vote import ProofOfVoteView
-
 from .views import ComparisonDetailApi, ComparisonListApi, ComparisonListFilteredApi
 from .views.contributor_recommendations import (
     PrivateContributorRecommendationsView,
@@ -35,6 +33,7 @@ from .views.preview import (
     DynamicWebsitePreviewDefault,
     DynamicWebsitePreviewEntity,
 )
+from .views.proof import ProofView
 from .views.rate_later import RateLaterDetail, RateLaterList
 from .views.ratings import (
     ContributorRatingDetail,
@@ -56,7 +55,7 @@ urlpatterns = [
     # User API
     path("users/me/", CurrentUserView.as_view(), name="users_me"),
     # Voucher API
-    path("users/me/", include('vouch.urls')),
+    path("users/me/", include("vouch.urls")),
     # Data exports
     path(
         "users/me/exports/comparisons/",
@@ -164,7 +163,7 @@ urlpatterns = [
     # Contributors' proof API
     path(
         "users/me/proof/<str:poll_name>/",
-        ProofOfVoteView.as_view(),
+        ProofView.as_view(),
         name="usersme-proof",
     ),
     # Email domain API
@@ -200,7 +199,7 @@ urlpatterns = [
         name="website_preview_entity",
     ),
     re_path(
-        r'^preview/.*$',
+        r"^preview/.*$",
         DynamicWebsitePreviewDefault.as_view(),
         name="website_preview_default",
     ),

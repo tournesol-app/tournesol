@@ -1,5 +1,6 @@
 """
-API endpoints to interact with the contributor's proof of work.
+API endpoints to interact with the contributor's proofs of work and other
+kind of proof.
 """
 
 from drf_spectacular.types import OpenApiTypes
@@ -25,7 +26,7 @@ from .mixins.poll import PollScopedViewMixin
         ],
     ),
 )
-class ProofOfVoteView(PollScopedViewMixin, generics.RetrieveAPIView):
+class ProofView(PollScopedViewMixin, generics.RetrieveAPIView):
     """
     Return a cryptographic signature of the user id, associated to the
     selected poll and optionally to the specified keyword.
