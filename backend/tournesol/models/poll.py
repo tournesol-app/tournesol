@@ -97,7 +97,7 @@ class Poll(models.Model):
         Return False if the proof identified by the provided keyword has
         requirements not satisfied by the provided user, return True instead.
 
-        Random keyword that are not understood by the poll will always return
+        Random keywords that are not understood by the poll will always return
         True.
         """
         from core.models.user import User  # pylint: disable=import-outside-toplevel
