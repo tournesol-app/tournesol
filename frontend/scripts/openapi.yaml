@@ -1654,17 +1654,19 @@ paths:
         Return a cryptographic signature of the user id, associated to the
         selected poll and optionally to the specified keyword.
 
-        This signature can act as a proof for the users to guarantee they really
-        have an account, and optionally that they meet specific expectations that
-        can be poll dependant.
+        This signature can act as a proof for the users to guarantee they have an
+        activated account, and optionally that they meet specific requirements
+        that can be poll dependant.
 
-        The query parameter `keyword` specifies which set of conditions are
-        expected to be met by the logged-in user. Each set of conditions
-        includes at least having a user account.
+        The query parameter `keyword` identifies the requested proof, and its set
+        of requirements that are expected to be met by the logged-in user. Each
+        set of requirements includes at least having an activated user account.
 
         List of accepted keywords and matching conditions:
 
-            "" (empty): Only check if the user has an account.
+            "" (empty): Same as "activated".
+
+            "activated": Only check if the user has an activated account.
 
             "proof_of_vote": Additionally check if the user has participated in
                              the selected poll.
@@ -1678,7 +1680,8 @@ paths:
         name: keyword
         schema:
           type: string
-        description: Used as an input by the signing algorithm.
+        description: A keyword identifying a proof. Used as an input by the signing
+          algorithm.
       tags:
       - users
       security:
