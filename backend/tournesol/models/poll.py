@@ -83,15 +83,12 @@ class Poll(models.Model):
     def __str__(self) -> str:
         return f'Poll "{self.name}"'
 
-    def get_proof_of_vote(self, user_id: int):
+    def get_user_proof(self, user_id: int, keyword: str):
         """
-        Returns the user_id signed with a signature,
-        derived from the Django SECRET_KEY and the current poll name.
-
-        Should only be provided for the user after they submitted
-        at least 1 comparison in the current poll.
+        Return the user_id signed with a signature, derived from the current
+        poll name and the specified keyword.
         """
-        signer = Signer(salt=f"proof_of_vote:{self.name}")
+        signer = Signer(salt=f"{keyword}:{self.name}")
         return signer.sign(f"{user_id:05d}")
 
     @property

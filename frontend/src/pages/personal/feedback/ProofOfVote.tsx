@@ -11,7 +11,10 @@ const ProofOfVote = () => {
   const [code, setCode] = useState('');
 
   useEffect(() => {
-    UsersService.usersMeProofOfVotesRetrieve({ pollName })
+    UsersService.usersMeProofRetrieve({
+      pollName: pollName,
+      keyword: 'proof_of_vote',
+    })
       .then(({ signature }) => setCode(signature))
       .catch(console.error);
   }, [pollName]);

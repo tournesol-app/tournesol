@@ -1647,16 +1647,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/ScoreInconsistencies'
           description: ''
-  /users/me/proof_of_votes/{poll_name}/:
+  /users/me/proof/{poll_name}/:
     get:
-      operationId: users_me_proof_of_votes_retrieve
-      description: API for retrieving the logged user's proof_of_vote in a given poll.
+      operationId: users_me_proof_retrieve
+      description: |-
+        Return a cryptographic signature of the user id, associated to the
+        selected poll and optionally to the specified keyword.
+
+        This signature can act as a proof for the users to guarantee they really
+        have an account, and optionally that they meet specific expectations that
+        can be poll dependant.
+
+        The query parameter `keyword` specifies which set of conditions are
+        expected to be met by the logged-in user. Each set of conditions
+        includes at least having a user account.
+
+        List of accepted keywords and matching conditions:
+
+            "" (empty): Only check if the user has an account.
+
+            "proof_of_vote": Additionally check if the user has participated in
+                             the selected poll.
       parameters:
       - in: path
         name: poll_name
         schema:
           type: string
         required: true
+      - in: query
+        name: keyword
+        schema:
+          type: string
+        description: Used as an input by the signing algorithm.
       tags:
       - users
       security:

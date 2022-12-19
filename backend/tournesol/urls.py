@@ -161,11 +161,11 @@ urlpatterns = [
         ContributorCriteriaCorrelationsView.as_view(),
         name="contributor_criteria_correlations",
     ),
-    # Proof of votes
+    # Contributors' proof API
     path(
-        "users/me/proof_of_votes/<str:poll_name>/",
+        "users/me/proof/<str:poll_name>/",
         ProofOfVoteView.as_view(),
-        name="proof_of_vote",
+        name="usersme-proof",
     ),
     # Email domain API
     path("domains/", EmailDomainsList.as_view(), name="email_domains_list"),
