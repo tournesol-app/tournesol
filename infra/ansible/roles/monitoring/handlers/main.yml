@@ -65,3 +65,7 @@
     ds_type: "prometheus"
     ds_url: "http://127.0.0.1:9090"
     is_default: yes
+  register: prometheus_ds
+  retries: 3
+  delay: 10
+  until: prometheus_ds is not failed

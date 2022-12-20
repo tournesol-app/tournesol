@@ -176,9 +176,16 @@
     repo: deb https://packages.grafana.com/oss/deb stable main
     state: present
 
+- name: Gather the package facts
+  package_facts:
+    manager: apt
+
 - name: Install Grafana
   apt:
-    name: grafana
+    # Install older version on provisioning, to workaround bug in
+    # on reset-admin-password in versions 9.3.x.
+    # See https://github.com/grafana/grafana/issues/59915
+    name: "{{ 'grafana' if 'grafana' in ansible_facts.packages else 'grafana=9.2.7' }}"
     install_recommends: no
     update_cache: yes
   notify:
