@@ -15,6 +15,7 @@ from core.models import User
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.lib.public_dataset import get_dataset, get_users_dataset
 from tournesol.models import Comparison, Poll
+from tournesol.models.poll import PROOF_OF_VOTE_KEYWORD
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -191,7 +192,7 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
         writer = csv.DictWriter(response, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(
-            {**d, "signature": poll.get_proof_of_vote(d["user_id"])}
+            {**d, "signature": poll.get_user_proof(d["user_id"], PROOF_OF_VOTE_KEYWORD)}
             for d in User.objects.filter(comparisons__poll=poll).values(
                 "username", "email", n_comparisons=Count("*"), user_id=F("id")
             )
