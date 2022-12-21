@@ -111,3 +111,29 @@ def get_users_dataset(poll_name: str) -> QuerySet:
         """,
         {"poll_name": poll_name},
     )
+
+
+def get_public_contributor_rating_criteria_scores_dataset(poll_name: str) -> QuerySet:
+    """
+    Retrieve ContributorRatingCriteriaScores made on public comparisons and return a
+    non-evaluated Django `RawQuerySet`.
+    """
+    from tournesol.models import (  # pylint: disable=import-outside-toplevel
+        ContributorRatingCriteriaScore,
+    )
+
+    return (
+        ContributorRatingCriteriaScore
+        .objects
+        .select_related('contributor_rating')
+        .select_related('contributor_rating__poll')
+        .select_related('contributor_rating__user')
+        .select_related('contributor_rating__entity')
+        .filter(contributor_rating__poll__name=poll_name)
+        .filter(contributor_rating__is_public=True)
+        .order_by(
+            'contributor_rating__user__username',
+            'contributor_rating__entity__uid',
+            'criteria',
+        )
+    )
