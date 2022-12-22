@@ -19,6 +19,8 @@ ALGORITHM_CHOICES = (
     (ALGORITHM_MEHESTAN, "Mehestan"),
 )
 
+PROOF_OF_VOTE_KEYWORD = "proof_of_vote"
+
 
 class Poll(models.Model):
     """
@@ -44,6 +46,9 @@ class Poll(models.Model):
         help_text="Scaling factor multiplied by score before the sigmoid function is applied."
         " Updated automatically on each run. (Mehestan only)."
     )
+
+    def __str__(self) -> str:
+        return f'Poll "{self.name}"'
 
     @classmethod
     def default_poll(cls) -> "Poll":
@@ -80,23 +85,44 @@ class Poll(models.Model):
     def entity_cls(self):
         return ENTITY_TYPE_NAME_TO_CLASS[self.entity_type]
 
-    def __str__(self) -> str:
-        return f'Poll "{self.name}"'
-
-    def get_proof_of_vote(self, user_id: int):
-        """
-        Returns the user_id signed with a signature,
-        derived from the Django SECRET_KEY and the current poll name.
-
-        Should only be provided for the user after they submitted
-        at least 1 comparison in the current poll.
-        """
-        signer = Signer(salt=f"proof_of_vote:{self.name}")
-        return signer.sign(f"{user_id:05d}")
-
     @property
     def scale_function(self):
         if self.algorithm == ALGORITHM_MEHESTAN and self.sigmoid_scale is not None:
             return lambda x: (4 * MEHESTAN_MAX_SCALED_SCORE / TAU) * \
                              np.arctan(self.sigmoid_scale * x)
         return lambda x: x
+
+    def user_meets_proof_requirements(self, user_id: int, keyword: str) -> bool:
+        """
+        Return False if the proof identified by the provided keyword has
+        requirements not satisfied by the provided user, return True instead.
+
+        Random keywords that are not understood by the poll will always return
+        True.
+        """
+        from core.models.user import User  # pylint: disable=import-outside-toplevel
+
+        from ..models import Comparison  # pylint: disable=import-outside-toplevel
+
+        # A proof can be obtained only by activated users.
+        try:
+            User.objects.get(id=user_id, is_active=True)
+        except User.DoesNotExist:
+            return False
+
+        # A proof of vote requires at least one comparison made.
+        if keyword == PROOF_OF_VOTE_KEYWORD:
+            comparisons = Comparison.objects.filter(poll=self, user_id=user_id)
+
+            if not comparisons.exists():
+                return False
+
+        return True
+
+    def get_user_proof(self, user_id: int, keyword: str):
+        """
+        Return the user_id and its signature, derived from the current poll
+        name and the specified keyword.
+        """
+        signer = Signer(salt=f"{keyword}:{self.name}")
+        return signer.sign(f"{user_id:05d}")
