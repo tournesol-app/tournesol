@@ -37,6 +37,7 @@
   template:
     src: settings.yaml.j2
     dest: /etc/tournesol/settings.yaml
+    backup: true
   notify: Restart Gunicorn
 
 - name: Copy Django OIDC RSA private key
