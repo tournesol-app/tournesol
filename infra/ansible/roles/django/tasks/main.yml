@@ -32,11 +32,17 @@
   file:
     path: /etc/tournesol
     state: directory
+    mode: 0750
+    owner: root
+    group: gunicorn
 
 - name: Copy Django settings
   template:
     src: settings.yaml.j2
     dest: /etc/tournesol/settings.yaml
+    mode: 0640
+    owner: root
+    group: gunicorn
     backup: true
   notify: Restart Gunicorn
 

@@ -6,7 +6,7 @@ export VM_USER="${2:-"$USER"}"
 function get_settings_value() {
     local jq_filter=$1;
     ssh "$VM_USER@$VM_ADDR" -- \
-    'python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
+    'sudo python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
     | jq -r' "'$jq_filter | values'"
 }
 
