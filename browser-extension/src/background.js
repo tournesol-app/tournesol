@@ -5,6 +5,7 @@ import {
   fetchTournesolApi,
   getAccessToken,
   getRandomSubarray,
+  getUserProof,
 } from './utils.js';
 
 const oversamplingRatioForRecentVideos = 3;
@@ -212,7 +213,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
     return true;
-  } else if (request.message == 'getVideoStatistics') {
+  }
+
+  if (request.message.startsWith('getProof:')) {
+    const keyword = request.message.split(':')[1];
+
+    if (keyword) {
+      getUserProof(keyword).then((response) => {
+        sendResponse(response);
+      });
+      return true;
+    }
+  }
+
+  if (request.message == 'getVideoStatistics') {
     // getVideoStatistics(request.video_id).then(sendResponse);
     return true;
   } else if (request.message == 'getTournesolRecommendations') {

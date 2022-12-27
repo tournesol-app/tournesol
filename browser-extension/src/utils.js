@@ -81,6 +81,25 @@ export const addRateLater = async (video_id) => {
   };
 };
 
+export const getUserProof = async (keyword) => {
+  const userProofResponse = await fetchTournesolApi(
+    `users/me/proof/videos?keyword=${keyword}`,
+    'GET'
+  );
+
+  if (userProofResponse) {
+    const responseJson = await userProofResponse.json();
+
+    return {
+      success: userProofResponse.ok,
+      response: userProofResponse,
+      responseBody: responseJson,
+    };
+  }
+
+  return { success: false };
+};
+
 /*
  ** Useful method to extract a subset from an array
  ** Copied from https://stackoverflow.com/questions/11935175/sampling-a-random-subset-from-an-array
