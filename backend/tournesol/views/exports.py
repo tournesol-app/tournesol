@@ -101,7 +101,7 @@ def write_public_users_file(poll_name: str, write_target) -> None:
     )
 
 
-def write_public_voting_rights_file(poll_name: str, write_target) -> None:
+def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
     """
     Retrieve all voting rights on public comparisons and write them as CSV in
     `write_target`, an object supporting the Python file API.
@@ -110,6 +110,7 @@ def write_public_voting_rights_file(poll_name: str, write_target) -> None:
         "public_username",
         "video",
         "criteria",
+        "score",
         "voting_right",
     ]
 
@@ -124,6 +125,7 @@ def write_public_voting_rights_file(poll_name: str, write_target) -> None:
                 contributor_rating_criteria_score.contributor_rating.entity.metadata["video_id"]
             ),
             "criteria": contributor_rating_criteria_score.criteria,
+            "score": contributor_rating_criteria_score.score,
             "voting_right": contributor_rating_criteria_score.voting_right,
         }
         for contributor_rating_criteria_score in contributor_rating_criteria_scores
@@ -270,7 +272,7 @@ class ExportPublicAllView(APIView):
                 zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
 
             with StringIO() as output:
-                write_public_voting_rights_file(Poll.default_poll().name, output)
-                zip_file.writestr(f"{zip_root}/voting_rights.csv", output.getvalue())
+                write_individual_criteria_scores_file(Poll.default_poll().name, output)
+                zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
 
         return response

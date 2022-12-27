@@ -217,7 +217,7 @@ class ExportTest(TestCase):
                 root + "/README.txt",
                 root + "/comparisons.csv",
                 root + "/users.csv",
-                root + "/voting_rights.csv",
+                root + "/individual_criteria_scores.csv",
             ]
             self.assertEqual(zip_file.namelist(), expected_files)
 
@@ -277,11 +277,13 @@ class ExportTest(TestCase):
             contributor_rating=first_user_private_contributor_ratings[0],
             criteria="criteria2",
             voting_right=0.4855,
+            score=0.5214,
         )
         ContributorRatingCriteriaScore.objects.create(
             contributor_rating=first_user_private_contributor_ratings[1],
             criteria="criteria1",
             voting_right=0.4444,
+            score=-5.5555,
         )
 
         # ContributorRatingCriteriaScore that should be exported
@@ -291,6 +293,7 @@ class ExportTest(TestCase):
                 contributor_rating=first_user_public_contributor_ratings[2],
                 criteria="criteria2",
                 voting_right=0.1234,
+                score=2.4567,
             ),
         )
         expected_exports.append(
@@ -298,6 +301,7 @@ class ExportTest(TestCase):
                 contributor_rating=last_user_public_contributor_ratings[0],
                 criteria="criteria2",
                 voting_right=0.11,
+                score=-0.66,
             ),
         )
         expected_exports.append(
@@ -305,6 +309,7 @@ class ExportTest(TestCase):
                 contributor_rating=first_user_public_contributor_ratings[0],
                 criteria="criteria1",
                 voting_right=0.8,
+                score=1.9,
             ),
         )
 
@@ -325,7 +330,7 @@ class ExportTest(TestCase):
 
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
-            with zip_file.open(root + "/voting_rights.csv", "r") as file:
+            with zip_file.open(root + "/individual_criteria_scores.csv", "r") as file:
                 content = file.read().decode("utf-8")
                 csv_file = csv.DictReader(io.StringIO(content))
                 rows = list(csv_file)
@@ -341,6 +346,7 @@ class ExportTest(TestCase):
                         expected_export.contributor_rating.entity.metadata["video_id"],
                     )
                     self.assertEqual(row["criteria"], expected_export.criteria)
+                    self.assertEqual(row["score"], str(expected_export.score))
                     self.assertEqual(row["voting_right"], str(expected_export.voting_right))
 
     def test_all_export_sorts_by_username(self):
