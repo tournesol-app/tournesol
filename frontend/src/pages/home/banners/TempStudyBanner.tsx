@@ -17,34 +17,15 @@ import { Biotech, Campaign } from '@mui/icons-material';
 
 import { useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
-import { getUserComparisons } from 'src/utils/api/comparisons';
-import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 // TODO: these values are placeholders. Replace them with the correct dates.
 const STUDY_DATE_START = new Date('2022-01-01T00:00:00Z');
 const STUDY_DATE_END = new Date('2024-01-01T00:00:00Z');
 
-const ParticipateButton = ({
-  nbComparisons,
-  proofOfVote,
-}: {
-  nbComparisons: number;
-  proofOfVote: string;
-}) => {
-  const { t } = useTranslation();
+const PROOF_ID = 'browser_ext_study_2022';
 
-  if (nbComparisons <= 0) {
-    return (
-      <Button
-        to="/comparison?series=true"
-        color="secondary"
-        variant="outlined"
-        component={RouterLink}
-      >
-        {t('tempStudyBanner.atLeastOneComparisonIsRequired')}
-      </Button>
-    );
-  }
+const ParticipateButton = ({ userProof }: { userProof: string }) => {
+  const { t } = useTranslation();
 
   return (
     <Button
@@ -52,7 +33,7 @@ const ParticipateButton = ({
       component={Link}
       target="_blank"
       rel="noopener"
-      href={`https://tournesol.app?proof=${proofOfVote}`}
+      href={`https://tournesol.app?proof=${userProof}`}
       endIcon={<Biotech />}
     >
       {t('tempStudyBanner.join')}
@@ -86,15 +67,13 @@ const TempStudyBanner = () => {
   const theme = useTheme();
 
   const { isLoggedIn } = useLoginState();
+  const [userProof, setUserProof] = useState('');
 
-  const [nbComparisons, setNbComparisons] = useState(0);
-  const [proofOfVote, setProofOfVote] = useState('');
   const mediaBelowXl = useMediaQuery(theme.breakpoints.down('xl'));
-
   const now = new Date();
 
   useEffect(() => {
-    // Anonymous users can't have a proof of vote.
+    // Anonymous users can't get a proof from the API.
     if (!isLoggedIn) {
       return;
     }
@@ -104,18 +83,11 @@ const TempStudyBanner = () => {
       return;
     }
 
-    getUserComparisons(YOUTUBE_POLL_NAME, 1)
-      .then((comparisons) => {
-        setNbComparisons(comparisons.length);
-
-        if (comparisons.length > 0) {
-          UsersService.usersMeProofOfVotesRetrieve({
-            pollName: YOUTUBE_POLL_NAME,
-          })
-            .then(({ signature }) => setProofOfVote(signature))
-            .catch(console.error);
-        }
-      })
+    UsersService.usersMeProofRetrieve({
+      pollName: PROOF_ID,
+      keyword: 'activated',
+    })
+      .then(({ signature }) => setUserProof(signature))
       .catch(console.error);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,10 +118,7 @@ const TempStudyBanner = () => {
               </Stack>
               <Box display="flex" justifyContent="flex-end">
                 {isLoggedIn ? (
-                  <ParticipateButton
-                    nbComparisons={nbComparisons}
-                    proofOfVote={proofOfVote}
-                  />
+                  <ParticipateButton userProof={userProof} />
                 ) : (
                   <LoginToParticipateButton />
                 )}
