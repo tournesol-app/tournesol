@@ -42,3 +42,19 @@ This file contains the list of the users who appear in comparisons.csv.
     Users with a trust score of 0 (i.e. users without a trusted email and who
     haven't been vouched for by trusted users) can influence together at most
     10% of the total collaborative evaluation of a video.
+
+individual_criteria_scores.csv
+------------------------------
+
+Type: algorithm output.
+
+This file contains the individual scores computed by the algorithm for each
+criterion, rated by a user for a given video.
+
+    score:
+
+    TO DESCRIBE. How is it built? What does it influence?
+
+    voting right:
+
+    TO DESCRIBE. How is it built? What does it influence?
