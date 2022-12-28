@@ -81,19 +81,22 @@ export const addRateLater = async (video_id) => {
   };
 };
 
+/**
+ * Retrieve the user proof related to the given keyword from the API.
+ */
 export const getUserProof = async (keyword) => {
   const userProofResponse = await fetchTournesolApi(
     `users/me/proof/videos?keyword=${keyword}`,
     'GET'
   );
 
-  if (userProofResponse) {
+  if ([200, 401].includes(userProofResponse.status)) {
     const responseJson = await userProofResponse.json();
 
     return {
       success: userProofResponse.ok,
-      response: userProofResponse,
-      responseBody: responseJson,
+      status: userProofResponse.status,
+      body: responseJson,
     };
   }
 

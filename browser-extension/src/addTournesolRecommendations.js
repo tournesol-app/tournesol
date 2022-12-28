@@ -3,12 +3,14 @@
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
-const videosPerRow = 4;
-const rowsWhenExpanded = 3;
-
-// TODO: these values are placeholder values that will be updated.
+// TODO: these values are placeholder values that should be updated.
 const TS_BANNER_DATE_START = new Date('2022-01-01T00:00:00Z');
 const TS_BANNER_DATE_END = new Date('2024-01-01T00:00:00Z');
+const TS_BANNER_ACTION_URL = 'https://tournesol.app';
+const TS_BANNER_PROOF_KW = 'browser_extension_study_2023';
+
+const videosPerRow = 4;
+const rowsWhenExpanded = 3;
 
 let isExpanded = false;
 
@@ -98,6 +100,26 @@ const getLocalizedActionButtonText = () => {
   return 'Join';
 };
 
+const getLocalizedActionError = () => {
+  if (isNavigatorLang('fr')) {
+    return (
+      'Désolé, une erreur est survenue.\n' +
+      "S'il vous plaît, reportez l'erreur dans notre espace GitHub " +
+      'ou sur notre serveur Discord.\n\n' +
+      'GitHub: https://github.com/tournesol-app/tournesol/issues/new\n\n' +
+      'Discord: https://discord.com/invite/TvsFB8RNBV'
+    );
+  }
+
+  return (
+    'Sorry, an error occured.\n' +
+    'Please, report the issue on our GitHub space ' +
+    'or on our Discord server.\n\n' +
+    'GitHub: https://github.com/tournesol-app/tournesol/issues/new\n\n' +
+    'Discord: https://discord.com/invite/TvsFB8RNBV'
+  );
+};
+
 /**
  * Create and return a banner.
  *
@@ -128,9 +150,51 @@ const createBanner = () => {
   const actionButton = document.createElement('a');
   actionButton.textContent = getLocalizedActionButtonText();
   actionButton.className = 'tournesol_mui_like_button';
-  actionButton.setAttribute('href', 'https://tournesol.app');
+  actionButton.setAttribute('href', TS_BANNER_ACTION_URL);
   actionButton.setAttribute('target', '_blank');
   actionButton.setAttribute('rel', 'noopener');
+
+  // Dynamically get the user proof before opening the URL.
+  actionButton.onclick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        {
+          message: `getProof:${TS_BANNER_PROOF_KW}`,
+        },
+        (response) => {
+          if (response.success) {
+            resolve(
+              `${TS_BANNER_ACTION_URL}?user_proof=${response.body.signature}`
+            );
+          } else {
+            reject(response);
+          }
+        }
+      );
+    })
+      .then((url) => {
+        actionButton.setAttribute('href', url);
+        window.open(url, '_blank', 'noopener');
+      })
+      .catch((response) => {
+        // Handle the Unauthorized response, log all other errors.
+        if (response.status === 401) {
+          chrome.runtime.sendMessage({ message: 'displayModal' });
+        } else {
+          console.error(
+            `Failed to retrieve user proof with keyword: ${TS_BANNER_PROOF_KW}`
+          );
+          console.error(response.body);
+          alert(getLocalizedActionError());
+        }
+      });
+
+    return false;
+  };
+
   actionButtonContainer.append(actionButton);
 
   banner.appendChild(bannerIconContainer);
