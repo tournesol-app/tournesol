@@ -4,10 +4,15 @@ The public dataset library.
 from django.db.models import QuerySet
 
 
-def get_dataset(poll_name: str) -> QuerySet:
+def get_comparisons_data(poll_name: str) -> QuerySet:
     """
-    Retrieve the public dataset from the database and return a non-evaluated
-    Django `RawQuerySet`.
+    Retrieve the public comparisons from the database and return a
+    non-evaluated Django `RawQuerySet`.
+
+    A comparison is represented by a rating given by a user for a specific
+    criterion and a couple of entities:
+
+        User X (Entity A, Entity B) X Given criteria rating
     """
     from tournesol.models.comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
@@ -62,9 +67,9 @@ def get_dataset(poll_name: str) -> QuerySet:
     )
 
 
-def get_users_dataset(poll_name: str) -> QuerySet:
+def get_users_data(poll_name: str) -> QuerySet:
     """
-    Retrieve users with at least one public comparison and return a
+    Retrieve the users with at least one public comparison and return a
     non-evaluated Django `RawQuerySet`.
     """
     from core.models import User  # pylint: disable=import-outside-toplevel
@@ -113,10 +118,15 @@ def get_users_dataset(poll_name: str) -> QuerySet:
     )
 
 
-def get_public_contributor_rating_criteria_scores_dataset(poll_name: str) -> QuerySet:
+def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
     """
-    Retrieve ContributorRatingCriteriaScores made on public comparisons and return a
-    non-evaluated Django `RawQuerySet`.
+    Retrieve the individual criteria scores computed for each public rating
+    and return a non-evaluated Django `RawQuerySet`.
+
+    An individual criteria score is a score computed by the algorithm for
+    a specific criterion, a specific entity and specific user:
+
+        User X Entity X Computed criteria score
     """
     from tournesol.models import (  # pylint: disable=import-outside-toplevel
         ContributorRatingCriteriaScore,
@@ -125,15 +135,15 @@ def get_public_contributor_rating_criteria_scores_dataset(poll_name: str) -> Que
     return (
         ContributorRatingCriteriaScore
         .objects
-        .select_related('contributor_rating')
-        .select_related('contributor_rating__poll')
-        .select_related('contributor_rating__user')
-        .select_related('contributor_rating__entity')
+        .select_related("contributor_rating")
+        .select_related("contributor_rating__poll")
+        .select_related("contributor_rating__user")
+        .select_related("contributor_rating__entity")
         .filter(contributor_rating__poll__name=poll_name)
         .filter(contributor_rating__is_public=True)
         .order_by(
-            'contributor_rating__user__username',
-            'contributor_rating__entity__uid',
-            'criteria',
+            "contributor_rating__user__username",
+            "contributor_rating__entity__uid",
+            "criteria",
         )
     )

@@ -14,9 +14,9 @@ from rest_framework.views import APIView
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.lib.public_dataset import (
-    get_dataset,
-    get_public_contributor_rating_criteria_scores_dataset,
-    get_users_dataset,
+    get_comparisons_data,
+    get_individual_criteria_scores_data,
+    get_users_data,
 )
 from tournesol.models import Comparison, Poll
 from tournesol.serializers.comparison import ComparisonSerializer
@@ -76,7 +76,7 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
             "weight": comparison.weight,
             "score": comparison.score,
         }
-        for comparison in get_dataset(poll_name).iterator()
+        for comparison in get_comparisons_data(poll_name).iterator()
     )
 
 
@@ -97,7 +97,7 @@ def write_public_users_file(poll_name: str, write_target) -> None:
             "public_username": user.username,
             "trust_score": user.trust_score,
         }
-        for user in get_users_dataset(poll_name).iterator()
+        for user in get_users_data(poll_name).iterator()
     )
 
 
@@ -115,7 +115,7 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
     ]
 
     contributor_rating_criteria_scores = (
-        get_public_contributor_rating_criteria_scores_dataset(poll_name).iterator()
+        get_individual_criteria_scores_data(poll_name).iterator()
     )
 
     rows = (
