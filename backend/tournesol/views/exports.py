@@ -273,8 +273,10 @@ class ExportPublicAllView(APIView):
                 write_public_users_file(Poll.default_poll().name, output)
                 zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
 
-            with StringIO() as output:
-                write_individual_criteria_scores_file(Poll.default_poll().name, output)
-                zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
+        # Temporarily disable the construction of this file, as the underlying
+        # SQL query is too slow.
+        # with StringIO() as output:
+        #     write_individual_criteria_scores_file(Poll.default_poll().name, output)
+        #     zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
 
         return response
