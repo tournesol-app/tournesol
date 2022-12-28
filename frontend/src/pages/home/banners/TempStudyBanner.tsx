@@ -22,7 +22,7 @@ import { UsersService } from 'src/services/openapi';
 const STUDY_DATE_START = new Date('2022-01-01T00:00:00Z');
 const STUDY_DATE_END = new Date('2024-01-01T00:00:00Z');
 
-const PROOF_ID = 'browser_ext_study_2022';
+const PROOF_ID = 'browser_extension_study_2023';
 
 const ParticipateButton = ({ userProof }: { userProof: string }) => {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ const ParticipateButton = ({ userProof }: { userProof: string }) => {
       component={Link}
       target="_blank"
       rel="noopener"
-      href={`https://tournesol.app?proof=${userProof}`}
+      href={`https://tournesol.app?user_proof=${userProof}`}
       endIcon={<Biotech />}
     >
       {t('tempStudyBanner.join')}
