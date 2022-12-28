@@ -10,7 +10,12 @@ from rest_framework.test import APIClient
 
 from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.models import ComparisonCriteriaScore, ContributorRating, Poll
+from tournesol.models import (
+    ComparisonCriteriaScore,
+    ContributorRating,
+    ContributorRatingCriteriaScore,
+    Poll,
+)
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 
@@ -100,6 +105,16 @@ class ExportTest(TestCase):
             entity_1=video1,
             entity_2=video2,
         )
+
+    def extract_export_root(self, response):
+        content_disposition = response.headers["Content-Disposition"]
+        match = re.search(
+            "attachment; filename=(tournesol_export_\\d{8}T\\d{6}Z).zip",
+            content_disposition,
+        )
+        self.assertIsNotNone(match)
+        root = match.group(1)
+        return root
 
     def test_not_authenticated_cannot_download_comparisons(self):
         resp = self.client.get("/users/me/exports/comparisons/")
@@ -194,13 +209,7 @@ class ExportTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
 
-        content_disposition = response.headers["Content-Disposition"]
-        match = re.search(
-            "attachment; filename=(tournesol_export_\\d{8}T\\d{6}Z).zip",
-            content_disposition,
-        )
-        self.assertIsNotNone(match)
-        root = match.group(1)
+        root = self.extract_export_root(response)
 
         zip_content = io.BytesIO(response.content)
         with zipfile.ZipFile(zip_content, "r") as zip_file:
@@ -208,6 +217,7 @@ class ExportTest(TestCase):
                 root + "/README.txt",
                 root + "/comparisons.csv",
                 root + "/users.csv",
+                root + "/individual_criteria_scores.csv",
             ]
             self.assertEqual(zip_file.namelist(), expected_files)
 
@@ -237,6 +247,107 @@ class ExportTest(TestCase):
                 self.assertEqual(len(user_rows), 1)
                 user_row = user_rows[0]
                 self.assertEqual(user_row["trust_score"], "0.5844")
+
+    def test_all_exports_voting_rights(self):
+        self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
+
+        last_user = UserFactory(username="z")
+        first_user = UserFactory(username="a")
+
+        self.add_comparison(user=last_user, is_public=True)
+        self.add_comparison(user=first_user, is_public=True)
+        self.add_comparison(user=first_user, is_public=True)
+        self.add_comparison(user=first_user, is_public=False)
+
+        last_user_public_contributor_ratings = ContributorRating.objects.filter(
+            user=last_user,
+            is_public=True,
+        )
+        first_user_public_contributor_ratings = ContributorRating.objects.filter(
+            user=first_user,
+            is_public=True,
+        )
+        first_user_private_contributor_ratings = ContributorRating.objects.filter(
+            user=first_user,
+            is_public=False,
+        )
+
+        # ContributorRatingCriteriaScore that should not be exported
+        ContributorRatingCriteriaScore.objects.create(
+            contributor_rating=first_user_private_contributor_ratings[0],
+            criteria="criteria2",
+            voting_right=0.4855,
+            score=0.5214,
+        )
+        ContributorRatingCriteriaScore.objects.create(
+            contributor_rating=first_user_private_contributor_ratings[1],
+            criteria="criteria1",
+            voting_right=0.4444,
+            score=-5.5555,
+        )
+
+        # ContributorRatingCriteriaScore that should be exported
+        expected_exports = []
+        expected_exports.append(
+            ContributorRatingCriteriaScore.objects.create(
+                contributor_rating=first_user_public_contributor_ratings[2],
+                criteria="criteria2",
+                voting_right=0.1234,
+                score=2.4567,
+            ),
+        )
+        expected_exports.append(
+            ContributorRatingCriteriaScore.objects.create(
+                contributor_rating=last_user_public_contributor_ratings[0],
+                criteria="criteria2",
+                voting_right=0.11,
+                score=-0.66,
+            ),
+        )
+        expected_exports.append(
+            ContributorRatingCriteriaScore.objects.create(
+                contributor_rating=first_user_public_contributor_ratings[0],
+                criteria="criteria1",
+                voting_right=0.8,
+                score=1.9,
+            ),
+        )
+
+        # Expect results sorted first by username then by video id and finally by criteria
+        expected_exports = sorted(expected_exports, key=lambda x: x.criteria)
+        expected_exports = sorted(
+            expected_exports,
+            key=lambda x: x.contributor_rating.entity.metadata["video_id"],
+        )
+        expected_exports = sorted(
+            expected_exports, key=lambda x: x.contributor_rating.user.username
+        )
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Type"], "application/zip")
+        root = self.extract_export_root(response)
+
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            with zip_file.open(root + "/individual_criteria_scores.csv", "r") as file:
+                content = file.read().decode("utf-8")
+                csv_file = csv.DictReader(io.StringIO(content))
+                rows = list(csv_file)
+
+                for expected_export in expected_exports:
+                    row = rows.pop(0)
+                    self.assertEqual(
+                        row["public_username"],
+                        expected_export.contributor_rating.user.username,
+                    )
+                    self.assertEqual(
+                        row["video"],
+                        expected_export.contributor_rating.entity.metadata["video_id"],
+                    )
+                    self.assertEqual(row["criteria"], expected_export.criteria)
+                    self.assertEqual(row["score"], str(expected_export.score))
+                    self.assertEqual(row["voting_right"], str(expected_export.voting_right))
 
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
