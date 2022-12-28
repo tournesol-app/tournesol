@@ -103,8 +103,9 @@ def write_public_users_file(poll_name: str, write_target) -> None:
 
 def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
     """
-    Retrieve all voting rights on public comparisons and write them as CSV in
-    `write_target`, an object supporting the Python file API.
+    Retrieve all public individual criteria scores, with the related voting
+    rights and write them as CSV in `write_target`, an object supporting the
+    Python file API.
     """
     fieldnames = [
         "public_username",
