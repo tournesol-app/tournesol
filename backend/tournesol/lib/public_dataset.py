@@ -124,7 +124,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
     and return a non-evaluated Django `RawQuerySet`.
 
     An individual criteria score is a score computed by the algorithm for
-    a specific criterion, a specific entity and specific user:
+    a specific criterion, previously rated by a user for a specific entity.
 
         User X Entity X Computed criteria score
     """
@@ -132,18 +132,41 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
         ContributorRatingCriteriaScore,
     )
 
-    return (
-        ContributorRatingCriteriaScore
-        .objects
-        .select_related("contributor_rating")
-        .select_related("contributor_rating__poll")
-        .select_related("contributor_rating__user")
-        .select_related("contributor_rating__entity")
-        .filter(contributor_rating__poll__name=poll_name)
-        .filter(contributor_rating__is_public=True)
-        .order_by(
-            "contributor_rating__user__username",
-            "contributor_rating__entity__uid",
-            "criteria",
-        )
+    return ContributorRatingCriteriaScore.objects.raw(
+        """
+        SELECT
+            tournesol_contributorratingcriteriascore.id,
+            core_user.username,
+            tournesol_entity.uid,
+            tournesol_contributorratingcriteriascore.criteria,
+            tournesol_contributorratingcriteriascore.score,
+            tournesol_contributorratingcriteriascore.voting_right
+
+        FROM core_user
+
+        JOIN tournesol_contributorrating
+          ON tournesol_contributorrating.user_id = core_user.id
+
+        JOIN tournesol_poll
+          ON tournesol_poll.id = tournesol_contributorrating.poll_id
+
+        JOIN tournesol_entity
+          ON tournesol_entity.id = tournesol_contributorrating.entity_id
+
+        JOIN tournesol_contributorratingcriteriascore
+          ON tournesol_contributorrating.id
+           = tournesol_contributorratingcriteriascore.contributor_rating_id
+
+        WHERE tournesol_poll.name = %(poll_name)s
+          AND tournesol_contributorrating.is_public
+
+        -- this query can be significantly faster by keeping only the username
+        -- in the ORDER BY clause
+
+        ORDER BY
+            core_user.username ASC,
+            tournesol_entity.uid ASC,
+            tournesol_contributorratingcriteriascore.criteria ASC
+        """,
+        {"poll_name": poll_name},
     )

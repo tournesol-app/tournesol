@@ -116,21 +116,17 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
         "voting_right",
     ]
 
-    contributor_rating_criteria_scores = (
-        get_individual_criteria_scores_data(poll_name).iterator()
-    )
+    criteria_scores = get_individual_criteria_scores_data(poll_name).iterator()
 
     rows = (
         {
-            "public_username": contributor_rating_criteria_score.contributor_rating.user.username,
-            "video": (
-                contributor_rating_criteria_score.contributor_rating.entity.metadata["video_id"]
-            ),
-            "criteria": contributor_rating_criteria_score.criteria,
-            "score": contributor_rating_criteria_score.score,
-            "voting_right": contributor_rating_criteria_score.voting_right,
+            "public_username": criteria_score.username,
+            "video": criteria_score.uid.split(UID_DELIMITER)[1],
+            "criteria": criteria_score.criteria,
+            "score": criteria_score.score,
+            "voting_right": criteria_score.voting_right,
         }
-        for contributor_rating_criteria_score in contributor_rating_criteria_scores
+        for criteria_score in criteria_scores
     )
 
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
@@ -273,10 +269,8 @@ class ExportPublicAllView(APIView):
                 write_public_users_file(Poll.default_poll().name, output)
                 zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
 
-        # Temporarily disable the construction of this file, as the underlying
-        # SQL query is too slow.
-        # with StringIO() as output:
-        #     write_individual_criteria_scores_file(Poll.default_poll().name, output)
-        #     zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
+            with StringIO() as output:
+                write_individual_criteria_scores_file(Poll.default_poll().name, output)
+                zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
 
         return response
