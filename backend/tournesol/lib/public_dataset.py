@@ -144,7 +144,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
 
         FROM core_user
 
-        LEFT OUTER JOIN tournesol_contributorrating
+        JOIN tournesol_contributorrating
           ON tournesol_contributorrating.user_id = core_user.id
 
         JOIN tournesol_poll
@@ -157,8 +157,7 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
           ON tournesol_contributorrating.id
            = tournesol_contributorratingcriteriascore.contributor_rating_id
 
-        WHERE core_user.is_active = true
-          AND tournesol_poll.name = %(poll_name)s
+        WHERE tournesol_poll.name = %(poll_name)s
           AND tournesol_contributorrating.is_public
 
         -- this query can be significantly faster by keeping only the username
