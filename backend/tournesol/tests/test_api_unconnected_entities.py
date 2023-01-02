@@ -158,6 +158,23 @@ class IsolatedVertexTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 3)
 
+    def test_non_strict_with_fully_unconnected_entity_returns_all(self):
+        """
+        The non-strict option used in the case of a video that is not connected
+        to any other video should have no effect, because the goal of the
+        strict option is to enable including distant-but-connected entities in
+        the unconnected entities API route.
+        """
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/?strict=false",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 3)
+
 
 class ConnectGraphNonReducibleDistanceTestCase(TestCase):
     """
@@ -176,34 +193,34 @@ class ConnectGraphNonReducibleDistanceTestCase(TestCase):
         self.poll_videos = Poll.default_poll()
         self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
-        video_4 = VideoFactory()
-        video_3 = VideoFactory()
-        video_2 = VideoFactory()
-        video_1 = VideoFactory()
+        self.video_4 = VideoFactory()
+        self.video_3 = VideoFactory()
+        self.video_2 = VideoFactory()
+        self.video_1 = VideoFactory()
 
-        self.video_source = video_1
+        self.video_source = self.video_1
 
         ComparisonFactory(
             user=self.user_1,
-            entity_1=video_3,
-            entity_2=video_4,
+            entity_1=self.video_3,
+            entity_2=self.video_4,
         )
         ComparisonFactory(
             user=self.user_1,
-            entity_1=video_2,
-            entity_2=video_3,
+            entity_1=self.video_2,
+            entity_2=self.video_3,
         )
         ComparisonFactory(
             user=self.user_1,
-            entity_1=video_1,
-            entity_2=video_3,
+            entity_1=self.video_1,
+            entity_2=self.video_3,
         )
 
     def test_all_linked_must_return_empty(self):
         """
         An authenticated user must get an empty list, when all of its compared
-        entities are connected, and close enough to each other, even if they
-        are not individually connected to each other.
+        entities are connected, even if they are not individually connected to
+        each other.
         """
         self.client.force_authenticate(self.user_1)
 
@@ -214,6 +231,25 @@ class ConnectGraphNonReducibleDistanceTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 0)
+
+    def test_non_strict_must_return_sorted_by_max_distance(self):
+        """
+        When using the option strict=false, an authenticated user must get a
+        full list sorted by decreasing distance in the graph or comnparison to
+        the target source entity.
+        """
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/?strict=false",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 3)
+        # video 2 and 4 are both at distance 2 and should appear first, video 3
+        # should appear third because it is at distance 1.
+        self.assertEqual(response.data["results"][-1]["uid"], self.video_3.uid)
 
 
 class ConnectedGraphReducibleDistanceTestCase(TestCase):
@@ -230,52 +266,41 @@ class ConnectedGraphReducibleDistanceTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user_1 = UserFactory()
-        user_2 = UserFactory()
+        self.user_2 = UserFactory()
         self.poll_videos = Poll.default_poll()
         self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
-        video_1 = VideoFactory()
-        video_2 = VideoFactory()
-        video_3 = VideoFactory()
-        video_4 = VideoFactory()
-        video_5 = VideoFactory()
+        self.video_1 = VideoFactory()
+        self.video_2 = VideoFactory()
+        self.video_3 = VideoFactory()
+        self.video_4 = VideoFactory()
+        self.video_5 = VideoFactory()
         # Distant entities.
-        video_6 = VideoFactory()
-        video_7 = VideoFactory()
+        self.video_6 = VideoFactory()
+        self.video_7 = VideoFactory()
 
-        self.unrelated_video = [video_6, video_7]
+        self.unrelated_video = [self.video_6, self.video_7]
 
-        self.video_source = video_1
+        self.video_source = self.video_1
 
+        # Comparisons from user 1
+        for video_a, video_b in [
+            (self.video_4, self.video_5),
+            (self.video_2, self.video_4),
+            (self.video_3, self.video_2),
+            (self.video_3, self.video_1),  # 1 -> 3 -> 2 -> 4 -> 5
+            (self.video_7, self.video_6),  # 6 & 7 are unconnected to the other entities
+        ]:
+            ComparisonFactory(
+                user=self.user_1,
+                entity_1=video_a,
+                entity_2=video_b,
+            )
+        # Comparisons from user 2
         ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_4,
-            entity_2=video_5,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_2,
-            entity_2=video_4,
-        )
-        ComparisonFactory(
-            user=user_2,
-            entity_1=video_2,
-            entity_2=video_6,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_7,
-            entity_2=video_6,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_3,
-            entity_2=video_2,
-        )
-        ComparisonFactory(
-            user=self.user_1,
-            entity_1=video_3,
-            entity_2=video_1,
+            user=self.user_2,
+            entity_1=self.video_2,
+            entity_2=self.video_6,
         )
 
     def test_must_return_non_connected_entities(self):
@@ -289,9 +314,29 @@ class ConnectedGraphReducibleDistanceTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            [entity["uid"] for entity in response.data["results"]],
-            [entity.uid for entity in self.unrelated_video],
+            {entity["uid"] for entity in response.data["results"]},
+            {entity.uid for entity in self.unrelated_video},
         )
+
+    def test_non_strict_must_return_non_connected_then_connected_sorted_by_distance(self):
+        self.client.force_authenticate(self.user_1)
+
+        response = self.client.get(
+            f"{self.user_base_url}/{self.video_source.uid}/?strict=false",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # The response must contain firstly the two unconnected entities, and
+        # and then the 4 other entities sorted by decreasing distance to the
+        # source entity
+        self.assertEqual(response.data["count"], 6)
+        a,b,c,d,e,f = [entity["uid"] for entity in response.data["results"]]
+        self.assertEqual(
+            {a,b},
+            {entity.uid for entity in self.unrelated_video},
+        )
+        self.assertEqual([self.video_5.uid,self.video_4.uid,self.video_2.uid,self.video_3.uid], [c,d,e,f])
 
     def test_non_connected_entities_ordering(self):
         """
