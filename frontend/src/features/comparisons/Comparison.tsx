@@ -239,6 +239,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorA}
           onChange={onChangeA}
           otherUid={uidB}
+          autoFill
         />
       </Grid>
       <Grid
@@ -254,6 +255,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
           value={selectorB}
           onChange={onChangeB}
           otherUid={uidA}
+          autoFill
         />
       </Grid>
       <Grid

@@ -44,6 +44,7 @@ interface Props {
   onChange: (newValue: SelectorValue) => void;
   otherUid: string | null;
   variant?: 'regular' | 'noControl';
+  autoFill?: boolean;
 }
 
 export interface SelectorValue {
@@ -60,6 +61,7 @@ const EntitySelector = ({
   onChange,
   otherUid,
   variant = 'regular',
+  autoFill = false,
 }: Props) => {
   const classes = useStyles();
   const { isLoggedIn } = useLoginState();
@@ -73,6 +75,7 @@ const EntitySelector = ({
           onChange={onChange}
           otherUid={otherUid}
           variant={variant}
+          autoFill={autoFill}
         />
       ) : (
         <EntitySelectorInnerAnonymous value={value} />
@@ -120,6 +123,7 @@ const EntitySelectorInnerAuth = ({
   onChange,
   otherUid,
   variant,
+  autoFill,
 }: Props) => {
   const { name: pollName, options } = useCurrentPoll();
 
@@ -275,6 +279,7 @@ const EntitySelectorInnerAuth = ({
               onResponse={(uid) => {
                 uid ? onChange({ uid, rating: null }) : setLoading(false);
               }}
+              autoFill={autoFill}
             />
           </Box>
 

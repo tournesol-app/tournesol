@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, Button } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
@@ -12,6 +12,7 @@ interface Props {
   onResponse: (newUid: string | null) => void;
   onClick: () => void;
   disabled?: boolean;
+  autoFill?: boolean;
 }
 
 const AutoEntityButton = ({
@@ -20,11 +21,12 @@ const AutoEntityButton = ({
   onResponse,
   onClick,
   disabled = false,
+  autoFill = false,
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const askNewVideo = async () => {
+  const askNewVideo = useCallback(async () => {
     onClick();
     const newVideoId: string | null = await getVideoForComparison(
       otherUid ? idFromUid(otherUid) : null,
@@ -35,7 +37,19 @@ const AutoEntityButton = ({
     } else {
       onResponse(null);
     }
-  };
+  }, [currentUid, otherUid, onClick, onResponse]);
+
+  const previousUidRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    // We only want to autofill when the currentUid changes, not when the other dependencies change
+    if (currentUid === previousUidRef.current) return;
+    previousUidRef.current = currentUid;
+
+    if (!autoFill) return;
+    if (currentUid) return;
+
+    askNewVideo();
+  }, [autoFill, currentUid, askNewVideo]);
 
   if (pollName !== YOUTUBE_POLL_NAME) {
     return null;

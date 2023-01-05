@@ -28,6 +28,11 @@ describe('Comparison page', () => {
       `);
   };
 
+  const waitForAutoFill = () => {
+    cy.get('div[data-testid=video-card-info]')
+      .should('have.length', 2);
+  }
+
   describe('authorization', () => {
     it('is not accessible by anonymous users', () => {
       cy.visit('/comparison');
@@ -79,8 +84,13 @@ describe('Comparison page', () => {
       cy.get('input[placeholder="Paste URL or Video ID"]')
         .should('have.length', 2);
 
+      waitForAutoFill();
+
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
         .type(videoAUrl.split('?v=')[1], {delay: 0});
+
+      // wait for the auto filled video to be replaced
+      cy.contains('Science4VeryAll');
 
       // the video title, upload date, and the number of views must be displayed
       cy.get('div[data-testid=video-card-info]').first().within(() => {
@@ -134,6 +144,8 @@ describe('Comparison page', () => {
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
+      waitForAutoFill();
+
       // add one video, and ask for a second one
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
         .type(videoAId, {delay: 0});
@@ -168,6 +180,8 @@ describe('Comparison page', () => {
       cy.get('input[name="password"]').click()
         .type('tournesol').type('{enter}');
 
+      waitForAutoFill();
+
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
         .type(videoAId, {delay: 0});
       cy.get('input[placeholder="Paste URL or Video ID"]').last()
@@ -201,6 +215,8 @@ describe('Comparison page', () => {
       cy.focused().type(username);
       cy.get('input[name="password"]').click()
           .type('tournesol').type('{enter}');
+
+      waitForAutoFill();
 
       cy.get('input[placeholder="Paste URL or Video ID"]').first()
           .type(videoAId, {delay: 0});
