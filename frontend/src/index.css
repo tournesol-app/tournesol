@@ -45,4 +45,17 @@ html.embedded .SnackbarContainer-root.belowTopBar {
   top: 4px;
 }
 
+
+/* pkg: @mui/material */
+@media (pointer: coarse) {
+  /* On touch screens, disable touch events on the slider rail.
+     Only the slider "thumb" will remain interactive. */
+  .MuiSlider-root {
+    pointer-events: none;
+  }
+  .MuiSlider-root .MuiSlider-thumb {
+    pointer-events: auto;
+  }
+}
+
 /* -- end: third-party packages customization -- */
