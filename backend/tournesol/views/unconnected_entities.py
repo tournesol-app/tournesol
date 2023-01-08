@@ -1,18 +1,38 @@
 """
 API endpoints interacting with unconnected entities.
 """
+import math
 from collections import defaultdict, deque
 
-from django.db.models import Case, Func, OuterRef, Q, Subquery, When
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 
 from tournesol.models import Comparison, Entity
 from tournesol.serializers.entity import EntityNoExtraFieldSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
+
+
+# We override the pagination filtering for our queryset for performance reasons. We decided to
+# already filter and sort the queryset in python directly because the annotation and sorting
+# operations were inneficient when done on the database.
+class AlreadyFilteredQuerySetLimitOffsetPagination(LimitOffsetPagination):
+
+    hacked_count_updated_by_view = -1
+
+    def paginate_queryset(self, queryset, request, view=None):
+        # Here the parameter queryset is instead the list of ids returned by
+        # UnconnectedEntitiesView.get_queryset. This is done this way for performance.
+        paginated_entity_ids = super().paginate_queryset(queryset, request, view)
+        entity_by_id = {e.id: e for e in Entity.objects.filter(id__in=paginated_entity_ids)}
+        entities = [entity_by_id[e_id] for e_id in queryset if e_id in entity_by_id]
+        return entities
+
+    def get_count(self, queryset):
+        return self.hacked_count_updated_by_view
 
 
 @extend_schema_view(
@@ -23,7 +43,8 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
         parameters=[
             OpenApiParameter(
                 "strict",
-                type=OpenApiTypes.STR,
+                type=OpenApiTypes.BOOL,
+                default=True,
                 location=OpenApiParameter.QUERY,
                 description=(
                     "Set to 'false' to include entities connected to the target entity. In this "
@@ -42,6 +63,7 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
 
     serializer_class = EntityNoExtraFieldSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = AlreadyFilteredQuerySetLimitOffsetPagination
 
     def get_queryset(self):
         # Get related entities from source entity
@@ -68,27 +90,12 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
         # because they are unreachable if the strict option has been left to
         # True (the default). Otherwise all the entities except the source are
         # selected.
-        strict = self.request.GET.get("strict") != "false"
-        entity_ids_filter = set(neighbors) - (set(distances) if strict else {source_node.id})
-
-        # From the computed distances, creates the cases for annotating and
-        # ordering the returned list of entities.
-        distance_annotation_whens = [
-            When(id=k, then=distances[k]) for k in entity_ids_filter if k in distances
-        ]
-
-        # Order the entities by number of comparisons so that the logged user
-        # is invited to compare entities with the least comparisons first.
-        comparison_counts = (
-            Comparison.objects.filter(user=self.request.user)
-            .filter(Q(entity_1=OuterRef("pk")) | Q(entity_2=OuterRef("pk")))
-            .annotate(count=Func("id", function="Count"))
-            .values("count")
+        strict = self.request.query_params.get("strict") != "false"
+        entity_ids = set(neighbors) - (set(distances) if strict else {source_node.id})
+        sorted_entity_ids = sorted(
+            entity_ids,
+            # Sorting first by distance and secondly by number of comparisons
+            key=lambda x: (-distances.get(x, math.inf), len(neighbors.get(x, [])))
         )
-
-        return (
-            Entity.objects.filter(id__in=entity_ids_filter)
-            .annotate(distance=Case(*distance_annotation_whens, default=1+len(neighbors)))
-            .annotate(n_comparisons=Subquery(comparison_counts))
-            .order_by("-distance", "n_comparisons")
-        )
+        self.paginator.hacked_count_updated_by_view = len(sorted_entity_ids)
+        return sorted_entity_ids

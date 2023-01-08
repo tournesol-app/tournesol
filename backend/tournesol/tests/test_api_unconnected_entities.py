@@ -6,15 +6,23 @@ are vertices and comparisons edges.
 
 See: https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 """
+import logging
+import time
 
+import numpy as np
+import pytest
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
+from tournesol.models import Comparison, Entity
+from tournesol.models.entity import TYPE_VIDEO
 from tournesol.models.poll import Poll
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
+
+logger = logging.getLogger(__name__)
 
 
 class CompleteGraphTestCase(TestCase):
@@ -444,3 +452,57 @@ class TwoIsolatedGraphComponentsTestCase(TestCase):
             list(map(lambda x: x["uid"], response.data["results"])),
             list(map(lambda x: x.uid, self.unrelated_video)),
         )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("n_videos", [
+    100,
+    1000,
+    2000,
+    # Disabling the large test cases because they take a few minutes to run, but are useful for
+    # checking the performance of the api call.
+    # 5000,
+    # 10000,
+    # 20000,
+    # 100000,
+])
+def test_non_strict_on_large_graph_should_be_fast(n_videos):
+    client = APIClient()
+    user_1 = UserFactory()
+    poll_videos = Poll.default_poll()
+    user_base_url = f"/users/me/unconnected_entities/{poll_videos.name}"
+
+    # Creates n_videos videos
+    begin = time.perf_counter()
+    videos = Entity.objects.bulk_create([Entity(
+        type=TYPE_VIDEO,
+        uid=f"yt:video{k:06d}",
+    ) for k in range(n_videos)], batch_size=2000)
+    logger.debug("Created videos: %.3f seconds", time.perf_counter() - begin)
+
+    # Creates comparisons for each videos 
+    begin = time.perf_counter()
+    Comparison.objects.bulk_create((
+        Comparison(
+            user=user_1,
+            entity_1=video_a,
+            entity_2=videos[k],
+            poll=poll_videos,
+        )
+        for i, video_a in enumerate(videos)
+        for k in np.random.choice(range(len(videos)), size=4, replace=False)
+        if i < k
+    ), batch_size=2000)
+    logger.debug("Creating comparisons: %.3f seconds", time.perf_counter() - begin)
+
+    client.force_authenticate(user_1)
+
+    begin = time.perf_counter()
+    response = client.get(
+        f"{user_base_url}/{videos[0].uid}/?strict=false",
+        format="json",
+    )
+    end = time.perf_counter()
+    logger.debug("Api call: %.3f seconds", end - begin)
+    assert end - begin < 1  # The API call takes less than 1 second
+    assert response.status_code == status.HTTP_200_OK
