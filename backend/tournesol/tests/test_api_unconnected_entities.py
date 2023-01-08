@@ -201,6 +201,7 @@ class ConnectGraphNonReducibleDistanceTestCase(TestCase):
         self.poll_videos = Poll.default_poll()
         self.user_base_url = f"/users/me/unconnected_entities/{self.poll_videos.name}"
 
+        self.video_5 = VideoFactory()
         self.video_4 = VideoFactory()
         self.video_3 = VideoFactory()
         self.video_2 = VideoFactory()
@@ -222,6 +223,16 @@ class ConnectGraphNonReducibleDistanceTestCase(TestCase):
             user=self.user_1,
             entity_1=self.video_1,
             entity_2=self.video_3,
+        )
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=self.video_1,
+            entity_2=self.video_5,
+        )
+        ComparisonFactory(
+            user=self.user_1,
+            entity_1=self.video_2,
+            entity_2=self.video_5,
         )
 
     def test_all_linked_must_return_empty(self):
@@ -254,10 +265,12 @@ class ConnectGraphNonReducibleDistanceTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], 3)
-        # video 2 and 4 are both at distance 2 and should appear first, video 3
-        # should appear third because it is at distance 1.
-        self.assertEqual(response.data["results"][-1]["uid"], self.video_3.uid)
+        self.assertEqual(response.data["count"], 2)
+        # video 2 and 4 are both at distance 2 and should appear first, video 3 and 5 should
+        # not appear because it has already been compared with the source entity. video 4 should
+        # be first because it has a single comparison by the user against video 2 which has two.
+        self.assertEqual(response.data["results"][0]["uid"], self.video_4.uid)
+        self.assertEqual(response.data["results"][1]["uid"], self.video_2.uid)
 
 
 class ConnectedGraphReducibleDistanceTestCase(TestCase):
@@ -338,13 +351,10 @@ class ConnectedGraphReducibleDistanceTestCase(TestCase):
         # The response must contain firstly the two unconnected entities, and
         # and then the 4 other entities sorted by decreasing distance to the
         # source entity
-        self.assertEqual(response.data["count"], 6)
-        a,b,c,d,e,f = [entity["uid"] for entity in response.data["results"]]
-        self.assertEqual(
-            {a,b},
-            {entity.uid for entity in self.unrelated_video},
-        )
-        self.assertEqual([self.video_5.uid,self.video_4.uid,self.video_2.uid,self.video_3.uid], [c,d,e,f])
+        self.assertEqual(response.data["count"], 5)
+        entities = [entity["uid"] for entity in response.data["results"]]
+        self.assertEqual(set(entities[:2]), {entity.uid for entity in self.unrelated_video})
+        self.assertEqual([self.video_5.uid,self.video_4.uid,self.video_2.uid], entities[2:])
 
     def test_non_connected_entities_ordering(self):
         """
@@ -449,8 +459,8 @@ class TwoIsolatedGraphComponentsTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(
-            list(map(lambda x: x["uid"], response.data["results"])),
-            list(map(lambda x: x.uid, self.unrelated_video)),
+            {x["uid"] for x in response.data["results"]},
+            {x.uid for x in self.unrelated_video},
         )
 
 
