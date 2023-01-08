@@ -55,6 +55,10 @@ html.embedded .SnackbarContainer-root.belowTopBar {
   }
   .MuiSlider-root .MuiSlider-thumb {
     pointer-events: auto;
+    /* `touch-action: none` is used internally by MUI on Slider to disable
+    scrolling and zooming on touch events. But it conflicts with
+    `pointer-events: none` on Firefox. So it's required here too. */
+    touch-action: none;
   }
 }
 
