@@ -19,7 +19,7 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 # We override the pagination filtering for our queryset for performance reasons. We decided to
 # already filter and sort the queryset in python directly because the annotation and sorting
 # operations were inneficient when done on the database.
-class AlreadyFilteredQuerySetLimitOffsetPagination(LimitOffsetPagination):
+class SortedEntityIdLimitOffsetPagination(LimitOffsetPagination):
 
     hacked_count_updated_by_view = -1
 
@@ -63,7 +63,7 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
 
     serializer_class = EntityNoExtraFieldSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = AlreadyFilteredQuerySetLimitOffsetPagination
+    pagination_class = SortedEntityIdLimitOffsetPagination
 
     def get_queryset(self):
         # Get related entities from source entity
