@@ -21,8 +21,6 @@ from tournesol.views.mixins.poll import PollScopedViewMixin
 # operations were inneficient when done on the database.
 class SortedEntityIdLimitOffsetPagination(LimitOffsetPagination):
 
-    hacked_count_updated_by_view = -1
-
     def paginate_queryset(self, queryset, request, view=None):
         # Here the parameter queryset is instead the list of ids returned by
         # UnconnectedEntitiesView.get_queryset. This is done this way for performance.
@@ -30,9 +28,6 @@ class SortedEntityIdLimitOffsetPagination(LimitOffsetPagination):
         entity_by_id = {e.id: e for e in Entity.objects.filter(id__in=paginated_entity_ids)}
         entities = [entity_by_id[e_id] for e_id in queryset if e_id in entity_by_id]
         return entities
-
-    def get_count(self, queryset):
-        return self.hacked_count_updated_by_view
 
 
 @extend_schema_view(
@@ -99,5 +94,4 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
             # Sorting first by distance and secondly by number of comparisons
             key=lambda x: (-distances.get(x, math.inf), len(neighbors.get(x, [])))
         )
-        self.paginator.hacked_count_updated_by_view = len(sorted_entity_ids)
         return sorted_entity_ids
