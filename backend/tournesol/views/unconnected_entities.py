@@ -92,6 +92,7 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
         sorted_entity_ids = sorted(
             entity_ids,
             # Sorting first by distance and secondly by number of comparisons
-            key=lambda x: (-distances.get(x, math.inf), len(neighbors.get(x, [])))
+            # and thirdly by entity_id such that we avoid non-determinism
+            key=lambda x: (-distances.get(x, math.inf), len(neighbors.get(x, [])), x)
         )
         return sorted_entity_ids
