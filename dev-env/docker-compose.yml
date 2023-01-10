@@ -14,7 +14,7 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
-      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      test: psql -h localhost -U $$POSTGRES_USER -d $$POSTGRES_DB -c "select 1"
       interval: 10s
       timeout: 5s
       retries: 5
