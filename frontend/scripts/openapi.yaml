@@ -1946,6 +1946,14 @@ paths:
         description: The initial index from which to return the results.
         schema:
           type: integer
+      - in: query
+        name: strict
+        schema:
+          type: boolean
+          default: true
+        description: Set to 'false' to include entities connected to the target entity.
+          In this case, the returned list contains first all unconnected entities,
+          then connected entities sorted by decreasing distance to the target entity.
       tags:
       - users
       security:
