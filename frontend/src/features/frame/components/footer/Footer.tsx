@@ -56,10 +56,7 @@ const Footer = () => {
         { name: 'Discord', to: discordTournesolInviteUrl },
         { name: 'Twitch', to: twitchTournesolUrl },
         { name: 'LinkedIn', to: linkedInTournesolUrl },
-        {
-          name: 'GitHub',
-          to: githubTournesolUrl,
-        },
+        { name: 'GitHub', to: githubTournesolUrl },
       ],
     },
     {
