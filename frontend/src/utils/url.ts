@@ -37,7 +37,7 @@ export const linkedInTournesolUrl =
 // YouTube
 export const youtubePlaylistEnUrl =
   'https://youtube.com/playlist?list=PLXX93NlSmUpayYeaNvKaeftX_QwEei3fU';
-export const youtubePlaylistBotFrUrl =
+export const youtubePlaylistFrUrl =
   'https://youtube.com/playlist?list=PLXX93NlSmUpZkR9NaBXMaPlPalESb5tDv';
 
 /**
