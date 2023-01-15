@@ -13,6 +13,8 @@ import {
   twitterTournesolBotEnUrl,
   twitterTournesolBotFrUrl,
   twitterTournesolUrl,
+  youtubePlaylistEnUrl,
+  youtubePlaylistFrUrl,
   discordTournesolInviteUrl,
   githubTournesolUrl,
   utipTournesolUrl,
@@ -42,6 +44,8 @@ const Footer = () => {
         },
         { name: 'Twitter Bot EN', to: twitterTournesolBotEnUrl },
         { name: 'Twitter Bot FR', to: twitterTournesolBotFrUrl },
+        { name: 'YouTube Playlist EN', to: youtubePlaylistEnUrl },
+        { name: 'YouTube Playlist FR', to: youtubePlaylistFrUrl },
       ],
     },
     {
@@ -52,10 +56,7 @@ const Footer = () => {
         { name: 'Discord', to: discordTournesolInviteUrl },
         { name: 'Twitch', to: twitchTournesolUrl },
         { name: 'LinkedIn', to: linkedInTournesolUrl },
-        {
-          name: 'GitHub',
-          to: githubTournesolUrl,
-        },
+        { name: 'GitHub', to: githubTournesolUrl },
       ],
     },
     {
