@@ -168,12 +168,12 @@
 
 - name: Add Grafana repository signing key
   apt_key:
-    url: https://packages.grafana.com/gpg.key
+    url: https://apt.grafana.com/gpg.key
     state: present
 
 - name: Add Grafana repository
   apt_repository:
-    repo: deb https://packages.grafana.com/oss/deb stable main
+    repo: deb https://apt.grafana.com stable main
     state: present
 
 - name: Gather the package facts
