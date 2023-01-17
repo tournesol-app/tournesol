@@ -4,13 +4,14 @@ import { Box, Divider, SxProps, Typography } from '@mui/material';
 
 interface SectionTitleProps {
   title: string;
+  color?: string;
   dividerColor?: string;
 }
 
 /**
  * A title of an home page section.
  */
-const SectionTitle = ({ title, dividerColor }: SectionTitleProps) => {
+const SectionTitle = ({ title, color, dividerColor }: SectionTitleProps) => {
   let sx: SxProps = {
     width: { xs: '100%', xl: '75%' },
   };
@@ -32,6 +33,7 @@ const SectionTitle = ({ title, dividerColor }: SectionTitleProps) => {
           variant="h1"
           component="h2"
           textAlign="center"
+          color={color || 'default'}
           pl={4}
           pr={4}
         >

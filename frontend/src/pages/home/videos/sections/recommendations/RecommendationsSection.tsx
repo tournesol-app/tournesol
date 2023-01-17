@@ -28,7 +28,7 @@ const RecommendationsSection = ({
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
-  const color = '#fff';
+  const titleColor = '#fff';
 
   // Determine the date filter applied when the user click on the see more
   // button.
@@ -50,17 +50,21 @@ const RecommendationsSection = ({
 
   return (
     <Box>
-      <SectionTitle title={t('recommendationsSection.recommendations')} />
+      <SectionTitle
+        title={t('recommendationsSection.recommendations')}
+        color={titleColor}
+        dividerColor={titleColor}
+      />
 
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>
-            <Box p={2} bgcolor="#1282B2" color={color} borderRadius={1}>
+            <Box p={2} borderRadius={1}>
               <Typography paragraph fontSize={17}>
                 {t('recommendationsSection.eachComparisonHelps')}
               </Typography>
               <Box pb={2}>
-                <Divider sx={{ backgroundColor: color }} />
+                <Divider />
               </Box>
               <Box textAlign="center">
                 <Metrics
@@ -98,7 +102,7 @@ const RecommendationsSection = ({
           </Box>
         </Grid>
       </Grid>
-      <UseOurExtension />
+      <UseOurExtension titleColor={titleColor} />
     </Box>
   );
 };
