@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import defaultdict
 
 from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_video import SuggestedVideo
@@ -13,7 +14,7 @@ class SuggestedUserVideo(SuggestedVideo):
             local_user: SuggestedUser
     ):
         super().__init__()
-        self._graph_sparsity_score = {}
+        self._graph_sparsity_score = defaultdict(int)
         self.uid = parent.uid
         self.nb_comparison_with = parent.nb_comparison_with
         self.local_user = local_user

@@ -16,6 +16,12 @@ from tournesol.suggestions.suggested_user import SuggestedUser
 from tournesol.suggestions.suggested_user_video import SuggestedUserVideo
 from tournesol.suggestions.suggested_video import SuggestedVideo
 
+from typing import List
+import logging
+import time
+
+logger = logging.getLogger(__name__)
+
 
 class CompleteGraph:
     _local_poll: Poll
@@ -217,6 +223,7 @@ class Graph(CompleteGraph):
         the video scores otherwise
         """
         if self.dirty:
+            begin = time.perf_counter()
             self.dirty = False
             self.build_adjacency_matrix()
             self.build_similarity_matrix()
@@ -238,10 +245,11 @@ class Graph(CompleteGraph):
                 .filter(contributor_rating__poll__name=self._local_poll.name)
                 .aggregate(mean=Avg("score"))
             )["mean"] or 0.0
+            logger.debug("Fetch data for offline parameters: %.3fs" % (time.perf_counter() - begin))
 
             self.compute_information_gain(scaling_factor_increasing_videos)
 
-    def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
+    def compute_information_gain(self, scaling_factor_increasing_videos: List[SuggestedVideo]):
         """
         Function used to compute the estimated information gain
         """
@@ -252,21 +260,26 @@ class Graph(CompleteGraph):
         weighted_scaling_uncertainty = scale_uncertainty * self.local_user_mean
         actual_scaling_uncertainty = weighted_scaling_uncertainty + translation_uncertainty
 
+        # For a new user with a small number of comparisons
+        logger.debug(f"{len(self.nodes)=}")
+        logger.debug(f"{actual_scaling_uncertainty=}, {self.MIN_SCALING_ACCURACY=}")
         if actual_scaling_uncertainty > self.MIN_SCALING_ACCURACY or len(self.nodes) == 0:
-            for va in self._nodes:
-                for vb in self._nodes:
-                    if (
-                            va in scaling_factor_increasing_videos
-                            and vb in scaling_factor_increasing_videos
-                    ):
-                        va.video1_score = 1
-                        va._graph_sparsity_score[vb] = 1
-                    else:
-                        va.video1_score = 0
-                        va._graph_sparsity_score[vb] = 0
+            logger.debug(f"Number of nodes to traverse {len(self._nodes)}")
+            logger.debug(f"Number of nodes in scaling_factor_increasing_videos {len(scaling_factor_increasing_videos)}")
+            nodes_per_uid = {n.uid: n for n in self._nodes}
+            begin = time.perf_counter()
+            for va in scaling_factor_increasing_videos:
+                if va.uid in nodes_per_uid:
+                    nodes_per_uid[va.uid].video1_score = 1
+                    for vb in scaling_factor_increasing_videos:
+                        if vb.uid in nodes_per_uid:
+                            nodes_per_uid[va.uid]._graph_sparsity_score[nodes_per_uid[vb.uid]] = 1
+            logger.debug("Went through all pairs of nodes: %.3fs" % (time.perf_counter() - begin))
+
         # Once the scaling factor is high enough, check what video should gain
         # information being compared by the user
         else:
+            logger.debug("There")
             sub_graphs = self.find_connected_sub_graphs()
             if len(sub_graphs) == 1:
                 sub_graphs = [self]
