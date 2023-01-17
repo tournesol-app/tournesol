@@ -28,6 +28,8 @@ const RecommendationsSection = ({
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
 
+  const color = '#fff';
+
   // Determine the date filter applied when the user click on the see more
   // button.
   const [seeMoreDate, setSeeMoreDate] = useState('Month');
@@ -48,20 +50,17 @@ const RecommendationsSection = ({
 
   return (
     <Box>
-      <SectionTitle
-        title={t('recommendationsSection.recommendations')}
-        dividerColor="#fff"
-      />
+      <SectionTitle title={t('recommendationsSection.recommendations')} />
 
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>
-            <Box p={2} borderRadius={1}>
+            <Box p={2} bgcolor="#1282B2" color={color} borderRadius={1}>
               <Typography paragraph fontSize={17}>
                 {t('recommendationsSection.eachComparisonHelps')}
               </Typography>
               <Box pb={2}>
-                <Divider />
+                <Divider sx={{ backgroundColor: color }} />
               </Box>
               <Box textAlign="center">
                 <Metrics

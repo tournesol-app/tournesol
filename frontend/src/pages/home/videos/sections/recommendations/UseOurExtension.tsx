@@ -14,7 +14,7 @@ const UseOurExtension = () => {
   return (
     <Box>
       <Box my={6}>
-        <SectionTitle title={t('home.useOurExtension')} dividerColor="#fff" />
+        <SectionTitle title={t('home.useOurExtension')} />
       </Box>
       <Grid container flexDirection="column" alignItems="center">
         <Grid item xl={9}>
