@@ -47,7 +47,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
             </Box>
           </Paper>
         </Grid>
-        <Grid item lg={9} xl={6}>
+        <Grid item lg={9} xl={6} width="100%">
           <Box display="flex" justifyContent="center">
             <HomeComparison />
           </Box>

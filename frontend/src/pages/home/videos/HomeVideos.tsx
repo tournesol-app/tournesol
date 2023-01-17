@@ -148,7 +148,7 @@ const HomeVideosPage = () => {
         <Grid2 sx={homeSectionSx}>
           <ResearchSection />
         </Grid2>
-        <Grid2 sx={homeSectionSx}>
+        <Grid2 width="100%" bgcolor="rgba(0, 0, 0, 0.08)" sx={homeSectionSx}>
           <UsageStatsSection externalData={stats} />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
