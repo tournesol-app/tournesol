@@ -475,6 +475,14 @@
     "contribute": "Contribuer",
     "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ?"
   },
+  "fundingSection": {
+    "supportUs": "Soutenez-nous !",
+    "tournesolExistsThanksToYourInvolvment": "Tournesol existe grâce à votre implication. En finançant Tournesol vous...",
+    "guaranteeTheProjectsIndependence": "<0>garantissez</0> l'indépendance du projet",
+    "participateInTheCreationOfCommons": "<0>participez</0> à la création de biens communs",
+    "actForTheEthicsOfInformation": "<0>agissez</0> pour l'éthique de l'information",
+    "iSupport": "Je soutiens"
+  },
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Désolé, la comparaison de vidéo est momentanément indisponible. Veuillez réessayer plus tard.",
     "compareTheVideos": "Comparer les vidéos"
