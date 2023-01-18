@@ -122,7 +122,7 @@ const HomePresidentielle2022Page = () => {
       </Box>
 
       <Grid2 container width="100%" flexDirection="column" alignItems="center">
-        <Grid2 sx={homeSectionSx}>
+        <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
           <PollListSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
