@@ -23,8 +23,9 @@ import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
 const HomeVideosPage = () => {
-  const { t } = useTranslation();
   const theme = useTheme();
+  const { t } = useTranslation();
+
   const { isLoggedIn } = useLoginState();
   const { showWarningAlert } = useNotifications();
   const { baseUrl, active, name: pollName } = useCurrentPoll();
@@ -32,6 +33,7 @@ const HomeVideosPage = () => {
   const [stats, setStats] = useState<PollStats>(DEFAULT_POLL_STATS);
 
   const homeSectionSx = {
+    width: '100%',
     padding: 6,
     [theme.breakpoints.down('md')]: {
       padding: 6,
@@ -137,7 +139,7 @@ const HomeVideosPage = () => {
             }}
           />
         </Grid2>
-        <Grid2 bgcolor="#1282B2" sx={homeSectionSx}>
+        <Grid2 sx={homeSectionSx} bgcolor="#1282B2">
           <RecommendationsSection
             comparedEntityStats={{
               comparedEntityCount: stats.comparedEntityCount,
@@ -148,10 +150,10 @@ const HomeVideosPage = () => {
         <Grid2 sx={homeSectionSx}>
           <ResearchSection />
         </Grid2>
-        <Grid2 width="100%" bgcolor="rgba(0, 0, 0, 0.08)" sx={homeSectionSx}>
+        <Grid2 sx={homeSectionSx} bgcolor="rgba(0, 0, 0, 0.08)">
           <UsageStatsSection externalData={stats} />
         </Grid2>
-        <Grid2 sx={homeSectionSx}>
+        <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
           <PollListSection />
         </Grid2>
       </Grid2>
