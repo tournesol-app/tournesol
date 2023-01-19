@@ -7,6 +7,7 @@ from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from sql_util.utils import SubqueryCount
 
@@ -28,14 +29,14 @@ from .utils.video_language import LANGUAGE_CODE_TO_NAME_MATCHING
 
 class MetadataFieldFilter(SimpleListFilter):
     """Used for metadata filters on entities"""
+
     parameter_name = None
     metadata_key = None
 
     def lookups(self, request, model_admin):
         """List the possible metadata filters on entities"""
         field_values = sorted(
-            model_admin.model.objects
-            .distinct()
+            model_admin.model.objects.distinct()
             .exclude(**{f"metadata__{self.metadata_key}": None})
             .values_list(f"metadata__{self.metadata_key}", flat=True)
         )
@@ -47,9 +48,8 @@ class MetadataFieldFilter(SimpleListFilter):
             json_field_query = {f"metadata__{self.metadata_key}": self.value()}
             return queryset.filter(**json_field_query)
         if self.value() == "":
-            json_field_query = (
-                Q(**{f"metadata__{self.metadata_key}": ""})
-                | Q(**{f"metadata__{self.metadata_key}": None})
+            json_field_query = Q(**{f"metadata__{self.metadata_key}": ""}) | Q(
+                **{f"metadata__{self.metadata_key}": None}
             )
             return queryset.filter(json_field_query)
         return queryset
@@ -57,6 +57,7 @@ class MetadataFieldFilter(SimpleListFilter):
 
 class EntityLanguageFilter(MetadataFieldFilter):
     """Enables the language filter in the entities' admin interface"""
+
     title = "language"
     parameter_name = "metadataLanguage"
     metadata_key = "language"
@@ -160,7 +161,13 @@ class ContributorRatingAdmin(admin.ModelAdmin):
 @admin.register(ContributorRatingCriteriaScore)
 class ContributorRatingCriteriaScoreAdmin(admin.ModelAdmin):
     list_filter = ("contributor_rating__poll__name",)
-    list_display = ("id", "contributor_rating", "criteria", "score", "voting_right",)
+    list_display = (
+        "id",
+        "contributor_rating",
+        "criteria",
+        "score",
+        "voting_right",
+    )
     readonly_fields = ("contributor_rating",)
     search_fields = ("contributor_rating__entity__uid",)
 
@@ -187,8 +194,8 @@ class ComparisonAdmin(admin.ModelAdmin):
         "pk",
         "user",
         "get_poll_name",
-        "entity_1",
-        "entity_2",
+        "entity_1_link",
+        "entity_2_link",
         "datetime_lastedit",
     )
     list_filter = ("poll__name",)
@@ -202,6 +209,20 @@ class ComparisonAdmin(admin.ModelAdmin):
         "entity_1",
         "entity_2",
     )
+
+    def entity_1_link(self, obj):
+        entity = obj.entity_1
+        app_label = entity._meta.app_label
+        model_label = entity._meta.model_name
+        url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
+        return mark_safe(f'<a href="{url}">{entity.uid}</a>')
+
+    def entity_2_link(self, obj):
+        entity = obj.entity_2
+        app_label = entity._meta.app_label
+        model_label = entity._meta.model_name
+        url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
+        return mark_safe(f'<a href="{url}">{entity.uid}</a>')
 
     @admin.display(ordering="poll__name", description="Poll")
     def get_poll_name(self, obj):
@@ -222,12 +243,14 @@ class ComparisonCriteriaScoreAdmin(admin.ModelAdmin):
 
 class CriteriasInline(admin.TabularInline):
     """Used to display the criteria in the polls' admin interface"""
+
     model = CriteriaRank
     extra = 0
 
 
 class CriteriaLocalesInline(admin.TabularInline):
     """Used to display the localization in the criteria's admin interface"""
+
     model = CriteriaLocale
     extra = 0
 
@@ -252,9 +275,7 @@ class PollAdmin(admin.ModelAdmin):
         qst = qst.annotate(n_criteria=SubqueryCount("criterias"))
         qst = qst.annotate(n_comparisons=SubqueryCount("comparisons"))
         qst = qst.annotate(
-            n_comparisons_per_criteria=SubqueryCount(
-                "comparisons__criteria_scores"
-            )
+            n_comparisons_per_criteria=SubqueryCount("comparisons__criteria_scores")
         )
         return qst
 
