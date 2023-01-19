@@ -7,7 +7,6 @@ from django.contrib.admin.filters import SimpleListFilter
 from django.db.models import Q, QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from sql_util.utils import SubqueryCount
 
@@ -215,14 +214,14 @@ class ComparisonAdmin(admin.ModelAdmin):
         app_label = entity._meta.app_label
         model_label = entity._meta.model_name
         url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
-        return mark_safe(f'<a href="{url}">{entity.uid}</a>')
+        return format_html(f'<a href="{url}">{entity.uid}</a>')
 
     def entity_2_link(self, obj):
         entity = obj.entity_2
         app_label = entity._meta.app_label
         model_label = entity._meta.model_name
         url = reverse(f"admin:{app_label}_{model_label}_change", args=(entity.id,))
-        return mark_safe(f'<a href="{url}">{entity.uid}</a>')
+        return format_html(f'<a href="{url}">{entity.uid}</a>')
 
     @admin.display(ordering="poll__name", description="Poll")
     def get_poll_name(self, obj):
