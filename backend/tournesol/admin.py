@@ -178,6 +178,11 @@ class ContributorScalingAdmin(admin.ModelAdmin):
 
 @admin.register(Comparison)
 class ComparisonAdmin(admin.ModelAdmin):
+    search_fields = (
+        "user__username",
+        "entity_1__uid",
+        "entity_2__uid",
+    )
     list_display = (
         "pk",
         "user",
