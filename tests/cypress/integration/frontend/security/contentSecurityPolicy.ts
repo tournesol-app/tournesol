@@ -21,5 +21,8 @@ describe('Content Security Policy checks', () => {
     content.should('contains', "base-uri 'self'");
     content.should('contains', "default-src 'none'");
     content.should('contains', "object-src 'none'");
-  })
-})
+
+    // frame-src must be explicitly defined
+    content.should('contains', "frame-src");
+  });
+});
