@@ -312,7 +312,9 @@ def compute_scaled_scores(
 
 def get_global_scores(scaled_scores: pd.DataFrame):
     if len(scaled_scores) == 0:
-        return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
+        return pd.DataFrame(
+            columns=["entity_id", "score", "uncertainty", "deviation", "n_contributors"]
+        )
 
     global_scores = {}
     for (entity_id, scores) in scaled_scores.groupby("entity_id"):
@@ -326,10 +328,8 @@ def get_global_scores(scaled_scores: pd.DataFrame):
             "score": rho,
             "uncertainty": rho_uncertainty,
             "deviation": rho_deviation,
+            "n_contributors": len(scores),
         }
-
-    if len(global_scores) == 0:
-        return pd.DataFrame(columns=["entity_id", "score", "uncertainty", "deviation"])
 
     result = pd.DataFrame.from_dict(global_scores, orient="index")
     result.index.name = "entity_id"
