@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 09:45+0000\n"
+"POT-Creation-Date: 2023-01-24 10:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,6 +54,10 @@ msgstr "'%(name)s' est un nom d'utilisateur reservé"
 #: core/serializers/user.py:30
 msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
+
+#: core/serializers/user_settings.py:15
+msgid "This parameter cannot be lower than 2."
+msgstr "Ce paramètre ne peut pas être inférieur à 2."
 
 #: core/templates/accounts/register/body.html:5
 msgid "Please verify your Tournesol account by clicking on this link:"
