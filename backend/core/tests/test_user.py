@@ -10,7 +10,17 @@ class UserModelTestCase(TestCase):
     TestCase of the User model.
     """
 
-    def test_validate_email_unique_with_plus_rsplit(self) -> None:
+    def test_default_settings(self):
+        """
+        The users must be created with an empty set of settings representing
+        their preferences.
+        """
+        UserFactory(username="user")
+        user = User.objects.get(username="user")
+
+        self.assertEqual(user.settings, {})
+
+    def test_validate_email_unique_with_plus_rsplit(self):
         """
         The method must correctly split on the last `@` character.
         """
