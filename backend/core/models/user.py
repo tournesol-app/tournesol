@@ -202,6 +202,13 @@ class User(AbstractUser):
                   " domains and the vouching mechanism.",
     )
 
+    settings = models.JSONField(
+        null=False,
+        blank=True,
+        default=dict,
+        help_text=_("The user' preferences.")
+    )
+
     # @property
     # def is_certified(self):
     #     """Check if the user's email is certified. See #152"""
