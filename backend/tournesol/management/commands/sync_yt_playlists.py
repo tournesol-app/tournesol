@@ -30,7 +30,7 @@ class Command(BaseCommand):
             metadata__publication_date__gte=time_ago(days=60).isoformat(),
             metadata__language=language,
             tournesol_score__gt=20,
-            rating_n_contributors__gte=2,
+            rating_n_contributors__gte=3,
         ).order_by("tournesol_score")
 
     def get_existing_items(self, yt_client, playlist_id):
