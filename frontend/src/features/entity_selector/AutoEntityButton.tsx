@@ -25,6 +25,7 @@ const AutoEntityButton = ({
 }: Props) => {
   const { t } = useTranslation();
   const { name: pollName } = useCurrentPoll();
+  const mountedRef = useRef(false);
 
   const askNewVideo = useCallback(async () => {
     onClick();
@@ -32,12 +33,22 @@ const AutoEntityButton = ({
       otherUid ? idFromUid(otherUid) : null,
       idFromUid(currentUid || '')
     );
+
+    if (!mountedRef.current) return;
+
     if (newVideoId) {
       onResponse(`${UID_YT_NAMESPACE}${newVideoId}`);
     } else {
       onResponse(null);
     }
   }, [currentUid, otherUid, onClick, onResponse]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const previousUidRef = useRef<string | null | undefined>(undefined);
   useEffect(() => {
