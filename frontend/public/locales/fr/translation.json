@@ -504,7 +504,7 @@
   },
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
-    "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visiualization</1> réalisée avec Streamlit.",
+    "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visualization</1> réalisée avec Streamlit.",
     "personCorrelationCoefficientMatrix": "Matrice des coefficient de corrélation de Pearson entre les scores des critères de comparaison (2022/10/10)."
   },
   "reset": {
