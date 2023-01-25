@@ -28,8 +28,9 @@ from .individual import compute_individual_score
 logger = logging.getLogger(__name__)
 
 MAX_SCORE = MEHESTAN_MAX_SCALED_SCORE
-POLL_SCALING_QUANTILE = 0.99
-POLL_SCALING_SCORE_AT_QUANTILE = 50.0
+POLL_SCALING_QUANTILE = 0.75
+POLL_SCALING_SCORE_AT_QUANTILE = 25.0
+POLL_SCALING_MIN_CONTRIBUTORS = 4
 
 VOTE_WEIGHT_PUBLIC_RATINGS = 1.0
 VOTE_WEIGHT_PRIVATE_RATINGS = 0.5
@@ -143,8 +144,14 @@ def run_mehestan_for_criterion(
         global_scores["criteria"] = criteria
 
         if update_poll_scaling and mode == ScoreMode.DEFAULT and len(global_scores) > 0:
-            quantile_value = np.quantile(global_scores["score"], POLL_SCALING_QUANTILE)
-            if quantile_value == 0.0:
+            scores_to_consider = global_scores[
+                global_scores["n_contributors"] >= POLL_SCALING_MIN_CONTRIBUTORS
+            ]["score"]
+            if len(scores_to_consider) == 0:
+                # Compute poll scaling over all entities if no entity has enough contributors
+                scores_to_consider = global_scores["score"]
+            quantile_value = np.quantile(scores_to_consider, POLL_SCALING_QUANTILE)
+            if quantile_value <= 0.0:
                 scale = 1.0
             else:
                 scale = (
