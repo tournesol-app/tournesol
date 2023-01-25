@@ -48,12 +48,13 @@ interface Props {
 }
 
 export interface SelectorValue {
-  uid: string;
+  uid: string | null;
   rating: ContributorRating | null;
   ratingIsExpired?: boolean;
 }
 
-const isUidValid = (uid: string) => uid.match(/\w+:.+/);
+const isUidValid = (uid: string | null) =>
+  uid === null ? false : uid.match(/\w+:.+/);
 
 const EntitySelector = ({
   title,
@@ -98,7 +99,10 @@ const EntitySelectorInnerAnonymous = ({ value }: { value: SelectorValue }) => {
 
   useEffect(() => {
     async function getEntity() {
-      return await PollsService.pollsEntitiesRetrieve({ name: pollName, uid });
+      return await PollsService.pollsEntitiesRetrieve({
+        name: pollName,
+        uid: uid || '',
+      });
     }
 
     // Wait for a not null / not empty UID before making an HTTP request.
@@ -147,7 +151,7 @@ const EntitySelectorInnerAuth = ({
       const contributorRating =
         await UsersService.usersMeContributorRatingsRetrieve({
           pollName,
-          uid,
+          uid: uid || '',
         });
       onChange({
         uid,
@@ -161,7 +165,7 @@ const EntitySelectorInnerAuth = ({
             await UsersService.usersMeContributorRatingsCreate({
               pollName,
               requestBody: {
-                uid,
+                uid: uid || '',
                 is_public: options?.comparisonsCanBePublic === true,
               },
             });
@@ -285,7 +289,7 @@ const EntitySelectorInnerAuth = ({
 
           <Box mx={1} marginBottom={1}>
             <EntityInput
-              value={inputValue || uid}
+              value={inputValue || uid || ''}
               onChange={handleChange}
               otherUid={otherUid}
             />

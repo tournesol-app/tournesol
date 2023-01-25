@@ -81,15 +81,15 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
     useState<ComparisonRequest | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
-  const uidA: string = searchParams.get(UID_PARAMS.vidA) || '';
-  const uidB: string = searchParams.get(UID_PARAMS.vidB) || '';
+  const uidA: string | null = searchParams.get(UID_PARAMS.vidA);
+  const uidB: string | null = searchParams.get(UID_PARAMS.vidB);
 
   // clean the URL by replacing legacy parameters by UIDs
   const legacyA = searchParams.get(LEGACY_PARAMS.vidA);
   const legacyB = searchParams.get(LEGACY_PARAMS.vidB);
   const newSearchParams = rewriteLegacyParameters(
-    uidA,
-    uidB,
+    uidA || '',
+    uidB || '',
     legacyA,
     legacyB,
     UID_PARAMS.vidA,
@@ -114,11 +114,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
       const uid = newValue.uid;
 
       if ((searchParams.get(uidKey) || '') !== uid) {
-        searchParams.delete(uidKey);
-
-        if (uid) {
-          searchParams.append(uidKey, uid);
-        }
+        searchParams.set(uidKey, uid || '');
         history.push({ search: searchParams.toString() });
       }
       if (uidKey === UID_PARAMS.vidA) {
@@ -295,8 +291,8 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
             <ComparisonSliders
               submit={onSubmitComparison}
               initialComparison={initialComparison}
-              uidA={uidA}
-              uidB={uidB}
+              uidA={uidA || ''}
+              uidB={uidB || ''}
               isComparisonPublic={
                 selectorA.rating.is_public && selectorB.rating.is_public
               }

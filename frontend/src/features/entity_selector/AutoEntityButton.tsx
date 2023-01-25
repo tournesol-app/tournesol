@@ -7,7 +7,7 @@ import { YOUTUBE_POLL_NAME, UID_YT_NAMESPACE } from 'src/utils/constants';
 import { getVideoForComparison, idFromUid } from 'src/utils/video';
 
 interface Props {
-  currentUid: string;
+  currentUid: string | null;
   otherUid: string | null;
   onResponse: (newUid: string | null) => void;
   onClick: () => void;
@@ -30,7 +30,7 @@ const AutoEntityButton = ({
     onClick();
     const newVideoId: string | null = await getVideoForComparison(
       otherUid ? idFromUid(otherUid) : null,
-      idFromUid(currentUid)
+      idFromUid(currentUid || '')
     );
     if (newVideoId) {
       onResponse(`${UID_YT_NAMESPACE}${newVideoId}`);
@@ -39,16 +39,13 @@ const AutoEntityButton = ({
     }
   }, [currentUid, otherUid, onClick, onResponse]);
 
-  const previousUidRef = useRef<string | undefined>(undefined);
+  const previousUidRef = useRef<string | null | undefined>(undefined);
   useEffect(() => {
     // We only want to autofill when the currentUid changes, not when the other dependencies change
     if (currentUid === previousUidRef.current) return;
     previousUidRef.current = currentUid;
 
-    if (!autoFill) return;
-    if (currentUid) return;
-
-    askNewVideo();
+    if (autoFill && currentUid === null) askNewVideo();
   }, [autoFill, currentUid, askNewVideo]);
 
   if (pollName !== YOUTUBE_POLL_NAME) {
