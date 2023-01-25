@@ -266,7 +266,8 @@ class Entity(models.Model):
         if self.type != TYPE_VIDEO:
             return None
         return format_html(
-            '<a href="https://tournesol.app/entities/yt:{}" target="_blank">Play ▶</a>', self.video_id
+            '<a href="https://tournesol.app/entities/yt:{}" target="_blank">Play ▶</a>',
+            self.video_id
         )
 
     def criteria_scores_distributions(self, poll):
