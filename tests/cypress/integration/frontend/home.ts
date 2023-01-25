@@ -41,7 +41,12 @@ describe('Home', () => {
         // already finished the tutorial, and should be redirected to the
         // comparison page without the parameter ?series=true.
         cy.location('pathname').should('equal', '/comparison');
-        cy.location('search').should('equal', '');
+        cy.location('search').should(search => {
+          // uidA and uidB will be auto filled so we only look at the 'series' parameter
+          const params = new URLSearchParams(search)
+          const series = params.get('series')
+          expect(series).to.equal(null)
+        })
       });
 
       it('contains a link to the tutorial - new user', () => {
