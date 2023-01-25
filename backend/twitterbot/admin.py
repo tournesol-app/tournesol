@@ -51,11 +51,11 @@ class TwitterBotAdmin(admin.ModelAdmin):
         return obj.video.metadata.get("uploader")
 
     @staticmethod
-    @admin.display(description="Video link to Youtube")
+    @admin.display(description="Video link to Tournesol")
     def get_video_link(obj):
-        """Returns video link to Youtube"""
+        """Returns video link to Tournesol"""
 
         return format_html(
-            '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>',
+            '<a href="https://tournesol.app/entities/yt:{}" target="_blank">Play ▶</a>',
             obj.video.video_id,
         )
