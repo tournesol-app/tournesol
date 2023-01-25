@@ -3538,6 +3538,10 @@ components:
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         is_trusted:
           type: boolean
     PoliticalAffiliationEnum:
@@ -3867,6 +3871,10 @@ components:
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
       required:
       - email
       - id
@@ -4019,6 +4027,10 @@ components:
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         password_confirm:
           type: string
           writeOnly: true
@@ -4616,6 +4628,10 @@ components:
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         is_trusted:
           type: boolean
       required:
@@ -4763,6 +4779,10 @@ components:
           nullable: true
           description: The trust score assigned to the user based on trusted domains
             and the vouching mechanism.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: The user' preferences.
         is_trusted:
           type: boolean
       required:
