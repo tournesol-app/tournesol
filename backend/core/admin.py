@@ -9,6 +9,7 @@ from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.db.models import Count, Func, OuterRef, Subquery
 from django.db.models.query import QuerySet
+from django.utils.translation import gettext_lazy as _
 
 from .models import Degree, EmailDomain, Expertise, ExpertiseKeyword, User, VerifiableEmail
 
@@ -69,6 +70,11 @@ class UserAdmin(DjangoUserAdmin):
                 "fields": ("username", "email", "password1", "password2"),
             },
         ),
+    )
+
+    fieldsets = DjangoUserAdmin.fieldsets + (
+        (_("Tournesol - trust"), {"fields": ("trust_score",)}),
+        (_("Tournesol - preferences"), {"fields": ("settings",)}),
     )
 
     @staticmethod
