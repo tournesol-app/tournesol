@@ -9,6 +9,9 @@ class GenericPollUserSettingsSerializerTestCase(TestCase):
     """
 
     def test_validate_rate_later__auto_remove(self):
+        """
+        The `rate_later__auto_remove` setting shouldn't be less than 2.
+        """
         serializer = GenericPollUserSettingsSerializer(
             data={"rate_later__auto_remove": -1}
         )
