@@ -262,11 +262,11 @@ class Entity(models.Model):
     def __str__(self):
         return f"{self.uid}"
 
-    def link_to_youtube(self):
+    def link_to_tournesol(self):
         if self.type != TYPE_VIDEO:
             return None
         return format_html(
-            '<a href="https://youtu.be/{}" target="_blank">Play ▶</a>', self.video_id
+            '<a href="https://tournesol.app/entities/yt:{}" target="_blank">Play ▶</a>', self.video_id
         )
 
     def criteria_scores_distributions(self, poll):
