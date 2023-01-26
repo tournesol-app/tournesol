@@ -105,7 +105,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        sx={{ background: '#1282B2', color: 'white' }}
+        sx={{ background: 'background.secondary', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -197,7 +197,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        sx={{ background: '#1282B2', color: 'white' }}
+        sx={{ background: 'background.secondary', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -403,7 +403,10 @@ const AboutPage = () => {
           className={classes.container}
         >
           <ContentBox className={classes.noMaxWidth}>
-            <Paper sx={{ background: '#1282B2', color: 'white', p: 2 }} square>
+            <Paper
+              sx={{ background: 'background.secondary', color: 'white', p: 2 }}
+              square
+            >
               <PublicDownloadSection />
             </Paper>
           </ContentBox>

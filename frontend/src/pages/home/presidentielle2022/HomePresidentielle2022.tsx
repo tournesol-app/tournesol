@@ -2,14 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Box,
-  Divider,
-  Stack,
-  Button,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Box, Divider, Stack, Button, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 import { useCurrentPoll, useLoginState } from 'src/hooks';
@@ -19,7 +12,6 @@ import PollListSection from 'src/pages/home/PollListSection';
 import { PRESIDENTIELLE_2022_SURVEY_URL } from 'src/utils/constants';
 
 const HomePresidentielle2022Page = () => {
-  const theme = useTheme();
   const { t } = useTranslation();
 
   const { isLoggedIn } = useLoginState();
@@ -28,10 +20,7 @@ const HomePresidentielle2022Page = () => {
   const homeSectionSx = {
     width: '100%',
     padding: 6,
-    [theme.breakpoints.down('md')]: {
-      padding: 6,
-      px: { xs: 2, md: 6 },
-    },
+    px: { xs: 2, md: 6 },
   };
 
   return (

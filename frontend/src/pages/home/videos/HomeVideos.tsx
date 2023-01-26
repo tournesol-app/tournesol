@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Box,
-  Button,
-  Divider,
-  Stack,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
@@ -23,7 +16,6 @@ import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
 import { PollStats } from 'src/utils/types';
 
 const HomeVideosPage = () => {
-  const theme = useTheme();
   const { t } = useTranslation();
 
   const { isLoggedIn } = useLoginState();
@@ -35,10 +27,7 @@ const HomeVideosPage = () => {
   const homeSectionSx = {
     width: '100%',
     padding: 6,
-    [theme.breakpoints.down('md')]: {
-      padding: 6,
-      px: { xs: 2, md: 6 },
-    },
+    px: { xs: 2, md: 6 },
   };
 
   /**
@@ -62,7 +51,7 @@ const HomeVideosPage = () => {
 
   return (
     <>
-      <Box padding={4} color="white" bgcolor="#1282B2">
+      <Box padding={4} color="white" bgcolor="background.secondary">
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
           <Typography paragraph fontSize="1.1em">
             {t('home.tournesolIsAParticipatoryResearchProject')}
@@ -139,7 +128,7 @@ const HomeVideosPage = () => {
             }}
           />
         </Grid2>
-        <Grid2 sx={homeSectionSx} bgcolor="#1282B2">
+        <Grid2 sx={homeSectionSx} bgcolor="background.secondary">
           <RecommendationsSection
             comparedEntityStats={{
               comparedEntityCount: stats.comparedEntityCount,
