@@ -25,7 +25,7 @@ const FundingSection = () => {
       <Box display="flex" justifyContent="center" mb={6}>
         <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
           <Typography variant="h3" textAlign="center" letterSpacing="0.8px">
-            {t('fundingSection.tournesolExistsThanksToYourInvolvment')}
+            {t('fundingSection.tournesolExistsThanksToYourInvolvement')}
           </Typography>
         </Box>
       </Box>
