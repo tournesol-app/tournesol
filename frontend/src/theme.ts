@@ -10,8 +10,9 @@ declare module '@mui/material/styles/createPalette' {
   }
 
   interface TypeBackground {
-    menu: string;
     primary: string;
+    menu: string;
+    emphatic?: string;
   }
 }
 
@@ -33,8 +34,9 @@ export const theme = responsiveFontSizes(
         secondary: '#4a473e',
       },
       background: {
-        menu: '#FAF8F3',
         primary: '#FAFAFA',
+        menu: '#FAF8F3',
+        emphatic: '#1282B2',
       },
     },
     typography: {
