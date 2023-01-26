@@ -23,7 +23,7 @@ const TitledPaper = ({
       <Box
         p={2}
         color="#fff"
-        bgcolor="background.empathic"
+        bgcolor="background.emphatic"
         sx={{
           borderTopLeftRadius: 'inherit',
           borderTopRightRadius: 'inherit',

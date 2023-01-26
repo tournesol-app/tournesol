@@ -51,7 +51,7 @@ const HomeVideosPage = () => {
 
   return (
     <>
-      <Box padding={4} color="white" bgcolor="background.empathic">
+      <Box padding={4} color="white" bgcolor="background.emphatic">
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
           <Typography paragraph fontSize="1.1em">
             {t('home.tournesolIsAParticipatoryResearchProject')}
@@ -128,7 +128,7 @@ const HomeVideosPage = () => {
             }}
           />
         </Grid2>
-        <Grid2 sx={homeSectionSx} bgcolor="background.empathic">
+        <Grid2 sx={homeSectionSx} bgcolor="background.emphatic">
           <RecommendationsSection
             comparedEntityStats={{
               comparedEntityCount: stats.comparedEntityCount,

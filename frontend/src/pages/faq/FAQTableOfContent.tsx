@@ -28,7 +28,7 @@ const FAQTableOfContent = ({ entries }: { entries: Array<FAQEntry> }) => {
         p: 2,
         pb: 2,
         mb: 2,
-        backgroundColor: 'background.empathic',
+        backgroundColor: 'background.emphatic',
       }}
     >
       <Typography variant="h6">{t('faqPage.tableOfContent')}</Typography>
