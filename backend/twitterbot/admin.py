@@ -1,7 +1,10 @@
 """
-Defines Tournesol twitter bot backend admin interface
+The Tournesol Twitter Bot admin interface.
 """
 
+from urllib.parse import urljoin
+
+from django.conf import settings
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -31,7 +34,7 @@ class TwitterBotAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display(description="URL of the tweet")
     def get_twitter_link(obj):
-        """Returns URL of the tweet"""
+        """Return the URI of the tweet."""
         return format_html(
             '<a href="https://twitter.com/{}/status/{}" target="_blank">Tweet</a>',
             obj.bot_name,
@@ -41,21 +44,22 @@ class TwitterBotAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display(ordering="video__metadata__name", description="Video name")
     def get_video_name(obj):
-        """Returns video name"""
+        """Return the video name."""
         return obj.video.metadata.get("name")
 
     @staticmethod
     @admin.display(ordering="video__metadata__uploader", description="Video uploader")
     def get_video_uploader(obj):
-        """Returns video uploader"""
+        """Return the video uploader."""
         return obj.video.metadata.get("uploader")
 
     @staticmethod
-    @admin.display(description="Video link to Tournesol")
+    @admin.display(description="Tournesol link")
     def get_video_link(obj):
-        """Returns video link to Tournesol"""
-
-        return format_html(
-            '<a href="https://tournesol.app/entities/yt:{}" target="_blank">Play ▶</a>',
-            obj.video.video_id,
+        """
+        Return the Tournesol front end URI of the video, in the poll `videos`.
+        """
+        video_uri = urljoin(
+            settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{obj.video.video_id}"
         )
+        return format_html(f'<a href="{video_uri}" target="_blank">Play ▶</a>')

@@ -6,6 +6,7 @@ import logging
 from collections import defaultdict
 from functools import cached_property
 from typing import List
+from urllib.parse import urljoin
 
 import numpy as np
 from django.conf import settings
@@ -42,10 +43,9 @@ class EntityQueryset(models.QuerySet):
             Prefetch(
                 "all_criteria_scores",
                 queryset=EntityCriteriaScore.objects.filter(
-                    poll__name=poll_name,
-                    score_mode=mode
+                    poll__name=poll_name, score_mode=mode
                 ),
-                to_attr="_prefetched_criteria_scores"
+                to_attr="_prefetched_criteria_scores",
             )
         )
 
@@ -99,9 +99,7 @@ class Entity(models.Model):
 
     class Meta:
         verbose_name_plural = "entities"
-        indexes = (
-            GinIndex(name="search_index", fields=['search_vector']),
-        )
+        indexes = (GinIndex(name="search_index", fields=["search_vector"]),)
 
     objects = EntityQueryset.as_manager()
 
@@ -216,9 +214,7 @@ class Entity(models.Model):
         ).count()
 
         if n_comparisons >= 4:
-            RateLater.objects.filter(
-                poll=poll, user=user, entity=self
-            ).delete()
+            RateLater.objects.filter(poll=poll, user=user, entity=self).delete()
 
     @property
     def entity_cls(self):
@@ -265,10 +261,11 @@ class Entity(models.Model):
     def link_to_tournesol(self):
         if self.type != TYPE_VIDEO:
             return None
-        return format_html(
-            '<a href="https://tournesol.app/entities/yt:{}" target="_blank">Play ▶</a>',
-            self.video_id
+
+        video_uri = urljoin(
+            settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{self.video_id}"
         )
+        return format_html(f'<a href="{video_uri}" target="_blank">Play ▶</a>')
 
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of criteria score per criteria for the entity"""
