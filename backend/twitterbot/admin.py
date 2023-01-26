@@ -62,4 +62,4 @@ class TwitterBotAdmin(admin.ModelAdmin):
         video_uri = urljoin(
             settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{obj.video.video_id}"
         )
-        return format_html(f'<a href="{video_uri}" target="_blank">Play ▶</a>')
+        return format_html('<a href="{}" target="_blank">Play ▶</a>', video_uri)
