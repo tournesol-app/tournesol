@@ -29,7 +29,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
           <Paper elevation={0}>
             <Box
               p={2}
-              bgcolor="background.secondary"
+              bgcolor="background.empathic"
               color={color}
               borderRadius={1}
             >
