@@ -265,7 +265,7 @@ class Entity(models.Model):
         video_uri = urljoin(
             settings.REST_REGISTRATION_MAIN_URL, f"entities/yt:{self.video_id}"
         )
-        return format_html(f'<a href="{video_uri}" target="_blank">Play ▶</a>')
+        return format_html('<a href="{}" target="_blank">Play ▶</a>', video_uri)
 
     def criteria_scores_distributions(self, poll):
         """Returns the distribution of criteria score per criteria for the entity"""
