@@ -1,8 +1,13 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
+
 if git diff --staged --quiet -- frontend/; then
     echo "Skipping hook: frontend/ is unchanged"
-else
-    cd frontend
+elif command -v yarn > /dev/null 2>&1; then
+    # yarn is installed locally
+    cd frontend || exit
     yarn lint
+elif docker top tournesol-dev-front > /dev/null 2>&1; then
+    # frontend container is running
+    docker exec -t tournesol-dev-front yarn lint
 fi
