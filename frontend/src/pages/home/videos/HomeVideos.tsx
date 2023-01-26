@@ -10,6 +10,7 @@ import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import TitleSection from 'src/pages/home/TitleSection';
 import PollListSection from 'src/pages/home/PollListSection';
 import ComparisonSection from 'src/pages/home/videos/sections/ComparisonSection';
+import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import RecommendationsSection from 'src/pages/home/videos/sections/recommendations/RecommendationsSection';
 import ResearchSection from 'src/pages/home/videos/sections/research/ResearchSection';
 import { DEFAULT_POLL_STATS, getPollStats } from 'src/utils/api/stats';
@@ -135,6 +136,9 @@ const HomeVideosPage = () => {
               lastMonthComparedEntityCount: stats.lastMonthComparedEntityCount,
             }}
           />
+        </Grid2>
+        <Grid2 sx={homeSectionSx}>
+          <FundingSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
           <ResearchSection />

@@ -469,6 +469,14 @@
     "contribute": "Contribute",
     "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
   },
+  "fundingSection": {
+    "supportUs": "Support Us!",
+    "tournesolExistsThanksToYourInvolvement": "Tournesol exists thanks to your involvement. By financing Tournesol you...",
+    "guaranteeTheProjectsIndependence": "<0>guarantee</0> the project's independance",
+    "participateInTheCreationOfCommons": "<0>participate</0> in the creation of commons",
+    "actForTheEthicsOfInformation": "<0>act</0> for the ethics of information",
+    "iSupport": "I support"
+  },
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Sorry, the comparison of video is temporarily unavailable. Please try again later.",
     "compareTheVideos": "Compare the videos"
