@@ -227,7 +227,7 @@
     "language": "Language",
     "scoreMode": {
       "default": {
-        "description": "More importance is given to accounts associated with an email address considered trusted",
+        "description": "More importance is given to accounts associated with an email address considered trustworthy",
         "label": "Default"
       },
       "allEqual": {
@@ -235,7 +235,7 @@
         "label": "All equal"
       },
       "trustedOnly": {
-        "description": "Only accounts associated with <2>an email address considered trusted</2> are taken into account",
+        "description": "Only accounts associated with <2>an email address considered trustworthy</2> are taken into account",
         "label": "Trusted only"
       }
     },
@@ -276,7 +276,7 @@
     "emailStatus": "Email status",
     "emailTrusted": "Trusted",
     "emailNonTrusted": "Non-trusted",
-    "learnMoreAboutTrustedDomains": "Learn more about domains which are considered trusted",
+    "learnMoreAboutTrustedDomains": "Learn more about domains which are considered trustworthy",
     "verificationEmailSentNewEmail": "A verification email has been sent to confirm your new email address.",
     "currentEmailAddressIs": "Your current email address is",
     "newEmailAddress": "New email address",
@@ -360,11 +360,11 @@
     "publicDatabase": "Public Database",
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
-    "trustedEmailDomains": "Email domains considered trusted",
+    "trustedEmailDomains": "Email domains considered trustworthy",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
-    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trusted</2>, or when other users vouch for you.",
+    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trustworthy</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
-    "trustedDomainsCurrentList": "Current list of domains considered trusted"
+    "trustedDomainsCurrentList": "Current list of domains considered trustworthy"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
@@ -546,19 +546,19 @@
       "title": "Trust score",
       "description": {
         "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
-        "howToChangeIt": "You can gain more trust by using an email from a domain considered trusted or when other users vouch for you.",
+        "howToChangeIt": "You can gain more trust by using an email from a domain considered trustworthy or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
       "nullValue": "Unknown",
       "low": "Low",
       "medium": "Medium",
       "high": "High",
-      "isTrusted": "Your email address is considered trusted.",
-      "isNotTrusted": "Your email address is not considered trusted.",
+      "isTrusted": "Your email address is considered trustworthy.",
+      "isNotTrusted": "Your email address is not considered trustworthy.",
       "hasReceivedVouchers": "Other users vouch for you.",
       "hasNotReceivedVouchers": "No other user vouch for you."
     },
-    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
+    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered trustworthy. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
