@@ -171,9 +171,12 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
         """
         if filters["search"] and self.poll_from_url.algorithm == ALGORITHM_MEHESTAN:
             max_absolute_score = MEHESTAN_MAX_SCALED_SCORE * self._weights_sum
-            normalized_total_score = (
-                (F("total_score") + max_absolute_score) / (2 * max_absolute_score)
-            )
+            if max_absolute_score > 0:
+                normalized_total_score = (
+                    (F("total_score") + max_absolute_score) / (2 * max_absolute_score)
+                )
+            else:
+                normalized_total_score = 0
             queryset = queryset.alias(
                 search_score=F("relevance")
                 * (F("relevance") + self.search_score_coef * normalized_total_score)
