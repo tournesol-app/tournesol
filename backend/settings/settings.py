@@ -296,7 +296,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_THROTTLE_RATES": {
         "anon_burst": "120/min",
-        "user_burst": "120/min",
+        "user_burst": server_settings.get("THROTTLE_USER_BURST", "120/min"),
         "anon_sustained": "3600/hour",
         "user_sustained": "3600/hour",
         # specific rates for specific parts of the API
