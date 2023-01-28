@@ -6,6 +6,8 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import matplotlib.image as mpimg
 import datetime
 
+# from tournesol.utils.contributors import get_top_public_contributors_last_month
+
 # TODO:
 # - Traduction
 # - get month name from Django
@@ -17,17 +19,17 @@ def generate_top_contributor_figure() -> Path:
     # top_contributors = get_top_public_contributors_last_month(poll_name=DEFAULT_POLL_NAME, top=10)
 
     top_contributors = {
-        "user0": 2677,
-        "user1": 2556,
-        "user2": 1556,
-        "user3": 1556,
-        "user4_too_long": 1356,
-        "user4": 556,
-        "user5": 456,
-        "user6": 453,
-        "user7": 356,
-        "user8": 256,
-        "u": 156,
+        "user0": 950,
+        "user1": 256,
+        "user2": 156,
+        "user3": 156,
+        "user4_very_long_name": 136,
+        "user4": 56,
+        "user5": 56,
+        "le_science4all": 53,
+        "user7": 35,
+        "user8": 26,
+        "u": 15,
     }
 
     now = datetime.datetime.now()
@@ -35,8 +37,9 @@ def generate_top_contributor_figure() -> Path:
     last_month = now.month - 1
     year = now.year
 
-    if last_month == 12:
+    if last_month == 0:
         year -= 1
+        last_month = 12
 
     MONTHS = {
         1: "January",
@@ -57,10 +60,11 @@ def generate_top_contributor_figure() -> Path:
     fig_path = Path("/tmp/top_contributor.png")
 
     plt.xkcd()
+    plt.rcParams["font.family"] = ["Arial"]
     fig, ax = plt.subplots(dpi=150)
 
     short_usernames = [
-        name[:11] + "..." if len(name) > 13 else name
+        name[:13] + "..." if len(name) > 15 else name
         for name in list(top_contributors.keys())
     ]
 
@@ -70,7 +74,7 @@ def generate_top_contributor_figure() -> Path:
     plt.title(
         f"Tournesol top public contributors of {MONTHS[last_month]} {year}", fontsize=14
     )
-    plt.xticks(rotation=70, fontsize=10)
+    plt.xticks(rotation=50, ha="right", fontsize=10)
     plt.ylabel("Number of comparisons", fontsize=12)
     plt.yticks(fontsize=10)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
