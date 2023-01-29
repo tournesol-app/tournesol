@@ -33,8 +33,6 @@ FOOTER_FONT_LOCATION = "tournesol/resources/Poppins-Medium.ttf"
 DURATION_FONT_LOCATION = "tournesol/resources/Roboto-Bold.ttf"
 ENTITY_N_CONTRIBUTORS_XY = (60, 98)
 ENTITY_TITLE_XY = (128, 194)
-ENTITY_DURATION_XY = (375, 160)
-ENTITY_DURATION_WH = (140, 40)
 
 TOURNESOL_SCORE_XY = (84, 30)
 TOURNESOL_SCORE_NEGATIVE_XY = (60, 30)
@@ -45,7 +43,7 @@ COLOR_WHITE_BACKGROUND = (255, 250, 230, 255)
 COLOR_BROWN_FONT = (29, 26, 20, 255)
 COLOR_WHITE_FONT = (255, 255, 255, 255)
 COLOR_NEGATIVE_SCORE = (128, 128, 128, 248)
-COLOR_DURATION_RECTANGLE = (0, 0, 0, 128)
+COLOR_DURATION_RECTANGLE = (0, 0, 0, 201)
 
 YT_THUMBNAIL_MQ_SIZE = (320, 180)
 
@@ -155,9 +153,6 @@ def get_preview_font_config(upscale_ratio=1) -> dict:
         ),
         "entity_ratings_label": ImageFont.truetype(
             str(BASE_DIR / FOOTER_FONT_LOCATION), 14 * upscale_ratio
-        ),
-        "entity_duration": ImageFont.truetype(
-            str(BASE_DIR / DURATION_FONT_LOCATION), 14 * upscale_ratio
         ),
     }
     return config
@@ -337,29 +332,51 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
                 dest=tuple(numpy.multiply((16, 24), upscale_ratio)),
             )
 
-    def _draw_duration(self, image: Image, entity: Entity, fnt_config, upscale_ratio: int):
+    def _draw_duration(self, image: Image, entity: Entity, thumbnail_bbox, upscale_ratio: int):
+        # pylint: disable=too-many-locals
+
         """
         Draw the duration on the preview.
+        Adapts the overlay position and size in function of the duration text size.
         """
 
         duration = entity.metadata.get("duration", 0)
         minutes, seconds = divmod(duration, 60)
         hours, minutes = divmod(minutes, 60)
 
-        overlay = Image.new('RGBA', ENTITY_DURATION_WH, COLOR_DURATION_RECTANGLE)
+        # creating a PIL.Image to get a Draw context, image later resized to text length
+        overlay = Image.new('RGBA', (1, 1), COLOR_DURATION_RECTANGLE)
+        overlay_draw = ImageDraw.Draw(overlay)
+
+        font_size = 14 * upscale_ratio
+        font = ImageFont.truetype(str(BASE_DIR / DURATION_FONT_LOCATION), font_size)
+
+        padding = tuple(numpy.multiply((5, 1), upscale_ratio))
+        duration_formatted = f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}"
+        duration_text_size = (
+            int(overlay_draw.textlength(duration_formatted, font=font)) + padding[0],
+            font_size + padding[1]
+        )
+
+        overlay = overlay.resize(duration_text_size)
+        # need to reinstanciate Draw after resizing, there must be a better way
         overlay_draw = ImageDraw.Draw(overlay)
 
         overlay_draw.text(
-            (ENTITY_DURATION_WH[0]//2, ENTITY_DURATION_WH[1]//2),
-            f"{str(hours) + ':' if hours > 0 else ''}{minutes:02d}:{seconds:02d}",
-            font=fnt_config["entity_duration"],
-            fill=COLOR_WHITE_FONT,
-            anchor="mm"
+            (padding[0]//2, padding[1]//2),
+            duration_formatted,
+            font=font,
+            fill=COLOR_WHITE_FONT
         )
 
         image.alpha_composite(
             overlay,
-            dest=tuple(numpy.multiply(ENTITY_DURATION_XY, upscale_ratio)))
+            dest=(
+                # all values are already upscaled (if applicable)
+                thumbnail_bbox[0] + thumbnail_bbox[2] - duration_text_size[0],
+                thumbnail_bbox[1] + thumbnail_bbox[3] - duration_text_size[1]
+            )
+        )
 
     @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
     @extend_schema(
@@ -388,14 +405,16 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
         except ConnectionError:
             return self.default_preview()
 
-        youtube_thumbnail = youtube_thumbnail.resize(
-            numpy.multiply((320, 180), upscale_ratio)
-        )
+        # (width, height, left, top)
+        youtube_thumbnail_bbox = tuple(numpy.multiply((320, 180, 120, 0), upscale_ratio))
+
+        youtube_thumbnail = youtube_thumbnail.resize(youtube_thumbnail_bbox[0:2])
+
         preview_image.paste(
-            youtube_thumbnail, box=tuple(numpy.multiply((120, 0), upscale_ratio))
+            youtube_thumbnail, box=tuple(youtube_thumbnail_bbox[2:4])
         )
 
-        self._draw_duration(preview_image, entity, fnt_config, upscale_ratio=upscale_ratio)
+        self._draw_duration(preview_image, entity, youtube_thumbnail_bbox, upscale_ratio)
         self._draw_logo(preview_image, entity, upscale_ratio=upscale_ratio)
 
         preview_image.save(response, "png")
