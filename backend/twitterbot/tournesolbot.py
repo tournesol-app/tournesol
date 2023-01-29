@@ -1,7 +1,9 @@
-import datetime
+from datetime import timedelta
 import random
 import re
 from pathlib import Path
+from django.utils import timezone, translation
+from django.utils.dateformat import format
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -190,66 +192,60 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
     )
 
 
-def generate_top_contributor_figure() -> Path:
+def generate_top_contributor_figure(language="en") -> Path:
     """Generate a figure with the top contributor of each video."""
 
-    now = datetime.datetime.now()
+    last_month_dt = timezone.now().replace(day=1) - timedelta(days=1)
+    year = last_month_dt.year
 
-    last_month = now.month - 1
-    year = now.year
+    if language == "en":
+        month_name = format(last_month_dt, "F")
+    elif language == "fr":
+        with translation.override("fr"):
+            month_name = format(last_month_dt, "F")
+    else:
+        raise ValueError("Language not found!")
 
-    if last_month == 12:
-        year -= 1
-
-    # TODO: get month name from Django
-    MONTHS = {
-        1: "January",
-        2: "February",
-        3: "March",
-        4: "April",
-        5: "May",
-        6: "June",
-        7: "July",
-        8: "August",
-        9: "September",
-        10: "October",
-        11: "November",
-        12: "December",
-    }
-
-    top_contributors = get_top_public_contributors_last_month(
+    top_contributors_qs = get_top_public_contributors_last_month(
         poll_name=DEFAULT_POLL_NAME, top=10
     )
 
     fig_path = Path("/tmp/top_contributor.png")
 
     plt.xkcd()
+    plt.rcParams["font.family"] = ["sans-serif"]
     fig, ax = plt.subplots(dpi=150)
 
     short_usernames = [
-        name[:11] + "..." if len(name) > 13 else name
-        for name in list(top_contributors.keys())
+        name[:13] + "..." if len(name) > 15 else name
+        for name in (u.username for u in top_contributors_qs)
     ]
 
     plt.bar(
-        short_usernames, list(top_contributors.values()), color="#567234", width=0.15
+        short_usernames,
+        [u.n_comparisons for u in top_contributors_qs],
+        color="#567234",
+        width=0.15,
     )
-    plt.title(
-        f"Tournesol top public contributors of {MONTHS[last_month]} {year}", fontsize=14
+    graph_title = settings.graph_title_text_template[language].format(
+        month_name=month_name,
+        year=year,
     )
-    plt.xticks(rotation=70, fontsize=10)
-    plt.ylabel("Number of comparisons", fontsize=12)
+    plt.title(graph_title, fontsize=14)
+    plt.xticks(rotation=50, ha="right", fontsize=10)
     plt.yticks(fontsize=10)
+    plt.ylabel(settings.graph_ylabel_text_template[language], fontsize=12)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
 
-    tournesol_logo = mpimg.imread("./Logo128.png")
+    logo_path = Path(__file__).parent / "Logo128.png"
+    tournesol_logo = mpimg.imread(logo_path)
     imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
-    for top_pos, nb_rating in enumerate(top_contributors.values()):
+    for top_pos, nb_rating in enumerate(u.n_comparisons for u in top_contributors_qs):
         ab = AnnotationBbox(imagebox, (top_pos, nb_rating), frameon=False)
         ax.add_artist(ab)
 
-    plt.savefig("test_top_contributor.png", dpi=150)
+    plt.savefig(fig_path, dpi=300)
     plt.show()
 
     return fig_path
