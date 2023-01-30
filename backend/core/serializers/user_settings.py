@@ -11,8 +11,8 @@ class GenericPollUserSettingsSerializer(serializers.Serializer):
     rate_later__auto_remove = serializers.IntegerField(required=False)
 
     def validate_rate_later__auto_remove(self, value):
-        if value < 2:
-            raise ValidationError(_("This parameter cannot be lower than 2."))
+        if value < 1:
+            raise ValidationError(_("This parameter cannot be lower than 1."))
         return value
 
 

@@ -121,7 +121,7 @@ class UserSettingsDetailTestCase(TestCase):
         self.user.settings = {"videos": {"rate_later__auto_remove": 4}}
         self.user.save(update_fields=["settings"])
 
-        invalid_settings = {"videos": {"rate_later__auto_remove": 1}}
+        invalid_settings = {"videos": {"rate_later__auto_remove": 0}}
         response = self.client.patch(
             self.settings_base_url, data=invalid_settings, format="json"
         )

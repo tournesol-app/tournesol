@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-24 10:15+0000\n"
+"POT-Creation-Date: 2023-01-30 16:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,15 +26,15 @@ msgstr "Tournesol - confiance"
 msgid "Tournesol - preferences"
 msgstr "Tournesol - préférences"
 
-#: core/models/user.py:36
+#: core/models/user.py:33
 msgid "email address"
 msgstr "adresse e-mail"
 
-#: core/models/user.py:209
+#: core/models/user.py:53
 msgid "The user' preferences."
 msgstr "Les préférences de l'utilisateur."
 
-#: core/models/user.py:302
+#: core/models/user.py:130
 #, python-format
 msgid ""
 "A user with an email starting with '%(email)s' already exists in this domain."
@@ -42,7 +42,7 @@ msgstr ""
 "Un utilisateur avec un e-mail commençant par '%(email)s' existe déjà dans ce "
 "domaine."
 
-#: core/models/user.py:341 core/serializers/user.py:19
+#: core/models/user.py:169 core/serializers/user.py:19
 msgid "A user with this email address already exists."
 msgstr "Un utilisateur avec cet e-mail existe déjà."
 
@@ -56,8 +56,8 @@ msgid "'@' is not allowed in username"
 msgstr "Un nom d'utilisateur ne peut pas contenir '@'"
 
 #: core/serializers/user_settings.py:15
-msgid "This parameter cannot be lower than 2."
-msgstr "Ce paramètre ne peut pas être inférieur à 2."
+msgid "This parameter cannot be lower than 1."
+msgstr "Ce paramètre ne peut pas être inférieur à 1."
 
 #: core/templates/accounts/register/body.html:5
 msgid "Please verify your Tournesol account by clicking on this link:"
