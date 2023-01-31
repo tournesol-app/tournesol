@@ -63,7 +63,6 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
         "video_a",
         "video_b",
         "criteria",
-        "weight",
         "score",
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
@@ -74,8 +73,7 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
             "video_a": comparison.uid_a.split(UID_DELIMITER)[1],
             "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
             "criteria": comparison.criteria,
-            "weight": comparison.weight,
-            "score": comparison.score,
+            "score": int(round(comparison.score)),
         }
         for comparison in get_comparisons_data(poll_name).iterator()
     )
