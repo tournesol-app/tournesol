@@ -200,10 +200,10 @@ class Entity(models.Model):
         )
         self.save(update_fields=["rating_n_ratings", "rating_n_contributors"])
 
-    def auto_remove_from_rate_later(self, poll, user) -> None:
+    def auto_remove_from_rate_later(self, poll, user, max_) -> None:
         """
         When called, the entity is removed from the user's rate-later list if
-        it has been compared at least 4 times.
+        it has been compared at least `max_` times.
         """
         from .comparisons import Comparison  # pylint: disable=import-outside-toplevel
 
@@ -213,7 +213,7 @@ class Entity(models.Model):
             Q(entity_1=self) | Q(entity_2=self)
         ).count()
 
-        if n_comparisons >= 4:
+        if n_comparisons >= max_:
             RateLater.objects.filter(poll=poll, user=user, entity=self).delete()
 
     @property

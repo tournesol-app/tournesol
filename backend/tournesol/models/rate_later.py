@@ -7,6 +7,8 @@ from django.db import models
 from core.models import User
 from tournesol.models.poll import Poll
 
+RATE_LATER_AUTO_REMOVE_DEFAULT = 4
+
 
 class RateLater(models.Model):
     """An `Entity` a user wants to rate later in a poll."""

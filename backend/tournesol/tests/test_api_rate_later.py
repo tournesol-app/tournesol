@@ -5,11 +5,10 @@ from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.models import Entity, Poll, RateLater
+from tournesol.models import RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
+from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
 
 
@@ -382,12 +381,17 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         """
         Test of the `auto_remove_from_rate_later` method of the Entity model.
 
-        After 4 comparisons, calling the tested method must remove the entity
-        from the user's rate-later list related to the specified poll.
+        After a defined number of comparisons, calling the tested method must
+        remove the entity from the user's rate-later list related to the
+        specified poll.
         """
         poll = self.poll
         user = self.user
         entity = self.entity_in_ratelater
+
+        # We consider 4 as the minimum number of comparisons required to
+        # remove an entity from a rate-later list.
+        max_comparisons = 4
 
         # Initial state.
         self.assertEqual(
@@ -398,7 +402,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         # The entity must not be removed after 2 comparisons.
         ComparisonFactory(poll=poll, user=user, entity_1=entity)
         ComparisonFactory(poll=poll, user=user, entity_1=entity)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -406,7 +410,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
 
         # The entity must not be removed after 3 comparisons.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -415,7 +419,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         # The entity must not be removed when comparing unrelated videos.
         ComparisonFactory(poll=poll, user=user)
         ComparisonFactory(poll=poll, user=user)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -423,7 +427,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
 
         # The entity must be removed after 4 comparisons.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
@@ -444,7 +448,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
 
         # The entity is removed again after one new comparison.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
@@ -473,7 +477,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         ComparisonFactory(user=other_user, entity_1=entity)
         ComparisonFactory(user=other_user, entity_2=entity)
         ComparisonFactory(user=other_user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, 4)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -508,7 +512,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         ComparisonFactory(poll=poll, user=user, entity_1=entity)
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user)
+        entity.auto_remove_from_rate_later(poll, user, 4)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
