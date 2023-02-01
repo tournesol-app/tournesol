@@ -26,7 +26,8 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
             entity_2.uid AS uid_b,
             comparisoncriteriascore.criteria,
             comparisoncriteriascore.weight,
-            comparisoncriteriascore.score
+            comparisoncriteriascore.score,
+            EXTRACT('epoch' FROM DATE_TRUNC('week', datetime_add)) AS week_timestamp
 
         FROM tournesol_comparison
 

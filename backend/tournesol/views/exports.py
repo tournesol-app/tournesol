@@ -65,6 +65,7 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
         "criteria",
         "weight",
         "score",
+        "week_timestamp"
     ]
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
     writer.writeheader()
@@ -76,6 +77,7 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
             "criteria": comparison.criteria,
             "weight": comparison.weight,
             "score": comparison.score,
+            "week_timestamp": comparison.week_timestamp
         }
         for comparison in get_comparisons_data(poll_name).iterator()
     )
@@ -244,7 +246,7 @@ class ExportPublicAllView(APIView):
     throttle_scope = "api_export_comparisons"
     permission_classes = [AllowAny]
 
-    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
+#    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
         description="Download the complete public dataset of the `videos` poll in a .zip file.",
         responses={200: OpenApiTypes.BINARY},
