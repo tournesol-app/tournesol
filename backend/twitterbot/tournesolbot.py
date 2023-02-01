@@ -1,15 +1,15 @@
-from datetime import timedelta
 import random
 import re
+from datetime import timedelta
 from pathlib import Path
-from django.utils import timezone, translation
-from django.utils.dateformat import format
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-from matplotlib.offsetbox import AnnotationBbox, OffsetImage
-
+from core.lib.discord.api import write_in_channel
 from core.utils.time import time_ago
+from django.utils import timezone, translation
+from django.utils.dateformat import format
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
 from tournesol.models.entity_score import ScoreMode
@@ -150,7 +150,7 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
 
     Args:
         bot_name (str): The name of the bot.
-        debug (bool): If True, a confirmation will be asked before tweeting it.
+        assumeyes (bool): If False, a confirmation will be asked before tweeting it.
 
     """
 
@@ -192,7 +192,7 @@ def tweet_video_recommendation(bot_name, assumeyes=False):
     )
 
 
-def generate_top_contributor_figure(language="en") -> Path:
+def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     """Generate a figure with the top contributor of each video."""
 
     last_month_dt = timezone.now().replace(day=1) - timedelta(days=1)
@@ -206,10 +206,8 @@ def generate_top_contributor_figure(language="en") -> Path:
     else:
         raise ValueError("Language not found!")
 
-    top_contributors_qs = get_top_public_contributors_last_month(
-        poll_name=DEFAULT_POLL_NAME, top=10
-    )
 
+    # TODO: modif path
     fig_path = Path("/tmp/top_contributor.png")
 
     plt.xkcd()
@@ -237,7 +235,7 @@ def generate_top_contributor_figure(language="en") -> Path:
     plt.ylabel(settings.graph_ylabel_text_template[language], fontsize=12)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
 
-    logo_path = Path(__file__).parent / "Logo128.png"
+    logo_path = Path(__file__).parent / "Logo128.png"  # TODO: move that
     tournesol_logo = mpimg.imread(logo_path)
     imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
@@ -249,3 +247,53 @@ def generate_top_contributor_figure(language="en") -> Path:
     plt.show()
 
     return fig_path
+
+
+def tweet_top_contributor_graph(bot_name, assumeyes=False):
+    """Tweet the top contibutor graph of last month.
+
+    Args:
+        bot_name (str): The name of the bot.
+        assumeyes (bool): If True, a confirmation will be asked before tweeting it.
+
+    """
+
+    twitterbot = TwitterBot(bot_name)
+    twitterbot.authenticate()
+    language = twitterbot.language
+
+    top_contributors_qs = get_top_public_contributors_last_month(
+        poll_name=DEFAULT_POLL_NAME, top=10
+    )
+    top_contributor_figure = generate_top_contributor_figure(
+        top_contributors_qs, language
+    )
+
+    if not top_contributor_figure.exists():
+        print("The top contributor graph has not been generated")
+        return
+
+    if not assumeyes:
+        confirmation = input(
+            f"\nThe image has been generated in {top_contributor_figure}\n"
+            "Would you like to tweet this image? (y/n): "
+        )
+        if confirmation not in ["y", "yes"]:
+            return
+
+    # Upload image
+    media = twitterbot.api.media_upload(top_contributor_figure)
+
+    # Tweet the graph
+    resp = twitterbot.api.update_status(
+        status=settings.top_contrib_tweet_text_template[language],
+        media_ids=[media.media_id],
+    )
+
+    # Post the tweet on Discord
+    discord_channel = settings.TWITTERBOT_DISCORD_CHANNEL
+    if discord_channel:
+        write_in_channel(
+            discord_channel,
+            f"https://twitter.com/{bot_name}/status/{resp.id}",
+        )
