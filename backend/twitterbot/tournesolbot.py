@@ -232,7 +232,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     plt.ylabel(settings.graph_ylabel_text_template[language], fontsize=12)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
 
-    logo_path = Path(__file__).parent / "resources" / "Logo128.png"  # TODO move logo
+    logo_path = Path(__file__).parents[1] / "tournesol" / "resources" / "Logo128.png"
     tournesol_logo = mpimg.imread(logo_path)
     imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
