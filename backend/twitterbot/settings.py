@@ -45,7 +45,7 @@ top_contrib_tweet_text_template = {
     ),
     "fr": (
         "Merci à tout·es nos contributeur·rice·s. Voici le top 10 du mois dernier. "
-        "Et vous, combien de comparaisons avez-vous faites le mois dernier ? \U0001F33B"
+        "Et vous, combien de comparaisons avez-vous faites le mois dernier? \U0001F33B"
     ),
 }
 
