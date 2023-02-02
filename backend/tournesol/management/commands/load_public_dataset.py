@@ -56,11 +56,13 @@ class Command(BaseCommand):
 
         futures = (thread_pool.submit(refresh_metadata, video) for video in videos.values())
         for future in concurrent.futures.as_completed(futures):
-            # .result() will reraise any exception occured during refresh
+            # .result() will reraise any exception occurred during refresh
             future.result()
 
+        thread_pool.shutdown()
+
     def create_test_user(self):
-        User.objects.create_user(  # hardcoded password is delibarate # nosec B106
+        User.objects.create_user(  # hardcoded password is deliberate # nosec B106
             username="user1",
             password="tournesol",
             email="user1@tournesol.app"

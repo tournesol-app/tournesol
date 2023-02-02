@@ -1,7 +1,7 @@
 import tempfile
 
 from django.core.management import call_command
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, override_settings
 from rest_framework.test import APIClient
 
 from core.models import User
@@ -16,7 +16,7 @@ class TestLoadPublicDataset(TransactionTestCase):
     def setUp(self):
         self.client = APIClient()
 
-        cc = ComparisonCriteriaScoreFactory()
+        ComparisonCriteriaScoreFactory()
         ContributorRating.objects.update(is_public=True)
 
         public_comparisons_resp = self.client.get("/exports/comparisons/")
@@ -27,6 +27,7 @@ class TestLoadPublicDataset(TransactionTestCase):
         User.objects.all().delete()
         Entity.objects.filter(type=TYPE_VIDEO).delete()
 
+    @override_settings(YOUTUBE_API_KEY=None)
     def test_load_public_dataset(self):
         self.assertEqual(User.objects.count(), 0)
         self.assertEqual(Comparison.objects.count(), 0)
