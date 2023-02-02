@@ -2,10 +2,11 @@ from datetime import timedelta
 from unittest import mock
 from unittest.mock import patch
 
-from core.tests.factories.user import UserFactory
-from core.utils.time import time_ago
 from django.test import TestCase, override_settings
 from django.utils import timezone
+
+from core.tests.factories.user import UserFactory
+from core.utils.time import time_ago
 from tournesol.models import Entity, Poll
 from tournesol.models.comparisons import Comparison
 from tournesol.tests.factories.comparison import ComparisonFactory

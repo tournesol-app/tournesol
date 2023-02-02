@@ -1,16 +1,16 @@
 import random
 import re
+import tempfile
 from datetime import timedelta
 from pathlib import Path
-import tempfile
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+from django.utils import dateformat, timezone, translation
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
+
 from core.lib.discord.api import write_in_channel
 from core.utils.time import time_ago
-from django.utils import timezone, translation
-from django.utils.dateformat import format
-from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from tournesol.models import Entity
 from tournesol.models.criteria import CriteriaLocale
 from tournesol.models.entity_score import ScoreMode
@@ -196,10 +196,10 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     year = last_month_dt.year
 
     if language == "en":
-        month_name = format(last_month_dt, "F")
+        month_name = dateformat.format(last_month_dt, "F")
     elif language == "fr":
         with translation.override("fr"):
-            month_name = format(last_month_dt, "F")
+            month_name = dateformat.format(last_month_dt, "F")
     else:
         raise ValueError("Language not found!")
 
@@ -209,7 +209,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
 
     plt.xkcd()
     plt.rcParams["font.family"] = ["sans-serif"]
-    _, ax = plt.subplots(dpi=150)
+    fig, ax = plt.subplots(dpi=150)
 
     short_usernames = [
         name[:14] + "…" if len(name) > 15 else name
