@@ -74,7 +74,7 @@ class EntityAdmin(admin.ModelAdmin):
         "tournesol_score",
         "rating_n_contributors",
         "get_language",
-        "link_to_youtube",
+        "link_to_tournesol",
     )
     search_fields = ("uid", "metadata__name", "metadata__uploader")
     list_filter = (
@@ -136,7 +136,7 @@ class ContributorRatingAdmin(admin.ModelAdmin):
         "user",
         "entity",
         "get_poll_name",
-        "link_to_youtube",
+        "link_to_tournesol",
         "is_public",
     )
     list_filter = (
@@ -149,8 +149,8 @@ class ContributorRatingAdmin(admin.ModelAdmin):
         "entity",
     )
 
-    def link_to_youtube(self, obj):
-        return obj.entity.link_to_youtube()
+    def link_to_tournesol(self, obj):
+        return obj.entity.link_to_tournesol()
 
     @admin.display(ordering="poll__name", description="Poll")
     def get_poll_name(self, obj):

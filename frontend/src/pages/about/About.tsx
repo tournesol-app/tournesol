@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const PeopleCard = ({
+const CoreTeamCard = ({
   name,
   image,
   institution,
@@ -72,6 +72,51 @@ const PeopleCard = ({
       <Typography>{job}</Typography>
       <Typography>{institution}</Typography>
     </Card>
+  );
+};
+
+const ContributorCard = ({
+  name,
+  image,
+  description,
+  website,
+}: {
+  name: string;
+  image: string;
+  description: string;
+  website: string;
+}) => {
+  const classes = useStyles();
+
+  return (
+    <Link
+      href={website}
+      rel="noopener"
+      target="_blank"
+      underline="none"
+      color="inherit"
+      variant="inherit"
+    >
+      <Card className={classes.card}>
+        <Grid container spacing={2}>
+          <Grid item xs={4} container alignItems="center">
+            <img
+              src={image}
+              width="100%"
+              style={{
+                aspectRatio: '1',
+                objectFit: 'cover',
+                borderRadius: '50%',
+              }}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <Typography variant="h3">{name}</Typography>
+            <Typography fontSize="90%">{description}</Typography>
+          </Grid>
+        </Grid>
+      </Card>
+    </Link>
   );
 };
 
@@ -105,7 +150,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        sx={{ background: '#1282B2', color: 'white' }}
+        sx={{ bgcolor: 'background.emphatic', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -197,7 +242,7 @@ const AboutPage = () => {
       <Grid
         container
         className={classes.root}
-        sx={{ background: '#1282B2', color: 'white' }}
+        sx={{ bgcolor: 'background.emphatic', color: 'white' }}
       >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
@@ -239,7 +284,7 @@ const AboutPage = () => {
 
         <Grid container item xs={12} md={9} className={classes.container}>
           <Grid item xs={12} sm={4} className={classes.container}>
-            <PeopleCard
+            <CoreTeamCard
               name="Lê Nguyên Hoang"
               image="/people/Le.jpeg"
               institution=""
@@ -250,7 +295,7 @@ const AboutPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={4} className={classes.container}>
-            <PeopleCard
+            <CoreTeamCard
               name="Louis Faucon"
               image="/people/Louis.jpeg"
               institution="Oracle Labs"
@@ -261,7 +306,7 @@ const AboutPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={4} className={classes.container}>
-            <PeopleCard
+            <CoreTeamCard
               name="Aidan Jungo"
               image="/people/Aidan.jpg"
               institution="CFS Engineering SA"
@@ -272,7 +317,7 @@ const AboutPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={4} className={classes.container}>
-            <PeopleCard
+            <CoreTeamCard
               name="Romain"
               image="/people/Tournecat.jpeg"
               institution=""
@@ -283,7 +328,7 @@ const AboutPage = () => {
           </Grid>
 
           <Grid item xs={12} sm={4} className={classes.container}>
-            <PeopleCard
+            <CoreTeamCard
               name="Adrien Matissart"
               image="/people/Adrien.jpeg"
               institution="Association Tournesol"
@@ -295,7 +340,47 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      <Grid container className={classes.root}>
+      <Grid
+        container
+        className={classes.root}
+        // sx={{ bgcolor: 'background.menu' }}
+      >
+        <Grid item xs={12} className={classes.container}>
+          <ContentBox>
+            <Typography variant="h3">
+              {t('about.significantContributors')}
+            </Typography>
+            <Typography paragraph>
+              {t('about.weThankOurContributors')}
+            </Typography>
+          </ContentBox>
+        </Grid>
+
+        <Grid container item xs={12} md={9} className={classes.container}>
+          <Grid item xs={12} sm={6} className={classes.container}>
+            <ContributorCard
+              name="Sergia"
+              image="/people/sergia.jpg"
+              description={t('about.sergiaDescription')}
+              website="https://sergia.ch"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} className={classes.container}>
+            <ContributorCard
+              name="Michael Witrant"
+              image="/people/sigmike.png"
+              description={t('about.sigmikeDescription')}
+              website="https://github.com/sigmike"
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid
+        container
+        className={classes.root}
+        sx={{ bgcolor: 'background.menu' }}
+      >
         <Grid item xs={12} className={classes.container}>
           <ContentBox>
             <Typography variant="h1">
@@ -403,7 +488,10 @@ const AboutPage = () => {
           className={classes.container}
         >
           <ContentBox className={classes.noMaxWidth}>
-            <Paper sx={{ background: '#1282B2', color: 'white', p: 2 }} square>
+            <Paper
+              sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2 }}
+              square
+            >
               <PublicDownloadSection />
             </Paper>
           </ContentBox>

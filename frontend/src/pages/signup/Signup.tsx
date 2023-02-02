@@ -83,6 +83,7 @@ const Signup = () => {
                 <FormTextField
                   name="email"
                   label={t('emailAddress')}
+                  autoComplete="email"
                   formError={formError}
                 />
               </Grid>
@@ -101,6 +102,7 @@ const Signup = () => {
                   name="password"
                   label={t('password')}
                   type="password"
+                  autoComplete="new-password"
                   formError={formError}
                 />
               </Grid>
@@ -109,6 +111,7 @@ const Signup = () => {
                   name="password_confirm"
                   label={t('confirmYourPassword')}
                   type="password"
+                  autoComplete="new-password"
                   formError={formError}
                 />
               </Grid>

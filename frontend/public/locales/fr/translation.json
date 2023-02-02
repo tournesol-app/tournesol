@@ -233,7 +233,7 @@
     "language": "Langues",
     "scoreMode": {
       "default": {
-        "description": "Davantage d'importance est donnée aux comptes associés à une adresse e-mail fiable",
+        "description": "Davantage d'importance est donnée aux comptes associés à une adresse e-mail considérée comme fiable",
         "label": "Par défaut"
       },
       "allEqual": {
@@ -241,8 +241,8 @@
         "label": "À égalité"
       },
       "trustedOnly": {
-        "description": "Seuls les comptes associés à <2>une adresse e-mail fiable</2> sont inclus",
-        "label": "E-mails fiables seulement"
+        "description": "Seuls les comptes associés à <2>une adresse e-mail considérée comme fiable</2> sont inclus",
+        "label": "E-mails considérés comme fiable seulement"
       }
     },
     "scoreModeSection": "Droits de vote",
@@ -282,7 +282,7 @@
     "emailStatus": "Statut de l'adresse",
     "emailTrusted": "Fiable",
     "emailNonTrusted": "Non-fiable",
-    "learnMoreAboutTrustedDomains": "À propos des domaines fiables",
+    "learnMoreAboutTrustedDomains": "À propos des domaines considérés comme fiables",
     "verificationEmailSentNewEmail": "Un courriel de vérification a été envoyé pour confirmer votre nouvelle adresse.",
     "currentEmailAddressIs": "Votre adresse actuelle est",
     "newEmailAddress": "Nouvelle adresse e-mail",
@@ -347,6 +347,10 @@
     "rolePresident": "Président",
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
+    "significantContributors": "Contributeur.rices important.es",
+    "weThankOurContributors": "Nous sommes extrêmement reconnaissant envers les contributrices et contributeurs qui ont eu un très grand impact sur le projet.",
+    "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
+    "sergiaDescription": "Sergia était une des quelques personnes qui ont décidé de développer le projet Tournesol. Elle a au début assumé la majorité des efforts de developpement pour le backend, les algorithmes et le frontend de la première vesion de la plateforme.",
     "weThankOurPartners": "Nous remercions nos partenaires",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
     "partenershipWithEpflDetail": "Pendant une courte période, un ingénieur de recherche à l'École Polytechnique Fédérale de Lausanne (EPFL) s'est consacré au développement de la plateforme Tournesol. Plusieurs chercheurs et chercheuses du laboratoire d'informatique distributée (DCL) ont également participé à la conception et poursuivent la recherche sur les algorithmes de Tournesol.",
@@ -366,9 +370,9 @@
     "publicDatabase": "Base de données publique",
     "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
     "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateurs qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
-    "trustedEmailDomains": "Noms de domaine fiables",
+    "trustedEmailDomains": "Noms de domaine considérés comme fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un score de confiance limité aux nouveaux comptes créés.",
-    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine fiable</2>, ou lorsque d'autres personnes se portent garant.es pour vous.",
+    "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine considéré comme fiable</2>, ou lorsque d'autres personnes se portent garant.es pour vous.",
     "trustedDomainsValuable": "Dans tous les cas, vos contributions sont utiles car elles motiveront et aideront la recherche en éthique des algorithmes et de l'intelligence artificielle",
     "trustedDomainsCurrentList": "Liste actuelle des domaines considérés fiables"
   },
@@ -475,6 +479,14 @@
     "contribute": "Contribuer",
     "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ?"
   },
+  "fundingSection": {
+    "supportUs": "Soutenez-nous !",
+    "tournesolExistsThanksToYourInvolvement": "Tournesol existe grâce à votre implication. En finançant Tournesol vous...",
+    "guaranteeTheProjectsIndependence": "<0>garantissez</0> l'indépendance du projet",
+    "participateInTheCreationOfCommons": "<0>participez</0> à la création de biens communs",
+    "actForTheEthicsOfInformation": "<0>agissez</0> pour l'éthique de l'information",
+    "iSupport": "Je soutiens"
+  },
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Désolé, la comparaison de vidéo est momentanément indisponible. Veuillez réessayer plus tard.",
     "compareTheVideos": "Comparer les vidéos"
@@ -553,15 +565,15 @@
       "title": "Score de confiance",
       "description": {
         "explanation": "Votre score de confiance détermine à quel point vos comparaisons influencent les recommandations de Tournesol.",
-        "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine fiable ou lorsque d'autres personnes se portent garant.es pour vous.",
+        "howToChangeIt": "Vous pouvez obtenir plus de confiance en utilisant une adresse e-mail d'un domaine considéré comme fiable ou lorsque d'autres personnes se portent garant.es pour vous.",
         "includedInPublicDatabase": "Votre score de confiance est inclus dans la base de données publique si vous avez au moins une comparaison publique."
       },
       "nullValue": "Indéterminé",
       "low": "Faible",
       "medium": "Moyen",
       "high": "Élevé",
-      "isTrusted": "Votre adresse e-mail est fiable.",
-      "isNotTrusted": "Votre adresse e-mail n'est pas fiable.",
+      "isTrusted": "Votre adresse e-mail est considérée comme fiable.",
+      "isNotTrusted": "Votre adresse e-mail n'est pas considérée comme fiable.",
       "hasReceivedVouchers": "Vous avez au moins un garant.",
       "hasNotReceivedVouchers": "Vous n'avez pas encore de garant."
     },

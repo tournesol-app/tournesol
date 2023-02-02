@@ -227,7 +227,7 @@
     "language": "Language",
     "scoreMode": {
       "default": {
-        "description": "More importance is given to accounts associated with a trusted email address",
+        "description": "More importance is given to accounts associated with an email address considered trustworthy",
         "label": "Default"
       },
       "allEqual": {
@@ -235,7 +235,7 @@
         "label": "All equal"
       },
       "trustedOnly": {
-        "description": "Only accounts associated with <2>a trusted email address</2> are considered",
+        "description": "Only accounts associated with <2>an email address considered trustworthy</2> are taken into account",
         "label": "Trusted only"
       }
     },
@@ -276,7 +276,7 @@
     "emailStatus": "Email status",
     "emailTrusted": "Trusted",
     "emailNonTrusted": "Non-trusted",
-    "learnMoreAboutTrustedDomains": "Learn more about trusted domains",
+    "learnMoreAboutTrustedDomains": "Learn more about domains which are considered trustworthy",
     "verificationEmailSentNewEmail": "A verification email has been sent to confirm your new email address.",
     "currentEmailAddressIs": "Your current email address is",
     "newEmailAddress": "New email address",
@@ -341,6 +341,10 @@
     "rolePresident": "President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
+    "significantContributors": "Significant Contributors",
+    "weThankOurContributors": "We are extremely thankful to many significant contributor who are or have been very impactful for the project.",
+    "sigmikeDescription": "Michael is a volunteer open source contributor who contributes impactful features on our backend, frontend and extension.",
+    "sergiaDescription": "Sergia was among the few people who decided to start building Tournesol. She took over most of the engineering effort and developped the backend, the algorithms and the front-end of the first version of the platform.",
     "weThankOurPartners": "We thank our partners",
     "partnershipWithEpfl": "Partnership with EPFL",
     "partenershipWithEpflDetail": "For a short period a research engineer at École Polytechnique Fédérale de Lausanne (EPFL) was dedicated to the development of the Tournesol platform. Many researchers from the Distributed Computing Laboratory have also designed and still contribute to the research about Tournesol algorithms.",
@@ -360,11 +364,11 @@
     "publicDatabase": "Public Database",
     "publicDatabaseDetailAndLicense": "Contributors on Tournesol can decide to make their data public. We hope this important data will prove useful for researchers on ethics of algorithms and large scale recommender systems. Our public database can be downloaded by clicking the button below and is published under <2>Open Data Commons Attribution License (ODC-By)</2>.",
     "publicDatabaseThanksToContributors": "Finally, we would like to thank all the contributors who compared videos on Tournesol. We count so far about {{userCount}} users who compared {{comparisonCount}} times more than {{comparedEntityCount}} videos.",
-    "trustedEmailDomains": "Trusted email domains",
+    "trustedEmailDomains": "Email domains considered trustworthy",
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
-    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a trusted domain</2>, or when other users vouch for you.",
+    "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trustworthy</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
-    "trustedDomainsCurrentList": "Current list of trusted domains"
+    "trustedDomainsCurrentList": "Current list of domains considered trustworthy"
   },
   "privacyPolicy": {
     "privacyPolicy": "Privacy Policy",
@@ -469,6 +473,14 @@
     "contribute": "Contribute",
     "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
   },
+  "fundingSection": {
+    "supportUs": "Support Us!",
+    "tournesolExistsThanksToYourInvolvement": "Tournesol exists thanks to your involvement. By financing Tournesol you...",
+    "guaranteeTheProjectsIndependence": "<0>guarantee</0> the project's independance",
+    "participateInTheCreationOfCommons": "<0>participate</0> in the creation of commons",
+    "actForTheEthicsOfInformation": "<0>act</0> for the ethics of information",
+    "iSupport": "I support"
+  },
   "homeComparison": {
     "sorryTheComparisonIsTemporarilyUnavailable": "Sorry, the comparison of video is temporarily unavailable. Please try again later.",
     "compareTheVideos": "Compare the videos"
@@ -546,19 +558,19 @@
       "title": "Trust score",
       "description": {
         "explanation": "Your trust score determines how much your comparisons influence the Tournesol's recommendations.",
-        "howToChangeIt": "You can gain more trust by using an email from a trusted domain or when other users vouch for you.",
+        "howToChangeIt": "You can gain more trust by using an email from a domain considered trustworthy or when other users vouch for you.",
         "includedInPublicDatabase": "Your trust score is included the public database if you have at least one public comparison."
       },
       "nullValue": "Unknown",
       "low": "Low",
       "medium": "Medium",
       "high": "High",
-      "isTrusted": "Your email address is trusted.",
-      "isNotTrusted": "Your email address is not trusted.",
+      "isTrusted": "Your email address is considered trustworthy.",
+      "isNotTrusted": "Your email address is not considered trustworthy.",
       "hasReceivedVouchers": "Other users vouch for you.",
       "hasNotReceivedVouchers": "No other user vouch for you."
     },
-    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered to be trusted. The list of users for whom you vouch, or who have vouched for you, is a public information."
+    "aboutVouchingMechanism": "By vouching for other users, you enable them to obtain a higher trust score even if their email address is not considered trustworthy. The list of users for whom you vouch, or who have vouched for you, is a public information."
   },
   "myRateLaterListPage": {
     "title": "My rate-later list"
@@ -693,7 +705,7 @@
           "p40": "You can also choose to not vote on the optional criteria by unchecking it.",
           "p50": "Good to know, you will be able to edit all your comparisons later if you are not confident."
         },
-        "title3": "How does Tournseol work? 🤖",
+        "title3": "How does Tournesol work? 🤖",
         "message3": {
           "p10": "Tournesol computes a score for each video, by aggregating contributors' judgements on each criterion.",
           "p20": "The final score represents a balance, in the middle of the different contributors' preferences.",

@@ -27,7 +27,12 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
       <Grid container justifyContent="center" spacing={4}>
         <Grid item lg={3} xl={3}>
           <Paper elevation={0}>
-            <Box p={2} bgcolor="#1282B2" color={color} borderRadius={1}>
+            <Box
+              p={2}
+              bgcolor="background.emphatic"
+              color={color}
+              borderRadius={1}
+            >
               <Typography paragraph fontSize={17}>
                 {t('comparisonSection.theSimpliestWayToContribute')}
               </Typography>
@@ -47,7 +52,7 @@ const ComparisonSection = ({ comparisonStats }: Props) => {
             </Box>
           </Paper>
         </Grid>
-        <Grid item lg={9} xl={6}>
+        <Grid item lg={9} xl={6} width="100%">
           <Box display="flex" justifyContent="center">
             <HomeComparison />
           </Box>
