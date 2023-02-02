@@ -2,6 +2,7 @@ import random
 import re
 from datetime import timedelta
 from pathlib import Path
+import tempfile
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -55,9 +56,7 @@ def prepare_tweet(video):
     # Get two best criteria and criteria dict name
     crit1, crit2 = get_best_criteria(video, 2)
     crit_dict = dict(
-        CriteriaLocale.objects.filter(language=language).values_list(
-            "criteria__name", "label"
-        )
+        CriteriaLocale.objects.filter(language=language).values_list("criteria__name", "label")
     )
 
     # Replace "@" by a smaller "@" to avoid false mentions in the tweet
@@ -110,9 +109,7 @@ def get_video_recommendations(language):
     # Filter videos with some quality criteria
     tweetable_videos = Entity.objects.filter(
         add_time__lte=time_ago(days=settings.DAYS_TOO_RECENT),
-        metadata__publication_date__gte=time_ago(
-            days=settings.DAYS_TOO_OLD
-        ).isoformat(),
+        metadata__publication_date__gte=time_ago(days=settings.DAYS_TOO_OLD).isoformat(),
         rating_n_contributors__gt=settings.MIN_NB_CONTRIBUTORS,
         rating_n_ratings__gte=settings.MIN_NB_RATINGS,
         metadata__language=language,
@@ -206,14 +203,16 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     else:
         raise ValueError("Language not found!")
 
-    figure_path = Path("/tmp") / f"top_contributor_{month_name}_{year}_{language}.png"
+    figure_path = (
+        Path(tempfile.gettempdir()) / f"top_contributor_{month_name}_{year}_{language}.png"
+    )
 
     plt.xkcd()
     plt.rcParams["font.family"] = ["sans-serif"]
     _, ax = plt.subplots(dpi=150)
 
     short_usernames = [
-        name[:13] + "..." if len(name) > 15 else name
+        name[:14] + "…" if len(name) > 15 else name
         for name in (u.username for u in top_contributors_qs)
     ]
 
@@ -233,7 +232,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     plt.ylabel(settings.graph_ylabel_text_template[language], fontsize=12)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
 
-    logo_path = Path(__file__).parent / "resources" / "Logo128.png"
+    logo_path = Path(__file__).parent / "resources" / "Logo128.png"  # TODO move logo
     tournesol_logo = mpimg.imread(logo_path)
     imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
@@ -262,9 +261,7 @@ def tweet_top_contributor_graph(bot_name, assumeyes=False):
     top_contributors_qs = get_top_public_contributors_last_month(
         poll_name=DEFAULT_POLL_NAME, top=10
     )
-    top_contributor_figure = generate_top_contributor_figure(
-        top_contributors_qs, language
-    )
+    top_contributor_figure = generate_top_contributor_figure(top_contributors_qs, language)
 
     if not top_contributor_figure.exists():
         print("The top contributor graph has not been generated")

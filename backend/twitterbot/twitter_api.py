@@ -1,11 +1,11 @@
 import tweepy
 from django.conf import settings
 
-CREDENTIALS = settings.TWITTERBOT_CREDENTIALS
-
 
 class TwitterBot:
     def __init__(self, account):
+
+        CREDENTIALS = settings.TWITTERBOT_CREDENTIALS
 
         if account not in CREDENTIALS:
             raise ValueError(f"No credentials found for {account} account!")
