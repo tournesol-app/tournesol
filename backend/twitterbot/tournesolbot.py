@@ -206,13 +206,11 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     else:
         raise ValueError("Language not found!")
 
-
-    # TODO: modif path
-    fig_path = Path("/tmp/top_contributor.png")
+    figure_path = Path("/tmp") / f"top_contributor_{month_name}_{year}_{language}.png"
 
     plt.xkcd()
     plt.rcParams["font.family"] = ["sans-serif"]
-    fig, ax = plt.subplots(dpi=150)
+    _, ax = plt.subplots(dpi=150)
 
     short_usernames = [
         name[:13] + "..." if len(name) > 15 else name
@@ -235,7 +233,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     plt.ylabel(settings.graph_ylabel_text_template[language], fontsize=12)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
 
-    logo_path = Path(__file__).parent / "Logo128.png"  # TODO: move that
+    logo_path = Path(__file__).parent / "resources" / "Logo128.png"
     tournesol_logo = mpimg.imread(logo_path)
     imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
@@ -243,10 +241,9 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
         ab = AnnotationBbox(imagebox, (top_pos, nb_rating), frameon=False)
         ax.add_artist(ab)
 
-    plt.savefig(fig_path, dpi=300)
-    plt.show()
+    plt.savefig(figure_path, dpi=300)
 
-    return fig_path
+    return figure_path
 
 
 def tweet_top_contributor_graph(bot_name, assumeyes=False):
