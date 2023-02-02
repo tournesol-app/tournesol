@@ -454,7 +454,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
             0,
         )
 
-    def test_auto_remove_is_setting(self) -> None:
+    def test_auto_remove_is_setting_specific(self) -> None:
         """
         Test of the `auto_remove_from_rate_later` method of the Entity model.
 
