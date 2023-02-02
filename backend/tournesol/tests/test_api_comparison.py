@@ -985,43 +985,6 @@ class ComparisonApiTestCase(TestCase):
             self._compare(video_main.uid, video.uid)
         self.assertEqual(RateLater.objects.filter(entity=video_main).count(), 0)
 
-    def test_comparing_removes_from_rate_later_with_settings(self):
-        """
-        A video compared several times should be removed from the user's
-        rate-later list.
-
-        If the user has configured `rate_later__auto_remove`, the video
-        should be removed according to the value of this setting.
-        """
-
-        # [GIVEN] a user with the setting `rate_later__auto_remove` set to 8.
-        self.user.settings[self.poll_videos.name] = {"rate_later__auto_remove": 8}
-        self.user.save(update_fields=["settings"])
-
-        self.client.force_authenticate(user=self.user)
-        video_main, *videos = (VideoFactory() for _ in range(9))
-
-        data = {"entity": {"uid": video_main.uid}}
-        self.client.post(
-            f"/users/me/rate_later/{self.poll_videos.name}/",
-            data,
-            format="json",
-        )
-
-        # The main video should be in the rate later list after 1 comparison.
-        self._compare(video_main.uid, videos[0].uid)
-        self.assertEqual(RateLater.objects.filter(entity=video_main).count(), 1)
-
-        # The main video should be in the rate later list after 5 comparison.
-        for video in videos[1:5]:
-            self._compare(video_main.uid, video.uid)
-        self.assertEqual(RateLater.objects.filter(entity=video_main).count(), 1)
-
-        # The main video should not be in the rate later list after 8 comparison.
-        for video in videos[5:]:
-            self._compare(video_main.uid, video.uid)
-        self.assertEqual(RateLater.objects.filter(entity=video_main).count(), 0)
-
 
 class ComparisonWithMehestanTest(TransactionTestCase):
     def setUp(self):

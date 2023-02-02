@@ -13,7 +13,6 @@ from rest_framework import exceptions, generics, mixins
 from ml.mehestan.run import update_user_scores
 from tournesol.models import Comparison
 from tournesol.models.poll import ALGORITHM_MEHESTAN
-from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
@@ -113,16 +112,12 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
             )
         comparison: Comparison = serializer.save()
 
-        auto_remove = self.request.user.settings.get(poll.name, {}).get(
-            "rate_later__auto_remove", RATE_LATER_AUTO_REMOVE_DEFAULT
-        )
-
         # TODO To be removed, replaced by update_n_poll_ratings
         comparison.entity_1.update_n_ratings()
 
         comparison.entity_1.inner.refresh_metadata()
         comparison.entity_1.auto_remove_from_rate_later(
-            poll=poll, user=self.request.user, max_=auto_remove
+            poll=poll, user=self.request.user
         )
 
         # TODO To be removed, replaced by update_n_poll_ratings
@@ -130,7 +125,7 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
 
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(
-            poll=poll, user=self.request.user, max_=auto_remove
+            poll=poll, user=self.request.user
         )
 
         if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON and poll.algorithm == ALGORITHM_MEHESTAN:

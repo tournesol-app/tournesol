@@ -389,11 +389,11 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         user = self.user
         entity = self.entity_in_ratelater
 
-        # We consider 4 as the minimum number of comparisons required to
-        # remove an entity from a rate-later list.
-        max_comparisons = 4
+        # [GIVEN] a user without settings.
+        user.settings = {}
+        user.save(update_fields=["settings"])
 
-        # Initial state.
+        # [GIVEN] a rate-later list with 1 entity.
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -402,7 +402,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         # The entity must not be removed after 2 comparisons.
         ComparisonFactory(poll=poll, user=user, entity_1=entity)
         ComparisonFactory(poll=poll, user=user, entity_1=entity)
-        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
+        entity.auto_remove_from_rate_later(poll, user)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -410,7 +410,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
 
         # The entity must not be removed after 3 comparisons.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
+        entity.auto_remove_from_rate_later(poll, user)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -419,7 +419,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         # The entity must not be removed when comparing unrelated videos.
         ComparisonFactory(poll=poll, user=user)
         ComparisonFactory(poll=poll, user=user)
-        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
+        entity.auto_remove_from_rate_later(poll, user)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -427,7 +427,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
 
         # The entity must be removed after 4 comparisons.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
+        entity.auto_remove_from_rate_later(poll, user)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
@@ -448,7 +448,49 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
 
         # The entity is removed again after one new comparison.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user, max_comparisons)
+        entity.auto_remove_from_rate_later(poll, user)
+        self.assertEqual(
+            RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
+            0,
+        )
+
+    def test_auto_remove_is_setting(self) -> None:
+        """
+        Test of the `auto_remove_from_rate_later` method of the Entity model.
+
+        After number of comparisons defined by the user's settings, calling
+        the tested method must remove the entity from the user's rate-later
+        list.
+        """
+        poll = self.poll
+        user = self.user
+        entity = self.entity_in_ratelater
+
+        # [GIVEN] a user with the setting `auto_remove` set to 2.
+        user.settings[poll.name] = {"rate_later__auto_remove": 2}
+        user.save(update_fields=["settings"])
+
+        # [GIVEN] a rate-later list with 1 entity.
+        self.assertEqual(
+            RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
+            1,
+        )
+
+        # [WHEN] the entity is compared 1 time.
+        ComparisonFactory(poll=poll, user=user, entity_1=entity)
+        entity.auto_remove_from_rate_later(poll, user)
+
+        # [THEN] the entity should be present in the rate-later list.
+        self.assertEqual(
+            RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
+            1,
+        )
+
+        # [WHEN] the entity is compared 2 tims.
+        ComparisonFactory(poll=poll, user=user, entity_1=entity)
+        entity.auto_remove_from_rate_later(poll, user)
+
+        # [THEN] the entity should not be present in the rate-later list.
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
@@ -477,7 +519,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         ComparisonFactory(user=other_user, entity_1=entity)
         ComparisonFactory(user=other_user, entity_2=entity)
         ComparisonFactory(user=other_user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user, 4)
+        entity.auto_remove_from_rate_later(poll, user)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -512,7 +554,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         ComparisonFactory(poll=poll, user=user, entity_1=entity)
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
-        entity.auto_remove_from_rate_later(poll, user, 4)
+        entity.auto_remove_from_rate_later(poll, user)
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
