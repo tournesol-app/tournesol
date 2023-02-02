@@ -5,12 +5,12 @@ from django.conf import settings
 class TwitterBot:
     def __init__(self, account):
 
-        CREDENTIALS = settings.TWITTERBOT_CREDENTIALS
+        credentials = settings.TWITTERBOT_CREDENTIALS
 
-        if account not in CREDENTIALS:
+        if account not in credentials:
             raise ValueError(f"No credentials found for {account} account!")
 
-        account_cred = CREDENTIALS[account]
+        account_cred = credentials[account]
 
         self.language = account_cred["LANGUAGE"]
         self.consumer_key = account_cred["CONSUMER_KEY"]

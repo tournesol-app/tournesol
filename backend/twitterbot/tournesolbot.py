@@ -209,7 +209,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
 
     plt.xkcd()
     plt.rcParams["font.family"] = ["sans-serif"]
-    fig, ax = plt.subplots(dpi=150)
+    _fig, axes = plt.subplots(dpi=150)
 
     short_usernames = [
         name[:14] + "…" if len(name) > 15 else name
@@ -237,8 +237,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     imagebox = OffsetImage(tournesol_logo, zoom=0.18)
 
     for top_pos, nb_rating in enumerate(u.n_comparisons for u in top_contributors_qs):
-        ab = AnnotationBbox(imagebox, (top_pos, nb_rating), frameon=False)
-        ax.add_artist(ab)
+        axes.add_artist(AnnotationBbox(imagebox, (top_pos, nb_rating), frameon=False))
 
     plt.savefig(figure_path, dpi=300)
 
