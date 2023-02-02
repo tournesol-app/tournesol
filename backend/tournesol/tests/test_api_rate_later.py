@@ -5,11 +5,10 @@ from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import User
 from core.tests.factories.user import UserFactory
-from tournesol.models import Entity, Poll, RateLater
+from tournesol.models import RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
+from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.poll import PollFactory
 
 
@@ -382,14 +381,19 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         """
         Test of the `auto_remove_from_rate_later` method of the Entity model.
 
-        After 4 comparisons, calling the tested method must remove the entity
-        from the user's rate-later list related to the specified poll.
+        After a defined number of comparisons, calling the tested method must
+        remove the entity from the user's rate-later list related to the
+        specified poll.
         """
         poll = self.poll
         user = self.user
         entity = self.entity_in_ratelater
 
-        # Initial state.
+        # [GIVEN] a user without settings.
+        user.settings = {}
+        user.save(update_fields=["settings"])
+
+        # [GIVEN] a rate-later list with 1 entity.
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             1,
@@ -445,6 +449,48 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
         # The entity is removed again after one new comparison.
         ComparisonFactory(poll=poll, user=user, entity_2=entity)
         entity.auto_remove_from_rate_later(poll, user)
+        self.assertEqual(
+            RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
+            0,
+        )
+
+    def test_auto_remove_is_setting_specific(self) -> None:
+        """
+        Test of the `auto_remove_from_rate_later` method of the Entity model.
+
+        After number of comparisons defined by the user's settings, calling
+        the tested method must remove the entity from the user's rate-later
+        list.
+        """
+        poll = self.poll
+        user = self.user
+        entity = self.entity_in_ratelater
+
+        # [GIVEN] a user with the setting `auto_remove` set to 2.
+        user.settings[poll.name] = {"rate_later__auto_remove": 2}
+        user.save(update_fields=["settings"])
+
+        # [GIVEN] a rate-later list with 1 entity.
+        self.assertEqual(
+            RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
+            1,
+        )
+
+        # [WHEN] the entity is compared 1 time.
+        ComparisonFactory(poll=poll, user=user, entity_1=entity)
+        entity.auto_remove_from_rate_later(poll, user)
+
+        # [THEN] the entity should be present in the rate-later list.
+        self.assertEqual(
+            RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
+            1,
+        )
+
+        # [WHEN] the entity is compared 2 tims.
+        ComparisonFactory(poll=poll, user=user, entity_1=entity)
+        entity.auto_remove_from_rate_later(poll, user)
+
+        # [THEN] the entity should not be present in the rate-later list.
         self.assertEqual(
             RateLater.objects.filter(poll=poll, user=user, entity=entity).count(),
             0,
