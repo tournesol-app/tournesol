@@ -27,7 +27,7 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
             comparisoncriteriascore.criteria,
             comparisoncriteriascore.weight,
             comparisoncriteriascore.score,
-            EXTRACT('epoch' FROM DATE_TRUNC('week', datetime_add)) AS week_timestamp
+            DATE(DATE_TRUNC('week', datetime_add)) AS week_date
 
         FROM tournesol_comparison
 
@@ -63,6 +63,10 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
           -- keep only public ratings
           AND rating_1.is_public = true
           AND rating_2.is_public = true
+          -- excluse current week comparisons
+          AND DATE_TRUNC('week', datetime_add) < DATE_TRUNC('week', now())
+
+        ORDER BY username, datetime_add
         """,
         {"poll_name": poll_name},
     )
