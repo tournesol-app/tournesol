@@ -29,8 +29,8 @@ tweet_text_template = {
 
 # Monthly top contributor text template
 graph_title_text_template = {
-    "en": ("Who compared the most on Tournesol in {month_name} {year}"),
-    "fr": ("Qui a le plus comparé sur Tournesol en {month_name} {year}"),
+    "en": ("Who compared the most on Tournesol in {month_name} {year}?"),
+    "fr": ("Qui a le plus comparé sur Tournesol en {month_name} {year} ?"),
 }
 
 graph_ylabel_text_template = {
