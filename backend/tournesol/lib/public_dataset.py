@@ -64,7 +64,7 @@ def get_comparisons_data(poll_name: str) -> QuerySet:
           AND rating_1.is_public = true
           AND rating_2.is_public = true
           -- excluse current week comparisons
-          AND DATE_TRUNC('week', datetime_add) < DATE_TRUNC('week', now())
+          AND datetime_add < DATE_TRUNC('week', now())
 
         ORDER BY username, datetime_add
         """,
