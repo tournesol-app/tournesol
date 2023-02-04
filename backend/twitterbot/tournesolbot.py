@@ -210,7 +210,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     _fig, axes = plt.subplots(dpi=150)
 
     short_usernames = [
-        name[:14] + "…" if len(name) > 15 else name
+        name[:12] + "…" if len(name) > 14 else name
         for name in (u.username for u in top_contributors_qs)
     ]
 
@@ -225,7 +225,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
         year=year,
     )
     plt.title(graph_title, fontsize=14)
-    plt.xticks(rotation=50, ha="right", fontsize=10)
+    plt.xticks(rotation=42, ha="right", fontsize=9)
     plt.yticks(fontsize=10)
     plt.ylabel(settings.graph_ylabel_text_template[language], fontsize=12)
     plt.subplots_adjust(bottom=0.22, left=0.15, right=0.95)
