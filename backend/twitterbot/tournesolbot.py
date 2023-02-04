@@ -195,7 +195,7 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     last_month_dt = timezone.now().replace(day=1) - timedelta(days=1)
     year = last_month_dt.year
 
-    if language in ["en","fr"]:
+    if language in ["en", "fr"]:
         with translation.override(language):
             month_name = dateformat.format(last_month_dt, "F")
     else:
