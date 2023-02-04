@@ -1,3 +1,4 @@
+from itertools import islice
 from typing import Iterable, Optional, Union
 
 import numpy as np
@@ -57,31 +58,34 @@ def save_entity_scores(
 
 
 def save_tournesol_scores(poll):
-    entities = []
-    for entity in (
-        Entity.objects.filter(all_criteria_scores__poll=poll)
-        .distinct()
-        .with_prefetched_scores(poll_name=poll.name)
-    ):
-        if poll.algorithm == ALGORITHM_MEHESTAN:
-            # The tournesol score is simply the score associated with the main criteria
-            entity.tournesol_score = next(
-                (
-                    s.score
-                    for s in entity.criteria_scores
-                    if s.criteria == poll.main_criteria
-                ),
-                None,
-            )
-        else:
-            entity.tournesol_score = 10 * sum(
-                criterion.score for criterion in entity.criteria_scores
-            )
-        entities.append(entity)
+    def entities_iterator():
+        for entity in (
+            Entity.objects.filter(all_criteria_scores__poll=poll)
+            .distinct()
+            .with_prefetched_scores(poll_name=poll.name)
+        ):
+            if poll.algorithm == ALGORITHM_MEHESTAN:
+                # The tournesol score is simply the score associated with the main criteria
+                entity.tournesol_score = next(
+                    (
+                        s.score
+                        for s in entity.criteria_scores
+                        if s.criteria == poll.main_criteria
+                    ),
+                    None,
+                )
+            else:
+                entity.tournesol_score = 10 * sum(
+                    criterion.score for criterion in entity.criteria_scores
+                )
+            yield entity
 
     # Updating all entities at once increases the risk of a database deadlock.
-    # We use an explicitly low `batch_size` value to reduce this risk.
-    Entity.objects.bulk_update(entities, ["tournesol_score"], batch_size=1000)
+    # We use explicit batches instead of bulk_update "batch_size" to avoid
+    # locking all entities in a large transaction.
+    entities_it = entities_iterator()
+    while batch := list(islice(entities_it, 1000)):
+        Entity.objects.bulk_update(batch, fields=["tournesol_score"])
 
 
 def apply_score_scalings(poll: Poll, contributor_scores: pd.DataFrame):
