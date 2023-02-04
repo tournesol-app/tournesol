@@ -1,11 +1,25 @@
+from datetime import timedelta
+from unittest import mock
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from django.utils import timezone
 
+from core.tests.factories.user import UserFactory
 from core.utils.time import time_ago
-from tournesol.models import Entity
-from tournesol.tests.factories.entity import VideoCriteriaScoreFactory, VideoFactory
-from twitterbot.tournesolbot import get_best_criteria, get_video_recommendations, prepare_tweet
+from tournesol.models import Entity, Poll
+from tournesol.models.comparisons import Comparison
+from tournesol.tests.factories.comparison import ComparisonFactory
+from tournesol.tests.factories.entity import EntityFactory, VideoCriteriaScoreFactory, VideoFactory
+from tournesol.tests.factories.ratings import ContributorRatingFactory
+from tournesol.utils.contributors import get_top_public_contributors_last_month
+from twitterbot.tournesolbot import (
+    generate_top_contributor_figure,
+    get_best_criteria,
+    get_video_recommendations,
+    prepare_tweet,
+    tweet_top_contributor_graph,
+)
 
 
 class TestTournesolBot(TestCase):
@@ -117,29 +131,17 @@ class TestTournesolBot(TestCase):
         VideoCriteriaScoreFactory(
             entity=self.videos[8], criteria="largely_recommended", score=0.35
         )
-        VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="reliability", score=32
-        )
-        VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="importance", score=52
-        )
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="reliability", score=32)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="importance", score=52)
         VideoCriteriaScoreFactory(entity=self.videos[8], criteria="engaging", score=38)
         VideoCriteriaScoreFactory(entity=self.videos[8], criteria="pedagogy", score=31)
-        VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="layman_friendly", score=26
-        )
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="layman_friendly", score=26)
         VideoCriteriaScoreFactory(
             entity=self.videos[8], criteria="entertaining_relaxing", score=14
         )
-        VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="better_habits", score=12
-        )
-        VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="diversity_inclusion", score=0.0
-        )
-        VideoCriteriaScoreFactory(
-            entity=self.videos[8], criteria="backfire_risk", score=-2
-        )
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="better_habits", score=12)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="diversity_inclusion", score=0.0)
+        VideoCriteriaScoreFactory(entity=self.videos[8], criteria="backfire_risk", score=-2)
 
     def test_get_best_criteria(self):
 
@@ -192,9 +194,7 @@ class TestTournesolBot(TestCase):
         assert prepare_tweet(self.videos[8]) == tweet_text_too_long
 
         # Test replacement of special characters in the video title
-        self.videos[8].metadata[
-            "name"
-        ] = "Tournesol.app is great but mention @twitter are not..."
+        self.videos[8].metadata["name"] = "Tournesol.app is great but mention @twitter are not..."
 
         tweet_special_characters = (
             "Aujourd'hui, je recommande 'Tournesol․app is great but mention ﹫twitter "
@@ -221,3 +221,80 @@ class TestTournesolBot(TestCase):
         assert get_video_recommendations("en")[0] == self.videos[4]
 
         assert not get_video_recommendations("de")
+
+
+class TestTournesolBotTopContributor(TestCase):
+    """TestCase of the utils.contributors module."""
+
+    def setUp(self):
+
+        self.poll = Poll.default_poll()
+
+        self.users = UserFactory.create_batch(15)
+        self.entities = EntityFactory.create_batch(2)
+
+        for user in self.users:
+            for entity in self.entities:
+
+                is_public = True
+                ContributorRatingFactory.create(
+                    user=user,
+                    entity=entity,
+                    is_public=is_public,
+                )
+
+            ComparisonFactory(user=user, entity_1=self.entities[0], entity_2=self.entities[1])
+
+        now = timezone.now()
+        last_month = timezone.datetime(
+            now.year, now.month, 1, tzinfo=timezone.get_current_timezone()
+        ) - timedelta(days=15)
+
+        Comparison.objects.update(datetime_add=last_month)
+
+    def test_generate_top_contributor_figure(self):
+        """
+        Test function generate_top_contributor_figure.
+        """
+
+        top_contributors_qs = get_top_public_contributors_last_month(
+            poll_name=self.poll.name, top=10
+        )
+
+        figure_path = generate_top_contributor_figure(top_contributors_qs, "fr")
+
+        assert figure_path.exists()
+
+    @mock.patch("tweepy.API")
+    @override_settings(
+        TWITTERBOT_CREDENTIALS={
+            "@TournesolBot": {
+                "LANGUAGE": "en",
+                "CONSUMER_KEY": "",
+                "CONSUMER_SECRET": "",
+                "ACCESS_TOKEN": "",
+                "ACCESS_TOKEN_SECRET": "",
+            },
+            "@TournesolBotFR": {
+                "LANGUAGE": "fr",
+                "CONSUMER_KEY": "",
+                "CONSUMER_SECRET": "",
+                "ACCESS_TOKEN": "",
+                "ACCESS_TOKEN_SECRET": "",
+            },
+        }
+    )
+    def test_tweet_top_contributor_graph(self, api_mock):
+
+        mocked_api_client = api_mock.return_value
+
+        tweet_top_contributor_graph("@TournesolBot", assumeyes=True)
+        tweet_top_contributor_graph("@TournesolBotFR", assumeyes=True)
+
+        self.assertEqual(
+            mocked_api_client.media_upload.call_count, 2, mocked_api_client.media_upload.calls
+        )
+        self.assertEqual(mocked_api_client.media_upload.call_args_list[0].args[0].suffix, ".png")
+        self.assertEqual(
+            mocked_api_client.update_status.call_count, 2, mocked_api_client.update_status.calls
+        )

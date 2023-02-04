@@ -1,4 +1,4 @@
-Django==4.0.8
+Django==4.0.9
 django-computed-property==0.3.0
 django-cors-headers==3.13.0
 django-countries==7.3.2
@@ -25,7 +25,8 @@ numexpr==2.8.3
 google-api-python-client==2.36.0
 google-auth-httplib2==0.1.0
 
-# TwitterBot 
+# TwitterBot
+matplotlib==3.6.3
 requests==2.27.1
 tweepy==3.10.0
 

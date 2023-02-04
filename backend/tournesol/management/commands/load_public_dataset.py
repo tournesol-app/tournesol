@@ -26,6 +26,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--user-sampling", type=float, default=None)
+        parser.add_argument("--comparisons-url", type=str, default=PUBLIC_DATASET_URL)
 
     def create_user(self, username):
         is_pretrusted = (
@@ -55,11 +56,13 @@ class Command(BaseCommand):
 
         futures = (thread_pool.submit(refresh_metadata, video) for video in videos.values())
         for future in concurrent.futures.as_completed(futures):
-            # .result() will reraise any exception occured during refresh
+            # .result() will reraise any exception occurred during refresh
             future.result()
 
+        thread_pool.shutdown()
+
     def create_test_user(self):
-        User.objects.create_user(  # hardcoded password is delibarate # nosec B106
+        User.objects.create_user(  # hardcoded password is deliberate # nosec B106
             username="user1",
             password="tournesol",
             email="user1@tournesol.app"
@@ -68,7 +71,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         random.seed(RANDOM_SEED)
 
-        public_dataset = pd.read_csv(PUBLIC_DATASET_URL)
+        public_dataset = pd.read_csv(options["comparisons_url"])
         nb_comparisons = 0
 
         with transaction.atomic():
@@ -110,7 +113,6 @@ class Command(BaseCommand):
                         comparison=comparison,
                         criteria=values["criteria"],
                         score=values["score"],
-                        weight=values["weight"],
                     )
                 nb_comparisons += 1
             print(f"Created {nb_comparisons} comparisons")
