@@ -18,9 +18,12 @@ from tournesol.models import (
 )
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.utils.datetime import FixDatetimes
 
 
 class ExportTest(TestCase):
+
+    @FixDatetime()
     def setUp(self) -> None:
         self.poll_videos = Poll.default_poll()
         self.user_with_comparisons = User.objects.create_user(
@@ -165,6 +168,7 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[0]["video_a"], self.video_public_1.video_id)
         self.assertEqual(comparison_list[0]["video_b"], self.video_public_2.video_id)
 
+    @FixDatetime()
     def test_not_authenticated_can_download_public_comparisons_multiple_users(self):
         self.public_comparisons2 = UserFactory()
         self.video_public_3 = VideoFactory()
