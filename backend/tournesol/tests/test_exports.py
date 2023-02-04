@@ -18,7 +18,7 @@ from tournesol.models import (
 )
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
-from tournesol.tests.utils.datetime import FixDatetimes
+from tournesol.tests.utils.datetime import FixDatetime
 
 
 class ExportTest(TestCase):
