@@ -75,6 +75,7 @@ def write_public_comparisons_file(poll_name: str, write_target) -> None:
             "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
             "criteria": comparison.criteria,
             "score": int(round(comparison.score)),
+            "week_date": comparison.week_date
         }
         for comparison in get_comparisons_data(poll_name).iterator()
     )
