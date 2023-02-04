@@ -12,6 +12,7 @@ class Command(BaseCommand):
             "-n",
             "--bot-name",
             type=str,
+            required=True,
             help="Name of the bot '@TournesolBot' or '@TournesolBotFR'",
         )
 
