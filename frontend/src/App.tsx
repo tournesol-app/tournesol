@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Switch, Redirect, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
+import Plausible from 'plausible-tracker';
 
 import { useLoginState } from './hooks';
 import LoginPage from './pages/login/Login';
@@ -69,6 +70,9 @@ function App() {
   useEffect(() => {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
+
+  const plausible = Plausible({ apiHost: 'http://tournesol-webanalytics' });
+  plausible.trackPageview();
 
   return (
     <PollProvider>
