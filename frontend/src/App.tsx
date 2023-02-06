@@ -72,7 +72,7 @@ function App() {
   }, [loginState, i18n]);
 
   const plausible = Plausible({ apiHost: 'http://tournesol-webanalytics' });
-  plausible.trackPageview();
+  plausible.enableAutoPageviews();
 
   return (
     <PollProvider>
