@@ -71,7 +71,11 @@ function App() {
     initializeOpenAPI(loginState, i18n);
   }, [loginState, i18n]);
 
-  const plausible = Plausible({ apiHost: 'http://tournesol-webanalytics' });
+  // Plausible will not make HTTP requests to track events when
+  // `localtion.hostname` is "localhost".
+  const plausible = Plausible({
+    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
+  });
   plausible.enableAutoPageviews();
 
   return (
