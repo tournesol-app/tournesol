@@ -1,0 +1,20 @@
+[Unit]
+Description=The Tournesol website analytics
+PartOf=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/opt/plausible_analytics
+ExecStart=/usr/bin/docker compose up --remove-orphans
+ExecStop=/usr/bin/docker compose down
+# sec
+#LockPersonality=true
+#PrivateTmp=true
+#ProtectClock=true
+#ProtectHome=true
+#ProtectHostname=true
+#ProtectSystem=full
+#ProtectProc=invisible
+
+[Install]
+WantedBy=multi-user.target

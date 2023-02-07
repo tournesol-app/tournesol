@@ -8,6 +8,7 @@ all:
           machine_name: tournesol
           domain_name: tournesol-vm
           api_domain_name: tournesol-api
+          webanalytics_domain_name: tournesol-webanalytics
           api_scheme: http
 
           buster_mirror: http://debian.ethz.ch/debian/
@@ -29,7 +30,7 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: http
-          frontend_csp_connect_src: https://noembed.com
+          frontend_csp_connect_src: https://noembed.com {{webanalytics_domain_name}}
           frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
@@ -71,6 +72,7 @@ all:
           machine_name: tournesol
           domain_name: staging.tournesol.app
           api_domain_name: "api.{{domain_name}}"
+          webanalytics_domain_name: "webanalytics.{{domain_name}}"
           api_scheme: https
 
           buster_mirror: http://debian.ethz.ch/debian/
@@ -92,7 +94,7 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
-          frontend_csp_connect_src: https://noembed.com
+          frontend_csp_connect_src: https://noembed.com {{webanalytics_domain_name}}
           frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"
@@ -141,6 +143,7 @@ all:
           machine_name: tournesol
           domain_name: tournesol.app
           api_domain_name: "api.{{domain_name}}"
+          webanalytics_domain_name: "webanalytics.{{domain_name}}"
           api_scheme: https
 
           buster_mirror: http://debian.ethz.ch/debian/
@@ -162,7 +165,7 @@ all:
           nvm_version: "v0.38.0"
           npm_lts_version: fermium
           frontend_scheme: https
-          frontend_csp_connect_src: https://noembed.com
+          frontend_csp_connect_src: https://noembed.com {{webanalytics_domain_name}}
           frontend_csp_frame_ancestors: "https://www.youtube.com moz-extension: chrome-extension:"
           frontend_csp_frame_src: https://www.youtube.com
           frontend_csp_image_src: "https://i.ytimg.com https://www.paypal.com https://www.paypalobjects.com https://*.wikimedia.org"

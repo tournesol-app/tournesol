@@ -12,6 +12,7 @@
     - monitoring
     - logging
     - frontend
+    - plausible_analytics
     - mediawiki
     - backups
   become: true
