@@ -1,9 +1,18 @@
 # Plausible Analytics
 #
 # This playbook installs a self-hosted instance of Plausible Analytics.
-# See the documentation: https://plausible.io/docs/self-hosting
 #
-# This playbook requires the following apt packages:
+# [DOC]
+#
+# For more information about how to run a self-hosted instance:
+#
+#   - https://plausible.io/docs/self-hosting
+#   - https://plausible.io/docs/self-hosting-configuration
+#
+# [REQUIREMENTS]
+#
+# This playbook depends on other playbooks, and thus requires the following
+# apt packages:
 #   - certbot
 #   - python3-certbot-nginx
 #   - nginx
@@ -11,12 +20,50 @@
 #   - docker-ce-cli
 #   - containerd.io
 #   - docker-compose-plugin
+#
+# It also assumes the Plausible Analytics Git repository `plausible/hosting`
+# is available at /home/git/plausible_hosting.
+#
+
+- name: Copy Plausible Analytics secret key
+  template:
+    src: plausible_analytics_secret_key.j2
+    dest: /root/plausible_analytics_secret_key
+    mode: u=rw,g=,o=
+  notify: Restart Tournesol website analytics
 
 #
 # Download the official Docker Compose file
 #
 
-# to-do...
+- name: Create Plausible Analytics directory
+  file:
+    path: /opt/plausible_analytics
+    state: directory
+
+- name: Copy Plausible Analytics self-hosting repository
+  synchronize:
+    src: "/home/git/plausible_hosting/"
+    dest: /opt/plausible_analytics
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+    rsync_opts:
+      - "--exclude=.git/"
+      - "--exclude=.github/"
+      - "--exclude=plausible-conf.env"
+  delegate_to: "{{ inventory_hostname }}"
+  become: yes
+  become_user: root
+  notify: Restart Tournesol website analytics
+
+- name: Copy Plausible configuration
+  template:
+    dest: /opt/plausible_analytics/plausible-conf.env
+    src: plausible-conf.env.j2
+    mode: u=rw,g=,o=
+  notify: Restart Tournesol website analytics
 
 #
 # Install the systemd unit
@@ -26,6 +73,7 @@
   template:
     dest: /etc/systemd/system/tournesol-website-analytics.service
     src: tournesol-website-analytics.service.j2
+  notify: Restart Tournesol website analytics
 
 - name: Enable and start tournesol-website-analytics service
   systemd:
@@ -33,6 +81,8 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+- meta: flush_handlers
 
 #
 # Install the TLS certificates
@@ -64,8 +114,7 @@
   template:
     src: website_analytics.j2
     dest: /etc/nginx/sites-available/website_analytics
-  notify:
-    - Reload Nginx
+  notify: Reload Nginx
 
 - name: Enable NGINX configuration
   file:
@@ -73,5 +122,3 @@
     dest: /etc/nginx/sites-enabled/website_analytics
     state: link
   notify: Reload Nginx
-
-- meta: flush_handlers

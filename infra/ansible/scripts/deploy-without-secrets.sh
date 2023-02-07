@@ -61,3 +61,4 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "discord_infra_alert_webhook=${DISCORD_INFRA_ALERT_WEBHOOK:-""}" \
   -e "discord_infra_alert_private_webhook=${DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK:-""}" \
   -e "discord_twitter_webhook=${DISCORD_TWITTER_WEBHOOK:-""}" \
+  -e "plausible_analytics_secret_key=${PLAUSIBLE_ANALYTICS_SECRET_KEY:-""}" \
