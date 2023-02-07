@@ -70,7 +70,9 @@ const AutoEntityButton = ({
 
   const previousUidRef = useRef<string | null | undefined>(undefined);
   useEffect(() => {
-    // We only want to autofill when the currentUid changes, not when the other dependencies change
+    // We only want to autofill when the currentUid is cleared, not when the other dependencies
+    // change. We must handle the prop change because the component stays mounted when we click on
+    // "Compare" and we already are on the comparison page.
     if (currentUid === previousUidRef.current) return;
     previousUidRef.current = currentUid;
 
