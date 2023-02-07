@@ -115,7 +115,7 @@ const Comparison = ({ afterSubmitCallback }: Props) => {
 
       if ((searchParams.get(uidKey) || '') !== uid) {
         searchParams.set(uidKey, uid || '');
-        history.push({ search: searchParams.toString() });
+        history.replace({ search: searchParams.toString() });
       }
       if (uidKey === UID_PARAMS.vidA) {
         setSelectorA(newValue);
