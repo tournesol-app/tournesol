@@ -3,3 +3,5 @@
     name: tournesol-website-analytics
     state: restarted
     daemon_reload: true
+  listen:
+    - "Docker daemon configuration changed"

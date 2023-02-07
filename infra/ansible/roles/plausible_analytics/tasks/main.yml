@@ -11,15 +11,12 @@
 #
 # [REQUIREMENTS]
 #
-# This playbook depends on other playbooks, and thus requires the following
-# apt packages:
-#   - certbot
-#   - python3-certbot-nginx
+# This playbook depends on other playbooks like:
+#
+#   - docker
 #   - nginx
-#   - docker-ce
-#   - docker-ce-cli
-#   - containerd.io
-#   - docker-compose-plugin
+#   - repository
+#   - etc.
 #
 # It also assumes the Plausible Analytics Git repository `plausible/hosting`
 # is available at /home/git/plausible_hosting.
