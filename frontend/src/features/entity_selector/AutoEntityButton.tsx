@@ -27,21 +27,39 @@ const AutoEntityButton = ({
   const { name: pollName } = useCurrentPoll();
   const mountedRef = useRef(false);
 
-  const askNewVideo = useCallback(async () => {
-    onClick();
-    const newVideoId: string | null = await getVideoForComparison(
-      otherUid ? idFromUid(otherUid) : null,
-      idFromUid(currentUid || '')
-    );
+  // askNewVideo needs to compare the received UID with the current `otherUid`
+  // but it can't access the updated props so we keep a ref with the latest value.
+  const otherUidRef = useRef(otherUid);
+  otherUidRef.current = otherUid;
 
-    if (!mountedRef.current) return;
+  const askNewVideo = useCallback(
+    async ({ fromAutoFill = false } = {}) => {
+      onClick();
+      const newVideoId: string | null = await getVideoForComparison(
+        otherUid ? idFromUid(otherUid) : null,
+        idFromUid(currentUid || '')
+      );
 
-    if (newVideoId) {
-      onResponse(`${UID_YT_NAMESPACE}${newVideoId}`);
-    } else {
-      onResponse(null);
-    }
-  }, [currentUid, otherUid, onClick, onResponse]);
+      if (!mountedRef.current) return;
+
+      if (newVideoId) {
+        const newVideoUid = `${UID_YT_NAMESPACE}${newVideoId}`;
+
+        // When both videos are auto filled it's common to receive the same video twice.
+        // When it happens we ask for another one.
+        if (fromAutoFill && newVideoUid === otherUidRef.current) {
+          onResponse(null);
+          askNewVideo({ fromAutoFill: true });
+          return;
+        }
+
+        onResponse(newVideoUid);
+      } else {
+        onResponse(null);
+      }
+    },
+    [currentUid, otherUid, onClick, onResponse]
+  );
 
   useEffect(() => {
     mountedRef.current = true;
@@ -56,7 +74,7 @@ const AutoEntityButton = ({
     if (currentUid === previousUidRef.current) return;
     previousUidRef.current = currentUid;
 
-    if (autoFill && currentUid === null) askNewVideo();
+    if (autoFill && currentUid === null) askNewVideo({ fromAutoFill: true });
   }, [autoFill, currentUid, askNewVideo]);
 
   if (pollName !== YOUTUBE_POLL_NAME) {
