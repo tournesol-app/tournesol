@@ -29,11 +29,11 @@ const SignupSuccess = ({ email }: { email: string }) => {
 };
 
 const Signup = () => {
-  const { t } = useTranslation();
-
   const { trackEvent } = Plausible({
     apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
   });
+
+  const { t } = useTranslation();
 
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(

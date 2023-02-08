@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import Plausible from 'plausible-tracker';
+
 import { TextField, Typography, Button, useTheme } from '@mui/material';
 
 import { UsersService } from 'src/services/openapi';
@@ -9,6 +11,10 @@ import { useLoginState } from 'src/hooks';
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
 const DeleteAccountForm = () => {
+  const { trackEvent } = Plausible({
+    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
+  });
+
   const { t } = useTranslation();
   const theme = useTheme();
   const [keyword, setKeyword] = useState('');
@@ -18,6 +24,7 @@ const DeleteAccountForm = () => {
 
   const deleteAccount = async () => {
     await UsersService.usersMeDestroy();
+    trackEvent('account deleted');
     logout();
     history.push('/');
   };
