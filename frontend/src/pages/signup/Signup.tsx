@@ -16,6 +16,8 @@ import {
 import { Link } from 'react-router-dom';
 import Plausible from 'plausible-tracker';
 
+import { TRACKED_EVENTS } from 'src/utils/analytics';
+
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
   return (
@@ -54,7 +56,7 @@ const Signup = () => {
         requestBody: formObject as RegisterUserRequest,
       });
       setSuccessEmailAddress(createdUser.email || '');
-      trackEvent('signup', { props: { state: 'created' } });
+      trackEvent(TRACKED_EVENTS.signup, { props: { state: 'created' } });
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {

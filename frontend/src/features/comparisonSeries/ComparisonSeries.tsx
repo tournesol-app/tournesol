@@ -10,6 +10,7 @@ import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { Entity, Recommendation } from 'src/services/openapi';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
+import { TRACKED_EVENTS } from 'src/utils/analytics';
 import { getUserComparisons } from 'src/utils/api/comparisons';
 import { OrderedDialogs } from 'src/utils/types';
 
@@ -174,7 +175,7 @@ const ComparisonSeries = ({
     // Anonymously track the users' progression through the tutorial, to
     // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
     if (comparisonIsNew) {
-      trackEvent('tutorial', { props: { step: step + 1 } });
+      trackEvent(TRACKED_EVENTS.tutorial, { props: { step: step + 1 } });
     }
 
     // Inform the child component `<Comparison>` to not trigger any additional

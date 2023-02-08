@@ -5,8 +5,9 @@ import Plausible from 'plausible-tracker';
 
 import { TextField, Typography, Button, useTheme } from '@mui/material';
 
-import { UsersService } from 'src/services/openapi';
 import { useLoginState } from 'src/hooks';
+import { UsersService } from 'src/services/openapi';
+import { TRACKED_EVENTS } from 'src/utils/analytics';
 
 const DELETE_ACCOUNT_KEYWORD = 'delete account';
 
@@ -23,8 +24,9 @@ const DeleteAccountForm = () => {
   const history = useHistory();
 
   const deleteAccount = async () => {
+    // TODO: track the event only when the deletion is successful
     await UsersService.usersMeDestroy();
-    trackEvent('account deleted');
+    trackEvent(TRACKED_EVENTS.accountDeleted);
     logout();
     history.push('/');
   };
