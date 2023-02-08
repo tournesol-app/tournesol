@@ -14,6 +14,7 @@ import {
   RegisterUserRequest,
 } from 'src/services/openapi';
 import { Link } from 'react-router-dom';
+import Plausible from 'plausible-tracker';
 
 const SignupSuccess = ({ email }: { email: string }) => {
   const { t } = useTranslation();
@@ -29,6 +30,11 @@ const SignupSuccess = ({ email }: { email: string }) => {
 
 const Signup = () => {
   const { t } = useTranslation();
+
+  const { trackEvent } = Plausible({
+    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
+  });
+
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(
     null
@@ -48,6 +54,7 @@ const Signup = () => {
         requestBody: formObject as RegisterUserRequest,
       });
       setSuccessEmailAddress(createdUser.email || '');
+      trackEvent('signup', { props: { state: 'created' } });
     } catch (err) {
       setApiError(err as ApiError);
       if (err?.status !== 400) {

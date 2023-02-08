@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+import Plausible from 'plausible-tracker';
+
 import { CircularProgress, Typography, Box, Button } from '@mui/material';
 import {
   AccountsService,
@@ -37,6 +39,10 @@ const executeVerifyEmail = async (searchParams: Record<string, string>) => {
 };
 
 const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
+  const { trackEvent } = Plausible({
+    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
+  });
+
   useLastPoll();
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
@@ -63,6 +69,7 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
       try {
         await executeVerify(searchParams);
         setVerificationState('success');
+        trackEvent('signup', { props: { state: 'verified' } });
       } catch (err) {
         console.error(err);
         setVerificationState('fail');
