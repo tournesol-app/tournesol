@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
+import Plausible from 'plausible-tracker';
+
 import { Container, Step, StepLabel, Stepper } from '@mui/material';
+
 import DialogBox from 'src/components/DialogBox';
 import LoaderWrapper from 'src/components/LoaderWrapper';
 import Comparison, { UID_PARAMS } from 'src/features/comparisons/Comparison';
@@ -53,6 +56,9 @@ const ComparisonSeries = ({
   const location = useLocation();
 
   const { name: pollName } = useCurrentPoll();
+  const { trackEvent } = Plausible({
+    apiHost: process.env.REACT_APP_WEBSITE_ANALYTICS_URL,
+  });
 
   // trigger the initialization on the first render only, to allow users to
   // freely clear entities without being redirected once the series has started
@@ -163,6 +169,12 @@ const ComparisonSeries = ({
     const newStep = comparisonIsNew ? step + 1 : step;
     if (step < length && comparisonIsNew) {
       setStep(newStep);
+    }
+
+    // Anonymously track the users' progression through the tutorial, to
+    // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
+    if (comparisonIsNew) {
+      trackEvent('tutorial', { props: { step: step } });
     }
 
     // Inform the child component `<Comparison>` to not trigger any additional
