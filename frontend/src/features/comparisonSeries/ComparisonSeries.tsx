@@ -174,7 +174,7 @@ const ComparisonSeries = ({
     // Anonymously track the users' progression through the tutorial, to
     // evaluate the tutorial's quality. DO NOT SEND ANY PERSONAL DATA.
     if (comparisonIsNew) {
-      trackEvent('tutorial', { props: { step: step } });
+      trackEvent('tutorial', { props: { step: step + 1 } });
     }
 
     // Inform the child component `<Comparison>` to not trigger any additional
