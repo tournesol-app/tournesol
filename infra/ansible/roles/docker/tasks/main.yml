@@ -1,6 +1,6 @@
 # Docker
 #
-# This playbook installs Docker and a set of plugins.
+# These tasks install Docker and a set of plugins.
 #
 # [DOC]
 #

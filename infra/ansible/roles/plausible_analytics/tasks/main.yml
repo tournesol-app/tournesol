@@ -1,6 +1,6 @@
 # Plausible Analytics
 #
-# This playbook installs a self-hosted instance of Plausible Analytics.
+# These tasks install a self-hosted instance of Plausible Analytics.
 #
 # [DOC]
 #
@@ -11,7 +11,7 @@
 #
 # [REQUIREMENTS]
 #
-# This playbook depends on other playbooks like:
+# They depend on other tasks like:
 #
 #   - docker
 #   - nginx
