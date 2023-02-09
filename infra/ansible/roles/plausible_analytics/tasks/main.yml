@@ -19,7 +19,7 @@
 #   - etc.
 #
 # It also assumes the Plausible Analytics Git repository `plausible/hosting`
-# is available at /home/git/plausible_hosting.
+# (or a fork) is available at /home/git/plausible_hosting.
 #
 
 - name: Copy Plausible Analytics secret key
@@ -30,7 +30,7 @@
   notify: Restart Tournesol website analytics
 
 #
-# Download the official Docker Compose file
+# Set up the Plausible working directory
 #
 
 - name: Create Plausible Analytics directory
@@ -54,6 +54,10 @@
   become: yes
   become_user: root
   notify: Restart Tournesol website analytics
+
+#
+# Configure the Plausible settings
+#
 
 - name: Copy Plausible configuration
   template:

@@ -21,8 +21,8 @@
 
 - name: Checkout Plausible Analytics self-hosting repository
   git:
-    repo: 'https://github.com/plausible/hosting'
+    repo: 'https://github.com/tournesol-app/plausible-self-hosting'
     dest: /home/git/plausible_hosting
-    version: 36ada56
+    version: tournesol_configuration
   become: yes
   become_user: git

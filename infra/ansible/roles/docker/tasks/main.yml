@@ -31,7 +31,6 @@
     mode: 0644
   notify:
     - Restart Docker
-    - "Docker daemon configuration changed"
 
 #
 # Install Docker and its requirements
