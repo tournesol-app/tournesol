@@ -63,16 +63,20 @@ def add_expander_avg_values():
             st.warning(MSG_NO_DATA)
             return
 
+        st.markdown("Criteria to be included:")
         col1, col2 = st.columns(2)
         with col1:
             min_videos = st.number_input(
-                "Minimum number of videos to be included", value=3, min_value=1
+                "Minimum number of videos per channel", value=3, min_value=1
             )
         with col2:
-            st.write(" ")
+            min_contributor = st.number_input(
+                "Minimum number of contributors per video", value=3, min_value=1
+            )
 
         df = st.session_state.df_scores
 
+        df = df[df["rating_n_contributors"] >= min_contributor]
         df_uploaders = df.groupby(["uploader"]).count()
         df_uploaders = df_uploaders[df_uploaders["video_id"] >= min_videos]
         uploader = df_uploaders.index.values.tolist()
