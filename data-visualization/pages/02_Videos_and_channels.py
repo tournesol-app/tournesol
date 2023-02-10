@@ -32,6 +32,16 @@ def add_sidebar_select_channels():
     if len(selected_uploaders):
         df = df[df["uploader"].isin(selected_uploaders)]
 
+    all_languages = df["language"].unique()
+    selected_languages = st.sidebar.multiselect("Language", all_languages, [])
+    if len(selected_languages):
+        df = df[df["language"].isin(selected_languages)]
+
+    min_contributor = st.sidebar.number_input(
+        "Minimum number of contributors to be included", value=3, min_value=1
+    )
+    df = df[df["rating_n_contributors"] >= min_contributor]
+
     st.session_state.df_scores = df
     st.session_state.all_uploaders = all_uploaders
     st.session_state.selected_uploaders = selected_uploaders
@@ -55,6 +65,40 @@ def add_expander_video_data():
         st.write(df)
 
 
+def add_expander_video_podium():
+
+    with st.expander("Video Podium"):
+
+        df = st.session_state.df_scores
+
+        if df.shape[0] < 3:
+            st.warning("Not enough video to show a podium")
+            return
+
+        selected_crit = st.selectbox("Select a criteria:", CRITERIA)
+
+        df = df.sort_values(by=selected_crit, ascending=False)
+
+        thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
+
+        col1, col2, col3 = st.columns(3)
+
+        col1.markdown(" ")
+        col1.metric("", "2nd")
+        col1.image(thumbnail_url.format(uid=df.iloc[1].loc["video_id"]))
+        col1.markdown(df.iloc[1].loc["name"])
+
+        col2.metric("", "1st")
+        col2.image(thumbnail_url.format(uid=df.iloc[0].loc["video_id"]))
+        col2.markdown(df.iloc[0].loc["name"])
+
+        col3.markdown(" ")
+        col3.markdown(" ")
+        col3.metric("", "3rd")
+        col3.image(thumbnail_url.format(uid=df.iloc[2].loc["video_id"]))
+        col3.markdown(df.iloc[2].loc["name"])
+
+
 def add_expander_avg_values():
 
     with st.expander("Average values by channel"):
@@ -64,19 +108,13 @@ def add_expander_avg_values():
             return
 
         st.markdown("Criteria to be included:")
-        col1, col2 = st.columns(2)
-        with col1:
+        with st.columns(2)[0]:
             min_videos = st.number_input(
                 "Minimum number of videos per channel", value=3, min_value=1
-            )
-        with col2:
-            min_contributor = st.number_input(
-                "Minimum number of contributors per video", value=3, min_value=1
             )
 
         df = st.session_state.df_scores
 
-        df = df[df["rating_n_contributors"] >= min_contributor]
         df_uploaders = df.groupby(["uploader"]).count()
         df_uploaders = df_uploaders[df_uploaders["video_id"] >= min_videos]
         uploader = df_uploaders.index.values.tolist()
@@ -185,6 +223,9 @@ add_sidebar_select_channels()
 
 # Table of video data
 add_expander_video_data()
+
+# Video podium by criteria
+add_expander_video_podium()
 
 # Table of average values by channel
 add_expander_avg_values()
