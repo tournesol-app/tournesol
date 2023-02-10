@@ -1,5 +1,7 @@
 // Youtube doesnt completely load a video page, so content script doesn't lauch correctly without these events
 
+import { millifyViews } from './utils';
+
 // This part is called on connection for the first time on youtube.com/*
 /* ********************************************************************* */
 
@@ -158,7 +160,9 @@ const getTournesolComponent = () => {
 
     const video_views_publication = document.createElement('p');
     video_views_publication.className = 'video_text';
-    video_views_publication.innerHTML = `<strong>${video.metadata.views} &nbsp·&nbsp ${video.metadata.publication_date}</strong>`;
+    video_views_publication.innerHTML = `<strong>${millifyViews(
+      video.metadata.views
+    )} &nbsp·&nbsp ${video.metadata.publication_date}</strong>`;
     details_div.append(video_views_publication);
 
     const video_score = document.createElement('p');
