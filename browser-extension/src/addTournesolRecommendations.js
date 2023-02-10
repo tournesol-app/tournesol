@@ -156,6 +156,11 @@ const getTournesolComponent = () => {
     video_uploader.append(video.metadata.uploader);
     details_div.append(video_uploader);
 
+    const video_views_publication = document.createElement('p');
+    video_views_publication.className = 'video_text';
+    video_views_publication.innerHTML = `<strong>${video.metadata.views} &nbsp·&nbsp ${video.metadata.publication_date}</strong>`;
+    details_div.append(video_views_publication);
+
     const video_score = document.createElement('p');
     video_score.className = 'video_text';
     video_score.innerHTML = `🌻 <strong>${video.tournesol_score.toFixed(
