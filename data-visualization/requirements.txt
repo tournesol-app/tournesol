@@ -6,4 +6,3 @@ pillow==9.3.0
 plotly==5.5.0
 scikit-learn==0.24.2
 requests==2.25.1
-
