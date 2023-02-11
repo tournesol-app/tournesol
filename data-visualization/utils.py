@@ -34,7 +34,7 @@ TCOLOR = [
 MSG_NO_DATA = "You should first load the public dataset at the top of the page."
 
 
-@st.cache
+@st.cache_data
 def set_df(users=[]):
     """Set up the dataframe"""
 
@@ -69,13 +69,11 @@ def get_score(row, crit):
             return item["score"]
 
 
-@st.experimental_memo
+@st.cache_data
 def api_get_tournesol_scores():
     """Get a dataframe with all videos from tournesol.."""
 
-    response = requests.get(
-        f"https://api.tournesol.app/video/?limit=99999&unsafe=true"
-    ).json()
+    response = requests.get(f"https://api.tournesol.app/video/?limit=99999&unsafe=true").json()
 
     df = pd.DataFrame.from_dict(response["results"])
 
