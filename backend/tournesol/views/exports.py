@@ -13,12 +13,14 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
+from tournesol.entities.video import TYPE_VIDEO
 from tournesol.lib.public_dataset import (
     get_comparisons_data,
     get_individual_criteria_scores_data,
     get_users_data,
 )
-from tournesol.models import Comparison, Poll
+from tournesol.models import Comparison, Entity, EntityCriteriaScore, Poll
+from tournesol.models.entity_score import ScoreMode
 from tournesol.models.poll import PROOF_OF_VOTE_KEYWORD
 from tournesol.serializers.comparison import ComparisonSerializer
 from tournesol.utils.cache import cache_page_no_i18n
@@ -125,6 +127,47 @@ def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
             "voting_right": criteria_score.voting_right,
         }
         for criteria_score in criteria_scores
+    )
+
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
+
+
+def write_entity_criteria_scores_file(poll_name: str, write_target) -> None:
+    """
+    Retrieve all criteria scores of entities and write them as CSV in `write_target`, an object
+    supporting the Python file API.
+    """
+    fieldnames = [
+        "video",
+        "criteria",
+        "score",
+        "name",
+        "publication_date",
+        "views",
+        "uploader",
+    ]
+
+    all_metadata = dict(Entity.objects.filter(type=TYPE_VIDEO).values_list("uid", "metadata"))
+
+    criteria_scores = sorted(
+        EntityCriteriaScore.objects
+        .filter(poll__name=poll_name, score_mode=ScoreMode.DEFAULT)
+        .values_list("entity__uid", "criteria", "score")
+    )
+
+    rows = (
+        {
+            "video": uid.split(UID_DELIMITER)[1],
+            "criteria": criteria,
+            "score": score,
+            "name": all_metadata[uid].get("name"),
+            "publication_date": all_metadata[uid].get("publication_date"),
+            "views": all_metadata[uid].get("views"),
+            "uploader": all_metadata[uid].get("uploader"),
+        }
+        for uid, criteria, score in criteria_scores
     )
 
     writer = csv.DictWriter(write_target, fieldnames=fieldnames)
@@ -254,21 +297,26 @@ class ExportPublicAllView(APIView):
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
 
+        default_poll_name = Poll.default_poll().name
         with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             readme_path = "tournesol/resources/export_readme.txt"
             with open(readme_path, "r", encoding="utf-8") as readme_file:
                 zip_file.writestr(f"{zip_root}/README.txt", readme_file.read())
 
             with StringIO() as output:
-                write_public_comparisons_file(Poll.default_poll().name, output)
+                write_public_comparisons_file(default_poll_name, output)
                 zip_file.writestr(f"{zip_root}/comparisons.csv", output.getvalue())
 
             with StringIO() as output:
-                write_public_users_file(Poll.default_poll().name, output)
+                write_public_users_file(default_poll_name, output)
                 zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
 
             with StringIO() as output:
-                write_individual_criteria_scores_file(Poll.default_poll().name, output)
+                write_individual_criteria_scores_file(default_poll_name, output)
                 zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
+
+            with StringIO() as output:
+                write_entity_criteria_scores_file(default_poll_name, output)
+                zip_file.writestr(f"{zip_root}/entities.csv", output.getvalue())
 
         return response
