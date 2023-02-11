@@ -9,7 +9,8 @@ EPSILON = 1e-6  # convergence tolerance
 
 def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
     """
-    Quadratically regularized median
+    Quadratically regularized median.
+    It behaves like a weighted median biased towards 0.
 
     Parameters:
         * `W`: Byzantine resilience parameter.
@@ -30,7 +31,15 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
 
     def L_prime(m: float):
         x_minus_m = x - m
-        return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m ** 2))
+        denominator = np.sqrt(delta_2 + x_minus_m ** 2)
+        # Avoid division by 0 by setting the result of the division
+        # to the sign of x_minus_m (+1 or -1) if the denominator is 0
+        division_result = np.where(
+            denominator > 0,
+            np.divide(x_minus_m, denominator, where=denominator > 0),
+            np.sign(x_minus_m),
+        )
+        return W * m - np.sum(w * division_result)
 
     m_low = -1.0
     while L_prime(m_low) > 0:
@@ -55,6 +64,7 @@ def QrDev(
     """
     Quadratically regularized deviation, between x and their QrMed.
     Can be understood as a measure of polarization.
+    It is like a secure version of the median deviation from the median.
     """
     if qr_med is None:
         qr_med = QrMed(W, w, x, delta)
@@ -71,6 +81,7 @@ def QrUnc(
 ):
     """
     Quadratically regularized uncertainty
+    TODO : search for a better formula for QrUnc if possible
     """
     if isinstance(w, pd.Series):
         w = w.to_numpy()
@@ -92,7 +103,11 @@ def QrUnc(
         return qr_dev
 
     k = (h - W) ** (-1 / 2)
-    return (np.exp(-qr_dev) * qr_dev + np.exp(-k) * k) / (np.exp(-qr_dev) + np.exp(-k))
+
+    # Use LogSumExp with a negative value of alpha to have a smooth minimum instead
+    # of a smooth maximum (c.f. https://github.com/tournesol-app/tournesol/issues/1232).
+    alpha = -1.0
+    return np.maximum(0.0, alpha * np.log(np.exp(alpha * qr_dev) + np.exp(alpha * k)))
 
 
 def Clip(x: np.ndarray, center: float, radius: float):
