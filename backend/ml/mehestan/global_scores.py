@@ -125,9 +125,9 @@ def compute_scaling(
                 )
             ) - s_nqmab
 
-            s = QrMed(1, 1, s_nqmab, delta_s_nqmab)
-            s_nqm.append(s)
-            delta_s_nqm.append(QrUnc(1, 1, 1, s_nqmab, delta_s_nqmab, qr_med=s))
+            s = QrMed(1, 1, s_nqmab - 1, delta_s_nqmab)
+            s_nqm.append(s + 1)
+            delta_s_nqm.append(QrUnc(1, 1, 1, s_nqmab - 1, delta_s_nqmab, qr_med=s))
             s_weights.append(scaling_weights[user_m])
 
         s_weights = np.array(s_weights)

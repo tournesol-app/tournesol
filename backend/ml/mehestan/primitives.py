@@ -92,7 +92,7 @@ def QrUnc(
         return qr_dev
 
     k = (h - W) ** (-1 / 2)
-    return (np.exp(-qr_dev) * qr_dev + np.exp(-k) * k) / (np.exp(-qr_dev) + np.exp(-k))
+    return np.logaddexp(qr_dev, k)
 
 
 def Clip(x: np.ndarray, center: float, radius: float):
