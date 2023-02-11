@@ -32,6 +32,10 @@ TCOLOR = [
 ]
 
 MSG_NO_DATA = "You should first load the public dataset at the top of the page."
+MSG_NOT_ENOUGH_DATA = "Not enough data to show this section with the selected filters."
+
+# URL to get YouTube thumbnail in high quality
+thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
 
 
 @st.cache_data

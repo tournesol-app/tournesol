@@ -3,8 +3,15 @@ import pandas as pd
 import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
-
-from utils import CRITERIA, CRITERI_EXT, MSG_NO_DATA, TCOLOR, api_get_tournesol_scores
+from utils import (
+    CRITERI_EXT,
+    CRITERIA,
+    MSG_NO_DATA,
+    MSG_NOT_ENOUGH_DATA,
+    TCOLOR,
+    api_get_tournesol_scores,
+    thumbnail_url,
+)
 
 st.set_page_config(
     page_title="Tournesol - Videos and channels",
@@ -72,25 +79,22 @@ def add_expander_video_podium():
         df = st.session_state.df_scores
 
         if df.shape[0] < 3:
-            st.warning("Not enough video to show a podium")
+            st.warning(MSG_NOT_ENOUGH_DATA)
             return
 
         selected_crit = st.selectbox("Select a criteria:", CRITERIA)
-
         df = df.sort_values(by=selected_crit, ascending=False)
 
-        thumbnail_url = "https://img.youtube.com/vi/{uid}/hqdefault.jpg"
-
         col1, col2, col3 = st.columns(3)
+
+        col2.metric("", "1st")
+        col2.image(thumbnail_url.format(uid=df.iloc[0].loc["video_id"]))
+        col2.markdown(df.iloc[0].loc["name"])
 
         col1.markdown(" ")
         col1.metric("", "2nd")
         col1.image(thumbnail_url.format(uid=df.iloc[1].loc["video_id"]))
         col1.markdown(df.iloc[1].loc["name"])
-
-        col2.metric("", "1st")
-        col2.image(thumbnail_url.format(uid=df.iloc[0].loc["video_id"]))
-        col2.markdown(df.iloc[0].loc["name"])
 
         col3.markdown(" ")
         col3.markdown(" ")
