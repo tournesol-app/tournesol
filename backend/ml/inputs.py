@@ -41,8 +41,8 @@ class MlInput(ABC):
             * `user_id`: int
             * `entity_id`: int or str
             * `is_public`: bool
-            * `is_trusted`: bool
-            * `is_supertrusted`: bool
+            * `is_scaling_calibration_user`: bool
+            * `trust_score`: float
         """
         raise NotImplementedError
 
@@ -57,9 +57,7 @@ class MlInputFromPublicDataset(MlInput):
             "public_username"
         ].factorize()
 
-    def get_comparisons(
-        self, trusted_only=False, criteria=None, user_id=None
-    ) -> pd.DataFrame:
+    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
         dtf = self.public_dataset.copy(deep=False)
         if criteria is not None:
             dtf = dtf[dtf.criteria == criteria]
@@ -69,35 +67,33 @@ class MlInputFromPublicDataset(MlInput):
 
     @cached_property
     def ratings_properties(self):
-        # TODO support trust_scores from the public dataset
         user_entities_pairs = pd.Series(
             iter(
                 set(self.public_dataset.groupby(["user_id", "entity_a"]).indices.keys())
-                | set(
-                    self.public_dataset.groupby(["user_id", "entity_b"]).indices.keys()
-                )
+                | set(self.public_dataset.groupby(["user_id", "entity_b"]).indices.keys())
             )
         )
         dtf = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
         dtf["is_public"] = True
         top_users = dtf.value_counts("user_id").index[:6]
-        dtf["is_trusted"] = dtf["is_supertrusted"] = dtf["user_id"].isin(top_users)
+        dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(top_users)
+        # TODO read trust_scores from the public dataset
+        dtf["trust_score"] = dtf["is_scaling_calibration_user"] * 0.8
         return dtf
 
 
 class MlInputFromDb(MlInput):
-    SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE = 20
-    MAX_SUPERTRUSTED_USERS = 100
+    SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
+    SCALING_CALIBRATION_MIN_TRUST_SCORE = 0.1
+    MAX_SCALING_CALIBRATION_USERS = 100
 
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
-    def get_supertrusted_users(self) -> QuerySet[User]:
+    def get_scaling_calibration_users(self) -> QuerySet[User]:
         n_alternatives = (
             Entity.objects.filter(comparisons_entity_1__poll__name=self.poll_name)
-            .union(
-                Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name)
-            )
+            .union(Entity.objects.filter(comparisons_entity_2__poll__name=self.poll_name))
             .count()
         )
         users = User.objects.alias(
@@ -114,29 +110,22 @@ class MlInputFromDb(MlInput):
                 (self.poll_name,),
             )
         )
-        if n_alternatives <= self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE:
-            # The number of alternatives is low enough to consider as supertrusted
+        if n_alternatives <= self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE:
+            # The number of alternatives is low enough to consider as calibration users
             # all trusted users who have compared all alternatives.
-            have_compared_all_alternatives = users.filter(
-                n_compared_entities__gte=n_alternatives
+            return users.filter(
+                is_active=True,
+                trust_score__gt=self.SCALING_CALIBRATION_MIN_TRUST_SCORE,
+                n_compared_entities__gte=n_alternatives,
             )
-            return User.with_trusted_email().filter(pk__in=have_compared_all_alternatives)
 
-        n_supertrusted_seed = User.supertrusted_seed_users().count()
-        return User.supertrusted_seed_users().union(
-            users.filter(
-                pk__in=User.with_trusted_email(),
-                n_compared_entities__gte=self.SUPERTRUSTED_MIN_ENTITIES_TO_COMPARE,
-            )
-            .exclude(pk__in=User.supertrusted_seed_users())
-            .order_by("-n_compared_entities")[
-                : self.MAX_SUPERTRUSTED_USERS - n_supertrusted_seed
-            ]
-        )
+        return users.filter(
+            is_active=True,
+            trust_score__gt=self.SCALING_CALIBRATION_MIN_TRUST_SCORE,
+            n_compared_entities__gte=self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE,
+        ).order_by("-n_compared_entities")[: self.MAX_SCALING_CALIBRATION_USERS]
 
-    def get_comparisons(
-        self, trusted_only=False, criteria=None, user_id=None
-    ) -> pd.DataFrame:
+    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll_name
         )
@@ -161,9 +150,7 @@ class MlInputFromDb(MlInput):
         )
         if len(values) > 0:
             dtf = pd.DataFrame(values)
-            return dtf[
-                ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]
-            ]
+            return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
         return pd.DataFrame(
             columns=[
@@ -183,11 +170,8 @@ class MlInputFromDb(MlInput):
                 poll__name=self.poll_name,
             )
             .annotate(
-                is_trusted=Case(
-                    When(user__in=User.with_trusted_email(), then=True), default=False
-                ),
-                is_supertrusted=Case(
-                    When(user__in=self.get_supertrusted_users().values("id"), then=True),
+                is_scaling_calibration_user=Case(
+                    When(user__in=self.get_scaling_calibration_users().values("id"), then=True),
                     default=False,
                 ),
             )
@@ -195,8 +179,7 @@ class MlInputFromDb(MlInput):
                 "user_id",
                 "entity_id",
                 "is_public",
-                "is_trusted",
-                "is_supertrusted",
+                "is_scaling_calibration_user",
                 trust_score=F("user__trust_score"),
             )
         )
@@ -206,8 +189,7 @@ class MlInputFromDb(MlInput):
                     "user_id",
                     "entity_id",
                     "is_public",
-                    "is_trusted",
-                    "is_supertrusted",
+                    "is_scaling_calibration_user",
                     "trust_score",
                 ]
             )
@@ -234,7 +216,7 @@ class MlInputFromDb(MlInput):
             "scale",
             "scale_uncertainty",
             "translation",
-            "translation_uncertainty"
+            "translation_uncertainty",
         )
         if len(values) == 0:
             return pd.DataFrame(
@@ -244,7 +226,7 @@ class MlInputFromDb(MlInput):
                     "scale",
                     "scale_uncertainty",
                     "translation",
-                    "translation_uncertainty"
+                    "translation_uncertainty",
                 ]
             )
         return pd.DataFrame(values)
