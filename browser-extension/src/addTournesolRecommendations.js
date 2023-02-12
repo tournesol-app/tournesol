@@ -156,6 +156,14 @@ const getTournesolComponent = () => {
     video_uploader.append(video.metadata.uploader);
     details_div.append(video_uploader);
 
+        const video_views_publication = document.createElement('p');
+    video_views_publication.className = 'video_text';
+    video_views_publication.innerHTML = `${millifyViews(
+      video.metadata.views
+    )} views &nbsp·&nbsp ${viewPublishedDate(video.metadata.publication_date)}`;
+    details_div.append(video_views_publication);
+
+
     const video_score = document.createElement('p');
     video_score.className = 'video_text';
     video_score.innerHTML = `🌻 <strong>${video.tournesol_score.toFixed(
@@ -256,4 +264,41 @@ function loadRecommandations() {
     },
     handleResponse
   );
+}
+
+function millifyViews(videoViews) {
+  // Intl.NumberFormat object is in-built and enables language-sensitive number formatting
+  return Intl.NumberFormat('en', { notation: 'compact' }).format(videoViews);
+}
+
+function viewPublishedDate(publishedDate) {
+  const date1 = new Date(publishedDate);
+  const date2 = new Date();
+  // we will find the difference in time of today's date and the published date, and will convert it into Days
+  // after calculating no. of days, we classify it into days, weeks, months, years, etc.
+  const diffTime = date2.getTime() - date1.getTime();
+  const diffDays = Math.floor(Math.abs(diffTime / (1000 * 3600 * 24)));
+
+
+  if (diffDays == 0) {
+    return `Today`;
+  } else if (diffDays < 31) {
+    if (diffDays < 14) {
+      return `${diffDays} days ago`;
+    } else {
+      return `${Math.floor(diffDays / 7)} weeks ago`;
+    }
+  } else if (diffDays >= 31 && diffDays < 365) {
+    if (diffDays < 61) {
+      return '1 month ago';
+    } else {
+      return `${Math.floor(diffDays / 30)} months ago`;
+    }
+  } else {
+    if (diffDays < 730) {
+      return '1 year ago';
+    } else {
+      return `${Math.floor(diffDays / 365)} years ago`;
+    }
+  }
 }
