@@ -111,7 +111,6 @@ def add_expander_avg_values():
             st.warning(MSG_NO_DATA)
             return
 
-        st.markdown("Criteria to be included:")
         with st.columns(2)[0]:
             min_videos = st.number_input(
                 "Minimum number of videos per channel", value=3, min_value=1
