@@ -1,0 +1,11 @@
+[Unit]
+Description=Tournesol twitterbot top contributors
+
+[Service]
+Type=oneshot
+User=gunicorn
+Group=gunicorn
+WorkingDirectory=/srv/tournesol-backend
+Environment="SETTINGS_FILE=/etc/tournesol/settings.yaml"
+ExecStart=/usr/bin/bash -c "source venv/bin/activate && python manage.py tweet_top_contributors -y --bot-name '@TournesolBotFR' && python manage.py tweet_top_contributors -y --bot-name '@TournesolBot'"
+ExecStopPost=/usr/bin/bash -c "if [ "$$EXIT_STATUS" != 0 ]; then /usr/local/bin/post-on-discord.sh -c infra_alert -m 'run_twitterbot_top_contributors job failed for {{domain_name}}'; fi"

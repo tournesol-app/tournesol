@@ -245,7 +245,7 @@
     enabled: yes
     daemon_reload: yes
 
-# scheduled task: Twitterbot
+# scheduled task: Twitterbot daily tweet
 
 - name: Copy twitterbot service
   template:
@@ -262,6 +262,25 @@
     name: tournesol-twitterbot.timer
     state: "{{ 'started' if tournesol_twitterbot_schedule is defined else 'stopped' }}"
     enabled: "{{ 'yes' if tournesol_twitterbot_schedule is defined else 'no' }}"
+    daemon_reload: yes
+
+# scheduled task: Twitterbot monthly top contributors tweet
+
+- name: Copy twitterbot top contributors service
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot-top-contributors.service
+    src: tournesol-twitterbot-top-contributors.service.j2
+
+- name: Copy twitterbot top contributor timer
+  template:
+    dest: /etc/systemd/system/tournesol-twitterbot-top-contributors.timer
+    src: tournesol-twitterbot-top-contributors.timer.j2
+
+- name: Enable and start Tournesol twitterbot top contributors timer
+  systemd:
+    name: tournesol-twitterbot-top-contributors.timer
+    state: "{{ 'started' if tournesol_twitterbot_top_contributors_schedule is defined else 'stopped' }}"
+    enabled: "{{ 'yes' if tournesol_twitterbot_top_contributors_schedule is defined else 'no' }}"
     daemon_reload: yes
 
 # scheduled task: Sync Youtube playlists
