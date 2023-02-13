@@ -3,7 +3,6 @@ The public dataset library.
 """
 import csv
 
-
 from django.db.models import QuerySet
 
 from tournesol.entities.base import UID_DELIMITER

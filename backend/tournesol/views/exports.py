@@ -1,8 +1,10 @@
 import csv
-import datetime
+import glob
+import os
 import zipfile
 from io import StringIO
 
+from django.conf import settings
 from django.db.models import Count, F
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -13,11 +15,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
-from tournesol.lib.public_dataset import (
-    write_comparisons_file,
-    write_individual_criteria_scores_file,
-    write_users_file,
-)
+from tournesol.lib.public_dataset import write_comparisons_file
 from tournesol.models import Comparison, Poll
 from tournesol.models.poll import PROOF_OF_VOTE_KEYWORD
 from tournesol.serializers.comparison import ComparisonSerializer
@@ -157,39 +155,25 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
 
 class ExportPublicAllView(APIView):
     """
-    Export the complete public dataset of the default poll in a .zip file.
+    Export the complete public dataset in a .zip file.
     """
 
     throttle_scope = "api_export_comparisons"
     permission_classes = [AllowAny]
 
-    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
         description="Download the complete public dataset of the `videos` poll in a .zip file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
-        now = datetime.datetime.utcnow()
-        zip_root = f"tournesol_export_{now.strftime('%Y%m%dT%H%M%SZ')}"
+        dataset_dir = os.path.join(settings.MEDIA_ROOT, "dataset/*")
+        all_datasets = glob.glob(dataset_dir)
+        latest_dataset = max(all_datasets, key=os.path.getctime)
+
+        with open(latest_dataset, "rb") as f:
+            archive_content = f.read()
 
         response = HttpResponse(content_type="application/zip")
-        response["Content-Disposition"] = f"attachment; filename={zip_root}.zip"
-
-        with zipfile.ZipFile(response, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-            readme_path = "tournesol/resources/export_readme.txt"
-            with open(readme_path, "r", encoding="utf-8") as readme_file:
-                zip_file.writestr(f"{zip_root}/README.txt", readme_file.read())
-
-            with StringIO() as output:
-                write_comparisons_file(Poll.default_poll().name, output)
-                zip_file.writestr(f"{zip_root}/comparisons.csv", output.getvalue())
-
-            with StringIO() as output:
-                write_users_file(Poll.default_poll().name, output)
-                zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
-
-            with StringIO() as output:
-                write_individual_criteria_scores_file(Poll.default_poll().name, output)
-                zip_file.writestr(f"{zip_root}/individual_criteria_scores.csv", output.getvalue())
-
+        response["Content-Disposition"] = f"attachment; filename={os.path.basename(latest_dataset)}.zip"
+        response.content = archive_content
         return response
