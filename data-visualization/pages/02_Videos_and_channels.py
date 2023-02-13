@@ -22,7 +22,7 @@ st.set_page_config(
 
 def add_sidebar_select_channels():
 
-    st.sidebar.title("Select channel(s)")
+    st.sidebar.title("Filters")
 
     st.sidebar.markdown(
         "You can select one or several YouTube channels."
@@ -35,12 +35,12 @@ def add_sidebar_select_channels():
 
     df = st.session_state.df_scores
     all_uploaders = df["uploader"].unique()
-    selected_uploaders = st.sidebar.multiselect("", all_uploaders)
+    selected_uploaders = st.sidebar.multiselect("Channel(s)", all_uploaders)
     if len(selected_uploaders):
         df = df[df["uploader"].isin(selected_uploaders)]
 
     all_languages = df["language"].unique()
-    selected_languages = st.sidebar.multiselect("Language", all_languages, [])
+    selected_languages = st.sidebar.multiselect("Language(s)", all_languages, [])
     if len(selected_languages):
         df = df[df["language"].isin(selected_languages)]
 
@@ -87,18 +87,18 @@ def add_expander_video_podium():
 
         col1, col2, col3 = st.columns(3)
 
-        col2.metric("", "1st")
+        col2.metric("podium_first", "1st", label_visibility="hidden")
         col2.image(thumbnail_url.format(uid=df.iloc[0].loc["video_id"]))
         col2.markdown(df.iloc[0].loc["name"])
 
         col1.markdown(" ")
-        col1.metric("", "2nd")
+        col1.metric("podium_second", "2nd", label_visibility="hidden")
         col1.image(thumbnail_url.format(uid=df.iloc[1].loc["video_id"]))
         col1.markdown(df.iloc[1].loc["name"])
 
         col3.markdown(" ")
         col3.markdown(" ")
-        col3.metric("", "3rd")
+        col3.metric("podium_third", "3rd", label_visibility="hidden")
         col3.image(thumbnail_url.format(uid=df.iloc[2].loc["video_id"]))
         col3.markdown(df.iloc[2].loc["name"])
 
@@ -122,7 +122,7 @@ def add_expander_avg_values():
         df_uploaders = df_uploaders[df_uploaders["video_id"] >= min_videos]
         uploader = df_uploaders.index.values.tolist()
 
-        df_uploader_avg = df.groupby(["uploader"]).mean()
+        df_uploader_avg = df.groupby(["uploader"]).mean(numeric_only=True)
         df_uploader_avg = df_uploader_avg[df_uploader_avg.index.isin(uploader)]
 
         st.write(df_uploader_avg[CRITERI_EXT])
