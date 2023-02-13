@@ -61,7 +61,7 @@ class ExportComparisonsView(APIView):
 
     @extend_schema(
         description="Download all comparisons made in all polls by the logged-in user in a"
-                    " CSV file.",
+        " CSV file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
@@ -82,20 +82,19 @@ class ExportPublicComparisonsView(APIView):
     @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
     @extend_schema(
         description="Download all public comparisons made in the `videos` poll by all users in a"
-                    " CSV file.",
+        " CSV file.",
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
         response = HttpResponse(content_type="text/csv")
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="tournesol_public_export.csv"'
+        response["Content-Disposition"] = 'attachment; filename="tournesol_public_export.csv"'
         write_comparisons_file(Poll.default_poll().name, response)
         return response
 
 
 class ExportAllView(APIView):
     """Export all the logged user's data in a .zip file."""
+
     throttle_scope = "api_users_me_export"
 
     @extend_schema(
@@ -121,6 +120,7 @@ class ExportAllView(APIView):
 
 class ExportProofOfVoteView(PollScopedViewMixin, APIView):
     """Export to the admin all the proofs of vote for a given poll."""
+
     authentication_classes = [SessionAuthentication]  # Auth via Django Admin session
     permission_classes = [IsAdminUser]
 
@@ -131,9 +131,7 @@ class ExportProofOfVoteView(PollScopedViewMixin, APIView):
     def get(self, request, *args, **kwargs):
         poll = self.poll_from_url
         response = HttpResponse(content_type="text/csv")
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="proof_of_vote_{poll.name}.csv"'
+        response["Content-Disposition"] = f'attachment; filename="proof_of_vote_{poll.name}.csv"'
 
         fieldnames = [
             "user_id",
@@ -174,6 +172,8 @@ class ExportPublicAllView(APIView):
             archive_content = f.read()
 
         response = HttpResponse(content_type="application/zip")
-        response["Content-Disposition"] = f"attachment; filename={os.path.basename(latest_dataset)}.zip"
+        response[
+            "Content-Disposition"
+        ] = f"attachment; filename={os.path.basename(latest_dataset)}.zip"
         response.content = archive_content
         return response
