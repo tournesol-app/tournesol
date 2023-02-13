@@ -14,9 +14,9 @@ from rest_framework.views import APIView
 from core.models import User
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.lib.public_dataset import (
-    get_comparisons_data,
-    get_individual_criteria_scores_data,
-    get_users_data,
+    write_comparisons_file,
+    write_individual_criteria_scores_file,
+    write_users_file,
 )
 from tournesol.models import Comparison, Poll
 from tournesol.models.poll import PROOF_OF_VOTE_KEYWORD
@@ -51,85 +51,6 @@ def write_comparisons_file(request, write_target):
         for comparison in serialized_comparisons
         for criteria_score in comparison["criteria_scores"]
     )
-
-
-def write_public_comparisons_file(poll_name: str, write_target) -> None:
-    """
-    Retrieve all public comparisons' data, and write them as CSV in
-    `write_target`, an object supporting the Python file API.
-    """
-    fieldnames = [
-        "public_username",
-        "video_a",
-        "video_b",
-        "criteria",
-        "score",
-    ]
-    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(
-        {
-            "public_username": comparison.username,
-            "video_a": comparison.uid_a.split(UID_DELIMITER)[1],
-            "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
-            "criteria": comparison.criteria,
-            "score": int(round(comparison.score)),
-        }
-        for comparison in get_comparisons_data(poll_name).iterator()
-    )
-
-
-def write_public_users_file(poll_name: str, write_target) -> None:
-    """
-    Retrieve all users present in the public dataset (i.e. with a least
-    one public comparison), and write them as CSV in `write_target`,
-    an object supporting the Python file API.
-    """
-    fieldnames = [
-        "public_username",
-        "trust_score",
-    ]
-    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(
-        {
-            "public_username": user.username,
-            "trust_score": user.trust_score,
-        }
-        for user in get_users_data(poll_name).iterator()
-    )
-
-
-def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
-    """
-    Retrieve all public individual criteria scores, with the related voting
-    rights and write them as CSV in `write_target`, an object supporting the
-    Python file API.
-    """
-    fieldnames = [
-        "public_username",
-        "video",
-        "criteria",
-        "score",
-        "voting_right",
-    ]
-
-    criteria_scores = get_individual_criteria_scores_data(poll_name).iterator()
-
-    rows = (
-        {
-            "public_username": criteria_score.username,
-            "video": criteria_score.uid.split(UID_DELIMITER)[1],
-            "criteria": criteria_score.criteria,
-            "score": criteria_score.score,
-            "voting_right": criteria_score.voting_right,
-        }
-        for criteria_score in criteria_scores
-    )
-
-    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
 
 
 class ExportComparisonsView(APIView):
@@ -171,7 +92,7 @@ class ExportPublicComparisonsView(APIView):
         response[
             "Content-Disposition"
         ] = 'attachment; filename="tournesol_public_export.csv"'
-        write_public_comparisons_file(Poll.default_poll().name, response)
+        write_comparisons_file(Poll.default_poll().name, response)
         return response
 
 
@@ -260,11 +181,11 @@ class ExportPublicAllView(APIView):
                 zip_file.writestr(f"{zip_root}/README.txt", readme_file.read())
 
             with StringIO() as output:
-                write_public_comparisons_file(Poll.default_poll().name, output)
+                write_comparisons_file(Poll.default_poll().name, output)
                 zip_file.writestr(f"{zip_root}/comparisons.csv", output.getvalue())
 
             with StringIO() as output:
-                write_public_users_file(Poll.default_poll().name, output)
+                write_users_file(Poll.default_poll().name, output)
                 zip_file.writestr(f"{zip_root}/users.csv", output.getvalue())
 
             with StringIO() as output:

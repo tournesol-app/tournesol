@@ -1,7 +1,12 @@
 """
 The public dataset library.
 """
+import csv
+
+
 from django.db.models import QuerySet
+
+from tournesol.entities.base import UID_DELIMITER
 
 
 def get_comparisons_data(poll_name: str) -> QuerySet:
@@ -170,3 +175,86 @@ def get_individual_criteria_scores_data(poll_name: str) -> QuerySet:
         """,
         {"poll_name": poll_name},
     )
+
+
+def write_comparisons_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_comparisons_data` as CSV in `write_target`, an
+    object supporting the Python file API.
+    """
+
+    # If we want this function to be generic, the specific video_a and video_b
+    # columns should be renamed entity_a and entity_b.
+    fieldnames = [
+        "public_username",
+        "video_a",
+        "video_b",
+        "criteria",
+        "score",
+    ]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "public_username": comparison.username,
+            "video_a": comparison.uid_a.split(UID_DELIMITER)[1],
+            "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
+            "criteria": comparison.criteria,
+            "score": int(round(comparison.score)),
+        }
+        for comparison in get_comparisons_data(poll_name).iterator()
+    )
+
+
+def write_users_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_users_data` as CSV in `write_target`, an object
+    supporting the Python file API.
+    """
+    fieldnames = [
+        "public_username",
+        "trust_score",
+    ]
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(
+        {
+            "public_username": user.username,
+            "trust_score": user.trust_score,
+        }
+        for user in get_users_data(poll_name).iterator()
+    )
+
+
+def write_individual_criteria_scores_file(poll_name: str, write_target) -> None:
+    """
+    Write the output of `get_individual_criteria_scores_data` as CSV in
+    `write_target`, an object supporting the Python file API.
+    """
+
+    # If we want this function to be generic, the specific video column should
+    # be renamed entity.
+    fieldnames = [
+        "public_username",
+        "video",
+        "criteria",
+        "score",
+        "voting_right",
+    ]
+
+    criteria_scores = get_individual_criteria_scores_data(poll_name).iterator()
+
+    rows = (
+        {
+            "public_username": criteria_score.username,
+            "video": criteria_score.uid.split(UID_DELIMITER)[1],
+            "criteria": criteria_score.criteria,
+            "score": criteria_score.score,
+            "voting_right": criteria_score.voting_right,
+        }
+        for criteria_score in criteria_scores
+    )
+
+    writer = csv.DictWriter(write_target, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
