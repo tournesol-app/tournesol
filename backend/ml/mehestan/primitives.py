@@ -27,19 +27,12 @@ def QrMed(W: float, w: Union[pd.Series, float], x: pd.Series, delta: pd.Series):
         x = x.to_numpy()
     if isinstance(delta, pd.Series):
         delta = delta.to_numpy()
-    delta_2 = delta ** 2
+    # Set a minimum value to prevent divisions by zero in L_prime
+    delta_2 = np.where(delta > 0, delta ** 2, np.spacing(0))
 
     def L_prime(m: float):
         x_minus_m = x - m
-        denominator = np.sqrt(delta_2 + x_minus_m ** 2)
-        # Avoid division by 0 by setting the result of the division
-        # to the sign of x_minus_m (+1 or -1) if the denominator is 0
-        division_result = np.where(
-            denominator > 0,
-            np.divide(x_minus_m, denominator, where=denominator > 0),
-            np.sign(x_minus_m),
-        )
-        return W * m - np.sum(w * division_result)
+        return W * m - np.sum(w * x_minus_m / np.sqrt(delta_2 + x_minus_m ** 2))
 
     m_low = -1.0
     while L_prime(m_low) > 0:
