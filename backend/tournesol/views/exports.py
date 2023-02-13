@@ -25,7 +25,7 @@ from tournesol.utils.cache import cache_page_no_i18n
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
 
-def write_comparisons_file(request, write_target):
+def write_logged_user_comparisons_file(request, write_target):
     """
     Write all user's comparisons as a CSV file to `write_target` which can be
     among other options an HttpResponse or a StringIO.
@@ -69,7 +69,7 @@ class ExportComparisonsView(APIView):
     def get(self, request):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="export.csv"'
-        write_comparisons_file(request, response)
+        write_logged_user_comparisons_file(request, response)
         return response
 
 
@@ -115,7 +115,7 @@ class ExportAllView(APIView):
             # Currently, adds only a single file to the zip archive, but we may extend the
             # content of the export in the future
             with StringIO() as comparisons_file_like:
-                write_comparisons_file(request, comparisons_file_like)
+                write_logged_user_comparisons_file(request, comparisons_file_like)
                 zip_file.writestr(f"{zip_root}/comparisons.csv", comparisons_file_like.getvalue())
 
         return response
