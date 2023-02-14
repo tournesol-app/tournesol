@@ -3,9 +3,11 @@ import io
 import os
 import re
 import shutil
-import tempfile
 import zipfile
+from collections import ChainMap
+from tempfile import gettempdir
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -89,8 +91,12 @@ class ExportTest(TestCase):
         cache.clear()
 
     def tearDown(self) -> None:
+        """
+        Delete the temporary directory created by the call to the mgmt command
+        `create_dataset`.
+        """
         try:
-            shutil.rmtree(os.path.join(tempfile.gettempdir(), "dataset"))
+            shutil.rmtree(os.path.join(gettempdir(), "ts_api_test_dataset"))
         except FileNotFoundError:
             pass
 
@@ -210,11 +216,17 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[1]["video_a"], self.video_public_3.video_id)
         self.assertEqual(comparison_list[1]["video_b"], self.video_public_4.video_id)
 
-    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASET_BUILD_DIR": "ts_api_test_dataset"}, settings.APP_TOURNESOL
+        ),
+    )
     def test_not_authenticated_can_download_all_exports(self):
         # Make sure this user has multiple public comparisons so
         # that we can verify they are only added once in the CSV
         self.add_comparison(user=self.public_comparisons, is_public=True)
+
         call_command("create_dataset")
 
         response = self.client.get("/exports/all/")
@@ -261,7 +273,12 @@ class ExportTest(TestCase):
                 user_row = user_rows[0]
                 self.assertEqual(user_row["trust_score"], "0.5844")
 
-    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASET_BUILD_DIR": "ts_api_test_dataset"}, settings.APP_TOURNESOL
+        ),
+    )
     def test_all_exports_voting_rights(self):
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
 
@@ -365,7 +382,12 @@ class ExportTest(TestCase):
                     self.assertEqual(row["score"], str(expected_export.score))
                     self.assertEqual(row["voting_right"], str(expected_export.voting_right))
 
-    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASET_BUILD_DIR": "ts_api_test_dataset"}, settings.APP_TOURNESOL
+        ),
+    )
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
         first_user = UserFactory(username="a")
