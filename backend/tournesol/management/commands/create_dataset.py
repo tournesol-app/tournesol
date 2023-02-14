@@ -1,5 +1,5 @@
 """
-Create the public dataset.
+Create and save a public dataset archive on the disk.
 """
 import os
 import zipfile
@@ -18,11 +18,12 @@ from tournesol.models.poll import Poll
 
 
 class Command(BaseCommand):
-    help = "Create a public dataset archive."
+    help = "Create and save a public dataset archive on the disk."
 
     def handle(self, *args, **options):
         """
-        Create a public dataset archive.
+        Create a public dataset archive with fresh data retrieved from the
+        database.
 
         The archive is created on the disk at:
             `MEDIA_ROOT/APP_TOURNESOL["DATASET_BUILD_DIR"]`
@@ -41,8 +42,7 @@ class Command(BaseCommand):
         # Only the default poll is exported for the moment.
         poll_name = Poll.default_poll().name
 
-        now = timezone.now()
-        archive_name = f"tournesol_dataset_{now.strftime('%Y%m%dT%H%M%SZ')}"
+        archive_name = f"tournesol_dataset_{timezone.now().strftime('%Y%m%dT%H%M%SZ')}"
         archive_root = os.path.join(dataset_dir, archive_name)
         readme_path = "tournesol/resources/export_readme.txt"
 
