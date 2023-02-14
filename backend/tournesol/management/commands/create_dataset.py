@@ -19,7 +19,7 @@ from tournesol.models.poll import Poll
 
 
 class Command(BaseCommand):
-    help = "Create and save a public dataset archive on the disk, the delete old datasets."
+    help = "Create and save a public dataset archive on the disk, then delete old datasets."
 
     def add_arguments(self, parser):
         parser.add_argument(
