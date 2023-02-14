@@ -2,7 +2,7 @@
 The public dataset library.
 
 This module contains functions to retrieve data from the database and
-shortcuts to write this data in file-like objects.
+shortcuts to write these data in file-like objects.
 """
 import csv
 

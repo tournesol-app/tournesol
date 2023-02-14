@@ -1,6 +1,7 @@
 """
 Create and save a public dataset archive on the disk.
 """
+import glob
 import os
 import zipfile
 from io import StringIO
@@ -18,7 +19,23 @@ from tournesol.models.poll import Poll
 
 
 class Command(BaseCommand):
-    help = "Create and save a public dataset archive on the disk."
+    help = "Create and save a public dataset archive on the disk, the delete old datasets."
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--keep-only",
+            type=int,
+            default=10,
+            help="The number of archives to keep on the disk."
+            " The oldest archives will be deleted. No effect when --keep-all is set.",
+        )
+        parser.add_argument(
+            "--keep-all",
+            action="store_true",
+            default=False,
+            help="Do not remove old archives from the disk."
+            " Ignore the value defined by --keep-only.",
+        )
 
     def handle(self, *args, **options):
         """
@@ -29,6 +46,13 @@ class Command(BaseCommand):
             `MEDIA_ROOT/APP_TOURNESOL["DATASET_BUILD_DIR"]`
         """
         self.stdout.write(f"start command: {__name__}")
+
+        # Display the configuration if more verbosity is asked.
+        if options.get("verbosity", 1) > 1:
+            self.stdout.write(f"MEDIA_ROOT: {settings.MEDIA_ROOT}")
+            self.stdout.write(
+                f"APP_TOURNESOL['DATASET_BUILD_DIR']: {settings.APP_TOURNESOL['DATASET_BUILD_DIR']}"
+            )
 
         dataset_dir = os.path.join(
             settings.MEDIA_ROOT, settings.APP_TOURNESOL["DATASET_BUILD_DIR"]
@@ -46,6 +70,7 @@ class Command(BaseCommand):
         archive_root = os.path.join(dataset_dir, archive_name)
         readme_path = "tournesol/resources/export_readme.txt"
 
+        # BUILDING phase
         with zipfile.ZipFile(archive_root, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             with open(readme_path, "r", encoding="utf-8") as readme_file:
                 zip_file.writestr(f"{archive_name}/README.txt", readme_file.read())
@@ -71,5 +96,17 @@ class Command(BaseCommand):
                 self.stdout.write("- individual_criteria_scores.csv written.")
 
         self.stdout.write(self.style.SUCCESS(f"archive created at {archive_root}"))
+
+        # CLEANING phase
+        if options["keep_all"]:
+            self.stdout.write("the option --keep-all is set, old datasets won't be deleted")
+        else:
+            all_datasets = glob.glob(f"{dataset_dir}/*")
+            all_datasets.sort(key=os.path.getctime, reverse=True)
+
+            for old_dataset in all_datasets[options["keep_only"]:]:
+                os.remove(old_dataset)
+                self.stdout.write(f"deleted old {old_dataset}")
+
         self.stdout.write(self.style.SUCCESS("success"))
         self.stdout.write("end")
