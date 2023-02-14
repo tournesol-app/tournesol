@@ -54,6 +54,20 @@ describe('Comparison page', () => {
     })
   });
 
+  it("doesn't break the browser's back button", () => {
+    cy.visit('/comparison');
+    cy.focused().type('user1');
+    cy.get('input[name="password"]').click().type('tournesol').type('{enter}');
+    cy.get('input[placeholder="Paste URL or Video ID"]').should('have.length', 2);
+
+    cy.visit('/');
+    cy.location('pathname').should('equal', '/');
+    cy.contains('Compare').click();
+    waitForAutoFill();
+    cy.go('back');
+    cy.location('pathname').should('equal', '/');
+  });
+
   describe('video selectors', () => {
     const videoAUrl = 'https://www.youtube.com/watch?v=u83A7DUNMHs';
 
