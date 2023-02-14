@@ -156,13 +156,12 @@ const getTournesolComponent = () => {
     video_uploader.append(video.metadata.uploader);
     details_div.append(video_uploader);
 
-        const video_views_publication = document.createElement('p');
+    const video_views_publication = document.createElement('p');
     video_views_publication.className = 'video_text';
     video_views_publication.innerHTML = `${millifyViews(
       video.metadata.views
-    )} views &nbsp·&nbsp ${viewPublishedDate(video.metadata.publication_date)}`;
+    )} views &nbsp•&nbsp ${viewPublishedDate(video.metadata.publication_date)}`;
     details_div.append(video_views_publication);
-
 
     const video_score = document.createElement('p');
     video_score.className = 'video_text';
@@ -279,16 +278,22 @@ function viewPublishedDate(publishedDate) {
   const diffTime = date2.getTime() - date1.getTime();
   const diffDays = Math.floor(Math.abs(diffTime / (1000 * 3600 * 24)));
 
+  if (diffDays < 0) {
+    //in case the local machine UTC time is less than the published date
+    return '';
+  }
 
   if (diffDays == 0) {
-    return `Today`;
+    return 'Today';
+  } else if (diffDays == 1) {
+    return 'Yesterday';
   } else if (diffDays < 31) {
     if (diffDays < 14) {
       return `${diffDays} days ago`;
     } else {
       return `${Math.floor(diffDays / 7)} weeks ago`;
     }
-  } else if (diffDays >= 31 && diffDays < 365) {
+  } else if (diffDays < 365) {
     if (diffDays < 61) {
       return '1 month ago';
     } else {
