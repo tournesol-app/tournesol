@@ -26,7 +26,7 @@ class Command(BaseCommand):
             "--keep-only",
             type=int,
             default=10,
-            help="The number of archives to keep on the disk."
+            help="The number of archives to keep on the disk (default 10)."
             " The oldest archives will be deleted. No effect when --keep-all is set.",
         )
         parser.add_argument(
