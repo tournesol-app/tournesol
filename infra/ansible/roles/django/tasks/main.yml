@@ -130,6 +130,14 @@
     src: gunicorn.socket
     dest: /etc/systemd/system/gunicorn.socket
 
+- name: Create Django media directory
+  file:
+    path: /var/www/html/media
+    owner: gunicorn
+    group: gunicorn
+    mode: u=rwx,g=rx,o=rx
+    state: directory
+
 - name: Create static assets directory
   file:
     path: /var/www/html/static
@@ -184,6 +192,25 @@
 - name: Enable and start ML training timer
   systemd:
     name: ml-train.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# scheduled task: create dataset
+
+- name: Copy Tournesol API create dataset service
+  template:
+    dest: /etc/systemd/system/tournesol-api-create-dataset.service
+    src: tournesol-api-create-dataset.service.j2
+
+- name: Copy Tournesol API create dataset timer
+  template:
+    dest: /etc/systemd/system/tournesol-api-create-dataset.timer
+    src: tournesol-api-create-dataset.timer.j2
+
+- name: Enable and start Tournesol API create dataset timer
+  systemd:
+    name: tournesol-api-create-dataset.timer
     state: started
     enabled: yes
     daemon_reload: yes
