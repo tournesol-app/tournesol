@@ -125,7 +125,7 @@ class ExportTest(TestCase):
     def extract_export_root(self, response):
         content_disposition = response.headers["Content-Disposition"]
         match = re.search(
-            "attachment; filename=(tournesol_dataset_\\d{8}T\\d{6}Z).zip",
+            "attachment; filename=(tournesol_dataset_\\d{8}).zip",
             content_disposition,
         )
         self.assertIsNotNone(match)

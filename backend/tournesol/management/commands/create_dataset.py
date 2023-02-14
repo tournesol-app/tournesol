@@ -51,7 +51,8 @@ class Command(BaseCommand):
         if options.get("verbosity", 1) > 1:
             self.stdout.write(f"MEDIA_ROOT: {settings.MEDIA_ROOT}")
             self.stdout.write(
-                f"APP_TOURNESOL['DATASETS_BUILD_DIR']: {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
+                "APP_TOURNESOL['DATASETS_BUILD_DIR']:"
+                f" {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
             )
 
         datasets_dir = os.path.join(
@@ -66,7 +67,7 @@ class Command(BaseCommand):
         # Only the default poll is exported for the moment.
         poll_name = Poll.default_poll().name
 
-        archive_name = f"tournesol_dataset_{timezone.now().strftime('%Y%m%dT%H%M%SZ')}"
+        archive_name = f"tournesol_dataset_{timezone.now().strftime('%Y%m%d')}"
         archive_root = os.path.join(datasets_dir, archive_name)
         readme_path = "tournesol/resources/export_readme.txt"
 
