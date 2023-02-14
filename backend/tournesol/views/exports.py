@@ -169,8 +169,8 @@ class ExportPublicAllView(APIView):
         all_datasets = glob.glob(dataset_path)
         latest_dataset = max(all_datasets, key=os.path.getctime)
 
-        with open(latest_dataset, "rb") as f:
-            archive_content = f.read()
+        with open(latest_dataset, "rb") as archive:
+            archive_content = archive.read()
 
         response = HttpResponse(content_type="application/zip")
         response[
