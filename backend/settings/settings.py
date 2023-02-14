@@ -412,3 +412,10 @@ APP_CORE = {
             datetime.timedelta(days=7)
         )
 }
+
+# Configuration of the app `tournesol`
+APP_TOURNESOL = {
+    # The mgmt command create_dataset will save the dataset in
+    # `MEDIA_ROOT/DATASET_BUILD_DIR`.
+    "DATASET_BUILD_DIR": "dataset",
+}

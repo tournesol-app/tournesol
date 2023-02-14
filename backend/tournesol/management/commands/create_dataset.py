@@ -18,16 +18,23 @@ from tournesol.models.poll import Poll
 
 
 class Command(BaseCommand):
-    help = "Create the public dataset archive."
+    help = "Create a public dataset archive."
 
     def handle(self, *args, **options):
+        """
+        Create a public dataset archive.
+
+        The archive is created on the disk at:
+            `MEDIA_ROOT/APP_TOURNESOL["DATASET_BUILD_DIR"]`
+        """
         self.stdout.write(f"start command: {__name__}")
 
-        # TODO: create a setting
-        DATASET_DIR = os.path.join(settings.MEDIA_ROOT, "dataset")
+        dataset_dir = os.path.join(
+            settings.MEDIA_ROOT, settings.APP_TOURNESOL["DATASET_BUILD_DIR"]
+        )
 
         try:
-            os.makedirs(DATASET_DIR)
+            os.makedirs(dataset_dir)
         except FileExistsError:
             pass
 
@@ -36,7 +43,7 @@ class Command(BaseCommand):
 
         now = timezone.now()
         archive_name = f"tournesol_dataset_{now.strftime('%Y%m%dT%H%M%SZ')}"
-        archive_root = os.path.join(DATASET_DIR, archive_name)
+        archive_root = os.path.join(dataset_dir, archive_name)
         readme_path = "tournesol/resources/export_readme.txt"
 
         with zipfile.ZipFile(archive_root, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:

@@ -164,8 +164,9 @@ class ExportPublicAllView(APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
-        dataset_dir = os.path.join(settings.MEDIA_ROOT, "dataset/*")
-        all_datasets = glob.glob(dataset_dir)
+        dataset_dir = settings.APP_TOURNESOL["DATASET_BUILD_DIR"]
+        dataset_path = os.path.join(settings.MEDIA_ROOT, f"{dataset_dir}/*")
+        all_datasets = glob.glob(dataset_path)
         latest_dataset = max(all_datasets, key=os.path.getctime)
 
         with open(latest_dataset, "rb") as f:
