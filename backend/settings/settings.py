@@ -415,7 +415,7 @@ APP_CORE = {
 
 # Configuration of the app `tournesol`
 APP_TOURNESOL = {
-    # The mgmt command create_dataset will save the dataset in
-    # `MEDIA_ROOT/DATASET_BUILD_DIR`.
-    "DATASET_BUILD_DIR": "dataset",
+    # The mgmt command create_dataset will create the datasets in
+    # `MEDIA_ROOT/DATASETS_BUILD_DIR`.
+    "DATASETS_BUILD_DIR": "datasets",
 }

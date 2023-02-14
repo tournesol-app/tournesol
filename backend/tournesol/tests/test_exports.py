@@ -96,7 +96,7 @@ class ExportTest(TestCase):
         `create_dataset`.
         """
         try:
-            shutil.rmtree(os.path.join(gettempdir(), "ts_api_test_dataset"))
+            shutil.rmtree(os.path.join(gettempdir(), "ts_api_test_datasets"))
         except FileNotFoundError:
             pass
 
@@ -219,7 +219,7 @@ class ExportTest(TestCase):
     @override_settings(
         MEDIA_ROOT=gettempdir(),
         APP_TOURNESOL=ChainMap(
-            {"DATASET_BUILD_DIR": "ts_api_test_dataset"}, settings.APP_TOURNESOL
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
         ),
     )
     def test_not_authenticated_can_download_all_exports(self):
@@ -276,7 +276,7 @@ class ExportTest(TestCase):
     @override_settings(
         MEDIA_ROOT=gettempdir(),
         APP_TOURNESOL=ChainMap(
-            {"DATASET_BUILD_DIR": "ts_api_test_dataset"}, settings.APP_TOURNESOL
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
         ),
     )
     def test_all_exports_voting_rights(self):
@@ -385,7 +385,7 @@ class ExportTest(TestCase):
     @override_settings(
         MEDIA_ROOT=gettempdir(),
         APP_TOURNESOL=ChainMap(
-            {"DATASET_BUILD_DIR": "ts_api_test_dataset"}, settings.APP_TOURNESOL
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
         ),
     )
     def test_all_export_sorts_by_username(self):
