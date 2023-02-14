@@ -227,10 +227,11 @@ class ExportTest(TestCase):
         with zipfile.ZipFile(zip_content, "r") as zip_file:
             expected_files = [
                 root + "/README.txt",
-                root + "/comparisons.csv",
                 root + "/users.csv",
+                root + "/comparisons.csv",
                 root + "/individual_criteria_scores.csv",
             ]
+
             self.assertEqual(zip_file.namelist(), expected_files)
 
             with zip_file.open(root + "/README.txt", "r") as file:
