@@ -8,7 +8,11 @@ import { VolunteerActivism } from '@mui/icons-material';
 
 import SectionTitle from './SectionTitle';
 
-const FundingSection = () => {
+interface FundingSectionLink {
+  linkToSupportPage?: boolean;
+}
+
+const FundingSection = ({ linkToSupportPage = true }: FundingSectionLink) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -105,17 +109,19 @@ const FundingSection = () => {
             </Box>
           </Paper>
         </Grid2>
-        <Grid2 xs={9} display="flex" justifyContent="center">
-          <Button
-            variant="contained"
-            size="large"
-            component={Link}
-            to="/about/donate"
-            endIcon={<VolunteerActivism />}
-          >
-            {t('fundingSection.iSupport')}
-          </Button>
-        </Grid2>
+        {linkToSupportPage && (
+          <Grid2 xs={9} display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              size="large"
+              component={Link}
+              to="/about/donate"
+              endIcon={<VolunteerActivism />}
+            >
+              {t('fundingSection.iSupport')}
+            </Button>
+          </Grid2>
+        )}
       </Grid2>
     </>
   );

@@ -4,6 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Typography, Link } from '@mui/material';
 
 import { ContentHeader } from 'src/components';
+import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import {
   discordTournesolInviteUrl,
   githubTournesolUrl,
@@ -45,6 +46,7 @@ const DonatePage = () => {
   return (
     <>
       <ContentHeader title="About > Donate" />
+      <FundingSection linkToSupportPage={false} />
       <div className={classes.root}>
         <div className={classes.content}>
           <Typography paragraph>
