@@ -415,6 +415,9 @@ APP_CORE = {
 
 # Configuration of the app `tournesol`
 APP_TOURNESOL = {
+    # The created datasets will use this name, and the creation date will be
+    # appened.
+    "DATASET_BASE_NAME": "tournesol_dataset_",
     # The mgmt command create_dataset will create the datasets in
     # `MEDIA_ROOT/DATASETS_BUILD_DIR`.
     "DATASETS_BUILD_DIR": "datasets",

@@ -1,8 +1,8 @@
 import csv
-import glob
-import os
 import zipfile
 from io import StringIO
+from os.path import getctime
+from pathlib import Path
 
 from django.conf import settings
 from django.db.models import Count, F
@@ -164,10 +164,13 @@ class ExportPublicAllView(APIView):
         responses={200: OpenApiTypes.BINARY},
     )
     def get(self, request):
-        dataset_dir = settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
-        dataset_path = os.path.join(settings.MEDIA_ROOT, f"{dataset_dir}/*")
-        all_datasets = glob.glob(dataset_path)
-        latest_dataset = max(all_datasets, key=os.path.getctime)
+        dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
+        datasets_build_dir = Path(settings.MEDIA_ROOT).joinpath(
+            settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
+        )
+
+        all_datasets = datasets_build_dir.glob(f"{dataset_base_name}*")
+        latest_dataset = max(all_datasets, key=getctime)
 
         with open(latest_dataset, "rb") as archive:
             archive_content = archive.read()
@@ -175,6 +178,6 @@ class ExportPublicAllView(APIView):
         response = HttpResponse(content_type="application/zip")
         response[
             "Content-Disposition"
-        ] = f"attachment; filename={os.path.basename(latest_dataset)}.zip"
+        ] = f"attachment; filename={latest_dataset.name}.zip"
         response.content = archive_content
         return response

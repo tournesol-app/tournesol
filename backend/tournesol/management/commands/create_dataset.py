@@ -17,8 +17,6 @@ from tournesol.lib.public_dataset import (
 )
 from tournesol.models.poll import Poll
 
-DATASET_BASE_NAME = "tournesol_dataset_"
-
 
 class Command(BaseCommand):
     help = "Create and save a public dataset archive on the disk, then delete old datasets."
@@ -57,16 +55,17 @@ class Command(BaseCommand):
                 f" {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
             )
 
-        datasets_dir = Path(settings.MEDIA_ROOT).joinpath(
+        dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
+        datasets_build_dir = Path(settings.MEDIA_ROOT).joinpath(
             settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
         )
-        datasets_dir.mkdir(parents=True, exist_ok=True)
+        datasets_build_dir.mkdir(parents=True, exist_ok=True)
 
         # Only the default poll is exported for the moment.
         poll_name = Poll.default_poll().name
 
-        archive_name = f"{DATASET_BASE_NAME}{timezone.now().strftime('%Y%m%d')}"
-        archive_root = datasets_dir.joinpath(archive_name)
+        archive_name = f"{dataset_base_name}{timezone.now().strftime('%Y%m%d')}"
+        archive_root = datasets_build_dir.joinpath(archive_name)
         readme_path = "tournesol/resources/export_readme.txt"
 
         # BUILDING phase
@@ -100,7 +99,7 @@ class Command(BaseCommand):
         if options["keep_all"]:
             self.stdout.write("the option --keep-all is set, old datasets won't be deleted")
         else:
-            all_datasets = list(datasets_dir.glob(f"{DATASET_BASE_NAME}*"))
+            all_datasets = list(datasets_build_dir.glob(f"{dataset_base_name}*"))
             all_datasets.sort(key=getctime, reverse=True)
 
             for old_dataset in all_datasets[options["keep_only"]:]:
