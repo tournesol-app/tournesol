@@ -12,7 +12,8 @@ def get_user_cnt_per_email_domain(
     since: datetime.datetime, status: str = "ACK", n_account: int = 1
 ) -> RawQuerySet:
     """
-    Return the email domain with the number of account created `since` date with at least `n_account`.
+    Return the email domain with the number of account created `since` date with atleast
+    `n_account`.
 
     Keyword arguments:
 
@@ -31,7 +32,7 @@ def get_user_cnt_per_email_domain(
             e.domain,
             count(*) as cnt
         FROM core_emaildomain AS e
-        INNER JOIN (SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2') 
+        INNER JOIN (SELECT *, regexp_replace("email", '(.*)(@.*$)', '\\2')
         AS user_domain FROM core_user) AS u
         ON e.domain=u.user_domain
         WHERE u.date_joined >= %(since)s
