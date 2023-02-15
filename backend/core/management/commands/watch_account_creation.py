@@ -7,6 +7,7 @@ from core.lib.discord.api import write_in_channel
 from core.utils.email_domain import get_user_cnt_per_email_domain
 from core.utils.time import time_ago
 
+
 class Command(BaseCommand):
     help = "Alert when a certain of accounts are created with the same trusted mail domain."
 
@@ -37,10 +38,10 @@ class Command(BaseCommand):
             created_after, "ACK", options["n_account"]
         )
 
-        for d in email_domains_alert_qs:
+        for domain in email_domains_alert_qs:
 
-            msg = (f"{d.cnt} accounts created an account with '{d.domain}' email domain"
-                   f" in the last {options['since_n_hours']} hour(s)")
+            msg = (f"{domain.cnt} accounts created an account with '{domain.domain}' "
+                   f"email domain in the last {options['since_n_hours']} hour(s)")
             self.stdout.write(msg)
 
             # Post the alert on Discord
