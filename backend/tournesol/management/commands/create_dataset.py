@@ -1,10 +1,10 @@
 """
 Create and save a public dataset archive on the disk.
 """
-import glob
-import os
 import zipfile
 from io import StringIO
+from os.path import getctime
+from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -16,6 +16,8 @@ from tournesol.lib.public_dataset import (
     write_users_file,
 )
 from tournesol.models.poll import Poll
+
+DATASET_BASE_NAME = "tournesol_dataset_"
 
 
 class Command(BaseCommand):
@@ -55,20 +57,16 @@ class Command(BaseCommand):
                 f" {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
             )
 
-        datasets_dir = os.path.join(
-            settings.MEDIA_ROOT, settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
+        datasets_dir = Path(settings.MEDIA_ROOT).joinpath(
+            settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
         )
-
-        try:
-            os.makedirs(datasets_dir)
-        except FileExistsError:
-            pass
+        datasets_dir.mkdir(parents=True, exist_ok=True)
 
         # Only the default poll is exported for the moment.
         poll_name = Poll.default_poll().name
 
-        archive_name = f"tournesol_dataset_{timezone.now().strftime('%Y%m%d')}"
-        archive_root = os.path.join(datasets_dir, archive_name)
+        archive_name = f"{DATASET_BASE_NAME}{timezone.now().strftime('%Y%m%d')}"
+        archive_root = datasets_dir.joinpath(archive_name)
         readme_path = "tournesol/resources/export_readme.txt"
 
         # BUILDING phase
@@ -102,8 +100,8 @@ class Command(BaseCommand):
         if options["keep_all"]:
             self.stdout.write("the option --keep-all is set, old datasets won't be deleted")
         else:
-            all_datasets = glob.glob(f"{datasets_dir}/*")
-            all_datasets.sort(key=os.path.getctime, reverse=True)
+            all_datasets = list(datasets_dir.glob(f"{DATASET_BASE_NAME}*"))
+            all_datasets.sort(key=getctime, reverse=True)
 
             for old_dataset in all_datasets[options["keep_only"]:]:
                 os.remove(old_dataset)
