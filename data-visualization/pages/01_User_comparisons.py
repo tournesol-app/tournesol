@@ -30,7 +30,7 @@ def add_sidebar_select_user():
 
     df = st.session_state.df
     all_users = df["public_username"].unique()
-    selected_users = st.sidebar.multiselect("", all_users)
+    selected_users = st.sidebar.multiselect("selected_users", all_users, label_visibility="hidden")
     if len(selected_users):
         df = df[df["public_username"].isin(selected_users)]
     st.session_state.df = df
