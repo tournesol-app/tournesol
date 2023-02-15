@@ -104,7 +104,7 @@ class Command(BaseCommand):
             all_datasets.sort(key=getctime, reverse=True)
 
             for old_dataset in all_datasets[options["keep_only"]:]:
-                os.remove(old_dataset)
+                old_dataset.unlink()
                 self.stdout.write(f"deleted old {old_dataset}")
 
         self.stdout.write(self.style.SUCCESS("success"))
