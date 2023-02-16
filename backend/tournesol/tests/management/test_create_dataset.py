@@ -68,11 +68,11 @@ class CreateDatasetTestCase(TestCase):
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
         datasets_dir.mkdir()
 
-        for num in range(20):
+        for num in range(12):
             datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
 
         datasets = list(datasets_dir.iterdir())
-        self.assertEqual(len(datasets), 20)
+        self.assertEqual(len(datasets), 12)
 
         call_command("create_dataset", stdout=output)
         archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
@@ -86,7 +86,7 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 10)
 
         # The deleted archives should appear in the logs.
-        self.assertEqual(output_str.count("deleted old"), 11)
+        self.assertEqual(output_str.count("deleted old"), 3)
         self.assertIn("success", output_str)
 
     def test_cmd_keep_only_option(self):
@@ -130,11 +130,11 @@ class CreateDatasetTestCase(TestCase):
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
         datasets_dir.mkdir()
 
-        for num in range(20):
+        for num in range(11):
             datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
 
         datasets = list(datasets_dir.iterdir())
-        self.assertEqual(len(datasets), 20)
+        self.assertEqual(len(datasets), 11)
 
         call_command("create_dataset", keep_all=True, stdout=output)
         archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
@@ -145,7 +145,7 @@ class CreateDatasetTestCase(TestCase):
 
         # 10 datasets should have been kept by default
         datasets = list(datasets_dir.iterdir())
-        self.assertEqual(len(datasets), 21)
+        self.assertEqual(len(datasets), 12)
 
         # The option --keep-all should appear in the logs.
         self.assertIn("the option --keep-all is set, old datasets won't be deleted", output_str)
