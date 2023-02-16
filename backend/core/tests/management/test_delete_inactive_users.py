@@ -2,10 +2,10 @@ from io import StringIO
 
 from django.core.management import call_command
 from django.test import TestCase
-from core.utils.time import time_ago
 
 from core.models.user import User
 from core.tests.factories.user import UserFactory
+from core.utils.time import time_ago
 
 
 class DeleteInactiveUsersTestCase(TestCase):
