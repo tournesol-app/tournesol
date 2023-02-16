@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 import seaborn as sns
 import streamlit as st
 from sklearn.linear_model import LinearRegression
-
 from utils import CRITERIA, MSG_NO_DATA, TCOLOR, get_unique_video_list, set_df
 
 st.set_page_config(
@@ -30,7 +29,7 @@ def add_sidebar_select_user():
 
     df = st.session_state.df
     all_users = df["public_username"].unique()
-    selected_users = st.sidebar.multiselect("", all_users)
+    selected_users = st.sidebar.multiselect("selected_users", all_users, label_visibility="hidden")
     if len(selected_users):
         df = df[df["public_username"].isin(selected_users)]
     st.session_state.df = df
