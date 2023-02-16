@@ -11,7 +11,7 @@ def time_ago(**kwargs):
     return timezone.now() - timedelta(**kwargs)
 
 
-def time_ahead(**kwargs):
+def time_ahead(**kwargs) -> datetime:
     """
     Return a `datetime` in the future relative to now.
 
