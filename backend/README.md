@@ -50,13 +50,16 @@ Django application; and how to install and configure a PostgreSQL server.
   [Linux](https://www.postgresqltutorial.com/install-postgresql-linux/)).
 
 - Create a config file named `settings-tournesol.yaml`. You can find an
-  [example](backend/documentation/settings-tournesol.yaml) in documentation
+  [example](documentation/settings-tournesol.yaml) in documentation
   folder. You can put this file in different locations:
     - `/etc/tournesol/settings-tournesol.yaml` (linux),
     - Anywhere but add the `path/to/file` in SETTINGS_FILE environment
       variable,
     - Anywhere but add the `path/to/file` in SETTINGS_FILE variable `.env`
       file.
+  
+- Add in the file `settings-tournesol.yaml`, custom values for the variable `CORS_ALLOWED_ORIGINS` 
+according to your environment. Example in `dev-env/settings-tournesol.yaml`
 
 - Create a python env and install the requirements
   `pip install -r requirements.txt`
