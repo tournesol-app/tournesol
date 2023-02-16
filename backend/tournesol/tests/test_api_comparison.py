@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from core.utils.time import time_ago
+from core.utils.time import time_ago, time_ahead
 from tournesol.models import (
     Comparison,
     ContributorRatingCriteriaScore,
@@ -96,7 +96,7 @@ class ComparisonApiTestCase(TestCase):
                 entity_1=self.videos[0],
                 entity_2=self.videos[3],
                 duration_ms=104,
-                datetime_lastedit=now + datetime.timedelta(minutes=1),
+                datetime_lastedit=time_ahead(minutes=1),
             ),
             # "other" will have the comparisons: 03 / 02 and 03 / 04
             ComparisonFactory(
@@ -104,14 +104,14 @@ class ComparisonApiTestCase(TestCase):
                 entity_1=self.videos[2],
                 entity_2=self.videos[1],
                 duration_ms=302,
-                datetime_lastedit=now + datetime.timedelta(minutes=3),
+                datetime_lastedit=time_ahead(minutes=3),
             ),
             ComparisonFactory(
                 user=self.other,
                 entity_1=self.videos[2],
                 entity_2=self.videos[3],
                 duration_ms=304,
-                datetime_lastedit=now + datetime.timedelta(minutes=2),
+                datetime_lastedit=time_ahead(minutes=2),
             ),
         ]
 
