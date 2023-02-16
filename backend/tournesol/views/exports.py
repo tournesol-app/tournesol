@@ -170,7 +170,7 @@ class ExportPublicAllView(APIView):
             settings.APP_TOURNESOL["DATASETS_BUILD_DIR"]
         )
 
-        all_datasets = datasets_build_dir.glob(f"{dataset_base_name}*")
+        all_datasets = datasets_build_dir.glob(f"{dataset_base_name}*.zip")
 
         try:
             latest_dataset = max(all_datasets, key=getctime)
