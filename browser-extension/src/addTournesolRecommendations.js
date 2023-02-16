@@ -276,12 +276,12 @@ function viewPublishedDate(publishedDate) {
   // we will find the difference in time of today's date and the published date, and will convert it into Days
   // after calculating no. of days, we classify it into days, weeks, months, years, etc.
   const diffTime = date2.getTime() - date1.getTime();
-  const diffDays = Math.floor(Math.abs(diffTime / (1000 * 3600 * 24)));
 
-  if (diffDays < 0) {
+  if (diffTime < 0) {
     //in case the local machine UTC time is less than the published date
     return '';
   }
+  const diffDays = Math.floor(Math.abs(diffTime / (1000 * 3600 * 24)));
 
   if (diffDays == 0) {
     return 'Today';
