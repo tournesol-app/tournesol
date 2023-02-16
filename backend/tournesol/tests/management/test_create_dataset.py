@@ -15,10 +15,10 @@ from django.utils import timezone
     APP_TOURNESOL=ChainMap({"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL),
 )
 class CreateDatasetTestCase(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.dataset_base_name = settings.APP_TOURNESOL["DATASET_BASE_NAME"]
 
-    def tearDown(self) -> None:
+    def tearDown(self):
         """
         Delete the temporary directory created by the call to the mgmt command
         `create_dataset`.
@@ -50,7 +50,7 @@ class CreateDatasetTestCase(TestCase):
         self.assertTrue(datasets_dir.exists())
         # Exactly one dataset has been created.
         self.assertEqual(len(datasets), 1)
-        # Its name matches the expected format.
+        # The dataset should have been created with the expected name.
         self.assertEqual(datasets[0].name, f"{self.dataset_base_name}{today}")
 
         # The archive path should appear in the logs.
@@ -66,6 +66,7 @@ class CreateDatasetTestCase(TestCase):
         TODO: check that the deleted files are the oldest
         """
         output = StringIO()
+        today = timezone.localdate().strftime("%Y%m%d")
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
         datasets_dir.mkdir()
 
@@ -76,7 +77,11 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 20)
 
         call_command("create_dataset", stdout=output)
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
         output_str = output.getvalue()
+
+        # The new dataset should have been created.
+        self.assertTrue(archive_path.exists())
 
         # 10 datasets should have been kept by default
         datasets = list(datasets_dir.iterdir())
@@ -94,6 +99,7 @@ class CreateDatasetTestCase(TestCase):
         TODO: check that the deleted files are the oldest
         """
         output = StringIO()
+        today = timezone.localdate().strftime("%Y%m%d")
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
         datasets_dir.mkdir()
 
@@ -104,7 +110,11 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 10)
 
         call_command("create_dataset", keep_only=4, stdout=output)
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
         output_str = output.getvalue()
+
+        # The new dataset should have been created.
+        self.assertTrue(archive_path.exists())
 
         # 10 datasets should have been kept by default
         datasets = list(datasets_dir.iterdir())
@@ -120,6 +130,7 @@ class CreateDatasetTestCase(TestCase):
         remove any file in the `DATASETS_BUILD_DIR`.
         """
         output = StringIO()
+        today = timezone.localdate().strftime("%Y%m%d")
         datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
         datasets_dir.mkdir()
 
@@ -130,7 +141,11 @@ class CreateDatasetTestCase(TestCase):
         self.assertEqual(len(datasets), 20)
 
         call_command("create_dataset", keep_all=True, stdout=output)
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
         output_str = output.getvalue()
+
+        # The new dataset should have been created.
+        self.assertTrue(archive_path.exists())
 
         # 10 datasets should have been kept by default
         datasets = list(datasets_dir.iterdir())
