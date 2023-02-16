@@ -183,6 +183,6 @@ class ExportPublicAllView(APIView):
         response = HttpResponse(content_type="application/zip")
         response[
             "Content-Disposition"
-        ] = f"attachment; filename={latest_dataset.name}.zip"
+        ] = f"attachment; filename={latest_dataset.name}"
         response.content = archive_content
         return response

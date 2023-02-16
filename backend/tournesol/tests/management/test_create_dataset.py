@@ -51,7 +51,7 @@ class CreateDatasetTestCase(TestCase):
         # Exactly one dataset has been created.
         self.assertEqual(len(datasets), 1)
         # The dataset should have been created with the expected name.
-        self.assertEqual(datasets[0].name, f"{self.dataset_base_name}{today}")
+        self.assertEqual(datasets[0].name, f"{self.dataset_base_name}{today}.zip")
 
         # The archive path should appear in the logs.
         archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
@@ -69,13 +69,13 @@ class CreateDatasetTestCase(TestCase):
         datasets_dir.mkdir()
 
         for num in range(20):
-            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("test")
+            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
 
         datasets = list(datasets_dir.iterdir())
         self.assertEqual(len(datasets), 20)
 
         call_command("create_dataset", stdout=output)
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
         output_str = output.getvalue()
 
         # The new dataset should have been created.
@@ -100,13 +100,13 @@ class CreateDatasetTestCase(TestCase):
         datasets_dir.mkdir()
 
         for num in range(10):
-            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("test")
+            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
 
         datasets = list(datasets_dir.iterdir())
         self.assertEqual(len(datasets), 10)
 
         call_command("create_dataset", keep_only=4, stdout=output)
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
         output_str = output.getvalue()
 
         # The new dataset should have been created.
@@ -131,13 +131,13 @@ class CreateDatasetTestCase(TestCase):
         datasets_dir.mkdir()
 
         for num in range(20):
-            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("plip")
+            datasets_dir.joinpath(f"{self.dataset_base_name}{num}").write_text("tst")
 
         datasets = list(datasets_dir.iterdir())
         self.assertEqual(len(datasets), 20)
 
         call_command("create_dataset", keep_all=True, stdout=output)
-        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}")
+        archive_path = datasets_dir.joinpath(f"{self.dataset_base_name}{today}.zip")
         output_str = output.getvalue()
 
         # The new dataset should have been created.
