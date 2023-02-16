@@ -1,6 +1,8 @@
+import zipfile
 from abc import ABC, abstractmethod
 from functools import cached_property
 from typing import Optional
+from urllib.request import urlretrieve
 
 import pandas as pd
 from django.db.models import Case, F, QuerySet, When
@@ -11,10 +13,13 @@ from tournesol.models import ComparisonCriteriaScore, ContributorRating, Contrib
 
 
 class MlInput(ABC):
+    SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
+    SCALING_CALIBRATION_MIN_TRUST_SCORE = 0.1
+    MAX_SCALING_CALIBRATION_USERS = 100
+
     @abstractmethod
     def get_comparisons(
         self,
-        trusted_only=False,
         criteria: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> pd.DataFrame:
@@ -48,45 +53,59 @@ class MlInput(ABC):
 
 
 class MlInputFromPublicDataset(MlInput):
-    def __init__(self, csv_file):
-        self.public_dataset = pd.read_csv(csv_file)
-        self.public_dataset.rename(
-            {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
-        )
-        self.public_dataset["user_id"], self.user_indices = self.public_dataset[
-            "public_username"
-        ].factorize()
+    def __init__(self, zip_path: str):
+        if zip_path.startswith("http://") or zip_path.startswith("https://"):
+            zip_path, _headers = urlretrieve(zip_path)
 
-    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
-        dtf = self.public_dataset.copy(deep=False)
+        with zipfile.ZipFile(zip_path) as zip_file:
+            zip_root_dir = next(path for path in zipfile.Path(zip_file).iterdir() if path.is_dir())
+
+            with (zip_root_dir / "comparisons.csv").open() as comparison_file:
+                self.comparisons = pd.read_csv(comparison_file)
+                self.comparisons.rename(
+                    {"video_a": "entity_a", "video_b": "entity_b"}, axis=1, inplace=True
+                )
+
+            with (zip_root_dir / "users.csv").open() as users_file:
+                self.users = pd.read_csv(users_file)
+                self.users.index.name = "user_id"
+
+            username_to_user_id = pd.Series(
+                data=self.users.index, index=self.users["public_username"]
+            )
+            self.comparisons = self.comparisons.join(username_to_user_id, on="public_username")
+
+    def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
+        dtf = self.comparisons.copy(deep=False)
         if criteria is not None:
             dtf = dtf[dtf.criteria == criteria]
         if user_id is not None:
             dtf = dtf[dtf.user_id == user_id]
+        dtf["weight"] = 1
         return dtf[["user_id", "entity_a", "entity_b", "criteria", "score", "weight"]]
 
     @cached_property
     def ratings_properties(self):
         user_entities_pairs = pd.Series(
             iter(
-                set(self.public_dataset.groupby(["user_id", "entity_a"]).indices.keys())
-                | set(self.public_dataset.groupby(["user_id", "entity_b"]).indices.keys())
+                set(self.comparisons.groupby(["user_id", "entity_a"]).indices.keys())
+                | set(self.comparisons.groupby(["user_id", "entity_b"]).indices.keys())
             )
         )
         dtf = pd.DataFrame([*user_entities_pairs], columns=["user_id", "entity_id"])
         dtf["is_public"] = True
-        top_users = dtf.value_counts("user_id").index[:6]
-        dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(top_users)
-        # TODO read trust_scores from the public dataset
-        dtf["trust_score"] = dtf["is_scaling_calibration_user"] * 0.8
+        dtf["trust_score"] = dtf["user_id"].map(self.users["trust_score"])
+        scaling_calibration_user_ids = (
+            dtf[dtf.trust_score > self.SCALING_CALIBRATION_MIN_TRUST_SCORE]["user_id"]
+            .value_counts(sort=True)[: self.MAX_SCALING_CALIBRATION_USERS]
+            .loc[lambda count: count >= self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE]
+            .index
+        )
+        dtf["is_scaling_calibration_user"] = dtf["user_id"].isin(scaling_calibration_user_ids)
         return dtf
 
 
 class MlInputFromDb(MlInput):
-    SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE = 20
-    SCALING_CALIBRATION_MIN_TRUST_SCORE = 0.1
-    MAX_SCALING_CALIBRATION_USERS = 100
-
     def __init__(self, poll_name: str):
         self.poll_name = poll_name
 
@@ -125,17 +144,12 @@ class MlInputFromDb(MlInput):
             n_compared_entities__gte=self.SCALING_CALIBRATION_MIN_ENTITIES_TO_COMPARE,
         ).order_by("-n_compared_entities")[: self.MAX_SCALING_CALIBRATION_USERS]
 
-    def get_comparisons(self, trusted_only=False, criteria=None, user_id=None) -> pd.DataFrame:
+    def get_comparisons(self, criteria=None, user_id=None) -> pd.DataFrame:
         scores_queryset = ComparisonCriteriaScore.objects.filter(
             comparison__poll__name=self.poll_name
         )
         if criteria is not None:
             scores_queryset = scores_queryset.filter(criteria=criteria)
-
-        if trusted_only:
-            scores_queryset = scores_queryset.filter(
-                comparison__user__in=User.with_trusted_email()
-            )
 
         if user_id is not None:
             scores_queryset = scores_queryset.filter(comparison__user_id=user_id)
