@@ -281,7 +281,7 @@ function viewPublishedDate(publishedDate) {
     //in case the local machine UTC time is less than the published date
     return '';
   }
-  const diffDays = Math.floor(Math.abs(diffTime / (1000 * 3600 * 24)));
+  const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
 
   if (diffDays == 0) {
     return 'Today';
