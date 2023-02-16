@@ -1,7 +1,7 @@
 import zipfile
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import Optional
+from typing import BinaryIO, Optional, Union
 from urllib.request import urlretrieve
 
 import pandas as pd
@@ -53,11 +53,13 @@ class MlInput(ABC):
 
 
 class MlInputFromPublicDataset(MlInput):
-    def __init__(self, zip_path: str):
-        if zip_path.startswith("http://") or zip_path.startswith("https://"):
-            zip_path, _headers = urlretrieve(zip_path)
+    def __init__(self, dataset_zip: Union[str, BinaryIO]):
+        if isinstance(dataset_zip, str) and (
+            dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
+        ):
+            dataset_zip, _headers = urlretrieve(dataset_zip)
 
-        with zipfile.ZipFile(zip_path) as zip_file:
+        with zipfile.ZipFile(dataset_zip) as zip_file:
             zip_root_dir = next(path for path in zipfile.Path(zip_file).iterdir() if path.is_dir())
 
             with (zip_root_dir / "comparisons.csv").open() as comparison_file:

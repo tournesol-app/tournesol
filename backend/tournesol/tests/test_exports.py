@@ -22,6 +22,7 @@ from rest_framework.test import APIClient
 from core.models import User
 from core.tests.factories.user import UserFactory
 from core.utils.time import time_ahead
+from ml.inputs import MlInputFromPublicDataset
 from tournesol.models import (
     ComparisonCriteriaScore,
     ContributorRating,
@@ -34,7 +35,8 @@ from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_score import EntityCriteriaScoreFactory
 from tournesol.tests.utils.mock_now import MockNow
 
-export_test_override_settings = override_settings(
+
+@override_settings(
     MEDIA_ROOT=gettempdir(),
     APP_TOURNESOL=ChainMap(
         {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
@@ -60,9 +62,7 @@ class ExportTest(TestCase):
         )
         self.user_without_comparisons = UserFactory(username="user_without_comparisons")
 
-        self.user_with_public_comparisons = UserFactory(
-            username="public_comparisons", trust_score=0.5844
-        )
+        self.public_comparisons = UserFactory(username="public_comparisons", trust_score=0.5844)
         self.video_public_1 = VideoFactory()
         self.video_public_2 = VideoFactory()
         self.video_private_3 = VideoFactory()
@@ -139,7 +139,7 @@ class ExportTest(TestCase):
         ComparisonCriteriaScoreFactory(
             comparison=comparison, score=5, criteria="largely_recommended"
         )
-        
+
 
     def extract_export_root(self, response):
         content_disposition = response.headers["Content-Disposition"]
@@ -248,14 +248,12 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[1]["video_a"], self.video_public_3.video_id)
         self.assertEqual(comparison_list[1]["video_b"], self.video_public_4.video_id)
 
-    @export_test_override_settings
     def test_non_authenticated_can_fetch_export_all_200(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
 
-    @export_test_override_settings
     def test_public_dataset_contains_all_expected_files(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
@@ -271,7 +269,6 @@ class ExportTest(TestCase):
             filenames = [filepath.rsplit("/", 1)[-1] for filepath in zip_file.namelist()]
             self.assertEqual(filenames, expected_filenames)
 
-    @export_test_override_settings
     def test_export_readme_equals_resources_readme(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
@@ -284,7 +281,6 @@ class ExportTest(TestCase):
                     expected_content = readme_file.read()
                 self.assertEqual(content, expected_content)
 
-    @export_test_override_settings
     def test_export_all_comparisons_equal_export_comparisons(self):
         call_command("create_dataset")
         response = self.client.get("/exports/all/")
@@ -295,7 +291,6 @@ class ExportTest(TestCase):
                 expected_content = self.client.get("/exports/comparisons/").content
                 self.assertEqual(file.read(), expected_content)
 
-    @export_test_override_settings
     def test_users_with_public_comparisons_uniquely_added_to_users_export(self):
         # Make sure this user has multiple public comparisons so
         # that we can verify they are only added once in the CSV
@@ -313,7 +308,6 @@ class ExportTest(TestCase):
         user_row = user_rows[0]
         self.assertEqual(user_row["trust_score"], "0.5844")
 
-    @export_test_override_settings
     def test_user_with_only_private_comparisons_not_in_users(self):
         user_with_only_private_comparisons = UserFactory(username="privacy_conscious")
         self.add_comparison(user=user_with_only_private_comparisons, is_public=False)
@@ -325,7 +319,6 @@ class ExportTest(TestCase):
         usernames = set(row["public_username"] for row in rows)
         self.assertNotIn(user_with_only_private_comparisons.username, usernames)
 
-    @export_test_override_settings
     def test_anon_cant_download_non_existing_dataset(self):
         """
         Anonymous and authenticated users cannot download a dataset when no
@@ -339,7 +332,6 @@ class ExportTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.headers["Content-Type"], "application/json")
 
-    @export_test_override_settings
     def test_all_exports_voting_rights(self):
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
 
@@ -429,7 +421,6 @@ class ExportTest(TestCase):
             self.assertEqual(row["score"], str(expected_export.score))
             self.assertEqual(row["voting_right"], str(expected_export.voting_right))
 
-    @export_test_override_settings
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
         first_user = UserFactory(username="a")
@@ -444,7 +435,6 @@ class ExportTest(TestCase):
         self.assertEqual("a", usernames[0])
         self.assertEqual("z", usernames[-1])
 
-    @export_test_override_settings
     def test_all_export_contains_collective_criteria_scores(self):
         e_criteria_score = EntityCriteriaScoreFactory(
             criteria="h2g2",
@@ -460,7 +450,6 @@ class ExportTest(TestCase):
         self.assertEqual(rows[0]["criteria"], "h2g2")
         self.assertEqual(float(rows[0]["score"]), 42.)
 
-    @export_test_override_settings
     def test_collective_criteria_scores_is_empty_without_criteria_scores(self):
         EntityCriteriaScore.objects.all().delete
         call_command("create_dataset")
@@ -509,3 +498,26 @@ class ExportTest(TestCase):
         self.assertEqual("2019-12-30", rows[2]["week_date"])
         self.assertEqual("2023-01-16", rows[3]["week_date"])
         self.assertEqual("2023-01-16", rows[4]["week_date"])
+
+    def test_use_public_export_as_ml_input(self):
+        call_command("create_dataset")
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        zip_content = io.BytesIO(response.content)
+
+        ml_input = MlInputFromPublicDataset(zip_content)
+        comparisons_df = ml_input.get_comparisons()
+        rating_properties = ml_input.ratings_properties
+
+        self.assertEqual(len(comparisons_df), 1)
+        self.assertEqual(
+            list(comparisons_df.columns),
+            ["user_id", "entity_a", "entity_b", "criteria", "score", "weight"],
+        )
+
+        self.assertEqual(len(rating_properties), 2)
+        self.assertEqual(
+            list(rating_properties.columns),
+            ["user_id", "entity_id", "is_public", "trust_score", "is_scaling_calibration_user"],
+        )
