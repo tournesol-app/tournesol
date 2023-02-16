@@ -57,7 +57,7 @@ class MlInputFromPublicDataset(MlInput):
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
         ):
-            dataset_zip, _headers = urlretrieve(dataset_zip)
+            dataset_zip, _headers = urlretrieve(dataset_zip)  # nosec B310
 
         with zipfile.ZipFile(dataset_zip) as zip_file:
             zip_root_dir = next(path for path in zipfile.Path(zip_file).iterdir() if path.is_dir())
