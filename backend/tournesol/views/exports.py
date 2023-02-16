@@ -174,8 +174,8 @@ class ExportPublicAllView(APIView):
 
         try:
             latest_dataset = max(all_datasets, key=getctime)
-        except ValueError:
-            raise NotFound("No dataset available.")
+        except ValueError as error:
+            raise NotFound("No dataset available.") from error
 
         with open(latest_dataset, "rb") as archive:
             archive_content = archive.read()
