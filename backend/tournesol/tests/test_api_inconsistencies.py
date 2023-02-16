@@ -1,18 +1,12 @@
 from math import sqrt
 
 from django.test import TestCase
-from core.utils.time import time_ago, time_ahead
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.tests.factories.user import UserFactory
-from tournesol.models import (
-    Comparison,
-    ComparisonCriteriaScore,
-    ContributorRating,
-    ContributorRatingCriteriaScore,
-    Poll,
-)
+from core.utils.time import time_ago, time_ahead
+from tournesol.models import Poll
 from tournesol.tests.factories.comparison import ComparisonCriteriaScoreFactory, ComparisonFactory
 from tournesol.tests.factories.entity import EntityFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
