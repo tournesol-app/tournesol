@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
         archive_name = f"{dataset_base_name}{timezone.now().strftime('%Y%m%d')}"
         archive_abs_path = datasets_build_dir.joinpath(archive_name)
-        readme_path = "tournesol/resources/export_readme.txt"
+        readme_path = Path("tournesol/resources/export_readme.txt")
 
         # BUILDING phase
         with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
