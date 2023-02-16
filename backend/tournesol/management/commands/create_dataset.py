@@ -51,6 +51,10 @@ class Command(BaseCommand):
         if options.get("verbosity", 1) > 1:
             self.stdout.write(f"MEDIA_ROOT: {settings.MEDIA_ROOT}")
             self.stdout.write(
+                "APP_TOURNESOL['DATASET_BASE_NAME']:"
+                f" {settings.APP_TOURNESOL['DATASET_BASE_NAME']}"
+            )
+            self.stdout.write(
                 "APP_TOURNESOL['DATASETS_BUILD_DIR']:"
                 f" {settings.APP_TOURNESOL['DATASETS_BUILD_DIR']}"
             )
