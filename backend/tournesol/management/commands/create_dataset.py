@@ -65,7 +65,7 @@ class Command(BaseCommand):
         poll_name = Poll.default_poll().name
 
         archive_name = f"{dataset_base_name}{timezone.now().strftime('%Y%m%d')}"
-        archive_abs_path = datasets_build_dir.joinpath(archive_name)
+        archive_abs_path = datasets_build_dir.joinpath(archive_name).with_suffix(".zip")
         readme_path = Path("tournesol/resources/export_readme.txt")
 
         # BUILDING phase
@@ -93,7 +93,6 @@ class Command(BaseCommand):
                 )
                 self.stdout.write("- individual_criteria_scores.csv written.")
 
-        archive_abs_path = archive_abs_path.rename(archive_abs_path.with_suffix(".zip"))
         self.stdout.write(self.style.SUCCESS(f"archive created at {archive_abs_path}"))
 
         # CLEANING phase
