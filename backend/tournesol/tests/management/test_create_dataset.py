@@ -62,8 +62,6 @@ class CreateDatasetTestCase(TestCase):
         """
         Without any option, the `create_dataset` command should keep only the
         10 most recent files in the `DATASETS_BUILD_DIR`.
-
-        TODO: check that the deleted files are the oldest
         """
         output = StringIO()
         today = timezone.localdate().strftime("%Y%m%d")
@@ -95,8 +93,6 @@ class CreateDatasetTestCase(TestCase):
         """
         With the --keep-only option, the `create_dataset` command should keep
         only the specified number of recent files in the `DATASETS_BUILD_DIR`.
-
-        TODO: check that the deleted files are the oldest
         """
         output = StringIO()
         today = timezone.localdate().strftime("%Y%m%d")
