@@ -6,7 +6,11 @@ from django.utils import timezone
 
 
 def time_ago(**kwargs):
-    """Return a time in the past as specified as keyword arguments."""
+    """
+    Return a `datetime` in the past relative to now.
+
+    The keyword arguments are directly passed to `datetime.timedelta`.
+    """
 
     return timezone.now() - timedelta(**kwargs)
 
