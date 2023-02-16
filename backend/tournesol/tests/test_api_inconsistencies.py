@@ -238,18 +238,18 @@ class Length3CyclesApiTestCase(TestCase):
         """Can use the date filter to ignore old comparisons"""
         self.client.force_authenticate(self.user)
 
-        tomorrow = time_ahead(days=1)
-        yesterday = time_ago(days=1)
-
+        tomorrow = time_ahead(days=1).isoformat().split('+')[0]
+        yesterday = time_ago(days=1).isoformat().split('+')[0]
+ 
         response = self.client.get(
-            self.url + f"?date_gte={yesterday.isoformat()}",
+            self.url + f"?date_gte={yesterday}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_cycles_count)
 
         response = self.client.get(
-            self.url + f"?date_gte={tomorrow.isoformat()}",
+            self.url + f"?date_gte={tomorrow}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -429,18 +429,18 @@ class ScoreInconsistenciesApiTestCase(TestCase):
 
         self._create_comparison_and_rating()
 
-        tomorrow = time_ahead(days=1)
-        yesterday = time_ago(days=1)
+        tomorrow = time_ahead(days=1).isoformat().split('+')[0]
+        yesterday = time_ago(days=1).isoformat().split('+')[0]
 
         response = self.client.get(
-            self.url + f"?date_gte={yesterday.isoformat()}",
+            self.url + f"?date_gte={yesterday}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
 
         response = self.client.get(
-            self.url + f"?date_gte={tomorrow.isoformat()}",
+            self.url + f"?date_gte={tomorrow}",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
