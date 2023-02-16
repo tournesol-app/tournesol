@@ -10,6 +10,7 @@ def time_ago(**kwargs):
 
     return timezone.now() - timedelta(**kwargs)
 
+
 def time_ahead(**kwargs):
     """Return a time in the future as specified as keyword arguments."""
 
