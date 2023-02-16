@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.views import APIView
 
@@ -170,7 +171,11 @@ class ExportPublicAllView(APIView):
         )
 
         all_datasets = datasets_build_dir.glob(f"{dataset_base_name}*")
-        latest_dataset = max(all_datasets, key=getctime)
+
+        try:
+            latest_dataset = max(all_datasets, key=getctime)
+        except ValueError:
+            raise NotFound("No dataset available.")
 
         with open(latest_dataset, "rb") as archive:
             archive_content = archive.read()
