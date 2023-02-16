@@ -1,6 +1,5 @@
 import csv
 import io
-import os
 import re
 import shutil
 import zipfile
@@ -97,7 +96,7 @@ class ExportTest(TestCase):
         `create_dataset`.
         """
         try:
-            shutil.rmtree(os.path.join(gettempdir(), "ts_api_test_datasets"))
+            shutil.rmtree(Path(gettempdir()).joinpath("ts_api_test_datasets"))
         except FileNotFoundError:
             pass
 
