@@ -1,10 +1,16 @@
 import csv
 import io
 import re
+import shutil
 import zipfile
+from collections import ChainMap
+from pathlib import Path
+from tempfile import gettempdir
 
+from django.conf import settings
 from django.core.cache import cache
-from django.test import TestCase
+from django.core.management import call_command
+from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -84,6 +90,16 @@ class ExportTest(TestCase):
         self.client = APIClient()
         cache.clear()
 
+    def tearDown(self) -> None:
+        """
+        Delete the temporary directory created by the call to the mgmt command
+        `create_dataset`.
+        """
+        try:
+            shutil.rmtree(Path(gettempdir()).joinpath("ts_api_test_datasets"))
+        except FileNotFoundError:
+            pass
+
     def add_comparison(self, user, is_public=True):
         video1 = VideoFactory()
         video2 = VideoFactory()
@@ -109,7 +125,7 @@ class ExportTest(TestCase):
     def extract_export_root(self, response):
         content_disposition = response.headers["Content-Disposition"]
         match = re.search(
-            "attachment; filename=(tournesol_export_\\d{8}T\\d{6}Z).zip",
+            "attachment; filename=(tournesol_dataset_\\d{8}).zip",
             content_disposition,
         )
         self.assertIsNotNone(match)
@@ -200,10 +216,18 @@ class ExportTest(TestCase):
         self.assertEqual(comparison_list[1]["video_a"], self.video_public_3.video_id)
         self.assertEqual(comparison_list[1]["video_b"], self.video_public_4.video_id)
 
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
+        ),
+    )
     def test_not_authenticated_can_download_all_exports(self):
         # Make sure this user has multiple public comparisons so
         # that we can verify they are only added once in the CSV
         self.add_comparison(user=self.public_comparisons, is_public=True)
+
+        call_command("create_dataset")
 
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -215,10 +239,11 @@ class ExportTest(TestCase):
         with zipfile.ZipFile(zip_content, "r") as zip_file:
             expected_files = [
                 root + "/README.txt",
-                root + "/comparisons.csv",
                 root + "/users.csv",
+                root + "/comparisons.csv",
                 root + "/individual_criteria_scores.csv",
             ]
+
             self.assertEqual(zip_file.namelist(), expected_files)
 
             with zip_file.open(root + "/README.txt", "r") as file:
@@ -248,6 +273,31 @@ class ExportTest(TestCase):
                 user_row = user_rows[0]
                 self.assertEqual(user_row["trust_score"], "0.5844")
 
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
+        ),
+    )
+    def test_anon_cant_download_non_existing_dataset(self):
+        """
+        Anonymous and authenticated users cannot download a dataset when no
+        dataset is available on the server.
+        """
+        # The dir "datasets" should not exist by default.
+        datasets_dir = Path(gettempdir()).joinpath("ts_api_test_datasets")
+        self.assertFalse(datasets_dir.exists())
+
+        response = self.client.get("/exports/all/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.headers["Content-Type"], "application/json")
+
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
+        ),
+    )
     def test_all_exports_voting_rights(self):
         self.assertEqual(ContributorRatingCriteriaScore.objects.count(), 0)
 
@@ -323,6 +373,8 @@ class ExportTest(TestCase):
             expected_exports, key=lambda x: x.contributor_rating.user.username
         )
 
+        call_command("create_dataset")
+
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Type"], "application/zip")
@@ -349,12 +401,20 @@ class ExportTest(TestCase):
                     self.assertEqual(row["score"], str(expected_export.score))
                     self.assertEqual(row["voting_right"], str(expected_export.voting_right))
 
+    @override_settings(
+        MEDIA_ROOT=gettempdir(),
+        APP_TOURNESOL=ChainMap(
+            {"DATASETS_BUILD_DIR": "ts_api_test_datasets"}, settings.APP_TOURNESOL
+        ),
+    )
     def test_all_export_sorts_by_username(self):
         last_user = UserFactory(username="z")
         first_user = UserFactory(username="a")
 
         self.add_comparison(user=last_user, is_public=True)
         self.add_comparison(user=first_user, is_public=True)
+
+        call_command("create_dataset")
 
         response = self.client.get("/exports/all/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
