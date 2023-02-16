@@ -1,7 +1,7 @@
-import datetime
 from math import sqrt
 
 from django.test import TestCase
+from core.utils.time import time_ago, time_ahead
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -238,8 +238,8 @@ class Length3CyclesApiTestCase(TestCase):
         """Can use the date filter to ignore old comparisons"""
         self.client.force_authenticate(self.user)
 
-        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        tomorrow = time_ahead(days=1)
+        yesterday = time_ago(days=1)
 
         response = self.client.get(
             self.url + f"?date_gte={yesterday.isoformat()}",
@@ -429,8 +429,8 @@ class ScoreInconsistenciesApiTestCase(TestCase):
 
         self._create_comparison_and_rating()
 
-        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        tomorrow = time_ahead(days=1)
+        yesterday = time_ago(days=1)
 
         response = self.client.get(
             self.url + f"?date_gte={yesterday.isoformat()}",
